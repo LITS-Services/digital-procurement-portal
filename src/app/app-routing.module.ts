@@ -1,0 +1,41 @@
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes, PreloadAllModules } from '@angular/router';
+
+import { FullLayoutComponent } from "./layouts/full/full-layout.component";
+import { ContentLayoutComponent } from "./layouts/content/content-layout.component";
+
+import { Full_ROUTES } from "./shared/routes/full-layout.routes";
+import { CONTENT_ROUTES } from "./shared/routes/content-layout.routes";
+
+import { AuthGuard } from './shared/auth/auth-guard.service';
+import { VendorRegistrationFormComponent } from './vendor-registration-form/vendor-registration-form/vendor-registration-form.component';
+
+const appRoutes: Routes = [
+  {
+    path: '',
+    redirectTo: 'pages/login',
+    pathMatch: 'full',
+  },
+  {
+    path: 'vendor-registration-form',
+    component: VendorRegistrationFormComponent,
+    data: {
+      title: 'Vendor Registration Form',
+      system: 'Vendor Registration Form'
+    }
+  },
+  { path: '', component: FullLayoutComponent, data: { title: 'full Views' }, children: Full_ROUTES, canActivate: [AuthGuard] },
+  { path: '', component: ContentLayoutComponent, data: { title: 'content Views' }, children: CONTENT_ROUTES },
+  {
+    path: '**',
+    redirectTo: 'pages/error'
+  }
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(appRoutes, { preloadingStrategy: PreloadAllModules, relativeLinkResolution: 'legacy' })],
+  exports: [RouterModule]
+})
+
+export class AppRoutingModule {
+}

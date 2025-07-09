@@ -1,0 +1,97 @@
+<div class="modal-header">
+    Exception Policy
+     <button type="button" class="close" aria-label="Close" (click)="closeDialog()">
+         <span aria-hidden="true">&times;</span>
+     </button>
+ </div>
+ <div class="modal-body">
+    <form [formGroup]="exceptionPolicyForm" (ngSubmit)="submitForm()">
+        <div class="form-row">
+          <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+            <div class="form-group mb-2">
+              <label>Requsition No.</label>
+              <input type="text" placeholder="Enter Requsition No." class="form-control" />
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+            <div class="form-group mb-2">
+              <label>Requester Name</label>
+              <input type="text" placeholder="Enter Requester Name" class="form-control" />
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+            <div class="form-group mb-2">
+              <label>Subject</label>
+              <input type="text" placeholder="Enter Subject" class="form-control" />
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+            <div class="form-group mb-2">
+              <label>Date</label>
+              <input type="date" class="form-control" />
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+            <div class="form-group mb-2">
+              <label>Requesting Department</label>
+              <input type="text" placeholder="Enter Requesting Department" class="form-control" />
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+            <div class="form-group mb-2">
+              <label>Description of Goods/Services</label>
+              <input type="text" placeholder="Enter Description of Goods/Services" class="form-control" />
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+            <div class="form-group mb-2">
+              <label>Estimated/Actual Value</label>
+              <input type="text" placeholder="Enter Estimated/Actual Value" class="form-control" />
+            </div>
+          </div>
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="form-group mb-2">
+              <label>Proposed Alternative Methods of Procurement</label>
+            </div>
+          </div>
+
+          <div class="col-12 mb-2">
+            <div class="form-check-inline">
+              <label class="form-check-label">
+                <input type="radio" class="form-check-input" name="optradio" formControlName="supplierOption" value="competitive">Obtain Competitive quotation from at least 3 suppliers without tendering
+              </label>
+            </div>
+          </div>
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-2">
+            <div class="form-check-inline">
+              <label class="form-check-label">
+                <input type="radio" class="form-check-input" name="optradio" formControlName="supplierOption" value="direct">Direct Appointment with Supplier(Name of proposed supplier)
+              </label>
+            </div> 
+          </div>
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-2" *ngIf="exceptionPolicyForm.get('supplierOption').value === 'direct'">
+            <div class="form-group mb-2">
+              <label>Supplier Name</label>
+              <!-- <input type="text" placeholder="Enter Status" class="form-control" /> -->
+              <select class="form-control" formControlName="supplierName">
+              <option value="" selected disabled>Select a Supplier</option>
+          </select>
+            </div>
+          </div>
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="form-group mb-2">
+              <label>Wavier Request Justification</label>
+              <!-- <input type="text" placeholder="Enter Business Unit" class="form-control" /> -->
+               <textarea name="" rows="5" type="text" placeholder="Enter Wavier Request Justification" class="form-control"></textarea>
+            </div>
+          </div>
+
+
+        </div>
+
+      </form>
+ </div>
+ <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="submitForm()">Save</button>
+    <button type="button" class="btn btn-secondary" (click)="closeDialog()">cancel</button>
+</div>

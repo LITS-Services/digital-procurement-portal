@@ -1,0 +1,101 @@
+<!--Login Page Starts-->
+<section id="login">
+  <div class="row auth-height full-height-vh m-0">    
+    <div class="col-12 d-flex align-items-center justify-content-center">
+      <div class="card overflow-hidden">
+        <div class="card-content">
+          <div class="card-body auth-img">
+            <div class="row m-0">
+              <!-- <div class="col-lg-6 d-none d-lg-flex justify-content-center align-items-center auth-img-bg p-3">
+                <img src="assets/img/gallery/login.png" alt="" class="img-fluid" width="300" height="230">
+              </div> -->
+              <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-12 px-4 py-3">
+                <div class="text-center mb-2"><img src="/assets/img/login-logo.webp" width="70" height="70" alt=""></div>
+                <!-- <h2 class="mb-2 text-center" style="color: #1E89B8;">Login</h2>
+                <p class="mb-2 text-center">Please enter credentials</p> -->
+                <ngb-alert type="light-danger" class="mb-2" *ngIf="isLoginFailed" (close)="isLoginFailed = false">
+                  <p class="mb-0">Login failed!</p>
+                </ngb-alert>
+                <form [formGroup]="loginForm">
+                  <div class="form-group">
+                    <input type="text" formControlName="username" class="form-control" placeholder="Username"
+                      [ngClass]="{ 'is-invalid': loginFormSubmitted && lf.username.invalid, 'is-valid': loginFormSubmitted && !lf.username.invalid }"
+                      required>
+                    <div *ngIf="loginFormSubmitted && (lf.username.invalid || lf.username.errors?.required)"
+                      class="help-block mt-1 text-danger"> <i class="ft-alert-circle align-middle"></i> This is
+                      required</div>
+                  </div>
+                  <div class="form-group">
+                    <input type="password" formControlName="password" class="form-control" placeholder="Old Password"
+                      [ngClass]="{ 'is-invalid': loginFormSubmitted && lf.password.invalid, 'is-valid': loginFormSubmitted && !lf.password.invalid }"
+                      required>
+                    <div *ngIf="loginFormSubmitted && (lf.password.invalid || lf.password.errors?.required)"
+                      class="help-block mt-1 text-danger"> <i class="ft-alert-circle align-middle"></i> This is required
+                    </div>
+                  </div>
+                  <!-- <div class="d-sm-flex justify-content-between mb-3 font-small-2">
+                    <div class="remember-me mb-2 mb-sm-0">
+                      <div class="checkbox auth-checkbox">
+                        <input type="checkbox" formControlName="rememberMe" class="form-control" id="rememberMe">
+                        <label for="rememberMe"><span class="font-small-2 mb-3 font-weight-normal">Remember Me</span></label>
+                      </div>
+                    </div>
+                    <a [routerLink]="['/pages/forgotpassword']">Forgot Password?</a>
+                  </div> -->
+                
+                  <div class="d-flex justify-content-between flex-sm-row">
+                    <!-- <a [routerLink]="['/pages/register']" class="btn bg-light-primary mb-2 mb-sm-0">Register</a> -->
+                    <a  class="btn btn-primary w-100" (click)="onSubmit()">Login</a>
+                  </div>
+                  
+                  <!-- <div class="d-flex"><a  class="btn btn-primary" (click)="onSubmit()">Login</a></div> -->
+                  
+                </form>
+
+                <div class="checkbox mb-2 mt-2">
+                  <input type="checkbox" formControlName="rememberMe" class="form-control" id="rememberMe"
+                    (change)="rememberMe()">
+                  <label for="rememberMe"><span class="font-small-2 mb-3 font-weight-normal rm"
+                      style="color: #253E88;">Remember me</span></label>
+
+                      <a (click)="forgotpassword()" class="ml-3 fp" [ngClass]="'link'">Forgot password?</a>
+                </div>
+                <div class="or-wrapper text-center">
+                  <div class="horizontal-line"></div>
+                  <div class="or-text">or</div>
+                  <div class="horizontal-line"></div>
+                </div>
+
+                <div class="d-flex flex-sm-row">
+                  <!-- <a [routerLink]="['/pages/register']" class="btn bg-light-primary mb-2 mb-sm-0">Register</a> -->
+                  <a  class="btn btn-primary mt-1 w-100 align-self-center justify-content-center" (click)="SSO($event)"><i class="ms-logo mr-3"></i><span
+                    class="text-white mt-1" for="">Sign in
+                    with microsoft</span></a>
+                </div>
+                <!-- <button class="btn btn-lg btn-primary-1 mt-2 msbtn" type="button" (click)="SSO($event)"><span
+                    class="text-white mb-2" for=""><i class="ms-logo" style="margin-top: -1.3rem; background-color: ;"></i>Sign in
+                    with microsoft</span></button> -->
+                <!-- <div class="row">
+                  <div class="col-md-12"><button class="btn btn-primary" (click)="onSubmit()">Login</button></div>
+                </div> -->
+                
+                <!-- <hr>
+                <div class="d-flex justify-content-between align-items-center">
+                  <h6 class="text-primary m-0">Or Login With</h6>
+                  <ngx-spinner></ngx-spinner>
+                  <div class="login-options">
+                    <a class="btn btn-sm btn-social-icon btn-facebook mr-1"><span class="fa fa-facebook"></span></a>
+                    <a class="btn btn-sm btn-social-icon btn-twitter mr-1"><span class="fa fa-twitter"></span></a>
+                  </div>
+                </div> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="semi-circle-img"></div>
+  </div>
+
+</section>
+<!--Login Page Ends-->

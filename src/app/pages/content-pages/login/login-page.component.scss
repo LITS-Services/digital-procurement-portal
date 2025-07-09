@@ -1,0 +1,110 @@
+.alert-light-danger {
+  background-color: #FEEFD0 !important;
+  color: #F55252  !important;
+  border-color: #FEEFD0;
+}
+#login {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: 
+    url('/assets/img/login-background.webp') left center / cover no-repeat,
+    white;
+    // url('/assets/img/login-right-img.png') right center / cover no-repeat;
+  // background-color: white; /* Fallback for no image */
+  background-size: 50% 100%; /* Ensures each image covers half the screen */
+  background-repeat: no-repeat;
+  position: relative;
+}
+.ms-logo{
+  background-image: url('/assets/img/icons/ms-icon.png');
+  height: 30px;
+  width: 30px;
+  // top: -0.25rem;
+  // margin-top: 1rem;
+  // margin-bottom: -0.85rem;
+  // margin-left: 40px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  display: inline-block;
+}
+.or-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem 0;
+}
+  .horizontal-line {
+    flex: 1;
+    height: 1.2px;
+    background-color: #ccc;
+    margin: 2px;
+  }
+.auth-height {
+  height: 100%;
+}
+
+.full-height-vh {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  width: 100%;
+  padding: 25px;
+  width: 400px; /* Adjust this width as needed */
+  margin: 0 auto;
+  background: #E8F3F8; /* Slight transparency to show the background */
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+// @media screen and (max-width: 992px) {
+//   #login {
+//     background: none; /* Removes the images for small screens */
+//   }
+
+//   .card {
+//     background: white; /* Solid background for the card on smaller screens */
+//   }
+// }
+
+.semi-circle-img {
+  position: absolute;
+  right: 0;
+  top: 20%; /* Adjust to align vertically as needed */
+  width: 40%; /* Takes 20% of the width */
+  height: 60%; /* Takes 20% of the height */
+  background: url('/assets/img/login-right-img.png') right center / contain no-repeat; 
+  // transform: translateX(50%); /* Moves it outside the right edge to stick on the side */
+}
+@media screen and (max-width: 1100px){
+
+  .semi-circle-img {
+    position: absolute;
+    right: 0;
+    top: 30%; /* Adjust to align vertically as needed */
+    width: 30%; /* Takes 20% of the width */
+    height: 40%; /* Takes 20% of the height */
+    background: url('/assets/img/login-right-img.png') right center / contain no-repeat; 
+    // transform: translateX(50%); /* Moves it outside the right edge to stick on the side */
+  }
+}
+
+
+@media screen and (max-width: 992px) {
+  #login {
+    background: none; /* Removes the left-side image for smaller screens */
+  }
+
+  .semi-circle-img {
+    display: none; /* Hides the semi-circle on small screens */
+  }
+
+  .card {
+    background: white;
+  }
+}

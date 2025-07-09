@@ -1,0 +1,114 @@
+ <!-- <header class="header">
+    <h1>Vendor Registration</h1>
+  </header>
+
+  <main class="main-content">
+    <form class="vendor-form" action="#" method="post">
+      <div class="form-group">
+        <label for="vendorName">Vendor Name</label>
+        <input type="text" id="vendorName" name="vendorName" required>
+      </div>
+
+      <div class="form-group">
+        <label for="vendorEmail">Email</label>
+        <input type="email" id="vendorEmail" name="vendorEmail" required>
+      </div>
+
+      <div class="form-group">
+        <label for="vendorPhone">Phone Number</label>
+        <input type="tel" id="vendorPhone" name="vendorPhone" required>
+      </div>
+
+      <div class="form-group">
+        <label for="vendorAddress">Address</label>
+        <input type="text" id="vendorAddress" name="vendorAddress" required>
+      </div>
+
+      <div class="form-group">
+        <label for="vendorCategory">Category</label>
+        <select id="vendorCategory" name="vendorCategory" required>
+          <option value="IT">IT</option>
+          <option value="Office Supplies">Office Supplies</option>
+          <option value="Consulting">Consulting</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <button type="submit">Register</button>
+      </div>
+    </form>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2024 LITS Vendor Portal. All rights reserved.</p>
+  </footer> -->
+
+
+  <div class="container">
+    <header class="header">
+      <h1>Vendor Registration</h1>
+    </header>
+  
+    <main class="main-content">
+      <form >
+
+        <div class="form-row">
+            <h5>Company Contact Information</h5>
+            <div class="col-md-12">
+                <hr>
+            </div>
+            <div class="form-group col-md-12"> 
+                <label for="vendorName">Organization/Business Name</label>
+                <input type="text" id="vendorName" formControlName="organizationName" required>
+            </div>
+            <div class="form-group col-md-12"> 
+                <label for="vendorName">Company Address</label>
+                <input type="text" id="vendorName" formControlName="companyAddress" required>
+            </div>
+            <div class="form-group col-md-12">
+                <label for="vendorCountry">Country</label>
+                <select id="vendorCountry"  (change)="onCountryChange($event)">
+                  <option *ngFor="let country of countries" [value]="country">{{ country }}</option>
+                </select>
+              </div>
+        
+              <!-- State/Province Selection -->
+              <div class="form-group">
+                <label for="vendorState">State/Province</label>
+                <select id="vendorState" formControlName="state" [disabled]="states.length === 0" (change)="onStateChange($event)">
+                  <option *ngFor="let state of states" [value]="state">{{ state }}</option>
+                </select>
+              </div>
+        
+              <!-- City Selection -->
+              <div class="form-group">
+                <label for="vendorCity">City</label>
+                <select id="vendorCity" formControlName="city" [disabled]="cities.length === 0">
+                  <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+                </select>
+              </div>
+        
+              <!-- Postal/Zip Code -->
+              <div class="form-group">
+                <label for="vendorZipCode">Postal/Zip Code</label>
+                <input type="text" id="vendorZipCode" formControlName="zipCode">
+              </div>
+            <div class="form-group col-md-6"> 
+                <label for="vendorName">Mobile Number</label>
+                <input type="text" id="vendorName" formControlName="mobileNo" required>
+            </div>
+        </div>
+
+
+  
+        <div class="form-group">
+          <button type="submit" [disabled]="!vendorForm.valid">Register</button>
+        </div>
+      </form>
+    </main>
+  
+    <footer class="footer">
+      <p>&copy; 2024 E-Procurement Portal. All rights reserved.</p>
+    </footer>
+  </div>
+  

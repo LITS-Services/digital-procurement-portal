@@ -1,0 +1,181 @@
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { DatatableData } from 'app/data-tables/data/datatables.data';
+import { PurchaseRequestAccountBudgetLookupModalComponent } from 'app/shared/modals/purchase-request-account-budget-lookup-modal/purchase-request-account-budget-lookup-modal.component';
+import { PurchaseRequestExceptionPolicyComponent } from 'app/shared/modals/purchase-request-exception-policy/purchase-request-exception-policy.component';
+
+@Component({
+  selector: 'app-purchase-request',
+  templateUrl: './purchase-request.component.html',
+  styleUrls: ['./purchase-request.component.scss']
+})
+export class PurchaseRequestComponent implements OnInit {
+  public SelectionType = SelectionType;
+  public ColumnMode = ColumnMode;
+  purchaseRequestData = [
+    {
+      requisitionNo: 'REQ001', // Requisition No.
+      status: 'Pending', // Status
+      date: '2024-10-01', // Date (title column)
+      owner: 'Mubashir', // Owner (announcementDate)
+      department: 'IT', // Department (announcementEndDate)
+      title: 'Cleaning Services Contract Renewal', // Title (fileName)
+      vendors: "000035", // File path for download
+      accounts: '03-63418', // Vendors, Accounts, Total Amount badges
+      totalAmount: 2500000
+    },
+    {
+      requisitionNo: 'REQ001', // Requisition No.
+      status: 'Pending', // Status
+      date: '2024-10-01', // Date (title column)
+      owner: 'Mubashir', // Owner (announcementDate)
+      department: 'IT', // Department (announcementEndDate)
+      title: 'Cleaning Services Contract Renewal', // Title (fileName)
+      vendors: "000035", // File path for download
+      accounts: '03-63418', // Vendors, Accounts, Total Amount badges
+      totalAmount: 2500000
+    },
+    {
+      requisitionNo: 'REQ001', // Requisition No.
+      status: 'Pending', // Status
+      date: '2024-10-01', // Date (title column)
+      owner: 'Mubashir', // Owner (announcementDate)
+      department: 'IT', // Department (announcementEndDate)
+      title: 'Cleaning Services Contract Renewal', // Title (fileName)
+      vendors: "000035", // File path for download
+      accounts: '03-63418', // Vendors, Accounts, Total Amount badges
+      totalAmount: 2500000
+    },
+    {
+      requisitionNo: 'REQ001', // Requisition No.
+      status: 'Pending', // Status
+      date: '2024-10-01', // Date (title column)
+      owner: 'Mubashir', // Owner (announcementDate)
+      department: 'IT', // Department (announcementEndDate)
+      title: 'Cleaning Services Contract Renewal', // Title (fileName)
+      vendors: "000035", // File path for download
+      accounts: '03-63418', // Vendors, Accounts, Total Amount badges
+      totalAmount: 2500000
+    },
+    {
+      requisitionNo: 'REQ001', // Requisition No.
+      status: 'Pending', // Status
+      date: '2024-10-01', // Date (title column)
+      owner: 'Mubashir', // Owner (announcementDate)
+      department: 'IT', // Department (announcementEndDate)
+      title: 'Cleaning Services Contract Renewal', // Title (fileName)
+      vendors: "000035", // File path for download
+      accounts: '03-63418', // Vendors, Accounts, Total Amount badges
+      totalAmount: 2500000
+    },
+    {
+      requisitionNo: 'REQ001', // Requisition No.
+      status: 'Pending', // Status
+      date: '2024-10-01', // Date (title column)
+      owner: 'Mubashir', // Owner (announcementDate)
+      department: 'IT', // Department (announcementEndDate)
+      title: 'Cleaning Services Contract Renewal', // Title (fileName)
+      vendors: "000035", // File path for download
+      accounts: '03-63418', // Vendors, Accounts, Total Amount badges
+      totalAmount: 2500000
+    },
+   
+  ];
+  
+  public chkBoxSelected = [];
+  loading = false;
+  public rows = DatatableData;
+  columns = [];
+  announcementId: number;
+  isEditButtonDisabled: boolean = true;
+  isDeleteButtonDisabled: boolean = true;
+  isOpenButtonDisabled: boolean = true;
+  isAddNewDisable:boolean= true;
+  isAllSelected: boolean = false;
+  constructor(
+    private router: Router,
+    private modalService: NgbModal,
+  ) { }
+
+  ngOnInit(): void {
+    console.log("Triggered");
+  }
+//   ngAfterViewChecked():void{
+//     window.dispatchEvent(new Event('resize'));
+// }
+  homePage() {
+    this.router.navigate(['/dashboard/dashboard1']);
+  }
+  openEmpDetails() {
+   
+    this.router.navigate(['/purchase-request/new-purchase-request']);
+  }
+  onSort(event) {
+    this.loading = true;
+    setTimeout(() => {
+      const rows = [...this.rows];
+      const sort = event.sorts[0];
+      rows.sort((a, b) => {
+        return a[sort.prop].localeCompare(b[sort.prop]) * (sort.dir === 'desc' ? -1 : 1);
+      });
+  
+      this.rows = rows;
+      this.loading = false;
+    }, 1000);
+  }
+  customChkboxOnSelect({ selected }) {
+    this.chkBoxSelected = [];
+    this.chkBoxSelected.splice(0, this.chkBoxSelected.length);
+    this.chkBoxSelected.push(...selected);
+    this.announcementId = selected[0]?.id;
+    // Enable/disable edit and delete buttons based on the number of selected rows
+    this.enableDisableButtons();
+
+  }
+  enableDisableButtons() {
+    const selectedRowCount = this.chkBoxSelected.length;
+    // Disable edit button by default
+   // this.isEditButtonDisabled = true;
+    // Enable delete button only if at least one row is selected
+    this.isDeleteButtonDisabled = selectedRowCount === 0;
+    // Enable edit button only if exactly one row is selected
+    this.isEditButtonDisabled = selectedRowCount !== 1;
+    this.isOpenButtonDisabled = selectedRowCount === 0;
+
+      //this.isDeleteButtonDisabled =true;
+if(this.purchaseRequestData.length!=this.chkBoxSelected.length){
+  this.isAllSelected=false;
+}
+else{
+  this.isAllSelected=true;
+}
+  }
+  openAblModal() {
+    const modalRef = this.modalService.open(PurchaseRequestAccountBudgetLookupModalComponent, {
+      backdrop: 'static',
+      size: 'xl', // Adjust the size as needed
+      centered: true,
+    });
+    modalRef.result.then((result) => {
+      // Handle modal close results if necessary
+    }, (reason) => {
+      // Handle dismissal if needed
+    });
+   
+  }
+  openExceptionPolicyModal() {
+    const modalRef = this.modalService.open(PurchaseRequestExceptionPolicyComponent, {
+      backdrop: 'static',
+      size: 'lg', // Adjust the size as needed
+      centered: true,
+    });
+    modalRef.result.then((result) => {
+      // Handle modal close results if necessary
+    }, (reason) => {
+      // Handle dismissal if needed
+    });
+   
+  }
+}

@@ -1,0 +1,29 @@
+<div class="modal-header">
+   Account Budget Lookup
+    <button type="button" class="close" aria-label="Close" (click)="closeDialog()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <ngx-datatable class="bootstrap core-bootstrap" [rows]="accountBudgetLookup" [columnMode]="'standard'"
+    [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="15" [scrollbarH]="true">
+
+     <ngx-datatable-column name="Sr. No." [width]="100">
+                    <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
+                        <span>{{rowIndex + 1}}</span>
+                    </ng-template>
+                </ngx-datatable-column>
+    <ngx-datatable-column name="Account Code" prop="accountCode" [width]="150">
+    </ngx-datatable-column>
+    <ngx-datatable-column name="Account Description" prop="accountDescription" [width]="250">
+    </ngx-datatable-column>
+    <ngx-datatable-column name="Budget Amount" [width]="150" prop="budgetAmount">
+    </ngx-datatable-column>
+    <ngx-datatable-column name="Actual Amount" [width]="150" prop="actualAmount">
+    </ngx-datatable-column>
+    <ngx-datatable-column name="Committed Amount" [width]="150" prop="committedAmount">
+    </ngx-datatable-column>
+    <ngx-datatable-column name="Balance" [width]="150" prop="Balance">
+    </ngx-datatable-column>
+  </ngx-datatable>
+</div>

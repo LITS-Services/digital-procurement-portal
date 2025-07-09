@@ -1,0 +1,49 @@
+.form-control1 {
+    display: block;
+    width: 100%;
+    height: calc(1.5em + 0.75rem + 3px);
+    padding: 0.25rem 0.75rem 0.25rem 0.25rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #75787d;
+    background-color: transparent;
+    background-clip: padding-box;
+    border: 1px solid #E0E0E0;
+    border-radius: 0.35rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.heading-upload {
+    color: #1E89B8;
+
+    font-weight: 700;
+    margin-left: -1rem;
+}
+
+
+.ngx-datatable ::ng-deep .datatable-header-inner{
+    background-color: #1E89B8 !important;
+    padding: 0.5rem;
+  border-radius: 10px;
+  }
+  .ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
+  .ngx-datatable ::ng-deep .datatable-header-inner .sort-btn{
+    color: white !important;
+  }
+  
+  .ngx-datatable ::ng-deep .datatable-body .datatable-body-row.datatable-row-even {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  // .ngx-datatable.bootstrap .datatable-body .datatable-body-row {
+  //   padding: 0.75rem;
+  //   vertical-align: middle;
+  //   border-top: 1px solid #1E89B8;
+  // }
+  
+  .ngx-datatable ::ng-deep .datatable-body .datatable-body-row .datatable-body-cell {
+    text-align: left;
+    padding: 0.75rem;
+    vertical-align:baseline;
+    
+  }

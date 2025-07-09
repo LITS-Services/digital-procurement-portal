@@ -1,0 +1,282 @@
+@import "assets/sass/core/variables/gradient-variables.scss";
+
+.rtl{
+
+  text-align: justify;
+  // font-size: 30px !important;
+}
+:host ::ng-deep .ct-grid {
+  stroke-dasharray : 0;
+  stroke : rgba(0, 0, 0, 0.1);
+}
+
+:host ::ng-deep .ct-label {
+  font-size : 0.9rem;
+}
+
+:host ::ng-deep .WidgetlineChart .ct-point {
+  stroke-width : 0;
+}
+
+:host ::ng-deep .WidgetlineChart .ct-line {
+  stroke : rgba(255, 255, 255, 0.6);
+    stroke-width: 4px;
+}
+
+:host ::ng-deep .WidgetlineChart .ct-grid {
+  stroke-dasharray : 0;
+  stroke : transparent !important;
+}
+
+:host ::ng-deep .WidgetlineChart .ct-point-regular {
+  stroke-width : 2px;
+  fill : transparent;
+  stroke : transparent !important;
+}
+
+:host ::ng-deep .WidgetlineChartshadow {
+  -webkit-filter : drop-shadow(0px 13px 6px rgba(0, 0, 0, 0.5));
+          filter : drop-shadow(0px 13px 6px rgba(0, 0, 0, 0.5));
+  /* Same syntax as box-shadow, except for the spread property */
+}
+
+:host ::ng-deep .lineArea .ct-line {
+  stroke-width : 0;
+}
+
+:host ::ng-deep .lineArea .ct-point {
+  stroke-width : 0;
+}
+
+:host ::ng-deep .lineArea .ct-series-a .ct-area {
+  fill-opacity : 0.7;
+  fill : url($dashboard1-gradient-path +  #gradient1) !important;
+}
+
+:host ::ng-deep .lineArea .ct-series-b .ct-area {
+  fill : url($dashboard1-gradient-path +  #gradient) !important;
+  fill-opacity : 0.9;
+}
+
+:host ::ng-deep .lineArea .ct-point-regular {
+  stroke-width : 2px;
+  fill : transparent;
+  stroke : transparent !important;
+}
+
+:host ::ng-deep .Stackbarchart .ct-series-a .ct-bar {
+  stroke : url($dashboard1-gradient-path +  #linear) !important;
+}
+
+:host ::ng-deep .Stackbarchart .ct-series-b .ct-bar {
+  stroke : #EEEEEE;
+}
+
+:host ::ng-deep .shopping-cart i.ft-trash-2 {
+  cursor : pointer;
+}
+:host ::ng-deep .shopping-cart i.ft-trash-2:hover {
+  color : #F55252;
+}
+
+:host ::ng-deep .shopping-cart table td {
+  vertical-align : middle;
+}
+
+:host ::ng-deep .lineArea2 .ct-line {
+  fill : none;
+  stroke-width : 2px;
+}
+
+:host ::ng-deep .lineArea2 .ct-point-circle {
+  stroke-width : 2px;
+  fill : #FFFFFF;
+}
+
+:host ::ng-deep .lineArea2 .ct-series-a .ct-area {
+  fill : url($dashboard1-gradient-path +  #gradient2) !important;
+  fill-opacity : 0.8;
+}
+
+:host ::ng-deep .lineArea2 .ct-series-a .ct-line {
+  stroke : #60AFF0;
+}
+
+:host ::ng-deep .lineArea2 .ct-series-a .ct-point-circle {
+  stroke : #2F8BE6;
+}
+
+:host ::ng-deep .lineArea2 .ct-series-b .ct-area {
+  fill : url($dashboard1-gradient-path +  #gradient3) !important;
+  fill-opacity : 0.8;
+}
+
+:host ::ng-deep .lineArea2 .ct-series-b .ct-line {
+  stroke : #6CD975;
+}
+
+:host ::ng-deep .lineArea2 .ct-series-b .ct-point-circle {
+  stroke : #40C057;
+}
+
+:host ::ng-deep .lineChart .ct-line {
+  fill : none;
+  stroke : #FFFFFF;
+  stroke-width : 1px;
+}
+
+:host ::ng-deep .lineChart .ct-label {
+  color : #FFFFFF;
+}
+
+:host ::ng-deep .lineChart .ct-point-circle {
+  stroke-width : 2px;
+  fill : #FFFFFF;
+}
+
+:host ::ng-deep .lineChart .ct-series-a .ct-point-circle, .lineChart .ct-series-a .ct-point {
+  stroke : #FFFFFF;
+}
+
+:host ::ng-deep .lineChartShadow {
+  -webkit-filter : drop-shadow(0px 25px 8px rgba(0, 0, 0, 0.5));
+          filter : drop-shadow(0px 25px 8px rgba(0, 0, 0, 0.5));
+  /* Same syntax as box-shadow, except for the spread property */
+}
+
+:host ::ng-deep .BarChart .ct-series-a .ct-bar:nth-of-type(4n+1) {
+  stroke : url($dashboard1-gradient-path +  #gradient7);
+}
+
+:host ::ng-deep .BarChart .ct-series-a .ct-bar:nth-of-type(4n+2) {
+  stroke : url($dashboard1-gradient-path +  #gradient5);
+}
+
+:host ::ng-deep .BarChart .ct-series-a .ct-bar:nth-of-type(4n+3) {
+  stroke : url($dashboard1-gradient-path +  #gradient6);
+}
+
+:host ::ng-deep .BarChart .ct-series-a .ct-bar:nth-of-type(4n+4) {
+  stroke : url($dashboard1-gradient-path +  #gradient4);
+}
+
+:host ::ng-deep .BarChartShadow {
+  -webkit-filter : drop-shadow(0px 20px 8px rgba(0, 0, 0, 0.3));
+          filter : drop-shadow(0px 20px 8px rgba(0, 0, 0, 0.3));
+  /* Same syntax as box-shadow, except for the spread property */
+}
+
+:host ::ng-deep .donut .ct-label {
+  font-size : 20px;
+}
+
+:host ::ng-deep .donut .ct-done .ct-slice-donut {
+  stroke : #40C057;
+  stroke-width : 24px !important;
+}
+
+:host ::ng-deep .donut .ct-progress .ct-slice-donut {
+  stroke : #F77E17;
+  stroke-width : 16px !important;
+}
+
+:host ::ng-deep .donut .ct-outstanding .ct-slice-donut {
+  stroke : #975AFF;
+  stroke-width : 8px !important;
+}
+
+:host ::ng-deep .donut .ct-started .ct-slice-donut {
+  stroke : #2F8BE6;
+  stroke-width : 32px !important;
+}
+.card-request-icon{
+  width: 54px;
+  height: 54px;
+  flex-grow: 0;
+  // margin: 0 0 0 106px;
+  padding: 13px;
+  border-radius: 10px;
+  background-color: #d2e7f1;
+}
+.card-request-icon img{
+  width: 30px;
+  height: 30px;
+}
+.font-large-1{
+  // width: 54px;
+  // height: 27px;
+  // flex-grow: 0;
+  // margin: 13px 134px 14px 0;
+  font-family: Poppins;
+  font-size: 25px !important;
+  font-weight: 800 !important;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  // line-height: 1.35;
+  letter-spacing: normal;
+  text-align: left;
+  color: #1e89b8;
+}
+
+
+
+.card1 {
+  // height: 150px !important;
+  padding: 30px 10px;
+  // margin: 10px;
+  margin-bottom: 10px;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  background: #fff; /* Default background color */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+/* Background and shadow change on hover */
+.card1:hover {
+  background-image: linear-gradient(135deg, #a5e4ff, #6cc6ff);
+  transform: scale(1.03); /* Makes the card slightly larger */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Deeper shadow for the pop-out effect */
+}
+
+.card1:hover .font-large-1 {
+  color: #FFFFFF;
+}
+
+
+/* Sliding ray effect */
+.card1::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 90%;
+  height: 90%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(45deg);
+  transition: transform 0.5s ease;
+}
+
+/* Activate sliding ray on hover */
+.card1:hover::before {
+  transform: translateX(200%) rotate(45deg);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Optional: Add a slight fade-in effect */
+.card1:hover::before {
+  animation: slide-ray 0.5s ease;
+}
+
+/* Animation for sliding ray */
+@keyframes slide-ray {
+  0% {
+    transform: translateX(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(200%) rotate(45deg);
+  }
+}

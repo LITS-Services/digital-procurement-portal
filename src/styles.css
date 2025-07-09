@@ -1,0 +1,87 @@
+/* You can add global styles to this file, and also import other style files */
+
+.rtl {
+    direction: rtl !important;
+    /* // color: red !important;
+    // font-size: 30px !important; */
+  }
+
+.btn-primary{
+  background: linear-gradient(to right, #0f4d6b, #1E89B8);
+  color: #ffffff;
+  border: #1E89B8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-primary:hover {
+  background-color: #0170a0;
+  border-color: #0170a0;
+}
+.btn-primary:active {
+  background-color: #1E89B8;
+  border-color: #1E89B8;
+}
+.btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active, .show > .btn-primary.dropdown-toggle {
+  color: #fff;
+  background-color: #1E89B8;
+  border-color: #1E89B8;
+}
+.btn-primary:focus, .btn-primary.focus {
+  color: #fff;
+  background-color: #0170a0;
+  border-color: #0170a0;
+  box-shadow: 0 0 0 0.2rem rgba(115, 204, 255, 0.5);
+}
+.vl {
+  border-left: 1.4px solid #cccccc;
+  height: 36px;
+  position: absolute;
+  margin-left: -3px;
+  top: 3px;
+  bottom: 3px;
+}
+.heading{
+  color: #1E89B8;
+  margin-top: 1rem;
+  margin-bottom: -0.5rem;
+  font-weight: 700;
+}
+body{
+  font-family: "Poppins", sans-serif !important;
+}
+html{
+  font-family: "Poppins", sans-serif !important;
+}
+
+.modal-header{
+  background: linear-gradient(to right, #0f4d6b, #1E89B8);
+
+  color: #fff;
+  font-size: 18px;
+   font-weight: 600;
+}
+
+.form-control:focus {
+  color: #75787d;
+  background-color: transparent;
+  border-color: #1E89B8;
+  outline: 0;
+  box-shadow: none;
+}
+
+form label, .form-group label {
+  text-transform: capitalize !important;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.example-action-buttons {
+  display: flex;
+  justify-content: flex-end; /* Move buttons to the right */
+}
+
+form label, .form-group label {
+  text-transform:none !important;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
