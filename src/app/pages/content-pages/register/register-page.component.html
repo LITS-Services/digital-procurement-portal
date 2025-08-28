@@ -16,7 +16,7 @@
 
                 <form [formGroup]="registerForm">
                   <div class="form-group">
-                    <input type="text" formControlName="name" class="form-control mb-2" placeholder="Name"
+                    <input type="text" formControlName="Username" class="form-control mb-2" placeholder="Name"
                       [ngClass]="{ 'is-invalid': registerFormSubmitted && rf.name.invalid, 'is-valid': registerFormSubmitted && !rf.name.invalid }"
                       required>
                     <div *ngIf="registerFormSubmitted && (rf.name.invalid || rf.name.errors?.required)"

@@ -9,6 +9,7 @@ import { CONTENT_ROUTES } from "./shared/routes/content-layout.routes";
 
 import { AuthGuard } from './shared/auth/auth-guard.service';
 import { VendorRegistrationFormComponent } from './vendor-registration-form/vendor-registration-form/vendor-registration-form.component';
+import { NewPurchaseRequestComponent } from './purchase-request/new-purchase-request/new-purchase-request.component';
 
 const appRoutes: Routes = [
   {
@@ -16,6 +17,18 @@ const appRoutes: Routes = [
     redirectTo: 'pages/login',
     pathMatch: 'full',
   },
+  {
+  path: 'new-purchase-request/:id',
+  component: NewPurchaseRequestComponent , // Your form component
+  canActivate: [AuthGuard],
+  data: { title: 'Update Purchase Request' }
+},
+{
+  path: 'new-purchase-request',
+  component: NewPurchaseRequestComponent , // For adding new
+  canActivate: [AuthGuard],
+  data: { title: 'New Purchase Request' }
+},
   {
     path: 'vendor-registration-form',
     component: VendorRegistrationFormComponent,

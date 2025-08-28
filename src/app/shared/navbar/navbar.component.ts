@@ -8,6 +8,7 @@ import { CustomizerService } from '../services/customizer.service';
 import { UntypedFormControl } from '@angular/forms';
 import { LISTITEMS } from '../data/template-search';
 import { Router } from '@angular/router';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: "app-navbar",
@@ -48,6 +49,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(public translate: TranslateService,
     private layoutService: LayoutService,
     private router: Router,
+    private authService: AuthService,
     private configService: ConfigService, private cdr: ChangeDetectorRef) {
 
     const browserLang: string = translate.getBrowserLang();
@@ -104,6 +106,16 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isSmallScreen = false;
     }
   }
+logout(): void {
+  this.authService.logout().subscribe({
+    next: () => {
+      this.authService.performLogout(); // Clear storage & navigate to login
+    },
+    error: () => {
+      this.authService.performLogout(); // Still logout even if API fails
+    }
+  });
+}
 
   loadLayout() {
 

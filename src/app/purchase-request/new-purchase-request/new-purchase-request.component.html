@@ -17,8 +17,8 @@
           <div class="col-md-6">
             <button class="btn btn-lg mr-1" type="button" (click)="homePage()"><i class="ft-arrow-left"></i></button>
             <span class="vl"></span>
-            <button type="reset" ngbTooltip="{{ 'Create new announcement' }}" class="btn btn-sm">
-              <i class="ft-plus"></i><label class="ml-1 mt-1" for="">Save</label>
+        <button type="submit" class="btn btn-sm" [disabled]="newPurchaseRequestForm.invalid" (click)="submitForm()">
+              <i class="ft-plus"></i><label class="ml-1 mt-1">Save</label>
             </button>
             <button type="reset" class="btn btn-sm">
               <i class="ft-edit"></i><label class="ml-1 mt-1" for="">Edit</label>
@@ -54,171 +54,95 @@
 
           <form [formGroup]="newPurchaseRequestForm" (ngSubmit)="submitForm()">
             <div class="form-row">
-              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-                <div class="form-group mb-2">
-                  <label>Requsition No.</label>
-                  <input type="text" placeholder="Enter Requsition No." class="form-control" />
-                </div>
+
+              <!-- Basic Fields -->
+              <div class="col-lg-4 mb-2">
+                <label>Requisition No.</label>
+                <input type="text" class="form-control" formControlName="requisitionNo" placeholder="Enter Requisition No." required>
               </div>
-              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-                <div class="form-group mb-2">
-                  <label>Submitted Date</label>
-                  <input type="date" class="form-control" />
-                </div>
+              <div class="col-lg-4 mb-2">
+                <label>Submitted Date</label>
+                <input type="date" class="form-control" formControlName="submittedDate">
               </div>
-              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-                <div class="form-group mb-2">
-                  <label>Delivery Location</label>
-                  <input type="text" placeholder="Enter Delivery Location" class="form-control" />
-                </div>
+              <div class="col-lg-4 mb-2">
+                <label>Delivery Location</label>
+                <input type="text" class="form-control" formControlName="deliveryLocation" placeholder="Enter Delivery Location">
               </div>
-              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-                <div class="form-group mb-2">
-                  <label>Reciever Name</label>
-                  <input type="text" placeholder="Enter Reciever Name" class="form-control" />
-                </div>
+              <div class="col-lg-4 mb-2">
+                <label>Receiver Name</label>
+                <input type="text" class="form-control" formControlName="receiverName" placeholder="Enter Receiver Name" required>
               </div>
-              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-                <div class="form-group mb-2">
-                  <label>Reciever Contact</label>
-                  <input type="text" placeholder="Enter Reciever Contact" class="form-control" />
-                </div>
+              <div class="col-lg-4 mb-2">
+                <label>Receiver Contact</label>
+                <input type="text" class="form-control" formControlName="receiverContact" placeholder="Enter Receiver Contact">
               </div>
-              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-                <div class="form-group mb-2">
-                  <label>Status</label>
-                  <!-- <input type="text" placeholder="Enter Status" class="form-control" /> -->
-                  <select class="form-control" >
-                  <option value="" selected disabled>Select Status</option>
+              <div class="col-lg-4 mb-2">
+                <label>Status</label>
+                <select class="form-control" formControlName="status">
+                  <option value="" disabled>Select Status</option>
                   <option>Draft</option>
                   <option>In-Progress</option>
                   <option>Completed</option>
                   <option>Cancelled</option>
                   <option>Rejected</option>
-              </select>
+                </select>
+              </div>
+
+              <!-- Department, Designation, Business Unit -->
+              <div class="col-lg-4 mb-2">
+                <label>Department</label>
+                <input type="text" class="form-control" formControlName="department" placeholder="Enter Department">
+              </div>
+              <div class="col-lg-4 mb-2">
+                <label>Designation</label>
+                <input type="text" class="form-control" formControlName="designation" placeholder="Enter Designation">
+              </div>
+              <div class="col-lg-4 mb-2">
+                <label>Business Unit</label>
+                <input type="text" class="form-control" formControlName="businessUnit" placeholder="Enter Business Unit">
+              </div>
+
+              <!-- Switches --> 
+              <div class="col-lg-4 mb-2">
+                <div class="custom-control custom-switch">
+                  <input type="checkbox" class="custom-control-input" id="partialDelivery" formControlName="partialDeliveryAcceptable">
+                  <label class="custom-control-label" for="partialDelivery">Partial Delivery Acceptable</label>
                 </div>
               </div>
-              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-                <div class="form-group mb-2">
-                  <label>Requsition</label>
-                  <input type="text" placeholder="Enter Requsition" class="form-control" />
-                </div>
-              </div>
-              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-                <div class="form-group mb-2">
-                  <label>Department</label>
-                  <input type="text" placeholder="Enter Department" class="form-control" />
-                </div>
-              </div>
-              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-                <div class="form-group mb-2">
-                  <label>Designation</label>
-                  <input type="text" placeholder="Enter Designation" class="form-control" />
-                </div>
-              </div>
-              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-                <div class="form-group mb-2">
-                  <label>Business Unit</label>
-                  <input type="text" placeholder="Enter Business Unit" class="form-control" />
+              <div class="col-lg-4 mb-2">
+                <div class="custom-control custom-switch">
+                  <input type="checkbox" class="custom-control-input" id="exceptionPolicy" formControlName="exceptionPolicy">
+                  <label class="custom-control-label" for="exceptionPolicy">Exception Policy</label>
                 </div>
               </div>
 
-              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-                <div class="form-group">
-                  <label for="validationTooltip04" hidden>dsds</label>
-                  <br>
-                  <div class="custom-switch custom-control-inline">
-                    <input type="checkbox" class="custom-control-input mt-2"
-                        >
-                    <label class="custom-control-label ml-1 mt-1" for="custom-switch-1">
-                        <span>Partial Delivery Acceptable</span>
-                    </label>
-                </div>
-                </div>
-               
+              <!-- Subject -->
+              <div class="col-12 mb-2">
+                <label>Subject</label>
+                <textarea class="form-control" rows="5" formControlName="subject" placeholder="Enter Subject"></textarea>
               </div>
 
-              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-                <div class="form-group">
-                  <label for="validationTooltip04" hidden>dsds</label>
-                  <br>
-                  <div class="custom-switch custom-control-inline">
-                    <input type="checkbox" class="custom-control-input mt-2"
-                        >
-                    <label class="custom-control-label ml-1 mt-1" for="custom-switch-1">
-                        <span>Exception Policy</span>
-                    </label>
-                </div>
-                </div>
-               
+              <!-- Attachments Section -->
+              <div class="col-12 mb-3">
+                <h4 class="heading">Attachment</h4>
               </div>
 
-              <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div class="form-group mb-2">
-                  <label>Subject</label>
-                  <!-- <input type="text" placeholder="Enter Business Unit" class="form-control" /> -->
-                   <textarea name="" rows="5" type="text" placeholder="Enter Subject" class="form-control"></textarea>
+              <div class="col-lg-3 mb-2" *ngFor="let key of ['specifications','drawing','scopeOfWorks','billOfMaterials']">
+                <div class="custom-control custom-checkbox" [formGroup]="newPurchaseRequestForm.get('attachments')">
+                  <input type="checkbox" class="custom-control-input" [id]="key" [formControlName]="key">
+                  <label class="custom-control-label" [for]="key">{{ key | titlecase }}</label>
                 </div>
               </div>
 
-              <div class="col-12"><hr></div>
-              
-              <div class="col-12 mb-3"><h4 class="heading">Attachment</h4></div>
-           
-
-              <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6 form-group"> <label hidden>hjhj</label>
-                <br>
-                <div class="checkbox">
-                    <input type="checkbox">
-                    <label for="checkbox1"><span>Specifications</span></label>
-                </div>
+              <div class="col-lg-6 mb-2">
+                <label>Other</label>
+                <textarea class="form-control" rows="2" formControlName="other" [formGroup]="newPurchaseRequestForm.get('attachments')"></textarea>
               </div>
-              <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6 form-group"> <label hidden>hjhj</label>
-                <br>
-                <div class="checkbox">
-                    <input type="checkbox">
-                    <label for="checkbox1"><span>Drawing</span></label>
-                </div>
+              <div class="col-lg-6 mb-2">
+                <label>Special Instructions</label>
+                <textarea class="form-control" rows="2" formControlName="specialInstructions" [formGroup]="newPurchaseRequestForm.get('attachments')"></textarea>
               </div>
-              <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6 form-group"> <label hidden>hjhj</label>
-                <br>
-                <div class="checkbox">
-                    <input type="checkbox">
-                    <label for="checkbox1"><span>Scope of Words</span></label>
-                </div>
-              </div>
-              <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6 form-group"> <label hidden>hjhj</label>
-                <br>
-                <div class="checkbox">
-                    <input type="checkbox">
-                    <label for="checkbox1"><span>Bill of Materials</span></label>
-                </div>
-              </div>
-
-              <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                <div class="form-group mb-2">
-                  <label>Other</label>
-                  <textarea name="" rows="2" type="text" class="form-control"></textarea>
-                </div>
-              </div>
-
-              <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                <div class="form-group mb-2">
-                  <label>Special Instructions</label>
-                  <textarea name="" rows="2" type="text" class="form-control"></textarea>
-                </div>
-              </div>
-
             </div>
-
-
-
-            <br>
-
-            <!-- <button type="submit" class="btn btn-primary mr-2"><i class="ft-check-square mr-1"></i>Save</button>
-              <button type="button" class="btn btn-primary mr-2" (click)="saveAsDraft()"><i class="ft-check-square mr-1"></i>Save As Draft</button>
-              <button type="button" class="btn btn-secondary" (click)="backtoMaster()"><i class="ft-x mr-1"></i>Cancel</button> -->
-
           </form>
 
 
@@ -237,139 +161,139 @@
             
             
              
-                  <div class="form-row position-relative">
+                 <div class="form-row position-relative" [formGroup]="itemForm">
 
-                    <button class="btn btn-primary position-absolute" style="top: 0; right: 0; z-index: 10;">
-                      <i class="ft-pocket mr-1"></i>
-                      Insert
-                    </button>
+  <button class="btn btn-primary position-absolute"
+          style="top: 0; right: 0; z-index: 10;"
+          (click)="insertItem()">
+    <i class="ft-pocket mr-1"></i>
+    Insert
+  </button>
 
-                    <div class="col-12">
-                      <h5>Item Type</h5>
-                    </div>
-                    <!-- <div class="col-12">
-                      <hr>
-                    </div> -->
-                    <div class="col-6 mb-2">
-                      <div class="form-check-inline">
-                        <label class="form-check-label">
-                          <input type="radio" class="form-check-input" name="optradio">Inventory
-                        </label>
-                      </div>
-                    </div>
-                    <div class="col-6 mb-2">
-                      <div class="form-check-inline">
-                        <label class="form-check-label">
-                          <input type="radio" class="form-check-input" name="optradio">Non-Inventory
-                        </label>
-                      </div>
-                    </div>
+  <div class="col-12">
+    <h5>Item Type</h5>
+  </div>
 
+  <div class="col-6 mb-2">
+    <div class="form-check-inline">
+      <label class="form-check-label">
+        <input type="radio" class="form-check-input" formControlName="type" value="Inventory">Inventory
+      </label>
+    </div>
+  </div>
 
+  <div class="col-6 mb-2">
+    <div class="form-check-inline">
+      <label class="form-check-label">
+        <input type="radio" class="form-check-input" formControlName="type" value="Non-Inventory">Non-Inventory
+      </label>
+    </div>
+  </div>
 
-                    <div class="col-12">
-                     <hr>
-                    </div>
+  <div class="col-12"><hr></div>
 
-                    <div class="col-12">
-                      <h5>Item Details</h5>
-                    </div>
+  <div class="col-12">
+    <h5>Item Details</h5>
+  </div>
 
-                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                      <div class="form-group mb-2">
-                        <label>Item Code</label>
-                        <select class="form-control" >
-                          <option value="" selected disabled>Select Item</option>
-                        
-                      </select>
-                      </div>
-                    </div>
+  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+    <div class="form-group mb-2">
+      <label>Item Code</label>
+      <select class="form-control" formControlName="itemCode">
+        <option value="" selected disabled>Select Item</option>
+        <option value="ITM001">ITM001 - Bandage</option>
+        <option value="ITM002">ITM002 - Syringe</option>
+        <option value="ITM003">ITM003 - Gloves</option>
+      </select>
+    </div>
+  </div>
 
-                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                      <div class="form-group mb-2">
-                        <label>U of M</label>
-                        <select class="form-control" >
-                          <option value="" selected disabled>Select UOM</option>
-                        
-                      </select>
-                      </div>
-                    </div>
+  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+    <div class="form-group mb-2">
+      <label>U of M</label>
+      <select class="form-control" formControlName="uofM">
+        <option value="" selected disabled>Select UOM</option>
+        <option value="PCS">PCS</option>
+        <option value="BOX">BOX</option>
+        <option value="PACK">PACK</option>
+      </select>
+    </div>
+  </div>
 
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
-                      <div class="form-group mb-2">
-                        <label>Amount</label>
-                        <input type="number" placeholder="Enter Amount" class="form-control" />
-                      </div>
-                    </div>
+  <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
+    <div class="form-group mb-2">
+      <label>Amount</label>
+      <input type="number" placeholder="Enter Amount" class="form-control" formControlName="amount" />
+    </div>
+  </div>
 
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
-                      <div class="form-group mb-2">
-                        <label>Unit Cost</label>
-                        <input type="number" placeholder="Enter Unit Cost" class="form-control" />
-                      </div>
-                    </div>
+  <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
+    <div class="form-group mb-2">
+      <label>Unit Cost</label>
+      <input type="number" placeholder="Enter Unit Cost" class="form-control" formControlName="unitCost" />
+    </div>
+  </div>
 
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
-                      <div class="form-group mb-2">
-                        <label>Order Quantity</label>
-                        <input type="number" placeholder="Enter Order Quantity" class="form-control" />
-                      </div>
-                    </div>
+  <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
+    <div class="form-group mb-2">
+      <label>Order Quantity</label>
+      <input type="number" placeholder="Enter Order Quantity" class="form-control" formControlName="orderQuantity" />
+    </div>
+  </div>
 
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
-                      <div class="form-group mb-2">
-                        <label>Req. by Date</label>
-                        <input type="date" class="form-control" />
-                      </div>
-                    </div>
+  <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
+    <div class="form-group mb-2">
+      <label>Req. by Date</label>
+      <input type="date" class="form-control" formControlName="reqByDate" />
+    </div>
+  </div>
 
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                      <div class="form-group mb-2">
-                        <label>Item Description</label>
-                       <textarea name="" id="" rows="2" type="text" placeholder="Enter Item Description" class="form-control"></textarea>
-                      </div>
-                    </div>
+  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div class="form-group mb-2">
+      <label>Item Description</label>
+      <textarea rows="2" placeholder="Enter Item Description" class="form-control" formControlName="description"></textarea>
+    </div>
+  </div>
 
-                    <div class="col-12">
-                      <hr>
-                    </div>
+  <div class="col-12"><hr></div>
 
-                    <div class="col-12">
-                      <h5>Other</h5>
-                    </div>
+  <div class="col-12">
+    <h5>Other</h5>
+  </div>
 
-                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                      <div class="form-group mb-2">
-                        <label>Vendor</label>
-                        <select class="form-control" >
-                          <option value="" selected disabled>Select Vendor</option>
-                        
-                      </select>
-                      </div>
-                    </div>
+  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+    <div class="form-group mb-2">
+      <label>Vendor</label>
+      <select class="form-control" formControlName="vendorName">
+        <option value="" selected disabled>Select Vendor</option>
+        <option value="Vendor A">Vendor A</option>
+        <option value="Vendor B">Vendor B</option>
+        <option value="Vendor C">Vendor C</option>
+      </select>
+    </div>
+  </div>
 
-                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                      <div class="form-group mb-2">
-                        <label>Account</label>
-                        <select class="form-control" >
-                          <option value="" selected disabled>Select Account</option>
-                        
-                      </select>
-                      </div>
-                    </div>
-                    
-                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                      <div class="form-group mb-2">
-                        <label>Remarks</label>
-                       <textarea name="" placeholder="Enter Remarks" id="" rows="2" type="text" class="form-control"></textarea>
-                      </div>
-                    </div>
+  <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+    <div class="form-group mb-2">
+      <label>Account</label>
+      <select class="form-control" formControlName="account">
+        <option value="" selected disabled>Select Account</option>
+        <option value="ACC001">ACC001 - Office Supplies</option>
+        <option value="ACC002">ACC002 - Medical Supplies</option>
+        <option value="ACC003">ACC003 - Maintenance</option>
+      </select>
+    </div>
+  </div>
 
+  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div class="form-group mb-2">
+      <label>Remarks</label>
+      <textarea rows="2" placeholder="Enter Remarks" class="form-control" formControlName="remarks"></textarea>
+    </div>
+  </div>
 
+</div>
 
-
-       
-                  </div>
       
       
       
@@ -391,7 +315,7 @@
           <div class="col-12 mt-4">
             <div style="position: relative;">
               <ngx-datatable class="bootstrap core-bootstrap" [rows]="newPurchaseRequestData" [columnMode]="'force'"
-                [headerHeight]="50" [footerHeight]="50" rowHeight="50" [limit]="5" [scrollbarH]="true">
+                [headerHeight]="50" [footerHeight]="50" rowHeight="50" [limit]="5" [scrollbarH]="true" >
 
                  <ngx-datatable-column name="Sr. No." [width]="50">
                                 <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
@@ -415,19 +339,24 @@
 
 
 
-                <ngx-datatable-column name="Actions" [width]="70">
-                  <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex">
-                    <a matTooltip="Upload File" style=" cursor: pointer; color: #d1d4d7;" (click)="deleteRow(rowIndex)"
-                    [ngClass]="{'disabled': actionType === 'View'}">
-                    <i style="font-size: 1.5rem;" class="ft-edit mr-1"></i>
-                  </a>
-                    <a matTooltip="Upload File" style=" cursor: pointer; color: #d1d4d7;" (click)="deleteRow(rowIndex)"
-                      [ngClass]="{'disabled': actionType === 'View'}">
-                      <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
-                    </a>
+        <ngx-datatable-column name="Actions" [width]="70">
+  <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
+    <!-- Edit button -->
+    <a matTooltip="Edit Item" style="cursor: pointer; color: #d1d4d7;" 
+       (click)="editRow(row, rowIndex)"
+       [ngClass]="{'disabled': actionType === 'View'}">
+      <i style="font-size: 1.5rem;" class="ft-edit mr-1"></i>
+    </a>
 
-                  </ng-template>
-                </ngx-datatable-column>
+    <!-- Delete button -->
+    <a matTooltip="Delete Item" style="cursor: pointer; color: #d1d4d7;" 
+       (click)="deleteRow(rowIndex)"
+       [ngClass]="{'disabled': actionType === 'View'}">
+      <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
+    </a>
+  </ng-template>
+</ngx-datatable-column>
+
               </ngx-datatable>
             </div>
 

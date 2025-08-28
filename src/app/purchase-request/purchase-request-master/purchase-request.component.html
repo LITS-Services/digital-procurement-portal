@@ -25,12 +25,14 @@
                             (click)="openEmpDetails()">
                             <i class="ft-plus"></i><label class="ml-1 mt-1" for="">Create</label>
                         </button>
-                        <button type="reset" class="btn btn-sm">
-                            <i class="ft-edit"></i><label class="ml-1 mt-1" for="">Update</label>
-                        </button>
-                        <button type="reset" class="btn btn-sm">
-                            <i class="ft-trash"></i><label class="ml-1 mt-1" for="">Delete</label>
-                        </button>
+                  <button type="reset" class="btn btn-sm" (click)="onUpdate()">
+  <i class="ft-edit"></i><label class="ml-1 mt-1" for="">Update</label>
+</button>
+
+                   <button type="reset" class="btn btn-sm" (click)="openDeleteModal(deleteModal)">
+  <i class="ft-trash"></i><label class="ml-1 mt-1" for="">Delete</label>
+</button>
+
                         <button type="reset" class="btn btn-sm">
                             <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
                         </button>
@@ -81,6 +83,8 @@
                     <span>{{rowIndex + 1}}</span>
                 </ng-template>
             </ngx-datatable-column>
+            <ngx-datatable-column name="id" prop="requestId" [width]="100" >
+            </ngx-datatable-column>
 
             <ngx-datatable-column name="Requisition No." prop="requisitionNo" [width]="100">
 
@@ -89,24 +93,24 @@
             <ngx-datatable-column name="Status" prop="status" [width]="100">
 
             </ngx-datatable-column>
-            <ngx-datatable-column name="Date" prop="date" [width]="50">
+            <ngx-datatable-column name="Date" prop="submittedDate" [width]="100">
             </ngx-datatable-column>
 
-            <ngx-datatable-column name="Owner" prop="owner" [width]="100">
+            <ngx-datatable-column name="Owner" prop="createdBy" [width]="100">
 
             </ngx-datatable-column>
-            <ngx-datatable-column name="Department" prop="department" [width]="50">
+            <ngx-datatable-column name="Department" prop="department" [width]="100">
             </ngx-datatable-column>
 
-            <ngx-datatable-column name="Title" prop="title" [width]="180">
+            <ngx-datatable-column name="Title" prop="itemDescription" [width]="100">
             </ngx-datatable-column>
 
-            <ngx-datatable-column name="Vendors" [width]="50" prop="vendors" [sortable]="false">
+            <ngx-datatable-column name="vendor" [width]="100" prop="vendor" [sortable]="false">
 
             </ngx-datatable-column>
-            <ngx-datatable-column name="Accounts" [width]="100" prop="accounts" [sortable]="false">
+            <ngx-datatable-column name="Accounts" [width]="100" prop="account" [sortable]="false">
             </ngx-datatable-column>
-            <ngx-datatable-column name="Total Amount" [width]="100" prop="totalAmount"
+            <ngx-datatable-column name="Total Amount" [width]="100" prop="amount"
                 [sortable]="false">
             </ngx-datatable-column>
         </ngx-datatable>
@@ -125,7 +129,7 @@
         <p>Are you sure you want to delete the selected records?</p>
         <!-- You can display the list of selected IDs here if needed -->
         <ul>
-            <li *ngFor="let id of idsToDelete">{{ id }}</li>
+            <li *ngFor="let id of idsToDelete">{{ requestId }}</li>
         </ul>
     </div>
     <div class="modal-footer">

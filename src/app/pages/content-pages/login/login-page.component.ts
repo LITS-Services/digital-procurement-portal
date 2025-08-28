@@ -17,8 +17,8 @@ export class LoginPageComponent {
   isLoginFailed = false;
 
   loginForm = new UntypedFormGroup({
-    username: new UntypedFormControl('guest@apex.com', [Validators.required]),
-    password: new UntypedFormControl('Password', [Validators.required]),
+    username: new UntypedFormControl('', [Validators.required]),
+    password: new UntypedFormControl('', [Validators.required]),
     rememberMe: new UntypedFormControl(true)
   });
 
@@ -33,33 +33,37 @@ export class LoginPageComponent {
   }
 
   // On submit button click
-  onSubmit() {
-    this.loginFormSubmitted = true;
-    if (this.loginForm.invalid) {
-      return;
-    }
-
-    this.spinner.show(undefined,
-      {
-        type: 'ball-triangle-path',
-        size: 'medium',
-        bdColor: 'rgba(0, 0, 0, 0.8)',
-        color: '#fff',
-        fullScreen: true
-      });
-
-    this.authService.signinUser(this.loginForm.value.username, this.loginForm.value.password)
-      .then((res) => {
-        this.spinner.hide();
-        this.router.navigate(['/dashboard/dashboard1']);
-      })
-      .catch((err) => {
-        this.isLoginFailed = true;
-        this.spinner.hide();
-        console.log('error: ' + err)
-      }
-      );
+onSubmit() {
+  this.loginFormSubmitted = true;
+  if (this.loginForm.invalid) {
+    return;
   }
+
+  this.spinner.show(undefined, {
+    type: 'ball-triangle-path',
+    size: 'medium',
+    bdColor: 'rgba(0, 0, 0, 0.8)',
+    color: '#fff',
+    fullScreen: true
+  });
+
+  this.authService.signinUser(
+    this.loginForm.value.username, 
+    this.loginForm.value.password
+  ).subscribe(
+    (res: any) => {
+      this.spinner.hide();
+      localStorage.setItem('token', res.token); // Save token if API returns it
+      this.router.navigate(['/dashboard/dashboard1']);
+    },
+    (err: any) => {
+      this.isLoginFailed = true;
+      this.spinner.hide();
+      console.error('Login error:', err);
+    }
+  );
+}
+
 
   rememberMe() {
 

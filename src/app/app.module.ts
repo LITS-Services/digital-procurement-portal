@@ -1,8 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from "@angular/core";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-
 import { AngularFireModule } from "@angular/fire";
 import { AngularFireAuthModule } from "@angular/fire/auth";
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { ToastrModule } from "ngx-toastr";
@@ -17,6 +17,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import {
   PerfectScrollbarModule,
   PERFECT_SCROLLBAR_CONFIG,
+  
   PerfectScrollbarConfigInterface
 } from 'ngx-perfect-scrollbar';
 
@@ -26,11 +27,13 @@ import * as fromApp from './store/app.reducer';
 import { AppComponent } from "./app.component";
 import { ContentLayoutComponent } from "./layouts/content/content-layout.component";
 import { FullLayoutComponent } from "./layouts/full/full-layout.component";
-
+import { AuthInterceptor } from './shared/auth/auth.interceptor';
 import { AuthService } from "./shared/auth/auth.service";
 import { AuthGuard } from "./shared/auth/auth-guard.service";
 import { WINDOW_PROVIDERS } from './shared/services/window.service';
 import { NewPurchaseRequestComponent } from './purchase-request/new-purchase-request/new-purchase-request.component';
+import { BrowserModule } from "@angular/platform-browser";
+import { ReactiveFormsModule } from "@angular/forms";
 
 var firebaseConfig = {
   apiKey: "AIzaSyC9XfnIpwNoSv7cyAsoccFQ5EYPd7lZXrk", //YOUR_API_KEY
@@ -55,11 +58,20 @@ export function createTranslateLoader(http: HttpClient) {
 
 @NgModule({
   declarations: [AppComponent, FullLayoutComponent, ContentLayoutComponent],
+
   imports: [
+    ToastrModule.forRoot({
+      positionClass: 'toast-bottom-right', // or 'toast-top-center' etc.
+      timeOut: 3000,
+      closeButton: true,
+      progressBar: true
+    }),
     BrowserAnimationsModule,
     StoreModule.forRoot(fromApp.appReducer),
     AppRoutingModule,
     SharedModule,
+       BrowserModule,
+    ReactiveFormsModule,
     HttpClientModule,
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireAuthModule,
@@ -83,6 +95,7 @@ export function createTranslateLoader(http: HttpClient) {
     AuthService,
     AuthGuard,
     DragulaService,
+   { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     {
       provide: PERFECT_SCROLLBAR_CONFIG,
       useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
