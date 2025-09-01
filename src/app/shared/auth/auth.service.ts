@@ -47,7 +47,25 @@ performLogout(): void {
   this.router.navigate(['/pages/login']);
 }
 
-  isAuthenticated() {
-    return true;
+  // isAuthenticated() {
+  //   return true;
+  // }
+
+  isAuthenticated(): boolean {
+  const token = localStorage.getItem('token');
+  // basic check: token exists
+  if (!token) {
+    return false;
   }
+
+  // optional: check if token is expired (if it’s a JWT)
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const isExpired = Date.now() >= payload.exp * 1000;
+    return !isExpired;
+  } catch (e) {
+    return false;
+  }
+}
+
 }

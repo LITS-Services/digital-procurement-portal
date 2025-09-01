@@ -1,0 +1,84 @@
+::ng-deep .ngx-datatable{
+    .sortable .sort-btn:before {
+        // font-family: data-table;
+        // content: "c";
+        display: none !important;
+    }
+    .sortable .sort-btn.datatable-icon-down:before {
+        // content: "f";
+        display: none !important;
+  
+    }
+    .sortable .sort-btn.datatable-icon-up:before {
+        // content: "e";
+        display: none !important;
+    }
+    .ngx-datatable.scroll-horz .datatable-body {
+        -webkit-overflow-scrolling: touch !important;
+        overflow-x: hidden !important;
+    }
+  }
+ 
+  .datatable-body-cell {
+      padding: 0.30rem !important;
+      text-align: left !important;
+      vertical-align: top !important;
+      line-height: 20px !important;
+    }
+
+    .dropdown-content {
+      position: absolute; /* Set the dropdown to absolute position */
+      // top: calc(100% + 10px); /* Position it below the container */
+      left: 0;
+      overflow: visible !important;
+      // z-index: 9999; /* Set a high z-index */
+      display: none; /* Hide the modal by default */
+      background-color: #fff; /* Set background color */
+      border: 1px solid #ccc; /* Add border */
+      padding: 10px; /* Add padding */
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add shadow */
+    }
+    
+    ::ng-deep .ngx-datatable.scroll-horz .datatable-body {
+        overflow-x: hidden !important;
+    }
+
+    .ngx-datatable ::ng-deep .datatable-footer .selected-count .page-count {
+        flex: 1 1 40%;
+        background: #eaeaeb !important;
+        color: #1E89B8 !important;
+    }
+
+    .spacer{
+        flex-grow: 1;
+    }
+    .ngx-datatable.bootstrap ::ng-deep .datatable-footer {
+        background: #eaeaeb !important;
+        color: #1E89B8 !important;
+        margin-top: -1px;
+    }
+    .ngx-datatable.bootstrap ::ng-deep .datatable-footer .datatable-pager ul li:not(.disabled).active a, .ngx-datatable.bootstrap .datatable-footer .datatable-pager ul li:not(.disabled):hover a {
+        background: #eaeaeb !important;
+        color: #1E89B8 !important;
+        font-weight: bold;
+    }
+    .ngx-datatable.bootstrap ::ng-deep .datatable-footer .datatable-pager a {
+        height: 22px;
+        min-width: 24px;
+        line-height: 22px;
+        padding: 0;
+        border-radius: 3px;
+        margin: 0 3px;
+        text-align: center;
+        vertical-align: top;
+        text-decoration: none;
+        vertical-align: bottom;
+        color: #6c757d !important;
+    }
+    .modal-body {
+        position: relative;
+        flex: 1 1 auto;
+        padding: 1rem;
+        height: 500px !important;
+        overflow-y: auto !important;
+    }

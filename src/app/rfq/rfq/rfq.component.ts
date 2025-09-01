@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { RfqQuotationboxComponent } from '../rfq-quotationbox/rfq-quotationbox.component';
+import { RfqVendorModalComponent } from '../rfq-vendor-modal/rfq-vendor-modal.component';
+import { VendorComparisionComponent } from '../vendor-comparision/vendor-comparision.component';
 
 @Component({
   selector: 'app-rfq',
@@ -21,7 +24,8 @@ export class RfqComponent implements OnInit {
       title: 'Cleaning Services Contract Renewal', // Title (fileName)
       vendors: "000035", // File path for download
       accounts: '03-63418', // Vendors, Accounts, Total Amount badges
-      totalAmount: 2500000
+      totalAmount: 2500000,
+      notificationCount: 2
     },
     {
       requisitionNo: 'REQ001', // Requisition No.
@@ -32,7 +36,8 @@ export class RfqComponent implements OnInit {
       title: 'Cleaning Services Contract Renewal', // Title (fileName)
       vendors: "000035", // File path for download
       accounts: '03-63418', // Vendors, Accounts, Total Amount badges
-      totalAmount: 2500000
+      totalAmount: 2500000,
+      notificationCount: 3
     },
     {
       requisitionNo: 'REQ001', // Requisition No.
@@ -43,7 +48,8 @@ export class RfqComponent implements OnInit {
       title: 'Cleaning Services Contract Renewal', // Title (fileName)
       vendors: "000035", // File path for download
       accounts: '03-63418', // Vendors, Accounts, Total Amount badges
-      totalAmount: 2500000
+      totalAmount: 2500000,
+      notificationCount: 2
     },
     {
       requisitionNo: 'REQ001', // Requisition No.
@@ -54,7 +60,8 @@ export class RfqComponent implements OnInit {
       title: 'Cleaning Services Contract Renewal', // Title (fileName)
       vendors: "000035", // File path for download
       accounts: '03-63418', // Vendors, Accounts, Total Amount badges
-      totalAmount: 2500000
+      totalAmount: 2500000,
+      notificationCount: 6
     },
     {
       requisitionNo: 'REQ001', // Requisition No.
@@ -65,7 +72,8 @@ export class RfqComponent implements OnInit {
       title: 'Cleaning Services Contract Renewal', // Title (fileName)
       vendors: "000035", // File path for download
       accounts: '03-63418', // Vendors, Accounts, Total Amount badges
-      totalAmount: 2500000
+      totalAmount: 2500000,
+      notificationCount: 4
     },
     {
       requisitionNo: 'REQ001', // Requisition No.
@@ -76,10 +84,12 @@ export class RfqComponent implements OnInit {
       title: 'Cleaning Services Contract Renewal', // Title (fileName)
       vendors: "000035", // File path for download
       accounts: '03-63418', // Vendors, Accounts, Total Amount badges
-      totalAmount: 2500000
+      totalAmount: 2500000,
+      notificationCount: 5
     },
    
   ];
+
   
   public chkBoxSelected = [];
   loading = false;
@@ -100,8 +110,7 @@ export class RfqComponent implements OnInit {
     this.router.navigate(['/dashboard/dashboard1']);
   }
   openEmpDetails() {
-   
-    this.router.navigate(['/purchase-request/new-purchase-request']);
+    this.router.navigate(['/rfq/new-rfq']);
   }
   onSort(event) {
     this.loading = true;
@@ -142,6 +151,21 @@ if(this.rfqData.length!=this.chkBoxSelected.length){
 else{
   this.isAllSelected=true;
 }
+  }
+
+    openQuotationBoxModal(row: any): void {
+    const modalRef = this.modalService.open(RfqQuotationboxComponent, { size: 'lg', backdrop: 'static', centered: true });
+    modalRef.componentInstance.data = row;  // Pass selected row data if needed
+  }
+
+    openVendorsModal(row: any): void {
+    const modalRef = this.modalService.open(RfqVendorModalComponent, { size: 'lg', backdrop: 'static', centered: true });
+    modalRef.componentInstance.data = row;  // Pass selected row data if needed
+  }
+
+  openVendorComparisonModal(row: any): void {
+    const modalRef = this.modalService.open(VendorComparisionComponent, { size: 'lg', backdrop: 'static', centered: true });
+    modalRef.componentInstance.data = row;  // Pass selected row data if needed
   }
 
 }

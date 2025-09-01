@@ -56,7 +56,8 @@
               "node_modules/@swimlane/ngx-datatable/assets/icons.css",
               "src/assets/css/demo.css",
               "src/assets/sass/core.scss",
-              "src/styles.css"
+              "src/styles.css",
+              "node_modules/@swimlane/ngx-datatable/themes/bootstrap.css"
             ],
             "scripts": [
               "src/assets/vendor/pace/pace.min.js",
@@ -134,7 +135,8 @@
               "node_modules/@swimlane/ngx-datatable/index.css",
               "node_modules/@swimlane/ngx-datatable/assets/icons.css",
               "src/assets/css/demo.css",
-              "src/styles.css"
+              "src/styles.css",
+              "node_modules/@swimlane/ngx-datatable/themes/bootstrap.css"
             ],
             "assets": [
               "src/assets",

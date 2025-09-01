@@ -1,0 +1,43 @@
+// .ngx-datatable ::ng-deep .datatable-footer .selected-count .page-count {
+//     flex: 1 1 40%;
+//     background: #eaeaeb !important;
+//     color: #1E89B8 !important;
+// }
+// .ngx-datatable.bootstrap .datatable-footer {
+//     background: unset !important;
+//     color: #1E89B8;
+//     margin-top: -1px;
+// }
+.spacer{
+    flex-grow: 1;
+}
+.ngx-datatable.bootstrap ::ng-deep .datatable-footer {
+    background: #eaeaeb !important;
+    color: #1E89B8 !important;
+    margin-top: -1px;
+}
+.ngx-datatable.bootstrap ::ng-deep .datatable-footer .datatable-pager ul li:not(.disabled).active a, .ngx-datatable.bootstrap .datatable-footer .datatable-pager ul li:not(.disabled):hover a {
+    background: #eaeaeb !important;
+    color: #1E89B8 !important;
+    font-weight: bold;
+}
+.ngx-datatable.bootstrap ::ng-deep .datatable-footer .datatable-pager a {
+    height: 22px;
+    min-width: 24px;
+    line-height: 22px;
+    padding: 0;
+    border-radius: 3px;
+    margin: 0 3px;
+    text-align: center;
+    vertical-align: top;
+    text-decoration: none;
+    vertical-align: bottom;
+    color: #6c757d !important;
+}
+.modal-body {
+    position: relative;
+    flex: 1 1 auto;
+    padding: 1rem;
+    height: 500px !important;
+    overflow-y: auto !important;
+}

@@ -158,7 +158,9 @@ onUpdate() {
   const selectedId = this.chkBoxSelected[0].requestId;  // use requestId column
   console.log("Navigating to update ID:", selectedId);
 
-  this.router.navigate(['/new-purchase-request', selectedId]);
+  this.router.navigate(['/purchase-request/new-purchase-request']);
+
+
 }
 
 

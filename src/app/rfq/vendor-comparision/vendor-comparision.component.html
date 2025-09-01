@@ -1,0 +1,211 @@
+<div class="modal-header">
+    <h4 class="modal-title text-white">Vendor Comparison</h4>
+    <button type="button" class="close text-white" aria-label="Close" (click)="closeDialog()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  
+  <div class="modal-body">
+    <h4 class="mb-3">Final Vendors</h4>
+
+    <div class="form-row">
+        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+            <div class="form-group mb-2">
+              <label>Item Code</label>
+              <input type="text" placeholder="GS-DPD009" disabled class="form-control" />
+            </div>
+          </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+            <div class="form-group">
+                <label for="">Vendor</label>
+           <select name="" id="" class="form-control">
+            <option value="null">Select Final Vendor</option>
+            <option value="">AFI Flight Inspection GmbH</option>
+            <option value="">Atlas Safety Products</option>
+            <option value="">AudiViz Technologies</option>
+           </select>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="form-group">
+                <label for="">Description</label>
+                <textarea name="" id="" rows="5" placeholder="Enter Description" class="form-control"></textarea>
+            </div>
+        </div>
+
+    </div>
+  
+    <hr class="my-4" />
+    <h4 class="mb-3">Vendor Quotations</h4>
+
+        <ngb-accordion #accordion="ngbAccordion" activeIds="ngb-panel-0">
+          <ngb-panel id="ngb-panel-0">
+            <ng-template ngbPanelTitle>
+              <div class="row">
+                <div class="col-md-6"> <span class="panel-icon">
+                    <label class="text-white">Item No: GS-DPD009</label> <span class="spacer"></span> <i class="ft-chevron-down"> </i>
+                  </span></div>
+              </div>
+            </ng-template>
+            <ng-template ngbPanelContent>
+              <ngx-datatable
+              class="bootstrap core-bootstrap"
+                [rows]="rfqVendors"
+                [columnMode]="'standard'"
+                [headerHeight]="50"
+                [footerHeight]="40"
+                [rowHeight]="60"
+                [scrollbarH]="true"
+                style="border: 1px solid #dee2e6; border-radius: 6px;">
+                <ngx-datatable-column name="Vendor ID" prop="vendorID" ></ngx-datatable-column>
+                <ngx-datatable-column name="Vendor Name" prop="vendorName" ></ngx-datatable-column>
+                <ngx-datatable-column name="Description" prop="description" ></ngx-datatable-column>
+                <ngx-datatable-column name="Amount" prop="Amount" ></ngx-datatable-column>
+                <ngx-datatable-column name="Action" [sortable]="false">
+                  <ng-template ngx-datatable-cell-template let-row="row">
+                      <!-- <div class="row d-flex"> -->
+                          <button class="btn btn-sm mr-1" (click)="printVendor(row)"><i class="ft-printer"></i></button>  
+                  </ng-template>
+                </ngx-datatable-column>
+              </ngx-datatable>
+            </ng-template>
+          </ngb-panel>
+        </ngb-accordion>
+        <ngb-accordion #accordion="ngbAccordion" activeIds="ngb-panel-0">
+          <ngb-panel id="ngb-panel-0">
+            <ng-template ngbPanelTitle>
+              <div class="row">
+                <div class="col-md-6"> <span class="panel-icon">
+                    <label class="text-white">Item No: GS-DPD0010</label> <span class="spacer"></span> <i class="ft-chevron-down"> </i>
+                  </span></div>
+              </div>
+            </ng-template>
+            <ng-template ngbPanelContent>
+              <ngx-datatable
+              class="bootstrap core-bootstrap"
+                [rows]="rfqVendors"
+                [columnMode]="'standard'"
+                [headerHeight]="50"
+                [footerHeight]="40"
+                [rowHeight]="60"
+                [scrollbarH]="true"
+                style="border: 1px solid #dee2e6; border-radius: 6px;">
+                <ngx-datatable-column name="Vendor ID" prop="vendorID" ></ngx-datatable-column>
+                <ngx-datatable-column name="Vendor Name" prop="vendorName" ></ngx-datatable-column>
+                <ngx-datatable-column name="Description" prop="description" ></ngx-datatable-column>
+                <ngx-datatable-column name="Amount" prop="Amount" ></ngx-datatable-column>
+                <ngx-datatable-column name="Action" [sortable]="false">
+                  <ng-template ngx-datatable-cell-template let-row="row">
+                      <!-- <div class="row d-flex"> -->
+                          <button class="btn btn-sm mr-1" (click)="printVendor(row)"><i class="ft-printer"></i></button>  
+                  </ng-template>
+                </ngx-datatable-column>
+              </ngx-datatable>
+            </ng-template>
+          </ngb-panel>
+        </ngb-accordion>
+        <ngb-accordion #accordion="ngbAccordion" activeIds="ngb-panel-0">
+          <ngb-panel id="ngb-panel-0">
+            <ng-template ngbPanelTitle>
+              <div class="row">
+                <div class="col-md-6"> <span class="panel-icon">
+                    <label class="text-white">Item No: GS-DPD0011</label> <span class="spacer"></span> <i class="ft-chevron-down"> </i>
+                  </span></div>
+              </div>
+            </ng-template>
+            <ng-template ngbPanelContent>
+              <ngx-datatable
+              class="bootstrap core-bootstrap"
+                [rows]="rfqVendors"
+                [columnMode]="'standard'"
+                [headerHeight]="50"
+                [footerHeight]="40"
+                [rowHeight]="60"
+                [scrollbarH]="true"
+                style="border: 1px solid #dee2e6; border-radius: 6px;">
+                <ngx-datatable-column name="Vendor ID" prop="vendorID" ></ngx-datatable-column>
+                <ngx-datatable-column name="Vendor Name" prop="vendorName" ></ngx-datatable-column>
+                <ngx-datatable-column name="Description" prop="description" ></ngx-datatable-column>
+                <ngx-datatable-column name="Amount" prop="Amount" ></ngx-datatable-column>
+                <ngx-datatable-column name="Action" [sortable]="false">
+                  <ng-template ngx-datatable-cell-template let-row="row">
+                      <!-- <div class="row d-flex"> -->
+                          <button class="btn btn-sm mr-1" (click)="printVendor(row)"><i class="ft-printer"></i></button>  
+                  </ng-template>
+                </ngx-datatable-column>
+              </ngx-datatable>
+            </ng-template>
+          </ngb-panel>
+        </ngb-accordion>
+        <ngb-accordion #accordion="ngbAccordion" activeIds="ngb-panel-0">
+          <ngb-panel id="ngb-panel-0">
+            <ng-template ngbPanelTitle>
+              <div class="row">
+                <div class="col-md-6"> <span class="panel-icon">
+                    <label class="text-white">Item No: GS-DPD0012</label> <span class="spacer"></span> <i class="ft-chevron-down"> </i>
+                  </span></div>
+              </div>
+            </ng-template>
+            <ng-template ngbPanelContent>
+              <ngx-datatable
+              class="bootstrap core-bootstrap"
+                [rows]="rfqVendors"
+                [columnMode]="'standard'"
+                [headerHeight]="50"
+                [footerHeight]="40"
+                [rowHeight]="60"
+                [scrollbarH]="true"
+                style="border: 1px solid #dee2e6; border-radius: 6px;">
+                <ngx-datatable-column name="Vendor ID" prop="vendorID" ></ngx-datatable-column>
+                <ngx-datatable-column name="Vendor Name" prop="vendorName" ></ngx-datatable-column>
+                <ngx-datatable-column name="Description" prop="description" ></ngx-datatable-column>
+                <ngx-datatable-column name="Amount" prop="Amount" ></ngx-datatable-column>
+                <ngx-datatable-column name="Action" [sortable]="false">
+                  <ng-template ngx-datatable-cell-template let-row="row">
+                      <!-- <div class="row d-flex"> -->
+                          <button class="btn btn-sm mr-1" (click)="printVendor(row)"><i class="ft-printer"></i></button>  
+                  </ng-template>
+                </ngx-datatable-column>
+              </ngx-datatable>
+            </ng-template>
+          </ngb-panel>
+        </ngb-accordion>
+        <ngb-accordion #accordion="ngbAccordion" activeIds="ngb-panel-0">
+          <ngb-panel id="ngb-panel-0">
+            <ng-template ngbPanelTitle>
+              <div class="row">
+                <div class="col-md-6"> <span class="panel-icon">
+                    <label class="text-white">Item No: GS-DPD0013</label> <span class="spacer"></span> <i class="ft-chevron-down"> </i>
+                  </span></div>
+              </div>
+            </ng-template>
+            <ng-template ngbPanelContent>
+              <ngx-datatable
+              class="bootstrap core-bootstrap"
+                [rows]="rfqVendors"
+                [columnMode]="'standard'"
+                [headerHeight]="50"
+                [footerHeight]="40"
+                [rowHeight]="60"
+                [scrollbarH]="true"
+                style="border: 1px solid #dee2e6; border-radius: 6px;">
+                <ngx-datatable-column name="Vendor ID" prop="vendorID" ></ngx-datatable-column>
+                <ngx-datatable-column name="Vendor Name" prop="vendorName" ></ngx-datatable-column>
+                <ngx-datatable-column name="Description" prop="description" ></ngx-datatable-column>
+                <ngx-datatable-column name="Amount" prop="Amount" ></ngx-datatable-column>
+                <ngx-datatable-column name="Action" [sortable]="false">
+                  <ng-template ngx-datatable-cell-template let-row="row">
+                      <!-- <div class="row d-flex"> -->
+                          <button class="btn btn-sm mr-1" (click)="printVendor(row)"><i class="ft-printer"></i></button>  
+                  </ng-template>
+                </ngx-datatable-column>
+              </ngx-datatable>
+            </ng-template>
+          </ngb-panel>
+        </ngb-accordion>
+
+
+   
+  </div>
+  
+  

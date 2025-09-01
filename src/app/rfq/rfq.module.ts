@@ -16,11 +16,21 @@ import { TagInputModule } from 'ngx-chips';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { RfqQuotationboxComponent } from './rfq-quotationbox/rfq-quotationbox.component';
+import { RfqVendorModalComponent } from './rfq-vendor-modal/rfq-vendor-modal.component';
+import { VendorComparisionComponent } from './vendor-comparision/vendor-comparision.component';
+import { NewRfqComponent } from './new-rfq/new-rfq.component';
+import { RfqAttachmentComponent } from './rfq-attachment/rfq-attachment.component';
 
 
 @NgModule({
   declarations: [
-    RfqComponent
+    RfqComponent,
+    RfqQuotationboxComponent,
+    RfqVendorModalComponent,
+    VendorComparisionComponent,
+    NewRfqComponent,
+    RfqAttachmentComponent
   ],
   imports: [
     CommonModule,

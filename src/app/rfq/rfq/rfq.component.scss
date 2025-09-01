@@ -33,7 +33,7 @@
     
   .ngx-datatable ::ng-deep .datatable-header-inner{
     background-color: #1E89B8 !important;
-    padding: 0.5rem;
+    // padding: 0.5rem;
   // border-radius: 10px;
   }
   .ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
@@ -58,3 +58,33 @@
     vertical-align:baseline;
     
   }
+//   .ngx-datatable ::ng-deep .datatable-footer .selected-count .page-count {
+//     flex: 1 1 40%;
+//     background: #eaeaeb !important;
+//     color: #1E89B8 !important;
+// }
+// .ngx-datatable.bootstrap .datatable-footer {
+//     background: #424242 !important;
+//     color: #1E89B8;
+//     margin-top: -1px;
+// }
+.counter{
+  top: -10px;
+  right: -16px;
+}
+.badge {
+  display: inline-block;
+  padding: 0.4rem 0.5rem !important;
+  font-size: 85%;
+  font-weight: 400 !important;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.35rem;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.custom-height-modal .modal-body {
+  height: 400px !important; /* or any height you want */
+  overflow-y: auto !important; /* optional: to make it scroll if content overflows */
+}

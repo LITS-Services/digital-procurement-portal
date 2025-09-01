@@ -82,7 +82,7 @@ export class TenderingComponent implements OnInit {
   }
   openEmpDetails() {
    
-    this.router.navigate(['/purchase-request/new-purchase-request']);
+    this.router.navigate(['/tendering/new-tendering']);
   }
   onSort(event) {
     this.loading = true;

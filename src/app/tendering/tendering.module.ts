@@ -16,11 +16,13 @@ import { TagInputModule } from 'ngx-chips';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { NewTenderingRequestComponent } from './new-tendering-request/new-tendering-request.component';
 
 
 @NgModule({
   declarations: [
-    TenderingComponent
+    TenderingComponent,
+    NewTenderingRequestComponent
   ],
   imports: [
     CommonModule,
