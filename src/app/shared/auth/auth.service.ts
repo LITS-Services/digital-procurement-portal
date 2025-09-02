@@ -33,10 +33,10 @@ private baseUrl = environment.apiUrl;
 
  signinUser(username: string, password: string): Observable<any> {
     const body = { username, password };
-    return this.http.post(`${this.baseUrl}/Auth/login`, body); 
+    return this.http.post(`${this.baseUrl}/Auth/ProcurementLogin`, body); 
   }
   register(userData: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/Auth/register`, userData);
+    return this.http.post(`${this.baseUrl}/Auth/ProcurmentUserRegister`, userData);
   }
 
 logout(): Observable<any> {
