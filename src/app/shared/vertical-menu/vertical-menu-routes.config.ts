@@ -19,6 +19,7 @@ export const ROUTES: RouteInfo[] = [
   { path: '/rfq', title: 'RFQ', icon: 'fa fa-envelope-o', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
   
   { path: '/tendering', title: 'Tendering', icon: 'fa fa-handshake-o', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+    { path: '/company', title: 'company', icon: 'fa fa-handshake-o', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
   { path: '', title: 'Reports', icon: 'ft-clipboard', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false, 
     submenu: [
       { path: '/uikit/grids', title: 'Grid', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },

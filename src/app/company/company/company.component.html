@@ -1,0 +1,94 @@
+<section>
+    <div class="row">
+        <div class="col-12">
+
+            <!-- Header -->
+            <div class="row">
+                <div class="col-md-12" style=" margin-top: -0.25rem;">
+                    <!-- <h4>Announcements</h4> -->
+                    <h4 class="heading">Tendering</h4>
+                </div>
+                <!-- <div class="col-md-6">
+                </div> -->
+
+
+            </div>
+
+            <!-- Action Pane -->
+            <div class="card">
+                <div class="row">
+                    <div class="col-md-6">
+                        <button class="btn btn-lg mr-1" type="button" (click)="homePage()"><i
+                                class="ft-arrow-left"></i></button>
+                        <span class="vl"></span>
+                        <button type="reset" ngbTooltip="{{ 'Create new announcement' }}" class="btn btn-sm"
+                            (click)="openEmpDetails()">
+                            <i class="ft-plus"></i><label class="ml-1 mt-1" for="">Create</label>
+                        </button>
+                        <button type="reset" class="btn btn-sm">
+                            <i class="ft-edit"></i><label class="ml-1 mt-1" for="">Update</label>
+                        </button>
+                        <button type="reset" class="btn btn-sm">
+                            <i class="ft-trash"></i><label class="ml-1 mt-1" for="">Delete</label>
+                        </button>
+                        <button type="reset" class="btn btn-sm">
+                            <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
+                        </button>
+                    </div>
+             
+
+                </div>
+
+            </div>
+            <!-- Content -->
+            <ngx-datatable class="bootstrap core-bootstrap" [rows]="tenderingData"
+            [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [columns]="columns"
+            rowHeight="50" [limit]="15" [scrollbarH]="true" [loadingIndicator]="loading"
+            [selected]="chkBoxSelected" [swapColumns]="false" [selectionType]="SelectionType.checkbox"
+            (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
+            <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false"
+                [draggable]="false" [resizeable]="false">
+                <ng-template ngx-datatable-header-template>
+                    <div class="custom-control">
+                        <input type="checkbox" [checked]="isAllSelected"
+                            (change)="toggleSelectAll($event)" />
+                    </div>
+                </ng-template>
+                <ng-template ngx-datatable-cell-template let-value="value" let-isSelected="isSelected"
+                    let-onCheckboxChangeFn="onCheckboxChangeFn">
+
+                    <div class="custom-control custom-checkbox ">
+                        <input type="checkbox" [checked]="isSelected"
+                            (change)="onCheckboxChangeFn($event)" />
+                    </div>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+                <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
+                    <span>{{rowIndex + 1}}</span>
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Tender No." prop="requisitionNo" [width]="100">
+
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Status" prop="status" [width]="100">
+
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Date" prop="date" [width]="50">
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Owner" prop="owner" [width]="100">
+
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Subject" prop="subject" [width]="180">
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Total Amount" [width]="100" prop="totalAmount"
+                [sortable]="false">
+            </ngx-datatable-column>
+        </ngx-datatable>
+        </div>
+    </div>
+</section>
+
