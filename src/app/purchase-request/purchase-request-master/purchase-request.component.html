@@ -1,156 +1,133 @@
 <section>
-    <div class="row">
-        <div class="col-12">
+  <div class="row">
+    <div class="col-12">
 
-            <!-- Header -->
-            <div class="row">
-                <div class="col-md-12" style=" margin-top: -0.25rem;">
-                    <!-- <h4>Announcements</h4> -->
-                    <h4 class="heading">Purchase Request</h4>
-                </div>
-                <!-- <div class="col-md-6">
-                </div> -->
-
-
-            </div>
-
-            <!-- Action Pane -->
-            <div class="card">
-                <div class="row">
-                    <div class="col-md-6">
-                        <button class="btn btn-lg mr-1" type="button" (click)="homePage()"><i
-                                class="ft-arrow-left"></i></button>
-                        <span class="vl"></span>
-                        <button type="reset" ngbTooltip="{{ 'Create new Purchase Request' }}" class="btn btn-sm"
-                            (click)="openEmpDetails()">
-                            <i class="ft-plus"></i><label class="ml-1 mt-1" for="">Create</label>
-                        </button>
-                        <button type="reset" class="btn btn-sm" (click)="onUpdate()">
-                            <i class="ft-edit"></i><label class="ml-1 mt-1" for="">Update</label>
-                        </button>
-
-                        <button type="reset" class="btn btn-sm" (click)="openDeleteModal(deleteModal)">
-                            <i class="ft-trash"></i><label class="ml-1 mt-1" for="">Delete</label>
-                        </button>
-
-                        <button type="reset" class="btn btn-sm">
-                            <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
-                        </button>
-                    </div>
-                    <div class="col-md-6 text-right" style="margin-top: 0.3rem;">
-                        <button type="reset" class="btn btn-sm">
-                            <i class="ft-printer"></i><label class="ml-1 mt-1" for="">Print</label>
-                        </button>
-                        <button type="reset" class="btn btn-sm">
-                            <i class="ft-paperclip"></i><label class="ml-1 mt-1" for="">Attachment</label>
-                        </button>
-                        <button type="reset" class="btn btn-sm" (click)="openAblModal()">
-                            <i class="ft-settings"></i><label class="ml-1 mt-1" for="">Account Budget Lookup</label>
-                        </button>
-                        <button type="reset" class="btn btn-sm" (click)="openExceptionPolicyModal()">
-                            <i class="ft-alert-circle"></i><label class="ml-1 mt-1" for="">Exception Policy</label>
-                        </button>
-                    </div>
-
-                </div>
-
-            </div>
-            <!-- Content -->
-            <ngx-datatable class="bootstrap core-bootstrap" [rows]="purchaseRequestData" [columnMode]="'force'"
-                [headerHeight]="50" [footerHeight]="50" [columns]="columns" rowHeight="50" [limit]="15"
-                [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
-                [selectionType]="SelectionType.checkbox" (sort)="onSort($event)"
-                (select)="customChkboxOnSelect($event)">
-                <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
-                    [resizeable]="false">
-                    <ng-template ngx-datatable-header-template>
-                        <div class="custom-control">
-                            <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
-                        </div>
-                    </ng-template>
-                    <ng-template ngx-datatable-cell-template let-value="value" let-isSelected="isSelected"
-                        let-onCheckboxChangeFn="onCheckboxChangeFn">
-
-                        <div class="custom-control custom-checkbox ">
-                            <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
-                        </div>
-                    </ng-template>
-                </ngx-datatable-column>
-                <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
-                    <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
-                        <span>{{rowIndex + 1}}</span>
-                    </ng-template>
-                </ngx-datatable-column>
-                <ngx-datatable-column name="id" prop="requestId" [width]="100">
-                </ngx-datatable-column>
-
-                <ngx-datatable-column name="Requisition No." prop="requisitionNo" [width]="100">
-
-                </ngx-datatable-column>
-
-                <ngx-datatable-column name="Status" prop="status" [width]="100">
-
-                </ngx-datatable-column>
-                <ngx-datatable-column name="Date" prop="submittedDate" [width]="100">
-                </ngx-datatable-column>
-
-                <ngx-datatable-column name="Owner" prop="createdBy" [width]="100">
-
-                </ngx-datatable-column>
-                <ngx-datatable-column name="Department" prop="department" [width]="100">
-                </ngx-datatable-column>
-
-                <ngx-datatable-column name="Title" prop="itemDescription" [width]="100">
-                </ngx-datatable-column>
-
-                <ngx-datatable-column name="vendor" [width]="100" prop="vendor" [sortable]="false">
-
-                </ngx-datatable-column>
-                <ngx-datatable-column name="Accounts" [width]="100" prop="account" [sortable]="false">
-                </ngx-datatable-column>
-                <ngx-datatable-column name="Total Amount" [width]="100" prop="amount" [sortable]="false">
-                </ngx-datatable-column>
-            </ngx-datatable>
+      <!-- Header -->
+      <div class="row">
+        <div class="col-md-12" style="margin-top: -0.25rem;">
+          <h4 class="heading">Purchase Request</h4>
         </div>
+      </div>
+
+      <!-- Action Pane -->
+      <div class="card mb-2 p-2">
+        <div class="row">
+          <div class="col-md-6">
+            <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+              <i class="ft-arrow-left"></i>
+            </button>
+            <span class="vl"></span>
+            <button type="button" class="btn btn-sm" ngbTooltip="Create new Purchase Request" (click)="openEmpDetails()">
+              <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
+            </button>
+            <button type="button" class="btn btn-sm" (click)="onUpdate()">
+              <i class="ft-edit"></i><label class="ml-1 mt-1">Update</label>
+            </button>
+            <button type="button" class="btn btn-sm" (click)="openDeleteModal(deleteModal)">
+              <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
+            </button>
+          </div>
+
+          <div class="col-md-6 text-right" style="margin-top: 0.3rem;">
+            <button type="button" class="btn btn-sm" (click)="openAblModal()">
+              <i class="ft-settings"></i><label class="ml-1 mt-1">Account Budget Lookup</label>
+            </button>
+            <button type="button" class="btn btn-sm" (click)="openExceptionPolicyModal()">
+              <i class="ft-alert-circle"></i><label class="ml-1 mt-1">Exception Policy</label>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Table -->
+      <ngx-datatable
+        class="bootstrap core-bootstrap"
+        [rows]="purchaseRequestData"
+        [columnMode]="'force'"
+        [headerHeight]="50"
+        [footerHeight]="50"
+        [rowHeight]="'auto'"
+        [scrollbarH]="true"
+        [limit]="15"
+        [loadingIndicator]="loading"
+        [selected]="chkBoxSelected"
+        [selectionType]="SelectionType.checkbox"
+        (sort)="onSort($event)"
+        (select)="customChkboxOnSelect($event)">
+
+        <!-- Checkbox Column -->
+        <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
+          <ng-template ngx-datatable-header-template>
+            <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
+          </ng-template>
+          <ng-template ngx-datatable-cell-template let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
+            <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Sr. No -->
+        <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+          <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
+            <span>{{ rowIndex + 1 }}</span>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Request Info -->
+        <ngx-datatable-column name="Request ID" prop="requestId" [width]="100"></ngx-datatable-column>
+        <ngx-datatable-column name="Requisition No." prop="requisitionNo" [width]="100"></ngx-datatable-column>
+        <ngx-datatable-column name="Status" prop="status" [width]="100"></ngx-datatable-column>
+        <ngx-datatable-column name="Date" prop="submittedDate" [width]="100"></ngx-datatable-column>
+        <ngx-datatable-column name="Owner" prop="createdBy" [width]="100"></ngx-datatable-column>
+        <ngx-datatable-column name="Department" prop="department" [width]="100"></ngx-datatable-column>
+
+        <!-- Expandable Row for Clones -->
+        <ngx-datatable-row-detail [rowHeight]="'auto'" #myDetailRow>
+          <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
+            <div class="p-2">
+              <h6>Items for Request #{{ row.requestId }}</h6>
+              <table class="table table-sm table-bordered mb-0">
+                <thead>
+                  <tr>
+                    <th>Item Description</th>
+                    <th>Vendor</th>
+                    <th>Account</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let clone of row.clones">
+                    <td>{{ clone.itemDescription }}</td>
+                    <td>{{ clone.vendor }}</td>
+                    <td>{{ clone.account }}</td>
+                    <td>{{ clone.amount }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </ng-template>
+        </ngx-datatable-row-detail>
+
+      </ngx-datatable>
     </div>
+  </div>
 </section>
-<!-- delete modal  -->
-<ng-template #deleteModal let-c="close" let-d="dismiss">
-    <div class="modal-header">
-        <h4 class="modal-title">Delete Confirmation</h4>
-        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    <div class="modal-body">
-        <p>Are you sure you want to delete the selected records?</p>
-        <!-- You can display the list of selected IDs here if needed -->
-        <ul>
-            <li *ngFor="let id of idsToDelete">{{ requestId }}</li>
-        </ul>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="c('Cancel click')">Cancel</button>
-        <button type="button" class="btn btn-danger" (click)="confirmDelete()">Delete</button>
-    </div>
-</ng-template>
 
-<ng-template #viewFileModal let-c="close" let-d="dismiss">
-    <div class="modal-header">
-        <!-- <h4 class="modal-title">View Document</h4> -->
-        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    <div class="modal-body">
-        <div *ngIf="fileType === 'image'">
-            <img [src]="filePath" alt="Document" class="img-fluid">
-        </div>
-        <div *ngIf="fileType === 'pdf'">
-            <embed [src]="filePath" type="application/pdf" width="100%" height="600px">
-        </div>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="c('Cancel click')">Close</button>
-    </div>
+<!-- Delete Modal -->
+<ng-template #deleteModal let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Delete Confirmation</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>Are you sure you want to delete the selected records?</p>
+    <ul>
+      <li *ngFor="let id of idsToDelete">{{ id }}</li>
+    </ul>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="c('Cancel click')">Cancel</button>
+    <button type="button" class="btn btn-danger" (click)="confirmDelete()">Delete</button>
+  </div>
 </ng-template>

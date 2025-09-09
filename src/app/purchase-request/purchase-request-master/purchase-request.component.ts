@@ -14,17 +14,16 @@ import { PurchaseRequestExceptionPolicyComponent } from 'app/shared/modals/purch
 export class PurchaseRequestComponent implements OnInit {
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
+  
   purchaseRequestData: any[] = [];
-  public chkBoxSelected: any[] = [];
-  public idsToDelete: number[] = []; // IDs to delete
+  chkBoxSelected: any[] = [];
+  idsToDelete: number[] = [];
   loading = false;
-  columns: any[] = [];
   announcementId: number;
-  isEditButtonDisabled: boolean = true;
-  isDeleteButtonDisabled: boolean = true;
-  isOpenButtonDisabled: boolean = true;
-  isAddNewDisable: boolean = true;
-  isAllSelected: boolean = false;
+  isEditButtonDisabled = true;
+  isDeleteButtonDisabled = true;
+  isOpenButtonDisabled = true;
+  isAllSelected = false;
 
   constructor(
     private router: Router,
@@ -36,11 +35,47 @@ export class PurchaseRequestComponent implements OnInit {
     this.loadPurchaseRequests();
   }
 
+  /**
+   * Load purchase requests from API and group clones
+   */
   loadPurchaseRequests() {
     this.loading = true;
+
     this.purchaseRequestService.getPurchaseRequests().subscribe({
       next: (data) => {
-        this.purchaseRequestData = data;
+        // 🔹 Group requests by requestId
+        const grouped = data.reduce((acc, item) => {
+          const existing = acc.find(x => x.requestId === item.requestId);
+
+          if (existing) {
+            existing.clones.push({
+              itemDescription: item.itemDescription,
+              vendor: item.vendor,
+              account: item.account,
+              amount: item.amount
+            });
+          } else {
+            acc.push({
+              requestId: item.requestId,
+              requisitionNo: item.requisitionNo,
+              status: item.status,
+              submittedDate: item.submittedDate,
+              createdBy: item.createdBy,
+              department: item.department,
+              clones: [
+                {
+                  itemDescription: item.itemDescription,
+                  vendor: item.vendor,
+                  account: item.account,
+                  amount: item.amount
+                }
+              ]
+            });
+          }
+          return acc;
+        }, []);
+
+        this.purchaseRequestData = grouped;
         this.loading = false;
       },
       error: (err) => {
@@ -50,49 +85,42 @@ export class PurchaseRequestComponent implements OnInit {
     });
   }
 
-  saveRequest() {
-    const payload = {
-      requisitionNo: 'REQ002',
-      status: 'Pending',
-      date: new Date(),
-      owner: 'Ali',
-      department: 'IT',
-      title: 'New Hardware Purchase'
-    };
-
-    this.purchaseRequestService.createPurchaseRequestWithFiles(payload).subscribe({
-      next: (res) => console.log('Saved successfully', res),
-      error: (err) => console.error('Save failed', err)
-    });
-  }
-
+  /**
+   * Navigate to dashboard home
+   */
   homePage() {
     this.router.navigate(['/dashboard/dashboard1']);
   }
 
+  /**
+   * Navigate to create new purchase request
+   */
   openEmpDetails() {
     this.router.navigate(['/purchase-request/new-purchase-request']);
   }
 
+  /**
+   * Handle sorting
+   */
   onSort(event) {
     this.loading = true;
     setTimeout(() => {
-      const rows = [...this.purchaseRequestData];
       const sort = event.sorts[0];
-      rows.sort((a, b) => {
-        return a[sort.prop].localeCompare(b[sort.prop]) * (sort.dir === 'desc' ? -1 : 1);
+      this.purchaseRequestData.sort((a, b) => {
+        const aValue = (a[sort.prop] ?? '').toString();
+        const bValue = (b[sort.prop] ?? '').toString();
+        return aValue.localeCompare(bValue) * (sort.dir === 'desc' ? -1 : 1);
       });
-      this.purchaseRequestData = rows;
       this.loading = false;
-    }, 1000);
+    }, 200);
   }
 
-  // Checkbox selection handling
+  /**
+   * Checkbox selection
+   */
   customChkboxOnSelect({ selected }) {
     this.chkBoxSelected = [...selected];
-this.idsToDelete = this.chkBoxSelected.map(item => item.requestId);
-    this.announcementId = selected[0]?.id;
-    
+    this.idsToDelete = this.chkBoxSelected.map(item => item.requestId);
     this.enableDisableButtons();
   }
 
@@ -108,14 +136,16 @@ this.idsToDelete = this.chkBoxSelected.map(item => item.requestId);
   }
 
   enableDisableButtons() {
-    const selectedRowCount = this.chkBoxSelected.length;
-    this.isDeleteButtonDisabled = selectedRowCount === 0;
-    this.isEditButtonDisabled = selectedRowCount !== 1;
-    this.isOpenButtonDisabled = selectedRowCount === 0;
+    const selectedCount = this.chkBoxSelected.length;
+    this.isDeleteButtonDisabled = selectedCount === 0;
+    this.isEditButtonDisabled = selectedCount !== 1;
+    this.isOpenButtonDisabled = selectedCount === 0;
     this.isAllSelected = this.purchaseRequestData.length === this.chkBoxSelected.length;
   }
 
-  // Delete modal open
+  /**
+   * Open Delete Modal
+   */
   openDeleteModal(deleteModal) {
     if (this.idsToDelete.length > 0) {
       this.modalService.open(deleteModal, { backdrop: 'static', centered: true });
@@ -124,61 +154,66 @@ this.idsToDelete = this.chkBoxSelected.map(item => item.requestId);
     }
   }
 
-  // Confirm delete action
-confirmDelete() {
-  if (this.idsToDelete.length === 0) return;
+  /**
+   * Confirm deletion of selected requests
+   */
+  confirmDelete() {
+    if (this.idsToDelete.length === 0) return;
 
-console.log('Deleting IDs:', this.idsToDelete);
+    console.log('Deleting IDs:', this.idsToDelete);
 
- this.purchaseRequestService.deletePurchaseRequest(this.idsToDelete)
- .subscribe({
-    next: () => {
-      this.modalService.dismissAll();
-      this.loadPurchaseRequests(); // Reload updated data
-      this.chkBoxSelected = [];
-      this.idsToDelete = [];
-    },
-    error: (err) => {
-      console.error('Delete failed:', err);
+    this.purchaseRequestService.deletePurchaseRequest(this.idsToDelete).subscribe({
+      next: () => {
+        this.modalService.dismissAll();
+        this.loadPurchaseRequests();
+        this.chkBoxSelected = [];
+        this.idsToDelete = [];
+      },
+      error: (err) => {
+        console.error('Delete failed:', err);
+      }
+    });
+  }
+
+  /**
+   * Navigate to update form
+   */
+  onUpdate() {
+    if (this.chkBoxSelected.length === 0) {
+      alert('Please select a record to update.');
+      return;
     }
-  });
-}
 
-onUpdate() {
-  if (!this.chkBoxSelected || this.chkBoxSelected.length === 0) {
-    alert("Please select a record to update.");
-    return;
+    if (this.chkBoxSelected.length > 1) {
+      alert('Please select only one record to update.');
+      return;
+    }
+
+    const selectedId = this.chkBoxSelected[0].requestId;
+    console.log('Navigating to update ID:', selectedId);
+
+    this.router.navigate(['/purchase-request/new-purchase-request']);
   }
 
-  if (this.chkBoxSelected.length > 1) {
-    alert("Please select only one record to update.");
-    return;
-  }
-
-  const selectedId = this.chkBoxSelected[0].requestId;  // use requestId column
-  console.log("Navigating to update ID:", selectedId);
-
-  this.router.navigate(['/purchase-request/new-purchase-request']);
-
-
-}
-
-
+  /**
+   * Open Account Budget Lookup modal
+   */
   openAblModal() {
-    const modalRef = this.modalService.open(PurchaseRequestAccountBudgetLookupModalComponent, {
+    this.modalService.open(PurchaseRequestAccountBudgetLookupModalComponent, {
       backdrop: 'static',
       size: 'xl',
       centered: true,
     });
-    modalRef.result.then((result) => {}, (reason) => {});
   }
 
+  /**
+   * Open Exception Policy modal
+   */
   openExceptionPolicyModal() {
-    const modalRef = this.modalService.open(PurchaseRequestExceptionPolicyComponent, {
+    this.modalService.open(PurchaseRequestExceptionPolicyComponent, {
       backdrop: 'static',
       size: 'lg',
       centered: true,
     });
-    modalRef.result.then((result) => {}, (reason) => {});
   }
 }
