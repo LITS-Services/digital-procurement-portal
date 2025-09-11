@@ -17,7 +17,8 @@
               <i class="ft-arrow-left"></i>
             </button>
             <span class="vl"></span>
-            <button type="button" class="btn btn-sm" ngbTooltip="Create new Purchase Request" (click)="openEmpDetails()">
+            <button type="button" class="btn btn-sm" ngbTooltip="Create new Purchase Request"
+              (click)="openEmpDetails()">
               <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
             </button>
             <button type="button" class="btn btn-sm" (click)="onUpdate()">
@@ -26,6 +27,10 @@
             <button type="button" class="btn btn-sm" (click)="openDeleteModal(deleteModal)">
               <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
             </button>
+            <button type="button" class="btn btn-sm" [disabled]="isEditButtonDisabled" (click)="onView()">
+              <i class="ft-eye"></i><label class="ml-1 mt-1">View</label>
+            </button>
+
           </div>
 
           <div class="col-md-6 text-right" style="margin-top: 0.3rem;">
@@ -40,27 +45,19 @@
       </div>
 
       <!-- Data Table -->
-      <ngx-datatable
-        class="bootstrap core-bootstrap"
-        [rows]="purchaseRequestData"
-        [columnMode]="'force'"
-        [headerHeight]="50"
-        [footerHeight]="50"
-        [rowHeight]="'auto'"
-        [scrollbarH]="true"
-        [limit]="15"
-        [loadingIndicator]="loading"
-        [selected]="chkBoxSelected"
-        [selectionType]="SelectionType.checkbox"
-        (sort)="onSort($event)"
-        (select)="customChkboxOnSelect($event)">
+      <ngx-datatable class="bootstrap core-bootstrap" [rows]="purchaseRequestData" [columnMode]="'force'"
+        [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [limit]="15"
+        [loadingIndicator]="loading" [selected]="chkBoxSelected" [selectionType]="SelectionType.checkbox"
+        (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 
         <!-- Checkbox Column -->
-        <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
+        <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+          [resizeable]="false">
           <ng-template ngx-datatable-header-template>
             <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
           </ng-template>
-          <ng-template ngx-datatable-cell-template let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
+          <ng-template ngx-datatable-cell-template let-isSelected="isSelected"
+            let-onCheckboxChangeFn="onCheckboxChangeFn">
             <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
           </ng-template>
         </ngx-datatable-column>
@@ -73,7 +70,6 @@
         </ngx-datatable-column>
 
         <!-- Request Info -->
-        <ngx-datatable-column name="Request ID" prop="requestId" [width]="100"></ngx-datatable-column>
         <ngx-datatable-column name="Requisition No." prop="requisitionNo" [width]="100"></ngx-datatable-column>
         <ngx-datatable-column name="Status" prop="status" [width]="100"></ngx-datatable-column>
         <ngx-datatable-column name="Date" prop="submittedDate" [width]="100"></ngx-datatable-column>

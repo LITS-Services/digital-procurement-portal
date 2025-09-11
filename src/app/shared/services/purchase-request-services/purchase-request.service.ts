@@ -16,38 +16,14 @@ export interface UploadedFile {
   providedIn: 'root'
 })
 export class PurchaseRequestService {
-  private uploadedFiles: UploadedFile[] = [];
-  private currentFilesSubject = new BehaviorSubject<UploadedFile[]>(this.uploadedFiles);
-  currentFiles = this.currentFilesSubject.asObservable();
 
   private baseUrl = `${environment.apiUrl}/Requests`;
 
-  constructor(private http: HttpClient) {}
-
-  /** ================= File Management ================= **/
-
-  addFiles(files: UploadedFile[]) {
-    this.uploadedFiles.push(...files);
-    this.currentFilesSubject.next(this.uploadedFiles);
-  }
-
-  removeFile(index: number) {
-    this.uploadedFiles.splice(index, 1);
-    this.currentFilesSubject.next(this.uploadedFiles);
-  }
-
-  clearFiles() {
-    this.uploadedFiles = [];
-    this.currentFilesSubject.next(this.uploadedFiles);
-  }
-
-  getFiles(): UploadedFile[] {
-    return this.uploadedFiles;
-  }
+  constructor(private http: HttpClient) { }
 
   /** ============== Convert File to Base64 ============== **/
 
-  private toBase64(file: File): Promise<string> {
+  public toBase64(file: File): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -58,41 +34,22 @@ export class PurchaseRequestService {
 
   /** ============== API Calls ============== **/
 
-  // Get All Purchase Requests (for your table)
   getPurchaseRequests(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/GetAllRequests`);
   }
 
-deletePurchaseRequest(ids: number[]) {
-  console.log(ids);
-  return this.http.delete(`${this.baseUrl}/DeleteRequest/${ids}`);
-}
+  deletePurchaseRequest(ids: number[]) {
+    console.log(ids);
+    return this.http.delete(`${this.baseUrl}/DeleteRequest/${ids}`);
+  }
   updatePurchaseRequest(id: number, data: any): Observable<any> {
     return this.http.put(`${this.baseUrl}/UpdateRequest/${id}`, data);
   }
 
-   getPurchaseRequestById(id: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/GetRequestById/${id}`);
+  createPurchaseRequestWithFiles(payload: any) {
+    return this.http.post(`${this.baseUrl}/CreateRequest`, payload);
   }
-  // Create a new purchase request with attached Base64 files
-  createPurchaseRequestWithFiles(payload: any): Observable<any> {
-    return from(
-      Promise.all(
-        this.uploadedFiles.map(async file => {
-          const base64Data = await this.toBase64(file.file);
-          return {
-            name: file.name,
-            type: file.type,
-            remarks: file.remarks,
-            base64Data
-          };
-        })
-      )
-    ).pipe(
-      switchMap(encodedFiles => {
-        payload.uploadedFiles = encodedFiles;
-        return this.http.post(`${this.baseUrl}/CreateRequest`, payload);
-      })
-    );
+  getPurchaseRequestById(id: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/GetRequestById/${id}`);
   }
 }

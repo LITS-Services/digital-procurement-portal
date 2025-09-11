@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { ColumnMode, id, SelectionType } from '@swimlane/ngx-datatable';
 import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
 import { PurchaseRequestAccountBudgetLookupModalComponent } from 'app/shared/modals/purchase-request-account-budget-lookup-modal/purchase-request-account-budget-lookup-modal.component';
 import { PurchaseRequestExceptionPolicyComponent } from 'app/shared/modals/purchase-request-exception-policy/purchase-request-exception-policy.component';
@@ -14,7 +14,7 @@ import { PurchaseRequestExceptionPolicyComponent } from 'app/shared/modals/purch
 export class PurchaseRequestComponent implements OnInit {
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
-  
+
   purchaseRequestData: any[] = [];
   chkBoxSelected: any[] = [];
   idsToDelete: number[] = [];
@@ -25,11 +25,13 @@ export class PurchaseRequestComponent implements OnInit {
   isOpenButtonDisabled = true;
   isAllSelected = false;
 
+
   constructor(
     private router: Router,
     private modalService: NgbModal,
-    private purchaseRequestService: PurchaseRequestService
-  ) {}
+    private purchaseRequestService: PurchaseRequestService,
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit(): void {
     this.loadPurchaseRequests();
@@ -38,44 +40,14 @@ export class PurchaseRequestComponent implements OnInit {
   /**
    * Load purchase requests from API and group clones
    */
+
   loadPurchaseRequests() {
     this.loading = true;
 
     this.purchaseRequestService.getPurchaseRequests().subscribe({
-      next: (data) => {
-        // 🔹 Group requests by requestId
-        const grouped = data.reduce((acc, item) => {
-          const existing = acc.find(x => x.requestId === item.requestId);
-
-          if (existing) {
-            existing.clones.push({
-              itemDescription: item.itemDescription,
-              vendor: item.vendor,
-              account: item.account,
-              amount: item.amount
-            });
-          } else {
-            acc.push({
-              requestId: item.requestId,
-              requisitionNo: item.requisitionNo,
-              status: item.status,
-              submittedDate: item.submittedDate,
-              createdBy: item.createdBy,
-              department: item.department,
-              clones: [
-                {
-                  itemDescription: item.itemDescription,
-                  vendor: item.vendor,
-                  account: item.account,
-                  amount: item.amount
-                }
-              ]
-            });
-          }
-          return acc;
-        }, []);
-
-        this.purchaseRequestData = grouped;
+      next: (data: any) => {
+        // 🔹 Directly assign the values (skip grouping logic)
+        this.purchaseRequestData = data?.$values || [];
         this.loading = false;
       },
       error: (err) => {
@@ -84,6 +56,22 @@ export class PurchaseRequestComponent implements OnInit {
       }
     });
   }
+
+
+  onView() {
+    if (this.chkBoxSelected.length !== 1) {
+      alert('Please select exactly one record to view.');
+      return;
+    }
+
+    const selectedId = this.chkBoxSelected[0].requestId;
+
+    this.router.navigate(['/purchase-request/new-purchase-request'], {
+      queryParams: { id: selectedId, mode: 'view' }
+    });
+  }
+
+
 
   /**
    * Navigate to dashboard home
@@ -192,7 +180,9 @@ export class PurchaseRequestComponent implements OnInit {
     const selectedId = this.chkBoxSelected[0].requestId;
     console.log('Navigating to update ID:', selectedId);
 
-    this.router.navigate(['/purchase-request/new-purchase-request']);
+    this.router.navigate(['/purchase-request/new-purchase-request'], {
+      queryParams: { id: selectedId }
+    });
   }
 
   /**
