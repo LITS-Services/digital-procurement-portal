@@ -16,9 +16,9 @@ export class CompanyService {
   }
 
 //   // Get company by ID
-//   getCompanyById(id: number): Observable<any> {
-//     return this.http.get<any>(`${this.apiUrl}/${id}`);
-//   }
+  getCompanyById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
 
 //   // Create company
 //   createCompany(data: any): Observable<any> {
@@ -26,9 +26,9 @@ export class CompanyService {
 //   }
 
 //   // Update company
-//   updateCompany(id: number, data: any): Observable<any> {
-//     return this.http.put<any>(`${this.apiUrl}/${id}`, data);
-//   }
+  updateCompany(id: number, data: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/update-vendor-company/${id}`, data);
+  }
 
 //   // Delete company
 //   deleteCompany(id: number): Observable<any> {

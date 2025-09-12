@@ -31,7 +31,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   public isCollapsed = true;
   layoutSub: Subscription;
   configSub: Subscription;
-
+  username: string;
   @ViewChild('search') searchElement: ElementRef;
   @ViewChildren('searchResults') searchResults: QueryList<any>;
 
@@ -66,7 +66,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.listItems = LISTITEMS;
-
+    this.username = localStorage.getItem('userName'); 
     if (this.innerWidth < 1200) {
       this.isSmallScreen = true;
     }
@@ -106,16 +106,16 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.isSmallScreen = false;
     }
   }
-logout(): void {
-  this.authService.logout().subscribe({
-    next: () => {
-      this.authService.performLogout(); // Clear storage & navigate to login
-    },
-    error: () => {
-      this.authService.performLogout(); // Still logout even if API fails
-    }
-  });
-}
+  logout(): void {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.authService.performLogout(); // Clear storage & navigate to login
+      },
+      error: () => {
+        this.authService.performLogout(); // Still logout even if API fails
+      }
+    });
+  }
 
   loadLayout() {
 

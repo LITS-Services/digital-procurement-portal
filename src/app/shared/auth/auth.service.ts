@@ -31,10 +31,35 @@ private baseUrl = environment.apiUrl;
     //your code for signing up the new user
   }
 
- signinUser(username: string, password: string): Observable<any> {
-    const body = { username, password };
-    return this.http.post(`${this.baseUrl}/Auth/ProcurementLogin`, body); 
-  }
+signinUser(username: string, password: string): Observable<any> {
+  const body = { username, password };
+
+  return new Observable((observer) => {
+    this.http.post<any>(`${this.baseUrl}/Auth/ProcurementLogin`, body).subscribe({
+      next: (res) => {
+        if (res && res.token) {
+          // Save values to localStorage
+          localStorage.setItem('token', res.token);
+          localStorage.setItem('userId', res.userId);
+          localStorage.setItem('userName', res.userName);
+
+          if (res.roles) {
+            localStorage.setItem('roles', JSON.stringify(res.roles));
+          }
+        }
+
+        observer.next(res);
+        observer.complete();
+      },
+      error: (err) => {
+        observer.error(err);
+      }
+    });
+  });
+}
+
+
+
   register(userData: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/Auth/ProcurmentUserRegister`, userData);
   }

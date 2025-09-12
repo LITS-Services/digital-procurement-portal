@@ -19,9 +19,9 @@ export const Full_ROUTES: Routes = [
     path: 'tendering',
     loadChildren: () => import('../../tendering/tendering.module').then(m => m.TenderingModule)
   },
-  {
+    {
     path: 'company',
-    loadChildren: () => import('../../company/company/company.module').then(m => m.CompanyModule)
+    loadChildren: () => import('../../company/company.module').then(m => m.CompanyModule)
   },
   {
     path: 'calendar',

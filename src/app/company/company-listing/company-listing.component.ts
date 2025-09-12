@@ -5,11 +5,12 @@ import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
 import { CompanyService } from 'app/shared/services/Company.services';
 
 @Component({
-  selector: 'app-company',
-  templateUrl: './company.component.html',
-  styleUrls: ['./company.component.scss']
+  selector: 'app-company-listing',
+  templateUrl: './company-listing.component.html',
+  styleUrls: ['./company-listing.component.scss']
 })
-export class CompanyComponent implements OnInit {
+export class CompanyListingComponent implements OnInit {
+
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
@@ -29,7 +30,12 @@ export class CompanyComponent implements OnInit {
     private router: Router,
     private modalService: NgbModal,
     private companyService: CompanyService
-  ) {}
+  ) { }
+
+
+  gotoEditCompany() {
+    this.router.navigateByUrl('/company/company-edit');
+  }
 
   ngOnInit(): void {
     this.getCompanyData();
@@ -45,40 +51,46 @@ export class CompanyComponent implements OnInit {
     ];
   }
 
-  // ✅ Fetch company data from API
-  // ✅ Fetch company data from API
-getCompanyData() {
-  this.loading = true;
-  this.companyService.getVendorCompanies().subscribe({
-    next: (res: any) => {
-      const companies = res.$values || [];
 
-      // ✅ Filter: only keep "Inprogress"
-      const filtered = companies.filter((c: any) => c.status?.toLowerCase() === 'inprogress');
+  getCompanyData() {
+    this.loading = true;
+    this.companyService.getVendorCompanies().subscribe({
+      next: (res: any) => {
+        const companies = res.$values || [];
 
-      this.tenderingData = filtered.map((c: any) => {
-        const primaryAddress = c.addresses?.$values?.[0] || {};
-        const primaryContact = c.contacts?.$values?.[0] || {};
+        // ✅ Filter: only keep "Inprogress"
+        const filtered = companies.filter((c: any) => c.status?.toLowerCase() === 'inprogress');
 
-        return {
-          id: c.id,
-          name: c.name,
-          companyStatus: c.status || '',
-          street: primaryAddress.street || '',
-          city: primaryAddress.city || '',
-          contactNumber: primaryContact.contactNumber || ''
-        };
-      });
+        this.tenderingData = filtered.map((c: any) => {
+          const primaryAddress = c.addressesVM?.$values?.[0] || {};
+          const primaryContact = c.contactsVM?.$values?.[0] || {};
+          const demographics = c.purchasingDemographics || {};
 
-      this.rows = [...this.tenderingData];
-      this.loading = false;
-    },
-    error: (err) => {
-      console.error('Error fetching companies:', err);
-      this.loading = false;
-    }
-  });
-}
+          return {
+            id: c.id,
+            name: c.name,
+            companyStatus: c.status || '',
+            street: primaryAddress.street || '',
+            city: primaryAddress.city || '',
+            contactNumber: primaryContact.contactNumber || '',
+            remarks: c.remarks || '',
+            approverId: c.approverId,
+            vendorId: c.vendorId,
+            vendorType: demographics.vendorType || '',
+            primaryCurrency: demographics.primaryCurrency || ''
+          };
+        });
+
+
+        this.rows = [...this.tenderingData];
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error fetching companies:', err);
+        this.loading = false;
+      }
+    });
+  }
 
   homePage() {
     this.router.navigate(['/dashboard/dashboard1']);
@@ -118,12 +130,17 @@ getCompanyData() {
     this.isEditButtonDisabled = selectedRowCount !== 1;
     this.isOpenButtonDisabled = selectedRowCount === 0;
 
-    this.isAllSelected = this.tenderingData.length === this.chkBoxSelected.length;
+    this.isAllSelected = this.tenderingData.length === selectedRowCount;
   }
 
-  // ✅ Edit button action
-  // editRow(row: any) {
-  //   console.log('Editing row:', row);
-  //   this.router.navigate(['/company/edit', row.id]); // adjust route as needed
-  // }
+  // Edit button in action pane
+  editSelectedRow() {
+    if (this.chkBoxSelected.length === 1) {
+      const row = this.chkBoxSelected[0];
+      this.router.navigate(['/company/company-edit'], { queryParams: { id: row.id } });
+
+    } else {
+      alert('Please select a single company to update.');
+    }
+  }
 }
