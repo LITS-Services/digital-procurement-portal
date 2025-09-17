@@ -40,8 +40,6 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
     private fb: FormBuilder,
     public toastr: ToastrService
   ) {
-    // this.WorkflowServiceService.currentFiles.subscribe(files => {
-    // });
   }
 
   ngOnInit(): void {
@@ -118,23 +116,42 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
     });
   }
 
+
+
   addApprover(): void {
     if (this.approverForm.invalid) {
       console.warn("Approver form is invalid");
       return;
     }
-
     const formValue = { ...this.approverForm.value };
-
     // Find the selected approver's display name
     const selectedApprover = this.approverList.find(a => a.id === formValue.approverList);
+
+    const userId = selectedApprover ? selectedApprover.id : null;
+    const approverLevel = formValue.approverLevel;
+ //Check duplicates BEFORE creating the object
+  const sameUserExists = this.newApproverData.some((item, index) =>
+    index !== this.editingRowIndex && item.userId === userId
+  );
+  if (sameUserExists) {
+    this.toastr.warning("This approver is already added!", "");
+    return;
+  }
+  const sameLevelExists = this.newApproverData.some((item, index) =>
+    index !== this.editingRowIndex && item.approverLevel === approverLevel
+  );
+
+  if (sameLevelExists) {
+    this.toastr.warning("This approver level is already used!", "");
+    return;
+  }
+
 
     const newItem = {
       ...formValue,
       approverName: selectedApprover ? selectedApprover.userName : '',
       userId: selectedApprover.userId
     };
-
     if (this.editingRowIndex !== null) {
       // Update existing row
       this.newApproverData[this.editingRowIndex] = newItem;
@@ -143,10 +160,8 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
       // Add new row
       this.newApproverData = [...this.newApproverData, newItem];
     }
-
     // Refresh table
     this.newApproverData = [...this.newApproverData];
-
     // Reset form
     this.approverForm.reset({
       approverList: '',
