@@ -39,58 +39,8 @@ export class WorkflowMasterSetupComponent implements OnInit {
 
   ngOnInit(): void {
     this.getWorkflowMasterList();
-    //this.loadPurchaseRequests();
   }
 
-  /**
-   * Load purchase requests from API and group clones
-   */
-  loadPurchaseRequests() {
-    this.loading = true;
-
-    this.purchaseRequestService.getPurchaseRequests().subscribe({
-      next: (data) => {
-        // 🔹 Group requests by requestId
-        const grouped = data.reduce((acc, item) => {
-          const existing = acc.find(x => x.requestId === item.requestId);
-
-          if (existing) {
-            existing.clones.push({
-              itemDescription: item.itemDescription,
-              vendor: item.vendor,
-              account: item.account,
-              amount: item.amount
-            });
-          } else {
-            acc.push({
-              requestId: item.requestId,
-              requisitionNo: item.requisitionNo,
-              status: item.status,
-              submittedDate: item.submittedDate,
-              createdBy: item.createdBy,
-              department: item.department,
-              clones: [
-                {
-                  itemDescription: item.itemDescription,
-                  vendor: item.vendor,
-                  account: item.account,
-                  amount: item.amount
-                }
-              ]
-            });
-          }
-          return acc;
-        }, []);
-
-        this.purchaseRequestData = grouped;
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Error fetching requests:', err);
-        this.loading = false;
-      }
-    });
-  }
 
 
   getWorkflowMasterList(): void {
@@ -152,17 +102,17 @@ export class WorkflowMasterSetupComponent implements OnInit {
    */
   customChkboxOnSelect({ selected }) {
     this.chkBoxSelected = [...selected];
-    this.idsToDelete = this.chkBoxSelected.map(item => item.requestId);
+    this.idsToDelete = this.chkBoxSelected.map(item => item.workflowMasterId);
     this.enableDisableButtons();
   }
 
   toggleSelectAll(event: any) {
     if (event.target.checked) {
-      this.chkBoxSelected = [...this.purchaseRequestData];
+      this.chkBoxSelected = [...this.workflowMasterList];
     } else {
       this.chkBoxSelected = [];
     }
-    this.idsToDelete = this.chkBoxSelected.map(item => item.requestId);
+    this.idsToDelete = this.chkBoxSelected.map(item => item.workflowMasterId);
     this.isAllSelected = event.target.checked;
     this.enableDisableButtons();
   }
@@ -172,7 +122,7 @@ export class WorkflowMasterSetupComponent implements OnInit {
     this.isDeleteButtonDisabled = selectedCount === 0;
     this.isEditButtonDisabled = selectedCount !== 1;
     this.isOpenButtonDisabled = selectedCount === 0;
-    this.isAllSelected = this.purchaseRequestData.length === this.chkBoxSelected.length;
+    this.isAllSelected = this.workflowMasterList.length === this.chkBoxSelected.length;
   }
 
   /**
@@ -194,10 +144,10 @@ export class WorkflowMasterSetupComponent implements OnInit {
 
     console.log('Deleting IDs:', this.idsToDelete);
 
-    this.purchaseRequestService.deletePurchaseRequest(this.idsToDelete).subscribe({
+    this.WorkflowServiceService.markworkflowDelete(this.idsToDelete).subscribe({
       next: () => {
         this.modalService.dismissAll();
-        this.loadPurchaseRequests();
+        this.getWorkflowMasterList();
         this.chkBoxSelected = [];
         this.idsToDelete = [];
       },
