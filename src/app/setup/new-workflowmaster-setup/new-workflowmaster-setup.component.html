@@ -1,0 +1,230 @@
+<section>
+  <div class="row">
+    <div class="col-12">
+
+      <!-- Header -->
+      <div class="row">
+        <div class="col-md-12" style=" margin-top: -0.25rem;">
+          <h4 class="heading">Create Workflow Setup</h4>
+        </div>
+        <!-- <div class="col-md-6">
+                  </div> -->
+      </div>
+
+      <!-- Action Pane -->
+      <div class="card">
+        <div class="row">
+          <div class="col-md-6">
+            <button class="btn btn-lg mr-1" type="button" (click)="homePage()"><i class="ft-arrow-left"></i></button>
+            <span class="vl"></span>
+            <button type="submit" class="btn btn-sm" [disabled]="workflowsetupform.invalid" (click)="submitForm()">
+              <i class="ft-plus"></i><label class="ml-1 mt-1">Save</label>
+            </button>
+            <button type="reset" class="btn btn-sm" (click)="updateForm()" >
+              <i class="ft-edit"></i><label class="ml-1 mt-1" for="">Edit</label>
+            </button>
+            <button type="reset" class="btn btn-sm">
+              <i class="ft-trash"></i><label class="ml-1 mt-1" for="">Delete</label>
+            </button>
+          </div>
+        </div>
+
+      </div>
+      <div class="card">
+        <div class="card-body">
+
+          <form [formGroup]="workflowsetupform" (ngSubmit)="submitForm()">
+            <div class="form-row">
+
+              <!-- Basic Fields -->
+              <div class="col-lg-4 mb-2">
+                <label>Workflow Name</label>
+                <input type="text" class="form-control" formControlName="workflowName" placeholder="Workflow Name"
+                  required>
+              </div>
+              <div class="col-lg-4 mb-2">
+                <label>Document Type</label>
+                <select class="form-control" formControlName="documentType">
+                  <option value="" disabled>Select Type</option>
+                  <option *ngFor="let wf of workflowTypes" [value]="wf.id">
+                    {{ wf.typeName }}
+                  </option>
+                </select>
+              </div>
+
+            </div>
+            <div class="form-row">
+              <!-- Switches -->
+              <div class="col-lg-4 mb-3">
+                <div class="custom-control custom-switch">
+                  <input type="checkbox" class="custom-control-input" id="status" formControlName="status">
+                  <label class="custom-control-label" for="status">Status</label>
+                </div>
+              </div>
+            </div>
+          </form>
+
+
+          <ngb-accordion #accordion="ngbAccordion" activeIds="ngb-panel-0">
+            <ngb-panel id="ngb-panel-0">
+              <ng-template ngbPanelTitle>
+                <div class="row">
+                  <div class="col-md-6"> <span class="panel-icon">
+                      <label class="text-white">Add Approver</label> <!-- Bootstrap icon example -->
+                    </span></div>
+                </div>
+              </ng-template>
+              <ng-template ngbPanelContent>
+                <div class="card-accordion">
+
+
+
+
+                  <div class="form-row position-relative" [formGroup]="approverForm">
+
+                    <button class="btn btn-primary position-absolute" style="top: 0; right: 0; z-index: 10;"
+                      (click)="addApprover()">
+                      <i class="ft-pocket mr-1"></i>
+                      Add
+                    </button>
+                    <div class="col-12 mt-4">
+                      <hr>
+                    </div>
+
+                    <div class="col-lg-5 col-md-5 col-sm-5 col-xs-6">
+                      <div class="form-group mb-2">
+                         <label>Approver</label>
+                      <select class="form-control" formControlName="approverList">
+                        <option value="" disabled>Select Approver</option>
+                        <option *ngFor="let approver of approverList" [value]="approver.id">
+                          {{ approver.userName }}
+                        </option>
+                      </select>
+                      </div>
+                    </div>
+
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                      <div class="form-group mb-2">
+                        <label>Amount From</label>
+                        <input type="number" placeholder="Enter Amount" class="form-control"
+                          formControlName="amountFrom" />
+                      </div>
+                    </div>
+
+
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6">
+                      <div class="form-group mb-2">
+                        <label>Amount To</label>
+                        <input type="number" placeholder="Enter Amount" class="form-control"
+                          formControlName="amountTo" />
+                      </div>
+                    </div>
+
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6">
+                      <div class="form-group mb-2">
+                        <label>Approver Level</label>
+                        <input type="number" placeholder="Enter Level" class="form-control"
+                          formControlName="approverLevel" />
+                      </div>
+                    </div>
+
+                    <div class="col-lg-2 mb-2">
+                      <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="canApprove"
+                          formControlName="canApprove">
+                        <label class="custom-control-label" for="canApprove">Approve</label>
+                      </div>
+                    </div>
+
+                    <div class="col-lg-2 mb-2">
+                      <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="canReject" formControlName="canReject">
+                        <label class="custom-control-label" for="canReject">canReject</label>
+                      </div>
+                    </div>
+                    <div class="col-lg-2 mb-3">
+                      <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="canSendBack"
+                          formControlName="canSendBack">
+                        <label class="custom-control-label" for="canSendBack">Send Back</label>
+                      </div>
+                    </div>
+                    <div class="col-lg-2 mb-3">
+                      <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="canSubmit" formControlName="canSubmit">
+                        <label class="custom-control-label" for="canSubmit">Submit</label>
+                      </div>
+                    </div>
+                    <div class="col-lg-2 mb-3">
+                      <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="isApprovalCompulsory"
+                          formControlName="isApprovalCompulsory">
+                        <label class="custom-control-label" for="isApprovalCompulsory">Is Compulsory</label>
+                      </div>
+                    </div>
+                    <div class="col-12">
+                      <hr>
+                    </div>
+
+                  </div>
+                  <br>
+                </div>
+              </ng-template>
+            </ngb-panel>
+
+          </ngb-accordion>
+          <div class="col-12 mt-2">
+            <div style="position: relative;">
+              <ngx-datatable class="bootstrap core-bootstrap" [rows]="newApproverData" [columnMode]="'force'"
+                [headerHeight]="50" [footerHeight]="50" rowHeight="50" [limit]="5" [scrollbarH]="true">
+
+                <ngx-datatable-column name="Sr. No." [width]="50">
+                  <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
+                    <span>{{rowIndex + 1}}</span>
+                  </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column name="Approver" prop="approverName" [width]="70">
+                </ngx-datatable-column>
+                <ngx-datatable-column name="Level" prop="approverLevel" [width]="70">
+                </ngx-datatable-column>
+                <ngx-datatable-column name="Amount From" prop="amountFrom" [width]="70">
+                </ngx-datatable-column>
+                <ngx-datatable-column name="Amount To" [width]="70" prop="amountTo">
+                </ngx-datatable-column>
+                <ngx-datatable-column name="Approve" prop="canApprove" [width]="70">
+                </ngx-datatable-column>
+                <ngx-datatable-column name="Reject" prop="canReject" [width]="70">
+                </ngx-datatable-column>
+                <ngx-datatable-column name="Send Back" prop="canSendBack" [width]="70">
+                </ngx-datatable-column>
+                <ngx-datatable-column name="Submit" prop="canSubmit" [width]="70">
+                </ngx-datatable-column>
+                <ngx-datatable-column name="IsCompulsory" prop="isApprovalCompulsory" [width]="70">
+                </ngx-datatable-column>
+
+
+                <ngx-datatable-column name="Actions" [width]="70">
+                  <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
+                    <!-- Edit button -->
+                    <a matTooltip="Edit Approver" style="cursor: pointer; color: #d1d4d7;"
+                      (click)="editRow(row, rowIndex)" [ngClass]="{'disabled': actionType === 'View'}">
+                      <i style="font-size: 1.5rem;" class="ft-edit mr-1"></i>
+                    </a>
+
+                    <!-- Delete button -->
+                    <a matTooltip="Delete Approver" style="cursor: pointer; color: #d1d4d7;"
+                      (click)="deleteRow(rowIndex)" [ngClass]="{'disabled': actionType === 'View'}">
+                      <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
+                    </a>
+                  </ng-template>
+                </ngx-datatable-column>
+
+              </ngx-datatable>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

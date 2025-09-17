@@ -1,0 +1,58 @@
+<div class="modal-header">
+    <h4 class="modal-title text-white">Approver Details</h4>
+    <button type="button" class="close text-white" aria-label="Close" (click)="closeDialog()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+  <div class="datatable-view animate-slide-in">
+    <ngx-datatable 
+        class="bootstrap core-bootstrap" 
+        [rows]="workflowDetails"
+        [columnMode]="'standard'"
+        [headerHeight]="40" 
+        [footerHeight]="40" 
+        [rowHeight]="'auto'" 
+        [limit]="10"
+        [scrollbarH]="true">
+
+      <ngx-datatable-column name="Approver" prop="approverName" [width]="120"></ngx-datatable-column>
+      <ngx-datatable-column name="Type" prop="workflowType" [width]="120"></ngx-datatable-column>
+      <ngx-datatable-column name="Approver Level" prop="approverLevel" [width]="140"></ngx-datatable-column>
+      <ngx-datatable-column name="Amount From" prop="amountFrom" [width]="120"></ngx-datatable-column>
+      <ngx-datatable-column name="Amount To" prop="amountTo" [width]="120"></ngx-datatable-column>
+
+      <ngx-datatable-column name="Can Approve" prop="canApprove" [width]="120">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          <span>{{ row.canApprove ? 'Yes' : 'No' }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Reject" prop="canReject" [width]="120">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          <span>{{ row.canReject ? 'Yes' : 'No' }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Send Back" prop="canSendBack" [width]="140">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          <span>{{ row.canSendBack ? 'Yes' : 'No' }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Submit" prop="canSubmit" [width]="120">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          <span>{{ row.canSubmit ? 'Yes' : 'No' }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Compulsory" prop="isApprovalCompulsory" [width]="150">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          <span>{{ row.isApprovalCompulsory ? 'Yes' : 'No' }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+    </ngx-datatable>
+  </div>
+</div>

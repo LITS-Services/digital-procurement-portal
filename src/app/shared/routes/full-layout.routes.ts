@@ -52,6 +52,10 @@ export const Full_ROUTES: Routes = [
     loadChildren: () => import('../../ui-kit/ui-kit.module').then(m => m.UIKitModule)
   },
   {
+    path: 'setup',
+    loadChildren: () => import('../../setup/setup.module').then(m => m.SetupModule)
+  },
+  {
     path: 'components',
     loadChildren: () => import('../../components/ui-components.module').then(m => m.UIComponentsModule)
   },

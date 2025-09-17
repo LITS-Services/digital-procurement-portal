@@ -18,17 +18,17 @@ const appRoutes: Routes = [
     pathMatch: 'full',
   },
   {
-  path: 'new-purchase-request/:id',
-  component: NewPurchaseRequestComponent , // Your form component
-  canActivate: [AuthGuard],
-  data: { title: 'Update Purchase Request' }
-},
-{
-  path: 'new-purchase-request',
-  component: NewPurchaseRequestComponent , // For adding new
-  canActivate: [AuthGuard],
-  data: { title: 'New Purchase Request' }
-},
+    path: 'new-purchase-request/:id',
+    component: NewPurchaseRequestComponent, // Your form component
+    canActivate: [AuthGuard],
+    data: { title: 'Update Purchase Request' }
+  },
+  {
+    path: 'new-purchase-request',
+    component: NewPurchaseRequestComponent, // For adding new
+    canActivate: [AuthGuard],
+    data: { title: 'New Purchase Request' }
+  },
   {
     path: 'vendor-registration-form',
     component: VendorRegistrationFormComponent,
@@ -37,6 +37,7 @@ const appRoutes: Routes = [
       system: 'Vendor Registration Form'
     }
   },
+
   { path: '', component: FullLayoutComponent, data: { title: 'full Views' }, children: Full_ROUTES, canActivate: [AuthGuard] },
   { path: '', component: ContentLayoutComponent, data: { title: 'content Views' }, children: CONTENT_ROUTES },
   {

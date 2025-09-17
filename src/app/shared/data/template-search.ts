@@ -8,6 +8,7 @@
         {"url":"/taskboard", "name":"Task Board", "icon":"ft-file-text"},
         {"url":"/calendar", "name":"Calendar", "icon":"ft-calendar"},
         {"url":"/uikit/grids", "name":"Grid", "icon":"ft-grid"},
+        {"url":"setup/workflow", "name":"Work Flow Setup", "icon":"ft-grid"},
         {"url":"/uikit/typography", "name":"Typography", "icon":"ft-type"},
         {"url":"/uikit/syntaxhighlighter", "name":"Syntax Highlighter", "icon":"ft-edit-1"},
         {"url":"/uikit/helperclasses", "name":"Helper Classes", "icon":"ft-help-circle"},
