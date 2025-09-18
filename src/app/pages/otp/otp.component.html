@@ -1,0 +1,71 @@
+<!--OTP Page Starts-->
+<section id="otp">
+    <div class="row auth-height full-height-vh m-0">
+        <div class="col-12 d-flex align-items-center justify-content-center">
+            <div class="card overflow-hidden">
+                <div class="card-content">
+                    <div class="card-body auth-img">
+                        <div class="row m-0">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-12 px-4 py-3">
+                                <div class="text-center mb-2">
+                                    <img src="/assets/img/login-logo.webp" width="70" height="70" alt="Logo">
+                                </div>
+
+                                <h4 class="mb-2 text-center" style="color: #1E89B8;">Verify OTP</h4>
+                                <p class="mb-3 text-center">Enter the OTP sent to your registered email</p>
+
+                                <ngb-alert type="light-danger" class="mb-2" *ngIf="isOtpFailed"
+                                    (close)="isOtpFailed = false">
+                                    <p class="mb-0">Invalid or expired OTP!</p>
+                                </ngb-alert>
+
+                                <form [formGroup]="otpForm">
+                                    <div class="form-group">
+                                        <input type="text" formControlName="otp" class="form-control"
+                                            placeholder="Enter OTP"
+                                            [ngClass]="{ 'is-invalid': otpFormSubmitted && of.otp.invalid, 'is-valid': otpFormSubmitted && !of.otp.invalid }"
+                                            required>
+                                        <div *ngIf="otpFormSubmitted && (of.otp.invalid || of.otp.errors?.required)"
+                                            class="help-block mt-1 text-danger">
+                                            <i class="ft-alert-circle align-middle"></i> OTP is required
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between flex-sm-row">
+                                        <button type="button" class="btn btn-primary w-100" [disabled]="otpForm.invalid"
+                                            (click)="verifyOtp()">
+                                            Verify OTP
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <div class="checkbox mb-2 mt-2">
+
+                                    <!-- <label for="rememberMe"><span class="font-small-2 mb-3 font-weight-normal rm"
+                      style="color: #253E88;">Remember me</span></label> -->
+
+                                    <a (click)="resendOtp()" class="ml-3 fp" [ngClass]="'link'" style="position: relative;
+    left: 51px;
+    color: #8484b5;">Resend OTP</a>
+                                </div>
+
+                                <div class="or-wrapper text-center">
+                                    <div class="horizontal-line"></div>
+                                    <div class="or-text">or</div>
+                                    <div class="horizontal-line"></div>
+                                </div>
+
+                                <div class="text-center mt-2">
+                                    <a [routerLink]="['/pages/register']" class="text-primary">Back to Register</a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="semi-circle-img"></div>
+    </div>
+</section>
+<!--OTP Page Ends-->

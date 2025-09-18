@@ -15,14 +15,19 @@
                 <p>Fill the below form to create a new account.</p>
 
                 <form [formGroup]="registerForm">
-                  <div class="form-group">
-                    <input type="text" formControlName="Username" class="form-control mb-2" placeholder="Name"
-                      [ngClass]="{ 'is-invalid': registerFormSubmitted && rf.name.invalid, 'is-valid': registerFormSubmitted && !rf.name.invalid }"
-                      required>
-                    <div *ngIf="registerFormSubmitted && (rf.name.invalid || rf.name.errors?.required)"
-                      class="help-block mt-1 text-danger"> <i class="ft-alert-circle align-middle"></i> Name is
-                      required</div>
-                  </div>
+                          <div class="form-group">
+                <input type="text" formControlName="Username" class="form-control mb-2" placeholder="Name"
+                  [ngClass]="{ 
+                    'is-invalid': registerFormSubmitted && rf.Username.invalid, 
+                    'is-valid': registerFormSubmitted && !rf.Username.invalid 
+                  }"
+                  required>
+                <div *ngIf="registerFormSubmitted && (rf.Username.invalid || rf.Username.errors?.required)"
+                  class="help-block mt-1 text-danger">
+                  <i class="ft-alert-circle align-middle"></i> Name is required
+                </div>
+              </div>
+
                   <div class="form-group">
                     <input type="email" formControlName="email" class="form-control mb-2" placeholder="Email"
                       [ngClass]="{ 'is-invalid': registerFormSubmitted && rf.email.invalid, 'is-valid': registerFormSubmitted && !rf.email.invalid }"
@@ -69,9 +74,40 @@
                       class="help-block mt-1 text-danger"> <i class="ft-alert-circle align-middle"></i> Accept Ts & Cs is required
                     </div>
                   </div>
-                  </div>
+                  </div>                  
+                          <div class="form-group">
+  <label>Select Procurement Companies</label>
+  <div class="dropdown" [class.show]="dropdownOpen">
+    <button type="button" class="btn btn-outline-secondary w-100 text-start dropdown-toggle"
+      (click)="toggleDropdown()">
+      {{ selectedCompaniesLabel }}
+    </button>
+    <ul class="dropdown-menu w-100 p-2" [class.show]="dropdownOpen"
+        style="max-height: 200px; overflow-y: auto;">
+      <li *ngFor="let company of procurmentCompanies">
+        <div class="form-check">
+          <input type="checkbox"
+            class="form-check-input"
+            [id]="'company-' + company.companyGUID"
+            [checked]="isCompanySelected(company.companyGUID)"
+            (change)="toggleCompanySelection($event, company)">
+          <label class="form-check-label" [for]="'company-' + company.companyGUID">
+            {{ company.name }}
+          </label>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div *ngIf="registerFormSubmitted && companyFormArray.invalid" class="help-block mt-1 text-danger">
+    <i class="ft-alert-circle align-middle"></i> At least one company must be selected
+  </div>
+</div>
+
+
+
+
                   <div class="d-flex justify-content-between flex-sm-row flex-column">
-                    <a [routerLink]="['/pages/login']" class="btn bg-light-primary mb-2 mb-sm-0">Back To Login</a>
+                    <a [routerLink]="['/dashboard/dashboard1']" class="btn bg-light-primary mb-2 mb-sm-0">Back To Dashboard</a>
                     <a class="btn btn-primary" (click)="onSubmit()">Register</a>
                   </div>
                 </form>

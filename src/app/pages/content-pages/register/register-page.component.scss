@@ -1,0 +1,13 @@
+.dropdown-menu {
+  max-height: 200px;   // Limit height
+  overflow-y: auto;    // Enable scroll
+  padding: 10px;
+}
+
+.dropdown-menu li {
+  padding: 2px 0;
+}
+
+.btn.dropdown-toggle {
+  text-align: left;
+}

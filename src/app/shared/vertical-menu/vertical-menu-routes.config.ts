@@ -19,7 +19,9 @@ export const ROUTES: RouteInfo[] = [
   { path: '/rfq', title: 'RFQ', icon: 'fa fa-envelope-o', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
 
   { path: '/tendering', title: 'Tendering', icon: 'fa fa-handshake-o', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-  { path: '/company', title: 'company', icon: 'fa fa-handshake-o', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+  { path: '/company', title: 'company', icon: 'fa fa-briefcase', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+  { path: '/procurment-companies', title: 'Procurment Companies', icon: 'fa fa-building', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+
   {
     path: '', title: 'Reports', icon: 'ft-clipboard', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false,
 

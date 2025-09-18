@@ -34,6 +34,8 @@ import { WINDOW_PROVIDERS } from './shared/services/window.service';
 import { NewPurchaseRequestComponent } from './purchase-request/new-purchase-request/new-purchase-request.component';
 import { BrowserModule } from "@angular/platform-browser";
 import { ReactiveFormsModule } from "@angular/forms";
+import { OtpComponent } from './pages/otp/otp.component';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 var firebaseConfig = {
   apiKey: "AIzaSyC9XfnIpwNoSv7cyAsoccFQ5EYPd7lZXrk", //YOUR_API_KEY
@@ -57,12 +59,13 @@ export function createTranslateLoader(http: HttpClient) {
 }
 
 @NgModule({
-  declarations: [AppComponent, FullLayoutComponent, ContentLayoutComponent ],
+  declarations: [AppComponent, FullLayoutComponent, ContentLayoutComponent, OtpComponent ],
 
   imports: [
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-right', // or 'toast-top-center' etc.
       timeOut: 3000,
+    
       closeButton: true,
       progressBar: true
     }),
@@ -77,6 +80,7 @@ export function createTranslateLoader(http: HttpClient) {
     AngularFireAuthModule,
     ToastrModule.forRoot(),
     NgbModule,
+    NgxDatatableModule,
     NgxSpinnerModule,
     TranslateModule.forRoot({
       loader: {
