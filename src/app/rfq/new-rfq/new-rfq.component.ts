@@ -9,6 +9,7 @@ import { RfqAttachmentComponent } from '../rfq-attachment/rfq-attachment.compone
 import { ToastrService } from 'ngx-toastr';
 import { RfqService } from '../rfq.service';
 import { CompanyService } from 'app/shared/services/Company.services';
+import { WorkflowServiceService } from 'app/shared/services/WorkflowService/workflow-service.service';
 
 @Component({
   selector: 'app-new-rfq',
@@ -31,14 +32,8 @@ export class NewRfqComponent implements OnInit {
   public chkBoxSelected = [];
   loading = false;
 
-  workflowList: any[] = [
-    {
-      id: 1, workflow: 'Vendor'
-    },
-    {
-      id: 2, workflow: 'Procurement'
-    }
-  ]
+  workflowList: any[] = []
+  workflowTypes: any[] = [];
 
   vendorUsers: any[] = [];
 
@@ -64,12 +59,14 @@ export class NewRfqComponent implements OnInit {
     private toastr: ToastrService,
     private rfqService: RfqService,
     private companyService: CompanyService,
-    private attachmentService: PurchaseRequestService
+    private attachmentService: PurchaseRequestService,
+     private WorkflowServiceService: WorkflowServiceService,
   ) { }
 
   ngOnInit(): void {
 
     this.loadVendorUsers();
+    this.getWorkflowTypes();
     this.route.queryParamMap.subscribe(params => {
       const id = params.get('id');
       const mode = params.get('mode');
@@ -99,11 +96,21 @@ export class NewRfqComponent implements OnInit {
       workflowMasterId: [0],
       comment: [''],
       createdBy: [''],
-      purchaseRequestId: [0]
+      purchaseRequestId: [0],
+      workflowName: [''],
+      workflowType: [''],
+  
     });
     this.newRfqForm.valueChanges.subscribe(() => {
       this.isFormDirty = true;
     });
+
+    
+      this.newRfqForm.get('workflowType')?.valueChanges.subscribe(selectedId => {
+    if (selectedId) {
+      this.GetWorkflowMasterByTypeId(selectedId);
+    }
+  });
 
     this.itemForm = this.fb.group({
       id: [null],
@@ -140,6 +147,37 @@ export class NewRfqComponent implements OnInit {
       this.vendorUsers = response.$values ?? [];
     });
   }
+
+  onWorkflowTypeChange(selectedId: number): void {
+  if (selectedId) {
+    this.GetWorkflowMasterByTypeId(selectedId);
+  }
+}
+
+  GetWorkflowMasterByTypeId(id: number): void {
+    this.WorkflowServiceService.GetWorkflowMasterByTypeId(id).subscribe({
+      next: (data: any) => {
+        // Fix: Extract $values if it exists
+        this.workflowList = data.$values ?? data;
+      },
+      error: (err) => {
+        console.error("Error fetching workflow master list:", err);
+      }
+    });
+  }
+
+ getWorkflowTypes(): void {
+    this.WorkflowServiceService.getWorkflowTypes().subscribe({
+      next: (data: any) => {
+        // Fix: Extract $values if it exists
+        this.workflowTypes = data.$values ?? data;
+      },
+      error: (err) => {
+        console.error("Error fetching workflow types:", err);
+      }
+    });
+  }
+
 
 
   getVendorNameById(id: number): string {

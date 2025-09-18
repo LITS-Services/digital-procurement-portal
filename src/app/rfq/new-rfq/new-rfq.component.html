@@ -80,7 +80,8 @@
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
                   <label>PR No.</label>
-                  <input type="text" formControlName="purchaseRequestNo" placeholder="Enter PR No." class="form-control" />
+                  <input type="text" formControlName="purchaseRequestNo" placeholder="Enter PR No."
+                    class="form-control" />
                 </div>
               </div>
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
@@ -139,6 +140,25 @@
 
 
 
+              <div class="col-lg-4 mb-2">
+                <label>Workflow Type</label>
+                <select class="form-control" formControlName="workflowType">
+                  (ngModelChange)="onWorkflowTypeChange($event)">
+                  <option value="" disabled>Select Type</option>
+                  <option *ngFor="let wf of workflowTypes" [value]="wf.id">
+                    {{ wf.typeName }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="col-lg-4 mb-2">
+                <label>Workflow</label>
+                <select class="form-control" formControlName="workflowMasterId">
+                  <option *ngFor="let data of workflowList" [value]="data.workflowMasterId">{{data?.workflowName}}
+                  </option>
+                </select>
+              </div>
+
               <!-- <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                   <div class="form-group mb-2">
                     <label>Title</label>
@@ -151,13 +171,6 @@
                   <textarea name="" type="text" formControlName="comment" placeholder="Enter Comments"
                     class="form-control"></textarea>
                 </div>
-              </div>
-
-              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-                <label>Workflow</label>
-                <select class="form-control" formControlName="workflowMasterId">
-                  <option *ngFor="let data of workflowList" [value]="data.id">{{data?.workflow}}</option>
-                </select>
               </div>
 
               <div class="col-12">
@@ -376,7 +389,7 @@
           <div class="col-12 mt-4">
             <div style="position: relative;">
               <ngx-datatable class="bootstrap core-bootstrap" [rows]="newQuotationItemData" [columnMode]="'force'"
-                [headerHeight]="50" [footerHeight]="50" rowHeight="50" [limit]="5" [scrollbarH]="true" >
+                [headerHeight]="50" [footerHeight]="50" rowHeight="50" [limit]="5" [scrollbarH]="true">
 
                 <ngx-datatable-column name="Sr. No." [width]="50" [sortable]="false">
                   <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
@@ -403,13 +416,13 @@
                 <ngx-datatable-column name="Remarks" prop="remarks" [width]="100" [sortable]="false">
                 </ngx-datatable-column>
 
-                 <ngx-datatable-column name="Attachments" [width]="70" [sortable]="false">
+                <ngx-datatable-column name="Attachments" [width]="70" [sortable]="false">
                   <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
                     <!-- Edit button -->
-                    <a matTooltip="Attachment" style="cursor: pointer; color: #d1d4d7;" (click)="openNewEntityModal(rowIndex)"
-                      [ngClass]="{'disabled': actionType === 'View'}">
+                    <a matTooltip="Attachment" style="cursor: pointer; color: #d1d4d7;"
+                      (click)="openNewEntityModal(rowIndex)" [ngClass]="{'disabled': actionType === 'View'}">
                       <i style="font-size: 1.5rem;" class="ft-paperclip mr-1"></i>
-                  </a>
+                    </a>
 
                   </ng-template>
                 </ngx-datatable-column>
