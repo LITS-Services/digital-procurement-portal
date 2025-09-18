@@ -1,1 +1,74 @@
-<p>rfq-attachment works!</p>
+<div class="modal-header">
+  Attachment
+  <button type="button" class="close" aria-label="Close" (click)="closeDialog()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="col-12">
+    <h5 class="heading-upload">Upload Files</h5>
+  </div>
+  <!-- Your form fields and content -->
+  <form [formGroup]="AttachmentForm">
+    <div class="form-row">
+      <!-- File Upload Button -->
+      <div class="col-12 form-group mt-3">
+        <!-- <label for="fileUpload">Choose files</label> -->
+        <input type="file" (change)="onFileSelected($event)" class="form-control1"
+          accept=".pdf, .doc, .docx, .xls, .csv" multiple>
+      </div>
+
+      <!-- Textarea for additional information -->
+      <!-- <div class="col-12 form-group mt-3">
+        <label for="additionalInfo">Remarks</label>
+        <textarea id="additionalInfo" formControlName="remarks" class="form-control" rows="3"
+          placeholder="Enter any additional information here..."></textarea>
+      </div> -->
+      <div class="col-12 form-group mt-3" *ngIf="uploadedFiles.length > 0">
+        <ngx-datatable class="bootstrap core-bootstrap" [rows]="uploadedFiles" [columnMode]="'standard'"
+          [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
+
+          <ngx-datatable-column name="Sr. No." [width]="100">
+            <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
+              <span>{{rowIndex + 1}}</span>
+            </ng-template>
+          </ngx-datatable-column>
+          <ngx-datatable-column name="Type" prop="contentType" [width]="300">
+          </ngx-datatable-column>
+          <ngx-datatable-column name="File" prop="fileName" [width]="250">
+          </ngx-datatable-column>
+          <!-- <ngx-datatable-column name="Remarks" [width]="150" prop="remarks">
+          </ngx-datatable-column> -->
+          <ngx-datatable-column name="Actions" [width]="100">
+            <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex">
+
+
+              <a 
+                matTooltip="Download File" style="cursor: pointer; color: #d1d4d7; margin-right: 10px;"
+                (click)="downloadLocalFile(uploadedFiles[rowIndex])"
+                [ngClass]="{'disabled': viewMode || uploadedFiles[rowIndex]?.isNew}">
+                <i style="font-size: 1.5rem;" class="ft-download"></i>
+              </a>
+
+              <a matTooltip="Upload File" style="cursor: pointer; color: #d1d4d7;" (click)="deleteRow(rowIndex)"
+                [ngClass]="{'disabled': actionType === 'View'}">
+                <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
+              </a>
+
+
+
+            </ng-template>
+          </ngx-datatable-column>
+        </ngx-datatable>
+      </div>
+    </div>
+
+ 
+    <!-- Submit Button -->
+    <div class="form-group mt-3">
+      <button type="submit" class="btn btn-primary" (click)="uploadFiles()" [disabled]="viewMode">Upload</button>
+    </div>
+  </form>
+
+
+</div>

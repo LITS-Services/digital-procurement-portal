@@ -3,6 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'environments/environment';
 
+export interface VendorUserDropdown {
+  $id: string,
+  $values: [];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -14,6 +19,11 @@ export class CompanyService {
   getVendorCompanies(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/get-all-vendor-companies`);
   }
+
+getVendorUsers(): Observable<VendorUserDropdown> {
+  return this.http.get<VendorUserDropdown>(`${this.apiUrl}/get-all-vendor-users`);
+}
+
 
 //   // Get company by ID
   getCompanyById(id: number): Observable<any> {

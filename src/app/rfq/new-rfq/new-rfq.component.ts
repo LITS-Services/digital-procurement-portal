@@ -1,11 +1,14 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgbAccordion, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { DatatableData } from 'app/data-tables/data/datatables.data';
 import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
 import { RfqAttachmentComponent } from '../rfq-attachment/rfq-attachment.component';
+import { ToastrService } from 'ngx-toastr';
+import { RfqService } from '../rfq.service';
+import { CompanyService } from 'app/shared/services/Company.services';
 
 @Component({
   selector: 'app-new-rfq',
@@ -13,56 +16,38 @@ import { RfqAttachmentComponent } from '../rfq-attachment/rfq-attachment.compone
   styleUrls: ['./new-rfq.component.scss']
 })
 export class NewRfqComponent implements OnInit {
+  isNewForm = true; // true = create, false = edit
+  isFormDirty = false; // track if any field was touched
   numberOfAttachments = 0;
-newPurchaseRequestData = [
-  {
-    type: 'Inventory',
-    itemCode: 'ITM001',
-    description: 'Medical Expense',
-    amount: '23000',
-    vendorName: 'Vendor A',
-    remarks: 'Urgent Order'
-  },
-  {
-    type: 'Non-Inventory',
-    itemCode: 'ITM002',
-    description: 'Travel Expense',
-    amount: '9000',
-    vendorName: 'Vendor B',
-    remarks: 'Routine Purchase'
-  },
-  {
-    type: 'Inventory',
-    itemCode: 'ITM003',
-    description: 'Leave Enhancement',
-    amount: '2000',
-    vendorName: 'Vendor C',
-    remarks: 'Leave Supplies'
-  },
-  {
-    type: 'Non-Inventory',
-    itemCode: 'ITM004',
-    description: 'Medical Expense',
-    amount: '4900',
-    vendorName: 'Vendor D',
-    remarks: 'Order for Clinic'
-  },
-  {
-    type: 'Inventory',
-    itemCode: 'ITM005',
-    description: 'Others',
-    amount: '8000',
-    vendorName: 'Vendor E',
-    remarks: 'Miscellaneous Items'
-  }
-];
+  attachmentList: any[] = [];
+    pendingAttachment: any[] = [];
 
+
+  newRfqForm: FormGroup;
+  itemForm: FormGroup;
+  editingRowIndex: number | null = null; // Track row being edited
+
+newQuotationItemData= [];
 public chkBoxSelected = [];
 loading = false;
+
+  workflowList: any[] = [
+    {
+      id: 1, workflow: 'Vendor'
+    },
+    {
+      id: 2, workflow: 'Procurement'
+    }
+  ]
+
+vendorUsers:any[] = [];
+
 public rows = DatatableData;
 columns = [
 ];
 itemType: string = 'Inventory'; // Default selection
+  viewMode = false;
+  currentQuotationId: number | null = null;
 
 public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
@@ -73,33 +58,299 @@ public SelectionType = SelectionType;
   @ViewChild('tableResponsive') tableResponsive: any;
   constructor(
          private router: Router,
+         private route: ActivatedRoute,
         private modalService: NgbModal,
+        private fb: FormBuilder,
+        private toastr: ToastrService,
+        private rfqService: RfqService,
+        private companyService: CompanyService,
         private attachmentService: PurchaseRequestService
   ) { }
 
   ngOnInit(): void {
+
+     this.loadVendorUsers();
+    this.route.queryParamMap.subscribe(params => {
+      const id = params.get('id');
+      const mode = params.get('mode');
+
+      this.viewMode = mode === 'view';
+      this.isNewForm = !id;
+
+      if (id) {
+        this.currentQuotationId = +id;
+        this.loadExistingQuotation(+id);
+      }
+
+      if (this.viewMode) {
+        this.newRfqForm.disable();
+        this.itemForm.disable();
+      }
+    });
+
+    this.newRfqForm = this.fb.group({
+  rfqNo: [''],
+  status: [''],
+  owner: [''],
+  date: [null],
+  contact: [''],
+  deliveryLocation: [''],
+  startDate: [null],
+  endDate: [null],
+  title: [''],
+  workflowMasterId: [0],
+  comment: [''],
+  createdBy: [''],
+  purchaseRequestId: [0]
+});
+    this.newRfqForm.valueChanges.subscribe(() => {
+      this.isFormDirty = true;
+    });
+
+this.itemForm = this.fb.group({
+      id: [null],
+      itemType: [''],
+      itemCode: [''],
+      uofM: [''],
+      amount: [0],
+      unitCost: [0],
+      orderQuantity: [0],
+      reqByDate: [null],
+      itemDescription: [''],
+      account: [''],
+      remarks: [''],
+      createdBy: [''],
+      quotationRequestId: [0],
+      vendorUserId: [''],
+      quotationItemAttachments: this.fb.array([
+        this.fb.group({
+          content: [''],
+          contentType: [''],
+          fileName: [''],
+          fromForm: [''],
+          createdDate: [null],
+          modifiedDate: [null],
+          createdBy: [''],
+          isDeleted: [false],
+          quotationItemId: [0]
+        })
+      ])
+})
+          this.itemForm.valueChanges.subscribe(() => {
+      this.isFormDirty = true;
+    });
   }
   homePage() {
     this.router.navigate(['/rfq']);
   }
-  submitForm() {
-  
 
+  loadVendorUsers() {
+ this.companyService.getVendorUsers().subscribe(response => {
+    this.vendorUsers = response.$values ?? [];
+  }); 
+}
+
+
+getVendorNameById(id: number): string {
+  const found = this.vendorUsers.find(v => v.id === id);
+  return found ? found.name : '';
+}
+
+loadExistingQuotation(id: number) {
+    this.rfqService.getQuotationById(id).subscribe({
+      next: async (data) => {
+        console.log("update data: ", data)
+        this.isNewForm = false;
+        this.currentQuotationId = data.id;
+        this.newRfqForm.patchValue(data);
+        if (data.quotationItems.$values) {
+          this.newQuotationItemData = data.quotationItems.$values.map((item: any) => ({
+            id: item.id,
+            itemType: item.itemType,
+            itemCode: item.itemCode,
+            itemDescription: item.itemDescription,
+            amount: item.amount,
+            unitCost: item.unitCost,
+            uofM: item.uofM,
+            orderQuantity: item.orderQuantity,
+            reqByDate: item.reqByDate,
+            vendorUserId: item.vendorUserId,
+            account: item.account,
+            remarks: item.remarks,
+            quotationRequestId: item.quotationRequestId,
+            quotationItemAttachments: item.quotationItemAttachments?.$values?.map((a: any) => ({
+            content: a.content || '',
+            contentType: a.contentType || '',
+            fileName: a.fileName || '',
+            fromForm: a.fromForm || '',
+            createdDate: a.createdDate,
+            modifiedDate: a.modifiedDate,
+            createdBy: a.createdBy || 'current-user',
+            isDeleted: a.isDeleted || false,
+            quotationItemId: a.quotationItemId || 0,
+            isNew: false
+          })) || []
+        }));
+      }
+
+    },
+        
+        
+
+      error: (err) => console.error('Failed to load purchase request:', err)
+
+    });
   }
+
+  editRow(row: any, rowIndex: number) {
+    this.itemForm.patchValue({
+      id: row.id,
+      itemType: row.itemType,
+      itemCode: row.itemCode,
+      uofM: row.uofM,
+      amount: row.amount,
+      unitCost: row.unitCost,
+      orderQuantity: row.orderQuantity,
+  reqByDate: row.reqByDate ? new Date(row.reqByDate) : null,
+      itemDescription: row.itemDescription,
+      vendorUserId: row.vendorUserId,
+      account: row.account,
+      remarks: row.remarks
+    });
+    this.editingRowIndex = rowIndex;
+  }
+
+
+submitForm() {
+    //   if (!this.newPurchaseRequestForm.valid) {
+    //   console.warn('Form is invalid');
+    //   return;
+    // }
+  const f = this.newRfqForm.value;
+    const dateISO = f.date ? new Date(f.date).toISOString() : new Date().toISOString();
+
+  const quotationItems = this.newQuotationItemData?.length
+  ? this.newQuotationItemData.map(item => ({
+      itemType: item.itemType || '',
+      itemCode: item.itemCode || '',
+      uofM: item.uofM || '',
+      amount: item.amount || 0,
+      unitCost: item.unitCost || 0,
+      orderQuantity: item.orderQuantity || 0,
+      reqByDate: item.reqByDate || new Date(),
+      itemDescription: item.itemDescription || '',
+      account: item.account || '',
+      remarks: item.remarks || '',
+      createdBy: item.createdBy || 'current-user',
+      quotationRequestId: item.quotationRequestId || 0,
+      vendorUserId: item.vendorUserId || '',
+      quotationItemAttachments: item.quotationItemAttachments?.map(att => ({
+        content: att.content || '',
+        contentType: att.contentType || '',
+        fileName: att.fileName || '',
+        fromForm: att.fromForm || '',
+        createdBy: 'current-user',
+        isDeleted: false,
+        quotationItemId: att.quotationItemId || 0,
+      }))
+    }))
+  : [];
+
+
+  const payload = {
+    rfqNo: f.rfqNo,
+    status: f.status,
+    owner: f.owner,
+    date: f.date,
+    contact: f.contact,
+    deliveryLocation: f.deliveryLocation,
+    startDate: f.startDate,
+    endDate: f.endDate,
+    title: f.title,
+    workflowMasterId: f.workflowMasterId,
+    comment: f.comment,
+    createdBy: f.createdBy,
+    purchaseRequestId: 40,
+    quotationItems
+  };
+
+  if (this.currentQuotationId){
+    this.rfqService.updateQuotation(this.currentQuotationId, payload).subscribe({
+    next: res => {
+      console.log('Updated Quotation!', res);
+    },
+    error: (err) => {
+      console.log('Quotation failed', err)
+    }
+  });
+  }
+  else{
+  this.rfqService.createQuotation({ quotationRequest: payload }).subscribe({
+    next: res => {
+      console.log('Created Quotation!', res);
+    },
+    error: (err) => {
+      console.log('Quotation failed', err)
+    }
+  });
+}
+}
+
+  insertItem(): void {
+  const newItem = this.itemForm.value;
+
+  if (this.editingRowIndex !== null) {
+    // Replace the item immutably
+    this.newQuotationItemData = this.newQuotationItemData.map((item, index) =>
+      index === this.editingRowIndex ? newItem : item
+    );
+    this.editingRowIndex = null;
+  } else {
+    // Add new item immutably
+    this.newQuotationItemData = [...this.newQuotationItemData, newItem];
+  }
+
+  this.itemForm.reset();
+}
+
+
+
   deleteRow(rowIndex: number): void {
-    this.newPurchaseRequestData.splice(rowIndex, 1);
+    this.newQuotationItemData.splice(rowIndex, 1);
+    this.newQuotationItemData = [...this.newQuotationItemData]; // refresh table
+    this.toastr.success('Delete!', '');
   }
-  openNewEntityModal() {
+
+
+  openNewEntityModal(row: any) {
     const modalRef = this.modalService.open(RfqAttachmentComponent, {
       backdrop: 'static',
       size: 'lg', // Adjust the size as needed
       centered: true,
     });
-    modalRef.result.then((result) => {
-      // Handle modal close results if necessary
-    }, (reason) => {
-      // Handle dismissal if needed
-    });
-   
-  }
+    const quotationItemId = row.id;
+    modalRef.componentInstance.data = {
+      quotationItemId: quotationItemId, 
+      existingAttachment: this.attachmentList
+    }
+  modalRef.result.then((data: any[]) => {
+      this.pendingAttachment = data;
+      this.attachmentList = [
+        ...this.attachmentList, ...data.map(a => ({
+          fileName: a.fileName,
+          contentType: a.contentType,
+          content: a.content,
+          fromForm: a.fromForm,
+          quotationItemId: a.quotationItemId,
+          IsNew: true
+        }))
+      ]
+      this.numberOfAttachments = this.attachmentList.length;
+    })
+  }  
+
+
+
+  
 }
+

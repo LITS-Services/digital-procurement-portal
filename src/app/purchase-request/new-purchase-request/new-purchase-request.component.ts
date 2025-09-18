@@ -4,13 +4,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgbAccordion, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { PurchaseRequestAttachmentModalComponent } from 'app/shared/modals/purchase-request-attachment-modal/purchase-request-attachment-modal.component';
+import { CompanyService, VendorUserDropdown } from 'app/shared/services/Company.services';
 import { PurchaseRequestService, UploadedFile } from 'app/shared/services/purchase-request-services/purchase-request.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-new-purchase-request',
   templateUrl: './new-purchase-request.component.html',
-  styleUrls: ['./new-purchase-request.component.scss']
+  styleUrls: ['./new-purchase-request.component.scss'] 
 })
 export class NewPurchaseRequestComponent implements OnInit {
   isNewForm = true; // true = create, false = edit
@@ -31,6 +32,8 @@ export class NewPurchaseRequestComponent implements OnInit {
       id: 2, workflow: 'Procurement'
     }
   ]
+
+vendorUsers:any[] = [];
 
   viewMode = false;
 
@@ -55,13 +58,14 @@ export class NewPurchaseRequestComponent implements OnInit {
     private route: ActivatedRoute,
     private modalService: NgbModal,
     private purchaseRequestService: PurchaseRequestService,
+    private companyService: CompanyService,
     private fb: FormBuilder,
     public toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
 
-    // Check for ID and mode in query params
+ this.loadVendorUsers();
     this.route.queryParamMap.subscribe(params => {
       const id = params.get('id');
       const mode = params.get('mode');
@@ -120,7 +124,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       orderQuantity: [1, Validators.min(1)],
       reqByDate: [null],
       description: [''],
-      vendorName: [''],
+      vendorUserId: [null, Validators.required],
       account: [''],
       remarks: ['']
     });
@@ -143,6 +147,17 @@ export class NewPurchaseRequestComponent implements OnInit {
       this.itemForm.disable();
     }
   }
+
+loadVendorUsers() {
+ this.companyService.getVendorUsers().subscribe(response => {
+    this.vendorUsers = response.$values ?? [];
+  }); 
+}
+
+getVendorNameById(id: number): string {
+  const found = this.vendorUsers.find(v => v.id === id);
+  return found ? found.name : '';
+}
 
   // Insert or Update item
   insertItem(): void {
@@ -180,9 +195,9 @@ export class NewPurchaseRequestComponent implements OnInit {
       amount: row.amount,
       unitCost: row.unitCost,
       orderQuantity: row.orderQuantity,
-      reqByDate: row.reqByDate,
+  reqByDate: row.reqByDate ? new Date(row.reqByDate) : null,
       description: row.description,
-      vendorName: row.vendorName,
+      vendorUserId: row.vendorUserId,
       account: row.account,
       remarks: row.remarks
     });
@@ -212,7 +227,7 @@ export class NewPurchaseRequestComponent implements OnInit {
             uofM: item.uofM,
             orderQuantity: item.orderQuantity,
             reqByDate: item.reqByDate,
-            vendorName: item.vendor,
+            vendorUserId: item.vendorUserId,
             account: item.account,
             remarks: item.remarks
           }));
@@ -291,7 +306,7 @@ export class NewPurchaseRequestComponent implements OnInit {
         orderQuantity: Number(item.orderQuantity) || 0,
         reqByDate: item.reqByDate ? new Date(item.reqByDate).toISOString() : null,
         itemDescription: item.description || '',
-        vendor: item.vendorName || '',
+vendorUserId: item.vendorUserId || null,
         account: item.account || '',
         remarks: item.remarks || '',
         requisitionNo: f.requisitionNo,
@@ -344,7 +359,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       orderQuantity: Number(item.orderQuantity) || 0,
       reqByDate: item.reqByDate ? new Date(item.reqByDate).toISOString() : null,
       itemDescription: item.description || '',
-      vendor: item.vendorName || '',
+vendorUserId: item.vendorUserId || null,
       account: item.account || '',
       remarks: item.remarks || '',
       requisitionNo: f.requisitionNo,
@@ -421,7 +436,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       });
     }
   }
-
+ 
   openNewEntityModal() {
     const modalRef = this.modalService.open(PurchaseRequestAttachmentModalComponent, {
       backdrop: 'static',

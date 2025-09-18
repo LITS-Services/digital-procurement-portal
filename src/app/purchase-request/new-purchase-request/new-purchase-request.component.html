@@ -37,7 +37,7 @@
           <div class="col-md-6 text-right" style="margin-top: 0.3rem;">
             <button type="reset" class="btn btn-sm">
               <i class="ft-printer"></i><label class="ml-1 mt-1" for="">Print</label>
-            </button>
+            </button> 
             <button type="reset" class="btn btn-sm" (click)="openNewEntityModal()">
               <i class="ft-paperclip"></i><label class="ml-1 mt-1" for="">Attachment</label>
               <span class="badge badge-primary ml-1">{{ numberOfAttachments }}</span>
@@ -92,7 +92,7 @@
 
           <form [formGroup]="newPurchaseRequestForm" (ngSubmit)="submitForm()">
             <div class="form-row">
-
+ 
               <!-- Basic Fields -->
               <div class="col-lg-4 mb-2">
                 <label>Requisition No.</label>
@@ -327,14 +327,15 @@
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                       <div class="form-group mb-2">
                         <label>Vendor</label>
-                        <select class="form-control" formControlName="vendorName">
-                          <option value="" selected disabled>Select Vendor</option>
-                          <option value="Vendor A">Vendor A</option>
-                          <option value="Vendor B">Vendor B</option>
-                          <option value="Vendor C">Vendor C</option>
+                        <select class="form-control" formControlName="vendorUserId">
+                          <option value="" disabled>Select Vendor</option>
+                          <option *ngFor="let vendor of vendorUsers" [value]="vendor.id">
+                            {{ vendor.name }}
+                          </option>
                         </select>
                       </div>
                     </div>
+
 
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                       <div class="form-group mb-2">
@@ -389,7 +390,13 @@
                 <ngx-datatable-column name="Amount" prop="amount" [width]="180">
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Vendor Name" prop="vendorName" [width]="100">
+                <!-- <ngx-datatable-column name="Vendor Name" prop="vendorName" [width]="100">
+                </ngx-datatable-column> -->
+
+                <ngx-datatable-column name="Vendor Name" [width]="100">
+                  <ng-template let-row="row" ngx-datatable-cell-template>
+                    {{ getVendorNameById(row.vendorUserId) }}
+                  </ng-template>
                 </ngx-datatable-column>
 
                 <ngx-datatable-column name="Remarks" prop="remarks" [width]="100">

@@ -4,42 +4,40 @@
 
             <!-- Header -->
             <div class="row">
-                <div class="col-md-12" style=" margin-top: -0.25rem;">
+                <div class="col-md-12" style="margin-top: -0.25rem;">
                     <!-- <h4>Announcements</h4> -->
                     <h4 class="heading">Request for Quotation</h4>
                 </div>
-                <!-- <div class="col-md-6">
-                </div> -->
-
-
             </div>
 
             <!-- Action Pane -->
             <div class="card">
                 <div class="row">
                     <div class="col-md-6">
-                        <button class="btn btn-lg mr-1" type="button" (click)="homePage()"><i
-                                class="ft-arrow-left"></i></button>
+                        <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+                            <i class="ft-arrow-left"></i></button>
+
                         <span class="vl"></span>
-                        <button type="reset" ngbTooltip="{{ 'Create new RFQ' }}" class="btn btn-sm"
-                            (click)="openEmpDetails()">
-                            <i class="ft-plus"></i><label class="ml-1 mt-1" for="">Create</label>
+
+                        <button type="button" class="btn btn-sm" ngbTooltip="Create new RFQ" (click)="openEmpDetails()">
+                            <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
                         </button>
-                        <button type="reset" class="btn btn-sm">
-                            <i class="ft-edit"></i><label class="ml-1 mt-1" for="">Update</label>
+                        <button type="button" class="btn btn-sm" (click)="onUpdate()">
+                            <i class="ft-edit"></i><label class="ml-1 mt-1">Update</label>
                         </button>
-                        <button type="reset" class="btn btn-sm">
-                            <i class="ft-trash"></i><label class="ml-1 mt-1" for="">Delete</label>
+                        <button type="button" class="btn btn-sm" (click)="openDeleteModal(deleteModal)">
+                            <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
                         </button>
-                        <button type="reset" class="btn btn-sm">
+                        <button type="button" class="btn btn-sm" [disabled]="isEditButtonDisabled" (click)="onView()">
+                            <i class="ft-eye"></i><label class="ml-1 mt-1">View</label>
+                        </button>
+                        <!-- <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
                             <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
-                        </button>
+                        </button> -->
                     </div>
-
-
                 </div>
-
             </div>
+
             <!-- Content -->
             <ngx-datatable class="bootstrap core-bootstrap" [rows]="rfqData" [columnMode]="'force'" [headerHeight]="50"
                 [footerHeight]="50" [columns]="columns" rowHeight="50" [limit]="15" [scrollbarH]="true"
@@ -61,28 +59,32 @@
                         </div>
                     </ng-template>
                 </ngx-datatable-column>
+
+                <!-- Sr. No -->
                 <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
-                    <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
-                        <span>{{rowIndex + 1}}</span>
+                    <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                        <span>{{ rowIndex + 1 }}</span>
                     </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Requisition No." prop="requisitionNo" [width]="100">
 
+
+                <ngx-datatable-column name="RFQ No." prop="rfqNo" [width]="100">
                 </ngx-datatable-column>
 
                 <ngx-datatable-column name="Status" prop="status" [width]="100">
-
                 </ngx-datatable-column>
+
                 <ngx-datatable-column name="Date" prop="date" [width]="50">
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Owner" prop="owner" [width]="100">
+                <ngx-datatable-column name="Owner" prop="createdBy" [width]="100">
+                </ngx-datatable-column>
 
+                <ngx-datatable-column name="Comments" prop="comment" [width]="180">
                 </ngx-datatable-column>
-                <ngx-datatable-column name="Comments" prop="subject" [width]="180">
-                </ngx-datatable-column>
-                <ngx-datatable-column name="Total Amount" [width]="100" prop="totalAmount" [sortable]="false">
+                
+                <ngx-datatable-column name="Total Amount" [width]="100" prop="amount" [sortable]="false">
                 </ngx-datatable-column>
 
                 <ngx-datatable-column name="Quotation Box" [width]="100" prop="action" [sortable]="false">
@@ -119,3 +121,23 @@
         </div>
     </div>
 </section>
+
+<!-- Delete Modal -->
+<ng-template #deleteModal let-c="close" let-d="dismiss">
+    <div class="modal-header">
+        <h4 class="modal-title">Delete Confirmation</h4>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <p>Are you sure you want to delete the selected records?</p>
+        <ul>
+            <li *ngFor="let id of idsToDelete">{{ id }}</li>
+        </ul>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="c('Cancel click')">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="confirmDelete()">Delete</button>
+    </div>
+</ng-template>
