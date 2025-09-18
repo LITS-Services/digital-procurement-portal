@@ -11,7 +11,7 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-new-purchase-request',
   templateUrl: './new-purchase-request.component.html',
-  styleUrls: ['./new-purchase-request.component.scss'] 
+  styleUrls: ['./new-purchase-request.component.scss']
 })
 export class NewPurchaseRequestComponent implements OnInit {
   isNewForm = true; // true = create, false = edit
@@ -33,7 +33,7 @@ export class NewPurchaseRequestComponent implements OnInit {
     }
   ]
 
-vendorUsers:any[] = [];
+  vendorUsers: any[] = [];
 
   viewMode = false;
 
@@ -65,7 +65,7 @@ vendorUsers:any[] = [];
 
   ngOnInit(): void {
 
- this.loadVendorUsers();
+    this.loadVendorUsers();
     this.route.queryParamMap.subscribe(params => {
       const id = params.get('id');
       const mode = params.get('mode');
@@ -148,16 +148,16 @@ vendorUsers:any[] = [];
     }
   }
 
-loadVendorUsers() {
- this.companyService.getVendorUsers().subscribe(response => {
-    this.vendorUsers = response.$values ?? [];
-  }); 
-}
+  loadVendorUsers() {
+    this.companyService.getVendorUsers().subscribe(response => {
+      this.vendorUsers = response.$values ?? [];
+    });
+  }
 
-getVendorNameById(id: number): string {
-  const found = this.vendorUsers.find(v => v.id === id);
-  return found ? found.name : '';
-}
+  getVendorNameById(id: number): string {
+    const found = this.vendorUsers.find(v => v.id === id);
+    return found ? found.name : '';
+  }
 
   // Insert or Update item
   insertItem(): void {
@@ -195,7 +195,7 @@ getVendorNameById(id: number): string {
       amount: row.amount,
       unitCost: row.unitCost,
       orderQuantity: row.orderQuantity,
-  reqByDate: row.reqByDate ? new Date(row.reqByDate) : null,
+      reqByDate: row.reqByDate ? new Date(row.reqByDate) : null,
       description: row.description,
       vendorUserId: row.vendorUserId,
       account: row.account,
@@ -306,7 +306,7 @@ getVendorNameById(id: number): string {
         orderQuantity: Number(item.orderQuantity) || 0,
         reqByDate: item.reqByDate ? new Date(item.reqByDate).toISOString() : null,
         itemDescription: item.description || '',
-vendorUserId: item.vendorUserId || null,
+        vendorUserId: item.vendorUserId || null,
         account: item.account || '',
         remarks: item.remarks || '',
         requisitionNo: f.requisitionNo,
@@ -327,8 +327,7 @@ vendorUserId: item.vendorUserId || null,
   }
 
   private handleDraftSuccess() {
-    this.attachmentList.forEach(a => a.isNew = false);
-    this.numberOfAttachments = this.attachmentList.length;
+   
     this.loading = false;
     this.toastr.success('Draft saved successfully');
     this.router.navigate(['/purchase-request']);
@@ -359,7 +358,7 @@ vendorUserId: item.vendorUserId || null,
       orderQuantity: Number(item.orderQuantity) || 0,
       reqByDate: item.reqByDate ? new Date(item.reqByDate).toISOString() : null,
       itemDescription: item.description || '',
-vendorUserId: item.vendorUserId || null,
+      vendorUserId: item.vendorUserId || null,
       account: item.account || '',
       remarks: item.remarks || '',
       requisitionNo: f.requisitionNo,
@@ -406,7 +405,7 @@ vendorUserId: item.vendorUserId || null,
           console.log('Purchase Request Updated:', res);
           this.loading = false;
           this.router.navigate(['/purchase-request']);
-          this.toastr.success('Request is created!', '');
+          this.toastr.success('Request is updated!', '');
         },
 
 
@@ -426,7 +425,7 @@ vendorUserId: item.vendorUserId || null,
           this.loading = false;
 
           this.router.navigate(['/purchase-request']);
-          this.toastr.success('Request Update!', '');
+          this.toastr.success('Request is created!', '');
         },
         error: err => {
           console.error('Error creating Purchase Request:', err);
@@ -436,7 +435,7 @@ vendorUserId: item.vendorUserId || null,
       });
     }
   }
- 
+
   openNewEntityModal() {
     const modalRef = this.modalService.open(PurchaseRequestAttachmentModalComponent, {
       backdrop: 'static',

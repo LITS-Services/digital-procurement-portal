@@ -14,7 +14,7 @@
       <!-- File Upload Button -->
       <div class="col-12 form-group mt-3">
         <!-- <label for="fileUpload">Choose files</label> -->
-        <input type="file" (change)="onFileSelected($event)" class="form-control1"
+        <input type="file" [disabled]="viewMode" (change)="onFileSelected($event)" class="form-control1"
           accept=".pdf, .doc, .docx, .xls, .csv" multiple>
       </div>
 
@@ -50,7 +50,7 @@
                 <i style="font-size: 1.5rem;" class="ft-download"></i>
               </a>
 
-              <a matTooltip="Upload File" style="cursor: pointer; color: #d1d4d7;" (click)="deleteRow(rowIndex)"
+              <a matTooltip="Upload File" style="cursor: pointer; color: #d1d4d7;" [disabled]="viewMode" (click)="deleteRow(rowIndex)"
                 [ngClass]="{'disabled': actionType === 'View'}">
                 <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
               </a>

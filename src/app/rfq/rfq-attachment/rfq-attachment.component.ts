@@ -19,6 +19,7 @@ export class RfqAttachmentComponent implements OnInit {
   data!: {
     existingAttachment?: any[],
     quotationItemId: number;
+    
   }
 
   itemId: number;
@@ -36,7 +37,10 @@ export class RfqAttachmentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.uploadedFiles = this.attachments ? [...this.attachments] : [];
+    // this.uploadedFiles = this.attachments ? [...this.attachments] : [];
+    this.uploadedFiles = this.data?.existingAttachment
+    ? this.data.existingAttachment.map((f: any) => ({ ...f, isNew: false })) // ⬅️ key line
+    : [];
     // this.uploadedFiles = this.data?.existingAttachment ? [...this.data.existingAttachment] : [];
     this.itemId = this.data?.quotationItemId;
 
@@ -50,16 +54,31 @@ export class RfqAttachmentComponent implements OnInit {
     await this.addAttachment(file);
   }
 
+  // uploadFiles() {
+  //   if (this.viewMode) return;
+  //   const payload = this.uploadedFiles.filter(a => a.isNew).map(a => ({
+  //     content: a.content,
+  //     contentType: a.contentType,
+  //     fileName: a.fileName,
+  //     fromForm: a.fromForm
+  //   }))
+  //   this.activeModal.close(payload);
+  // }
+
   uploadFiles() {
-    if (this.viewMode) return;
-    const payload = this.uploadedFiles.filter(a => a.isNew).map(a => ({
-      content: a.content,
-      contentType: a.contentType,
-      fileName: a.fileName,
-      fromForm: a.fromForm
-    }))
-    this.activeModal.close(payload);
-  }
+  if (this.viewMode) return;
+
+  const payload = this.uploadedFiles.filter(a => a.isNew).map(a => ({
+    content: a.content,
+    contentType: a.contentType,
+    fileName: a.fileName,
+    fromForm: a.fromForm,
+    quotationItemId: a.quotationItemId
+  }));
+
+  this.activeModal.close(payload);
+}
+
 
   downloadLocalFile(file: any) {
     const link = document.createElement('a');

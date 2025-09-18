@@ -51,6 +51,7 @@ export class RfqComponent implements OnInit {
     this.rfqService.getAllQuotations().subscribe({
       next: (data: any) => {
         this.rfqData = data?.$values || [];
+        console.log('Raw API Response:', data);
         this.loading = false;
       },
       error: (err) => {
@@ -66,9 +67,9 @@ export class RfqComponent implements OnInit {
       return;
     }
 
-    const selectedId = this.chkBoxSelected[0].requestId;
+    const selectedId = this.chkBoxSelected[0].quotationId;
 
-    this.router.navigate(['/purchase-request/new-purchase-request'], {
+    this.router.navigate(['/rfq/new-rfq'], {
       queryParams: { id: selectedId, mode: 'view' }
     });
   }
