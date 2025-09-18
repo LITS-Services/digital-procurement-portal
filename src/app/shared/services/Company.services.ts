@@ -16,6 +16,34 @@ export class CompanyService {
 
   constructor(private http: HttpClient) {}
 
+// Create a new procurement company
+createProCompany(data: any): Observable<any> {
+  return this.http.post<any>(`${this.apiUrl}/register-procurement-company`, data);
+}
+
+   getProCompanies(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/get-all-procurement-companies`);
+  }
+  
+ deleteProCompanies(id: number[]): Observable<any> {
+  return this.http.delete<any>(`${this.apiUrl}/delete-procurement-company/${id}`);
+}
+
+  
+  // Update multiple procurement companies (example)
+  getproByid(id): Observable<any> {
+   return this.http.get<any>(`${this.apiUrl}/get-procurement-company/${id}`);
+  }
+  
+  // Update single procurement company by ID
+  updateProCompaniesById(id: number, data: any): Observable<any> {
+   return this.http.put<any>(`${this.apiUrl}/update-procurement-company/${id}`, data);
+  }
+
+
+
+
+
   getVendorCompanies(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/get-all-vendor-companies`);
   }
@@ -29,6 +57,7 @@ getVendorUsers(): Observable<VendorUserDropdown> {
   getCompanyById(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
+
 
 //   // Create company
 //   createCompany(data: any): Observable<any> {

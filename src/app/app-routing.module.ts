@@ -10,6 +10,7 @@ import { CONTENT_ROUTES } from "./shared/routes/content-layout.routes";
 import { AuthGuard } from './shared/auth/auth-guard.service';
 import { VendorRegistrationFormComponent } from './vendor-registration-form/vendor-registration-form/vendor-registration-form.component';
 import { NewPurchaseRequestComponent } from './purchase-request/new-purchase-request/new-purchase-request.component';
+import { OtpComponent } from './pages/otp/otp.component';
 
 const appRoutes: Routes = [
   {
@@ -37,9 +38,17 @@ const appRoutes: Routes = [
       system: 'Vendor Registration Form'
     }
   },
+  {
+    path: 'otp',
+    component: OtpComponent,
+    data: { title: 'OTP Verification' }   // ✅ added
+  },
+
 
   { path: '', component: FullLayoutComponent, data: { title: 'full Views' }, children: Full_ROUTES, canActivate: [AuthGuard] },
   { path: '', component: ContentLayoutComponent, data: { title: 'content Views' }, children: CONTENT_ROUTES },
+
+
   {
     path: '**',
     redirectTo: 'pages/error'

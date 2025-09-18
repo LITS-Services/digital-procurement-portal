@@ -27,9 +27,21 @@ private baseUrl = environment.apiUrl;
 
   }
 
+
+  resendOtp(username: string, portalType: string) {
+  return this.http.post(`${this.baseUrl}/Auth/ResendOtp`, { 
+    username, 
+    portalType 
+  });
+}
+
   signupUser(email: string, password: string) {
     //your code for signing up the new user
   }
+  verifyOtp(otp: string) {
+  return this.http.post(`${this.baseUrl}/Auth/VerifyProcurementOtp`, {  otp });
+}
+
 
 signinUser(username: string, password: string): Observable<any> {
   const body = { username, password };
@@ -61,7 +73,7 @@ signinUser(username: string, password: string): Observable<any> {
 
 
   register(userData: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/Auth/ProcurmentUserRegister`, userData);
+    return this.http.post(`${this.baseUrl}/Auth/ProcurementUserRegister`, userData);
   }
 
 logout(): Observable<any> {

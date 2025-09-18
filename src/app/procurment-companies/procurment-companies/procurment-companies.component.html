@@ -1,0 +1,96 @@
+<section>
+  <div class="row">
+    <div class="col-12">
+
+      <!-- Header -->
+      <div class="row">
+        <div class="col-md-12" style="margin-top: -0.25rem;">
+          <h4 class="heading">Procurment Companies</h4>
+        </div>
+      </div>
+
+      <!-- Action Pane -->
+      <div class="card">
+        <div class="row">
+          <div class="col-md-6">
+            <!-- Back -->
+            <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+              <i class="ft-arrow-left"></i>
+            </button>
+            <span class="vl"></span>
+
+            <!-- Create -->
+            <button 
+              type="button" 
+              ngbTooltip="Create new Procurement Company" 
+              class="btn btn-sm"
+              (click)="openEmpDetails()
+              ">
+              <i class="ft-plus"></i>
+              <label class="ml-1 mt-1">Create</label>
+            </button>
+
+            <!-- Update -->
+            <button 
+              type="button" 
+              class="btn btn-sm" 
+              [disabled]="isEditButtonDisabled"
+              (click)="editSelectedRow()">
+              <i class="ft-edit"></i>
+              <label class="ml-1 mt-1">Update</label>
+            </button>
+
+            <!-- Delete -->
+            <button 
+              type="button" 
+              class="btn btn-sm" 
+              [disabled]="isDeleteButtonDisabled"
+              (click)="deleteSelectedRows()">
+              <i class="ft-trash"></i>
+              <label class="ml-1 mt-1">Delete</label>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <ngx-datatable
+        class="bootstrap"
+        [rows]="tenderingData"
+        [columnMode]="ColumnMode.force"
+        [headerHeight]="50"
+        [footerHeight]="50"
+        [rowHeight]="50"
+        [selectionType]="SelectionType.checkbox"
+        [selected]="chkBoxSelected"
+        (select)="customChkboxOnSelect($event)"
+      >
+        <!-- Checkbox Column -->
+        <ngx-datatable-column [width]="50" [sortable]="false">
+          <ng-template ngx-datatable-header-template>
+            <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
+          </ng-template>
+          <ng-template ngx-datatable-cell-template let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
+            <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- ID -->
+        <ngx-datatable-column name="ID" prop="id" [width]="80"></ngx-datatable-column>
+
+        <!-- Company GUID -->
+        <ngx-datatable-column name="Company GUID" prop="companyGUID" [width]="200"></ngx-datatable-column>
+
+        <!-- Name -->
+        <ngx-datatable-column name="Name" prop="name" [width]="200"></ngx-datatable-column>
+
+        <!-- Logo -->
+        <ngx-datatable-column name="Logo" prop="logo" [width]="100">
+          <ng-template ngx-datatable-cell-template let-row="row">
+            <img *ngIf="row.logo" [src]="row.logo" alt="Logo" width="50" height="50" />
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
+    </div>
+  </div>
+</section>

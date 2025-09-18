@@ -1,0 +1,73 @@
+<section>
+  <div class="row">
+    <div class="col-12">
+
+      <!-- Header -->
+      <div class="row">
+        <div class="col-md-12" style=" margin-top: -0.25rem;">
+          <h4 class="heading">Register New Company</h4>
+        </div>
+      </div>
+
+      <!-- Action Pane -->
+      <div class="card">
+        <div class="row">
+          <div class="col-md-6">
+            <button class="btn btn-lg mr-1" type="button" (click)="goBack()"><i class="ft-arrow-left"></i></button>
+            <span class="vl"></span>
+            <button type="submit" class="btn btn-sm" form="companyForm">
+              <i class="ft-plus"></i><label class="ml-1 mt-1">Save</label>
+            </button>
+            <button type="reset" class="btn btn-sm" (click)="onReset()">
+              <i class="ft-refresh-ccw"></i><label class="ml-1 mt-1">Reset</label>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Card -->
+      <div class="card">
+        <div class="card-body">
+          <form [formGroup]="companyForm" id="companyForm" (ngSubmit)="onSubmit()">
+            <div class="form-row">
+              
+              <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="form-group mb-2">
+                  <label>ID</label>
+                  <input type="number" formControlName="id" class="form-control" placeholder="Enter ID" />
+                </div>
+              </div>
+
+              <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="form-group mb-2">
+                  <label>Company GUID</label>
+                  <input type="text" formControlName="companyGUID" class="form-control" placeholder="Enter GUID" disabled/>
+                </div>
+              </div>
+
+              <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="form-group mb-2">
+                  <label>Name</label>
+                  <input type="text" formControlName="name" class="form-control" placeholder="Enter Company Name" />
+                </div>
+              </div>
+
+              <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="form-group mb-2">
+                  <label>Logo</label>
+                  <input type="file" (change)="onFileSelect($event)" class="form-control" />
+                  <div *ngIf="previewUrl" class="mt-2">
+                    <img [src]="previewUrl" alt="Logo Preview" width="120" class="img-thumbnail" />
+                  </div>
+                </div>
+              </div>
+
+           
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
