@@ -16,18 +16,16 @@ import { WorkflowServiceService } from 'app/shared/services/WorkflowService/work
   templateUrl: './new-rfq.component.html',
   styleUrls: ['./new-rfq.component.scss']
 })
+
 export class NewRfqComponent implements OnInit {
   isNewForm = true; // true = create, false = edit
   isFormDirty = false; // track if any field was touched
   numberOfAttachments = 0;
   attachmentList: any[] = [];
   pendingAttachment: any[] = [];
-
-
   newRfqForm: FormGroup;
   itemForm: FormGroup;
   editingRowIndex: number | null = null; // Track row being edited
-
   newQuotationItemData = [];
   public chkBoxSelected = [];
   loading = false;
@@ -38,8 +36,7 @@ export class NewRfqComponent implements OnInit {
   vendorUsers: any[] = [];
 
   public rows = DatatableData;
-  columns = [
-  ];
+  columns = [];
   itemType: string = 'Inventory'; // Default selection
   viewMode = false;
   currentQuotationId: number | null = null;
@@ -47,10 +44,12 @@ export class NewRfqComponent implements OnInit {
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
   newPurchaseRequestForm: FormGroup;
+
   @ViewChild('accordion') accordion: NgbAccordion;
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
   @ViewChild('tableResponsive') tableResponsive: any;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -64,7 +63,6 @@ export class NewRfqComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
     this.loadVendorUsers();
     this.getWorkflowTypes();
     this.route.queryParamMap.subscribe(params => {
@@ -78,8 +76,6 @@ export class NewRfqComponent implements OnInit {
         this.currentQuotationId = +id;
         this.loadExistingQuotation(+id);
       }
-
-
     });
 
     this.newRfqForm = this.fb.group({
@@ -101,6 +97,7 @@ export class NewRfqComponent implements OnInit {
       workflowType: [''],
   
     });
+
     this.newRfqForm.valueChanges.subscribe(() => {
       this.isFormDirty = true;
     });
@@ -129,6 +126,7 @@ export class NewRfqComponent implements OnInit {
       vendorUserId: [''],
       quotationItemAttachments: this.fb.array([])
     })
+
     this.itemForm.valueChanges.subscribe(() => {
       this.isFormDirty = true;
     });
@@ -221,13 +219,9 @@ export class NewRfqComponent implements OnInit {
             })) || []
           }));
         }
-
       },
 
-
-
       error: (err) => console.error('Failed to load purchase request:', err)
-
     });
   }
 
@@ -245,7 +239,6 @@ export class NewRfqComponent implements OnInit {
       vendorUserId: row.vendorUserId,
       account: row.account,
       remarks: row.remarks,
-
       quotationItemAttachments: row.quotationItemAttachments
     });
     this.editingRowIndex = rowIndex;
@@ -287,7 +280,6 @@ export class NewRfqComponent implements OnInit {
       }))
       : [];
 
-
     const payload = {
       rfqNo: f.rfqNo,
       purchaseRequestNo: f.purchaseRequestNo,
@@ -321,6 +313,7 @@ export class NewRfqComponent implements OnInit {
         }
       });
     }
+
     else {
       this.rfqService.createQuotation({ quotationRequest: payload }).subscribe({
         next: res => {
@@ -395,12 +388,12 @@ export class NewRfqComponent implements OnInit {
 
     const request$ = this.rfqService.createQuotation({ quotationRequest: payload })
 
-
     request$.subscribe({
       next: () => this.handleDraftSuccess(),
       error: (err) => this.handleDraftError(err)
     });
   }
+
   // insertItem(): void {
   //   const newItem = this.itemForm.value;
 
@@ -417,46 +410,38 @@ export class NewRfqComponent implements OnInit {
 
   //   this.itemForm.reset();
   // }
-
   insertItem(): void {
     const newItem = this.itemForm.value;
 
     if (this.editingRowIndex !== null) {
       const existing = this.newQuotationItemData[this.editingRowIndex];
 
-      // 🔧 Preserve attachments from the existing row
       const merged = {
         ...existing,
         ...newItem,
         quotationItemAttachments: existing?.quotationItemAttachments ?? []
       };
 
-      // Replace immutably
       this.newQuotationItemData = this.newQuotationItemData.map((item, index) =>
         index === this.editingRowIndex ? merged : item
       );
 
       this.editingRowIndex = null;
     } else {
-      // For new rows, ensure attachments is an empty array (not the default FormArray group)
       const withEmptyAttachments = {
         ...newItem,
         quotationItemAttachments: newItem.quotationItemAttachments?.length ? newItem.quotationItemAttachments : []
       };
       this.newQuotationItemData = [...this.newQuotationItemData, withEmptyAttachments];
     }
-
     this.itemForm.reset();
   }
-
-
 
   deleteRow(rowIndex: number): void {
     this.newQuotationItemData.splice(rowIndex, 1);
     this.newQuotationItemData = [...this.newQuotationItemData]; // refresh table
     this.toastr.success('Delete!', '');
   }
-
 
   // openNewEntityModal(row: any) {
   //   const modalRef = this.modalService.open(RfqAttachmentComponent, {
@@ -486,88 +471,49 @@ export class NewRfqComponent implements OnInit {
   // }
 
   openNewEntityModal(rowIndex: number): void {
-
-    const sourceRow =
-
-      rowIndex !== null
-
-        ? this.newQuotationItemData[rowIndex]
-
-        : this.itemForm.value; // new item (not yet inserted)
+    const sourceRow = rowIndex !== null
+      ? this.newQuotationItemData[rowIndex] : this.itemForm.value; // new item (not yet inserted)
     console.log("Source Row:", sourceRow);
     const modalRef = this.modalService.open(RfqAttachmentComponent, {
-
       backdrop: 'static',
-
       size: 'lg',
-
       centered: true,
-
     });
+
     modalRef.componentInstance.viewMode = this.viewMode;
-
     modalRef.componentInstance.data = {
-
       quotationItemId: sourceRow?.id ?? 0,
-
       existingAttachment: sourceRow?.quotationItemAttachments || []
-
     };
 
     modalRef.result.then((data: any[]) => {
-
       if (data?.length) {
-
         const merged = [
-
           ...(sourceRow.quotationItemAttachments || []),
-
           ...data.map(a => ({
-
             fileName: a.fileName,
-
             contentType: a.contentType,
-
             content: a.content,
-
             fromForm: a.fromForm,
-
             quotationItemId: sourceRow?.id ?? 0,
-
             isNew: true
-
           }))
-
         ];
 
         if (rowIndex !== null) {
-
           // immutably update the edited row in the grid
-
           this.newQuotationItemData = this.newQuotationItemData.map((r, i) =>
-
             i === rowIndex ? { ...r, quotationItemAttachments: merged } : r
-
           );
 
         } else {
-
           // reflect on the form for a new (not yet inserted) item
-
           this.itemForm.patchValue({ quotationItemAttachments: merged });
-
         }
         // this.numberOfAttachments = this.attachmentList.length;
-
       }
-
     }).catch(() => { });
-
   }
-
-
-
-
 
   private handleDraftSuccess() {
     this.loading = false;
@@ -580,6 +526,5 @@ export class NewRfqComponent implements OnInit {
     this.toastr.error('Failed to save draft');
     console.error('Error saving draft:', err);
   }
-
 }
 

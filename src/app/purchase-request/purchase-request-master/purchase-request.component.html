@@ -16,7 +16,9 @@
             <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
               <i class="ft-arrow-left"></i>
             </button>
+
             <span class="vl"></span>
+            
             <button type="button" class="btn btn-sm" ngbTooltip="Create new Purchase Request"
               (click)="openEmpDetails()">
               <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
@@ -30,7 +32,9 @@
             <button type="button" class="btn btn-sm" [disabled]="isEditButtonDisabled" (click)="onView()">
               <i class="ft-eye"></i><label class="ml-1 mt-1">View</label>
             </button>
-
+            <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
+              <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
+            </button>
           </div>
 
           <div class="col-md-6 text-right" style="margin-top: 0.3rem;">

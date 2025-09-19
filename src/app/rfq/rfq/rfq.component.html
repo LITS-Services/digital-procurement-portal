@@ -16,9 +16,7 @@
                     <div class="col-md-6">
                         <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
                             <i class="ft-arrow-left"></i></button>
-
                         <span class="vl"></span>
-
                         <button type="button" class="btn btn-sm" ngbTooltip="Create new RFQ" (click)="openEmpDetails()">
                             <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
                         </button>
@@ -31,9 +29,9 @@
                         <button type="button" class="btn btn-sm" [disabled]="isEditButtonDisabled" (click)="onView()">
                             <i class="ft-eye"></i><label class="ml-1 mt-1">View</label>
                         </button>
-                        <!-- <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
+                        <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
                             <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
-                        </button> -->
+                        </button>
                     </div>
                 </div>
             </div>
@@ -67,8 +65,6 @@
                     </ng-template>
                 </ngx-datatable-column>
 
-
-
                 <ngx-datatable-column name="RFQ No." prop="rfqNo" [width]="100">
                 </ngx-datatable-column>
 
@@ -83,7 +79,7 @@
 
                 <ngx-datatable-column name="Comments" prop="comment" [width]="180">
                 </ngx-datatable-column>
-                
+
                 <ngx-datatable-column name="Total Amount" [width]="100" prop="amount" [sortable]="false">
                 </ngx-datatable-column>
 
@@ -110,13 +106,13 @@
                 </ngx-datatable-column>
 
                 <ngx-datatable-column name="Vendors" [width]="100" prop="action" [sortable]="false">
+
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <button class="btn btn-primary btn-sm" (click)="openVendorsModal(row)">
                             <i class="ft-user-check"></i>
                         </button>
                     </ng-template>
                 </ngx-datatable-column>
-
             </ngx-datatable>
         </div>
     </div>

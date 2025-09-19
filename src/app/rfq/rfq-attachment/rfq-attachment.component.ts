@@ -9,9 +9,10 @@ import { DatatableComponent } from '@swimlane/ngx-datatable';
   templateUrl: './rfq-attachment.component.html',
   styleUrls: ['./rfq-attachment.component.scss']
 })
+
 export class RfqAttachmentComponent implements OnInit {
   @Input() viewMode: boolean = false;
-  @Input() attachments: any[] = []; // Array of attachments for this item
+  @Input() attachments: any[] = []; 
   @Output() attachmentsChange = new EventEmitter<any[]>();
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
@@ -19,19 +20,15 @@ export class RfqAttachmentComponent implements OnInit {
   data!: {
     existingAttachment?: any[],
     quotationItemId: number;
-    
   }
 
   itemId: number;
   selectedFiles: File[] = [];
-
   AttachmentForm: FormGroup;
   uploadedFiles: any[] = [];
   newQuotationItemAttachmentData = [];
-  constructor(private http: HttpClient, private fb: FormBuilder
 
-    , public activeModal: NgbActiveModal,
-  ) {
+  constructor(private http: HttpClient, private fb: FormBuilder, public activeModal: NgbActiveModal) {
     this.AttachmentForm = this.fb.group({
     });
   }
@@ -39,11 +36,10 @@ export class RfqAttachmentComponent implements OnInit {
   ngOnInit(): void {
     // this.uploadedFiles = this.attachments ? [...this.attachments] : [];
     this.uploadedFiles = this.data?.existingAttachment
-    ? this.data.existingAttachment.map((f: any) => ({ ...f, isNew: false })) // ⬅️ key line
-    : [];
+      ? this.data.existingAttachment.map((f: any) => ({ ...f, isNew: false })) // ⬅️ key line
+      : [];
     // this.uploadedFiles = this.data?.existingAttachment ? [...this.data.existingAttachment] : [];
     this.itemId = this.data?.quotationItemId;
-
   }
 
   async onFileSelected(event: Event) {
@@ -54,30 +50,19 @@ export class RfqAttachmentComponent implements OnInit {
     await this.addAttachment(file);
   }
 
-  // uploadFiles() {
-  //   if (this.viewMode) return;
-  //   const payload = this.uploadedFiles.filter(a => a.isNew).map(a => ({
-  //     content: a.content,
-  //     contentType: a.contentType,
-  //     fileName: a.fileName,
-  //     fromForm: a.fromForm
-  //   }))
-  //   this.activeModal.close(payload);
-  // }
-
   uploadFiles() {
-  if (this.viewMode) return;
+    if (this.viewMode) return;
 
-  const payload = this.uploadedFiles.filter(a => a.isNew).map(a => ({
-    content: a.content,
-    contentType: a.contentType,
-    fileName: a.fileName,
-    fromForm: a.fromForm,
-    quotationItemId: a.quotationItemId
-  }));
+    const payload = this.uploadedFiles.filter(a => a.isNew).map(a => ({
+      content: a.content,
+      contentType: a.contentType,
+      fileName: a.fileName,
+      fromForm: a.fromForm,
+      quotationItemId: a.quotationItemId
+    }));
 
-  this.activeModal.close(payload);
-}
+    this.activeModal.close(payload);
+  }
 
 
   downloadLocalFile(file: any) {
@@ -92,7 +77,6 @@ export class RfqAttachmentComponent implements OnInit {
 
     try {
       const base64 = await this.toBase64(file);
-
       const quotationItemId = this.itemId ?? 0;
 
       const newAttachment = {
@@ -145,8 +129,6 @@ export class RfqAttachmentComponent implements OnInit {
       reader.onerror = error => reject(error);
     });
   }
-
-
 
   private emitChanges() {
     this.attachmentsChange.emit(this.uploadedFiles);

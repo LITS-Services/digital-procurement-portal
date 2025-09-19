@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, id, SelectionType } from '@swimlane/ngx-datatable';
@@ -19,7 +19,7 @@ export class PurchaseRequestComponent implements OnInit {
   chkBoxSelected: any[] = [];
   idsToDelete: number[] = [];
   loading = false;
-  announcementId: number;
+  announcementId: number; 
   isEditButtonDisabled = true;
   isDeleteButtonDisabled = true;
   isOpenButtonDisabled = true;
@@ -30,7 +30,9 @@ export class PurchaseRequestComponent implements OnInit {
     private router: Router,
     private modalService: NgbModal,
     private purchaseRequestService: PurchaseRequestService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
+    
   ) { }
 
   ngOnInit(): void {
@@ -49,6 +51,7 @@ export class PurchaseRequestComponent implements OnInit {
         // 🔹 Directly assign the values (skip grouping logic)
         this.purchaseRequestData = data?.$values || [];
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error fetching requests:', err);
@@ -122,7 +125,7 @@ export class PurchaseRequestComponent implements OnInit {
     this.isAllSelected = event.target.checked;
     this.enableDisableButtons();
   }
-
+ 
   enableDisableButtons() {
     const selectedCount = this.chkBoxSelected.length;
     this.isDeleteButtonDisabled = selectedCount === 0;
