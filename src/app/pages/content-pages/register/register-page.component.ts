@@ -31,6 +31,7 @@ export class RegisterPageComponent implements OnInit {
   ngOnInit() {
     this.registerForm = this.formBuilder.group({
       Username: ['', Validators.required],
+      Fullname: [''],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
@@ -107,6 +108,7 @@ export class RegisterPageComponent implements OnInit {
 
     const registerData = {
       Username: this.registerForm.value.Username,
+      Fullname: this.registerForm.value.Username,
       Email: this.registerForm.value.email,
       Password: this.registerForm.value.password,
       Role: this.registerForm.value.role,
@@ -114,14 +116,42 @@ export class RegisterPageComponent implements OnInit {
     };
 
     this.spinner.show();
+    // this.authService.register(registerData).subscribe({
+    //   // next: (res: any) => {
+    //   //   this.spinner.hide();
+    //   //   this.toastr.success('OTP sent to your email');
+    //   //   localStorage.setItem('pendingUsername', registerData.Username);
+    //   //   this.router.navigate(['/otp']);
+    //   // },
+    //   next: (res: any) => {
+    //     this.spinner.hide();
+
+    //     // Since backend returns a string like "OTP sent to email..."
+    //     if (typeof res === 'string' && res.includes('OTP sent')) {
+    //       this.toastr.success(res);
+    //       localStorage.setItem('pendingUsername', registerData.Username);
+    //       this.router.navigate(['/otp']);
+    //     } else {
+    //       this.toastr.error('Unexpected response. Please try again');
+    //     }
+    //   },
+    //   error: (err) => {
+    //     this.spinner.hide();
+    //     this.toastr.error('Registration failed ❌ Please try again');
+    //   }
+    // });
     this.authService.register(registerData).subscribe({
-      next: (res: any) => {
+      next: (res: string) => {
         this.spinner.hide();
-        this.toastr.success('OTP sent to your email');
-        localStorage.setItem('pendingUsername', registerData.Username);
-        this.router.navigate(['/otp']);
+        if (res.includes('OTP sent')) {
+          this.toastr.success(res);
+          localStorage.setItem('pendingUsername', registerData.Username);
+          this.router.navigate(['/otp']);
+        } else {
+          this.toastr.error('Unexpected response. Please try again');
+        }
       },
-      error: (err) => {
+      error: () => {
         this.spinner.hide();
         this.toastr.error('Registration failed ❌ Please try again');
       }

@@ -34,26 +34,55 @@ export class OtpComponent implements OnInit {
     return this.otpForm.controls;
   }
 
+  // verifyOtp() {
+  //   this.otpFormSubmitted = true;
+  //   if (this.otpForm.invalid) return;
+
+  //   this.spinner.show(); // show spinner
+
+  //   this.authService.verifyOtp(this.otpForm.value.otp).subscribe({
+  //     next: (res: any) => {
+  //       this.spinner.hide();
+  //       this.toastr.success('OTP Verified Successfully ✅');
+  //       this.router.navigate(['/dashboard/dashboard1']);
+  //     },
+  //     error: (err: any) => {
+  //       this.spinner.hide();
+  //       this.isOtpFailed = true;
+  //       this.toastr.error('Invalid or Expired OTP ❌');
+  //       console.error('OTP verification failed:', err);
+  //     }
+  //   });
+  // }
+
+
   verifyOtp() {
-    this.otpFormSubmitted = true;
-    if (this.otpForm.invalid) return;
+  this.otpFormSubmitted = true;
+  if (this.otpForm.invalid) return;
 
-    this.spinner.show(); // show spinner
+  this.spinner.show();
 
-    this.authService.verifyOtp(this.otpForm.value.otp).subscribe({
-      next: (res: any) => {
-        this.spinner.hide();
-        this.toastr.success('OTP Verified Successfully ✅');
+  this.authService.verifyOtp(this.otpForm.value.otp).subscribe({
+    next: (res: string) => {
+      this.spinner.hide();
+
+      if (res.toLowerCase().includes('verified') || res.toLowerCase().includes('completed')) {
+        this.toastr.success(res);
         this.router.navigate(['/dashboard/dashboard1']);
-      },
-      error: (err: any) => {
-        this.spinner.hide();
+      } else {
         this.isOtpFailed = true;
-        this.toastr.error('Invalid or Expired OTP ❌');
-        console.error('OTP verification failed:', err);
+        this.toastr.error(res || 'Invalid or Expired OTP ❌');
       }
-    });
-  }
+    },
+    error: (err: any) => {
+      this.spinner.hide();
+      this.isOtpFailed = true;
+      this.toastr.error('Invalid or Expired OTP ❌');
+      console.error('OTP verification failed:', err);
+    }
+  });
+}
+
 
   resendOtp() {
     const portalType = 'Procurement';

@@ -10,7 +10,8 @@ import { CompanyService } from 'app/shared/services/Company.services';
 export class CompanyEditComponent implements OnInit {
 
   companyId: number | null = null;
-  vendorId: string = '';   // ✅ added vendorId
+  companyGUID: string | null = null;
+  vendorId: string = '';  
   companyName: string = '';
   aboutCompany: string = '';
   vendorCategory: string = '';
@@ -24,7 +25,7 @@ export class CompanyEditComponent implements OnInit {
   isEditMode: boolean = false;
   isLoading: boolean = false;
   error: string = '';
-  remark: string = ''; // For review remark
+  remark: string = '';
 
   constructor(
     private router: Router,
@@ -52,7 +53,8 @@ export class CompanyEditComponent implements OnInit {
         const company = res?.vendorCompany || res;
         if (company) {
           this.companyId = company.id || 0;
-          this.vendorId = company.vendorId || this.companyId?.toString() || ''; // ✅ capture vendorId safely
+          this.companyGUID = company.companyGUID || null;
+          this.vendorId = company.vendorId || '';
           this.companyName = company.name || '';
           this.aboutCompany = company.aboutCompany || '';
           this.vendorCategory = company.purchasingDemographics?.vendorType || '';
@@ -61,7 +63,6 @@ export class CompanyEditComponent implements OnInit {
           this.employeeResponsible = company.purchasingDemographics?.employeeResponsible || '';
           this.note = company.purchasingDemographics?.note || '';
 
-          // Addresses
           this.addressList = (company.addresses?.$values || []).map(a => ({
             id: a.id,
             street: a.street,
@@ -72,7 +73,6 @@ export class CompanyEditComponent implements OnInit {
             isPrimary: a.isPrimary
           }));
 
-          // Contacts
           this.contactList = (company.contacts?.$values || []).map(c => ({
             id: c.id,
             description: c.description,
@@ -82,7 +82,6 @@ export class CompanyEditComponent implements OnInit {
             isPrimary: c.isPrimary
           }));
 
-          // Attachments
           this.attachedFiles = (company.attachments?.$values || []).map(f => ({
             id: f.id,
             fileName: f.fileName,
@@ -136,7 +135,7 @@ export class CompanyEditComponent implements OnInit {
 
     this.isLoading = true;
 
-    // Ensure attachments are Base64 if uploading new ones
+    // Convert any new attachments to Base64
     this.attachedFiles = await Promise.all(this.attachedFiles.map(async f => {
       if (f.file && !f.fileContent) {
         f.fileContent = await this.convertFileToBase64(f.file);
@@ -144,61 +143,65 @@ export class CompanyEditComponent implements OnInit {
       return f;
     }));
 
-    // ✅ Get ApprovedBy (userId) from localStorage
-    const ApproverId = localStorage.getItem('userId') || '';
+    // Get userId from localStorage
+    const approverId = localStorage.getItem('userId') || '';
 
+    // ✅ Build payload exactly as API expects
     const payload = {
-      id: this.companyId || 0,
-      companyGUID: '', 
-      name: this.companyName,
-      logo: '', 
-      remarks: this.remark, 
-      requestStatusId: requestStatusId, 
-      vendorId: this.vendorId || '', // ✅ send vendorId
-      ApproverId: ApproverId, 
-      attachments: this.attachedFiles.map(f => ({
-        id: f.id || 0,
-        vendorCompanyId: this.companyId || 0,
-        fileName: f.fileName,
-        fileFormat: f.format,
-        fileContent: f.fileContent,
-        attachedBy: f.attachedBy || '',
-        remarks: f.remarks || '',
-        attachedAt: f.attachedAt || new Date().toISOString()
-      })),
-      addresses: this.addressList.map(a => ({
-        id: a.id || 0,
-        vendorCompanyId: this.companyId || 0,
-        street: a.street,
-        city: a.city,
-        state: a.state,
-        zip: a.zip,
-        country: a.country,
-        isPrimary: a.isPrimary
-      })),
-      contacts: this.contactList.map(c => ({
-        id: c.id || 0,
-        vendorCompanyId: this.companyId || 0,
-        description: c.description,
-        type: c.type,
-        contactNumber: c.contactNumber,
-        extension: c.extension,
-        isPrimary: c.isPrimary
-      })),
-      purchasingDemographics: {
-        id: 0,
-        vendorCompanyId: this.companyId || 0,
-        primaryCurrency: this.primaryCurrency,
-        primaryContactId: 0,
-        vendorType: this.vendorCategory,
-        lineOfBusiness: this.lineOfBusiness,
-        birthCountry: '', // optional
-        employeeResponsible: this.employeeResponsible,
-        segment: '',
-        speciality: '',
-        chain: '',
-        note: this.note
-      }
+      Id: this.companyId || 0,
+      VendorCompany: {
+        Id: this.companyId || 0,
+        CompanyGUID: this.companyGUID || null,
+        Name: this.companyName,
+        Logo: '',
+        Remarks: this.remark || '',
+        RequestStatusId: requestStatusId,
+        VendorId: this.vendorId || '',
+        Attachments: this.attachedFiles.map(f => ({
+          Id: f.id || 0,
+          VendorCompanyId: this.companyId || 0,
+          FileName: f.fileName,
+          FileFormat: f.format,
+          FileContent: f.fileContent,
+          AttachedBy: f.attachedBy || '',
+          Remarks: f.remarks || '',
+          AttachedAt: f.attachedAt || new Date().toISOString()
+        })),
+        Addresses: this.addressList.map(a => ({
+          Id: a.id || 0,
+          VendorCompanyId: this.companyId || 0,
+          Street: a.street,
+          City: a.city,
+          State: a.state,
+          Zip: a.zip,
+          Country: a.country,
+          IsPrimary: a.isPrimary
+        })),
+        Contacts: this.contactList.map(c => ({
+          Id: c.id || 0,
+          VendorCompanyId: this.companyId || 0,
+          Description: c.description,
+          Type: c.type,
+          ContactNumber: c.contactNumber,
+          Extension: c.extension,
+          IsPrimary: c.isPrimary
+        })),
+        PurchasingDemographics: {
+          Id: 0,
+          VendorCompanyId: this.companyId || 0,
+          PrimaryCurrency: this.primaryCurrency,
+          PrimaryContactId: 0,
+          VendorType: this.vendorCategory,
+          LineOfBusiness: this.lineOfBusiness,
+          BirthCountry: '',
+          EmployeeResponsible: this.employeeResponsible,
+          Segment: '',
+          Speciality: '',
+          Chain: '',
+          Note: this.note
+        }
+      },
+      VendorUserId: approverId
     };
 
     this.companyService.updateCompany(this.companyId, payload).subscribe({
@@ -215,7 +218,7 @@ export class CompanyEditComponent implements OnInit {
     });
   }
 
-  // 🔹 File -> Base64
+  // 🔹 Convert file to Base64
   convertFileToBase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -229,5 +232,4 @@ export class CompanyEditComponent implements OnInit {
   goBack() {
     this.router.navigate(['/company']);
   }
-
 }
