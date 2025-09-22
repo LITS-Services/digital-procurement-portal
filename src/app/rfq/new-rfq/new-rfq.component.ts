@@ -63,8 +63,8 @@ export class NewRfqComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loadVendorUsers();
-    this.getWorkflowTypes();
+    // this.loadVendorUsers();
+    // this.getWorkflowTypes();
     this.route.queryParamMap.subscribe(params => {
       const id = params.get('id');
       const mode = params.get('mode');
