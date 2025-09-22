@@ -28,9 +28,11 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
   workflowmasterId: number | null = null;
   workflowTypes: any[] = [];
   approverList: any[] = [];
+  usersList: any[] = [];
   editableWorkFlowMasterId: number | null = null;
   @ViewChild('accordion') accordion: NgbAccordion;
   @ViewChild(DatatableComponent) table: DatatableComponent;
+  mode: string = 'Create';
 
   constructor(
     private router: Router,
@@ -45,13 +47,15 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
   ngOnInit(): void {
 
     // Main form
+    this.getDepartmentUsersList();
     this.getWorkflowTypes();
     this.getApproverList();
 
     this.workflowsetupform = this.fb.group({
       workflowName: ['', Validators.required],
       documentType: ['', Validators.required],
-      status: [false]
+      status: [false],
+      usersList: [[]]
     });
 
     // Approver form (no validations)
@@ -59,7 +63,7 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
       approverList: ['', Validators.required],
       amountFrom: [null],
       amountTo: [null],
-      approverLevel: [null],
+      approverLevel: [null,Validators.required],
       canApprove: [false],
       canReject: [false],
       canSendBack: [false],
@@ -73,11 +77,11 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
     // Check if editing existing request
     this.route.queryParamMap.subscribe(params => {
       const id = params.get('id');
+      this.mode = params.get('mode') || 'Create';
       const mode = params.get('mode');
       this.workflowmasterId = id ? Number(id) : 0;
-      if(mode=='Edit')
-      {
-      this.loadexistingWorkflowById(this.workflowmasterId);
+      if (mode == 'Edit') {
+        this.loadexistingWorkflowById(this.workflowmasterId);
       }
 
     });
@@ -116,6 +120,22 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
     });
   }
 
+  getDepartmentUsersList(): void {
+    this.WorkflowServiceService.getApproverList().subscribe({
+      next: (data: any) => {
+        console.log("Raw API Response:", data);
+
+        // Fix: Extract $values if it exists
+        this.usersList = data.$values ?? data;
+
+        console.log("Extracted Approver List:", this.usersList);
+      },
+      error: (err) => {
+        console.error("Error fetching approver list:", err);
+      }
+    });
+  }
+
 
 
   addApprover(): void {
@@ -129,23 +149,28 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
 
     const userId = selectedApprover ? selectedApprover.id : null;
     const approverLevel = formValue.approverLevel;
- //Check duplicates BEFORE creating the object
-  const sameUserExists = this.newApproverData.some((item, index) =>
-    index !== this.editingRowIndex && item.userId === userId
-  );
-  if (sameUserExists) {
-    this.toastr.warning("This approver is already added!", "");
-    return;
-  }
-  const sameLevelExists = this.newApproverData.some((item, index) =>
-    index !== this.editingRowIndex && item.approverLevel === approverLevel
-  );
+    //Check duplicates BEFORE creating the object
+    const sameUserExists = this.newApproverData.some((item, index) =>
+      index !== this.editingRowIndex && item.approverList === userId
+    );
+    if (sameUserExists) {
+      this.toastr.warning("This approver is already added!", "");
+      return;
+    }
+    const sameLevelExists = this.newApproverData.some((item, index) =>
+      index !== this.editingRowIndex && item.approverLevel === approverLevel
+    );
 
-  if (sameLevelExists) {
-    this.toastr.warning("This approver level is already used!", "");
-    return;
-  }
+    if (sameLevelExists) {
+      this.toastr.warning("This approver level is already used!", "");
+      return;
+    }
 
+    if(formValue.amountFrom > formValue.amountTo)
+    {
+       this.toastr.warning("Amount from should less than amount to.", "");
+      return;
+    }
 
     const newItem = {
       ...formValue,
@@ -175,7 +200,7 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
       isApprovalCompulsory: false,
       approverName: null,
       userId: null,
-      WorkflowDetailsId:null
+      WorkflowDetailsId: null
     });
   }
 
@@ -192,7 +217,7 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
       canSubmit: row.canSubmit,
       isApprovalCompulsory: row.isApprovalCompulsory,
       approverName: row.approverName,
-      WorkflowDetailsId:row.WorkflowDetailsId,
+      WorkflowDetailsId: row.WorkflowDetailsId,
     });
     this.editingRowIndex = rowIndex;
   }
@@ -216,6 +241,8 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
 
     const f = this.workflowsetupform.value;
 
+    const selectedUsers = f.usersList || [];
+
     // Map approvers -> workflowDetails
     const workflowDetails = this.newApproverData.map(a => ({
       approverList: a.approverList || '',
@@ -238,6 +265,7 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
       workflowName: f.workflowName,
       isActive: f.status === true,
       createdDate: new Date().toISOString(),
+      users: selectedUsers,
       workflowDetails: workflowDetails
     };
 
@@ -255,6 +283,8 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
           status: false
         });
         this.newApproverData = [];
+        this.router.navigateByUrl('/setup/workflow');
+
       },
       error: (err) => {
         console.error('Error saving workflow:', err);
@@ -266,40 +296,51 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
 
 
 
-loadexistingWorkflowById(id: number) {
-  this.WorkflowServiceService.GetWorkflowById(id).subscribe({
-    next: (data) => {
-      const master = data.$values[0];
-      this.workflowmasterId = master.workflowMasterId;
-     this.workflowsetupform.patchValue({
-    workflowName: master.workflowName,
-    documentType: master.workflowTypeId,
-    status: master.isActive
-  });
-      if (master.workflowDetails?.$values?.length) {
-        this.newApproverData = master.workflowDetails.$values.map((d: any) => ({
-          approverName: d.approverName || '',
-          approverList: d.userId || '',
-          amountFrom: d.amountFrom,
-          amountTo: d.amountTo,
-          approverLevel: d.approverLevel,
-          canApprove: d.canApprove,
-          canReject: d.canReject,
-          canSendBack: d.canSendBack,
-          canSubmit: d.canSubmit,
-          isApprovalCompulsory: d.isApprovalCompulsory,
-          userId: d.userId,
-          workflowDetailsId:d.workflowDetailsId,
-        }));
-      } else {
-        this.newApproverData = [];
-      }
-    },
-    error: (err) => console.error('Failed to load workflow:', err)
-  });
-}
+  loadexistingWorkflowById(id: number) {
 
- updateForm() {
+    this.WorkflowServiceService.GetWorkflowById(id).subscribe({
+      next: (data) => {
+        const master = data.$values[0];
+
+        // master.users might be wrapped with $values
+        const selectedUsers: string[] = master.users?.$values ?? [];
+
+        // Now filter against usersList
+        const validSelectedUsers = this.usersList
+          .filter((u: any) => selectedUsers.includes(u.id))
+          .map((u: any) => u.id);
+
+        this.workflowmasterId = master.workflowMasterId;
+        this.workflowsetupform.patchValue({
+          workflowName: master.workflowName,
+          documentType: master.workflowTypeId,
+          status: master.isActive,
+          usersList: selectedUsers
+        });
+        if (master.workflowDetails?.$values?.length) {
+          this.newApproverData = master.workflowDetails.$values.map((d: any) => ({
+            approverName: d.approverName || '',
+            approverList: d.userId || '',
+            amountFrom: d.amountFrom,
+            amountTo: d.amountTo,
+            approverLevel: d.approverLevel,
+            canApprove: d.canApprove,
+            canReject: d.canReject,
+            canSendBack: d.canSendBack,
+            canSubmit: d.canSubmit,
+            isApprovalCompulsory: d.isApprovalCompulsory,
+            userId: d.userId,
+            workflowDetailsId: d.workflowDetailsId,
+          }));
+        } else {
+          this.newApproverData = [];
+        }
+      },
+      error: (err) => console.error('Failed to load workflow:', err)
+    });
+  }
+
+  updateForm() {
     if (!this.workflowsetupform.valid) {
       console.warn('Form is invalid');
       return;
@@ -307,10 +348,11 @@ loadexistingWorkflowById(id: number) {
 
     const f = this.workflowsetupform.value;
 
+    const selectedUsers = f.usersList || [];
     // Map approvers -> workflowDetails
     const workflowDetails = this.newApproverData.map(a => ({
-      WorkflowMasterId:this.workflowmasterId,
-      WorkflowDetailsId:a.workflowDetailsId,
+      WorkflowMasterId: this.workflowmasterId,
+      WorkflowDetailsId: a.workflowDetailsId,
       approverList: a.approverList || '',
       userId: a.approverList || '',
       amountFrom: Number(a.amountFrom) || 0,
@@ -325,12 +367,13 @@ loadexistingWorkflowById(id: number) {
 
     // Final payload matches WorkflowVM
     const payload = {
-      workflowMasterId: this.workflowmasterId, 
-      workflowTypeId: f.documentType, 
+      workflowMasterId: this.workflowmasterId,
+      workflowTypeId: f.documentType,
       workflowName: f.workflowName,
       isActive: f.status === true,
       createdDate: new Date().toISOString(),
-      workflowDetails: workflowDetails
+      workflowDetails: workflowDetails,
+      users: selectedUsers,
     };
 
     this.loading = true;
@@ -347,6 +390,7 @@ loadexistingWorkflowById(id: number) {
           status: false
         });
         this.newApproverData = [];
+        this.router.navigateByUrl('/setup/workflow');
       },
       error: (err) => {
         console.error('Error updating workflow:', err);
