@@ -65,7 +65,6 @@ export function createTranslateLoader(http: HttpClient) {
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-right', // or 'toast-top-center' etc.
       timeOut: 3000,
-    
       closeButton: true,
       progressBar: true
     }),
@@ -78,7 +77,6 @@ export function createTranslateLoader(http: HttpClient) {
     HttpClientModule,
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireAuthModule,
-    ToastrModule.forRoot(),
     NgbModule,
     NgxDatatableModule,
     NgxSpinnerModule,
@@ -100,11 +98,7 @@ export function createTranslateLoader(http: HttpClient) {
     AuthGuard,
     DragulaService,
    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    {
-      provide: PERFECT_SCROLLBAR_CONFIG,
-      useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
-    },
-    { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
+   { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG },
     WINDOW_PROVIDERS
   ],
   bootstrap: [AppComponent]
