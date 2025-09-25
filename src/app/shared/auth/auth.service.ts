@@ -26,7 +26,10 @@ private baseUrl = environment.apiUrl;
     );
 
   }
-
+  initiateSSOLogin(returnUrl: string = '/dashboard/dashboard1'): Observable<any> {
+    return this.http.get(`${this.baseUrl}/Auth/sso/login-url?returnUrl=${encodeURIComponent(returnUrl)}`);
+  }
+  
 
 //   resendOtp(username: string, portalType: string) {
 //   return this.http.post(`${this.baseUrl}/Auth/ResendOtp`, { 

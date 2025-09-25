@@ -35,9 +35,7 @@ export class LoginPageComponent {
   // On submit button click
 onSubmit() {
   this.loginFormSubmitted = true;
-  if (this.loginForm.invalid) {
-    return;
-  }
+  if (this.loginForm.invalid) return;
 
   this.spinner.show(undefined, {
     type: 'ball-triangle-path',
@@ -53,7 +51,16 @@ onSubmit() {
   ).subscribe(
     (res: any) => {
       this.spinner.hide();
-      localStorage.setItem('token', res.token); // Save token if API returns it
+
+      // Save token
+      localStorage.setItem('token', res.token);
+
+      // Save companyIds properly
+      const companyIds = res?.companyIds?.$values || [];
+      console.log('Extracted companyIds:', companyIds); // ✅ debug
+
+      localStorage.setItem('companyIds', JSON.stringify(companyIds));
+
       this.router.navigate(['/dashboard/dashboard1']);
     },
     (err: any) => {
@@ -63,6 +70,8 @@ onSubmit() {
     }
   );
 }
+
+
 
 
   rememberMe() {

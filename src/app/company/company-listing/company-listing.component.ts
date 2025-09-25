@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { forkJoin } from 'rxjs';
 import { CompanyService } from 'app/shared/services/Company.services';
 
 @Component({
@@ -32,7 +33,6 @@ export class CompanyListingComponent implements OnInit {
     private companyService: CompanyService
   ) { }
 
-
   gotoEditCompany() {
     this.router.navigateByUrl('/company/company-edit');
   }
@@ -40,7 +40,7 @@ export class CompanyListingComponent implements OnInit {
   ngOnInit(): void {
     this.getCompanyData();
 
-    // ✅ Define the table columns
+    // Define the table columns
     this.columns = [
       { prop: 'name', name: 'Name' },
       { prop: 'companyStatus', name: 'Status' },
@@ -51,46 +51,61 @@ export class CompanyListingComponent implements OnInit {
     ];
   }
 
-
   getCompanyData() {
-    this.loading = true;
-    this.companyService.getVendorCompanies().subscribe({
-      next: (res: any) => {
-        const companies = res.$values || [];
+  this.loading = true;
 
-        // ✅ Filter: only keep "Inprogress"
-        const filtered = companies.filter((c: any) => c.status?.toLowerCase() === 'inprogress');
-
-        this.tenderingData = filtered.map((c: any) => {
-          const primaryAddress = c.addressesVM?.$values?.[0] || {};
-          const primaryContact = c.contactsVM?.$values?.[0] || {};
-          const demographics = c.purchasingDemographics || {};
-
-          return {
-            id: c.id,
-            name: c.name,
-            companyStatus: c.status || '',
-            street: primaryAddress.street || '',
-            city: primaryAddress.city || '',
-            contactNumber: primaryContact.contactNumber || '',
-            remarks: c.remarks || '',
-            approverId: c.approverId,
-            vendorId: c.vendorId,
-            vendorType: demographics.vendorType || '',
-            primaryCurrency: demographics.primaryCurrency || ''
-          };
-        });
-
-
-        this.rows = [...this.tenderingData];
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Error fetching companies:', err);
-        this.loading = false;
-      }
-    });
+  const storedIds: string[] = JSON.parse(localStorage.getItem('companyIds') || '[]');
+  if (!storedIds || storedIds.length === 0) {
+    console.warn('No companyIds found in localStorage');
+    this.tenderingData = [];
+    this.rows = [];
+    this.loading = false;
+    return;
   }
+
+  // Create an array of observables
+  const requests = storedIds.map(id => this.companyService.getCompaniesByUserEntity(id));
+
+  // forkJoin will wait for all requests
+  forkJoin(requests).subscribe({
+    next: (responses: any[]) => {
+      // Flatten all results and extract $values
+      const companies = responses
+        .map(r => r.$values || [])
+        .reduce((acc, val) => acc.concat(val), []);
+
+      // Filter only "inprogress"
+      const filtered = companies.filter(c => c.status?.toLowerCase() === 'inprogress');
+
+      this.tenderingData = filtered.map(c => {
+        const primaryAddress = c.addressesVM?.$values?.[0] || {};
+        const primaryContact = c.contactsVM?.$values?.[0] || {};
+        const demographics = c.purchasingDemographics || {};
+
+        return {
+          id: c.id,
+          name: c.name,
+          companyStatus: c.status || '',
+          street: primaryAddress.street || '',
+          city: primaryAddress.city || '',
+          contactNumber: primaryContact.contactNumber || '',
+          remarks: c.remarks || '',
+          approverId: c.approverId,
+          vendorId: c.vendorId,
+          vendorType: demographics.vendorType || '',
+          primaryCurrency: demographics.primaryCurrency || ''
+        };
+      });
+
+      this.rows = [...this.tenderingData];
+      this.loading = false;
+    },
+    error: err => {
+      console.error('Error fetching companies:', err);
+      this.loading = false;
+    }
+  });
+}
 
   homePage() {
     this.router.navigate(['/dashboard/dashboard1']);
@@ -138,7 +153,6 @@ export class CompanyListingComponent implements OnInit {
     if (this.chkBoxSelected.length === 1) {
       const row = this.chkBoxSelected[0];
       this.router.navigate(['/company/company-edit'], { queryParams: { id: row.id } });
-
     } else {
       alert('Please select a single company to update.');
     }

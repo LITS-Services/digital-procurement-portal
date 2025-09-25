@@ -16,6 +16,21 @@ export class CompanyService {
 
   constructor(private http: HttpClient) {}
 
+
+getAllEmployees(): Observable<any[]> {
+return this.http.get<any[]>(`${environment.apiUrl}/Employee/GetAllEmployees`);
+  }
+
+registerEmployee(data: any): Observable<any> {
+  return this.http.post<any>(`${environment.apiUrl}/Employee/Create`, data);
+}
+getCompaniesByUserEntity(procurmentCompanyId: string): Observable<any[]> {
+  return this.http.post<any[]>(`${environment.apiUrl}/Company/get-companies-by-user-entity`, {
+    procurmentCompanyId: procurmentCompanyId
+  });
+}
+
+
 // Create a new procurement company
 createProCompany(data: any): Observable<any> {
   return this.http.post<any>(`${this.apiUrl}/register-procurement-company`, data);

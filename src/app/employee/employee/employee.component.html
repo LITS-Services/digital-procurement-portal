@@ -1,0 +1,146 @@
+<section>
+  <div class="row">
+    <div class="col-12">
+
+      <!-- Header -->
+      <div class="row">
+        <div class="col-md-12" style="margin-top: -0.25rem;">
+          <h4 class="heading">Employee New Company</h4>
+        </div>
+      </div>
+
+      <!-- Action Pane -->
+      <div class="card">
+        <div class="row">
+          <div class="col-md-6">
+            <button class="btn btn-lg mr-1" type="button" (click)="goBack()">
+              <i class="ft-arrow-left"></i>
+            </button>
+            <span class="vl"></span>
+            <button type="submit" class="btn btn-sm" form="companyForm">
+              <i class="ft-plus"></i><label class="ml-1 mt-1">Save</label>
+            </button>
+            <button type="reset" class="btn btn-sm" (click)="onReset()">
+              <i class="ft-refresh-ccw"></i><label class="ml-1 mt-1">Reset</label>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Card -->
+      <div class="card">
+        <div class="card-body">
+          <form [formGroup]="companyForm" id="companyForm" (ngSubmit)="onSubmit()">
+            <div class="form-row">
+
+              <!-- Employee dropdown -->
+              <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="form-group mb-2">
+                  <label>Select Employee</label>
+                  <select class="form-control" formControlName="employeeId" (change)="onEmployeeSelect($event)">
+                    <option value="">-- Select Employee --</option>
+                    <option *ngFor="let emp of employees" [value]="emp.id">
+                      {{ emp.fullName }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Name -->
+              <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="form-group mb-2">
+                  <label>Name</label>
+                  <input type="text" formControlName="name" class="form-control" placeholder="Enter Name" />
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="form-group mb-2">
+                  <label>Email</label>
+                  <input type="email" formControlName="email" class="form-control" placeholder="Enter Email" />
+                  <div *ngIf="companyForm.get('email')?.invalid && companyForm.get('email')?.touched" class="text-danger">
+                    Enter a valid email.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Password -->
+              <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="form-group mb-2">
+                  <label>Password</label>
+                  <div class="input-group">
+                    <input [type]="passwordFieldType" formControlName="password" class="form-control" placeholder="Enter Password" />
+                    <div class="input-group-append">
+                      <button type="button" class="btn btn-outline-secondary" (click)="togglePassword('password')">
+                        <i class="ft-eye"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <small class="text-muted">Must contain 1 capital letter, 1 special character, min 6 chars.</small>
+                  <div *ngIf="companyForm.get('password')?.invalid && companyForm.get('password')?.touched" class="text-danger">
+                    Password does not meet requirements.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Confirm Password -->
+              <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="form-group mb-2">
+                  <label>Confirm Password</label>
+                  <div class="input-group">
+                    <input [type]="confirmPasswordFieldType" formControlName="confirmPassword" class="form-control" placeholder="Confirm Password" />
+                    <div class="input-group-append">
+                      <button type="button" class="btn btn-outline-secondary" (click)="togglePassword('confirmPassword')">
+                        <i class="ft-eye"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div *ngIf="companyForm.hasError('passwordMismatch') && companyForm.get('confirmPassword')?.touched" class="text-danger">
+                    Passwords do not match.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Roles Dropdown -->
+              <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="form-group mb-2">
+                  <label>Role</label>
+                  <select class="form-control" formControlName="roleId">
+                    <option value="">-- Select Role --</option>
+                    <option *ngFor="let role of roles" [value]="role.id">
+                      {{ role.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Companies Multi-select -->
+              <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="form-group mb-2">
+                  <label>Select Companies</label>
+                  <div class="form-control" style="height:auto; max-height:200px; overflow-y:auto;">
+                    <div *ngFor="let company of companies">
+                      <input 
+                        type="checkbox"
+                        [value]="company.companyGUID"
+                        (change)="onCompanyToggle($event, company.companyGUID)"
+                        [checked]="selectedCompanyGUIDs.includes(company.companyGUID)"
+                      />
+                      <label class="ml-1">{{ company.name }}</label>
+                    </div>
+                  </div>
+                  <div *ngIf="selectedCompanyGUIDs.length === 0 && companyFormSubmitted" class="text-danger">
+                    Please select at least one company.
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

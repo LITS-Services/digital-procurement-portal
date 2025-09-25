@@ -33,6 +33,10 @@ export const Full_ROUTES: Routes = [
     loadChildren: () => import('../../calendar/calendar.module').then(m => m.CalendarsModule)
   },
   {
+    path: 'Employee',
+    loadChildren: () => import('../../employee/employee.module').then(m => m.EmployeeModule)
+  },
+  {
     path: 'charts',
     loadChildren: () => import('../../charts/charts.module').then(m => m.ChartsNg2Module)
   },

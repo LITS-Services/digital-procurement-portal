@@ -1,5 +1,5 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { UntypedFormGroup, Validators, UntypedFormBuilder, FormArray } from '@angular/forms';
+import { UntypedFormGroup, Validators, UntypedFormBuilder, FormArray, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MustMatch } from '../../../shared/directives/must-match.validator';
 import { AuthService } from 'app/shared/auth/auth.service';
@@ -17,7 +17,9 @@ export class RegisterPageComponent implements OnInit {
   registerForm: UntypedFormGroup;
   procurmentCompanies: any[] = [];
   selectedCompanies: any[] = [];
-  dropdownOpen = false; // Control dropdown visibility
+  employees: any[] = [];
+  selectedEmployee: any = null;
+  dropdownOpen = false;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -33,7 +35,7 @@ export class RegisterPageComponent implements OnInit {
       Username: ['', Validators.required],
       Fullname: [''],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      password: ['', [Validators.required, this.passwordComplexityValidator]],
       confirmPassword: ['', Validators.required],
       role: ['User', Validators.required],
       companyGUIDs: this.formBuilder.array([], Validators.required),
@@ -43,19 +45,31 @@ export class RegisterPageComponent implements OnInit {
     });
 
     this.loadProcurmentCompanies();
+    this.loadEmployees();
+  }
+
+  // Password complexity validator
+  passwordComplexityValidator(control: AbstractControl): ValidationErrors | null {
+    const value: string = control.value || '';
+    const hasUpperCase = /[A-Z]/.test(value);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>-]/.test(value);
+    const minLength = value.length >= 6;
+
+    if (hasUpperCase && hasSpecialChar && minLength) {
+      return null;
+    }
+    return { passwordComplexity: { hasUpperCase, hasSpecialChar, minLength } };
   }
 
   get rf() { return this.registerForm.controls; }
   get companyFormArray(): FormArray { return this.registerForm.get('companyGUIDs') as FormArray; }
 
-  // Label for dropdown
   get selectedCompaniesLabel(): string {
     return this.selectedCompanies.length > 0
       ? this.selectedCompanies.map(c => c.name).join(', ')
       : 'Select Companies';
   }
 
-  // Load companies
   loadProcurmentCompanies() {
     this.spinner.show();
     this.companyService.getProCompanies().subscribe({
@@ -63,17 +77,41 @@ export class RegisterPageComponent implements OnInit {
         this.spinner.hide();
         this.procurmentCompanies = res?.$values || [];
       },
-      error: (err) => {
+      error: () => {
         this.spinner.hide();
         this.toastr.error('Error fetching procurement companies ❌');
       }
     });
   }
 
-  // Dropdown toggle
+  loadEmployees() {
+    this.spinner.show();
+    this.companyService.getAllEmployees().subscribe({
+      next: (res: any) => {
+        this.spinner.hide();
+        this.employees = res?.$values || [];
+      },
+      error: () => {
+        this.spinner.hide();
+        this.toastr.error('Error fetching employees ❌');
+      }
+    });
+  }
+
+  onEmployeeSelected(empId: number) {
+    const emp = this.employees.find(e => e.id == empId);
+    if (emp) {
+      this.selectedEmployee = emp;
+      this.registerForm.patchValue({
+        Username: emp.fullName,
+        Fullname: emp.fullName,
+        email: emp.email
+      });
+    }
+  }
+
   toggleDropdown() { this.dropdownOpen = !this.dropdownOpen; }
 
-  // Close dropdown when clicking outside
   @HostListener('document:click', ['$event'])
   clickOutside(event: any) {
     const target = event.target;
@@ -82,12 +120,10 @@ export class RegisterPageComponent implements OnInit {
     }
   }
 
-  // Check if selected
   isCompanySelected(companyGUID: string): boolean {
     return this.selectedCompanies.some(c => c.companyGUID === companyGUID);
   }
 
-  // Select/unselect company
   toggleCompanySelection(event: any, company: any) {
     if (event.target.checked) {
       this.selectedCompanies.push(company);
@@ -101,14 +137,13 @@ export class RegisterPageComponent implements OnInit {
     }
   }
 
-  // Form submission
   onSubmit() {
     this.registerFormSubmitted = true;
     if (this.registerForm.invalid) return;
 
     const registerData = {
       Username: this.registerForm.value.Username,
-      Fullname: this.registerForm.value.Username,
+      Fullname: this.registerForm.value.Fullname,
       Email: this.registerForm.value.email,
       Password: this.registerForm.value.password,
       Role: this.registerForm.value.role,
@@ -116,30 +151,6 @@ export class RegisterPageComponent implements OnInit {
     };
 
     this.spinner.show();
-    // this.authService.register(registerData).subscribe({
-    //   // next: (res: any) => {
-    //   //   this.spinner.hide();
-    //   //   this.toastr.success('OTP sent to your email');
-    //   //   localStorage.setItem('pendingUsername', registerData.Username);
-    //   //   this.router.navigate(['/otp']);
-    //   // },
-    //   next: (res: any) => {
-    //     this.spinner.hide();
-
-    //     // Since backend returns a string like "OTP sent to email..."
-    //     if (typeof res === 'string' && res.includes('OTP sent')) {
-    //       this.toastr.success(res);
-    //       localStorage.setItem('pendingUsername', registerData.Username);
-    //       this.router.navigate(['/otp']);
-    //     } else {
-    //       this.toastr.error('Unexpected response. Please try again');
-    //     }
-    //   },
-    //   error: (err) => {
-    //     this.spinner.hide();
-    //     this.toastr.error('Registration failed ❌ Please try again');
-    //   }
-    // });
     this.authService.register(registerData).subscribe({
       next: (res: string) => {
         this.spinner.hide();
