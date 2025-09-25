@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { AuthService } from 'app/shared/auth/auth.service'; // Import AuthService
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-procurment-companies',
@@ -27,9 +29,22 @@ export class ProcurmentCompaniesComponent implements OnInit {
     { prop: 'logo', name: 'Logo', width: 100 }
   ];
 
-  constructor(private router: Router, private companyService: CompanyService) { }
+  constructor(
+    private router: Router, 
+    private companyService: CompanyService,
+    private authService: AuthService, // Inject AuthService
+ private toastr: ToastrService 
+
+  ) { }
 
   ngOnInit(): void {
+    // Check if user is admin
+    if (!this.authService.hasRole('Admin')) {
+     this.toastr.warning('Access denied. Only Admins can access this page.');
+      this.router.navigate(['/dashboard/dashboard1']); // redirect non-admins
+      return;
+    }
+
     this.loadCompanyData();
   }
 
@@ -73,20 +88,17 @@ export class ProcurmentCompaniesComponent implements OnInit {
     this.isDeleteButtonDisabled = selectedCount === 0; // Enable Delete if at least 1 selected
   }
 
-  // Navigate to edit page for selected company (with ID as param)
   editSelectedRow() {
-  if (this.chkBoxSelected.length === 1) {
-    const selectedCompany = this.chkBoxSelected[0];
-    this.router.navigate(['/procurment-companies/procurment-companies-edit'], { 
-      queryParams: { id: selectedCompany.id } 
-    });
-  } else {
-    alert('Please select a single company to update.');
+    if (this.chkBoxSelected.length === 1) {
+      const selectedCompany = this.chkBoxSelected[0];
+      this.router.navigate(['/procurment-companies/procurment-companies-edit'], { 
+        queryParams: { id: selectedCompany.id } 
+      });
+    } else {
+      alert('Please select a single company to update.');
+    }
   }
-}
 
-
-  // Delete selected companies
   deleteSelectedRows() {
     if (this.chkBoxSelected.length === 0) {
       alert('Please select at least one company to delete.');

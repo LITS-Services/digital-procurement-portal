@@ -1,48 +1,35 @@
 import { RouteInfo } from './vertical-menu.metadata';
 
-//Sidebar menu Routes and data
+// Sidebar menu Routes and data
 export const ROUTES: RouteInfo[] = [
-
   {
-    path: '/dashboard/dashboard1', title: 'Dashboard', icon: 'ft-grid', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [
-      // { path: '/dashboard/dashboard1', title: 'Dashboard 1', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-      // { path: '/dashboard/dashboard2', title: 'Dashboard 2', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-    ]
+    path: '/dashboard/dashboard1', title: 'Dashboard', icon: 'ft-grid', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: []
   },
-  // {
-  //   path: '', title: 'Dashboard', icon: 'ft-grid', class: 'has-sub', badge: '2', badgeClass: 'badge badge-pill badge-danger float-right mr-1 mt-1', isExternalLink: false, submenu: [
-  //     { path: '/dashboard/dashboard1', title: 'Dashboard 1', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-  //     { path: '/dashboard/dashboard2', title: 'Dashboard 2', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-  //   ]
-  // },
   { path: '/purchase-request', title: 'Purchase Request', icon: 'ft-file-plus', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
   { path: '/rfq', title: 'RFQ', icon: 'fa fa-envelope-o', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-
   { path: '/tendering', title: 'Tendering', icon: 'fa fa-handshake-o', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-  { path: '/company', title: 'company', icon: 'fa fa-briefcase', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-  { path: '/Employee', title: 'Employee', icon: 'fa fa-briefcase', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-
-  { path: '/procurment-companies', title: 'Procurment Companies', icon: 'fa fa-building', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+  { path: '/company', title: 'Company', icon: 'fa fa-briefcase', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+  { path: '/Employee', title: 'Employee', icon: 'fa fa-users', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] ,roles: ['Admin']},
+  // Only Vendor role can see this
+  { path: '/procurment-companies', title: 'Procurment Companies', icon: 'fa fa-building', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [], roles: ['Admin'] },
 
   {
     path: '', title: 'Reports', icon: 'ft-clipboard', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false,
-
     submenu: [
       { path: '/uikit/grids', title: 'Grid', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
       { path: '/uikit/typography', title: 'Typography', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
       { path: '/uikit/syntaxhighlighter', title: 'Syntax Highlighter', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
       { path: '/uikit/helperclasses', title: 'Helper Classes', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-
     ]
   },
-
   {
     path: '', title: 'Setup', icon: 'ft-settings', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false,
     submenu: [
-   { path: '/setup/workflow', title: 'Workflow Setup', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-     // { path: '/setup/create-workflow', title: 'Create Workflow', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+      { path: '/setup/workflow', title: 'Workflow Setup', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
     ]
   },
+
+
 
 
   // { path: '/taskboard-ngrx', title: 'Task Board NgRx', icon: 'ft-file-text', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },

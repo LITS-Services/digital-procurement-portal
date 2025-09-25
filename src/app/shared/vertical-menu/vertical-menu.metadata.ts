@@ -8,4 +8,6 @@ export interface RouteInfo {
     badgeClass?: string;
     isExternalLink: boolean;
     submenu : RouteInfo[];
+      roles?: string[]; // ✅ add this line
+
 }

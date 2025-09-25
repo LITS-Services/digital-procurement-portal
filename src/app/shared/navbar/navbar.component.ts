@@ -1,14 +1,12 @@
-import { Component, Output, EventEmitter, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, Inject, Renderer2, ViewChild, ElementRef, ViewChildren, QueryList, HostListener } from '@angular/core';
+import { Component, Output, EventEmitter, OnDestroy, OnInit, AfterViewInit, ChangeDetectorRef, HostListener, ViewChild, ViewChildren, ElementRef, QueryList } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { LayoutService } from '../services/layout.service';
-import { Subscription } from 'rxjs';
 import { ConfigService } from '../services/config.service';
-import { DOCUMENT } from '@angular/common';
-import { CustomizerService } from '../services/customizer.service';
-import { UntypedFormControl } from '@angular/forms';
-import { LISTITEMS } from '../data/template-search';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
+import { UntypedFormControl } from '@angular/forms';
+import { LISTITEMS } from '../data/template-search';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: "app-navbar",
@@ -35,108 +33,71 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('search') searchElement: ElementRef;
   @ViewChildren('searchResults') searchResults: QueryList<any>;
 
-  @Output()
-  toggleHideSidebar = new EventEmitter<Object>();
-
-  @Output()
-  seachTextEmpty = new EventEmitter<boolean>();
+  @Output() toggleHideSidebar = new EventEmitter<Object>();
+  @Output() seachTextEmpty = new EventEmitter<boolean>();
 
   listItems = [];
   control = new UntypedFormControl();
-
   public config: any = {};
 
-  constructor(public translate: TranslateService,
+  constructor(
+    public translate: TranslateService,
     private layoutService: LayoutService,
     private router: Router,
-    private authService: AuthService,
-    private configService: ConfigService, private cdr: ChangeDetectorRef) {
-
+    public authService: AuthService, // <-- make it public to use in template
+    private configService: ConfigService, 
+    private cdr: ChangeDetectorRef
+  ) {
     const browserLang: string = translate.getBrowserLang();
     translate.use(browserLang.match(/en|es|pt|de|ar/) ? browserLang : "en");
     this.config = this.configService.templateConf;
     this.innerWidth = window.innerWidth;
 
     this.layoutSub = layoutService.toggleSidebar$.subscribe(
-      isShow => {
-        this.hideSidebar = !isShow;
-      });
-
+      isShow => this.hideSidebar = !isShow
+    );
   }
 
   ngOnInit() {
     this.listItems = LISTITEMS;
-    this.username = localStorage.getItem('userName'); 
-    if (this.innerWidth < 1200) {
-      this.isSmallScreen = true;
-    }
-    else {
-      this.isSmallScreen = false;
-    }
+    this.username = this.authService.getUserName(); // use auth service instead of localStorage
+    this.isSmallScreen = this.innerWidth < 1200;
   }
 
   ngAfterViewInit() {
-
     this.configSub = this.configService.templateConf$.subscribe((templateConf) => {
       if (templateConf) {
         this.config = templateConf;
       }
       this.loadLayout();
       this.cdr.markForCheck();
-
-    })
+    });
   }
 
   ngOnDestroy() {
-    if (this.layoutSub) {
-      this.layoutSub.unsubscribe();
-    }
-    if (this.configSub) {
-      this.configSub.unsubscribe();
-    }
+    if (this.layoutSub) this.layoutSub.unsubscribe();
+    if (this.configSub) this.configSub.unsubscribe();
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
     this.innerWidth = event.target.innerWidth;
-    if (this.innerWidth < 1200) {
-      this.isSmallScreen = true;
-    }
-    else {
-      this.isSmallScreen = false;
-    }
+    this.isSmallScreen = this.innerWidth < 1200;
   }
+
   logout(): void {
     this.authService.logout().subscribe({
-      next: () => {
-        this.authService.performLogout(); // Clear storage & navigate to login
-      },
-      error: () => {
-        this.authService.performLogout(); // Still logout even if API fails
-      }
+      next: () => this.authService.performLogout(),
+      error: () => this.authService.performLogout()
     });
   }
 
   loadLayout() {
-
-    if (this.config.layout.menuPosition && this.config.layout.menuPosition.toString().trim() != "") {
+    if (this.config.layout.menuPosition) {
       this.menuPosition = this.config.layout.menuPosition;
     }
-
-    if (this.config.layout.variant === "Light") {
-      this.logoUrl = 'assets/img/logo-dark.png';
-    }
-    else {
-      this.logoUrl = 'assets/img/logo.png';
-    }
-
-    if (this.config.layout.variant === "Transparent") {
-      this.transparentBGClass = this.config.layout.sidebar.backgroundColor;
-    }
-    else {
-      this.transparentBGClass = "";
-    }
-
+    this.logoUrl = (this.config.layout.variant === "Light") ? 'assets/img/logo-dark.png' : 'assets/img/logo.png';
+    this.transparentBGClass = (this.config.layout.variant === "Transparent") ? this.config.layout.sidebar.backgroundColor : "";
   }
 
   onSearchKey(event: any) {

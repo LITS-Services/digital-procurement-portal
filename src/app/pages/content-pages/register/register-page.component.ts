@@ -31,6 +31,13 @@ export class RegisterPageComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    // ADMIN CHECK
+    if (!this.authService.hasRole('Admin')) {
+      this.toastr.warning('Access denied. Only Admins can access this page.');
+      this.router.navigate(['/dashboard/dashboard1']);
+      return;
+    }
+
     this.registerForm = this.formBuilder.group({
       Username: ['', Validators.required],
       Fullname: [''],

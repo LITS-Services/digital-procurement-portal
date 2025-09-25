@@ -272,7 +272,7 @@
                 <span class="text-right">{{username}}</span><span
                   class="text-right text-muted font-small-3">Available</span>
               </div>
-              <img class="avatar" src="assets/img/portrait/small/avatar-s-1.png" alt="avatar" height="35" width="35" />
+              <img class="avatar" src="assets/img/profile/user.png" alt="avatar" height="35" width="35" />
             </a>
             <div class="dropdown-menu text-left dropdown-menu-right m-0 pb-0" aria-labelledby="dropdownBasic2"
               ngbDropdownMenu>
@@ -286,11 +286,15 @@
                   <i class="ft-edit mr-2"></i><span>Edit Profile</span>
                 </div>
               </a>
-               <a class="dropdown-item" routerLink="/pages/register">
-                <div class="d-flex align-items-center">
-                  <i class="ft-edit mr-2"></i><span>Register User</span>
-                </div>
-              </a>
+             <!-- Register User button visible only to Admin -->
+             <a *ngIf="authService.hasRole('Admin')" class="dropdown-item" routerLink="/pages/register">
+  <div class="d-flex align-items-center">
+    <i class="ft-edit mr-2"></i>
+    <span>Register User</span>
+  </div>
+</a>
+
+
               <!-- <a class="dropdown-item" routerLink="/inbox">
                 <div class="d-flex align-items-center">
                   <i class="ft-mail mr-2"></i><span>My Inbox</span>

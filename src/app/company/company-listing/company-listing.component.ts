@@ -4,6 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
 import { forkJoin } from 'rxjs';
 import { CompanyService } from 'app/shared/services/Company.services';
+import { AuthService } from 'app/shared/auth/auth.service'; // Import AuthService
 
 @Component({
   selector: 'app-company-listing',
@@ -30,7 +31,8 @@ export class CompanyListingComponent implements OnInit {
   constructor(
     private router: Router,
     private modalService: NgbModal,
-    private companyService: CompanyService
+    private companyService: CompanyService,
+    private authService: AuthService, 
   ) { }
 
   gotoEditCompany() {
@@ -54,58 +56,96 @@ export class CompanyListingComponent implements OnInit {
   getCompanyData() {
   this.loading = true;
 
-  const storedIds: string[] = JSON.parse(localStorage.getItem('companyIds') || '[]');
-  if (!storedIds || storedIds.length === 0) {
-    console.warn('No companyIds found in localStorage');
-    this.tenderingData = [];
-    this.rows = [];
-    this.loading = false;
-    return;
-  }
+  // Check if the user is admin
+  const isAdmin = this.authService.hasRole('Admin');
 
-  // Create an array of observables
-  const requests = storedIds.map(id => this.companyService.getCompaniesByUserEntity(id));
+  if (isAdmin) {
+    // Admin: fetch all vendor companies
+    this.companyService.getVendorCompanies().subscribe({
+      next: (res: any) => {
+        const companies = res?.$values || [];
+        const filtered = companies.filter(c => c.status?.toLowerCase() === 'inprogress');
 
-  // forkJoin will wait for all requests
-  forkJoin(requests).subscribe({
-    next: (responses: any[]) => {
-      // Flatten all results and extract $values
-      const companies = responses
-        .map(r => r.$values || [])
-        .reduce((acc, val) => acc.concat(val), []);
+        this.tenderingData = filtered.map(c => {
+          const primaryAddress = c.addressesVM?.$values?.[0] || {};
+          const primaryContact = c.contactsVM?.$values?.[0] || {};
+          const demographics = c.purchasingDemographics || {};
 
-      // Filter only "inprogress"
-      const filtered = companies.filter(c => c.status?.toLowerCase() === 'inprogress');
+          return {
+            id: c.id,
+            name: c.name,
+            companyStatus: c.status || '',
+            street: primaryAddress.street || '',
+            city: primaryAddress.city || '',
+            contactNumber: primaryContact.contactNumber || '',
+            remarks: c.remarks || '',
+            approverId: c.approverId,
+            vendorId: c.vendorId,
+            vendorType: demographics.vendorType || '',
+            primaryCurrency: demographics.primaryCurrency || ''
+          };
+        });
 
-      this.tenderingData = filtered.map(c => {
-        const primaryAddress = c.addressesVM?.$values?.[0] || {};
-        const primaryContact = c.contactsVM?.$values?.[0] || {};
-        const demographics = c.purchasingDemographics || {};
+        this.rows = [...this.tenderingData];
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error fetching vendor companies:', err);
+        this.loading = false;
+      }
+    });
 
-        return {
-          id: c.id,
-          name: c.name,
-          companyStatus: c.status || '',
-          street: primaryAddress.street || '',
-          city: primaryAddress.city || '',
-          contactNumber: primaryContact.contactNumber || '',
-          remarks: c.remarks || '',
-          approverId: c.approverId,
-          vendorId: c.vendorId,
-          vendorType: demographics.vendorType || '',
-          primaryCurrency: demographics.primaryCurrency || ''
-        };
-      });
-
-      this.rows = [...this.tenderingData];
+  } else {
+    // Non-admin: fetch companies by user entity
+    const storedIds: string[] = JSON.parse(localStorage.getItem('companyIds') || '[]');
+    if (!storedIds || storedIds.length === 0) {
+      console.warn('No companyIds found in localStorage');
+      this.tenderingData = [];
+      this.rows = [];
       this.loading = false;
-    },
-    error: err => {
-      console.error('Error fetching companies:', err);
-      this.loading = false;
+      return;
     }
-  });
+
+    const requests = storedIds.map(id => this.companyService.getCompaniesByUserEntity(id));
+
+    forkJoin(requests).subscribe({
+      next: (responses: any[]) => {
+        const companies = responses
+          .map(r => r.$values || [])
+          .reduce((acc, val) => acc.concat(val), []);
+        const filtered = companies.filter(c => c.status?.toLowerCase() === 'inprogress');
+
+        this.tenderingData = filtered.map(c => {
+          const primaryAddress = c.addressesVM?.$values?.[0] || {};
+          const primaryContact = c.contactsVM?.$values?.[0] || {};
+          const demographics = c.purchasingDemographics || {};
+
+          return {
+            id: c.id,
+            name: c.name,
+            companyStatus: c.status || '',
+            street: primaryAddress.street || '',
+            city: primaryAddress.city || '',
+            contactNumber: primaryContact.contactNumber || '',
+            remarks: c.remarks || '',
+            approverId: c.approverId,
+            vendorId: c.vendorId,
+            vendorType: demographics.vendorType || '',
+            primaryCurrency: demographics.primaryCurrency || ''
+          };
+        });
+
+        this.rows = [...this.tenderingData];
+        this.loading = false;
+      },
+      error: err => {
+        console.error('Error fetching companies:', err);
+        this.loading = false;
+      }
+    });
+  }
 }
+
 
   homePage() {
     this.router.navigate(['/dashboard/dashboard1']);

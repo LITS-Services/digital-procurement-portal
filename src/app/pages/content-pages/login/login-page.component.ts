@@ -45,30 +45,39 @@ onSubmit() {
     fullScreen: true
   });
 
-  this.authService.signinUser(
-    this.loginForm.value.username, 
-    this.loginForm.value.password
-  ).subscribe(
-    (res: any) => {
-      this.spinner.hide();
+this.authService.signinUser(
+  this.loginForm.value.username, 
+  this.loginForm.value.password
+).subscribe(
+  (res: any) => {
+    this.spinner.hide();
 
-      // Save token
-      localStorage.setItem('token', res.token);
+    // Save token
+    localStorage.setItem('token', res.token);
 
-      // Save companyIds properly
-      const companyIds = res?.companyIds?.$values || [];
-      console.log('Extracted companyIds:', companyIds); // ✅ debug
+    // Save user info
+    localStorage.setItem('userId', res.userId);
+    localStorage.setItem('userName', res.userName);
 
-      localStorage.setItem('companyIds', JSON.stringify(companyIds));
+    // ✅ Save roles (extract from $values array)
+    const roles = res?.roles?.$values || [];
+    console.log('Extracted roles:', roles); // Debug
+    localStorage.setItem('roles', JSON.stringify(roles));
 
-      this.router.navigate(['/dashboard/dashboard1']);
-    },
-    (err: any) => {
-      this.isLoginFailed = true;
-      this.spinner.hide();
-      console.error('Login error:', err);
-    }
-  );
+    // Save companyIds properly
+    const companyIds = res?.companyIds?.$values || [];
+    console.log('Extracted companyIds:', companyIds); // Debug
+    localStorage.setItem('companyIds', JSON.stringify(companyIds));
+
+    this.router.navigate(['/dashboard/dashboard1']);
+  },
+  (err: any) => {
+    this.isLoginFailed = true;
+    this.spinner.hide();
+    console.error('Login error:', err);
+  }
+);
+
 }
 
 

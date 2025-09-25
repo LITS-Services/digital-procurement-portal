@@ -1,136 +1,119 @@
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from "@angular/fire/auth";
-import firebase from 'firebase/app'
+import firebase from 'firebase/app';
 import { Observable } from 'rxjs';
 import { environment } from 'environments/environment';
 import { HttpClient } from '@angular/common/http';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class AuthService {
   private user: Observable<firebase.User>;
   private userDetails: firebase.User = null;
-private baseUrl = environment.apiUrl;
+  private baseUrl = environment.apiUrl;
 
-  constructor(public _firebaseAuth: AngularFireAuth, public router: Router,private http: HttpClient,) {
+  constructor(
+    public _firebaseAuth: AngularFireAuth,
+    private router: Router,
+    private http: HttpClient
+  ) {
     this.user = _firebaseAuth.authState;
-    this.user.subscribe(
-      (user) => {
-        if (user) {
-          this.userDetails = user;
-        }
-        else {
-          this.userDetails = null;
-        }
-      }
-    );
-
+    this.user.subscribe(user => this.userDetails = user || null);
   }
+
+  // ===== SSO Login =====
   initiateSSOLogin(returnUrl: string = '/dashboard/dashboard1'): Observable<any> {
     return this.http.get(`${this.baseUrl}/Auth/sso/login-url?returnUrl=${encodeURIComponent(returnUrl)}`);
   }
-  
 
-//   resendOtp(username: string, portalType: string) {
-//   return this.http.post(`${this.baseUrl}/Auth/ResendOtp`, { 
-//     username, 
-//     portalType 
-//   });
-// }
-resendOtp(username: string, portalType: string): Observable<string> {
-  return this.http.post(`${this.baseUrl}/Auth/ResendOtp`, 
-    { username, portalType }, 
-    { responseType: 'text' }
-  );
-}
-
-
-
-  signupUser(email: string, password: string) {
-    //your code for signing up the new user
+  // ===== OTP =====
+  resendOtp(username: string, portalType: string): Observable<string> {
+    return this.http.post(`${this.baseUrl}/Auth/ResendOtp`, { username, portalType }, { responseType: 'text' });
   }
-//   verifyOtp(otp: string) {
-//   return this.http.post(`${this.baseUrl}/Auth/VerifyProcurementOtp`, {  otp });
-// }
 
-verifyOtp(otp: string): Observable<string> {
-  return this.http.post(
-    `${this.baseUrl}/Auth/VerifyProcurementOtp`,
-    { otp },
-    { responseType: 'text' }
-  );
-}
+  verifyOtp(otp: string): Observable<string> {
+    return this.http.post(`${this.baseUrl}/Auth/VerifyProcurementOtp`, { otp }, { responseType: 'text' });
+  }
 
+  // ===== Sign In =====
+  signinUser(username: string, password: string): Observable<any> {
+    return new Observable((observer) => {
+      this.http.post<any>(`${this.baseUrl}/Auth/ProcurementLogin`, { username, password }).subscribe({
+        next: (res) => {
+          if (res && res.token) {
+            localStorage.setItem('token', res.token);
+            localStorage.setItem('userId', res.userId);
+            localStorage.setItem('userName', res.userName);
 
+            // Save roles array properly
+            const roles = res?.roles?.$values || [];
+            localStorage.setItem('roles', JSON.stringify(roles));
 
-signinUser(username: string, password: string): Observable<any> {
-  const body = { username, password };
-
-  return new Observable((observer) => {
-    this.http.post<any>(`${this.baseUrl}/Auth/ProcurementLogin`, body).subscribe({
-      next: (res) => {
-        if (res && res.token) {
-          // Save values to localStorage
-          localStorage.setItem('token', res.token);
-          localStorage.setItem('userId', res.userId);
-          localStorage.setItem('userName', res.userName);
-
-          if (res.roles) {
-            localStorage.setItem('roles', JSON.stringify(res.roles));
+            // Save companyIds
+            const companyIds = res?.companyIds?.$values || [];
+            localStorage.setItem('companyIds', JSON.stringify(companyIds));
           }
-        }
 
-        observer.next(res);
-        observer.complete();
-      },
-      error: (err) => {
-        observer.error(err);
-      }
+          observer.next(res);
+          observer.complete();
+        },
+        error: (err) => observer.error(err)
+      });
     });
-  });
-}
+  }
 
+  // ===== Register =====
+  register(userData: any): Observable<string> {
+    return this.http.post(`${this.baseUrl}/Auth/ProcurementUserRegister`, userData, { responseType: 'text' });
+  }
 
+  // ===== Logout =====
+  logout(): Observable<any> {
+    return this.http.post(`${this.baseUrl}/Auth/logout`, {});
+  }
 
-  // register(userData: any): Observable<any> {
-  //   return this.http.post(`${this.baseUrl}/Auth/ProcurementUserRegister`, userData);
-  // }
+  performLogout(): void {
+    localStorage.clear();
+    this.router.navigate(['/pages/login']);
+  }
 
-register(userData: any): Observable<string> {
-  return this.http.post(`${this.baseUrl}/Auth/ProcurementUserRegister`, userData, {
-    responseType: 'text'
-  });
-}
-
-
-
-logout(): Observable<any> {
-  return this.http.post(`${this.baseUrl}/Auth/logout`, {}); // Example API endpoint
-}
-performLogout(): void {
-  localStorage.clear();
-  this.router.navigate(['/pages/login']);
-}
-
-  // isAuthenticated() {
-  //   return true;
-  // }
-
+  // ===== Authentication Check =====
   isAuthenticated(): boolean {
-  const token = localStorage.getItem('token');
-  // basic check: token exists
-  if (!token) {
-    return false;
+    const token = localStorage.getItem('token');
+    if (!token) return false;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return Date.now() < payload.exp * 1000;
+    } catch (e) {
+      return false;
+    }
   }
 
-  // optional: check if token is expired (if it’s a JWT)
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const isExpired = Date.now() >= payload.exp * 1000;
-    return !isExpired;
-  } catch (e) {
-    return false;
+  // ===== Role Helpers =====
+  getUserRoles(): string[] {
+    return JSON.parse(localStorage.getItem('roles') || '[]');
   }
-}
 
+  getUserRole(): string | null {
+    const roles = this.getUserRoles();
+    return roles.length > 0 ? roles[0] : null;
+  }
+
+  hasRole(role: string): boolean {
+    return this.getUserRoles().includes(role);
+  }
+
+  // ===== User Info Helpers =====
+  getUserId(): string | null {
+    return localStorage.getItem('userId');
+  }
+
+  getUserName(): string | null {
+    return localStorage.getItem('userName');
+  }
+
+  getCompanyIds(): string[] {
+    return JSON.parse(localStorage.getItem('companyIds') || '[]');
+  }
 }

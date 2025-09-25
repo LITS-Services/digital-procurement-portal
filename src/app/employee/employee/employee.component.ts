@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { CompanyService } from 'app/shared/services/Company.services';
+import { AuthService } from 'app/shared/auth/auth.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-employee',
@@ -31,10 +33,20 @@ export class EmployeeComponent implements OnInit {
     private fb: UntypedFormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private companyService: CompanyService
+    private companyService: CompanyService,
+    private authService: AuthService, 
+    private toastr: ToastrService 
   ) {}
 
   ngOnInit(): void {
+
+    // ✅ Restrict access to Admin only
+    if (!this.authService.hasRole('Admin')) {
+      this.toastr.warning('Access denied. Only Admins can access this page.');
+      this.router.navigate(['/dashboard/dashboard1']);
+      return;
+    }
+
     const idParam = this.route.snapshot.queryParamMap.get('id');
     this.companyId = idParam ? +idParam : null;
     this.isEditMode = !!this.companyId;
@@ -53,9 +65,7 @@ export class EmployeeComponent implements OnInit {
       roleId: [null, Validators.required]
     }, { validators: this.passwordMatchValidator });
 
-    if (this.isEditMode) {
-      this.loadCompany();
-    }
+    if (this.isEditMode) this.loadCompany();
 
     this.loadEmployees();
     this.loadCompanies();
@@ -96,7 +106,7 @@ export class EmployeeComponent implements OnInit {
   loadCompanies() {
     this.companyService.getProCompanies().subscribe({
       next: (res: any) => {
-        this.companies = res?.$values || res; // handle both array and $values
+        this.companies = res?.$values || res;
       },
       error: (err) => console.error('Error loading companies:', err)
     });
@@ -126,6 +136,7 @@ export class EmployeeComponent implements OnInit {
     }
   }
 
+  // ✅ Toggle password visibility
   togglePassword(field: 'password' | 'confirmPassword') {
     if (field === 'password') {
       this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
@@ -134,41 +145,37 @@ export class EmployeeComponent implements OnInit {
     }
   }
 
+  // ✅ Submit employee form
+  onSubmit() {
+    this.companyFormSubmitted = true;
+    if (this.companyForm.invalid || this.selectedCompanyGUIDs.length === 0) return;
 
-onSubmit() {
-  this.companyFormSubmitted = true;
-  if (this.companyForm.invalid || this.selectedCompanyGUIDs.length === 0) return;
+    const formValues = this.companyForm.getRawValue();
+    const payload = {
+      id: formValues.employeeId,
+      username: formValues.name,       
+      email: formValues.email,
+      fullName: formValues.name,       
+      password: formValues.password,
+      role: this.roles.find(r => r.id == formValues.roleId)?.name,
+      companyGUIDs: this.selectedCompanyGUIDs
+    };
 
-  const formValues = this.companyForm.getRawValue();
-  const payload = {
-    id: formValues.employeeId,
- 
-    username: formValues.name,       
-    email: formValues.email,
-    fullName: formValues.name,       
-    password: formValues.password,
-    role: this.roles.find(r => r.id == formValues.roleId)?.name,
-    companyGUIDs: this.selectedCompanyGUIDs
-  };
+    this.companyService.registerEmployee(payload).subscribe({
+      next: () => this.router.navigate(['/procurment-companies']),
+      error: (err) => console.error('Error saving employee:', err)
+    });
+  }
 
-  console.log("Final Payload Sent:", payload);
-
-  this.companyService.registerEmployee(payload).subscribe({
-    next: () => this.router.navigate(['/procurment-companies']),
-    error: (err) => console.error('Error saving employee:', err)
-  });
-}
-
-
+  // ✅ Reset form
   onReset() {
     this.companyForm.reset(); 
     this.selectedCompanyGUIDs = [];
     this.companyFormSubmitted = false;
-    if (this.isEditMode) {
-      this.loadCompany();
-    }
+    if (this.isEditMode) this.loadCompany();
   }
 
+  // ✅ Go back
   goBack() {
     this.router.navigate(['/procurment-companies']);
   }
