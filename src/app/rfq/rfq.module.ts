@@ -21,6 +21,7 @@ import { RfqVendorModalComponent } from './rfq-vendor-modal/rfq-vendor-modal.com
 import { VendorComparisionComponent } from './vendor-comparision/vendor-comparision.component';
 import { NewRfqComponent } from './new-rfq/new-rfq.component';
 import { RfqAttachmentComponent } from './rfq-attachment/rfq-attachment.component';
+import { RfqRemarksComponent } from './rfq-remarks/rfq-remarks.component';
 
 
 @NgModule({
@@ -30,7 +31,8 @@ import { RfqAttachmentComponent } from './rfq-attachment/rfq-attachment.componen
     RfqVendorModalComponent,
     VendorComparisionComponent,
     NewRfqComponent,
-    RfqAttachmentComponent
+    RfqAttachmentComponent,
+    RfqRemarksComponent
   ],
   imports: [
     CommonModule,
