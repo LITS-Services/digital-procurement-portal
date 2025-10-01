@@ -22,9 +22,11 @@ export class NewRfqComponent implements OnInit {
   currentRfqNo!: string;
   isNewForm = true; // true = create, false = edit
   isFormDirty = false; // track if any field was touched
+
   numberOfAttachments = 0;
   attachmentList: any[] = [];
   pendingAttachment: any[] = [];
+
   newRfqForm: FormGroup;
   itemForm: FormGroup;
   editingRowIndex: number | null = null; // Track row being edited
@@ -36,6 +38,11 @@ export class NewRfqComponent implements OnInit {
   workflowTypes: any[] = [];
 
   vendorUsers: any[] = [];
+
+  // modifications
+  quotationVendorUsers: any[] = [];   // all vendors + companies
+  filteredCompanies: any[] = [];      // companies for selected vendor
+
 
   public rows = DatatableData;
   columns = [];
@@ -65,7 +72,7 @@ export class NewRfqComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // this.loadVendorUsers();
+    this.loadVendorUsers();
     // this.getWorkflowTypes();
     this.route.queryParamMap.subscribe(params => {
       const id = params.get('id');
@@ -113,6 +120,7 @@ export class NewRfqComponent implements OnInit {
 
     this.itemForm = this.fb.group({
       id: [null],
+      rfqNo: [''],
       itemType: [''],
       itemCode: [''],
       uofM: [''],
@@ -126,6 +134,7 @@ export class NewRfqComponent implements OnInit {
       createdBy: [''],
       quotationRequestId: [0],
       vendorUserId: [''],
+      vendorCompanyId: [''],
       quotationItemAttachments: this.fb.array([])
     })
 
@@ -146,6 +155,29 @@ export class NewRfqComponent implements OnInit {
     this.companyService.getVendorUsers().subscribe(response => {
       this.vendorUsers = response.$values ?? [];
     });
+  }
+  loadVendorsAndCompanies(rfqId: number) {
+    this.rfqService.getVendorsByQuotationRequestId(rfqId).subscribe({
+      next: (res: any) => {
+        this.quotationVendorUsers = res?.$values || res || [];
+        console.log("Vendors & Companies:", this.quotationVendorUsers);
+      },
+      error: (err) => console.error("Error fetching vendors & companies", err)
+    });
+  }
+
+  onVendorChange(vendorId: string) {
+    this.filteredCompanies = this.quotationVendorUsers
+      .filter(vc => vc.vendorId === vendorId)
+      .map(vc => ({
+        companyId: vc.vendorCompanyId,
+        name: vc.companyName
+      }));
+
+    // Only reset when adding a new item, not when editing
+    if (!this.editingRowIndex) {
+      this.itemForm.patchValue({ vendorCompanyId: '' });
+    }
   }
 
   onWorkflowTypeChange(selectedId: number): void {
@@ -180,23 +212,105 @@ export class NewRfqComponent implements OnInit {
 
 
 
-  getVendorNameById(id: number): string {
-    const found = this.vendorUsers.find(v => v.id === id);
-    return found ? found.name : '';
+  // getVendorNameById(vendorId: number): string {
+  //   const found = this.quotationVendorUsers.find(v => v.id === vendorId);
+  //   return found ? found.vendorName : '';
+  // }
+  getVendorNameById(vendorId: string): string {
+    const found = this.quotationVendorUsers.find(v => v.vendorId === vendorId);
+    return found ? found.vendorName : '';
   }
 
+  private toDateInputValue(date: any): string | null {
+    if (!date) return null;
+    const d = new Date(date);
+    return d.toISOString().split('T')[0];
+  }
+
+
+
+  // loadExistingQuotation(id: number) {
+  //   this.loadVendorsAndCompanies(id);
+
+  //   this.rfqService.getQuotationById(id).subscribe({
+  //     next: async (data) => {
+  //       console.log("update data: ", data)
+  //       this.isNewForm = false;
+  //       this.currentQuotationId = data.id;
+  //       this.currentRfqNo = data.rfqNo;
+  //         // ✅ store rfqNo here
+
+  //       this.newRfqForm.patchValue(data);
+
+  //       if (data.requestStatus?.status) {
+  //       this.newRfqForm.patchValue({
+  //         status: data.requestStatus.status
+  //       });
+  //     }
+  //       if (data.quotationItems.$values) {
+  //         this.newQuotationItemData = data.quotationItems.$values.map((item: any) => ({
+  //           id: item.id,
+  //           rfqNo: item.rfqNo,
+  //           itemType: item.itemType,
+  //           itemCode: item.itemCode,
+  //           itemDescription: item.itemDescription,
+  //           amount: item.amount,
+  //           unitCost: item.unitCost,
+  //           uofM: item.uofM,
+  //           orderQuantity: item.orderQuantity,
+  //           reqByDate: item.reqByDate,
+  //           vendorUserId: item.vendorUserId,
+  //           vendorCompanyId: item.vendorCompanyId,
+  //           account: item.account,
+  //           remarks: item.remarks,
+  //           quotationRequestId: item.quotationRequestId,
+  //           quotationItemAttachments: item.quotationItemAttachments?.$values?.map((a: any) => ({
+  //             content: a.content || '',
+  //             contentType: a.contentType || '',
+  //             fileName: a.fileName || '',
+  //             fromForm: a.fromForm || '',
+  //             createdDate: a.createdDate,
+  //             modifiedDate: a.modifiedDate,
+  //             createdBy: a.createdBy || 'current-user',
+  //             isDeleted: a.isDeleted || false,
+  //             quotationItemId: a.quotationItemId || 0,
+  //             isNew: false
+  //           })) || []
+  //         }));
+  //       }
+  //     },
+
+  //     error: (err) => console.error('Failed to load purchase request:', err)
+  //   });
+  // }
   loadExistingQuotation(id: number) {
+    this.loadVendorsAndCompanies(id);
+
     this.rfqService.getQuotationById(id).subscribe({
       next: async (data) => {
         console.log("update data: ", data)
         this.isNewForm = false;
         this.currentQuotationId = data.id;
-        this.currentRfqNo = data.rfqNo;  // ✅ store rfqNo here
+        this.currentRfqNo = data.rfqNo;
 
-        this.newRfqForm.patchValue(data);
-        if (data.quotationItems.$values) {
+        // ✅ patch values with formatted dates
+        this.newRfqForm.patchValue({
+          ...data,
+          date: this.toDateInputValue(data.date),
+          startDate: this.toDateInputValue(data.startDate),
+          endDate: this.toDateInputValue(data.endDate),
+        });
+
+        if (data.requestStatus?.status) {
+          this.newRfqForm.patchValue({
+            status: data.requestStatus.status
+          });
+        }
+
+        if (data.quotationItems?.$values) {
           this.newQuotationItemData = data.quotationItems.$values.map((item: any) => ({
             id: item.id,
+            rfqNo: item.rfqNo,
             itemType: item.itemType,
             itemCode: item.itemCode,
             itemDescription: item.itemDescription,
@@ -204,8 +318,9 @@ export class NewRfqComponent implements OnInit {
             unitCost: item.unitCost,
             uofM: item.uofM,
             orderQuantity: item.orderQuantity,
-            reqByDate: item.reqByDate,
+            reqByDate: this.toDateInputValue(item.reqByDate), // ✅ fix here too
             vendorUserId: item.vendorUserId,
+            vendorCompanyId: item.vendorCompanyId,
             account: item.account,
             remarks: item.remarks,
             quotationRequestId: item.quotationRequestId,
@@ -229,6 +344,7 @@ export class NewRfqComponent implements OnInit {
     });
   }
 
+
   editRow(row: any, rowIndex: number) {
     this.itemForm.patchValue({
       id: row.id,
@@ -238,13 +354,17 @@ export class NewRfqComponent implements OnInit {
       amount: row.amount,
       unitCost: row.unitCost,
       orderQuantity: row.orderQuantity,
-      reqByDate: row.reqByDate ? new Date(row.reqByDate) : null,
+      // reqByDate: row.reqByDate ? new Date(row.reqByDate) : null,
+      reqByDate: this.toDateInputValue(row.reqByDate),
+
       itemDescription: row.itemDescription,
       vendorUserId: row.vendorUserId,
+      vendorCompanyId: row.vendorCompanyId,
       account: row.account,
       remarks: row.remarks,
       quotationItemAttachments: row.quotationItemAttachments
     });
+    this.onVendorChange(row.vendorUserId);
     this.editingRowIndex = rowIndex;
   }
 
@@ -259,6 +379,7 @@ export class NewRfqComponent implements OnInit {
 
     const quotationItems = this.newQuotationItemData?.length
       ? this.newQuotationItemData.map(item => ({
+        rfqNo: f.rfqNo || '',
         itemType: item.itemType || '',
         itemCode: item.itemCode || '',
         uofM: item.uofM || '',
@@ -272,6 +393,7 @@ export class NewRfqComponent implements OnInit {
         createdBy: item.createdBy || 'current-user',
         quotationRequestId: item.quotationRequestId || 0,
         vendorUserId: item.vendorUserId || '',
+        vendorCompanyId: item.vendorCompanyId || '',
         quotationItemAttachments: item.quotationItemAttachments?.map(att => ({
           content: att.content || '',
           contentType: att.contentType || '',
@@ -287,7 +409,6 @@ export class NewRfqComponent implements OnInit {
     const payload = {
       rfqNo: f.rfqNo,
       purchaseRequestNo: f.purchaseRequestNo,
-      status: f.status,
       owner: f.owner,
       date: f.date,
       contact: f.contact,
@@ -298,7 +419,7 @@ export class NewRfqComponent implements OnInit {
       workflowMasterId: f.workflowMasterId,
       comment: f.comment,
       createdBy: f.createdBy,
-      purchaseRequestId: 40,
+      purchaseRequestId: 74,
       quotationItems
     };
 
@@ -345,6 +466,7 @@ export class NewRfqComponent implements OnInit {
 
     const quotationItems = this.newQuotationItemData?.length
       ? this.newQuotationItemData.map(item => ({
+        rfqNo: item.rfqNo || '',
         itemType: item.itemType || '',
         itemCode: item.itemCode || '',
         uofM: item.uofM || '',
@@ -358,6 +480,7 @@ export class NewRfqComponent implements OnInit {
         createdBy: item.createdBy || 'current-user',
         quotationRequestId: item.quotationRequestId || 0,
         vendorUserId: item.vendorUserId || '',
+        vendorCompanyId: item.vendorCompanyId || '',
         quotationItemAttachments: item.quotationItemAttachments?.map(att => ({
           content: att.content || '',
           contentType: att.contentType || '',
@@ -384,7 +507,7 @@ export class NewRfqComponent implements OnInit {
       workflowMasterId: Number(f.workflowMasterId) || 0,
       comment: f.comment || '',
       createdBy: f.createdBy || 'current-user',
-      purchaseRequestId: 40,
+      purchaseRequestId: 74,
       quotationItems
     };
 
@@ -438,13 +561,24 @@ export class NewRfqComponent implements OnInit {
       };
       this.newQuotationItemData = [...this.newQuotationItemData, withEmptyAttachments];
     }
+    this.toastr.success('Item inserted!', '');
+
     this.itemForm.reset();
+  }
+  get uniqueVendors() {
+    const map = new Map<string, any>();
+    this.quotationVendorUsers.forEach(v => {
+      if (!map.has(v.vendorId)) {
+        map.set(v.vendorId, v);
+      }
+    });
+    return Array.from(map.values());
   }
 
   deleteRow(rowIndex: number): void {
     this.newQuotationItemData.splice(rowIndex, 1);
     this.newQuotationItemData = [...this.newQuotationItemData]; // refresh table
-    this.toastr.success('Delete!', '');
+    this.toastr.success('Item deleted!', '');
   }
 
   // openNewEntityModal(row: any) {
@@ -548,19 +682,18 @@ export class NewRfqComponent implements OnInit {
           const payload = {
             RfqNo: this.currentRfqNo,
             Remarks: result.remarks,
-            ActionTaken: action
+            ActionTaken: action,
+            ApproverId: localStorage.getItem('userId')
           };
 
           this.rfqService.addRemarksWithActionTaken(payload).subscribe({
             next: res => {
               this.loading = false;
-              if(res.message=="Approved")
-              {
-              this.router.navigate(['/rfq']);
-              this.toastr.success(res.message);
+              if (res.message == "Approved") {
+                this.router.navigate(['/rfq']);
+                this.toastr.success(res.message);
               }
-              else
-              {
+              else {
                 this.toastr.warning(res.message);
               }
             },

@@ -1,66 +1,48 @@
-import { HttpClient, HttpEventType } from '@angular/common/http';
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { map, catchError } from "rxjs/operators";
-import { throwError } from "rxjs";
-import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
-import { PurchaseRequestService, UploadedFile } from 'app/shared/services/purchase-request-services/purchase-request.service';
-import { base64 } from 'ngx-custom-validators/src/app/base64/validator';
+import { DatatableComponent } from '@swimlane/ngx-datatable';
 @Component({
   selector: 'app-purchase-request-attachment-modal',
   templateUrl: './purchase-request-attachment-modal.component.html',
   styleUrls: ['./purchase-request-attachment-modal.component.scss']
 })
+
+
+
 export class PurchaseRequestAttachmentModalComponent implements OnInit {
-  @Input() viewMode: boolean = false;
+@Input() viewMode: boolean = false;
+  @Input() attachments: any[] = []; 
+  @Output() attachmentsChange = new EventEmitter<any[]>();
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
   @ViewChild('tableResponsive') tableResponsive: any;
-  AttachmentForm: FormGroup;
-  progress: number;
-  selectedFiles: File[] = [];
   data!: {
-    existingAttachment?: any[]
+    existingAttachment?: any[],
+    purchaseItemId: number;
   }
-  public chkBoxSelected = [];
-  loading = false;
-  public rows = [];
-  newPurchaseRequestAttachmentData = [];
+
+  itemId: number;
+  selectedFiles: File[] = [];
+  AttachmentForm: FormGroup;
   uploadedFiles: any[] = [];
+  newAttachmentsData = [];
 
-  fileRemarks: string = '';
-  columns = [
-  ];
-  public SelectionType = SelectionType;
-  public ColumnMode = ColumnMode;
-
-  constructor(public activeModal: NgbActiveModal,
-    private http: HttpClient,
-    private attachmentService: PurchaseRequestService,
-    private fb: FormBuilder
-  ) {
+  constructor(private http: HttpClient, private fb: FormBuilder, public activeModal: NgbActiveModal) {
     this.AttachmentForm = this.fb.group({
-      remarks: [''] // Initialize the remarks control
     });
   }
 
   ngOnInit(): void {
-    if (this.viewMode) {
-      console.log("Attachment Modal in view mode – disabling controls.");
-    }
+    // this.uploadedFiles = this.attachments ? [...this.attachments] : [];
+    this.uploadedFiles = this.data?.existingAttachment
+      ? this.data.existingAttachment.map((f: any) => ({ ...f, isNew: false })) // ⬅️ key line
+      : [];
+    // this.uploadedFiles = this.data?.existingAttachment ? [...this.data.existingAttachment] : [];
+    this.itemId = this.data?.purchaseItemId;
+  }
 
-    this.uploadedFiles = this.data?.existingAttachment ? [...this.data.existingAttachment] : [];
-  }
-  ngAfterViewChecked(): void {
-    window.dispatchEvent(new Event('resize'));
-  }
-  closeDialog() {
-    this.activeModal.close(false);
-  }
-  saveData() {
-
-  }
   async onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
@@ -69,101 +51,41 @@ export class PurchaseRequestAttachmentModalComponent implements OnInit {
     await this.addAttachment(file);
   }
 
-
-
   uploadFiles() {
     if (this.viewMode) return;
 
-
     const payload = this.uploadedFiles.filter(a => a.isNew).map(a => ({
-      name: a.name,
-      type: a.type,
-      attachment: a.attachment
-    }))
+      content: a.content,
+      contentType: a.contentType,
+      fileName: a.fileName,
+      fromForm: a.fromForm,
+      purchaseItemId: a.purchaseItemId
+    }));
+
     this.activeModal.close(payload);
   }
 
-  downloadAttachment(attachmentId: number, fileName: string) {
-    this.http.get(`api/Requests/Download-Attachment/${attachmentId}`, {
-      responseType: 'blob'
-    }).subscribe(blob => {
-      const link = document.createElement('a');
-      link.href = window.URL.createObjectURL(blob);
-      link.download = fileName;
-      link.click();
-      window.URL.revokeObjectURL(link.href);
-    }, error => {
-      console.error('Download failed:', error);
-    });
-  }
 
   downloadLocalFile(file: any) {
     const link = document.createElement('a');
-    link.href = file.attachment;
-    link.download = 'FILE';
+    link.href = file.content;
+    link.download = file.fileName;
     link.click();
   }
-
-
-  editFile(index: number) {
-    const fileToEdit = this.uploadedFiles[index];
-    this.AttachmentForm.get('remarks')?.setValue(fileToEdit.remarks);
-  }
-  upload(file) {
-    this.progress = 1;
-    const formData = new FormData();
-    formData.append("file", file);
-    this.http
-      .post("your-url-here", formData, {
-        reportProgress: true,
-        observe: "events"
-      })
-      .pipe(
-        map((event: any) => {
-          if (event.type == HttpEventType.UploadProgress) {
-            this.progress = Math.round((100 / event.total) * event.loaded);
-          } else if (event.type == HttpEventType.Response) {
-            this.progress = null;
-          }
-        }),
-        catchError((err: any) => {
-          this.progress = null;
-          alert(err.message);
-          return throwError(err.message);
-        })
-      )
-      .toPromise();
-  }
-
-  /** ================= File Management ================= **/
-
-  addFiles(files: UploadedFile[]) {
-    this.uploadedFiles.push(...files);
-  }
-
-  removeFile(index: number) {
-    this.uploadedFiles.splice(index, 1);
-  }
-
-  clearFiles() {
-    this.uploadedFiles = [];
-  }
-
-  getFiles(): UploadedFile[] {
-    return this.uploadedFiles;
-  }
-
 
   async addAttachment(file: File) {
     if (!file) return;
 
     try {
-      const base64 = await this.attachmentService.toBase64(file);
+      const base64 = await this.toBase64(file);
+      const purchaseItemId = this.itemId ?? 0;
 
       const newAttachment = {
-        name: file.name,
-        type: file.type,
-        attachment: base64,
+        fileName: file.name,
+        contentType: file.type,
+        content: base64,
+        fromForm: 'Purchase Item Attachment',
+        purchaseItemId: purchaseItemId,
         isNew: true
       };
 
@@ -175,4 +97,45 @@ export class PurchaseRequestAttachmentModalComponent implements OnInit {
     }
   }
 
+  removeFile(index: number) {
+    this.uploadedFiles.splice(index, 1);
+  }
+
+  downloadAttachment(attachment: any) {
+    if (!attachment) return;
+
+    if (attachment.isNew) {
+      // Download from base64 string
+      const link = document.createElement('a');
+      link.href = attachment.attachment;
+      link.download = attachment.name;
+      link.click();
+    } else {
+      // Download from API if exists
+      this.http.get(`api/Quotation/Download-Attachment/${attachment.id}`, { responseType: 'blob' }).subscribe(blob => {
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = attachment.name;
+        link.click();
+        window.URL.revokeObjectURL(link.href);
+      });
+    }
+  }
+
+  private toBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  }
+
+  private emitChanges() {
+    this.attachmentsChange.emit(this.uploadedFiles);
+  }
+
+  closeDialog() {
+    this.activeModal.close(false);
+  }
 }

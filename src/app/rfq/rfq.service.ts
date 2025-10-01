@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
@@ -11,8 +11,10 @@ export class RfqService {
   private baseUrl = `${environment.apiUrl}/Quotation`;
   constructor(private http: HttpClient) { }
 
-  getAllQuotations(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/GetAllQuotations`);
+  getAllQuotations(userId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/GetAllQuotations/`, {
+      params: new HttpParams().set('userId', userId)
+    });
   }
 
   getQuotationById(id: number): Observable<any> {
@@ -24,11 +26,31 @@ export class RfqService {
   }
 
   updateQuotation(id: number, data: any): Observable<any> {
-    return this.http.put<any>(`${this.baseUrl}/UpdateQuotation/${id}`, data );
+    return this.http.put<any>(`${this.baseUrl}/UpdateQuotation/${id}`, data);
   }
 
   deleteQuotation(ids: number[]) {
     return this.http.delete(`${this.baseUrl}/DeleteQuotation/${ids}`);
+  }
+
+  getBidSubmissionDetailsByQuotation(quotationRequestId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/${quotationRequestId}/bid-details`);
+  }
+
+  getVendorComparison(quotationRequestId: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/vendor-comparison/${quotationRequestId}`);
+  }
+
+  addVendorsToQuotation(payload: any[]): Observable<any[]> {
+    return this.http.post<any[]>(`${this.baseUrl}/submit-vendors`, payload);
+  }
+
+  getVendorsByQuotationRequestId(quotationRequestId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/vendors/${quotationRequestId}`);
+  }
+
+  removeVendorsFromQuotation(payload: any) {
+    return this.http.post((`${this.baseUrl}/remove-vendors`), payload);
   }
 
   addRemarksWithActionTaken(data: any): Observable<any> {

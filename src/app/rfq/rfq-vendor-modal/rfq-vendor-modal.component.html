@@ -9,7 +9,7 @@
     <h4 class="mb-3">All Vendors</h4>
     <ngx-datatable
       class="bootstrap core-bootstrap"
-      [rows]="allVendors"
+      [rows]="allVendorsandCompanies"
       [columnMode]="'force'"
       [headerHeight]="50"
       [footerHeight]="40"
@@ -22,15 +22,16 @@
         <ng-template ngx-datatable-cell-template let-row="row">
             <button
             class="btn btn-sm text-bold btn-info"
-            [disabled]="isVendorAdded(row.vendorCode)"
+            [disabled]="isVendorAdded(row.id)"
             (click)="addVendor(row)">
             <i class="ft-plus"></i>
           </button>
+
         </ng-template>
       </ngx-datatable-column>
   
-      <ngx-datatable-column name="Vendor Code" prop="vendorCode" ></ngx-datatable-column>
-      <ngx-datatable-column name="Vendor Name" prop="vendorName"></ngx-datatable-column>
+      <ngx-datatable-column name="Vendor" prop="vendorName" ></ngx-datatable-column>
+      <ngx-datatable-column name="Company" prop="companyName" ></ngx-datatable-column>
     </ngx-datatable>
   
     <hr class="my-4" />
@@ -48,12 +49,12 @@
   
       <ngx-datatable-column  [sortable]="false">
         <ng-template ngx-datatable-cell-template let-row="row">
-          <button class="btn btn-sm btn-danger" (click)="removeVendor(row)">❌</button>
+          <button type="button" class="btn btn-sm btn-danger" (click)="removeVendor(row)">❌</button>
         </ng-template>
       </ngx-datatable-column>
   
-      <ngx-datatable-column name="Vendor Code" prop="vendorCode" ></ngx-datatable-column>
-      <ngx-datatable-column name="Vendor Name" prop="vendorName" ></ngx-datatable-column>
+      <ngx-datatable-column name="Vendor" prop="vendorName" ></ngx-datatable-column>
+      <ngx-datatable-column name="Company" prop="companyName" ></ngx-datatable-column>
   
       <ngx-datatable-column name="Action" [sortable]="false">
         <ng-template ngx-datatable-cell-template let-row="row">
@@ -67,4 +68,6 @@
     </ngx-datatable>
   </div>
   
-  
+  <div class="modal-footer">
+  <button class="btn btn-primary" (click)="onSubmit()">Submit</button>
+</div>

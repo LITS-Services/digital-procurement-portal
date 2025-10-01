@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, from } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from 'environments/environment';
 
 export interface UploadedFile {
@@ -34,8 +34,10 @@ export class PurchaseRequestService {
 
   /** ============== API Calls ============== **/
 
-  getPurchaseRequests(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/GetAllRequests`);
+  getPurchaseRequests(userId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/GetAllRequests`, {
+      params: new HttpParams().set('userId', userId)
+    });
   }
 
   deletePurchaseRequest(ids: number[]) {
@@ -46,10 +48,15 @@ export class PurchaseRequestService {
     return this.http.put(`${this.baseUrl}/UpdateRequest/${id}`, data);
   }
 
-  createPurchaseRequestWithFiles(payload: any) {
-    return this.http.post(`${this.baseUrl}/CreateRequest`, payload);
+  createPurchaseRequest(data: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/CreateRequest`, data);
   }
+
   getPurchaseRequestById(id: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/GetRequestById/${id}`);
+    return this.http.get<any>(`${this.baseUrl}/GetRequestById/${id}`);
+  }
+
+  addRemarksWithActionTaken(data: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/addRemarksWithActionTaken`, data);
   }
 }

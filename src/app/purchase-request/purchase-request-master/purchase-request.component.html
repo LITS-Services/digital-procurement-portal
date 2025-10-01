@@ -75,9 +75,12 @@
 
         <!-- Request Info -->
         <ngx-datatable-column name="Requisition No." prop="requisitionNo" [width]="100"></ngx-datatable-column>
-        <ngx-datatable-column name="Status" prop="status" [width]="100"></ngx-datatable-column>
-        <ngx-datatable-column name="Date" prop="submittedDate" [width]="100"></ngx-datatable-column>
-        <ngx-datatable-column name="Owner" prop="createdBy" [width]="100"></ngx-datatable-column>
+        <ngx-datatable-column name="Status" prop="requestStatus" [width]="100"></ngx-datatable-column>
+<ngx-datatable-column name="Date" prop="submittedDate" [width]="100">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{ row.submittedDate | date:'yyyy-MM-dd' }}
+                    </ng-template>
+                </ngx-datatable-column>        <ngx-datatable-column name="Owner" prop="createdBy" [width]="100"></ngx-datatable-column>
         <ngx-datatable-column name="Department" prop="department" [width]="100"></ngx-datatable-column>
 
         <!-- Expandable Row for Clones -->

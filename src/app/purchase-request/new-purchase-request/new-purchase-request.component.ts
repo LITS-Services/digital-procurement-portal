@@ -2,11 +2,14 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbAccordion, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
+import { ColumnMode, DatatableComponent, id, SelectionType } from '@swimlane/ngx-datatable';
+import { DatatableData } from 'app/data-tables/data/datatables.data';
 import { PurchaseRequestAttachmentModalComponent } from 'app/shared/modals/purchase-request-attachment-modal/purchase-request-attachment-modal.component';
 import { CompanyService, VendorUserDropdown } from 'app/shared/services/Company.services';
 import { PurchaseRequestService, UploadedFile } from 'app/shared/services/purchase-request-services/purchase-request.service';
 import { ToastrService } from 'ngx-toastr';
+import { PurchaseRequestRemarksComponent } from '../purchase-request-remarks/purchase-request-remarks.component';
+import { WorkflowServiceService } from 'app/shared/services/WorkflowService/workflow-service.service';
 
 @Component({
   selector: 'app-new-purchase-request',
@@ -16,22 +19,17 @@ import { ToastrService } from 'ngx-toastr';
 export class NewPurchaseRequestComponent implements OnInit {
   isNewForm = true; // true = create, false = edit
   isFormDirty = false; // track if any field was touched
+  currentRequisitionNo!: string;
+
+
   pendingAttachment: any[] = [];
   attachmentList: any[] = [];
   numberOfAttachments = 0;
 
-  newPurchaseRequestData = [
+  newPurchaseItemData = [];
 
-  ];
-
-  workflowList: any[] = [
-    {
-      id: 1, workflow: 'Vendor'
-    },
-    {
-      id: 2, workflow: 'Procurement'
-    }
-  ]
+  workflowList: any[] = []
+  workflowTypes: any[] = [];
 
   vendorUsers: any[] = [];
 
@@ -44,7 +42,8 @@ export class NewPurchaseRequestComponent implements OnInit {
 
   public chkBoxSelected = [];
   loading = false;
-  public rows = [];
+  // public rows = [];
+  public rows = DatatableData;
   columns = [];
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
@@ -52,7 +51,8 @@ export class NewPurchaseRequestComponent implements OnInit {
 
   @ViewChild('accordion') accordion: NgbAccordion;
   @ViewChild(DatatableComponent) table: DatatableComponent;
-
+  @ViewChild('tableRowDetails') tableRowDetails: any;
+  @ViewChild('tableResponsive') tableResponsive: any;
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -60,7 +60,9 @@ export class NewPurchaseRequestComponent implements OnInit {
     private purchaseRequestService: PurchaseRequestService,
     private companyService: CompanyService,
     private fb: FormBuilder,
-    public toastr: ToastrService
+    public toastr: ToastrService,
+    private WorkflowServiceService: WorkflowServiceService,
+
   ) { }
 
   ngOnInit(): void {
@@ -78,10 +80,10 @@ export class NewPurchaseRequestComponent implements OnInit {
         this.loadExistingRequest(+id);
       }
 
-      if (this.viewMode) {
-        this.newPurchaseRequestForm.disable();
-        this.itemForm.disable();
-      }
+      // if (this.viewMode) {
+      //   this.newPurchaseRequestForm.disable();
+      //   this.itemForm.disable();
+      // }
     });
 
     // Main form
@@ -91,56 +93,69 @@ export class NewPurchaseRequestComponent implements OnInit {
       deliveryLocation: [''],
       receiverName: [''],
       receiverContact: [''],
-      status: ['Draft'],
+      status: [''],
       department: [''],
       designation: [''],
       businessUnit: [''],
-      partialDeliveryAcceptable: [false],
-      exceptionPolicy: [false],
+      partialDeliveryAcceptable: [null],
+      exceptionPolicy: [null],
       subject: [''],
       workflowMasterId: [0],
+      workflowName: [''],
+      workflowType: [''],
       createdBy: [''],
-      attachments: this.fb.group({
-        specifications: [false],
-        drawing: [false],
-        scopeOfWorks: [false],
-        billOfMaterials: [false],
-        other: [''],
-        attachment: [''],
-        specialInstructions: ['']
-      })
+      // attachments: this.fb.group({
+      //   specifications: [false],
+      //   drawing: [false],
+      //   scopeOfWorks: [false],
+      //   billOfMaterials: [false],
+      //   other: [''],
+      //   attachment: [''],
+      //   specialInstructions: ['']
+      // })
     });
     this.newPurchaseRequestForm.valueChanges.subscribe(() => {
       this.isFormDirty = true;
     });
 
+    this.newPurchaseRequestForm.get('workflowType')?.valueChanges.subscribe(selectedId => {
+      if (selectedId) {
+        this.GetWorkflowMasterByTypeId(selectedId);
+      }
+    });
+
     // Item form
     this.itemForm = this.fb.group({
-      type: ['Inventory', Validators.required],
-      itemCode: ['', Validators.required],
+      id: [null],
+      requisitionNo: [''],
+      itemType: [''],
+      itemCode: [''],
       uofM: [''],
-      amount: [0, Validators.min(0)],
-      unitCost: [0, Validators.min(0)],
-      orderQuantity: [1, Validators.min(1)],
+      amount: [0],
+      unitCost: [0],
+      orderQuantity: [0],
       reqByDate: [null],
-      description: [''],
-      vendorUserId: [null, Validators.required],
+      itemDescription: [''],
+      vendorUserId: [''],
+      createdBy: [''],
       account: [''],
-      remarks: ['']
-    });
+      remarks: [''],
+      purchaseRequestId: [0],
+      attachments: this.fb.group([])
+    })
     this.itemForm.valueChanges.subscribe(() => {
       this.isFormDirty = true;
     });
 
 
-    // Check if editing existing request
-    this.route.queryParamMap.subscribe(params => {
-      const id = params.get('id');
-      if (id) {
-        this.currentRequestId = +id;
-        this.loadExistingRequest(+id);
-      }
-    });
+    // // Check if editing existing request
+    // this.route.queryParamMap.subscribe(params => {
+    //   const id = params.get('id');
+    //   if (id) {
+    //     this.currentRequestId = +id;
+    //     this.loadExistingRequest(+id);
+    //   }
+    // });
 
     if (this.viewMode) {
       this.newPurchaseRequestForm.disable();
@@ -154,60 +169,125 @@ export class NewPurchaseRequestComponent implements OnInit {
     });
   }
 
+  onWorkflowTypeChange(selectedId: number): void {
+    if (selectedId) {
+      this.GetWorkflowMasterByTypeId(selectedId);
+    }
+  }
+
+  GetWorkflowMasterByTypeId(id: number): void {
+    this.WorkflowServiceService.GetWorkflowMasterByTypeId(id).subscribe({
+      next: (data: any) => {
+        // Fix: Extract $values if it exists
+        this.workflowList = data.$values ?? data;
+      },
+      error: (err) => {
+        console.error("Error fetching workflow master list:", err);
+      }
+    });
+  }
+
+  getWorkflowTypes(): void {
+    this.WorkflowServiceService.getWorkflowTypes().subscribe({
+      next: (data: any) => {
+        // Fix: Extract $values if it exists
+        this.workflowTypes = data.$values ?? data;
+      },
+      error: (err) => {
+        console.error("Error fetching workflow types:", err);
+      }
+    });
+  }
   getVendorNameById(id: number): string {
     const found = this.vendorUsers.find(v => v.id === id);
     return found ? found.name : '';
   }
+  private toDateInputValue(date: any): string | null {
+    if (!date) return null;
+    const d = new Date(date);
+    return d.toISOString().split('T')[0];
+  }
 
   // Insert or Update item
-  insertItem(): void {
-    if (this.itemForm.invalid) {
-      console.warn("Item form is invalid");
-      return;
-    }
+  // insertItem(): void {
+  //   if (this.itemForm.invalid) {
+  //     console.warn("Item form is invalid");
+  //     return;
+  //   }
 
+  //   const newItem = this.itemForm.value;
+
+  //   if (this.editingRowIndex !== null) {
+  //     // Update existing row
+  //     this.newPurchaseRequestData[this.editingRowIndex] = newItem;
+  //     this.editingRowIndex = null; // reset editing
+  //   } else {
+  //     // Add new row
+  //     this.newPurchaseRequestData = [...this.newPurchaseRequestData, newItem];
+  //   }
+
+  //   // Reset form
+  //   this.itemForm.reset({
+  //     type: 'Inventory',
+  //     amount: 0,
+  //     unitCost: 0,
+  //     orderQuantity: 1
+  //   });
+  // }
+
+  insertItem(): void {
     const newItem = this.itemForm.value;
 
     if (this.editingRowIndex !== null) {
-      // Update existing row
-      this.newPurchaseRequestData[this.editingRowIndex] = newItem;
-      this.editingRowIndex = null; // reset editing
-    } else {
-      // Add new row
-      this.newPurchaseRequestData = [...this.newPurchaseRequestData, newItem];
-    }
+      const existing = this.newPurchaseItemData[this.editingRowIndex];
 
-    // Reset form
-    this.itemForm.reset({
-      type: 'Inventory',
-      amount: 0,
-      unitCost: 0,
-      orderQuantity: 1
-    });
+      const merged = {
+        ...existing,
+        ...newItem,
+        attachments: existing?.attachments ?? []
+      };
+
+      this.newPurchaseItemData = this.newPurchaseItemData.map((item, index) =>
+        index === this.editingRowIndex ? merged : item
+      );
+
+      this.editingRowIndex = null;
+    } else {
+      const withEmptyAttachments = {
+        ...newItem,
+        attachments: newItem.attachments?.length ? newItem.attachments : []
+      };
+      this.newPurchaseItemData = [...this.newPurchaseItemData, withEmptyAttachments];
+    }
+    this.toastr.success('Item inserted!', '');
+
+    this.itemForm.reset();
   }
 
   // Edit a row
   editRow(row: any, rowIndex: number) {
     this.itemForm.patchValue({
-      type: row.type,
+      id: row.id,
+      itemType: row.itemType,
       itemCode: row.itemCode,
       uofM: row.uofM,
       amount: row.amount,
       unitCost: row.unitCost,
       orderQuantity: row.orderQuantity,
-      reqByDate: row.reqByDate ? new Date(row.reqByDate) : null,
-      description: row.description,
+      reqByDate: this.toDateInputValue(row.reqByDate),
+      itemDescription: row.itemDescription,
       vendorUserId: row.vendorUserId,
       account: row.account,
-      remarks: row.remarks
+      remarks: row.remarks,
+      attachments: row.attachments
     });
     this.editingRowIndex = rowIndex;
   }
 
   deleteRow(rowIndex: number): void {
-    this.newPurchaseRequestData.splice(rowIndex, 1);
-    this.newPurchaseRequestData = [...this.newPurchaseRequestData]; // refresh table
-    this.toastr.success('Delete!', '');
+    this.newPurchaseItemData.splice(rowIndex, 1);
+    this.newPurchaseItemData = [...this.newPurchaseItemData]; // refresh table
+    this.toastr.success('Item deleted!', '');
   }
 
   loadExistingRequest(id: number) {
@@ -216,30 +296,65 @@ export class NewPurchaseRequestComponent implements OnInit {
         console.log("update data: ", data)
         this.isNewForm = false;
         this.currentRequestId = data.id;
-        this.newPurchaseRequestForm.patchValue(data);
+        this.currentRequisitionNo = data.requisitionNo;
+        // this.newPurchaseRequestForm.patchValue(data);
+        // patch values with formatted dates
+        this.newPurchaseRequestForm.patchValue({
+          ...data,
+          submittedDate: this.toDateInputValue(data.submittedDate)
+        });
+
+        if (data.requestStatus?.status) {
+          this.newPurchaseRequestForm.patchValue({
+            status: data.requestStatus.status
+          });
+        }
+
         if (data.items.$values) {
-          this.newPurchaseRequestData = data.items.$values.map((item: any) => ({
-            type: item.itemType,
+          this.newPurchaseItemData = data.items.$values.map((item: any) => ({
+            id: item.id,
+            requisitionNo: item.requisitionNo,
+            itemType: item.itemType,
             itemCode: item.itemCode,
-            description: item.itemDescription,
+            itemDescription: item.itemDescription,
             amount: item.amount,
             unitCost: item.unitCost,
             uofM: item.uofM,
             orderQuantity: item.orderQuantity,
-            reqByDate: item.reqByDate,
+            reqByDate: this.toDateInputValue(item.reqByDate),
             vendorUserId: item.vendorUserId,
             account: item.account,
-            remarks: item.remarks
+            remarks: item.remarks,
+            createdBy: item.createdBy,
+            purchaseRequestId: item.purchaseRequestId,
+            attachments: item.attachments?.$values?.map((a: any) => ({
+              // specifications: a.specifications || '',
+              // drawing: a.drawing || '',
+              // scopeOfWorks: a.scopeOfWorks || '',
+              // billOfMaterials: a.billOfMaterials || '',
+              // other: a.other || '',
+              // specialInstructions: a.specialInstructions || '',
+              content: a.content || '',
+              contentType: a.contentType || '',
+              fileName: a.fileName || '',
+              fromForm: a.fromForm || '',
+              createdDate: a.createdDate,
+              modifiedDate: a.modifiedDate,
+              createdBy: a.createdBy || 'current-user',
+              isDeleted: a.isDeleted || false,
+              purchaseItemId: a.purchaseItemId || 0,
+              isNew: false
+            })) || []
           }));
         }
-        this.attachmentList = data.attachments?.$values.map((a: any) => ({
-          name: a.name,
-          type: a.type,
-          attachment: a.attachment,
-          isNew: false
-        }))
-        this.pendingAttachment = [];
-        this.numberOfAttachments = this.attachmentList.length;
+        // this.attachmentList = data.attachments?.$values.map((a: any) => ({
+        //   name: a.name,
+        //   type: a.type,
+        //   attachment: a.attachment,
+        //   isNew: false
+        // }))
+        // this.pendingAttachment = [];
+        // this.numberOfAttachments = this.attachmentList.length;
       },
 
       error: (err) => console.error('Failed to load purchase request:', err)
@@ -263,62 +378,69 @@ export class NewPurchaseRequestComponent implements OnInit {
   }
 
   saveAsDraftAndGoBack() {
-    if (this.newPurchaseRequestForm.invalid) {
-      return;
-    }
+    // if (this.newPurchaseRequestForm.invalid) {
+    //   return;
+    // }
 
     const f = this.newPurchaseRequestForm.value;
+    const submittedDateISO = f.date ? new Date(f.submittedDate).toISOString() : new Date().toISOString();
 
-    const payload = {
-      requisitionNo: f.requisitionNo,
-      submittedDate: new Date().toISOString(),
-      deliveryLocation: f.deliveryLocation,
-      receiverName: f.receiverName,
-      receiverContact: f.receiverContact,
-      status: 'Draft',
-      department: f.department,
-      designation: f.designation,
-      businessUnit: f.businessUnit,
-      partialDeliveryAcceptable: f.partialDeliveryAcceptable,
-      exceptionPolicy: f.exceptionPolicy,
-      subject: f.subject,
-      workflowMasterId: Number(f.workflowMasterId) || 0,
-      createdBy: f.createdBy || 'current-user',
-      attachments: this.attachmentList.map(att => ({
-        requisitionNo: f.requisitionNo,
-        specifications: f.attachments.specifications,
-        drawing: f.attachments.drawing,
-        scopeOfWorks: f.attachments.scopeOfWorks,
-        billOfMaterials: f.attachments.billOfMaterials,
-        other: f.attachments.other,
-        specialInstructions: f.attachments.specialInstructions,
-        attachment: att.attachment,
-        type: att.type,
-        name: att.name,
-        createdBy: f.createdBy || 'current-user',
-      })),
-      purchaseItems: this.newPurchaseRequestData.map(item => ({
-        itemType: item.type || 'Inventory',
+    const purchaseItems = this.newPurchaseItemData?.length
+      ? this.newPurchaseItemData.map(item => ({
+        itemType: item.itemType || '',
         itemCode: item.itemCode || '',
         uofM: item.uofM || '',
-        amount: Number(item.amount) || 0,
-        unitCost: Number(item.unitCost) || 0,
-        orderQuantity: Number(item.orderQuantity) || 0,
-        reqByDate: item.reqByDate ? new Date(item.reqByDate).toISOString() : null,
-        itemDescription: item.description || '',
-        vendorUserId: item.vendorUserId || null,
+        amount: item.amount || 0,
+        unitCost: item.unitCost || 0,
+        orderQuantity: item.orderQuantity || 0,
+        reqByDate: item.reqByDate || new Date(),
+        itemDescription: item.itemDescription || '',
         account: item.account || '',
         remarks: item.remarks || '',
+        createdBy: item.createdBy || 'current-user',
+        purchaseRequestId: item.purchaseRequestId || 0,
+        vendorUserId: item.vendorUserId || '',
         requisitionNo: f.requisitionNo,
-        createdBy: f.createdBy || 'current-user',
+        attachments: item.attachments?.map(att => ({
+          // specifications: att.specifications || '',
+          // drawing: att.drawing || '',
+          // scopeOfWorks: att.scopeOfWorks || '',
+          // billOfMaterials: att.billOfMaterials || '',
+          // other: att.other || '',
+          // specialInstructions: att.specialInstructions || '',
+          content: att.content || '',
+          contentType: att.contentType || '',
+          fileName: att.fileName || '',
+          fromForm: att.fromForm || '',
+          createdBy: 'current-user',
+          isDeleted: false,
+          purchaseItemId: att.purchaseItemId || 0,
+        }))
       }))
+      : [];
+
+    const payload = {
+      requisitionNo: f.requisitionNo || '',
+      submittedDate: f.submittedDate,
+      deliveryLocation: f.deliveryLocation || '',
+      receiverName: f.receiverName || '',
+      receiverContact: f.receiverContact || '',
+      status: 'Draft',
+      department: f.department || '',
+      designation: f.designation || '',
+      businessUnit: f.businessUnit || '',
+      partialDeliveryAcceptable: f.partialDeliveryAcceptable || false,
+      exceptionPolicy: f.exceptionPolicy || false,
+      subject: f.subject || '',
+      workflowMasterId: Number(f.workflowMasterId) || 0,
+      createdBy: f.createdBy || 'USER',
+      purchaseItems
     };
 
     this.loading = true;
 
-    const request$ = this.isNewForm
-      ? this.purchaseRequestService.createPurchaseRequestWithFiles(payload)
-      : this.purchaseRequestService.updatePurchaseRequest(this.currentRequestId, payload);
+
+    const request$ = this.purchaseRequestService.createPurchaseRequest({ purchaseRequest: payload});
 
     request$.subscribe({
       next: () => this.handleDraftSuccess(),
@@ -327,7 +449,7 @@ export class NewPurchaseRequestComponent implements OnInit {
   }
 
   private handleDraftSuccess() {
-   
+
     this.loading = false;
     this.toastr.success('Draft saved successfully');
     this.router.navigate(['/purchase-request']);
@@ -341,63 +463,65 @@ export class NewPurchaseRequestComponent implements OnInit {
 
 
   submitForm() {
-    if (!this.newPurchaseRequestForm.valid) {
-      console.warn('Form is invalid');
-      return;
-    }
+    // if (!this.newPurchaseRequestForm.valid) {
+    //   console.warn('Form is invalid');
+    //   return;
+    // }
 
     const f = this.newPurchaseRequestForm.value;
     const submittedDateISO = f.submittedDate ? new Date(f.submittedDate).toISOString() : new Date().toISOString();
 
-    const purchaseItems = this.newPurchaseRequestData.map(item => ({
-      itemType: item.type || 'Inventory',
-      itemCode: item.itemCode || '',
-      uofM: item.uofM || '',
-      amount: Number(item.amount) || 0,
-      unitCost: Number(item.unitCost) || 0,
-      orderQuantity: Number(item.orderQuantity) || 0,
-      reqByDate: item.reqByDate ? new Date(item.reqByDate).toISOString() : null,
-      itemDescription: item.description || '',
-      vendorUserId: item.vendorUserId || null,
-      account: item.account || '',
-      remarks: item.remarks || '',
-      requisitionNo: f.requisitionNo,
-      createdBy: f.createdBy || 'current-user',
-    }));
+    const purchaseItems = this.newPurchaseItemData?.length
+      ? this.newPurchaseItemData.map(item => ({
+        itemType: item.itemType || '',
+        itemCode: item.itemCode || '',
+        uofM: item.uofM || '',
+        amount: item.amount || 0,
+        unitCost: item.unitCost || 0,
+        orderQuantity: item.orderQuantity || 0,
+        reqByDate: item.reqByDate || new Date(),
+        itemDescription: item.itemDescription || '',
+        account: item.account || '',
+        remarks: item.remarks || '',
+        createdBy: item.createdBy || 'current-user',
+        purchaseRequestId: item.purchaseRequestId || 0,
+        vendorUserId: item.vendorUserId || '',
+        requisitionNo: f.requisitionNo,
+        attachments: item.attachments?.map(att => ({
+          // specifications: att.specifications || '',
+          // drawing: att.drawing || '',
+          // scopeOfWorks: att.scopeOfWorks || '',
+          // billOfMaterials: att.billOfMaterials || '',
+          // other: att.other || '',
+          // specialInstructions: att.specialInstructions || '',
+          content: att.content || '',
+          contentType: att.contentType || '',
+          fileName: att.fileName || '',
+          fromForm: att.fromForm || '',
+          createdBy: 'current-user',
+          isDeleted: false,
+          purchaseItemId: att.purchaseItemId || 0,
+        }))
+      }))
+      : [];
 
     const payload = {
       requisitionNo: f.requisitionNo,
-      submittedDate: submittedDateISO,
+      submittedDate: f.submittedDate,
       deliveryLocation: f.deliveryLocation,
       receiverName: f.receiverName,
       receiverContact: f.receiverContact,
-      status: f.status,
+      // status: f.status,
       department: f.department,
       designation: f.designation,
       businessUnit: f.businessUnit,
       partialDeliveryAcceptable: f.partialDeliveryAcceptable,
       exceptionPolicy: f.exceptionPolicy,
       subject: f.subject,
-      workflowMasterId: Number(f.workflowMasterId) || 0,
-      createdBy: f.createdBy || 'current-user',
-      attachments: this.attachmentList.map(att => ({
-        requisitionNo: f.requisitionNo,
-        specifications: f.attachments.specifications,
-        drawing: f.attachments.drawing,
-        scopeOfWorks: f.attachments.scopeOfWorks,
-        billOfMaterials: f.attachments.billOfMaterials,
-        other: f.attachments.other,
-        specialInstructions: f.attachments.specialInstructions,
-        attachment: att.attachment,
-        type: att.type,
-        name: att.name,
-        createdBy: f.createdBy || 'current-user',
-      })),
-
+      workflowMasterId: f.workflowMasterId,
+      createdBy: f.createdBy || 'USER',
       purchaseItems
     };
-
-    this.loading = true;
 
     if (this.currentRequestId) {
       this.purchaseRequestService.updatePurchaseRequest(this.currentRequestId, payload).subscribe({
@@ -407,21 +531,19 @@ export class NewPurchaseRequestComponent implements OnInit {
           this.router.navigate(['/purchase-request']);
           this.toastr.success('Request is updated!', '');
         },
-
-
-
         error: err => {
           console.error('Error updating Purchase Request:', err);
           this.toastr.success('Something went Wrong', '');
           this.loading = false;
         }
       });
-    } else {
-      this.purchaseRequestService.createPurchaseRequestWithFiles(payload).subscribe({
+    }
+    else {
+      this.purchaseRequestService.createPurchaseRequest({ purchaseRequest: payload }).subscribe({
         next: res => {
           console.log('Purchase Request Created:', res);
-          this.attachmentList.forEach(a => a.isNew = false);
-          this.numberOfAttachments = this.attachmentList.length;
+          // this.attachmentList.forEach(a => a.isNew = false);
+          // this.numberOfAttachments = this.attachmentList.length;
           this.loading = false;
 
           this.router.navigate(['/purchase-request']);
@@ -436,32 +558,129 @@ export class NewPurchaseRequestComponent implements OnInit {
     }
   }
 
-  openNewEntityModal() {
+  // openNewEntityModal() {
+  //   const modalRef = this.modalService.open(PurchaseRequestAttachmentModalComponent, {
+  //     backdrop: 'static',
+  //     size: 'lg',
+  //     centered: true,
+  //   });
+  //   modalRef.componentInstance.data = {
+  //     existingAttachment: this.attachmentList
+  //   }
+  //   modalRef.componentInstance.viewMode = this.viewMode;
+  //   modalRef.result.then((data: any[]) => {
+  //     this.pendingAttachment = data;
+  //     this.attachmentList = [
+  //       ...this.attachmentList, ...data.map(a => ({
+  //         name: a.name,
+  //         type: a.type,
+  //         attachment: a.attachment,
+  //         IsNew: true
+  //       }))
+  //     ]
+  //     this.numberOfAttachments = this.attachmentList.length;
+  //   })
+  // }
+
+  openNewEntityModal(rowIndex: number): void {
+    const sourceRow = rowIndex !== null
+      ? this.newPurchaseItemData[rowIndex] : this.itemForm.value; // new item (not yet inserted)
+    console.log("Source Row:", sourceRow);
     const modalRef = this.modalService.open(PurchaseRequestAttachmentModalComponent, {
       backdrop: 'static',
       size: 'lg',
       centered: true,
     });
-    modalRef.componentInstance.data = {
-      existingAttachment: this.attachmentList
-    }
+
     modalRef.componentInstance.viewMode = this.viewMode;
+    modalRef.componentInstance.data = {
+      purchaseItemId: sourceRow?.id ?? 0,
+      existingAttachment: sourceRow?.attachments || []
+    };
+
     modalRef.result.then((data: any[]) => {
-      this.pendingAttachment = data;
-      this.attachmentList = [
-        ...this.attachmentList, ...data.map(a => ({
-          name: a.name,
-          type: a.type,
-          attachment: a.attachment,
-          IsNew: true
-        }))
-      ]
-      this.numberOfAttachments = this.attachmentList.length;
-    })
+      if (data?.length) {
+        const merged = [
+          ...(sourceRow.attachments || []),
+          ...data.map(a => ({
+            // specifications: a.specifications,
+            // drawing: a.drawing,
+            // scopeOfWorks: a.scopeOfWorks,
+            // billOfMaterials: a.billOfMaterials,
+            // other: a.other,
+            // specialInstructions: a.specialInstructions,
+            fileName: a.fileName,
+            contentType: a.contentType,
+            content: a.content,
+            fromForm: a.fromForm,
+            purchaseItemId: sourceRow?.id ?? 0,
+            isNew: true
+          }))
+        ];
+
+        if (rowIndex !== null) {
+          // immutably update the edited row in the grid
+          this.newPurchaseItemData = this.newPurchaseItemData.map((r, i) =>
+            i === rowIndex ? { ...r, attachments: merged } : r
+          );
+
+        } else {
+          // reflect on the form for a new (not yet inserted) item
+          this.itemForm.patchValue({ attachments: merged });
+        }
+        // this.numberOfAttachments = this.attachmentList.length;
+      }
+    }).catch(() => { });
   }
 
   hasUnsavedChanges(): boolean {
-    return this.newPurchaseRequestForm.dirty || this.itemForm.dirty || this.newPurchaseRequestData.length > 0;
+    return this.newPurchaseRequestForm.dirty || this.itemForm.dirty || this.newPurchaseItemData.length > 0;
+  }
+
+  onAddRemarks(action: string): void {
+    const modalRef = this.modalService.open(PurchaseRequestRemarksComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      centered: true
+    });
+    modalRef.componentInstance.action = action;
+    modalRef.componentInstance.requisitionNo = this.currentRequisitionNo;
+
+    modalRef.result.then(
+      (result) => {
+        if (result) {
+          this.loading = true;
+          const payload = {
+            RequisitionNo: this.currentRequisitionNo,
+            Remarks: result.remarks,
+            ActionTaken: action,
+            ApproverId: localStorage.getItem('userId')
+          };
+
+          this.purchaseRequestService.addRemarksWithActionTaken(payload).subscribe({
+            next: res => {
+              this.loading = false;
+              if (res.message == "Approved") {
+                this.router.navigate(['/purchase-request']);
+                this.toastr.success(res.message);
+              }
+              else {
+                this.toastr.warning(res.message);
+              }
+            },
+            error: err => {
+              this.toastr.warning('Something went Wrong', '');
+              this.loading = false;
+            }
+          });
+
+
+        }
+      },
+      (reason) => {
+        console.log(`Modal dismissed: ${reason}`);
+      }
+    );
   }
 
 }  

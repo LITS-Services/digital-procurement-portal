@@ -88,4 +88,10 @@ getVendorUsers(): Observable<VendorUserDropdown> {
 //   deleteCompany(id: number): Observable<any> {
 //     return this.http.delete<any>(`${this.apiUrl}/${id}`);
 //   }
+
+// Done by Sahal
+getVendorsAndCompaniesForRfq(): Observable<any[]> {
+  return this.http.get<any[]>(`${this.apiUrl}/get-all-vendors-companies-for-rfq`);
+}
+
 }

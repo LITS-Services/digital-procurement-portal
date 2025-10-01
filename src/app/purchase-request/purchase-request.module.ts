@@ -19,6 +19,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { PurchaseRequestApprovalComponent } from './purchase-request-approval/purchase-request-approval.component';
 import { NewPurchaseRequestComponent } from './new-purchase-request/new-purchase-request.component';
+import { PurchaseRequestRemarksComponent } from './purchase-request-remarks/purchase-request-remarks.component';
 
 
 @NgModule({
@@ -49,7 +50,8 @@ import { NewPurchaseRequestComponent } from './new-purchase-request/new-purchase
     PurchaseRequestComponent,
     PurchaseRequestApprovalComponent,
     NewPurchaseRequestComponent,
-    PurchaseRequestApprovalComponent
+    PurchaseRequestApprovalComponent,
+    PurchaseRequestRemarksComponent
   ],
 })
 export class PurchaseRequestModule { }

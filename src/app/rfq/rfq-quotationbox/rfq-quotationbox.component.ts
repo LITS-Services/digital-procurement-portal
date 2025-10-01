@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { RfqService } from '../rfq.service';
 
 @Component({
   selector: 'app-rfq-quotationbox',
@@ -16,154 +17,125 @@ export class RfqQuotationboxComponent implements OnInit {
   public chkBoxSelected = [];
   loading = false;
   rfqData = []; // Will fill with dummy data in ngOnInit
+  itemsData: any[] = [];     // Selected vendor’s items
+  vendorItemMap: any = {};   // Keeps mapping vendor → item list
   isAllSelected: boolean = false;
-  itemsData = [];
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
   public rows = [];
   columns = [];
   isCreateMode = false;
-  newPurchaseRequestForm: FormGroup;
+  newQuotationBoxForm: FormGroup;
   constructor(
     private router: Router,
     public activeModal: NgbActiveModal,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private rfqService: RfqService
 
   ) { }
 
   ngOnInit(): void {
+    this.newQuotationBoxForm = this.fb.group({
+      rfqNo: [''],
+      purchaseRequestNo: [''],
+      status: [''],
+      owner: [''],
+      date: [null],
+      title: [''],
+      comment: [''],
+    
+    })
+ if (this.data && this.data.quotationId) {
+      this.loadVendors(this.data.quotationId); // load bids for given quotationRequestId
+    }
 
-    this.itemsData = [
-      {
-        itemCode: 'ITM001',
-        deliveryDate: '2025-05-05',
-        description: 'Item 1 Description',
-        amount: 1200
-      },
-      {
-        itemCode: 'ITM002',
-        deliveryDate: '2025-05-10',
-        description: 'Item 2 Description',
-        amount: 850
-      },
-      {
-        itemCode: 'ITM003',
-        deliveryDate: '2025-05-12',
-        description: 'Item 3 Description',
-        amount: 460
-      },
-      {
-        itemCode: 'ITM004',
-        deliveryDate: '2025-05-15',
-        description: 'Item 4 Description',
-        amount: 1390
-      },
-      {
-        itemCode: 'ITM005',
-        deliveryDate: '2025-05-18',
-        description: 'Item 5 Description',
-        amount: 299
-      }
-    ]
-    this.rfqData = [
-      {
-        requisitionNo: 'SUP-001',
-        status: 'Alpha Supplies Ltd.',
-        amount: 12500.00,
-        date: '2025-05-21',
-        owner: '30 Days',
-        subject: 'Pending for Quotation'
-      },
-      {
-        requisitionNo: 'SUP-002',
-        status: 'Beta Industrial Co.',
-        amount: 9850.75,
-        date: '2025-05-21',
-        owner: '30 Days',
-        subject: 'Pending for Quotation'
-      },
-      {
-        requisitionNo: 'SUP-003',
-        status: 'Gamma Traders',
-        amount: 15200.00,
-        date: '2025-05-21',
-        owner: '30 Days',
-        subject: 'Pending for Quotation'
-      },
-      {
-        requisitionNo: 'SUP-004',
-        status: 'Delta Tech Inc.',
-        amount: 17500.99,
-        date: '2025-05-21',
-        owner: '30 Days',
-        subject: 'Pending for Approval'
-      },
-      {
-        requisitionNo: 'SUP-005',
-        status: 'Epsilon Distributors',
-        amount: 11000.00,
-        date: '2025-05-21',
-        owner: '30 Days',
-        subject: 'Draft'
-      },
-      {
-        requisitionNo: 'SUP-006',
-        status: 'Zeta Equipments',
-        amount: 21000.45,
-        date: '2025-05-21',
-        owner: '30 Days',
-        subject: 'Pending for Approval'
-      },
-      {
-        requisitionNo: 'SUP-007',
-        status: 'Eta Chemicals',
-        amount: 8700.30,
-        date: '2025-05-21',
-        owner: '30 Days',
-        subject: 'Pending for Approval'
-      },
-      {
-        requisitionNo: 'SUP-008',
-        status: 'Theta Metals',
-        amount: 9500.00,
-        date: '2025-05-21',
-        owner: '30 Days',
-        subject: 'Pending for Approval'
-      },
-      {
-        requisitionNo: 'SUP-009',
-        status: 'Iota Logistics',
-        amount: 13250.75,
-        date: '2025-05-21',
-        owner: '30 Days',
-        subject: 'Pending for Quotation'
-      },
-      {
-        requisitionNo: 'SUP-010',
-        status: 'Kappa Services',
-        amount: 10200.90,
-        date: '2025-05-21',
-        owner: '30 Days',
-        subject: 'Draft'
-      }
-    ];
+  }
+// loadVendors(quotationRequestId: number) {
+//     this.loading = true;
+//     this.rfqService.getBidSubmissionDetailsByQuotation(quotationRequestId).subscribe({
+//       next: (res: any[]) => {
+//         const vendorMap: any = {};
 
-    this.newPurchaseRequestForm = this.fb.group({
-      rfqNo: ['', Validators.required],
-      prNo: ['', Validators.required],
-      date: ['', Validators.required],
-      supplier: ['', Validators.required],
-      amount: ['', Validators.required],
-      specifications: ['', Validators.required],
-      paymentTerms: ['', Validators.required],
-      validity: ['', Validators.required],
-      delivery: ['', Validators.required],
-      deviation: ['', Validators.required],
-      creator: ['', Validators.required],
-      information: ['', Validators.required],
+//         res.forEach(bid => {
+//           if (!vendorMap[bid.vendorUserId]) {
+//             vendorMap[bid.vendorUserId] = {
+//               vendorUserId: bid.vendorUserId,
+//               biddingAmount: 0,
+//               items: []
+//             };
+//           }
+//           vendorMap[bid.vendorUserId].biddingAmount += bid.biddingAmount;
+//           vendorMap[bid.vendorUserId].items.push(bid);
+//         });
 
-    });
+//         this.rfqData = Object.values(vendorMap); // vendor table
+//         this.vendorItemMap = vendorMap;
+//         this.loading = false;
+//       },
+//       error: err => {
+//         console.error('Error fetching bid details', err);
+//         this.loading = false;
+//       }
+//     });
+//   }
 
+loadVendors(quotationRequestId: number) {
+  this.loading = true;
+  this.rfqService.getBidSubmissionDetailsByQuotation(quotationRequestId).subscribe({
+    next: (res: any) => {
+      // Navigate into res.vendors.$values safely
+      const vendors = res?.vendors?.$values || [];
+      this.newQuotationBoxForm.patchValue({
+        quotationRequestId: res?.quotationRequestId,
+        rfqNo: res?.rfqNo,
+        purchaseRequestNo: res?.purchaseRequestNo,
+        owner: res?.owner,
+        title: res?.title,
+        date: res?.date,
+        status: res?.status,
+        comment: res?.comment
+      })
+
+      // Map only vendor users list
+      this.rfqData = vendors.map((vendor: any) => ({
+        vendorUserId: vendor.vendorUserId,
+        vendorName: vendor.vendorName,
+        amount: vendor.amount,
+      }));
+console.log( "RFQ DATA: ", this.rfqData);
+ // Vendor → Items map (children)
+      this.vendorItemMap = {};
+      vendors.forEach((vendor: any) => {
+        this.vendorItemMap[vendor.vendorUserId] = {
+          items: vendor?.bids?.$values || []
+        };
+      });
+      this.loading = false;
+
+      
+    },
+    error: err => {
+      console.error('Error fetching bid details', err);
+      this.loading = false;
+    }
+  });
+}
+
+
+
+  view() {
+    if (this.chkBoxSelected.length !== 1) {
+      alert('Please select exactly one vendor to view their quotation.');
+      return;
+    }
+    const selectedVendor = this.chkBoxSelected[0];
+    this.itemsData = this.vendorItemMap[selectedVendor.vendorUserId].items;
+    this.isCreateMode = true;
+  }
+ backToVendors() {
+    this.isCreateMode = false;
+    this.chkBoxSelected = [];
+    this.itemsData = [];
   }
 
 
@@ -177,10 +149,10 @@ export class RfqQuotationboxComponent implements OnInit {
   }
 
   submitForm() {
-    if (this.newPurchaseRequestForm.valid) {
-      this.rfqData.push(this.newPurchaseRequestForm.value);
+    if (this.newQuotationBoxForm.valid) {
+      this.rfqData.push(this.newQuotationBoxForm.value);
       this.isCreateMode = false;
-      this.newPurchaseRequestForm.reset();
+      this.newQuotationBoxForm.reset();
     }
   }
   customChkboxOnSelect({ selected }) {
@@ -209,3 +181,6 @@ export class RfqQuotationboxComponent implements OnInit {
     }
   }
 }
+
+
+

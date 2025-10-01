@@ -49,8 +49,10 @@ export class RfqComponent implements OnInit {
   }
 
   loadRfqs() {
+        const userId = localStorage.getItem('userId'); 
+
     this.loading = true;
-    this.rfqService.getAllQuotations().subscribe({
+    this.rfqService.getAllQuotations(userId).subscribe({
       next: (data: any) => {
         this.rfqData = data?.$values || [];
         console.log('Raw API Response:', data);
@@ -182,6 +184,18 @@ export class RfqComponent implements OnInit {
     const modalRef = this.modalService.open(VendorComparisionComponent, { size: 'lg', backdrop: 'static', centered: true });
     modalRef.componentInstance.data = row;  // Pass selected row data if needed
   }
+
+//   openVendorComparisonModal(quotationRequestId: number) {
+//   this.rfqService.getVendorComparison(quotationRequestId).subscribe({
+//     next: (res) => {
+//       const modalRef = this.modalService.open(VendorComparisionComponent, { size: 'lg', backdrop: 'static' });
+//       modalRef.componentInstance.data = res; // Pass API response into modal
+//     },
+//     error: (err) => {
+//       console.error('Failed to load vendor comparison', err);
+//     }
+//   });
+// }
 
 }
 

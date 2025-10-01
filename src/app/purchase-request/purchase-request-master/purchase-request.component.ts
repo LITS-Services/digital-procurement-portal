@@ -24,7 +24,7 @@ export class PurchaseRequestComponent implements OnInit {
   isDeleteButtonDisabled = true;
   isOpenButtonDisabled = true;
   isAllSelected = false;
-
+columns = [];
 
   constructor(
     private router: Router,
@@ -44,9 +44,10 @@ export class PurchaseRequestComponent implements OnInit {
    */
 
   loadPurchaseRequests() {
+    const userId = localStorage.getItem('userId'); 
     this.loading = true;
 
-    this.purchaseRequestService.getPurchaseRequests().subscribe({
+    this.purchaseRequestService.getPurchaseRequests(userId).subscribe({
       next: (data: any) => {
         // 🔹 Directly assign the values (skip grouping logic)
         this.purchaseRequestData = data?.$values || [];
