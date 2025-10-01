@@ -64,7 +64,7 @@ export class CompanyListingComponent implements OnInit {
     this.companyService.getVendorCompanies().subscribe({
       next: (res: any) => {
         const companies = res?.$values || [];
-        const filtered = companies.filter(c => c.status?.toLowerCase() === 'inprogress');
+        const filtered = companies.filter(c => c.status?.toLowerCase() === 'inprocess');
 
         this.tenderingData = filtered.map(c => {
           const primaryAddress = c.addressesVM?.$values?.[0] || {};
@@ -113,7 +113,7 @@ export class CompanyListingComponent implements OnInit {
         const companies = responses
           .map(r => r.$values || [])
           .reduce((acc, val) => acc.concat(val), []);
-        const filtered = companies.filter(c => c.status?.toLowerCase() === 'inprogress');
+        const filtered = companies.filter(c => c.status?.toLowerCase() === 'inprocess');
 
         this.tenderingData = filtered.map(c => {
           const primaryAddress = c.addressesVM?.$values?.[0] || {};
