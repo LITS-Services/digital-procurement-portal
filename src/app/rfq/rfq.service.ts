@@ -30,4 +30,8 @@ export class RfqService {
   deleteQuotation(ids: number[]) {
     return this.http.delete(`${this.baseUrl}/DeleteQuotation/${ids}`);
   }
+
+  addRemarksWithActionTaken(data: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/addRemarksWithActionTaken`, data);
+  }
 }

@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbAccordion, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAccordion, NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { DatatableData } from 'app/data-tables/data/datatables.data';
 import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
@@ -10,6 +10,7 @@ import { ToastrService } from 'ngx-toastr';
 import { RfqService } from '../rfq.service';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { WorkflowServiceService } from 'app/shared/services/WorkflowService/workflow-service.service';
+import { RfqRemarksComponent } from '../rfq-remarks/rfq-remarks.component';
 
 @Component({
   selector: 'app-new-rfq',
@@ -18,6 +19,7 @@ import { WorkflowServiceService } from 'app/shared/services/WorkflowService/work
 })
 
 export class NewRfqComponent implements OnInit {
+  currentRfqNo!: string;
   isNewForm = true; // true = create, false = edit
   isFormDirty = false; // track if any field was touched
   numberOfAttachments = 0;
@@ -59,7 +61,7 @@ export class NewRfqComponent implements OnInit {
     private rfqService: RfqService,
     private companyService: CompanyService,
     private attachmentService: PurchaseRequestService,
-     private WorkflowServiceService: WorkflowServiceService,
+    private WorkflowServiceService: WorkflowServiceService,
   ) { }
 
   ngOnInit(): void {
@@ -95,19 +97,19 @@ export class NewRfqComponent implements OnInit {
       purchaseRequestId: [0],
       workflowName: [''],
       workflowType: [''],
-  
+
     });
 
     this.newRfqForm.valueChanges.subscribe(() => {
       this.isFormDirty = true;
     });
 
-    
-      this.newRfqForm.get('workflowType')?.valueChanges.subscribe(selectedId => {
-    if (selectedId) {
-      this.GetWorkflowMasterByTypeId(selectedId);
-    }
-  });
+
+    this.newRfqForm.get('workflowType')?.valueChanges.subscribe(selectedId => {
+      if (selectedId) {
+        this.GetWorkflowMasterByTypeId(selectedId);
+      }
+    });
 
     this.itemForm = this.fb.group({
       id: [null],
@@ -147,10 +149,10 @@ export class NewRfqComponent implements OnInit {
   }
 
   onWorkflowTypeChange(selectedId: number): void {
-  if (selectedId) {
-    this.GetWorkflowMasterByTypeId(selectedId);
+    if (selectedId) {
+      this.GetWorkflowMasterByTypeId(selectedId);
+    }
   }
-}
 
   GetWorkflowMasterByTypeId(id: number): void {
     this.WorkflowServiceService.GetWorkflowMasterByTypeId(id).subscribe({
@@ -164,7 +166,7 @@ export class NewRfqComponent implements OnInit {
     });
   }
 
- getWorkflowTypes(): void {
+  getWorkflowTypes(): void {
     this.WorkflowServiceService.getWorkflowTypes().subscribe({
       next: (data: any) => {
         // Fix: Extract $values if it exists
@@ -189,6 +191,8 @@ export class NewRfqComponent implements OnInit {
         console.log("update data: ", data)
         this.isNewForm = false;
         this.currentQuotationId = data.id;
+        this.currentRfqNo = data.rfqNo;  // ✅ store rfqNo here
+
         this.newRfqForm.patchValue(data);
         if (data.quotationItems.$values) {
           this.newQuotationItemData = data.quotationItems.$values.map((item: any) => ({
@@ -526,5 +530,54 @@ export class NewRfqComponent implements OnInit {
     this.toastr.error('Failed to save draft');
     console.error('Error saving draft:', err);
   }
+
+
+  onAddRemarks(action: string): void {
+    const modalRef = this.modalService.open(RfqRemarksComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      centered: true
+    });
+    modalRef.componentInstance.action = action;
+    modalRef.componentInstance.rfqNo = this.currentRfqNo;
+
+    modalRef.result.then(
+      (result) => {
+        if (result) {
+          this.loading = true;
+          const payload = {
+            RfqNo: this.currentRfqNo,
+            Remarks: result.remarks,
+            ActionTaken: action
+          };
+
+          this.rfqService.addRemarksWithActionTaken(payload).subscribe({
+            next: res => {
+              this.loading = false;
+              if(res.message=="Approved")
+              {
+              this.router.navigate(['/rfq']);
+              this.toastr.success(res.message);
+              }
+              else
+              {
+                this.toastr.warning(res.message);
+              }
+            },
+            error: err => {
+              this.toastr.warning('Something went Wrong', '');
+              this.loading = false;
+            }
+          });
+
+
+        }
+      },
+      (reason) => {
+        console.log(`Modal dismissed: ${reason}`);
+      }
+    );
+  }
+
 }
 

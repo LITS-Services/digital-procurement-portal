@@ -38,6 +38,25 @@
               </button>
             </ng-container>
 
+            <ng-container *ngIf="viewMode">
+              <button class="btn btn-sm" [disabled]="newRfqForm.invalid" (click)="onAddRemarks('Approve')">
+                <i class="ft-check"></i><label class="ml-1 mt-1">Approve</label>
+              </button>
+
+              <button class="btn btn-sm" [disabled]="newRfqForm.invalid" (click)="onAddRemarks('Reject')">
+                <i class="ft-x"></i><label class="ml-1 mt-1">Reject</label>
+              </button>
+
+              <button class="btn btn-sm" [disabled]="newRfqForm.invalid" (click)="onAddRemarks('SendBack')">
+                <i class="ft-arrow-left"></i><label class="ml-1 mt-1">Send Back</label>
+              </button>
+
+              <button class="btn btn-sm" [disabled]="newRfqForm.invalid" (click)="onAddRemarks('Submit')">
+                <i class="ft-check"></i><label class="ml-1 mt-1">Submit</label>
+              </button>
+            </ng-container>
+
+
             <!-- <button type="reset" class="btn btn-sm">
               <i class="ft-edit"></i><label class="ml-1 mt-1" for="">Edit</label>
             </button>
@@ -421,7 +440,7 @@
                     <!-- Edit button -->
                     <a matTooltip="Attachment" style="cursor: pointer; color: #d1d4d7;"
                       (click)="openNewEntityModal(rowIndex)" [ngClass]="{'disabled': actionType === 'View'}">
-                    <!-- <a matTooltip="Attachment" style="cursor: pointer; color: #d1d4d7;"
+                      <!-- <a matTooltip="Attachment" style="cursor: pointer; color: #d1d4d7;"
                       (click)="openNewEntityModal(rowIndex)" [ngClass]="{'disabled': actionType === 'View'}"> -->
                       <i style="font-size: 1.5rem;" class="ft-paperclip mr-1"></i>
                     </a>
