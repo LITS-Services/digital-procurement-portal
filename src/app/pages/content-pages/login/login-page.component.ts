@@ -4,13 +4,11 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { AuthService } from 'app/shared/auth/auth.service';
 import { NgxSpinnerService } from "ngx-spinner";
 
-
 @Component({
   selector: 'app-login-page',
   templateUrl: './login-page.component.html',
   styleUrls: ['./login-page.component.scss']
 })
-
 export class LoginPageComponent {
 
   loginFormSubmitted = false;
@@ -22,77 +20,85 @@ export class LoginPageComponent {
     rememberMe: new UntypedFormControl(true)
   });
 
-
-  constructor(private router: Router, private authService: AuthService,
+  constructor(
+    private router: Router,
+    private authService: AuthService,
     private spinner: NgxSpinnerService,
-    private route: ActivatedRoute) {
-  }
+    private route: ActivatedRoute
+  ) { }
 
   get lf() {
     return this.loginForm.controls;
   }
 
   // On submit button click
-onSubmit() {
-  this.loginFormSubmitted = true;
-  if (this.loginForm.invalid) return;
+  onSubmit() {
+    this.loginFormSubmitted = true;
+    if (this.loginForm.invalid) return;
 
-  this.spinner.show(undefined, {
-    type: 'ball-triangle-path',
-    size: 'medium',
-    bdColor: 'rgba(0, 0, 0, 0.8)',
-    color: '#fff',
-    fullScreen: true
-  });
+    this.spinner.show(undefined, {
+      type: 'ball-triangle-path',
+      size: 'medium',
+      bdColor: 'rgba(0, 0, 0, 0.8)',
+      color: '#fff',
+      fullScreen: true
+    });
 
-this.authService.signinUser(
-  this.loginForm.value.username, 
-  this.loginForm.value.password
-).subscribe(
-  (res: any) => {
-    this.spinner.hide();
+    this.authService.signinUser(
+      this.loginForm.value.username, 
+      this.loginForm.value.password
+    ).subscribe(
+      (res: any) => {
+        this.spinner.hide();
 
-    // Save token
-    localStorage.setItem('token', res.token);
+        // Save token
+        localStorage.setItem('token', res.token);
 
-    // Save user info
-    localStorage.setItem('userId', res.userId);
-    localStorage.setItem('userName', res.userName);
+        // Save user info
+        localStorage.setItem('id', res.id || '');
+        localStorage.setItem('userId', res.userId || '');
+        localStorage.setItem('userName', res.userName || '');
 
-    // ✅ Save roles (extract from $values array)
-    const roles = res?.roles?.$values || [];
-    console.log('Extracted roles:', roles); // Debug
-    localStorage.setItem('roles', JSON.stringify(roles));
+        // Save roles
+        const roles = res?.roles?.$values || [];
+        console.log('Extracted roles:', roles);
+        localStorage.setItem('roles', JSON.stringify(roles));
 
-    // Save companyIds properly
-    const companyIds = res?.companyIds?.$values || [];
-    console.log('Extracted companyIds:', companyIds); // Debug
-    localStorage.setItem('companyIds', JSON.stringify(companyIds));
+        // Save roles $id
+        const rolesId = res?.roles?.$id || '';
+        console.log('Roles $id:', rolesId);
+        localStorage.setItem('rolesId', rolesId);
 
-    this.router.navigate(['/dashboard/dashboard1']);
-  },
-  (err: any) => {
-    this.isLoginFailed = true;
-    this.spinner.hide();
-    console.error('Login error:', err);
+        // Save companyIds
+        const companyIds = res?.companyIds?.$values || [];
+        console.log('Extracted companyIds:', companyIds);
+        localStorage.setItem('companyIds', JSON.stringify(companyIds));
+
+        // Save companyIds $id
+        const companyIdsId = res?.companyIds?.$id || '';
+        console.log('CompanyIds $id:', companyIdsId);
+        localStorage.setItem('companyIdsId', companyIdsId);
+
+        // Navigate to dashboard
+        this.router.navigate(['/dashboard/dashboard1']);
+      },
+      (err: any) => {
+        this.isLoginFailed = true;
+        this.spinner.hide();
+        console.error('Login error:', err);
+      }
+    );
   }
-);
-
-}
-
-
-
 
   rememberMe() {
-
+    // implement if needed
   }
+
   forgotpassword() {
+    // implement if needed
+  }
 
+  SSO(event: Event) {
+    // implement if needed
   }
- SSO(event: Event) {
- 
-  }
-  // onSubmit() {
-   
-  // }
 }

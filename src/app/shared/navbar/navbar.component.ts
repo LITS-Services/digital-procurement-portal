@@ -4,6 +4,7 @@ import { LayoutService } from '../services/layout.service';
 import { ConfigService } from '../services/config.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
+import { CompanyService } from 'app/shared/services/Company.services';
 import { UntypedFormControl } from '@angular/forms';
 import { LISTITEMS } from '../data/template-search';
 import { Subscription } from 'rxjs';
@@ -30,6 +31,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   layoutSub: Subscription;
   configSub: Subscription;
   username: string;
+  profilePicture: string = "assets/img/profile/user.png"; // default avatar
+
   @ViewChild('search') searchElement: ElementRef;
   @ViewChildren('searchResults') searchResults: QueryList<any>;
 
@@ -44,8 +47,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     public translate: TranslateService,
     private layoutService: LayoutService,
     private router: Router,
-    public authService: AuthService, // <-- make it public to use in template
-    private configService: ConfigService, 
+    public authService: AuthService,
+    private configService: ConfigService,
+    private companyService: CompanyService,
     private cdr: ChangeDetectorRef
   ) {
     const browserLang: string = translate.getBrowserLang();
@@ -60,15 +64,31 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.listItems = LISTITEMS;
-    this.username = this.authService.getUserName(); // use auth service instead of localStorage
     this.isSmallScreen = this.innerWidth < 1200;
+
+    // Fetch user data from API
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      this.companyService.getprocurementusersbyid(userId).subscribe({
+        next: (res: any) => {
+          if (res) {
+            this.username = res.fullName || this.authService.getUserName();
+            this.profilePicture = res.profilePicture || "assets/img/profile/user.png";
+          }
+        },
+        error: () => {
+          this.username = this.authService.getUserName();
+          this.profilePicture = "assets/img/profile/user.png";
+        }
+      });
+    } else {
+      this.username = this.authService.getUserName();
+    }
   }
 
   ngAfterViewInit() {
     this.configSub = this.configService.templateConf$.subscribe((templateConf) => {
-      if (templateConf) {
-        this.config = templateConf;
-      }
+      if (templateConf) this.config = templateConf;
       this.loadLayout();
       this.cdr.markForCheck();
     });
@@ -93,9 +113,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   loadLayout() {
-    if (this.config.layout.menuPosition) {
-      this.menuPosition = this.config.layout.menuPosition;
-    }
+    if (this.config.layout.menuPosition) this.menuPosition = this.config.layout.menuPosition;
     this.logoUrl = (this.config.layout.variant === "Light") ? 'assets/img/logo-dark.png' : 'assets/img/logo.png';
     this.transparentBGClass = (this.config.layout.variant === "Transparent") ? this.config.layout.sidebar.backgroundColor : "";
   }
@@ -104,13 +122,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.searchResults && this.searchResults.length > 0) {
       this.searchResults.first.host.nativeElement.classList.add('first-active-item');
     }
-
-    if (event.target.value === "") {
-      this.seachTextEmpty.emit(true);
-    }
-    else {
-      this.seachTextEmpty.emit(false);
-    }
+    this.seachTextEmpty.emit(event.target.value === "");
   }
 
   removeActiveClass() {
@@ -128,7 +140,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   onEnter() {
     if (this.searchResults && this.searchResults.length > 0) {
       let url = this.searchResults.first.url;
-      if (url && url != '') {
+      if (url) {
         this.control.setValue("");
         this.searchOpenClass = '';
         this.router.navigate([url]);
@@ -142,58 +154,27 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.seachTextEmpty.emit(true);
   }
 
-
   ChangeLanguage(language: string) {
     this.translate.use(language);
-
-    if (language === 'en') {
-      this.selectedLanguageText = "English";
-      this.selectedLanguageFlag = "./assets/img/flags/us.png";
-    }
-    else if (language === 'es') {
-      this.selectedLanguageText = "Spanish";
-      this.selectedLanguageFlag = "./assets/img/flags/es.png";
-    }
-    else if (language === 'pt') {
-      this.selectedLanguageText = "Portuguese";
-      this.selectedLanguageFlag = "./assets/img/flags/pt.png";
-    }
-    else if (language === 'de') {
-      this.selectedLanguageText = "German";
-      this.selectedLanguageFlag = "./assets/img/flags/de.png";
-    }
-    else if (language === 'ar') {
-      this.selectedLanguageText = "Arabic";
-      this.selectedLanguageFlag = "./assets/img/flags/de.png";
+    switch (language) {
+      case 'en': this.selectedLanguageText = "English"; this.selectedLanguageFlag = "./assets/img/flags/us.png"; break;
+      case 'es': this.selectedLanguageText = "Spanish"; this.selectedLanguageFlag = "./assets/img/flags/es.png"; break;
+      case 'pt': this.selectedLanguageText = "Portuguese"; this.selectedLanguageFlag = "./assets/img/flags/pt.png"; break;
+      case 'de': this.selectedLanguageText = "German"; this.selectedLanguageFlag = "./assets/img/flags/de.png"; break;
+      case 'ar': this.selectedLanguageText = "Arabic"; this.selectedLanguageFlag = "./assets/img/flags/de.png"; break;
     }
   }
 
   ToggleClass() {
-    if (this.toggleClass === "ft-maximize") {
-      this.toggleClass = "ft-minimize";
-    } else {
-      this.toggleClass = "ft-maximize";
-    }
+    this.toggleClass = this.toggleClass === "ft-maximize" ? "ft-minimize" : "ft-maximize";
   }
 
   toggleSearchOpenClass(display) {
     this.control.setValue("");
-    if (display) {
-      this.searchOpenClass = 'open';
-      setTimeout(() => {
-        this.searchElement.nativeElement.focus();
-      }, 0);
-    }
-    else {
-      this.searchOpenClass = '';
-    }
+    this.searchOpenClass = display ? 'open' : '';
+    if (display) setTimeout(() => this.searchElement.nativeElement.focus(), 0);
     this.seachTextEmpty.emit(true);
-
-
-
   }
-
-
 
   toggleNotificationSidebar() {
     this.layoutService.toggleNotificationSidebar(true);

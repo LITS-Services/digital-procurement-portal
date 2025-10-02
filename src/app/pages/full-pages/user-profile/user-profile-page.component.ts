@@ -3,11 +3,12 @@ import { Subscription } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { ConfigService } from 'app/shared/services/config.service';
 import { LayoutService } from 'app/shared/services/layout.service';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { ToastrService } from 'ngx-toastr';
 
 import { SwiperDirective, SwiperConfigInterface } from 'ngx-swiper-wrapper';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-user-profile-page',
@@ -27,6 +28,7 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
   @ViewChild(SwiperDirective, { static: false }) directiveRef?: SwiperDirective;
 
   public userForm: FormGroup;
+  public resetPasswordForm: FormGroup;
   public profileImage: string | ArrayBuffer | null = 'assets/img/profile/user.png';
   public userId: string;
 
@@ -38,11 +40,12 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
     private companyService: CompanyService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private modalService: NgbModal
   ) {
     this.config = this.configService.templateConf;
 
-    // Initialize form
+    // User Profile Form
     this.userForm = this.fb.group({
       userName: [{ value: '', disabled: true }],
       fullName: [{ value: '', disabled: true }],
@@ -53,24 +56,53 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
       roles: [[]],
       companies: [[]]
     });
-  }
+
+    // Reset Password Form
+    this.resetPasswordForm = this.fb.group({
+      oldPassword: ['', Validators.required],
+      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required]
+    }, { validators: this.passwordMatchValidator });
+  }showOldPassword = false;
+showNewPassword = false;
+showConfirmPassword = false;
 
   ngOnInit() {
     this.layoutSub = this.configService.templateConf$.subscribe((templateConf) => {
       if (templateConf) {
         this.config = templateConf;
       }
+      
       this.cdr.markForCheck();
     });
 
-    // Get userId from localStorage
     this.userId = localStorage.getItem('userId') || '';
-
     if (this.userId) {
       this.loadUserData(this.userId);
     }
-  }
 
+     this.resetPasswordForm = this.fb.group({
+    oldPassword: ['', Validators.required],
+    newPassword: ['', [
+      Validators.required,
+      Validators.minLength(6),
+      Validators.pattern(/^(?=.*[A-Z])(?=.*\d).{6,}$/) // at least 1 uppercase & 1 number
+    ]],
+    confirmPassword: ['', Validators.required]
+  }, { validators: [this.passwordMatchValidator, this.newNotEqualOldValidator] });
+  }
+passwordMatchValidato(group: FormGroup) {
+  const newPass = group.get('newPassword')?.value;
+  const confirmPass = group.get('confirmPassword')?.value;
+  return newPass === confirmPass ? null : { passwordMismatch: true };
+}
+
+// ✅ New password must not equal old password
+newNotEqualOldValidator(group: FormGroup) {
+  const oldPass = group.get('oldPassword')?.value;
+  const newPass = group.get('newPassword')?.value;
+  return oldPass && newPass && oldPass === newPass ? { sameAsOld: true } : null;
+}
   ngAfterViewInit() {
     let conf = this.config;
     conf.layout.sidebar.collapsed = true;
@@ -86,6 +118,45 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
     }
   }
 
+  // ✅ Password match validator
+  passwordMatchValidator(group: FormGroup) {
+    const newPass = group.get('newPassword')?.value;
+    const confirmPass = group.get('confirmPassword')?.value;
+    return newPass === confirmPass ? null : { passwordMismatch: true };
+  }
+
+  // ✅ Open Reset Password Modal
+  openResetPassword(content: any) {
+    this.resetPasswordForm.reset();
+    this.modalService.open(content, { centered: true, backdrop: 'static' });
+  }
+
+  // ✅ Handle Reset Password
+  onResetPassword(modal: any) {
+    if (this.resetPasswordForm.invalid || !this.userId) {
+      this.toastr.error("Please fill all fields correctly");
+      return;
+    }
+
+    const payload = {
+      userid: this.userId,
+      oldPassword: this.resetPasswordForm.get('oldPassword')?.value,
+      newPassword: this.resetPasswordForm.get('newPassword')?.value
+    };
+
+    this.companyService.resetPassword(payload).subscribe({
+      next: () => {
+        this.toastr.success('Password updated successfully');
+        this.resetPasswordForm.reset();
+        modal.close(); // ✅ Close modal on success
+      },
+      error: (err) => {
+        console.error('Error resetting password', err);
+        this.toastr.error('Failed to reset password');
+      }
+    });
+  }
+
   // Load user data from API
   loadUserData(id: string) {
     this.companyService.getprocurementusersbyid(id).subscribe({
@@ -95,13 +166,12 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
           fullName: res.fullName,
           email: res.email,
           phoneNumber: res.phoneNumber || '',
-          officeLocation: '', // Map if API provides
-          mailingAddress: '', // Map if API provides
+          officeLocation: '',
+          mailingAddress: '',
           roles: res.roles?.$values || [],
           companies: res.companies?.$values || []
         });
 
-        // Set profile image Base64 if exists
         if (res.profilePicture) {
           this.profileImage = res.profilePicture;
         }
@@ -113,28 +183,25 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
     });
   }
 
-  // Handle profile image change and convert to Base64
+  // Profile image change
   onProfileImageChange(event: any) {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        // Save the image as Base64 string
         this.profileImage = e.target?.result as string;
       };
       reader.readAsDataURL(file);
     }
   }
 
-  // Save form changes
+  // Save changes
   saveChanges() {
     if (!this.userId) return;
 
-    // Map company IDs as numbers
     const companies = this.userForm.get('companies')?.value || [];
     const selectedCompanyIds: number[] = companies.map((c: any) => Number(c.id));
 
-    // Map role IDs as strings
     const roles = this.userForm.get('roles')?.value || [];
     const selectedRoleIds: string[] = roles.map((r: any) => r.id);
 
@@ -145,12 +212,11 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
       email: this.userForm.get('email')?.value,
       phoneNumber: this.userForm.get('phoneNumber')?.value,
       isDeleted: false,
-      profilePicture: this.profileImage, // Base64 string
+      profilePicture: this.profileImage,
       selectedCompanyIds: selectedCompanyIds,
       selectedRoleIds: selectedRoleIds
     };
 
-    // Call API
     this.companyService.ProcurmentuserUpdate(this.userId, updateData).subscribe({
       next: () => {
         this.toastr.success('User updated successfully');

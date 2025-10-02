@@ -15,8 +15,10 @@
 
             <input type="file" (change)="onProfileImageChange($event)" id="profileImageUpload" accept="image/*" style="display: none;">
 
-            <label for="profileImageUpload" class="profile-upload-overlay-btn btn btn-custom-primary btn-sm rounded-circle position-absolute p-2 text-white" 
-                   title="Change Profile Picture" style="bottom: 5px; right: 5px; cursor: pointer;">
+            <label for="profileImageUpload" 
+                   class="profile-upload-overlay-btn btn btn-custom-primary btn-sm rounded-circle position-absolute p-2 text-white" 
+                   title="Change Profile Picture" 
+                   style="bottom: 5px; right: 5px; cursor: pointer;">
               <i class="fas fa-camera fa-lg"></i>
             </label>
           </div>
@@ -27,7 +29,7 @@
               <i class="fas fa-user-circle me-2 text-custom-primary"></i> {{ userForm.get('fullName')?.value }}
             </h4>
             <p class="text-muted mb-0 d-flex align-items-center justify-content-center">
-              <i class="fas fa-envelope me-2 text-secondary"></i> {{ userForm.get('email')?.value }}
+              <i class="fas fa-envelope me-2 text-secondary"style="margin-right: 5px;"></i> {{ userForm.get('email')?.value }}
             </p>
             <span class="badge bg-custom-primary mt-3 py-2 px-3">
               <i class="fas fa-code me-1"></i> 
@@ -37,7 +39,7 @@
 
           <!-- Reset Password Button -->
           <div class="d-grid gap-3 w-100 mt-auto pt-4 border-top">
-            <button type="button" class="btn btn-danger btn-lg shadow-sm" data-bs-toggle="modal" data-bs-target="#resetPasswordModal">
+            <button type="button" class="btn btn-danger btn-md shadow-sm" (click)="openResetPassword(resetPasswordModal)">
               <i class="fas fa-lock me-2"></i> Reset Password
             </button>
           </div>
@@ -48,49 +50,49 @@
 
     <!-- Edit Employee Details Form -->
     <div class="col-lg-7 col-md-10">
-      <div class="card p-5 h-100 shadow-lg border-0" style="border-radius: 12px;">
+      <div class="card p-5 h-100 shadow-lg border-0 position-relative" style="border-radius: 12px;">
+
         <h3 class="mb-5 fw-light text-custom-primary border-bottom pb-3"> 
           <i class="fas fa-edit me-2"></i> Edit Employee Details
         </h3>
 
-        <form [formGroup]="userForm" (ngSubmit)="saveChanges()">
-          <div class="row g-5"> 
+        <form [formGroup]="userForm" (ngSubmit)="saveChanges()" class="h-100 d-flex flex-column">
+          <div class="row g-5 flex-grow-1"> 
 
             <!-- Username (disabled) -->
             <div class="col-md-6">
               <label class="form-label d-flex align-items-center mb-2">
-                <i class="fas fa-user me-2 text-secondary"></i> Username
+                <i class="fas fa-user me-2 text-secondary"style=" margin-right: 7px;"></i> Username
               </label>
-              <input type="text" class="form-control form-control-lg" formControlName="userName" disabled>
+              <input type="text" class="form-control form-control-sm" formControlName="userName" disabled>
             </div>
 
             <!-- Full Name (disabled) -->
             <div class="col-md-6">
               <label class="form-label d-flex align-items-center mb-2">
-                <i class="fas fa-id-badge me-2 text-secondary"></i> Full Name
+                <i class="fas fa-id-badge me-2 text-secondary"style=" margin-right: 7px;"></i> Full Name
               </label>
-              <input type="text" class="form-control form-control-lg" formControlName="fullName" disabled>
+              <input type="text" class="form-control form-control-sm" formControlName="fullName" disabled>
             </div>
 
             <!-- Email (disabled) -->
             <div class="col-12">
               <label class="form-label d-flex align-items-center mb-2">
-                <i class="fas fa-envelope me-2 text-secondary"></i> Email
+                <i class="fas fa-envelope me-2 text-secondary" style=" margin-right: 7px;"></i> Email
               </label>
-              <input type="email" class="form-control form-control-lg" formControlName="email" disabled>
+              <input type="email" class="form-control form-control-sm" formControlName="email" disabled>
             </div>
 
+          </div>
 
-            <!-- Buttons -->
-            <div class="col-12 mt-5 text-end">
-              <button type="reset" class="btn btn-outline-secondary btn-lg px-5 me-3 shadow-sm">
-                <i class="fas fa-times me-2"></i> Cancel
-              </button>
-              <button type="submit" class="btn btn-custom-primary btn-lg px-5 shadow-sm">
-                <i class="fas fa-check me-2"></i> Save Changes
-              </button>
-            </div>
-
+          <!-- Buttons aligned bottom-right -->
+          <div class="d-flex justify-content-end mt-4">
+            <button type="reset" class="btn btn-outline-secondary btn-sm px-4 me-3 shadow-sm" style=" margin-right: 7px;">
+              <i class="fas fa-times me-2"></i> Cancel
+            </button>
+            <button type="submit" class="btn btn-custom-primary btn-sm px-4 shadow-sm">
+              <i class="fas fa-check me-2"></i> Save Changes
+            </button>
           </div>
         </form>
       </div>
@@ -98,23 +100,64 @@
   </div>
 </section>
 
-<!-- Reset Password Modal -->
-<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="resetPasswordModalLabel"><i class="fas fa-exclamation-triangle me-2"></i> Password Security</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body p-4">
-        <p>A secure password reset link will be sent to your registered email:</p>
-        <p class="fw-bold text-custom-primary">{{ userForm.get('email')?.value }}</p>
-        <small class="text-danger">Please check your spam folder if you don't receive the email within a few minutes.</small>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-danger">Send Reset Link</button>
-      </div>
-    </div>
+<!-- Reset Password Modal using NgbModal -->
+<ng-template #resetPasswordModal let-modal>
+  <div class="modal-header bg-danger text-white">
+    <h5 class="modal-title">
+      <i class="fas fa-key me-2"></i> Reset Password
+    </h5>
+    <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="modal.dismiss()"></button>
   </div>
-</div>
+
+  <form [formGroup]="resetPasswordForm" (ngSubmit)="onResetPassword(modal)">
+    <div class="modal-body p-4">
+
+      <!-- Old Password -->
+      <div class="mb-3">
+        <label class="form-label"><i class="fas fa-lock me-2 text-secondary"></i> Old Password</label>
+        <div class="input-group">
+          <input [type]="showOldPassword ? 'text' : 'password'" formControlName="oldPassword" 
+                 class="form-control form-control-sm" placeholder="Enter old password">
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="showOldPassword = !showOldPassword">
+            <i class="fas" [ngClass]="showOldPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- New Password -->
+      <div class="mb-3">
+        <label class="form-label"><i class="fas fa-unlock-alt me-2 text-secondary"></i> New Password</label>
+        <div class="input-group">
+          <input [type]="showNewPassword ? 'text' : 'password'" formControlName="newPassword" 
+                 class="form-control form-control-sm" placeholder="Enter new password">
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="showNewPassword = !showNewPassword">
+            <i class="fas" [ngClass]="showNewPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+          </button>
+        </div>
+        <small class="text-danger" *ngIf="resetPasswordForm.get('newPassword')?.invalid && resetPasswordForm.get('newPassword')?.touched">
+          Password must be at least 6 characters, include 1 uppercase letter and 1 number, and must not match old password.
+        </small>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="mb-3">
+        <label class="form-label"><i class="fas fa-check-circle me-2 text-secondary"></i> Confirm Password</label>
+        <div class="input-group">
+          <input [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword" 
+                 class="form-control form-control-sm" placeholder="Confirm new password">
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="showConfirmPassword = !showConfirmPassword">
+            <i class="fas" [ngClass]="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+          </button>
+        </div>
+        <small class="text-danger" *ngIf="resetPasswordForm.hasError('passwordMismatch') && resetPasswordForm.get('confirmPassword')?.touched">
+          Passwords do not match.
+        </small>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-secondary btn-sm px-4 me-2" (click)="modal.dismiss()">Close</button>
+      <button type="submit" class="btn btn-danger btn-sm px-4" [disabled]="resetPasswordForm.invalid">Change Password</button>
+    </div>
+  </form>
+</ng-template>

@@ -53,7 +53,7 @@ export class CompanyListingComponent implements OnInit {
     ];
   }
 
-  getCompanyData() {
+getCompanyData() {
   this.loading = true;
 
   // Check if the user is admin
@@ -96,23 +96,20 @@ export class CompanyListingComponent implements OnInit {
     });
 
   } else {
-    // Non-admin: fetch companies by user entity
-    const storedIds: string[] = JSON.parse(localStorage.getItem('companyIds') || '[]');
-    if (!storedIds || storedIds.length === 0) {
-      console.warn('No companyIds found in localStorage');
+    // Non-admin: fetch companies by UserId from localStorage
+    const userId = localStorage.getItem('userId'); // <-- fetch UserId
+    if (!userId) {
+      console.warn('No userId found in localStorage');
       this.tenderingData = [];
       this.rows = [];
       this.loading = false;
       return;
     }
 
-    const requests = storedIds.map(id => this.companyService.getCompaniesByUserEntity(id));
-
-    forkJoin(requests).subscribe({
-      next: (responses: any[]) => {
-        const companies = responses
-          .map(r => r.$values || [])
-          .reduce((acc, val) => acc.concat(val), []);
+    // Call API with userId
+    this.companyService.getCompaniesByUserEntity(userId).subscribe({
+      next: (res: any) => {
+        const companies = res?.$values || [];
         const filtered = companies.filter(c => c.status?.toLowerCase() === 'inprocess');
 
         this.tenderingData = filtered.map(c => {
@@ -138,13 +135,14 @@ export class CompanyListingComponent implements OnInit {
         this.rows = [...this.tenderingData];
         this.loading = false;
       },
-      error: err => {
-        console.error('Error fetching companies:', err);
+      error: (err) => {
+        console.error('Error fetching companies by user:', err);
         this.loading = false;
       }
     });
   }
 }
+
 
 
   homePage() {

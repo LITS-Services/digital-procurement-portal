@@ -24,9 +24,9 @@ return this.http.get<any[]>(`${environment.apiUrl}/Employee/GetAllEmployees`);
 registerEmployee(data: any): Observable<any> {
   return this.http.post<any>(`${environment.apiUrl}/Employee/Create`, data);
 }
-getCompaniesByUserEntity(procurmentCompanyId: string): Observable<any[]> {
+getCompaniesByUserEntity(userId: string): Observable<any[]> {
   return this.http.post<any[]>(`${environment.apiUrl}/Company/get-companies-by-user-entity`, {
-    procurmentCompanyId: procurmentCompanyId
+    userId: userId
   });
 }
 
@@ -85,6 +85,9 @@ getRoles(): Observable<any[]> {
   }
 
 
+resetPassword(payload: any) {
+  return this.http.post(`${environment.apiUrl}/ProcurementUsers/ChangePassword/`, payload);
+}
 
 
 ProcurmentuserUpdate(id: string, data: any): Observable<any> {
