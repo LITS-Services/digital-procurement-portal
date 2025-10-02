@@ -22,6 +22,7 @@ import { VendorComparisionComponent } from './vendor-comparision/vendor-comparis
 import { NewRfqComponent } from './new-rfq/new-rfq.component';
 import { RfqAttachmentComponent } from './rfq-attachment/rfq-attachment.component';
 import { RfqRemarksComponent } from './rfq-remarks/rfq-remarks.component';
+import { RfqApprovalHistoryComponent } from './rfq-approval-history/rfq-approval-history.component';
 
 
 @NgModule({
@@ -32,7 +33,8 @@ import { RfqRemarksComponent } from './rfq-remarks/rfq-remarks.component';
     VendorComparisionComponent,
     NewRfqComponent,
     RfqAttachmentComponent,
-    RfqRemarksComponent
+    RfqRemarksComponent,
+    RfqApprovalHistoryComponent
   ],
   imports: [
     CommonModule,

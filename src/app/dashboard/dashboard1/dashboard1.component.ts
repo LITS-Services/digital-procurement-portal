@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as Chartist from 'chartist';
 import { ChartType, ChartEvent } from "ng-chartist";
 import ChartistTooltip from 'chartist-plugin-tooltips-updated';
 import { TranslateService } from '@ngx-translate/core';
+import { HttpClient } from '@angular/common/http';
+import { DashboardService } from 'app/shared/services/dashboard.service';
 
 declare var require: any;
 
@@ -17,17 +19,32 @@ export interface Chart {
   // plugins?: any;
 }
 
+export interface PurchaseRequestsCountVM {
+  totalRequests: number;
+  inProcessRequests: number;
+  completedRequests: number;
+}
+
+export interface QuotationRequestsCountVM {
+  totalQuotations: number;
+  inProcessQuotations: number;
+  completedQuotations: number;
+}
+
 @Component({
   selector: 'app-dashboard1',
   templateUrl: './dashboard1.component.html',
   styleUrls: ['./dashboard1.component.scss']
 })
 
-export class Dashboard1Component {
-  isArabic: boolean = false;
-  constructor(
-    public translate: TranslateService,
-  ){
+export class Dashboard1Component implements OnInit{
+  prCounts!: PurchaseRequestsCountVM;
+  rfqCounts!: QuotationRequestsCountVM;
+
+
+  constructor(private http: HttpClient, public translate: TranslateService
+    , private dashboardService: DashboardService
+  ) {
     this.translate.onLangChange.subscribe(() => {
       // Check if the current language is Arabic
       this.isArabic = this.translate.currentLang === 'ar';
@@ -37,6 +54,35 @@ export class Dashboard1Component {
 // console.log(this.isArabic);
     });
   }
+
+  ngOnInit(): void {
+    this.loadPurchaseRequestsCounts();
+    this.loadQuotationRequestsCounts();
+  }
+loadPurchaseRequestsCounts(): void {
+    this.dashboardService.getPurchaseRequestsCount().subscribe({
+      next: (data) => {
+        this.prCounts = data;
+      },
+      error: (err) => {
+        console.error('Error fetching purchase requests count:', err);
+      }
+    });
+  }
+
+  loadQuotationRequestsCounts(): void {
+    this.dashboardService.getQuotationRequestsCount().subscribe({
+      next: (data) => {
+        this.rfqCounts = data;
+      },
+      error: (err) => {
+        console.error('Error fetching quotation requests count:', err);
+      }
+    });
+  }
+
+  isArabic: boolean = false;
+
   productSale: string = "PRODUCTSALES";
  
   // Line area chart configuration Starts

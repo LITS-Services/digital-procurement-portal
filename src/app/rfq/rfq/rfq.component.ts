@@ -6,6 +6,7 @@ import { RfqQuotationboxComponent } from '../rfq-quotationbox/rfq-quotationbox.c
 import { RfqVendorModalComponent } from '../rfq-vendor-modal/rfq-vendor-modal.component';
 import { VendorComparisionComponent } from '../vendor-comparision/vendor-comparision.component';
 import { RfqService } from '../rfq.service';
+import { RfqApprovalHistoryComponent } from '../rfq-approval-history/rfq-approval-history.component';
 
 @Component({
   selector: 'app-rfq',
@@ -16,6 +17,8 @@ import { RfqService } from '../rfq.service';
 export class RfqComponent implements OnInit {
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
+
+  activeFilter: string = ''; // default filter
 
   rfqData: any[] = [];
   chkBoxSelected: any[] = [];
@@ -49,7 +52,7 @@ export class RfqComponent implements OnInit {
   }
 
   loadRfqs() {
-        const userId = localStorage.getItem('userId'); 
+    const userId = localStorage.getItem('userId');
 
     this.loading = true;
     this.rfqService.getAllQuotations(userId).subscribe({
@@ -63,6 +66,19 @@ export class RfqComponent implements OnInit {
         console.error('Error fetching RFQs:', err);
         this.loading = false;
       }
+    });
+  }
+
+  loadFilteredQuotations(status: string) {
+    const userId = localStorage.getItem('userId');
+    this.activeFilter = status;
+    this.rfqService.getAllQuotationsByStatus(userId, status).subscribe({
+      next: (data: any) => {
+        this.rfqData = data?.$values
+        this.cdr.detectChanges();
+
+      },
+      error: (err) => console.error(err)
     });
   }
 
@@ -185,17 +201,22 @@ export class RfqComponent implements OnInit {
     modalRef.componentInstance.data = row;  // Pass selected row data if needed
   }
 
-//   openVendorComparisonModal(quotationRequestId: number) {
-//   this.rfqService.getVendorComparison(quotationRequestId).subscribe({
-//     next: (res) => {
-//       const modalRef = this.modalService.open(VendorComparisionComponent, { size: 'lg', backdrop: 'static' });
-//       modalRef.componentInstance.data = res; // Pass API response into modal
-//     },
-//     error: (err) => {
-//       console.error('Failed to load vendor comparison', err);
-//     }
-//   });
-// }
+openApprovalHistoryModal(row: any): void {
+  const modalRef = this.modalService.open(RfqApprovalHistoryComponent, { size: 'lg', backdrop: 'static', centered: true });
+  modalRef.componentInstance.rfqNo = row.rfqNo; // pass RfqNo
+}
+
+  //   openVendorComparisonModal(quotationRequestId: number) {
+  //   this.rfqService.getVendorComparison(quotationRequestId).subscribe({
+  //     next: (res) => {
+  //       const modalRef = this.modalService.open(VendorComparisionComponent, { size: 'lg', backdrop: 'static' });
+  //       modalRef.componentInstance.data = res; // Pass API response into modal
+  //     },
+  //     error: (err) => {
+  //       console.error('Failed to load vendor comparison', err);
+  //     }
+  //   });
+  // }
 
 }
 

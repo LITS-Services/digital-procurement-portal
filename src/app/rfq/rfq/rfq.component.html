@@ -13,7 +13,7 @@
             <!-- Action Pane -->
             <div class="card">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
                             <i class="ft-arrow-left"></i></button>
                         <span class="vl"></span>
@@ -29,9 +29,20 @@
                         <button type="button" class="btn btn-sm" [disabled]="isEditButtonDisabled" (click)="onView()">
                             <i class="ft-eye"></i><label class="ml-1 mt-1">View</label>
                         </button>
-                        <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
+                        <button type="button" class="btn btn-sm" (click)="loadRfqs()"><label
+                                class="ml-1 mt-1">All</label></button>
+
+                        <button type="button" class="btn btn-sm" (click)="loadFilteredQuotations('New')"><label
+                                class="ml-1 mt-1">New</label></button>
+
+                        <button type="button" class="btn btn-sm" (click)="loadFilteredQuotations('InProcess')"><label
+                                class="ml-1 mt-1">InProcess</label></button>
+
+                        <button type="button" class="btn btn-sm" (click)="loadFilteredQuotations('Completed')"><label
+                                class="ml-1 mt-1">Completed</label></button>
+                        <!-- <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
                             <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
-                        </button>
+                        </button> -->
                     </div>
                 </div>
             </div>
@@ -113,10 +124,17 @@
                 </ngx-datatable-column>
 
                 <ngx-datatable-column name="Vendors" [width]="100" prop="action" [sortable]="false">
-
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <button class="btn btn-primary btn-sm" (click)="openVendorsModal(row)">
                             <i class="ft-user-check"></i>
+                        </button>
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="Approval History" [width]="100" prop="action" [sortable]="false">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <button class="btn btn-primary btn-sm" (click)="openApprovalHistoryModal(row)">
+                            <i class="ft-list"></i>
                         </button>
                     </ng-template>
                 </ngx-datatable-column>

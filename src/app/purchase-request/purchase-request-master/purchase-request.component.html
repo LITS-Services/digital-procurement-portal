@@ -18,7 +18,7 @@
             </button>
 
             <span class="vl"></span>
-            
+
             <button type="button" class="btn btn-sm" ngbTooltip="Create new Purchase Request"
               (click)="openEmpDetails()">
               <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
@@ -32,9 +32,20 @@
             <button type="button" class="btn btn-sm" [disabled]="isEditButtonDisabled" (click)="onView()">
               <i class="ft-eye"></i><label class="ml-1 mt-1">View</label>
             </button>
-            <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
+            <button type="button" class="btn btn-sm" (click)="loadPurchaseRequests()"><label
+                class="ml-1 mt-1">All</label></button>
+
+            <button type="button" class="btn btn-sm" (click)="loadFilteredRequests('New')"><label
+                class="ml-1 mt-1">New</label></button>
+
+            <button type="button" class="btn btn-sm" (click)="loadFilteredRequests('InProcess')"><label
+                class="ml-1 mt-1">InProcess</label></button>
+
+            <button type="button" class="btn btn-sm" (click)="loadFilteredRequests('Completed')"><label
+                class="ml-1 mt-1">Completed</label></button>
+            <!-- <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
               <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
-            </button>
+            </button> -->
           </div>
 
           <div class="col-md-6 text-right" style="margin-top: 0.3rem;">
@@ -76,13 +87,21 @@
         <!-- Request Info -->
         <ngx-datatable-column name="Requisition No." prop="requisitionNo" [width]="100"></ngx-datatable-column>
         <ngx-datatable-column name="Status" prop="requestStatus" [width]="100"></ngx-datatable-column>
-<ngx-datatable-column name="Date" prop="submittedDate" [width]="100">
-                    <ng-template let-row="row" ngx-datatable-cell-template>
-                        {{ row.submittedDate | date:'yyyy-MM-dd' }}
-                    </ng-template>
-                </ngx-datatable-column>        <ngx-datatable-column name="Owner" prop="createdBy" [width]="100"></ngx-datatable-column>
+        <ngx-datatable-column name="Date" prop="submittedDate" [width]="100">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            {{ row.submittedDate | date:'yyyy-MM-dd' }}
+          </ng-template>
+        </ngx-datatable-column> <ngx-datatable-column name="Owner" prop="createdBy"
+          [width]="100"></ngx-datatable-column>
         <ngx-datatable-column name="Department" prop="department" [width]="100"></ngx-datatable-column>
 
+         <ngx-datatable-column name="Approval History" [width]="100" prop="action" [sortable]="false">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <button class="btn btn-primary btn-sm" (click)="openApprovalHistoryModal(row)">
+                            <i class="ft-list"></i>
+                        </button>
+                    </ng-template>
+                </ngx-datatable-column>
         <!-- Expandable Row for Clones -->
         <ngx-datatable-row-detail [rowHeight]="'auto'" #myDetailRow>
           <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>

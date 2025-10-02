@@ -5,6 +5,7 @@ import { ColumnMode, id, SelectionType } from '@swimlane/ngx-datatable';
 import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
 import { PurchaseRequestAccountBudgetLookupModalComponent } from 'app/shared/modals/purchase-request-account-budget-lookup-modal/purchase-request-account-budget-lookup-modal.component';
 import { PurchaseRequestExceptionPolicyComponent } from 'app/shared/modals/purchase-request-exception-policy/purchase-request-exception-policy.component';
+import { PrApprovalHistoryComponent } from '../pr-approval-history/pr-approval-history.component';
 
 @Component({
   selector: 'app-purchase-request',
@@ -15,16 +16,17 @@ export class PurchaseRequestComponent implements OnInit {
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
+  activeFilter: string = ''; // default filter
   purchaseRequestData: any[] = [];
   chkBoxSelected: any[] = [];
   idsToDelete: number[] = [];
   loading = false;
-  announcementId: number; 
+  announcementId: number;
   isEditButtonDisabled = true;
   isDeleteButtonDisabled = true;
   isOpenButtonDisabled = true;
   isAllSelected = false;
-columns = [];
+  columns = [];
 
   constructor(
     private router: Router,
@@ -32,7 +34,7 @@ columns = [];
     private purchaseRequestService: PurchaseRequestService,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
-    
+
   ) { }
 
   ngOnInit(): void {
@@ -44,7 +46,7 @@ columns = [];
    */
 
   loadPurchaseRequests() {
-    const userId = localStorage.getItem('userId'); 
+    const userId = localStorage.getItem('userId');
     this.loading = true;
 
     this.purchaseRequestService.getPurchaseRequests(userId).subscribe({
@@ -58,6 +60,19 @@ columns = [];
         console.error('Error fetching requests:', err);
         this.loading = false;
       }
+    });
+  }
+
+  loadFilteredRequests(status: string) {
+    const userId = localStorage.getItem('userId');
+    this.activeFilter = status;
+    this.purchaseRequestService.getAllRequestsByStatus(userId, status).subscribe({
+      next: (data: any) => {
+        this.purchaseRequestData = data?.$values
+        this.cdr.detectChanges();
+
+      },
+      error: (err) => console.error(err)
     });
   }
 
@@ -126,7 +141,7 @@ columns = [];
     this.isAllSelected = event.target.checked;
     this.enableDisableButtons();
   }
- 
+
   enableDisableButtons() {
     const selectedCount = this.chkBoxSelected.length;
     this.isDeleteButtonDisabled = selectedCount === 0;
@@ -209,5 +224,10 @@ columns = [];
       size: 'lg',
       centered: true,
     });
+  }
+
+  openApprovalHistoryModal(row: any): void {
+    const modalRef = this.modalService.open(PrApprovalHistoryComponent, { size: 'lg', backdrop: 'static', centered: true });
+    modalRef.componentInstance.requisitionNo = row.requisitionNo; // pass RfqNo
   }
 }

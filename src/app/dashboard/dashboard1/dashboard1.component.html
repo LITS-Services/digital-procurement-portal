@@ -7,7 +7,8 @@
           <div class="media">
             <div class="media-body  text-left">
               <h4 class="font-large-1 mt-1">Purchase Request</h4>
-          
+              <h3 class="font-large-1 mt-1">{{ prCounts?.totalRequests }}</h3>
+
             </div>
             <div class="media-right text-right">
               <div class="card-request-icon">
@@ -26,6 +27,8 @@
           <div class="media">
             <div class="media-body  text-left">
               <h4 class="font-large-1 mt-1">In Process</h4>
+              <h3 class="font-large-1 mt-1">{{ prCounts?.inProcessRequests }}</h3>
+
             </div>
             <div class="media-right text-right">
               <div class="card-request-icon">
@@ -34,7 +37,7 @@
             </div>
           </div>
         </div>
-      
+
       </div>
     </div>
   </div>
@@ -64,7 +67,8 @@
           <div class="media">
             <div class="media-body  text-left">
               <h4 class="font-large-1 mt-1">Completed</h4>
-  
+              <h3 class="font-large-1 mt-1">{{ prCounts?.completedRequests }}</h3>
+
             </div>
             <div class="media-right text-right">
               <div class="card-request-icon">
@@ -73,7 +77,7 @@
             </div>
           </div>
         </div>
-    
+
       </div>
     </div>
   </div>
@@ -84,7 +88,7 @@
           <div class="media">
             <div class="media-body  text-left">
               <h4 class="font-large-1 mt-1">RFQ</h4>
-          
+<h3 class="font-large-1 mt-1">{{ rfqCounts?.totalQuotations }}</h3>
             </div>
             <div class="media-right text-right">
               <div class="card-request-icon">
@@ -103,6 +107,8 @@
           <div class="media">
             <div class="media-body  text-left">
               <h4 class="font-large-1 mt-1">In Process</h4>
+              <h3 class="font-large-1 mt-1">{{ rfqCounts?.inProcessQuotations }}</h3>
+
             </div>
             <div class="media-right text-right">
               <div class="card-request-icon">
@@ -111,7 +117,7 @@
             </div>
           </div>
         </div>
-      
+
       </div>
     </div>
   </div>
@@ -141,7 +147,8 @@
           <div class="media">
             <div class="media-body  text-left">
               <h4 class="font-large-1 mt-1">Completed</h4>
-  
+<h3 class="font-large-1 mt-1">{{ rfqCounts?.completedQuotations }}</h3>
+
             </div>
             <div class="media-right text-right">
               <div class="card-request-icon">
@@ -150,28 +157,29 @@
             </div>
           </div>
         </div>
-    
+
       </div>
     </div>
   </div>
   <div hidden class="col-12">
     <div class="card">
-      <div class="card-header" >
+      <div class="card-header">
         <h4 class="card-title" [ngClass]="{'rtl': isArabic}">Spend By Supplier</h4>
       </div>
       <div class="card-content">
         <div class="card-body">
           <div class="chart-info mb-3 ml-3">
-            <span class="gradient-purple-bliss d-inline-block rounded-circle mr-1" style="width:15px; height:15px;"></span>
+            <span class="gradient-purple-bliss d-inline-block rounded-circle mr-1"
+              style="width:15px; height:15px;"></span>
             <span>Sales</span>
             <span class="gradient-mint d-inline-block rounded-circle mr-1 ml-2" style="width:15px; height:15px;"></span>
             <span>Visits</span>
           </div>
           <div id="line-area" class="lineArea">
-						<x-chartist class="height-500" [data]="lineArea.data" [type]="lineArea.type" [options]="lineArea.options"
-						 [responsiveOptions]="lineArea.responsiveOptions" [events]="lineArea.events">
-						</x-chartist>
-					</div>
+            <x-chartist class="height-500" [data]="lineArea.data" [type]="lineArea.type" [options]="lineArea.options"
+              [responsiveOptions]="lineArea.responsiveOptions" [events]="lineArea.events">
+            </x-chartist>
+          </div>
         </div>
       </div>
     </div>
@@ -183,7 +191,7 @@
 
 <!--Line with Area Chart 1 Ends-->
 
-<div  hidden class="row match-height">
+<div hidden class="row match-height">
   <div class="col-xl-4 col-lg-12 col-12">
     <div class="card">
       <div class="card-header">
@@ -193,8 +201,9 @@
         <div class="card-body">
           <p class="font-medium-2 text-center my-2">Last 6 Months Sales</p>
           <div id="Stack-bar-chart" class="Stackbarchart mb-2">
-            <x-chartist class="height-300" [data]="Stackbarchart.data" [type]="Stackbarchart.type" [options]="Stackbarchart.options"
-             [responsiveOptions]="Stackbarchart.responsiveOptions" [events]="Stackbarchart.events">
+            <x-chartist class="height-300" [data]="Stackbarchart.data" [type]="Stackbarchart.type"
+              [options]="Stackbarchart.options" [responsiveOptions]="Stackbarchart.responsiveOptions"
+              [events]="Stackbarchart.events">
             </x-chartist>
           </div>
         </div>
@@ -291,10 +300,10 @@
             <span class="text-uppercase"><i class="fa fa-circle info font-small-2 mr-1"></i> Visits</span>
           </div>
           <div id="line-area2" class="lineArea2">
-						<x-chartist class="height-400" [data]="lineArea2.data" [type]="lineArea2.type" [options]="lineArea2.options"
-						 [responsiveOptions]="lineArea2.responsiveOptions" [events]="lineArea2.events">
-						</x-chartist>
-					</div>
+            <x-chartist class="height-400" [data]="lineArea2.data" [type]="lineArea2.type" [options]="lineArea2.options"
+              [responsiveOptions]="lineArea2.responsiveOptions" [events]="lineArea2.events">
+            </x-chartist>
+          </div>
         </div>
       </div>
     </div>
@@ -318,10 +327,10 @@
           </div>
         </div>
         <div id="lineChart" class="lineChart lineChartShadow">
-					<x-chartist class="height-250" [data]="lineChart.data" [type]="lineChart.type" [options]="lineChart.options"
-					 [responsiveOptions]="lineChart.responsiveOptions" [events]="lineChart.events">
-					</x-chartist>
-				</div>
+          <x-chartist class="height-250" [data]="lineChart.data" [type]="lineChart.type" [options]="lineChart.options"
+            [responsiveOptions]="lineChart.responsiveOptions" [events]="lineChart.events">
+          </x-chartist>
+        </div>
       </div>
     </div>
   </div>
@@ -337,15 +346,16 @@
 
         <p class="font-medium-2 text-center mb-0 mt-2">Hobbies</p>
         <div id="bar-chart" class="BarChartShadow BarChart">
-					<x-chartist class="height-250" [data]="BarChart.data" [type]="BarChart.type" [options]="BarChart.options"
-					 [responsiveOptions]="BarChart.responsiveOptions" [events]="BarChart.events">
-					</x-chartist>
-				</div>
+          <x-chartist class="height-250" [data]="BarChart.data" [type]="BarChart.type" [options]="BarChart.options"
+            [responsiveOptions]="BarChart.responsiveOptions" [events]="BarChart.events">
+          </x-chartist>
+        </div>
 
         <div class="card-body">
           <div class="row">
             <div class="col text-center">
-              <span class="gradient-starfall d-block rounded-circle mx-auto mb-2" style="width:10px; height:10px;"></span>
+              <span class="gradient-starfall d-block rounded-circle mx-auto mb-2"
+                style="width:10px; height:10px;"></span>
               <span class="font-medium-4 d-block mb-2">48</span>
               <span class="font-small-3">Sport</span>
             </div>
@@ -355,12 +365,14 @@
               <span class="font-small-3">Music</span>
             </div>
             <div class="col text-center">
-              <span class="gradient-purple-bliss d-block rounded-circle mx-auto mb-2" style="width:10px; height:10px;"></span>
+              <span class="gradient-purple-bliss d-block rounded-circle mx-auto mb-2"
+                style="width:10px; height:10px;"></span>
               <span class="font-medium-4 d-block mb-2">26</span>
               <span class="font-small-3">Travel</span>
             </div>
             <div class="col text-center">
-              <span class="gradient-ibiza-sunset d-block rounded-circle mx-auto mb-2" style="width:10px; height:10px;"></span>
+              <span class="gradient-ibiza-sunset d-block rounded-circle mx-auto mb-2"
+                style="width:10px; height:10px;"></span>
               <span class="font-medium-4 d-block mb-2">17</span>
               <span class="font-small-3">News</span>
             </div>
@@ -470,10 +482,11 @@
 
         <p class="font-medium-2 text-center mb-0 mt-2">Project Tasks</p>
         <div id="donut-dashboard-chart" class="donut">
-					<x-chartist class="height-250" [data]="DonutChart.data" [type]="DonutChart.type" [options]="DonutChart.options" [responsiveOptions]="DonutChart.responsiveOptions"
-					 [events]="DonutChart.events">
-					</x-chartist>
-				</div>
+          <x-chartist class="height-250" [data]="DonutChart.data" [type]="DonutChart.type"
+            [options]="DonutChart.options" [responsiveOptions]="DonutChart.responsiveOptions"
+            [events]="DonutChart.events">
+          </x-chartist>
+        </div>
 
         <div class="card-body">
           <div class="row mb-3">
@@ -496,8 +509,8 @@
             <div class="col">
               <span class="mb-1 text-muted d-block">35% - Remaining</span>
               <div class="progress" style="height: 5px;">
-                <div class="progress-bar bg-primary" role="progressbar" style="width: 35%;"
-                  aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="progress-bar bg-primary" role="progressbar" style="width: 35%;" aria-valuenow="35"
+                  aria-valuemin="0" aria-valuemax="100"></div>
               </div>
             </div>
             <div class="col">

@@ -36,6 +36,9 @@
               <button class="btn btn-sm" [disabled]="newRfqForm.invalid" (click)="submitForm()">
                 <i class="ft-edit-2"></i><label class="ml-1 mt-1">Update</label>
               </button>
+              <button class="btn btn-sm" [disabled]="newRfqForm.invalid" (click)="onSubmitForApproval()">
+                <i class="ft-edit-2"></i><label class="ml-1 mt-1">Submit For Approval</label>
+              </button>
             </ng-container>
 
             <ng-container *ngIf="viewMode">
@@ -115,7 +118,7 @@
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
                   <label>Status</label>
-                  <input type="text" formControlName="status" class="form-control" disabled/>
+                  <input type="text" formControlName="status" class="form-control" disabled />
                 </div>
               </div>
 
@@ -365,21 +368,21 @@
                               </option>
                             </select> -->
                             <select class="form-control" formControlName="vendorUserId"
-          (change)="onVendorChange($event.target.value)">
-    <option value="" disabled>Select Vendor</option>
-    <option *ngFor="let v of uniqueVendors" [value]="v.vendorId">
-      {{ v.vendorName }}
-    </option>
-  </select>
+                              (change)="onVendorChange($event.target.value)">
+                              <option value="" disabled>Select Vendor</option>
+                              <option *ngFor="let v of uniqueVendors" [value]="v.vendorId">
+                                {{ v.vendorName }}
+                              </option>
+                            </select>
                           </div>
                           <div class="form-group mb-2">
                             <label>Company</label>
-  <select class="form-control" formControlName="vendorCompanyId">
-    <option value="" disabled>Select Company</option>
-    <option *ngFor="let c of filteredCompanies" [value]="c.companyId">
-      {{ c.name }}
-    </option>
-  </select>
+                            <select class="form-control" formControlName="vendorCompanyId">
+                              <option value="" disabled>Select Company</option>
+                              <option *ngFor="let c of filteredCompanies" [value]="c.companyId">
+                                {{ c.name }}
+                              </option>
+                            </select>
                           </div>
 
                           <div class="form-group mb-2">

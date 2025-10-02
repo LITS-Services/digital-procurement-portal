@@ -20,6 +20,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { PurchaseRequestApprovalComponent } from './purchase-request-approval/purchase-request-approval.component';
 import { NewPurchaseRequestComponent } from './new-purchase-request/new-purchase-request.component';
 import { PurchaseRequestRemarksComponent } from './purchase-request-remarks/purchase-request-remarks.component';
+import { PrApprovalHistoryComponent } from './pr-approval-history/pr-approval-history.component';
 
 
 @NgModule({
@@ -51,7 +52,8 @@ import { PurchaseRequestRemarksComponent } from './purchase-request-remarks/purc
     PurchaseRequestApprovalComponent,
     NewPurchaseRequestComponent,
     PurchaseRequestApprovalComponent,
-    PurchaseRequestRemarksComponent
+    PurchaseRequestRemarksComponent,
+    PrApprovalHistoryComponent
   ],
 })
 export class PurchaseRequestModule { }

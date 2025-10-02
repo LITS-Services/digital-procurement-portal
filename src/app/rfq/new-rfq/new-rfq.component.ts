@@ -665,7 +665,17 @@ export class NewRfqComponent implements OnInit {
     console.error('Error saving draft:', err);
   }
 
-
+  onSubmitForApproval() {
+    this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
+      next: (res) => {
+        alert(res.message || 'Quotation submitted for approval successfully!');
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Failed to submit quotation for approval.');
+      }
+    });
+  }
   onAddRemarks(action: string): void {
     const modalRef = this.modalService.open(RfqRemarksComponent, {
       size: 'lg',

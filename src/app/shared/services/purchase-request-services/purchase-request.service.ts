@@ -59,4 +59,12 @@ export class PurchaseRequestService {
   addRemarksWithActionTaken(data: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/addRemarksWithActionTaken`, data);
   }
+
+  getAllRequestsByStatus(userId: string, status: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/get-requests-by-status?userId=${userId}&status=${status}`);
+  }
+
+  getApprovalHistoryByReqNo(requisitionNo: string): Observable<any[]> {
+  return this.http.get<any[]>(`${this.baseUrl}/get-request-approval-history?requisitionNo=${requisitionNo}`);
+}
 }

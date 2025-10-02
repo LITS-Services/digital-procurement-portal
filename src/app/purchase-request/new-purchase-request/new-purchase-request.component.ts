@@ -518,7 +518,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       partialDeliveryAcceptable: f.partialDeliveryAcceptable,
       exceptionPolicy: f.exceptionPolicy,
       subject: f.subject,
-      workflowMasterId: f.workflowMasterId,
+      workflowMasterId: Number(f.workflowMasterId) || 0,
       createdBy: f.createdBy || 'USER',
       purchaseItems
     };
