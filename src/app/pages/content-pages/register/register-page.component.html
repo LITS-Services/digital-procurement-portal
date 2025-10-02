@@ -6,9 +6,12 @@
         <div class="card-content">
           <div class="card-body auth-img">
             <div class="row m-0">
+              <!-- Left Image -->
               <div class="col-lg-6 d-none d-lg-flex justify-content-center align-items-center text-center auth-img-bg py-2">
                 <img src="assets/img/gallery/register.png" alt="" class="img-fluid" width="350" height="230">
               </div>
+
+              <!-- Registration Form -->
               <div class="col-lg-6 col-md-12 px-4 py-3">
                 <h4 class="card-title mb-2">Create Account</h4>
                 <p>Fill the below form to create a new account.</p>
@@ -93,10 +96,10 @@
                       <ul class="dropdown-menu w-100 p-2" [class.show]="dropdownOpen" style="max-height: 200px; overflow-y: auto;">
                         <li *ngFor="let company of procurmentCompanies">
                           <div class="form-check">
-                            <input type="checkbox" class="form-check-input" [id]="'company-' + company.companyGUID"
-                              [checked]="isCompanySelected(company.companyGUID)"
+                            <input type="checkbox" class="form-check-input" [id]="'company-' + company.id"
+                              [checked]="isCompanySelected(company.id)"
                               (change)="toggleCompanySelection($event, company)">
-                            <label class="form-check-label" [for]="'company-' + company.companyGUID">
+                            <label class="form-check-label" [for]="'company-' + company.id">
                               {{ company.name }}
                             </label>
                           </div>

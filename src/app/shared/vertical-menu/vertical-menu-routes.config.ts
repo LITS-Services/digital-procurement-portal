@@ -9,7 +9,7 @@ export const ROUTES: RouteInfo[] = [
   { path: '/rfq', title: 'RFQ', icon: 'fa fa-envelope-o', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
   { path: '/tendering', title: 'Tendering', icon: 'fa fa-handshake-o', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
   { path: '/company', title: 'Company', icon: 'fa fa-briefcase', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-  { path: '/Employee', title: 'Employee', icon: 'fa fa-users', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] ,roles: ['Admin']},
+  { path: '/employee-list', title: 'Employee list', icon: 'fa fa-users', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [], roles: ['Admin'] },
   // Only Vendor role can see this
   { path: '/procurment-companies', title: 'Procurment Companies', icon: 'fa fa-building', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [], roles: ['Admin'] },
 

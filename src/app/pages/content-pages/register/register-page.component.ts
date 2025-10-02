@@ -45,7 +45,7 @@ export class RegisterPageComponent implements OnInit {
       password: ['', [Validators.required, this.passwordComplexityValidator]],
       confirmPassword: ['', Validators.required],
       role: ['User', Validators.required],
-      companyGUIDs: this.formBuilder.array([], Validators.required),
+      companyIds: this.formBuilder.array([], Validators.required), // changed from companyGUIDs
       acceptTerms: [false, Validators.requiredTrue]
     }, {
       validator: MustMatch('password', 'confirmPassword')
@@ -69,7 +69,7 @@ export class RegisterPageComponent implements OnInit {
   }
 
   get rf() { return this.registerForm.controls; }
-  get companyFormArray(): FormArray { return this.registerForm.get('companyGUIDs') as FormArray; }
+  get companyFormArray(): FormArray { return this.registerForm.get('companyIds') as FormArray; }
 
   get selectedCompaniesLabel(): string {
     return this.selectedCompanies.length > 0
@@ -127,19 +127,19 @@ export class RegisterPageComponent implements OnInit {
     }
   }
 
-  isCompanySelected(companyGUID: string): boolean {
-    return this.selectedCompanies.some(c => c.companyGUID === companyGUID);
+  isCompanySelected(companyId: number): boolean {
+    return this.selectedCompanies.some(c => c.id === companyId);
   }
 
   toggleCompanySelection(event: any, company: any) {
     if (event.target.checked) {
       this.selectedCompanies.push(company);
-      this.companyFormArray.push(this.formBuilder.control(company.companyGUID));
+      this.companyFormArray.push(this.formBuilder.control(company.id)); // store ID instead of GUID
     } else {
-      const index = this.selectedCompanies.findIndex(c => c.companyGUID === company.companyGUID);
+      const index = this.selectedCompanies.findIndex(c => c.id === company.id);
       if (index >= 0) this.selectedCompanies.splice(index, 1);
 
-      const formIndex = this.companyFormArray.controls.findIndex(x => x.value === company.companyGUID);
+      const formIndex = this.companyFormArray.controls.findIndex(x => x.value === company.id);
       if (formIndex >= 0) this.companyFormArray.removeAt(formIndex);
     }
   }
@@ -154,7 +154,7 @@ export class RegisterPageComponent implements OnInit {
       Email: this.registerForm.value.email,
       Password: this.registerForm.value.password,
       Role: this.registerForm.value.role,
-      CompanyGUIDs: this.companyFormArray.value
+      CompanyId: this.companyFormArray.value // send IDs
     };
 
     this.spinner.show();

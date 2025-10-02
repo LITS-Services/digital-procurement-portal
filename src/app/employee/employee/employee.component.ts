@@ -13,7 +13,7 @@ import { ToastrService } from 'ngx-toastr';
 export class EmployeeComponent implements OnInit {
 
   companyForm: UntypedFormGroup;
-  companyId: number | null = null;
+  companyId: string | null = null;
   isEditMode: boolean = false;
 
   employees: any[] = [];
@@ -21,10 +21,7 @@ export class EmployeeComponent implements OnInit {
   selectedCompanyGUIDs: string[] = [];
   companyFormSubmitted: boolean = false;
 
-  roles: any[] = [
-    { id: 1, name: 'User' },
-    { id: 2, name: 'Admin' }
-  ];
+  roles: any[] = [];
 
   passwordFieldType: string = 'password';
   confirmPasswordFieldType: string = 'password';
@@ -34,97 +31,102 @@ export class EmployeeComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private companyService: CompanyService,
-    private authService: AuthService, 
-    private toastr: ToastrService 
-  ) {}
+    private authService: AuthService,
+    private toastr: ToastrService
+  ) { }
 
   ngOnInit(): void {
-
-    // ✅ Restrict access to Admin only
     if (!this.authService.hasRole('Admin')) {
       this.toastr.warning('Access denied. Only Admins can access this page.');
       this.router.navigate(['/dashboard/dashboard1']);
       return;
     }
 
-    const idParam = this.route.snapshot.queryParamMap.get('id');
-    this.companyId = idParam ? +idParam : null;
+    this.companyId = this.route.snapshot.queryParamMap.get('id');
     this.isEditMode = !!this.companyId;
 
-    // Build form
     this.companyForm = this.fb.group({
-      employeeId: [null, Validators.required],
-      name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [
+      employeeId: [null], // optional for create
+      name: [{ value: '', disabled: this.isEditMode }, Validators.required],
+      email: [{ value: '', disabled: this.isEditMode }, [Validators.required, Validators.email]],
+      password: ['', this.isEditMode ? [] : [
         Validators.required,
         Validators.minLength(6),
         Validators.pattern(/^(?=.*[A-Z])(?=.*[!@#$%^&*]).{6,}$/)
       ]],
-      confirmPassword: ['', Validators.required],
-      roleId: [null, Validators.required]
+      confirmPassword: ['', this.isEditMode ? [] : Validators.required],
+      roleId: [null, Validators.required],
+      isDeleted: [false]
     }, { validators: this.passwordMatchValidator });
 
-    if (this.isEditMode) this.loadCompany();
-
-    this.loadEmployees();
+    this.loadRoles();
     this.loadCompanies();
+
+    if (!this.isEditMode) this.loadEmployees();
   }
 
-  // ✅ Custom validator
   passwordMatchValidator(form: UntypedFormGroup) {
-    return form.get('password')?.value === form.get('confirmPassword')?.value
-      ? null : { passwordMismatch: true };
+    if (form.get('password')?.disabled) return null;
+    if (form.get('password')?.value || form.get('confirmPassword')?.value) {
+      return form.get('password')?.value === form.get('confirmPassword')?.value
+        ? null : { passwordMismatch: true };
+    }
+    return null;
   }
 
-  // ✅ Load company for edit
-  loadCompany() {
-    this.companyService.getproByid(this.companyId).subscribe({
-      next: (company: any) => {
-        this.companyForm.patchValue({
-          employeeId: company.employeeId,
-          name: company.name,
-          email: company.email,
-          roleId: company.roleId
-        });
-        this.selectedCompanyGUIDs = company.companyGUIDs || [];
-      }
-    });
-  }
-
-  // ✅ Load employees
-  loadEmployees() {
-    this.companyService.getAllEmployees().subscribe({
+  loadRoles() {
+    this.companyService.getRoles().subscribe({
       next: (res: any) => {
-        this.employees = res?.$values || [];
+        this.roles = res?.$values || [];
+        if (this.isEditMode && this.companyId) this.loadEmployeeForEdit(this.companyId);
       },
-      error: (err) => console.error('Error loading employees:', err)
+      error: (err) => console.error('Error loading roles:', err)
     });
   }
 
-  // ✅ Load companies
   loadCompanies() {
     this.companyService.getProCompanies().subscribe({
-      next: (res: any) => {
-        this.companies = res?.$values || res;
-      },
+      next: (res: any) => this.companies = res?.$values || [],
       error: (err) => console.error('Error loading companies:', err)
     });
   }
 
-  // ✅ Toggle company checkbox
-  onCompanyToggle(event: Event, guid: string) {
-    const checked = (event.target as HTMLInputElement).checked;
-    if (checked) {
-      if (!this.selectedCompanyGUIDs.includes(guid)) {
-        this.selectedCompanyGUIDs.push(guid);
-      }
-    } else {
-      this.selectedCompanyGUIDs = this.selectedCompanyGUIDs.filter(c => c !== guid);
-    }
+  loadEmployees() {
+    this.companyService.getAllEmployees().subscribe({
+      next: (res: any) => this.employees = res?.$values || [],
+      error: (err) => console.error('Error loading employees:', err)
+    });
   }
 
-  // ✅ Select employee auto-fill
+  loadEmployeeForEdit(id: string) {
+    this.companyService.getprocurementusersbyid(id).subscribe({
+      next: (emp: any) => {
+        this.companyForm.patchValue({
+          employeeId: emp.id,
+          name: emp.fullName || emp.userName,
+          email: emp.email || '',
+          isDeleted: emp.isDeleted || false
+        });
+
+        this.companyForm.get('name')?.disable();
+        this.companyForm.get('email')?.disable();
+        this.companyForm.get('password')?.disable();
+        this.companyForm.get('confirmPassword')?.disable();
+
+        if (emp.roles && emp.roles.$values?.length) {
+          const roleName = emp.roles.$values[0].name;
+          const role = this.roles.find(r => r.name === roleName);
+          this.companyForm.patchValue({ roleId: role?.id || null });
+        }
+
+        if (emp.companies && emp.companies.$values?.length) {
+          this.selectedCompanyGUIDs = emp.companies.$values.map((c: any) => c.companyGUID);
+        }
+      },
+      error: (err) => console.error('Error fetching employee:', err)
+    });
+  }
+
   onEmployeeSelect(event: Event) {
     const selectedId = (event.target as HTMLSelectElement).value;
     const selectedEmp = this.employees.find(e => e.id == selectedId);
@@ -136,47 +138,112 @@ export class EmployeeComponent implements OnInit {
     }
   }
 
-  // ✅ Toggle password visibility
-  togglePassword(field: 'password' | 'confirmPassword') {
-    if (field === 'password') {
-      this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
+  onCompanyToggle(event: Event, guid: string) {
+    const checked = (event.target as HTMLInputElement).checked;
+    if (checked) {
+      if (!this.selectedCompanyGUIDs.includes(guid)) this.selectedCompanyGUIDs.push(guid);
     } else {
-      this.confirmPasswordFieldType = this.confirmPasswordFieldType === 'password' ? 'text' : 'password';
+      this.selectedCompanyGUIDs = this.selectedCompanyGUIDs.filter(c => c !== guid);
     }
   }
 
-  // ✅ Submit employee form
+  togglePassword(field: 'password' | 'confirmPassword') {
+    if (!this.isEditMode) {
+      if (field === 'password') this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
+      else this.confirmPasswordFieldType = this.confirmPasswordFieldType === 'password' ? 'text' : 'password';
+    }
+  }
+
+  toggleStatus() {
+    const current = this.companyForm.get('isDeleted')?.value;
+    this.companyForm.patchValue({ isDeleted: !current });
+  }
+
   onSubmit() {
     this.companyFormSubmitted = true;
-    if (this.companyForm.invalid || this.selectedCompanyGUIDs.length === 0) return;
+
+    if (this.companyForm.invalid) {
+      this.toastr.warning('Please fill all required fields correctly.');
+      return;
+    }
+
+    if (this.selectedCompanyGUIDs.length === 0) {
+      this.toastr.warning('Please select at least one company.');
+      return;
+    }
 
     const formValues = this.companyForm.getRawValue();
-    const payload = {
-      id: formValues.employeeId,
-      username: formValues.name,       
+    const selectedRole = this.roles.find(r => r.id == formValues.roleId);
+
+    // EDIT MODE
+    if (this.isEditMode) {
+      const updatePayload = {
+        id: formValues.employeeId,
+        fullName: formValues.name,
+        userName: formValues.name,
+        email: formValues.email,
+        phoneNumber: '',
+        isDeleted: formValues.isDeleted,
+        profilePicture: '',
+        selectedCompanyIds: this.companies
+          .filter(c => this.selectedCompanyGUIDs.includes(c.companyGUID))
+          .map(c => c.id),
+        selectedRoleIds: selectedRole ? [selectedRole.id] : []
+      };
+
+      this.companyService.ProcurmentuserUpdate(formValues.employeeId, updatePayload).subscribe({
+        next: () => {
+          this.toastr.success('Employee updated successfully');
+          this.router.navigate(['/employee-list']);
+        },
+        error: (err) => {
+          this.toastr.error('Failed to update employee');
+          console.error('Error updating employee:', err);
+        }
+      });
+      return;
+    }
+
+    // CREATE MODE - send id and roleNames
+    const createPayload: any = {
+      id: formValues.employeeId, // send id
+      fullName: formValues.name,
+      userName: formValues.name,
       email: formValues.email,
-      fullName: formValues.name,       
-      password: formValues.password,
-      role: this.roles.find(r => r.id == formValues.roleId)?.name,
-      companyGUIDs: this.selectedCompanyGUIDs
+      phoneNumber: '',
+      isDeleted: formValues.isDeleted,
+      profilePicture: '',
+      selectedCompanyIds: this.companies
+        .filter(c => this.selectedCompanyGUIDs.includes(c.companyGUID))
+        .map(c => c.id),
+      roleNames: selectedRole ? [selectedRole.name] : [], // send role name
+      password: formValues.password
     };
 
-    this.companyService.registerEmployee(payload).subscribe({
-      next: () => this.router.navigate(['/procurment-companies']),
-      error: (err) => console.error('Error saving employee:', err)
+    this.companyService.registerEmployee(createPayload).subscribe({
+      next: () => {
+        this.toastr.success('Employee registered successfully');
+        this.router.navigate(['/employee-list']); // <-- navigate after registration
+        this.loadEmployees();
+        this.companyForm.reset();
+        this.selectedCompanyGUIDs = [];
+        this.companyFormSubmitted = false;
+      },
+      error: (err) => {
+        this.toastr.error('Failed to register employee');
+        console.error('Error saving employee:', err);
+      }
     });
   }
 
-  // ✅ Reset form
   onReset() {
-    this.companyForm.reset(); 
+    this.companyForm.reset();
     this.selectedCompanyGUIDs = [];
     this.companyFormSubmitted = false;
-    if (this.isEditMode) this.loadCompany();
+    if (this.isEditMode && this.companyId) this.loadEmployeeForEdit(this.companyId);
   }
 
-  // ✅ Go back
   goBack() {
-    this.router.navigate(['/procurment-companies']);
+    this.router.navigate(['/employee-list']);
   }
 }

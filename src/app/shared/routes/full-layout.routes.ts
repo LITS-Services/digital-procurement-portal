@@ -20,11 +20,11 @@ export const Full_ROUTES: Routes = [
     loadChildren: () => import('../../tendering/tendering.module').then(m => m.TenderingModule)
   },
 
-    {
+  {
     path: 'procurment-companies',
     loadChildren: () => import('../../procurment-companies/procurment-companies.module').then(m => m.ProcurmentCompaniesModule)
   },
-    {
+  {
     path: 'company',
     loadChildren: () => import('../../company/company.module').then(m => m.CompanyModule)
   },
@@ -33,14 +33,18 @@ export const Full_ROUTES: Routes = [
     loadChildren: () => import('../../calendar/calendar.module').then(m => m.CalendarsModule)
   },
   {
-    path: 'Employee',
+    path: 'employee',
     loadChildren: () => import('../../employee/employee.module').then(m => m.EmployeeModule)
+  },
+  {
+    path: 'employee-list',
+    loadChildren: () => import('../../employee-list/employee-list.module').then(m => m.EmployeeListModule)
   },
   {
     path: 'charts',
     loadChildren: () => import('../../charts/charts.module').then(m => m.ChartsNg2Module)
   },
-   {
+  {
     path: 'forms',
     loadChildren: () => import('../../forms/forms.module').then(m => m.FormModule)
   },

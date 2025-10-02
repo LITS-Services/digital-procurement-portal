@@ -58,6 +58,52 @@ createProCompany(data: any): Observable<any> {
 
 
 
+  //ProcurementUsers
+  getprocurementusers():Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/ProcurementUsers/GetAll`);
+  }
+
+  deleteprocurementusers(id: string): Observable<any> {
+  return this.http.delete<any>(`${environment.apiUrl}/ProcurementUsers/Delete`);
+  }
+
+  enableProcurementUser(id: string): Observable<any> {
+    return this.http.put<any>(`${environment}ProcurementUsers/Activate/${id}`, null);
+  }
+
+
+getprocurementusersbyid(id: string): Observable<any> {
+  return this.http.get<any>(`${environment.apiUrl}/ProcurementUsers/GetUserWithCompanies/${id}`);
+}
+
+getcompanydatabyid(id: string): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/Procurement/GetUserCompanies/GetUserWithCompanies/${id}`);
+  }
+ 
+getRoles(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/ProcurementUsers/GetRoles`);
+  }
+
+
+
+
+ProcurmentuserUpdate(id: string, data: any): Observable<any> {
+   return this.http.put<any>(`${environment.apiUrl}/ProcurementUsers/Update/${id}`, data);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   getVendorCompanies(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/get-all-vendor-companies`);
