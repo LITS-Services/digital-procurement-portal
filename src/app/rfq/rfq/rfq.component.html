@@ -13,8 +13,9 @@
             <!-- Action Pane -->
             <div class="card">
                 <div class="row">
-                    <div class="col-md-12">
-                        <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+                    <div class="col-md-12 row">
+                        <div class="col-md-5">
+                            <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
                             <i class="ft-arrow-left"></i></button>
                         <span class="vl"></span>
                         <button type="button" class="btn btn-sm" ngbTooltip="Create new RFQ" (click)="openEmpDetails()">
@@ -29,6 +30,8 @@
                         <button type="button" class="btn btn-sm" [disabled]="isEditButtonDisabled" (click)="onView()">
                             <i class="ft-eye"></i><label class="ml-1 mt-1">View</label>
                         </button>
+                        </div>
+                        <div class="col-md-6">
                         <button type="button" class="btn btn-sm" (click)="loadRfqs()"><label
                                 class="ml-1 mt-1">All</label></button>
 
@@ -40,6 +43,7 @@
 
                         <button type="button" class="btn btn-sm" (click)="loadFilteredQuotations('Completed')"><label
                                 class="ml-1 mt-1">Completed</label></button>
+                                </div>
                         <!-- <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
                             <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
                         </button> -->

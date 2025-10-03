@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbAccordion, NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
+import { ColumnMode, DatatableComponent, id, SelectionType } from '@swimlane/ngx-datatable';
 import { DatatableData } from 'app/data-tables/data/datatables.data';
 import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
 import { RfqAttachmentComponent } from '../rfq-attachment/rfq-attachment.component';
@@ -133,8 +133,8 @@ export class NewRfqComponent implements OnInit {
       remarks: [''],
       createdBy: [''],
       quotationRequestId: [0],
-      vendorUserId: [''],
-      vendorCompanyId: [''],
+      vendorUserId: [null],
+      vendorCompanyId: [null],
       quotationItemAttachments: this.fb.array([])
     })
 
@@ -324,7 +324,7 @@ export class NewRfqComponent implements OnInit {
             unitCost: item.unitCost,
             uofM: item.uofM,
             orderQuantity: item.orderQuantity,
-            reqByDate: this.toDateInputValue(item.reqByDate), // ✅ fix here too
+            reqByDate: this.toDateInputValue(item.reqByDate), 
             vendorUserId: item.vendorUserId,
             vendorCompanyId: item.vendorCompanyId,
             account: item.account,
@@ -388,6 +388,8 @@ export class NewRfqComponent implements OnInit {
 
     const quotationItems = this.newQuotationItemData?.length
       ? this.newQuotationItemData.map(item => ({
+        id: item.id || null,   // 👈 very important
+
         rfqNo: f.rfqNo || '',
         itemType: item.itemType || '',
         itemCode: item.itemCode || '',
@@ -401,9 +403,11 @@ export class NewRfqComponent implements OnInit {
         remarks: item.remarks || '',
         createdBy: item.createdBy || 'current-user',
         quotationRequestId: item.quotationRequestId || 0,
-        vendorUserId: item.vendorUserId || '',
-        vendorCompanyId: item.vendorCompanyId || '',
+        vendorUserId: item.vendorUserId || null,
+        vendorCompanyId: item.vendorCompanyId || null,
         quotationItemAttachments: item.quotationItemAttachments?.map(att => ({
+          id: att.id || null,   // 👈 very important
+
           content: att.content || '',
           contentType: att.contentType || '',
           fileName: att.fileName || '',
@@ -475,6 +479,7 @@ export class NewRfqComponent implements OnInit {
 
     const quotationItems = this.newQuotationItemData?.length
       ? this.newQuotationItemData.map(item => ({
+        id: item.id || null,
         rfqNo: item.rfqNo || '',
         itemType: item.itemType || '',
         itemCode: item.itemCode || '',
@@ -488,9 +493,10 @@ export class NewRfqComponent implements OnInit {
         remarks: item.remarks || '',
         createdBy: item.createdBy || 'current-user',
         quotationRequestId: item.quotationRequestId || 0,
-        vendorUserId: item.vendorUserId || '',
-        vendorCompanyId: item.vendorCompanyId || '',
+        vendorUserId: item.vendorUserId || null,
+        vendorCompanyId: item.vendorCompanyId || null,
         quotationItemAttachments: item.quotationItemAttachments?.map(att => ({
+          id: att.id || null,
           content: att.content || '',
           contentType: att.contentType || '',
           fileName: att.fileName || '',
@@ -677,11 +683,12 @@ export class NewRfqComponent implements OnInit {
   onSubmitForApproval() {
     this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
       next: (res) => {
-        alert(res.message || 'Quotation submitted for approval successfully!');
+        this.toastr.success(res.message || 'Quotation submitted for approval successfully!');
+        this.router.navigate(['/rfq']);
       },
       error: (err) => {
         console.error(err);
-        alert('Failed to submit quotation for approval.');
+        this.toastr.error('Failed to submit quotation for approval.');
       }
     });
   }

@@ -387,6 +387,7 @@ export class NewPurchaseRequestComponent implements OnInit {
 
     const purchaseItems = this.newPurchaseItemData?.length
       ? this.newPurchaseItemData.map(item => ({
+        id: item.id || null,
         itemType: item.itemType || '',
         itemCode: item.itemCode || '',
         uofM: item.uofM || '',
@@ -408,6 +409,7 @@ export class NewPurchaseRequestComponent implements OnInit {
           // billOfMaterials: att.billOfMaterials || '',
           // other: att.other || '',
           // specialInstructions: att.specialInstructions || '',
+          id: att.id || null,
           content: att.content || '',
           contentType: att.contentType || '',
           fileName: att.fileName || '',
@@ -473,6 +475,7 @@ export class NewPurchaseRequestComponent implements OnInit {
 
     const purchaseItems = this.newPurchaseItemData?.length
       ? this.newPurchaseItemData.map(item => ({
+        id: item.id || null,
         itemType: item.itemType || '',
         itemCode: item.itemCode || '',
         uofM: item.uofM || '',
@@ -494,6 +497,7 @@ export class NewPurchaseRequestComponent implements OnInit {
           // billOfMaterials: att.billOfMaterials || '',
           // other: att.other || '',
           // specialInstructions: att.specialInstructions || '',
+          id: att.id || null,
           content: att.content || '',
           contentType: att.contentType || '',
           fileName: att.fileName || '',

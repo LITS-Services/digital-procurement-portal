@@ -359,7 +359,7 @@
 
                         <div class="col-6">
                           <h5>Other Details</h5>
-                          <div class="form-group mb-2">
+                          <div *ngIf="!isNewForm" class="form-group mb-2">
                             <label>Final Vendor</label>
                             <!-- <select class="form-control" formControlName="vendorUserId">
                               <option value="" disabled>Select Vendor</option>
@@ -375,7 +375,7 @@
                               </option>
                             </select>
                           </div>
-                          <div class="form-group mb-2">
+                          <div *ngIf="!isNewForm" class="form-group mb-2">
                             <label>Company</label>
                             <select class="form-control" formControlName="vendorCompanyId">
                               <option value="" disabled>Select Company</option>
