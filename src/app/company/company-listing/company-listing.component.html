@@ -6,7 +6,7 @@
             <div class="row">
                 <div class="col-md-12" style=" margin-top: -0.25rem;">
                     <!-- <h4>Announcements</h4> -->
-                    <h4 class="heading">Companies</h4>
+                    <h4 class="heading">Vendor Companies</h4>
                 </div>
                 <!-- <div class="col-md-6">
                 </div> -->
@@ -34,6 +34,22 @@
                             <i class="ft-edit"></i><label class="ml-1 mt-1">Company Review</label>
                         </button>
 
+                        <button type="button" class="btn btn-sm" (click)="showAll()">
+                            <i class="ft-edit"></i>
+                            <label class="ml-1 mt-1">All</label>
+                        </button>
+
+                        <button type="button" class="btn btn-sm" (click)="showInProcess()">
+                            <i class="ft-edit"></i>
+                            <label class="ml-1 mt-1">InProcess</label>
+                        </button>
+
+                        <button type="button" class="btn btn-sm" (click)="showRecall()">
+                            <i class="ft-edit"></i>
+                            <label class="ml-1 mt-1">Recall</label>
+                        </button>
+
+
                         <!-- Delete -->
                         <!-- <button type="button" class="btn btn-sm" [disabled]="isDeleteButtonDisabled" (click)="deleteSelectedRows()">
         <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
@@ -51,7 +67,7 @@
 
             </div>
             <!-- Content -->
-            <ngx-datatable  class="bootstrap core-bootstrap" [rows]="tenderingData" [columnMode]="'force'"
+            <ngx-datatable class="bootstrap core-bootstrap" [rows]="rows" [columnMode]="'force'"
                 [headerHeight]="50" [footerHeight]="50" [columns]="columns" rowHeight="50" [limit]="15"
                 [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
                 [selectionType]="SelectionType.checkbox" (sort)="onSort($event)"
@@ -84,9 +100,9 @@
                 <!-- ✅ New Columns -->
                 <ngx-datatable-column name="Name" prop="name" [width]="120"></ngx-datatable-column>
                 <ngx-datatable-column name="Status" prop="companyStatus" [width]="100"></ngx-datatable-column>
-                <ngx-datatable-column name="Street" prop="street" [width]="150"></ngx-datatable-column>
+                <!-- <ngx-datatable-column name="Street" prop="street" [width]="150"></ngx-datatable-column> -->
                 <ngx-datatable-column name="City" prop="city" [width]="120"></ngx-datatable-column>
-                <ngx-datatable-column name="Contact Number" prop="contactNumber" [width]="150"></ngx-datatable-column>
+                <!-- <ngx-datatable-column name="Contact Number" prop="contactNumber" [width]="150"></ngx-datatable-column> -->
                 <ngx-datatable-column name="Vendor Type" prop="vendorType" [width]="120"></ngx-datatable-column>
                 <ngx-datatable-column name="Currency" prop="primaryCurrency" [width]="100"></ngx-datatable-column>
 

@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
-import { forkJoin } from 'rxjs';
 import { CompanyService } from 'app/shared/services/Company.services';
-import { AuthService } from 'app/shared/auth/auth.service'; // Import AuthService
+import { AuthService } from 'app/shared/auth/auth.service';
 
 @Component({
   selector: 'app-company-listing',
@@ -16,7 +15,8 @@ export class CompanyListingComponent implements OnInit {
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
-  tenderingData: any[] = []; // data for table
+  tenderingData: any[] = [];       // filtered list for table
+  allCompanies: any[] = [];        // full list (for ALL button)
   public chkBoxSelected = [];
   loading = false;
   public rows = [];
@@ -32,7 +32,8 @@ export class CompanyListingComponent implements OnInit {
     private router: Router,
     private modalService: NgbModal,
     private companyService: CompanyService,
-    private authService: AuthService, 
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   gotoEditCompany() {
@@ -53,97 +54,113 @@ export class CompanyListingComponent implements OnInit {
     ];
   }
 
-getCompanyData() {
-  this.loading = true;
+  getCompanyData() {
+    this.loading = true;
 
-  // Check if the user is admin
-  const isAdmin = this.authService.hasRole('Admin');
+    const isAdmin = this.authService.hasRole('Admin');
 
-  if (isAdmin) {
-    // Admin: fetch all vendor companies
-    this.companyService.getVendorCompanies().subscribe({
-      next: (res: any) => {
-        const companies = res?.$values || [];
-        const filtered = companies.filter(c => c.status?.toLowerCase() === 'inprocess');
+    if (isAdmin) {
+      this.companyService.getVendorCompanies().subscribe({
+        next: (res: any) => {
+          const companies = res?.$values || [];
 
-        this.tenderingData = filtered.map(c => {
-          const primaryAddress = c.addressesVM?.$values?.[0] || {};
-          const primaryContact = c.contactsVM?.$values?.[0] || {};
-          const demographics = c.purchasingDemographics || {};
+          // ✅ Store all companies
+          this.allCompanies = companies.map(c => this.mapCompany(c));
 
-          return {
-            id: c.id,
-            name: c.name,
-            companyStatus: c.status || '',
-            street: primaryAddress.street || '',
-            city: primaryAddress.city || '',
-            contactNumber: primaryContact.contactNumber || '',
-            remarks: c.remarks || '',
-            approverId: c.approverId,
-            vendorId: c.vendorId,
-            vendorType: demographics.vendorType || '',
-            primaryCurrency: demographics.primaryCurrency || ''
-          };
-        });
+          // ✅ Default → show Inprocess & Approved
+          this.tenderingData = this.allCompanies.filter(c =>
+            c.companyStatus.toLowerCase() === 'inprocess' ||
+            c.companyStatus.toLowerCase() === 'approve'
+          );
 
-        this.rows = [...this.tenderingData];
+          this.rows = [...this.tenderingData];
+          this.cdr.detectChanges();
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('Error fetching vendor companies:', err);
+          this.loading = false;
+        }
+      });
+
+    } else {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        console.warn('No userId found in localStorage');
+        this.tenderingData = [];
+        this.rows = [];
         this.loading = false;
-      },
-      error: (err) => {
-        console.error('Error fetching vendor companies:', err);
-        this.loading = false;
+        return;
       }
-    });
 
-  } else {
-    // Non-admin: fetch companies by UserId from localStorage
-    const userId = localStorage.getItem('userId'); // <-- fetch UserId
-    if (!userId) {
-      console.warn('No userId found in localStorage');
-      this.tenderingData = [];
-      this.rows = [];
-      this.loading = false;
-      return;
+      this.companyService.getCompaniesByUserEntity(userId).subscribe({
+        next: (res: any) => {
+          const companies = res?.$values || [];
+
+          // ✅ Store all companies
+          this.allCompanies = companies.map(c => this.mapCompany(c));
+
+          // ✅ Default → show Inprocess & Approved
+          this.tenderingData = this.allCompanies.filter(c =>
+            c.companyStatus.toLowerCase() === 'inprocess' ||
+            c.companyStatus.toLowerCase() === 'approve'
+          );
+
+          this.rows = [...this.tenderingData];
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('Error fetching companies by user:', err);
+          this.loading = false;
+        }
+      });
     }
-
-    // Call API with userId
-    this.companyService.getCompaniesByUserEntity(userId).subscribe({
-      next: (res: any) => {
-        const companies = res?.$values || [];
-        const filtered = companies.filter(c => c.status?.toLowerCase() === 'inprocess');
-
-        this.tenderingData = filtered.map(c => {
-          const primaryAddress = c.addressesVM?.$values?.[0] || {};
-          const primaryContact = c.contactsVM?.$values?.[0] || {};
-          const demographics = c.purchasingDemographics || {};
-
-          return {
-            id: c.id,
-            name: c.name,
-            companyStatus: c.status || '',
-            street: primaryAddress.street || '',
-            city: primaryAddress.city || '',
-            contactNumber: primaryContact.contactNumber || '',
-            remarks: c.remarks || '',
-            approverId: c.approverId,
-            vendorId: c.vendorId,
-            vendorType: demographics.vendorType || '',
-            primaryCurrency: demographics.primaryCurrency || ''
-          };
-        });
-
-        this.rows = [...this.tenderingData];
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Error fetching companies by user:', err);
-        this.loading = false;
-      }
-    });
   }
-}
 
+  private mapCompany(c: any) {
+    const primaryAddress = c.addressesVM?.$values?.[0] || {};
+    const primaryContact = c.contactsVM?.$values?.[0] || {};
+    const demographics = c.purchasingDemographics || {};
 
+    return {
+      id: c.id,
+      name: c.name,
+      companyStatus: c.status || '',
+      street: primaryAddress.street || '',
+      city: primaryAddress.city || '',
+      contactNumber: primaryContact.contactNumber || '',
+      remarks: c.remarks || '',
+      approverId: c.approverId,
+      vendorId: c.vendorId,
+      vendorType: demographics.vendorType || '',
+      primaryCurrency: demographics.primaryCurrency || ''
+    };
+  }
+
+  showAll() {
+   this.rows = this.allCompanies.filter(c =>
+      c.companyStatus.toLowerCase() === 'inprocess'  ||
+       c.companyStatus.toLowerCase() === 'approve'
+    );  
+                  this.cdr.detectChanges()
+
+  }
+
+  showInProcess() {
+    this.rows = this.allCompanies.filter(c =>
+      c.companyStatus.toLowerCase() === 'inprocess'
+    );
+                      this.cdr.detectChanges()
+
+  }
+
+  showRecall() {
+    this.rows = this.allCompanies.filter(c =>
+      c.companyStatus.toLowerCase() === 'sendback'
+    );
+                      this.cdr.detectChanges()
+
+  }
 
   homePage() {
     this.router.navigate(['/dashboard/dashboard1']);
@@ -161,7 +178,6 @@ getCompanyData() {
       rows.sort((a, b) =>
         a[sort.prop].localeCompare(b[sort.prop]) * (sort.dir === 'desc' ? -1 : 1)
       );
-
       this.rows = rows;
       this.loading = false;
     }, 1000);
@@ -172,7 +188,6 @@ getCompanyData() {
     this.chkBoxSelected.splice(0, this.chkBoxSelected.length);
     this.chkBoxSelected.push(...selected);
     this.announcementId = selected[0]?.id;
-
     this.enableDisableButtons();
   }
 
@@ -186,7 +201,6 @@ getCompanyData() {
     this.isAllSelected = this.tenderingData.length === selectedRowCount;
   }
 
-  // Edit button in action pane
   editSelectedRow() {
     if (this.chkBoxSelected.length === 1) {
       const row = this.chkBoxSelected[0];
