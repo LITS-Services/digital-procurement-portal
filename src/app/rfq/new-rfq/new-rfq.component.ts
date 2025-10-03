@@ -178,6 +178,12 @@ export class NewRfqComponent implements OnInit {
     if (!this.editingRowIndex) {
       this.itemForm.patchValue({ vendorCompanyId: '' });
     }
+    else {
+    const current = String(this.itemForm.get('vendorCompanyId')?.value ?? '');
+    if (!this.filteredCompanies.some(c => c.companyId === current)) {
+      this.itemForm.patchValue({ vendorCompanyId: '' });
+    }
+  }
   }
 
   onWorkflowTypeChange(selectedId: number): void {
@@ -359,13 +365,16 @@ export class NewRfqComponent implements OnInit {
 
       itemDescription: row.itemDescription,
       vendorUserId: row.vendorUserId,
-      vendorCompanyId: row.vendorCompanyId,
       account: row.account,
       remarks: row.remarks,
       quotationItemAttachments: row.quotationItemAttachments
     });
     this.onVendorChange(row.vendorUserId);
     this.editingRowIndex = rowIndex;
+
+    this.itemForm.patchValue({
+    vendorCompanyId: row.vendorCompanyId
+  });
   }
 
 
