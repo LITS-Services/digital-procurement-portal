@@ -32,6 +32,10 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
   public profileImage: string | ArrayBuffer | null = 'assets/img/profile/user.png';
   public userId: string;
 
+  showOldPassword = false;
+  showNewPassword = false;
+  showConfirmPassword = false;
+
   constructor(
     private configService: ConfigService,
     private layoutService: LayoutService,
@@ -63,17 +67,14 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
       newPassword: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required]
     }, { validators: this.passwordMatchValidator });
-  }showOldPassword = false;
-showNewPassword = false;
-showConfirmPassword = false;
+  }
 
   ngOnInit() {
     this.layoutSub = this.configService.templateConf$.subscribe((templateConf) => {
       if (templateConf) {
         this.config = templateConf;
+        this.cdr.detectChanges(); // ✅ detectChanges added
       }
-      
-      this.cdr.markForCheck();
     });
 
     this.userId = localStorage.getItem('userId') || '';
@@ -81,32 +82,34 @@ showConfirmPassword = false;
       this.loadUserData(this.userId);
     }
 
-     this.resetPasswordForm = this.fb.group({
-    oldPassword: ['', Validators.required],
-    newPassword: ['', [
-      Validators.required,
-      Validators.minLength(6),
-      Validators.pattern(/^(?=.*[A-Z])(?=.*\d).{6,}$/) // at least 1 uppercase & 1 number
-    ]],
-    confirmPassword: ['', Validators.required]
-  }, { validators: [this.passwordMatchValidator, this.newNotEqualOldValidator] });
+    this.resetPasswordForm = this.fb.group({
+      oldPassword: ['', Validators.required],
+      newPassword: ['', [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.pattern(/^(?=.*[A-Z])(?=.*\d).{6,}$/) // at least 1 uppercase & 1 number
+      ]],
+      confirmPassword: ['', Validators.required]
+    }, { validators: [this.passwordMatchValidator, this.newNotEqualOldValidator] });
   }
-passwordMatchValidato(group: FormGroup) {
-  const newPass = group.get('newPassword')?.value;
-  const confirmPass = group.get('confirmPassword')?.value;
-  return newPass === confirmPass ? null : { passwordMismatch: true };
-}
 
-// ✅ New password must not equal old password
-newNotEqualOldValidator(group: FormGroup) {
-  const oldPass = group.get('oldPassword')?.value;
-  const newPass = group.get('newPassword')?.value;
-  return oldPass && newPass && oldPass === newPass ? { sameAsOld: true } : null;
-}
+  passwordMatchValidator(group: FormGroup) {
+    const newPass = group.get('newPassword')?.value;
+    const confirmPass = group.get('confirmPassword')?.value;
+    return newPass === confirmPass ? null : { passwordMismatch: true };
+  }
+
+  newNotEqualOldValidator(group: FormGroup) {
+    const oldPass = group.get('oldPassword')?.value;
+    const newPass = group.get('newPassword')?.value;
+    return oldPass && newPass && oldPass === newPass ? { sameAsOld: true } : null;
+  }
+
   ngAfterViewInit() {
     let conf = this.config;
     conf.layout.sidebar.collapsed = true;
     this.configService.applyTemplateConfigChange({ layout: conf.layout });
+    this.cdr.detectChanges(); // ✅ detectChanges added
   }
 
   ngOnDestroy() {
@@ -116,25 +119,19 @@ newNotEqualOldValidator(group: FormGroup) {
     if (this.layoutSub) {
       this.layoutSub.unsubscribe();
     }
+    this.cdr.detectChanges(); // ✅ detectChanges added
   }
 
-  // ✅ Password match validator
-  passwordMatchValidator(group: FormGroup) {
-    const newPass = group.get('newPassword')?.value;
-    const confirmPass = group.get('confirmPassword')?.value;
-    return newPass === confirmPass ? null : { passwordMismatch: true };
-  }
-
-  // ✅ Open Reset Password Modal
   openResetPassword(content: any) {
     this.resetPasswordForm.reset();
     this.modalService.open(content, { centered: true, backdrop: 'static' });
+    this.cdr.detectChanges(); // ✅ detectChanges added
   }
 
-  // ✅ Handle Reset Password
   onResetPassword(modal: any) {
     if (this.resetPasswordForm.invalid || !this.userId) {
       this.toastr.error("Please fill all fields correctly");
+      this.cdr.detectChanges(); // ✅ detectChanges added
       return;
     }
 
@@ -148,16 +145,17 @@ newNotEqualOldValidator(group: FormGroup) {
       next: () => {
         this.toastr.success('Password updated successfully');
         this.resetPasswordForm.reset();
-        modal.close(); // ✅ Close modal on success
+        modal.close();
+        this.cdr.detectChanges(); // ✅ detectChanges added
       },
       error: (err) => {
         console.error('Error resetting password', err);
         this.toastr.error('Failed to reset password');
+        this.cdr.detectChanges(); // ✅ detectChanges added
       }
     });
   }
 
-  // Load user data from API
   loadUserData(id: string) {
     this.companyService.getprocurementusersbyid(id).subscribe({
       next: (res) => {
@@ -175,27 +173,28 @@ newNotEqualOldValidator(group: FormGroup) {
         if (res.profilePicture) {
           this.profileImage = res.profilePicture;
         }
+        this.cdr.detectChanges(); // ✅ detectChanges added
       },
       error: (err) => {
         console.error('Error loading user data', err);
         this.toastr.error('Failed to load user data');
+        this.cdr.detectChanges(); // ✅ detectChanges added
       }
     });
   }
 
-  // Profile image change
   onProfileImageChange(event: any) {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         this.profileImage = e.target?.result as string;
+        this.cdr.detectChanges(); // ✅ detectChanges added
       };
       reader.readAsDataURL(file);
     }
   }
 
-  // Save changes
   saveChanges() {
     if (!this.userId) return;
 
@@ -220,10 +219,12 @@ newNotEqualOldValidator(group: FormGroup) {
     this.companyService.ProcurmentuserUpdate(this.userId, updateData).subscribe({
       next: () => {
         this.toastr.success('User updated successfully');
+        this.cdr.detectChanges(); // ✅ detectChanges added
       },
       error: (err) => {
         console.error('Error updating user', err);
         this.toastr.error('Failed to update user');
+        this.cdr.detectChanges(); // ✅ detectChanges added
       }
     });
   }

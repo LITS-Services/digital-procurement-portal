@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompanyService } from 'app/shared/services/Company.services';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-company-edit',
@@ -27,12 +28,15 @@ export class CompanyEditComponent implements OnInit {
   error: string = '';
   remark: string = '';
   message: string = '';
+  actionType!: number; // 2 = Approve, 4 = Recall
+  private modalRef!: NgbModalRef;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private companyService: CompanyService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private modalService: NgbModal
   ) {}
 
   ngOnInit(): void {
@@ -126,7 +130,23 @@ export class CompanyEditComponent implements OnInit {
     window.URL.revokeObjectURL(url);
   }
 
-  async reviewCompany(requestStatusId: number) {
+  openRemarkModal(action: number, content: any) {
+    this.actionType = action;
+    this.remark = '';
+    this.modalRef = this.modalService.open(content, { backdrop: 'static', size: 'md' });
+  }
+
+  submitRemark() {
+    if (!this.remark.trim()) {
+      alert('Please enter a remark');
+      return;
+    }
+
+    this.reviewCompany(this.actionType, this.remark);
+    this.modalRef.close();
+  }
+
+  async reviewCompany(requestStatusId: number, remark?: string) {
     if (!this.companyId) {
       this.error = 'Company ID missing! Cannot proceed.';
       return;
@@ -135,6 +155,7 @@ export class CompanyEditComponent implements OnInit {
     this.isLoading = true;
     this.error = '';
     this.message = '';
+    this.remark = remark || this.remark;
 
     this.attachedFiles = await Promise.all(this.attachedFiles.map(async f => {
       if (f.file && !f.fileContent) {
@@ -144,7 +165,6 @@ export class CompanyEditComponent implements OnInit {
     }));
 
     const approverId = localStorage.getItem('userId') || '';
-    console.log(approverId)
 
     const payload = {
       Id: this.companyId || 0,
@@ -224,7 +244,7 @@ export class CompanyEditComponent implements OnInit {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => resolve((reader.result as string).split(',')[4]);
+      reader.onload = () => resolve((reader.result as string).split(',')[1]);
       reader.onerror = error => reject(error);
     });
   }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
@@ -33,7 +33,9 @@ export class ProcurmentCompaniesComponent implements OnInit {
     private router: Router, 
     private companyService: CompanyService,
     private authService: AuthService, // Inject AuthService
- private toastr: ToastrService 
+ private toastr: ToastrService ,
+     private cdr: ChangeDetectorRef
+
 
   ) { }
 
@@ -61,6 +63,8 @@ export class ProcurmentCompaniesComponent implements OnInit {
         this.loading = false;
       }
     });
+              this.cdr.detectChanges()
+
   }
 
   homePage() {
@@ -116,7 +120,10 @@ export class ProcurmentCompaniesComponent implements OnInit {
         this.loadCompanyData();
         this.chkBoxSelected = [];
         this.updateActionButtons();
+                        this.cdr.detectChanges()
+
       },
+
       error: (err) => {
         console.error('Error deleting companies:', err);
       }

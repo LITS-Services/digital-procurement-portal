@@ -1,135 +1,122 @@
 <section>
-    <div class="row">
-        <div class="col-12">
+  <div class="row">
+    <div class="col-12">
 
-            <!-- Header -->
-            <div class="row">
-                <div class="col-md-12" style="margin-top: -0.25rem;">
-                    <h4 class="heading">Company Review</h4>
-                </div>
-            </div>
-
-
-
-
-            <div class="card">
-                <div class="row">
-                    <div class="col-md-6">
-                        <button class="btn btn-lg mr-1" type="button" (click)="goBack()"><i
-                                class="ft-arrow-left"></i></button>
-                        <span class="vl"></span>
-                        <button type="submit" class="btn btn-sm" form="companyForm" [disabled]="!companyId"
-                            (click)="reviewCompany(2)">
-                            <i class="fa fa-circle-check"></i>
-                            <label class="ml-1 mt-1">Approve</label>
-                        </button>
-
-                        <button type="reset" class="btn btn-sm" [disabled]="!companyId" (click)="reviewCompany(4)">
-                            <i class="fa fa-rotate-left"></i>
-                            <label class="ml-1 mt-1">Recall</label>
-                        </button>
-
-                    </div>
-                </div>
-            </div>
-
-
-
-
-
-
-
-
-
-
-
-            <!-- Company Info -->
-            <div class="card">
-                <div class="card-body">
-
-                    <!-- Loading / Error -->
-                    <div *ngIf="isLoading" class="alert alert-info">Loading company data...</div>
-                    <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
-
-                    <form *ngIf="!isLoading && !error">
-
-                        <div class="form-row">
-                            <div class="col-lg-4 mb-2">
-                                <label>Company Name</label>
-                                <input type="text" class="form-control" [value]="companyName" readonly>
-                            </div>
-                            <div class="col-lg-8 mb-2">
-                                <label>About Company</label>
-                                <textarea class="form-control" [value]="aboutCompany" rows="2" readonly></textarea>
-                            </div>
-                        </div>
-
-                        <!-- Purchasing Demographics -->
-                        <h4 class="mt-4">Purchasing Demographics</h4>
-                        <div class="border p-3 rounded mb-3">
-                            <div class="form-row">
-                                <div class="col-lg-4 mb-2"><strong>Currency:</strong> {{ primaryCurrency }}</div>
-                                <div class="col-lg-4 mb-2"><strong>Vendor Type:</strong> {{ vendorCategory }}</div>
-                                <div class="col-lg-4 mb-2"><strong>Line of Business:</strong> {{ lineOfBusiness }}</div>
-                                <div class="col-lg-4 mb-2"><strong>Employee Responsible:</strong> {{ employeeResponsible
-                                    }}</div>
-                                <div class="col-lg-8 mb-2"><strong>Note:</strong> {{ note }}</div>
-                            </div>
-                        </div>
-
-                        <!-- Addresses -->
-                        <h4 class="mt-4">Addresses</h4>
-                        <div *ngIf="addressList.length > 0; else noAddresses" class="border p-3 rounded mb-3">
-                            <div *ngFor="let address of addressList; let i = index" class="mb-2">
-                                <strong>Address {{ i + 1 }}:</strong>
-                                <div>{{ address.street }}, {{ address.city }}, {{ address.state }}, {{ address.zip }},
-                                    {{ address.country }}</div>
-                                <div><em>Primary:</em> {{ address.isPrimary ? 'Yes' : 'No' }}</div>
-                            </div>
-                        </div>
-                        <ng-template #noAddresses>
-                            <p class="text-muted">No addresses available</p>
-                        </ng-template>
-
-                        <!-- Contacts -->
-                        <h4 class="mt-4">Contacts</h4>
-                        <div *ngIf="contactList.length > 0; else noContacts" class="border p-3 rounded mb-3">
-                            <div *ngFor="let contact of contactList; let i = index" class="mb-2">
-                                <strong>Contact {{ i + 1 }}:</strong>
-                                <div>{{ contact.description }} ({{ contact.type }}) - {{ contact.contactNumber }} {{
-                                    contact.extension ? ' Ext: ' + contact.extension : '' }}</div>
-                                <div><em>Primary:</em> {{ contact.isPrimary ? 'Yes' : 'No' }}</div>
-                            </div>
-                        </div>
-                        <ng-template #noContacts>
-                            <p class="text-muted">No contacts available</p>
-                        </ng-template>
-
-                        <!-- Attachments -->
-                        <h4 class="mt-4">Attachments</h4>
-                        <div *ngIf="attachedFiles.length > 0; else noAttachments">
-                            <div *ngFor="let file of attachedFiles" class="d-flex align-items-center mb-2">
-                                <span class="me-3">{{ file.fileName }}</span>
-                                <button type="button" class="btn btn-sm btn-outline-primary"
-                                    (click)="downloadAttachment(file)">
-                                    Download
-                                </button>
-                            </div>
-                        </div>
-                        <ng-template #noAttachments>
-                            <p class="text-muted">No attachments available</p>
-                        </ng-template>
-
-                        <!-- Remark -->
-                        <div class="col-12 mb-3 mt-4">
-                            <label for="remark" class="form-label">Remark</label>
-                            <textarea id="remark" class="form-control" [(ngModel)]="remark" name="remark"
-                                placeholder="Enter remark here..." rows="3"></textarea>
-                        </div>
-
-                    </form>
-                </div>
-            </div>
+      <!-- Header -->
+      <div class="row mb-2">
+        <div class="col-md-12">
+          <h4 class="heading">Company Review</h4>
         </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="card mb-3">
+        <div class="row p-2">
+          <div class="col-md-6">
+            <button class="btn btn-lg mr-1" type="button" (click)="goBack()">
+              <i class="ft-arrow-left"></i>
+            </button>
+            <span class="vl"></span>
+
+            <button class="btn btn-sm" [disabled]="!companyId" (click)="openRemarkModal(2, remarkModal)">
+              <i class="fa fa-circle-check"></i> Approve
+            </button>
+
+            <button class="btn btn-sm" [disabled]="!companyId" (click)="openRemarkModal(4, remarkModal)">
+              <i class="fa fa-rotate-left"></i> Recall
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Company Info -->
+      <div class="card">
+        <div class="card-body">
+          <div *ngIf="isLoading" class="alert alert-info">Loading company data...</div>
+          <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+          <form *ngIf="!isLoading && !error">
+            <div class="form-row">
+              <div class="col-lg-4 mb-2">
+                <label>Company Name</label>
+                <input type="text" class="form-control" [value]="companyName" readonly>
+              </div>
+              <div class="col-lg-8 mb-2">
+                <label>About Company</label>
+                <textarea class="form-control" [value]="aboutCompany" rows="2" readonly></textarea>
+              </div>
+            </div>
+
+            <!-- Purchasing Demographics -->
+            <h4 class="mt-4">Purchasing Demographics</h4>
+            <div class="border p-3 rounded mb-3">
+              <div class="form-row">
+                <div class="col-lg-4 mb-2"><strong>Currency:</strong> {{ primaryCurrency }}</div>
+                <div class="col-lg-4 mb-2"><strong>Vendor Type:</strong> {{ vendorCategory }}</div>
+                <div class="col-lg-4 mb-2"><strong>Line of Business:</strong> {{ lineOfBusiness }}</div>
+                <div class="col-lg-4 mb-2"><strong>Employee Responsible:</strong> {{ employeeResponsible }}</div>
+                <div class="col-lg-8 mb-2"><strong>Note:</strong> {{ note }}</div>
+              </div>
+            </div>
+
+            <!-- Addresses -->
+            <h4 class="mt-4">Addresses</h4>
+            <div *ngIf="addressList.length > 0; else noAddresses" class="border p-3 rounded mb-3">
+              <div *ngFor="let address of addressList; let i = index" class="mb-2">
+                <strong>Address {{ i + 1 }}:</strong>
+                <div>{{ address.street }}, {{ address.city }}, {{ address.state }}, {{ address.zip }}, {{ address.country }}</div>
+                <div><em>Primary:</em> {{ address.isPrimary ? 'Yes' : 'No' }}</div>
+              </div>
+            </div>
+            <ng-template #noAddresses>
+              <p class="text-muted">No addresses available</p>
+            </ng-template>
+
+            <!-- Contacts -->
+            <h4 class="mt-4">Contacts</h4>
+            <div *ngIf="contactList.length > 0; else noContacts" class="border p-3 rounded mb-3">
+              <div *ngFor="let contact of contactList; let i = index" class="mb-2">
+                <strong>Contact {{ i + 1 }}:</strong>
+                <div>{{ contact.description }} ({{ contact.type }}) - {{ contact.contactNumber }} {{ contact.extension ? ' Ext: ' + contact.extension : '' }}</div>
+                <div><em>Primary:</em> {{ contact.isPrimary ? 'Yes' : 'No' }}</div>
+              </div>
+            </div>
+            <ng-template #noContacts>
+              <p class="text-muted">No contacts available</p>
+            </ng-template>
+
+            <!-- Attachments -->
+            <h4 class="mt-4">Attachments</h4>
+            <div *ngIf="attachedFiles.length > 0; else noAttachments">
+              <div *ngFor="let file of attachedFiles" class="d-flex align-items-center mb-2">
+                <span class="me-3">{{ file.fileName }}</span>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="downloadAttachment(file)">
+                  Download
+                </button>
+              </div>
+            </div>
+            <ng-template #noAttachments>
+              <p class="text-muted">No attachments available</p>
+            </ng-template>
+          </form>
+        </div>
+      </div>
+
+      <!-- Remark Modal -->
+      <ng-template #remarkModal let-modal>
+        <div class="modal-header">
+          <h5 class="modal-title">{{ actionType === 2 ? 'Approve' : 'Recall' }} Company</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+        </div>
+        <div class="modal-body">
+          <textarea class="form-control" [(ngModel)]="remark" placeholder="Enter remark..." rows="3"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
+          <button type="button" class="btn btn-primary" (click)="submitRemark()">Submit</button>
+        </div>
+      </ng-template>
+
     </div>
+  </div>
 </section>

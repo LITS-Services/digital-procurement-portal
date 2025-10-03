@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
 import { AuthService } from 'app/shared/auth/auth.service';
@@ -24,7 +24,9 @@ export class EmployeeListComponent implements OnInit {
   constructor(
     private router: Router,
     private companyService: CompanyService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
+    
   ) { }
 
   ngOnInit(): void {
@@ -57,6 +59,7 @@ export class EmployeeListComponent implements OnInit {
           phoneNumber: u.phoneNumber || 'N/A',
           isDeleted: u.isDeleted
         }));
+          this.cdr.detectChanges()
 
         this.loading = false;
       },
@@ -107,6 +110,8 @@ export class EmployeeListComponent implements OnInit {
 // Navigate to register user page
 registerUser() {
   this.router.navigate(['/employee']);
+            this.cdr.detectChanges()
+
 }
 
   // Edit button (top)
