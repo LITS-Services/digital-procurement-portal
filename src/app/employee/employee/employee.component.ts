@@ -111,7 +111,7 @@ export class EmployeeComponent implements OnInit {
       next: (emp: any) => {
         this.companyForm.patchValue({
           employeeId: emp.id,
-          name: emp.fullName || emp.userName,
+          name: emp.Username || emp.userName,
           email: emp.email || '',
           isDeleted: emp.isDeleted || false
         });
@@ -142,7 +142,7 @@ export class EmployeeComponent implements OnInit {
     const selectedEmp = this.employees.find(e => e.id == selectedId);
     if (selectedEmp) {
       this.companyForm.patchValue({ 
-        name: selectedEmp.fullName, 
+        name: selectedEmp.Username, 
         email: selectedEmp.email 
       });
       this.cdr.detectChanges();         // ✅ Update form after selecting employee
@@ -246,7 +246,7 @@ export class EmployeeComponent implements OnInit {
         this.companyForm.reset();
         this.selectedCompanyGUIDs = [];
         this.companyFormSubmitted = false;
-        this.cdr.detectChanges();       // ✅ Refresh UI after successful registration
+        this.cdr.detectChanges();      
       },
       error: (err) => {
         this.toastr.error('Failed to register employee');
@@ -260,7 +260,7 @@ export class EmployeeComponent implements OnInit {
     this.selectedCompanyGUIDs = [];
     this.companyFormSubmitted = false;
     if (this.isEditMode && this.companyId) this.loadEmployeeForEdit(this.companyId);
-    this.cdr.detectChanges();           // ✅ Refresh form after reset
+    this.cdr.detectChanges();          
   }
 
   goBack() {

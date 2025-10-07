@@ -14,6 +14,7 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
   selectedFile: File | null = null;
   companyId: number | null = null;
   isEditMode: boolean = false;
+  existingLogo: string | null = null; // keep existing logo
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -23,37 +24,37 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Get ID from query params
     const idParam = this.route.snapshot.queryParamMap.get('id');
     this.companyId = idParam ? +idParam : null;
     this.isEditMode = !!this.companyId;
 
     // Build form
     this.companyForm = this.fb.group({
-      id: [{ value: '', disabled: true }], // ID not editable
-      companyGUID: [this.isEditMode ? '' : this.generateGUID(), Validators.required], // auto-generate GUID for new
+      id: [{ value: '', disabled: true }],
+      companyGUID: [this.isEditMode ? '' : this.generateGUID(), Validators.required],
       name: ['', Validators.required],
-      logo: [null]
+      logo: [null],
+      isDeleted: [false] // default Active
     });
 
-    // If edit mode, load existing company
     if (this.isEditMode) {
       this.loadCompany();
     }
   }
 
-  // Load company for edit
   loadCompany() {
     this.companyService.getproByid(this.companyId).subscribe({
       next: (company: any) => {
         this.companyForm.patchValue({
           id: company.id,
           companyGUID: company.companyGUID,
-          name: company.name
+          name: company.name,
+          isDeleted: company.isDeleted
         });
 
         if (company.logo && company.logo !== 'string') {
           this.previewUrl = company.logo;
+          this.existingLogo = company.logo;
         } else {
           this.previewUrl = null;
         }
@@ -62,7 +63,6 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
     });
   }
 
-  // File input change
   onFileSelect(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
@@ -76,19 +76,27 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
     }
   }
 
-  // Submit form
   onSubmit() {
     if (this.companyForm.invalid) return;
+
+    const userName = localStorage.getItem('userName') || 'Unknown';
 
     const payload: any = {
       id: this.isEditMode ? this.companyForm.getRawValue().id : 0,
       companyGUID: this.companyForm.value.companyGUID || this.generateGUID(),
-      name: this.companyForm.value.name || 'string',
-      logo: 'string'
+      name: this.companyForm.value.name, 
+      logo: this.existingLogo || 'string',
+      isDeleted: !!this.companyForm.value.isDeleted
     };
 
+    if (this.isEditMode) {
+      payload.modifiedBy = userName;
+      payload.modifiedDate = new Date().toISOString();
+    } else {
+      payload.createdBy = userName;
+    }
+
     if (this.selectedFile) {
-      // Convert file to Base64
       const reader = new FileReader();
       reader.onload = () => {
         payload.logo = reader.result as string;
@@ -100,7 +108,6 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
     }
   }
 
-  // Send payload to service
   private sendPayload(payload: any) {
     if (this.isEditMode) {
       this.companyService.updateProCompaniesById(this.companyId, payload).subscribe({
@@ -121,7 +128,6 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
     }
   }
 
-  // Generate a GUID for new companies
   private generateGUID(): string {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
       const r = Math.random() * 16 | 0,
@@ -130,21 +136,20 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
     });
   }
 
-  // Reset form
   onReset() {
     this.companyForm.reset();
-    this.previewUrl = null;
+    this.previewUrl = this.existingLogo || null;
     this.selectedFile = null;
     if (this.isEditMode) {
-      this.loadCompany(); // reload initial values
+      this.loadCompany();
     } else {
       this.companyForm.patchValue({
-        companyGUID: this.generateGUID()
+        companyGUID: this.generateGUID(),
+        isDeleted: false
       });
     }
   }
 
-  // Navigate back
   goBack() {
     this.router.navigate(['/procurment-companies']);
   }

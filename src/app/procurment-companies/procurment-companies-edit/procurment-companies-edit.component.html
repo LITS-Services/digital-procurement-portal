@@ -4,8 +4,8 @@
 
       <!-- Header -->
       <div class="row">
-        <div class="col-md-12" style=" margin-top: -0.25rem;">
-          <h4 class="heading">Register New Company</h4>
+        <div class="col-md-12" style="margin-top: -0.25rem;">
+          <h4 class="heading">Register / Edit Company</h4>
         </div>
       </div>
 
@@ -31,19 +31,19 @@
           <form [formGroup]="companyForm" id="companyForm" (ngSubmit)="onSubmit()">
             <div class="form-row">
               
-              <div class="col-lg-4 col-md-4 col-sm-6">
+              <!-- <div class="col-lg-4 col-md-4 col-sm-6">
                 <div class="form-group mb-2">
                   <label>ID</label>
                   <input type="number" formControlName="id" class="form-control" placeholder="Enter ID" />
                 </div>
-              </div>
+              </div> -->
 
-              <div class="col-lg-4 col-md-4 col-sm-6">
+              <!-- <div class="col-lg-4 col-md-4 col-sm-6">
                 <div class="form-group mb-2">
                   <label>Company GUID</label>
                   <input type="text" formControlName="companyGUID" class="form-control" placeholder="Enter GUID" disabled/>
                 </div>
-              </div>
+              </div> -->
 
               <div class="col-lg-4 col-md-4 col-sm-6">
                 <div class="form-group mb-2">
@@ -59,10 +59,23 @@
                   <div *ngIf="previewUrl" class="mt-2">
                     <img [src]="previewUrl" alt="Logo Preview" width="120" class="img-thumbnail" />
                   </div>
+                  <div *ngIf="!previewUrl && existingLogo" class="mt-2">
+                    <img [src]="existingLogo" alt="Existing Logo" width="120" class="img-thumbnail" />
+                  </div>
                 </div>
               </div>
 
-           
+              <!-- Status Toggle -->
+              <div class="col-lg-4 col-md-4 col-sm-6">
+                <div class="form-group mb-2">
+                  <label>Status</label>
+                  <select formControlName="isDeleted" class="form-control">
+                    <option [value]="false">Active</option>
+                    <option [value]="true">Inactive</option>
+                  </select>
+                </div>
+              </div>
+
             </div>
           </form>
         </div>
