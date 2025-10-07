@@ -6,6 +6,7 @@ import { PurchaseRequestService } from 'app/shared/services/purchase-request-ser
 import { PurchaseRequestAccountBudgetLookupModalComponent } from 'app/shared/modals/purchase-request-account-budget-lookup-modal/purchase-request-account-budget-lookup-modal.component';
 import { PurchaseRequestExceptionPolicyComponent } from 'app/shared/modals/purchase-request-exception-policy/purchase-request-exception-policy.component';
 import { PrApprovalHistoryComponent } from '../pr-approval-history/pr-approval-history.component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-purchase-request',
@@ -15,6 +16,8 @@ import { PrApprovalHistoryComponent } from '../pr-approval-history/pr-approval-h
 export class PurchaseRequestComponent implements OnInit {
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
+
+  isStatusCompleted: boolean = false;
 
   activeFilter: string = ''; // default filter
   purchaseRequestData: any[] = [];
@@ -33,7 +36,8 @@ export class PurchaseRequestComponent implements OnInit {
     private modalService: NgbModal,
     private purchaseRequestService: PurchaseRequestService,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private toastr: ToastrService
 
   ) { }
 
@@ -45,14 +49,34 @@ export class PurchaseRequestComponent implements OnInit {
    * Load purchase requests from API and group clones
    */
 
+  // loadPurchaseRequests() {
+  //   const userId = localStorage.getItem('userId');
+  //   this.loading = true;
+
+  //   this.purchaseRequestService.getPurchaseRequests(userId).subscribe({
+  //     next: (data: any) => {
+  //       // 🔹 Directly assign the values (skip grouping logic)
+  //       this.purchaseRequestData = data?.$values || [];
+  //       this.loading = false;
+  //       this.cdr.detectChanges();
+  //     },
+  //     error: (err) => {
+  //       console.error('Error fetching requests:', err);
+  //       this.loading = false;
+  //     }
+  //   });
+  // }
+
   loadPurchaseRequests() {
     const userId = localStorage.getItem('userId');
     this.loading = true;
-
     this.purchaseRequestService.getPurchaseRequests(userId).subscribe({
       next: (data: any) => {
-        // 🔹 Directly assign the values (skip grouping logic)
-        this.purchaseRequestData = data?.$values || [];
+        this.purchaseRequestData = (data?.$values || []).map((pr: any) => ({
+          ...pr,
+          canGenerateRfq: pr.requestStatus === 'Completed'   // add flag
+        }));
+
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -63,13 +87,16 @@ export class PurchaseRequestComponent implements OnInit {
     });
   }
 
+
   loadFilteredRequests(status: string) {
     const userId = localStorage.getItem('userId');
     this.activeFilter = status;
     this.purchaseRequestService.getAllRequestsByStatus(userId, status).subscribe({
       next: (data: any) => {
-        this.purchaseRequestData = data?.$values
-        this.cdr.detectChanges();
+ this.purchaseRequestData = (data?.$values || []).map((pr: any) => ({
+          ...pr,
+          canGenerateRfq: pr.requestStatus === 'Completed'   // add flag
+        }));        this.cdr.detectChanges();
 
       },
       error: (err) => console.error(err)
@@ -229,5 +256,17 @@ export class PurchaseRequestComponent implements OnInit {
   openApprovalHistoryModal(row: any): void {
     const modalRef = this.modalService.open(PrApprovalHistoryComponent, { size: 'lg', backdrop: 'static', centered: true });
     modalRef.componentInstance.requisitionNo = row.requisitionNo; // pass RfqNo
+  }
+
+  generateRfq(row: any) {
+    console.log('Row data:', row);
+    if (row.requestStatus !== 'Completed') {
+      this.toastr.info('RFQ can only be generated if PR is Completed.');
+      return;
+    }
+
+    this.router.navigate(['/rfq/new-rfq'], {
+      queryParams: { prId: row.requestId }
+    });
   }
 }

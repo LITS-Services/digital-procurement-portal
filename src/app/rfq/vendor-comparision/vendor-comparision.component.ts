@@ -26,7 +26,8 @@ export class VendorComparisionComponent implements OnInit {
 
   vendors: any[] = [];
 selectedVendorId: string | null = null;
-selectedItemCode: string | null = null;
+selectedItem: string | null = null;
+
 filteredVendorComparisonList: any[] = [];
 
 
@@ -137,7 +138,7 @@ loadVendorComparison(quotationRequestId: number): void {
       const items = res?.items?.$values || [];
 
       this.vendorComparisonList = items.map((item: any) => ({
-        itemCode: item.itemCode,
+        itemName: item.itemName,
         itemDescription: item.itemDescription,
         vendorComparisonBid: (item.vendorComparisonBid?.$values || []).map((bid: any) => ({
           vendorUserId: bid.vendorUserId,
@@ -148,7 +149,7 @@ loadVendorComparison(quotationRequestId: number): void {
       }));
 this.filteredVendorComparisonList = [...this.vendorComparisonList];
 
-      // ✅ unique vendors for dropdown
+      // unique vendors for dropdown
       const vendorMap = new Map<string, string>();
       this.vendorComparisonList.forEach(item => {
         item.vendorComparisonBid.forEach((bid: any) => {
@@ -232,22 +233,37 @@ this.filteredVendorComparisonList = [...this.vendorComparisonList];
 // }
 
 
+// applyVendorItemFilter() {
+//   this.filteredVendorComparisonList = this.vendorComparisonList
+//     .map(item => {
+//       // Vendor filter
+//       let bids = item.vendorComparisonBid;
+//       if (this.selectedVendorId) {
+//         bids = bids.filter((b: any) => b.vendorUserId == this.selectedVendorId);
+//       }
+
+//       // Return only item if it matches AND has bids
+//       if ((!this.selectedItemCode || item.itemCode === this.selectedItemCode) && bids.length > 0) {
+//         return { ...item, vendorComparisonBid: bids };
+//       }
+//       return null;
+//     })
+//     .filter(item => item !== null);
+// }
+
 applyVendorItemFilter() {
   this.filteredVendorComparisonList = this.vendorComparisonList
+    .filter(item =>
+      (!this.selectedItem || item.itemName === this.selectedItem)
+    )
     .map(item => {
-      // Vendor filter
-      let bids = item.vendorComparisonBid;
-      if (this.selectedVendorId) {
-        bids = bids.filter((b: any) => b.vendorUserId == this.selectedVendorId);
-      }
+      let bids = this.selectedVendorId
+        ? item.vendorComparisonBid.filter((b: any) => b.vendorUserId == this.selectedVendorId)
+        : item.vendorComparisonBid;
 
-      // Return only item if it matches AND has bids
-      if ((!this.selectedItemCode || item.itemCode === this.selectedItemCode) && bids.length > 0) {
-        return { ...item, vendorComparisonBid: bids };
-      }
-      return null;
+      return { ...item, vendorComparisonBid: bids };
     })
-    .filter(item => item !== null);
+    .filter(item => item.vendorComparisonBid.length > 0);
 }
 
 

@@ -12,6 +12,12 @@ export interface UploadedFile {
   base64Data?: string;
 }
 
+export interface Dropdown {
+  $id: string,
+  $values: [];
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -65,6 +71,18 @@ export class PurchaseRequestService {
   }
 
   getApprovalHistoryByReqNo(requisitionNo: string): Observable<any[]> {
-  return this.http.get<any[]>(`${this.baseUrl}/get-request-approval-history?requisitionNo=${requisitionNo}`);
-}
+    return this.http.get<any[]>(`${this.baseUrl}/get-request-approval-history?requisitionNo=${requisitionNo}`);
+  }
+
+  getAllUnitsOfMeasurements(): Observable<Dropdown> {
+    return this.http.get<Dropdown>(`${this.baseUrl}/unit-of-measurements`);
+  }
+
+  getAllItems(): Observable<Dropdown> {
+    return this.http.get<Dropdown>(`${this.baseUrl}/items`);
+  }
+
+  getAllAccounts(): Observable<Dropdown> {
+    return this.http.get<Dropdown>(`${this.baseUrl}/account`);
+  }
 }

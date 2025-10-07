@@ -20,12 +20,19 @@
   
       <ngx-datatable-column  [sortable]="false">
         <ng-template ngx-datatable-cell-template let-row="row">
-            <button
+            <!-- <button
             class="btn btn-sm text-bold btn-info"
             [disabled]="isVendorAdded(row.id)"
             (click)="addVendor(row)">
             <i class="ft-plus"></i>
-          </button>
+          </button> -->
+          <button
+  class="btn btn-sm text-bold btn-info"
+  [disabled]="isVendorAdded(row.vendorCompanyEntityId ?? row.id)"
+  (click)="addVendor(row)">
+  <i class="ft-plus"></i>
+</button>
+
 
         </ng-template>
       </ngx-datatable-column>

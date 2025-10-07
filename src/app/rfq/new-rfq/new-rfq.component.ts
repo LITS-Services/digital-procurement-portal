@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbAccordion, NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -23,9 +23,15 @@ export class NewRfqComponent implements OnInit {
   isNewForm = true; // true = create, false = edit
   isFormDirty = false; // track if any field was touched
 
+  isStatusCompleted: boolean = false;
   numberOfAttachments = 0;
   attachmentList: any[] = [];
   pendingAttachment: any[] = [];
+
+    // new work
+  itemList: any[] = [];
+  unitsOfMeasurementList: any[] = [];
+  accountList: any[] = [];
 
   newRfqForm: FormGroup;
   itemForm: FormGroup;
@@ -67,16 +73,21 @@ export class NewRfqComponent implements OnInit {
     private toastr: ToastrService,
     private rfqService: RfqService,
     private companyService: CompanyService,
-    private attachmentService: PurchaseRequestService,
     private WorkflowServiceService: WorkflowServiceService,
+    public cdr: ChangeDetectorRef,
+    private purchaseRequestService: PurchaseRequestService
   ) { }
 
   ngOnInit(): void {
     this.loadVendorUsers();
     // this.getWorkflowTypes();
+        this.loadUnitsOfMeasurements();
+    this.loadAccounts();
+    this.loadItems();
     this.route.queryParamMap.subscribe(params => {
       const id = params.get('id');
       const mode = params.get('mode');
+      const prId = params.get('prId');
 
       this.viewMode = mode === 'view';
       this.isNewForm = !id;
@@ -84,6 +95,9 @@ export class NewRfqComponent implements OnInit {
       if (id) {
         this.currentQuotationId = +id;
         this.loadExistingQuotation(+id);
+      }
+      else if (prId) {
+        this.loadFromPurchaseRequest(+prId);
       }
     });
 
@@ -122,14 +136,14 @@ export class NewRfqComponent implements OnInit {
       id: [null],
       rfqNo: [''],
       itemType: [''],
-      itemCode: [''],
-      uofM: [''],
+      itemId: [0],
+      unitOfMeasurementId: [0],
       amount: [0],
       unitCost: [0],
       orderQuantity: [0],
       reqByDate: [null],
       itemDescription: [''],
-      account: [''],
+      accountId: [0],
       remarks: [''],
       createdBy: [''],
       quotationRequestId: [0],
@@ -166,6 +180,24 @@ export class NewRfqComponent implements OnInit {
     });
   }
 
+    loadUnitsOfMeasurements() {
+    this.purchaseRequestService.getAllUnitsOfMeasurements().subscribe(res => {
+      this.unitsOfMeasurementList = res.$values ?? [];
+    });
+  }
+
+  loadAccounts() {
+    this.purchaseRequestService.getAllAccounts().subscribe(res => {
+      this.accountList = res.$values ?? [];
+    });
+  }
+
+  loadItems() {
+    this.purchaseRequestService.getAllItems().subscribe(res => {
+      this.itemList = res.$values ?? [];
+    });
+  }
+
   onVendorChange(vendorId: string) {
     this.filteredCompanies = this.quotationVendorUsers
       .filter(vc => vc.vendorId === vendorId)
@@ -179,11 +211,11 @@ export class NewRfqComponent implements OnInit {
       this.itemForm.patchValue({ vendorCompanyId: '' });
     }
     else {
-    const current = String(this.itemForm.get('vendorCompanyId')?.value ?? '');
-    if (!this.filteredCompanies.some(c => c.companyId === current)) {
-      this.itemForm.patchValue({ vendorCompanyId: '' });
+      const current = String(this.itemForm.get('vendorCompanyId')?.value ?? '');
+      if (!this.filteredCompanies.some(c => c.companyId === current)) {
+        this.itemForm.patchValue({ vendorCompanyId: '' });
+      }
     }
-  }
   }
 
   onWorkflowTypeChange(selectedId: number): void {
@@ -234,7 +266,19 @@ export class NewRfqComponent implements OnInit {
   }
 
 
+  getUomCodeById(id: number): string {
+    const found = this.unitsOfMeasurementList.find(u => u.id === id);
+    return found ? found.uomCode : '';
+  }
 
+  getAccountNameById(id: number): string {
+    const found = this.accountList.find(a => a.id === id);
+    return found ? found.name : '';
+  }
+  getItemNameById(id: number): string {
+    const found = this.itemList.find(i => i.id === id);
+    return found ? found.itemName : '';
+  }
   // loadExistingQuotation(id: number) {
   //   this.loadVendorsAndCompanies(id);
 
@@ -289,6 +333,63 @@ export class NewRfqComponent implements OnInit {
   //     error: (err) => console.error('Failed to load purchase request:', err)
   //   });
   // }
+
+  loadFromPurchaseRequest(prId: number): void {
+    this.purchaseRequestService.getPurchaseRequestById(prId).subscribe({
+      next: (pr) => {
+        if (!pr) return;
+
+        //  Patch header-level fields
+        this.newRfqForm.patchValue({
+          purchaseRequestId: pr.id,
+          purchaseRequestNo: pr.requisitionNo,
+          deliveryLocation: pr.deliveryLocation,
+          contact: pr.receiverContact || '',
+          // date: pr.submittedDate || new Date(),
+          date: this.toDateInputValue(pr.submittedDate),
+        });
+
+        //  Map PR items → RFQ items
+        this.newQuotationItemData = pr.items.$values.map((item: any) => ({
+          id: null,
+          rfqNo: '',
+          itemType: item.itemType,
+          itemCode: item.itemCode || '',
+          uofM: item.uofM,
+          amount: item.amount,
+          unitCost: item.unitCost,
+          orderQuantity: item.orderQuantity,
+          reqByDate: item.reqByDate,
+          itemDescription: item.itemDescription,
+          account: item.account || '',
+          remarks: item.remarks || '',
+          createdBy: item.createdBy || 'current-user',
+          quotationRequestId: 0,
+          vendorUserId: null,
+          vendorCompanyId: null,
+
+          quotationItemAttachments: item.attachments?.$values?.map((a: any) => ({
+            content: a.content || '',
+            contentType: a.contentType || '',
+            fileName: a.fileName || '',
+            fromForm: a.fromForm || '',
+            createdDate: a.createdDate,
+            modifiedDate: a.modifiedDate,
+            createdBy: a.createdBy || 'current-user',
+            isDeleted: a.isDeleted || false,
+            quotationItemId: a.quotationItemId || 0,
+          })) || []
+        }));
+
+        //  Refresh datatable
+        this.newQuotationItemData = [...this.newQuotationItemData];
+      },
+      error: (err) => {
+        console.error('Error loading PR', err);
+      }
+    });
+  }
+
   loadExistingQuotation(id: number) {
     this.loadVendorsAndCompanies(id);
 
@@ -299,7 +400,7 @@ export class NewRfqComponent implements OnInit {
         this.currentQuotationId = data.id;
         this.currentRfqNo = data.rfqNo;
 
-        // ✅ patch values with formatted dates
+        //  patch values with formatted dates
         this.newRfqForm.patchValue({
           ...data,
           date: this.toDateInputValue(data.date),
@@ -311,6 +412,14 @@ export class NewRfqComponent implements OnInit {
           this.newRfqForm.patchValue({
             status: data.requestStatus.status
           });
+          if (data.requestStatus?.status === 'Completed' && this.viewMode) {
+            this.isStatusCompleted = true;
+            this.cdr.detectChanges();
+          }
+          else {
+            this.isStatusCompleted = false;
+            this.cdr.detectChanges();
+          }
         }
 
         if (data.quotationItems?.$values) {
@@ -318,19 +427,20 @@ export class NewRfqComponent implements OnInit {
             id: item.id,
             rfqNo: item.rfqNo,
             itemType: item.itemType,
-            itemCode: item.itemCode,
+            itemId: item.itemId,
             itemDescription: item.itemDescription,
             amount: item.amount,
             unitCost: item.unitCost,
-            uofM: item.uofM,
+            unitOfMeasurementId: item.unitOfMeasurementId,
             orderQuantity: item.orderQuantity,
-            reqByDate: this.toDateInputValue(item.reqByDate), 
+            reqByDate: this.toDateInputValue(item.reqByDate),
             vendorUserId: item.vendorUserId,
             vendorCompanyId: item.vendorCompanyId,
-            account: item.account,
+            accountId: item.accountId,
             remarks: item.remarks,
             quotationRequestId: item.quotationRequestId,
             quotationItemAttachments: item.quotationItemAttachments?.$values?.map((a: any) => ({
+              id: a.id,
               content: a.content || '',
               contentType: a.contentType || '',
               fileName: a.fileName || '',
@@ -355,8 +465,8 @@ export class NewRfqComponent implements OnInit {
     this.itemForm.patchValue({
       id: row.id,
       itemType: row.itemType,
-      itemCode: row.itemCode,
-      uofM: row.uofM,
+      itemId: row.itemId,
+      unitOfMeasurementId: row.unitOfMeasurementId,
       amount: row.amount,
       unitCost: row.unitCost,
       orderQuantity: row.orderQuantity,
@@ -365,7 +475,7 @@ export class NewRfqComponent implements OnInit {
 
       itemDescription: row.itemDescription,
       vendorUserId: row.vendorUserId,
-      account: row.account,
+      accountId: row.accountId,
       remarks: row.remarks,
       quotationItemAttachments: row.quotationItemAttachments
     });
@@ -373,8 +483,8 @@ export class NewRfqComponent implements OnInit {
     this.editingRowIndex = rowIndex;
 
     this.itemForm.patchValue({
-    vendorCompanyId: row.vendorCompanyId
-  });
+      vendorCompanyId: row.vendorCompanyId
+    });
   }
 
 
@@ -388,25 +498,25 @@ export class NewRfqComponent implements OnInit {
 
     const quotationItems = this.newQuotationItemData?.length
       ? this.newQuotationItemData.map(item => ({
-        id: item.id || null,   // 👈 very important
+        id: item.id || null,   //  very important
 
         rfqNo: f.rfqNo || '',
         itemType: item.itemType || '',
-        itemCode: item.itemCode || '',
-        uofM: item.uofM || '',
+        itemId: Number(item.itemId) || 0,
+        unitOfMeasurementId: Number(item.unitOfMeasurementId) || 0,
         amount: item.amount || 0,
         unitCost: item.unitCost || 0,
         orderQuantity: item.orderQuantity || 0,
         reqByDate: item.reqByDate || new Date(),
         itemDescription: item.itemDescription || '',
-        account: item.account || '',
+        accountId: Number(item.accountId) || 0,
         remarks: item.remarks || '',
         createdBy: item.createdBy || 'current-user',
         quotationRequestId: item.quotationRequestId || 0,
         vendorUserId: item.vendorUserId || null,
         vendorCompanyId: item.vendorCompanyId || null,
         quotationItemAttachments: item.quotationItemAttachments?.map(att => ({
-          id: att.id || null,   // 👈 very important
+          id: att.id || null,   // very important
 
           content: att.content || '',
           contentType: att.contentType || '',
@@ -432,7 +542,7 @@ export class NewRfqComponent implements OnInit {
       workflowMasterId: f.workflowMasterId,
       comment: f.comment,
       createdBy: f.createdBy,
-      purchaseRequestId: 74,
+      purchaseRequestId: f.purchaseRequestId || null,
       quotationItems
     };
 
@@ -482,14 +592,14 @@ export class NewRfqComponent implements OnInit {
         id: item.id || null,
         rfqNo: item.rfqNo || '',
         itemType: item.itemType || '',
-        itemCode: item.itemCode || '',
-        uofM: item.uofM || '',
+        itemId: Number(item.itemId) || 0,
+        unitOfMeasurementId: Number(item.unitOfMeasurementId) || 0,
         amount: item.amount || 0,
         unitCost: item.unitCost || 0,
         orderQuantity: item.orderQuantity || 0,
         reqByDate: item.reqByDate || new Date(),
         itemDescription: item.itemDescription || '',
-        account: item.account || '',
+        accountId: Number(item.accountId) || 0,
         remarks: item.remarks || '',
         createdBy: item.createdBy || 'current-user',
         quotationRequestId: item.quotationRequestId || 0,
@@ -522,7 +632,7 @@ export class NewRfqComponent implements OnInit {
       workflowMasterId: Number(f.workflowMasterId) || 0,
       comment: f.comment || '',
       createdBy: f.createdBy || 'current-user',
-      purchaseRequestId: 74,
+      purchaseRequestId: f.purchaseRequestId || null,
       quotationItems
     };
 
@@ -572,6 +682,7 @@ export class NewRfqComponent implements OnInit {
     } else {
       const withEmptyAttachments = {
         ...newItem,
+        itemId: Number(newItem.itemId) || 0,
         quotationItemAttachments: newItem.quotationItemAttachments?.length ? newItem.quotationItemAttachments : []
       };
       this.newQuotationItemData = [...this.newQuotationItemData, withEmptyAttachments];
@@ -737,6 +848,5 @@ export class NewRfqComponent implements OnInit {
       }
     );
   }
-
 }
 

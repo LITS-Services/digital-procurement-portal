@@ -48,7 +48,6 @@ export class RfqVendorModalComponent implements OnInit {
     });
   }
 
-
   loadRfqVendors(quotationRequestId: number): void {
     this.rfqService.getVendorsByQuotationRequestId(quotationRequestId).subscribe({
       next: (res: any) => {
@@ -64,98 +63,35 @@ export class RfqVendorModalComponent implements OnInit {
     });
   }
 
-
-  // onSubmit() {
-  //   if (!this.quotationRequestId) {
-  //     console.error('Quotation Request Id is missing!');
-  //     return;
-  //   }
-
-  //   // build payload matching QuotationRequestVendorVM
-  //   const payload = this.rfqVendors.map(v => ({
-  //     quotationRequestId: this.quotationRequestId,
-  //     vendorCompanyEntityId: v.id,
-  //     vendorId: v.vendorId,       // comes from backend Vendor
-  //     vendorCompanyId: v.companyGUID,      // row.id is company GUID in VendorsAndCompaniesVM
-  //   }));
-
-  //   this.rfqService.addVendorsToQuotation(payload).subscribe({
-  //     next: (res) => {
-  //       console.log('Vendors submitted successfully', res);
-  //       this.activeModal.close(true);
-  //     },
-  //     error: (err) => {
-  //       console.error('Error submitting vendors', err);
-  //     }
-  //   });
-  // }
-
-
-
-
   // addVendor(vendor: any) {
-  //   const alreadyAdded = this.rfqVendors.some(v => v.vendorCode === vendor.vendorCode);
-  //   if (!alreadyAdded) {
-  //     this.rfqVendors.push({ ...vendor });
-  //   }
-  // }
+  //   if (this.isVendorAdded(vendor.vendorCompanyEntityId)) return;
 
-  // addVendor(vendor: any) {
-  //   // const alreadyAdded = this.rfqVendors.some(v => v.id === vendor.id);
-  //   // if (!alreadyAdded) {
-  //   //   this.rfqVendors.push({ ...vendor });
+  //   // add to rfqVendors for UI display
   //   this.rfqVendors = [...this.rfqVendors, vendor];
+
+  //   // also track this one for submission
+  //   this.selectedVendors = [...this.selectedVendors, vendor];
   // }
-
-
   addVendor(vendor: any) {
-    if (this.isVendorAdded(vendor.vendorCompanyEntityId)) return;
+  const companyId = vendor.vendorCompanyEntityId ?? vendor.id;
 
-    // add to rfqVendors for UI display
-    this.rfqVendors = [...this.rfqVendors, vendor];
+  if (this.isVendorAdded(companyId)) return;
 
-    // also track this one for submission
-    this.selectedVendors = [...this.selectedVendors, vendor];
-  }
+  const newVendor = {
+    vendorCompanyEntityId: companyId,
+    vendorName: vendor.vendorName,
+    companyName: vendor.companyName,
+    vendorId: vendor.vendorId,
+    companyGUID: vendor.companyGUID
+  };
 
-//   addVendor(vendor: any) {
-//   const vendorKey = vendor.companyGUID;  // unique per vendor-company
-//   if (this.isVendorAdded(vendorKey)) return;
+  // Add to RFQ vendors list (UI display)
+  this.rfqVendors = [...this.rfqVendors, newVendor];
 
-//   this.rfqVendors = [...this.rfqVendors, vendor];
-//   this.selectedVendors = [...this.selectedVendors, vendor];
-// }
+  // Track for submission
+  this.selectedVendors = [...this.selectedVendors, newVendor];
+}
 
-
-  // onSubmit() {
-  //   if (!this.quotationRequestId) {
-  //     console.error('Quotation Request Id is missing!');
-  //     return;
-  //   }
-
-  //   // send only newly selected vendors, not all
-  //   const payload = this.selectedVendors.map(v => ({
-  //     quotationRequestId: this.quotationRequestId,
-  //     vendorCompanyEntityId: v.vendorCompanyEntityId ?? v.id,
-  //     vendorId: v.vendorId,
-  //     vendorCompanyId: v.companyGUID,
-  //   }));
-
-  //   console.log("Submitting only new vendors:", payload);
-
-  //   this.rfqService.addVendorsToQuotation(payload).subscribe({
-  //     next: (res) => {
-  //       console.log('Vendors submitted successfully', res);
-
-  //       // ✅ reset selectedVendors after successful save
-  //       this.selectedVendors = [];
-  //       this.activeModal.close(true);
-  //     },
-  //     error: (err) => {
-  //       console.error('Error submitting vendors', err);
-  //     }
-  //   });
-  // }
 
   onSubmit() {
     if (!this.quotationRequestId) {
@@ -194,20 +130,6 @@ export class RfqVendorModalComponent implements OnInit {
     this.activeModal.close(true);
   }
 
-
-  // removeVendor(vendor: any) {
-  //   // remove from display list
-  //   this.rfqVendors = this.rfqVendors.filter(v => v.id !== vendor.id);
-
-  //   // if vendor already exists in DB, mark for deletion
-  //   if (!this.selectedVendors.some(v => v.id === vendor.id)) {
-  //     this.removedVendors = [...this.removedVendors, vendor];
-  //   } else {
-  //     // if it was just newly added in this session, remove from selected list too
-  //     this.selectedVendors = this.selectedVendors.filter(v => v.id !== vendor.id);
-  //   }
-  // }
-
   removeVendor(vendor: any) {
     const vendorKey = vendor.vendorCompanyEntityId ?? vendor.id;
 
@@ -227,18 +149,6 @@ export class RfqVendorModalComponent implements OnInit {
     }
   }
 
-
-
-
-  // removeVendor(vendor: any) {
-  //   this.rfqVendors = this.rfqVendors.filter(v => v.vendorCode !== vendor.vendorCode);
-  // }
-
-  // removeVendor(vendor: any) {
-  //   this.rfqVendors = this.rfqVendors.filter(v => v.id !== vendor.id);
-  // }
-
-
   printVendor(vendor: any) {
     console.log('Printing Vendor:', vendor);
   }
@@ -251,13 +161,16 @@ export class RfqVendorModalComponent implements OnInit {
     this.activeModal.close(false);
   }
 
+  // isVendorAdded(companyId: number): boolean {
+  //   console.log("sahal", this.rfqVendors.some(v => v.vendorCompanyEntityId === companyId));
+  //   return this.rfqVendors.some(v => v.vendorCompanyEntityId === companyId);
+
+  // }
+
   isVendorAdded(companyId: number): boolean {
-    console.log("sahal", this.rfqVendors.some(v => v.vendorCompanyEntityId === companyId));
-    return this.rfqVendors.some(v => v.vendorCompanyEntityId === companyId);
-
-  }
-
-
-
+  return this.rfqVendors.some(
+    v => (v.vendorCompanyEntityId ?? v.id) === companyId
+  );
+}
 
 }

@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-purchase-request-attachment-modal',
   templateUrl: './purchase-request-attachment-modal.component.html',
@@ -29,7 +30,7 @@ export class PurchaseRequestAttachmentModalComponent implements OnInit {
   uploadedFiles: any[] = [];
   newAttachmentsData = [];
 
-  constructor(private http: HttpClient, private fb: FormBuilder, public activeModal: NgbActiveModal) {
+  constructor(private http: HttpClient, private fb: FormBuilder, public activeModal: NgbActiveModal, public toastr: ToastrService) {
     this.AttachmentForm = this.fb.group({
     });
   }
@@ -130,7 +131,11 @@ export class PurchaseRequestAttachmentModalComponent implements OnInit {
       reader.onerror = error => reject(error);
     });
   }
-
+ deleteRow(rowIndex: number): void {
+    this.uploadedFiles.splice(rowIndex, 1);
+    this.uploadedFiles = [...this.uploadedFiles]; // refresh table
+    this.toastr.success('Attachment removed!', '');
+  }
   private emitChanges() {
     this.attachmentsChange.emit(this.uploadedFiles);
   }

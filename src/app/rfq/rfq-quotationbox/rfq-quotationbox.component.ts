@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
 import { RfqService } from '../rfq.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-rfq-quotationbox',
@@ -30,7 +31,8 @@ export class RfqQuotationboxComponent implements OnInit {
     private router: Router,
     public activeModal: NgbActiveModal,
     private fb: FormBuilder,
-    private rfqService: RfqService
+    private rfqService: RfqService,
+    private toastr: ToastrService
 
   ) { }
 
@@ -38,7 +40,7 @@ export class RfqQuotationboxComponent implements OnInit {
     this.newQuotationBoxForm = this.fb.group({
       rfqNo: [''],
       purchaseRequestNo: [''],
-      status: [''],
+      requestStatus: [''],
       owner: [''],
       date: [null],
       title: [''],
@@ -91,8 +93,8 @@ loadVendors(quotationRequestId: number) {
         purchaseRequestNo: res?.purchaseRequestNo,
         owner: res?.owner,
         title: res?.title,
-        date: res?.date,
-        status: res?.status,
+        date: this.toDateInputValue(res?.date),
+        requestStatus: res?.requestStatus,
         comment: res?.comment
       })
 
@@ -121,11 +123,15 @@ console.log( "RFQ DATA: ", this.rfqData);
   });
 }
 
-
+  private toDateInputValue(date: any): string | null {
+    if (!date) return null;
+    const d = new Date(date);
+    return d.toISOString().split('T')[0];
+  }
 
   view() {
     if (this.chkBoxSelected.length !== 1) {
-      alert('Please select exactly one vendor to view their quotation.');
+      this.toastr.info('Please select exactly one vendor to view their quotation.');
       return;
     }
     const selectedVendor = this.chkBoxSelected[0];

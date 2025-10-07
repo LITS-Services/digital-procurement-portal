@@ -96,7 +96,7 @@
                 </ngx-datatable-column>
 
 
-                <ngx-datatable-column name="Owner" prop="createdBy" [width]="100">
+                <ngx-datatable-column name="Owner" prop="owner" [width]="100">
                 </ngx-datatable-column>
 
                 <ngx-datatable-column name="Comments" prop="comment" [width]="180">
@@ -105,7 +105,8 @@
                 <ngx-datatable-column name="Total Amount" [width]="100" prop="amount" [sortable]="false">
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Quotation Box" [width]="100" prop="action" [sortable]="false">
+                
+                <!-- <ngx-datatable-column name="Quotation Box" [width]="100" prop="action" [sortable]="false">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <button class="btn btn-primary btn-sm position-relative" (click)="openQuotationBoxModal(row)">
                             <i class="ft-mail"></i>
@@ -141,8 +142,51 @@
                             <i class="ft-list"></i>
                         </button>
                     </ng-template>
-                </ngx-datatable-column>
-            </ngx-datatable>
+                </ngx-datatable-column> -->
+           
+           <ngx-datatable-column name="Action" [width]="100" prop="action" [sortable]="false">
+  <ng-template let-row="row" ngx-datatable-cell-template>
+    <button type="button"
+            class="btn btn-sm btn-primary"
+            [ngbPopover]="actionToolbar"
+            popoverClass="action-popover"
+            placement="left"
+            container="body">
+      <i class="ft-settings"></i>
+    </button>
+
+    <!-- Popover Template -->
+    <ng-template #actionToolbar>
+      <div class="d-flex justify-content-around">
+        <button class="btn btn-light btn-sm m-1"
+                ngbTooltip="Quotation Box"
+                (click)="openQuotationBoxModal(row)">
+          <i class="ft-mail"></i>
+        </button>
+
+        <button class="btn btn-light btn-sm m-1"
+                ngbTooltip="Vendor Comparison"
+                (click)="openVendorComparisonModal(row)">
+          <i class="ft-bar-chart-2"></i>
+        </button>
+
+        <button class="btn btn-light btn-sm m-1"
+                ngbTooltip="Vendors"
+                (click)="openVendorsModal(row)">
+          <i class="ft-user-check"></i>
+        </button>
+
+        <button class="btn btn-light btn-sm m-1"
+                ngbTooltip="Approval History"
+                (click)="openApprovalHistoryModal(row)">
+          <i class="ft-list"></i>
+        </button>
+      </div>
+    </ng-template>
+  </ng-template>
+</ngx-datatable-column>
+
+            </ngx-datatable> 
         </div>
     </div>
 </section>

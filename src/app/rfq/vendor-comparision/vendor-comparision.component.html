@@ -19,10 +19,11 @@
     </div> -->
     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
       <div class="form-group">
-        <label for="">Item Code</label>
-        <select class="form-control" [(ngModel)]="selectedItemCode" (change)="applyVendorItemFilter()">
-          <option *ngFor="let item of vendorComparisonList" [value]="item.itemCode">
-            {{ item.itemCode }} - {{ item.itemDescription }}
+        <label for="">Item</label>
+        <select class="form-control" [(ngModel)]="selectedItem" (change)="applyVendorItemFilter()">
+          <option value="">All Items</option>
+          <option *ngFor="let item of vendorComparisonList" [value]="item.itemName">
+            {{ item.itemName }} 
           </option>
         </select>
       </div>
@@ -44,6 +45,7 @@
       <div class="form-group">
         <label for="">Vendor</label>
         <select class="form-control" [(ngModel)]="selectedVendorId" (change)="applyVendorItemFilter()">
+          <option value="">All Vendors</option>
           <option *ngFor="let v of vendors" [value]="v.vendorUserId">
             {{ v.vendorName }}
           </option>
@@ -55,7 +57,7 @@
     <div class="col-12">
       <div class="form-group">
         <label for="">Description</label>
-        <textarea name="" id="" rows="5" placeholder="Enter Description" class="form-control"></textarea>
+        <textarea name="" id="" rows="2" placeholder="Enter Description" class="form-control"></textarea>
       </div>
     </div>
   </div>
@@ -73,7 +75,7 @@
           <div class="col-md-6">
             <span class="panel-icon">
               <!-- Item Code from backend -->
-              <label class="text-white"> Item No: {{ item.itemCode }} - {{ item.itemDescription }}</label>
+              <label class="text-white"> Item:  {{ item.itemName }}</label>
               <span class="spacer"></span>
               <i class="ft-chevron-down"></i>
             </span>
@@ -83,7 +85,7 @@
 
       <ng-template ngbPanelContent>
         <ngx-datatable class="bootstrap core-bootstrap" [rows]="item.vendorComparisonBid" [columnMode]="'standard'"
-          [headerHeight]="50" [footerHeight]="40" [rowHeight]="60" [scrollbarH]="true"
+          [headerHeight]="50" [footerHeight]="40" [rowHeight]="60"
           style="border: 1px solid #dee2e6; border-radius: 6px;">
           <!-- <ngx-datatable-column name="Vendor ID" prop="vendorUserId"></ngx-datatable-column> -->
           <ngx-datatable-column name="Vendor Name" prop="vendorName"></ngx-datatable-column>

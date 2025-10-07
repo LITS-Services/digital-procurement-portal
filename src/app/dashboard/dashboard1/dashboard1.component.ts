@@ -21,12 +21,14 @@ export interface Chart {
 
 export interface PurchaseRequestsCountVM {
   totalRequests: number;
+  newRequests: number;
   inProcessRequests: number;
   completedRequests: number;
 }
 
 export interface QuotationRequestsCountVM {
   totalQuotations: number;
+  newQuotations: number;
   inProcessQuotations: number;
   completedQuotations: number;
 }

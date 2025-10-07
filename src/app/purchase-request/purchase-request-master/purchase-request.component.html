@@ -95,13 +95,56 @@
           [width]="100"></ngx-datatable-column>
         <ngx-datatable-column name="Department" prop="department" [width]="100"></ngx-datatable-column>
 
-         <ngx-datatable-column name="Approval History" [width]="100" prop="action" [sortable]="false">
-                    <ng-template let-row="row" ngx-datatable-cell-template>
-                        <button class="btn btn-primary btn-sm" (click)="openApprovalHistoryModal(row)">
-                            <i class="ft-list"></i>
-                        </button>
-                    </ng-template>
-                </ngx-datatable-column>
+        <!-- <ngx-datatable-column name="Approval History" [width]="100" prop="action" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <button class="btn btn-primary btn-sm" (click)="openApprovalHistoryModal(row)">
+              <i class="ft-list"></i>
+            </button>
+          </ng-template>
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Actions" [width]="150">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <button class="btn btn-sm btn-primary" (click)="generateRfq(row)" [disabled]="!row.canGenerateRfq">
+              <i class="ft-file-text" style="margin-right: 5px;"></i> Generate RFQ
+            </button>
+          </ng-template>
+        </ngx-datatable-column> -->
+        <ngx-datatable-column name="Action" [width]="100" prop="action" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <button type="button" class="btn btn-sm btn-primary" [ngbPopover]="actionToolbar"
+              popoverClass="action-popover" placement="left" container="body">
+              <i class="ft-settings"></i>
+            </button>
+            <ng-template #actionToolbar>
+              <div class="d-flex justify-content-around">
+
+                <button class="btn btn-light btn-sm m-1" ngbTooltip="Approval History"
+                  (click)="openApprovalHistoryModal(row)">
+                  <i class="ft-list"></i>
+                </button>
+
+                <!-- <button class="btn btn-light btn-sm m-1" ngbTooltip="Generate RFQ" (click)="generateRfq(row)"
+                  [disabled]="!row.canGenerateRfq">
+                  <i class="ft-file-text" style="margin-right: 5px;"></i>
+                </button> -->
+                <!-- If PR is completed, show active button -->
+                <button *ngIf="row.requestStatus === 'Completed'; else waitingTemplate" class="btn btn-light btn-sm m-1"
+                  ngbTooltip="Generate RFQ" (click)="generateRfq(row)">
+                  <i class="ft-file-text"></i>
+                </button>
+
+                <!-- Template for PRs not completed -->
+                <ng-template #waitingTemplate>
+                  <button class="btn btn-light btn-sm m-1" disabled
+                    ngbTooltip="RFQ can only be generated when PR is Completed.">
+                    <i class="ft-file-text" style="opacity: 0.5;"></i>
+                  </button>
+                </ng-template>
+
+              </div>
+            </ng-template>
+          </ng-template>
+        </ngx-datatable-column>
         <!-- Expandable Row for Clones -->
         <ngx-datatable-row-detail [rowHeight]="'auto'" #myDetailRow>
           <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>

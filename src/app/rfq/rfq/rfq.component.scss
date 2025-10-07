@@ -88,3 +88,15 @@
   height: 400px !important; /* or any height you want */
   overflow-y: auto !important; /* optional: to make it scroll if content overflows */
 }
+
+::ng-deep .action-popover {
+  padding: 0.5rem;
+  border-radius: 8px;
+  min-width: auto;
+}
+
+::ng-deep .action-popover .btn {
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+}

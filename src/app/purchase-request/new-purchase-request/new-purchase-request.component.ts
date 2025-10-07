@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbAccordion, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
@@ -21,6 +21,7 @@ export class NewPurchaseRequestComponent implements OnInit {
   isFormDirty = false; // track if any field was touched
   currentRequisitionNo!: string;
 
+  isStatusCompleted: boolean = false;
 
   pendingAttachment: any[] = [];
   attachmentList: any[] = [];
@@ -30,6 +31,12 @@ export class NewPurchaseRequestComponent implements OnInit {
 
   workflowList: any[] = []
   workflowTypes: any[] = [];
+
+  // new work
+  itemList: any[] = [];
+  unitsOfMeasurementList: any[] = [];
+  accountList: any[] = [];
+
 
   vendorUsers: any[] = [];
 
@@ -62,12 +69,16 @@ export class NewPurchaseRequestComponent implements OnInit {
     private fb: FormBuilder,
     public toastr: ToastrService,
     private WorkflowServiceService: WorkflowServiceService,
+    public cdr: ChangeDetectorRef
 
   ) { }
 
   ngOnInit(): void {
 
     this.loadVendorUsers();
+    this.loadUnitsOfMeasurements();
+    this.loadAccounts();
+    this.loadItems();
     this.route.queryParamMap.subscribe(params => {
       const id = params.get('id');
       const mode = params.get('mode');
@@ -129,8 +140,8 @@ export class NewPurchaseRequestComponent implements OnInit {
       id: [null],
       requisitionNo: [''],
       itemType: [''],
-      itemCode: [''],
-      uofM: [''],
+      itemId: [0],
+      unitOfMeasurementId: [0],
       amount: [0],
       unitCost: [0],
       orderQuantity: [0],
@@ -138,7 +149,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       itemDescription: [''],
       vendorUserId: [''],
       createdBy: [''],
-      account: [''],
+      accountId: [0],
       remarks: [''],
       purchaseRequestId: [0],
       attachments: this.fb.group([])
@@ -166,6 +177,24 @@ export class NewPurchaseRequestComponent implements OnInit {
   loadVendorUsers() {
     this.companyService.getVendorUsers().subscribe(response => {
       this.vendorUsers = response.$values ?? [];
+    });
+  }
+
+  loadUnitsOfMeasurements() {
+    this.purchaseRequestService.getAllUnitsOfMeasurements().subscribe(res => {
+      this.unitsOfMeasurementList = res.$values ?? [];
+    });
+  }
+
+  loadAccounts() {
+    this.purchaseRequestService.getAllAccounts().subscribe(res => {
+      this.accountList = res.$values ?? [];
+    });
+  }
+
+  loadItems() {
+    this.purchaseRequestService.getAllItems().subscribe(res => {
+      this.itemList = res.$values ?? [];
     });
   }
 
@@ -206,6 +235,20 @@ export class NewPurchaseRequestComponent implements OnInit {
     if (!date) return null;
     const d = new Date(date);
     return d.toISOString().split('T')[0];
+  }
+
+  getUomCodeById(id: number): string {
+    const found = this.unitsOfMeasurementList.find(u => u.id === id);
+    return found ? found.uomCode : '';
+  }
+
+  getAccountNameById(id: number): string {
+    const found = this.accountList.find(a => a.id === id);
+    return found ? found.name : '';
+  }
+  getItemNameById(id: number): string {
+    const found = this.itemList.find(i => i.id === id);
+    return found ? found.itemName : '';
   }
 
   // Insert or Update item
@@ -255,6 +298,7 @@ export class NewPurchaseRequestComponent implements OnInit {
     } else {
       const withEmptyAttachments = {
         ...newItem,
+        itemId: Number(newItem.itemId) || 0,
         attachments: newItem.attachments?.length ? newItem.attachments : []
       };
       this.newPurchaseItemData = [...this.newPurchaseItemData, withEmptyAttachments];
@@ -269,15 +313,15 @@ export class NewPurchaseRequestComponent implements OnInit {
     this.itemForm.patchValue({
       id: row.id,
       itemType: row.itemType,
-      itemCode: row.itemCode,
-      uofM: row.uofM,
+      itemId: row.itemId,
+      unitOfMeasurementId: row.unitOfMeasurementId,
       amount: row.amount,
       unitCost: row.unitCost,
       orderQuantity: row.orderQuantity,
       reqByDate: this.toDateInputValue(row.reqByDate),
       itemDescription: row.itemDescription,
       vendorUserId: row.vendorUserId,
-      account: row.account,
+      accountId: row.accountId,
       remarks: row.remarks,
       attachments: row.attachments
     });
@@ -308,6 +352,14 @@ export class NewPurchaseRequestComponent implements OnInit {
           this.newPurchaseRequestForm.patchValue({
             status: data.requestStatus.status
           });
+          if (data.requestStatus?.status === 'Completed' && this.viewMode) {
+            this.isStatusCompleted = true;
+            this.cdr.detectChanges();
+          }
+          else {
+            this.isStatusCompleted = false;
+            this.cdr.detectChanges();
+          }
         }
 
         if (data.items.$values) {
@@ -315,19 +367,20 @@ export class NewPurchaseRequestComponent implements OnInit {
             id: item.id,
             requisitionNo: item.requisitionNo,
             itemType: item.itemType,
-            itemCode: item.itemCode,
+            itemId: item.itemId,
             itemDescription: item.itemDescription,
             amount: item.amount,
             unitCost: item.unitCost,
-            uofM: item.uofM,
+            unitOfMeasurementId: item.unitOfMeasurementId,
             orderQuantity: item.orderQuantity,
             reqByDate: this.toDateInputValue(item.reqByDate),
             vendorUserId: item.vendorUserId,
-            account: item.account,
+            accountId: item.accountId,
             remarks: item.remarks,
             createdBy: item.createdBy,
             purchaseRequestId: item.purchaseRequestId,
             attachments: item.attachments?.$values?.map((a: any) => ({
+              id: a.id,
               // specifications: a.specifications || '',
               // drawing: a.drawing || '',
               // scopeOfWorks: a.scopeOfWorks || '',
@@ -389,14 +442,14 @@ export class NewPurchaseRequestComponent implements OnInit {
       ? this.newPurchaseItemData.map(item => ({
         id: item.id || null,
         itemType: item.itemType || '',
-        itemCode: item.itemCode || '',
-        uofM: item.uofM || '',
+        itemId: Number(item.itemId) || 0,
+        unitOfMeasurementId: Number(item.unitOfMeasurementId) || 0,
         amount: item.amount || 0,
         unitCost: item.unitCost || 0,
         orderQuantity: item.orderQuantity || 0,
         reqByDate: item.reqByDate || new Date(),
         itemDescription: item.itemDescription || '',
-        account: item.account || '',
+        accountId: Number(item.accountId) || 0,
         remarks: item.remarks || '',
         createdBy: item.createdBy || 'current-user',
         purchaseRequestId: item.purchaseRequestId || 0,
@@ -442,7 +495,7 @@ export class NewPurchaseRequestComponent implements OnInit {
     this.loading = true;
 
 
-    const request$ = this.purchaseRequestService.createPurchaseRequest({ purchaseRequest: payload});
+    const request$ = this.purchaseRequestService.createPurchaseRequest({ purchaseRequest: payload });
 
     request$.subscribe({
       next: () => this.handleDraftSuccess(),
@@ -477,14 +530,14 @@ export class NewPurchaseRequestComponent implements OnInit {
       ? this.newPurchaseItemData.map(item => ({
         id: item.id || null,
         itemType: item.itemType || '',
-        itemCode: item.itemCode || '',
-        uofM: item.uofM || '',
+        itemId: Number(item.itemId) || 0,
+        unitOfMeasurementId: Number(item.unitOfMeasurementId) || 0,
         amount: item.amount || 0,
         unitCost: item.unitCost || 0,
         orderQuantity: item.orderQuantity || 0,
         reqByDate: item.reqByDate || new Date(),
         itemDescription: item.itemDescription || '',
-        account: item.account || '',
+        accountId: Number(item.accountId) || 0,
         remarks: item.remarks || '',
         createdBy: item.createdBy || 'current-user',
         purchaseRequestId: item.purchaseRequestId || 0,
