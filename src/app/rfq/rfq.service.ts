@@ -29,8 +29,8 @@ export class RfqService {
     return this.http.put<any>(`${this.baseUrl}/UpdateQuotation/${id}`, data);
   }
 
-  deleteQuotation(ids: number[]) {
-    return this.http.delete(`${this.baseUrl}/DeleteQuotation/${ids}`);
+  deleteQuotation(ids: number[]): Observable<any> {
+    return this.http.request('DELETE', `${this.baseUrl}/DeleteQuotation/`, { body: { ids } });
   }
 
   getBidSubmissionDetailsByQuotation(quotationRequestId: number): Observable<any[]> {
@@ -57,13 +57,24 @@ export class RfqService {
     return this.http.post<any>(`${this.baseUrl}/addRemarksWithActionTaken`, data);
   }
 
-  getAllQuotationsByStatus(userId: string, status: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/get-quotations-by-status?userId=${userId}&status=${status}`);
-  }
+  // getAllQuotationsByStatus(userId: string, status: string): Observable<any[]> {
+  //   return this.http.get<any[]>(`${this.baseUrl}/get-quotations-by-status?userId=${userId}&status=${status}`);
+  // }
+
+  getAllQuotationsByStatus(userId: string, status: string, isVendorPortal: boolean = false): Observable<any[]> {
+  return this.http.get<any[]>(`${this.baseUrl}/get-quotations-by-status`, {
+    params: {
+      userId: userId,
+      status: status,
+      isVendorPortal: isVendorPortal
+    }
+  });
+}
+
 
   getApprovalHistoryByRfqNo(rfqNo: string): Observable<any[]> {
-  return this.http.get<any[]>(`${this.baseUrl}/get-quotation-approval-history?rfqNo=${rfqNo}`);
-}
+    return this.http.get<any[]>(`${this.baseUrl}/get-quotation-approval-history?rfqNo=${rfqNo}`);
+  }
 
   submitForApproval(quotationRequestId: number): Observable<any> {
     return this.http.post(`${this.baseUrl}/SubmitForApproval/${quotationRequestId}`, {});

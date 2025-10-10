@@ -24,7 +24,7 @@
                         <button type="button" class="btn btn-sm" (click)="onUpdate()">
                             <i class="ft-edit"></i><label class="ml-1 mt-1">Update</label>
                         </button>
-                        <button type="button" class="btn btn-sm" (click)="openDeleteModal(deleteModal)">
+                        <button type="button" class="btn btn-sm" (click)="openDeleteModal()">
                             <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
                         </button>
                         <button type="button" class="btn btn-sm" [disabled]="isEditButtonDisabled" (click)="onView()">
@@ -192,7 +192,7 @@
 </section>
 
 <!-- Delete Modal -->
-<ng-template #deleteModal let-c="close" let-d="dismiss">
+<!-- <ng-template #deleteModal let-c="close" let-d="dismiss">
     <div class="modal-header">
         <h4 class="modal-title">Delete Confirmation</h4>
         <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
@@ -209,4 +209,4 @@
         <button type="button" class="btn btn-secondary" (click)="c('Cancel click')">Cancel</button>
         <button type="button" class="btn btn-danger" (click)="confirmDelete()">Delete</button>
     </div>
-</ng-template>
+</ng-template> -->

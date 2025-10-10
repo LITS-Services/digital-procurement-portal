@@ -6,7 +6,7 @@
 </div>
 <div class="modal-body">
   <div class="col-12">
-    <h5 class="heading-upload">Upload Files</h5>
+    <h5 *ngIf="!viewMode" class="heading-upload">Upload Files</h5>
   </div>
   <!-- Your form fields and content -->
   <form [formGroup]="AttachmentForm">
@@ -14,7 +14,7 @@
       <!-- File Upload Button -->
       <div class="col-12 form-group mt-3">
         <!-- <label for="fileUpload">Choose files</label> -->
-        <input type="file" [disabled]="viewMode" (change)="onFileSelected($event)" class="form-control1"
+        <input type="file" *ngIf="!viewMode" (change)="onFileSelected($event)" class="form-control1"
           accept=".pdf, .doc, .docx, .xls, .csv" multiple>
       </div>
 
@@ -53,7 +53,7 @@
                 <i style="font-size: 1.5rem;" class="ft-download"></i>
               </a>
 
-              <a matTooltip="Upload File" style="cursor: pointer; color: #d1d4d7;" [disabled]="viewMode"
+              <a *ngIf="!viewMode" matTooltip="Upload File" style="cursor: pointer; color: #d1d4d7;" [disabled]="viewMode"
                 (click)="deleteRow(rowIndex)" [ngClass]="{'disabled': actionType === 'View'}">
                 <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
               </a>

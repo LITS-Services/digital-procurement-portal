@@ -7,6 +7,8 @@ import { RfqVendorModalComponent } from '../rfq-vendor-modal/rfq-vendor-modal.co
 import { VendorComparisionComponent } from '../vendor-comparision/vendor-comparision.component';
 import { RfqService } from '../rfq.service';
 import { RfqApprovalHistoryComponent } from '../rfq-approval-history/rfq-approval-history.component';
+import Swal from 'sweetalert2';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-rfq',
@@ -19,7 +21,7 @@ export class RfqComponent implements OnInit {
   public ColumnMode = ColumnMode;
 
   activeFilter: string = ''; // default filter
-
+  hasRestrictedStatus: boolean = false;
   rfqData: any[] = [];
   chkBoxSelected: any[] = [];
   idsToDelete: number[] = [];
@@ -44,11 +46,12 @@ export class RfqComponent implements OnInit {
 
   constructor(private router: Router, private modalService: NgbModal,
     private route: ActivatedRoute, private rfqService: RfqService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef, public toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
     this.loadRfqs();
+    this.cdr.detectChanges();
   }
 
   loadRfqs() {
@@ -72,7 +75,7 @@ export class RfqComponent implements OnInit {
   loadFilteredQuotations(status: string) {
     const userId = localStorage.getItem('userId');
     this.activeFilter = status;
-    this.rfqService.getAllQuotationsByStatus(userId, status).subscribe({
+    this.rfqService.getAllQuotationsByStatus(userId, status, false).subscribe({
       next: (data: any) => {
         this.rfqData = data?.$values
         this.cdr.detectChanges();
@@ -133,48 +136,111 @@ export class RfqComponent implements OnInit {
     this.enableDisableButtons();
   }
 
+  // enableDisableButtons() {
+  //   const selectedCount = this.chkBoxSelected.length;
+  //   this.isDeleteButtonDisabled = selectedCount === 0;
+  //   this.isEditButtonDisabled = selectedCount !== 1;
+  //   this.isOpenButtonDisabled = selectedCount === 0;
+  //   this.isAllSelected = this.rfqData.length === this.chkBoxSelected.length;
+  // }
+
   enableDisableButtons() {
-    const selectedCount = this.chkBoxSelected.length;
-    this.isDeleteButtonDisabled = selectedCount === 0;
-    this.isEditButtonDisabled = selectedCount !== 1;
-    this.isOpenButtonDisabled = selectedCount === 0;
-    this.isAllSelected = this.rfqData.length === this.chkBoxSelected.length;
+  const selectedCount = this.chkBoxSelected.length;
+
+  // Disable delete if no rows selected
+  this.isDeleteButtonDisabled = selectedCount === 0;
+
+  // Disable edit unless exactly one record is selected
+  this.isEditButtonDisabled = selectedCount !== 1;
+
+  // Disable open button if no rows selected
+  this.isOpenButtonDisabled = selectedCount === 0;
+
+  // Check "Select All" toggle
+  this.isAllSelected = this.rfqData.length === this.chkBoxSelected.length;
+
+  // Disable delete if any selected item has restricted status
+  const hasRestrictedStatus = this.chkBoxSelected.some(
+    item => item.requestStatus === 'InProcess' || item.requestStatus === 'Completed'
+  );
+
+  if (hasRestrictedStatus) {
+    this.isDeleteButtonDisabled = false; // still allow click
+    this.hasRestrictedStatus = true; // store flag for later use
+  } else {
+    this.hasRestrictedStatus = false;
+  }
+}
+
+  openDeleteModal(): void {
+  if (this.idsToDelete.length === 0) {
+    this.toastr.info('Please select at least one record to delete.');
+    return;
+  }
+    if (this.hasRestrictedStatus) {
+    this.toastr.warning('Cannot delete records with status "InProcess" or "Completed".');
+    return;
   }
 
-  openDeleteModal(deleteModal) {
-    if (this.idsToDelete.length > 0) {
-      this.modalService.open(deleteModal, { backdrop: 'static', centered: true });
-    } else {
-      alert('Please select at least one record to delete.');
+  Swal.fire({
+    title: 'Are you sure?',
+    text: `You are about to delete ${this.idsToDelete.length} record(s). This action cannot be undone.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.confirmDelete();
     }
-  }
+  });
+}
 
-  confirmDelete() {
+  // confirmDelete() {
+  //   if (this.idsToDelete.length === 0) return;
+
+  //   console.log('Deleting IDs:', this.idsToDelete);
+
+  //   this.rfqService.deleteQuotation(this.idsToDelete).subscribe({
+  //     next: () => {
+  //       this.modalService.dismissAll();
+  //       this.loadRfqs();
+  //       this.chkBoxSelected = [];
+  //       this.idsToDelete = [];
+  //     },
+  //     error: (err) => {
+  //       console.error('Delete failed:', err);
+  //     }
+  //   });
+  // }
+
+  confirmDelete(): void {
     if (this.idsToDelete.length === 0) return;
-
-    console.log('Deleting IDs:', this.idsToDelete);
-
+  
     this.rfqService.deleteQuotation(this.idsToDelete).subscribe({
       next: () => {
-        this.modalService.dismissAll();
+        Swal.fire('Deleted!', 'Selected record(s) have been deleted successfully.', 'success');
         this.loadRfqs();
         this.chkBoxSelected = [];
         this.idsToDelete = [];
       },
       error: (err) => {
         console.error('Delete failed:', err);
+        Swal.fire('Error', 'An error occurred while deleting records.', 'error');
       }
     });
   }
 
   onUpdate() {
     if (this.chkBoxSelected.length === 0) {
-      alert('Please select a record to update.');
+      this.toastr.info('Please select a record to update.');
       return;
     }
 
     if (this.chkBoxSelected.length > 1) {
-      alert('Please select only one record to update.');
+      this.toastr.info('Please select only one record to update.');
       return;
     }
 

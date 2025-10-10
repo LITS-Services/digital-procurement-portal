@@ -26,7 +26,7 @@
             <button type="button" class="btn btn-sm" (click)="onUpdate()">
               <i class="ft-edit"></i><label class="ml-1 mt-1">Update</label>
             </button>
-            <button type="button" class="btn btn-sm" (click)="openDeleteModal(deleteModal)">
+            <button type="button" class="btn btn-sm" (click)="openDeleteModal()" [disabled]="isDeleteButtonDisabled">
               <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
             </button>
             <button type="button" class="btn btn-sm" [disabled]="isEditButtonDisabled" (click)="onView()">
@@ -43,6 +43,20 @@
 
             <button type="button" class="btn btn-sm" (click)="loadFilteredRequests('Completed')"><label
                 class="ml-1 mt-1">Completed</label></button>
+
+<!-- <div ngbDropdown class="ml-2">
+  <button class="btn btn-outline-primary btn-sm dropdown-toggle" ngbDropdownToggle>
+    By Status: {{ activeFilter || 'All' }}
+  </button>
+  <div ngbDropdownMenu>
+    <button class="dropdown-item" (click)="loadPurchaseRequests(); activeFilter='All'">All</button>
+    <button class="dropdown-item" (click)="loadFilteredRequests('New'); activeFilter='New'">New</button>
+    <button class="dropdown-item" (click)="loadFilteredRequests('InProcess'); activeFilter='InProcess'">In Process</button>
+    <button class="dropdown-item" (click)="loadFilteredRequests('Completed'); activeFilter='Completed'">Completed</button>
+  </div>
+</div> -->
+
+
             <!-- <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
               <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
             </button> -->
@@ -178,7 +192,7 @@
 </section>
 
 <!-- Delete Modal -->
-<ng-template #deleteModal let-c="close" let-d="dismiss">
+<!-- <ng-template #deleteModal let-c="close" let-d="dismiss">
   <div class="modal-header">
     <h4 class="modal-title">Delete Confirmation</h4>
     <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
@@ -195,4 +209,4 @@
     <button type="button" class="btn btn-secondary" (click)="c('Cancel click')">Cancel</button>
     <button type="button" class="btn btn-danger" (click)="confirmDelete()">Delete</button>
   </div>
-</ng-template>
+</ng-template> -->

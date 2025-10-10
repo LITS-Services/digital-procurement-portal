@@ -11,6 +11,7 @@ import { RfqService } from '../rfq.service';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { WorkflowServiceService } from 'app/shared/services/WorkflowService/workflow-service.service';
 import { RfqRemarksComponent } from '../rfq-remarks/rfq-remarks.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-new-rfq',
@@ -22,8 +23,10 @@ export class NewRfqComponent implements OnInit {
   currentRfqNo!: string;
   isNewForm = true; // true = create, false = edit
   isFormDirty = false; // track if any field was touched
+  isSubmitter: boolean = false;
 
   isStatusCompleted: boolean = false;
+  isStatusInProcess: boolean = false;
   numberOfAttachments = 0;
   attachmentList: any[] = [];
   pendingAttachment: any[] = [];
@@ -162,8 +165,25 @@ export class NewRfqComponent implements OnInit {
     }
   }
   homePage() {
-    this.router.navigate(['/rfq']);
-  }
+   if (this.isNewForm && this.isFormDirty) {
+     Swal.fire({
+       title: 'Save as Draft?',
+       text: 'Do you want to save this request as a draft?',
+       icon: 'question',
+       showCancelButton: true,
+       confirmButtonText: 'Yes, save it',
+       cancelButtonText: 'No, go back',
+     }).then((result) => {
+       if (result.isConfirmed) {
+         this.saveAsDraftAndGoBack();
+       } else {
+         this.router.navigate(['/rfq']);
+       }
+     });
+   } else {
+     this.router.navigate(['/rfq']);
+   }
+ }
 
   loadVendorUsers() {
     this.companyService.getVendorUsers().subscribe(response => {
@@ -354,14 +374,14 @@ export class NewRfqComponent implements OnInit {
           id: null,
           rfqNo: '',
           itemType: item.itemType,
-          itemCode: item.itemCode || '',
-          uofM: item.uofM,
+          itemId: item.itemId,
+          unitOfMeasurementId: item.unitOfMeasurementId,
           amount: item.amount,
           unitCost: item.unitCost,
           orderQuantity: item.orderQuantity,
           reqByDate: item.reqByDate,
           itemDescription: item.itemDescription,
-          account: item.account || '',
+          accountId: item.accountId,
           remarks: item.remarks || '',
           createdBy: item.createdBy || 'current-user',
           quotationRequestId: 0,
@@ -396,6 +416,8 @@ export class NewRfqComponent implements OnInit {
     this.rfqService.getQuotationById(id).subscribe({
       next: async (data) => {
         console.log("update data: ", data)
+        const loggedInUserId = localStorage.getItem('userId');
+        this.isSubmitter = data.submitterId === loggedInUserId;
         this.isNewForm = false;
         this.currentQuotationId = data.id;
         this.currentRfqNo = data.rfqNo;
@@ -412,12 +434,20 @@ export class NewRfqComponent implements OnInit {
           this.newRfqForm.patchValue({
             status: data.requestStatus.status
           });
-          if (data.requestStatus?.status === 'Completed' && this.viewMode) {
+          if (data.requestStatus?.status === 'Completed') {
             this.isStatusCompleted = true;
             this.cdr.detectChanges();
           }
           else {
             this.isStatusCompleted = false;
+            this.cdr.detectChanges();
+          }
+          if (data.requestStatus?.status === 'InProcess') {
+            this.isStatusInProcess = true;
+            this.cdr.detectChanges();
+          }
+          else {
+            this.isStatusInProcess = false;
             this.cdr.detectChanges();
           }
         }
@@ -563,7 +593,7 @@ export class NewRfqComponent implements OnInit {
     }
 
     else {
-      this.rfqService.createQuotation({ quotationRequest: payload }).subscribe({
+      this.rfqService.createQuotation({ quotationRequest: payload, isDraft: false }).subscribe({
         next: res => {
           console.log('Created Quotation!', res);
           this.loading = false;
@@ -638,7 +668,7 @@ export class NewRfqComponent implements OnInit {
 
     this.loading = true;
 
-    const request$ = this.rfqService.createQuotation({ quotationRequest: payload })
+    const request$ = this.rfqService.createQuotation({ quotationRequest: payload, isDraft: true })
 
     request$.subscribe({
       next: () => this.handleDraftSuccess(),
@@ -662,35 +692,35 @@ export class NewRfqComponent implements OnInit {
 
   //   this.itemForm.reset();
   // }
-  insertItem(): void {
-    const newItem = this.itemForm.value;
+  // insertItem(): void {
+  //   const newItem = this.itemForm.value;
 
-    if (this.editingRowIndex !== null) {
-      const existing = this.newQuotationItemData[this.editingRowIndex];
+  //   if (this.editingRowIndex !== null) {
+  //     const existing = this.newQuotationItemData[this.editingRowIndex];
 
-      const merged = {
-        ...existing,
-        ...newItem,
-        quotationItemAttachments: existing?.quotationItemAttachments ?? []
-      };
+  //     const merged = {
+  //       ...existing,
+  //       ...newItem,
+  //       quotationItemAttachments: existing?.quotationItemAttachments ?? []
+  //     };
 
-      this.newQuotationItemData = this.newQuotationItemData.map((item, index) =>
-        index === this.editingRowIndex ? merged : item
-      );
+  //     this.newQuotationItemData = this.newQuotationItemData.map((item, index) =>
+  //       index === this.editingRowIndex ? merged : item
+  //     );
 
-      this.editingRowIndex = null;
-    } else {
-      const withEmptyAttachments = {
-        ...newItem,
-        itemId: Number(newItem.itemId) || 0,
-        quotationItemAttachments: newItem.quotationItemAttachments?.length ? newItem.quotationItemAttachments : []
-      };
-      this.newQuotationItemData = [...this.newQuotationItemData, withEmptyAttachments];
-    }
-    this.toastr.success('Item inserted!', '');
+  //     this.editingRowIndex = null;
+  //   } else {
+  //     const withEmptyAttachments = {
+  //       ...newItem,
+  //       itemId: Number(newItem.itemId) || 0,
+  //       quotationItemAttachments: newItem.quotationItemAttachments?.length ? newItem.quotationItemAttachments : []
+  //     };
+  //     this.newQuotationItemData = [...this.newQuotationItemData, withEmptyAttachments];
+  //   }
+  //   this.toastr.success('Item inserted!', '');
 
-    this.itemForm.reset();
-  }
+  //   this.itemForm.reset();
+  // }
   get uniqueVendors() {
     const map = new Map<string, any>();
     this.quotationVendorUsers.forEach(v => {
@@ -701,11 +731,89 @@ export class NewRfqComponent implements OnInit {
     return Array.from(map.values());
   }
 
+  insertItem(): void {
+  const newItem = this.itemForm.value;
+
+  // Normalize IDs
+  const newItemId = Number(newItem.itemId);
+
+//   const itemType = newItem.itemType;
+//  //  Only check for itemId if the user selected "Inventory"
+//   if (itemType === 'Inventory' && (!newItemId || newItemId === 0)) {
+//     this.toastr.warning('Please select an item before adding.');
+//     return;
+//   }
+
+//   //  For Non-Inventory, ensure description is filled (optional but recommended)
+//   if (itemType === 'Non-Inventory' && !newItem.itemDescription?.trim()) {
+//     this.toastr.warning('Please enter an item description before adding.');
+//     return;
+//   }
+
+  // Check for duplicate (only if not editing)
+  if (this.editingRowIndex === null) {
+    const duplicate = this.newQuotationItemData.some(
+      item => Number(item.itemId) === newItemId
+    );
+
+    if (duplicate) {
+      this.toastr.warning('This item is already added. You can update it instead.');
+      return;
+    }
+  }
+
+  if (this.editingRowIndex !== null) {
+    // --- Update existing item ---
+    const existing = this.newQuotationItemData[this.editingRowIndex];
+    const merged = {
+      ...existing,
+      ...newItem,
+      itemId: newItemId,
+      attachments: existing?.attachments ?? []
+    };
+
+    this.newQuotationItemData = this.newQuotationItemData.map((item, index) =>
+      index === this.editingRowIndex ? merged : item
+    );
+
+    this.toastr.success('Item updated successfully!');
+    this.editingRowIndex = null;
+  } else {
+    // --- Add new item ---
+    const withEmptyAttachments = {
+      ...newItem,
+      itemId: newItemId,
+      attachments: newItem.attachments?.length ? newItem.attachments : []
+    };
+    this.newQuotationItemData = [...this.newQuotationItemData, withEmptyAttachments];
+    this.toastr.success('Item added successfully!');
+  }
+
+  // Reset form
+  this.itemForm.reset({
+    amount: 0,
+    unitCost: 0,
+    orderQuantity: 1
+  });
+}
   deleteRow(rowIndex: number): void {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you want to delete this item?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+  }).then((result) => {
+    if (result.isConfirmed) {
     this.newQuotationItemData.splice(rowIndex, 1);
     this.newQuotationItemData = [...this.newQuotationItemData]; // refresh table
     this.toastr.success('Item deleted!', '');
-  }
+    }
+  });
+}
 
   // openNewEntityModal(row: any) {
   //   const modalRef = this.modalService.open(RfqAttachmentComponent, {
@@ -791,18 +899,55 @@ export class NewRfqComponent implements OnInit {
     console.error('Error saving draft:', err);
   }
 
+  // onSubmitForApproval() {
+  //   this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
+  //     next: (res) => {
+  //       this.toastr.success(res.message || 'Quotation submitted for approval successfully!');
+  //       this.router.navigate(['/rfq']);
+  //     },
+  //     error: (err) => {
+  //       console.error(err);
+  //       this.toastr.error('Failed to submit quotation for approval.');
+  //     }
+  //   });
+  // }
+
   onSubmitForApproval() {
-    this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
-      next: (res) => {
-        this.toastr.success(res.message || 'Quotation submitted for approval successfully!');
-        this.router.navigate(['/rfq']);
-      },
-      error: (err) => {
-        console.error(err);
-        this.toastr.error('Failed to submit quotation for approval.');
-      }
-    });
-  }
+  Swal.fire({
+    title: 'Submit for Approval?',
+    text: 'Are you sure you want to submit this quotation for approval?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, submit it',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
+        next: (res) => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Submitted!',
+            text: res.message || 'Quotation submitted for approval successfully.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+          this.router.navigate(['/rfq']);
+        },
+        error: (err) => {
+          console.error(err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to submit quotation for approval.'
+          });
+        }
+      });
+    }
+  });
+}
+
   onAddRemarks(action: string): void {
     const modalRef = this.modalService.open(RfqRemarksComponent, {
       size: 'lg',

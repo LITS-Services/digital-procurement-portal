@@ -7,6 +7,7 @@ import { PurchaseRequestAccountBudgetLookupModalComponent } from 'app/shared/mod
 import { PurchaseRequestExceptionPolicyComponent } from 'app/shared/modals/purchase-request-exception-policy/purchase-request-exception-policy.component';
 import { PrApprovalHistoryComponent } from '../pr-approval-history/pr-approval-history.component';
 import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-purchase-request',
@@ -18,7 +19,7 @@ export class PurchaseRequestComponent implements OnInit {
   public ColumnMode = ColumnMode;
 
   isStatusCompleted: boolean = false;
-
+  hasRestrictedStatus: boolean = false;
   activeFilter: string = ''; // default filter
   purchaseRequestData: any[] = [];
   chkBoxSelected: any[] = [];
@@ -43,6 +44,7 @@ export class PurchaseRequestComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPurchaseRequests();
+    this.cdr.detectChanges();
   }
 
   /**
@@ -93,10 +95,10 @@ export class PurchaseRequestComponent implements OnInit {
     this.activeFilter = status;
     this.purchaseRequestService.getAllRequestsByStatus(userId, status).subscribe({
       next: (data: any) => {
- this.purchaseRequestData = (data?.$values || []).map((pr: any) => ({
+        this.purchaseRequestData = (data?.$values || []).map((pr: any) => ({
           ...pr,
           canGenerateRfq: pr.requestStatus === 'Completed'   // add flag
-        }));        this.cdr.detectChanges();
+        })); this.cdr.detectChanges();
 
       },
       error: (err) => console.error(err)
@@ -169,42 +171,117 @@ export class PurchaseRequestComponent implements OnInit {
     this.enableDisableButtons();
   }
 
-  enableDisableButtons() {
-    const selectedCount = this.chkBoxSelected.length;
-    this.isDeleteButtonDisabled = selectedCount === 0;
-    this.isEditButtonDisabled = selectedCount !== 1;
-    this.isOpenButtonDisabled = selectedCount === 0;
-    this.isAllSelected = this.purchaseRequestData.length === this.chkBoxSelected.length;
+  // enableDisableButtons() {
+  //   const selectedCount = this.chkBoxSelected.length;
+  //   this.isDeleteButtonDisabled = selectedCount === 0;
+  //   this.isEditButtonDisabled = selectedCount !== 1;
+  //   this.isOpenButtonDisabled = selectedCount === 0;
+  //   this.isAllSelected = this.purchaseRequestData.length === this.chkBoxSelected.length;
+  // }
+enableDisableButtons() {
+  const selectedCount = this.chkBoxSelected.length;
+
+  // Disable delete if no rows selected
+  this.isDeleteButtonDisabled = selectedCount === 0;
+
+  // Disable edit unless exactly one record is selected
+  this.isEditButtonDisabled = selectedCount !== 1;
+
+  // Disable open button if no rows selected
+  this.isOpenButtonDisabled = selectedCount === 0;
+
+  // Check "Select All" toggle
+  this.isAllSelected = this.purchaseRequestData.length === this.chkBoxSelected.length;
+
+  // Disable delete if any selected item has restricted status
+  const hasRestrictedStatus = this.chkBoxSelected.some(
+    item => item.requestStatus === 'InProcess' || item.requestStatus === 'Completed'
+  );
+
+  if (hasRestrictedStatus) {
+    this.isDeleteButtonDisabled = false; // still allow click
+    this.hasRestrictedStatus = true; // store flag for later use
+  } else {
+    this.hasRestrictedStatus = false;
   }
+}
+
+
 
   /**
    * Open Delete Modal
    */
-  openDeleteModal(deleteModal) {
-    if (this.idsToDelete.length > 0) {
-      this.modalService.open(deleteModal, { backdrop: 'static', centered: true });
-    } else {
-      alert('Please select at least one record to delete.');
-    }
+  // openDeleteModal(deleteModal) {
+  //   if (this.idsToDelete.length > 0) {
+  //     this.modalService.open(deleteModal, { backdrop: 'static', centered: true });
+  //   } else {
+  //     this.toastr.info('Please select at least one record to delete.');
+  //   }
+  // }
+
+  /**
+   * Confirm deletion of selected requests
+   */
+  // confirmDelete() {
+  //   if (this.idsToDelete.length === 0) return;
+
+  //   console.log('Deleting IDs:', this.idsToDelete);
+
+  //   this.purchaseRequestService.deletePurchaseRequest(this.idsToDelete).subscribe({
+  //     next: () => {
+  //       this.modalService.dismissAll();
+  //       this.loadPurchaseRequests();
+  //       this.chkBoxSelected = [];
+  //       this.idsToDelete = [];
+  //     },
+  //     error: (err) => {
+  //       console.error('Delete failed:', err);
+  //     }
+  //   });
+  // }
+
+  openDeleteModal(): void {
+     if (this.idsToDelete.length === 0) {
+    this.toastr.info('Please select at least one record to delete.');
+    return;
+  }
+   if (this.hasRestrictedStatus) {
+    this.toastr.warning('Cannot delete records with status "InProcess" or "Completed".');
+    return;
+  }
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `You are about to delete ${this.idsToDelete.length} record(s). This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.confirmDelete();
+      }
+    });
   }
 
   /**
    * Confirm deletion of selected requests
    */
-  confirmDelete() {
+  confirmDelete(): void {
     if (this.idsToDelete.length === 0) return;
-
-    console.log('Deleting IDs:', this.idsToDelete);
 
     this.purchaseRequestService.deletePurchaseRequest(this.idsToDelete).subscribe({
       next: () => {
-        this.modalService.dismissAll();
+        Swal.fire('Deleted!', 'Selected record(s) have been deleted successfully.', 'success');
         this.loadPurchaseRequests();
         this.chkBoxSelected = [];
         this.idsToDelete = [];
       },
       error: (err) => {
         console.error('Delete failed:', err);
+        Swal.fire('Error', 'An error occurred while deleting records.', 'error');
       }
     });
   }
@@ -214,12 +291,12 @@ export class PurchaseRequestComponent implements OnInit {
    */
   onUpdate() {
     if (this.chkBoxSelected.length === 0) {
-      alert('Please select a record to update.');
+      this.toastr.info('Please select a record to update.');
       return;
     }
 
     if (this.chkBoxSelected.length > 1) {
-      alert('Please select only one record to update.');
+      this.toastr.info('Please select only one record to update.');
       return;
     }
 

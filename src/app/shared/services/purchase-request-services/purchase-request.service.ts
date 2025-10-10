@@ -46,10 +46,15 @@ export class PurchaseRequestService {
     });
   }
 
-  deletePurchaseRequest(ids: number[]) {
+  // deletePurchaseRequest(ids: number[]): Observable<any> {
+  //   console.log(ids);
+  //   return this.http.delete(`${this.baseUrl}/DeleteRequest`, {ids});
+  // }
+  deletePurchaseRequest(ids: number[]): Observable<any> {
     console.log(ids);
-    return this.http.delete(`${this.baseUrl}/DeleteRequest/${ids}`);
+    return this.http.request('DELETE', `${this.baseUrl}/DeleteRequest`, { body: { ids } });
   }
+
   updatePurchaseRequest(id: number, data: any): Observable<any> {
     return this.http.put(`${this.baseUrl}/UpdateRequest/${id}`, data);
   }
@@ -84,5 +89,9 @@ export class PurchaseRequestService {
 
   getAllAccounts(): Observable<Dropdown> {
     return this.http.get<Dropdown>(`${this.baseUrl}/account`);
+  }
+
+  submitForApproval(purchaseRequestId: number): Observable<any> {
+    return this.http.post(`${this.baseUrl}/SubmitForApproval/${purchaseRequestId}`, {});
   }
 }

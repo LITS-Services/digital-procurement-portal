@@ -23,6 +23,7 @@ import { NewRfqComponent } from './new-rfq/new-rfq.component';
 import { RfqAttachmentComponent } from './rfq-attachment/rfq-attachment.component';
 import { RfqRemarksComponent } from './rfq-remarks/rfq-remarks.component';
 import { RfqApprovalHistoryComponent } from './rfq-approval-history/rfq-approval-history.component';
+import { AgmCoreModule } from "@agm/core";
 
 
 @NgModule({
@@ -54,8 +55,9 @@ import { RfqApprovalHistoryComponent } from './rfq-approval-history/rfq-approval
     NgxDatatableModule,
     NgbAccordionModule,
     NgbDatepickerModule,
-    ToastrModule.forRoot() ,
+    ToastrModule.forRoot(),
     NgxSpinnerModule,
-  ]
+    AgmCoreModule
+]
 })
 export class RFQModule { }
