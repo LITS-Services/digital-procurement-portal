@@ -36,6 +36,7 @@ import { BrowserModule } from "@angular/platform-browser";
 import { ReactiveFormsModule } from "@angular/forms";
 import { OtpComponent } from './pages/otp/otp.component';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { responseHandlerInterceptor } from "./shared/interceptor/response-handler.interceptor";
 
 var firebaseConfig = {
   apiKey: "AIzaSyC9XfnIpwNoSv7cyAsoccFQ5EYPd7lZXrk", //YOUR_API_KEY
@@ -100,6 +101,7 @@ export function createTranslateLoader(http: HttpClient) {
     AuthGuard,
     DragulaService,
    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: responseHandlerInterceptor, multi: true }, 
     {
       provide: PERFECT_SCROLLBAR_CONFIG,
       useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
