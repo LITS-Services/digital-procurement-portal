@@ -2,15 +2,15 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
-import { CompanyService } from 'app/shared/services/Company.services';
 import { AuthService } from 'app/shared/auth/auth.service';
+import { CompanyService } from 'app/shared/services/Company.services';
 
 @Component({
-  selector: 'app-company-listing',
-  templateUrl: './company-listing.component.html',
-  styleUrls: ['./company-listing.component.scss']
+  selector: 'app-email-setup',
+  templateUrl: './email-setup.component.html',
+  styleUrls: ['./email-setup.component.scss']
 })
-export class CompanyListingComponent implements OnInit {
+export class EmailSetupComponent implements OnInit {
 
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
@@ -55,90 +55,87 @@ export class CompanyListingComponent implements OnInit {
   }
 
   getCompanyData() {
-  this.loading = true;
+    this.loading = true;
 
-  const isAdmin = this.authService.hasRole('Admin');
-  const userId = localStorage.getItem('userId');
+    const isAdmin = this.authService.hasRole('Admin');
 
-  if (!userId && !isAdmin) {
-    console.warn('No userId found in localStorage');
-    this.tenderingData = [];
-    this.rows = [];
-    this.loading = false;
-    return;
+    if (isAdmin) {
+      this.companyService.getVendorCompanies().subscribe({
+        next: (res: any) => {
+          const companies = res?.$values || [];
+
+          // ✅ Store all companies
+          this.allCompanies = companies.map(c => this.mapCompany(c));
+
+          // ✅ Default → show Inprocess & Approved
+          this.tenderingData = this.allCompanies.filter(c =>
+            c.companyStatus.toLowerCase() === 'inprocess' ||
+            c.companyStatus.toLowerCase() === 'approve'
+          );
+
+          this.rows = [...this.tenderingData];
+          this.cdr.detectChanges();
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('Error fetching vendor companies:', err);
+          this.loading = false;
+        }
+      });
+
+    } else {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        console.warn('No userId found in localStorage');
+        this.tenderingData = [];
+        this.rows = [];
+        this.loading = false;
+        return;
+      }
+
+      this.companyService.getCompaniesByUserEntity(userId).subscribe({
+        next: (res: any) => {
+          const companies = res?.$values || [];
+
+          // ✅ Store all companies
+          this.allCompanies = companies.map(c => this.mapCompany(c));
+
+          // ✅ Default → show Inprocess & Approved
+          this.tenderingData = this.allCompanies.filter(c =>
+            c.companyStatus.toLowerCase() === 'inprocess' ||
+            c.companyStatus.toLowerCase() === 'approve'
+          );
+
+          this.rows = [...this.tenderingData];
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('Error fetching companies by user:', err);
+          this.loading = false;
+        }
+      });
+    }
   }
 
-  const apiCall = isAdmin
-    ? this.companyService.getVendorCompanies()
-    : this.companyService.getCompaniesByUserEntity(userId);
+  private mapCompany(c: any) {
+    const primaryAddress = c.addressesVM?.$values?.[0] || {};
+    const primaryContact = c.contactsVM?.$values?.[0] || {};
+    const demographics = c.purchasingDemographics || {};
 
-  apiCall.subscribe({
-    next: (res: any) => {
-      // ✅ Extract the paginated 'result' array
-      const companies = res?.result || [];
-
-      // Map the company data
-      this.allCompanies = companies.map(c => this.mapCompany(c));
-
-      // Filter visible statuses
-      this.tenderingData = this.allCompanies.filter(c =>
-        ['inprocess', 'approve'].includes(c.companyStatus.toLowerCase())
-      );
-
-      this.rows = [...this.tenderingData];
-      this.loading = false;
-      this.cdr.detectChanges();
-
-      console.log('✅ Loaded companies:', this.rows);
-    },
-    error: (err) => {
-      console.error('Error fetching companies:', err);
-      this.loading = false;
-    }
-  });
-}
-
-
-private mapCompany(c: any) {
-  // ✅ Use direct array indexing (no $values)
-  const primaryAddress = Array.isArray(c.addressesVM) ? c.addressesVM[0] : {};
-  const primaryContact = Array.isArray(c.contactsVM) ? c.contactsVM[0] : {};
-  const demographics = c.purchasingDemographics || {};
-
-  return {
-    id: c.id,
-    name: c.name,
-    companyStatus: c.status || '',
-    street: primaryAddress?.street || '',
-    city: primaryAddress?.city || '',
-    contactNumber: primaryContact?.contactNumber || '',
-    remarks: c.remarks || '',
-    approverId: c.approverId,
-    vendorId: c.vendorId,
-    vendorType: demographics.vendorType || '',
-    primaryCurrency: demographics.primaryCurrency || ''
-  };
-}
-
-  // private mapCompany(c: any) {
-  //   const primaryAddress = c.addressesVM?.$values?.[0] || {};
-  //   const primaryContact = c.contactsVM?.$values?.[0] || {};
-  //   const demographics = c.purchasingDemographics || {};
-
-  //   return {
-  //     id: c.id,
-  //     name: c.name,
-  //     companyStatus: c.status || '',
-  //     street: primaryAddress.street || '',
-  //     city: primaryAddress.city || '',
-  //     contactNumber: primaryContact.contactNumber || '',
-  //     remarks: c.remarks || '',
-  //     approverId: c.approverId,
-  //     vendorId: c.vendorId,
-  //     vendorType: demographics.vendorType || '',
-  //     primaryCurrency: demographics.primaryCurrency || ''
-  //   };
-  // }
+    return {
+      id: c.id,
+      name: c.name,
+      companyStatus: c.status || '',
+      street: primaryAddress.street || '',
+      city: primaryAddress.city || '',
+      contactNumber: primaryContact.contactNumber || '',
+      remarks: c.remarks || '',
+      approverId: c.approverId,
+      vendorId: c.vendorId,
+      vendorType: demographics.vendorType || '',
+      primaryCurrency: demographics.primaryCurrency || ''
+    };
+  }
 
   showAll() {
    this.rows = this.allCompanies.filter(c =>
@@ -204,12 +201,7 @@ private mapCompany(c: any) {
     this.isAllSelected = this.tenderingData.length === selectedRowCount;
   }
 
-  editSelectedRow() {
-    if (this.chkBoxSelected.length === 1) {
-      const row = this.chkBoxSelected[0];
-      this.router.navigate(['/company/company-edit'], { queryParams: { id: row.id } });
-    } else {
-      alert('Please select a single company to update.');
-    }
+  CreatInvitations() {
+      this.router.navigate(['/setup/create-invitation']);
   }
 }

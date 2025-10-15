@@ -26,7 +26,6 @@ export class EmployeeListComponent implements OnInit {
     private companyService: CompanyService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef
-    
   ) { }
 
   ngOnInit(): void {
@@ -47,20 +46,26 @@ export class EmployeeListComponent implements OnInit {
     this.loading = true;
 
     this.companyService.getprocurementusers().subscribe({
-      next: (res: any) => {
-        const users = res?.$values || [];
+      next: (res: any[]) => {
+        if (!res || res.length === 0) {
+          this.tenderingData = [];
+          this.loading = false;
+          return;
+        }
 
-        // Map only necessary fields
-        this.tenderingData = users.map((u: any) => ({
+        // Map the new response
+        this.tenderingData = res.map(u => ({
           id: u.id,
           fullName: u.fullName || '-',
           userName: u.userName || '-',
           email: u.email || '-',
           phoneNumber: u.phoneNumber || 'N/A',
-          isDeleted: u.isDeleted
+          status: u.isDeleted ? 'Deleted' : 'Active',
+          profilePicture: u.profilePicture || '',    // New field
+          emailConfirmed: u.emailConfirmed || false // New field
         }));
-          this.cdr.detectChanges()
 
+        this.cdr.detectChanges();
         this.loading = false;
       },
       error: (err) => {
@@ -80,7 +85,7 @@ export class EmployeeListComponent implements OnInit {
     const sort = event.sorts[0];
     const rows = [...this.tenderingData];
     rows.sort((a, b) =>
-      a[sort.prop]?.localeCompare(b[sort.prop] || '') * (sort.dir === 'desc' ? -1 : 1)
+      (a[sort.prop] || '').toString().localeCompare((b[sort.prop] || '').toString()) * (sort.dir === 'desc' ? -1 : 1)
     );
     this.tenderingData = rows;
   }
@@ -107,12 +112,12 @@ export class EmployeeListComponent implements OnInit {
     }
     this.enableDisableButtons();
   }
-// Navigate to register user page
-registerUser() {
-  this.router.navigate(['/employee']);
-            this.cdr.detectChanges()
 
-}
+  // Navigate to register user page
+  registerUser() {
+    this.router.navigate(['/employee']);
+    this.cdr.detectChanges();
+  }
 
   // Edit button (top)
   editSelectedRow() {

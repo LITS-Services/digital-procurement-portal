@@ -1,0 +1,120 @@
+::ng-deep {
+    .ngx-datatable {
+
+        .sortable .sort-btn:before,
+        .sortable .sort-btn.datatable-icon-down:before,
+        .sortable .sort-btn.datatable-icon-up:before {
+            display: none !important;
+        }
+
+        .datatable-header-inner {
+            background-color: #1E89B8 !important;
+            padding: 0.5rem;
+        }
+
+        .datatable-header-cell-label,
+        .sort-btn {
+            color: white !important;
+        }
+
+        .datatable-footer {
+            background: #424242 !important;
+            color: #1E89B8;
+        }
+
+        .datatable-body-row.datatable-row-even {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .datatable-body-cell {
+            text-align: left;
+            padding: 0.75rem;
+            vertical-align: baseline;
+        }
+    }
+}
+
+/* ---------- Custom Invitation Styles ---------- */
+.vl {
+    border-left: 1.4px solid #cccccc;
+    height: 36px;
+    position: relative;
+    top: 3px;
+}
+
+.heading {
+    color: #1E89B8;
+    font-weight: 700;
+    margin-top: 0.5rem;
+}
+
+.action-pane {
+    border-radius: 0.75rem;
+    background-color: #f8f9fa;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    color: #1E89B8;
+}
+
+.action-btn i {
+    margin-right: 5px;
+    font-size: 1.1rem;
+}
+
+.full-form-card {
+    border-radius: 0.75rem;
+    background: #ffffff;
+    width: 100%;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #333;
+}
+
+.form-control {
+    border-radius: 0.5rem;
+    border: 1px solid #d9d9d9;
+    transition: 0.2s;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.1rem rgba(30, 137, 184, 0.25);
+    border-color: #1E89B8;
+}
+
+.card {
+    margin: 15px 0;
+    box-shadow: -8px 8px 14px 0 rgba(166, 166, 166, 0.412) !important;
+}
+
+.custom-dropdown {
+    width: 100%;
+    max-height: 220px;
+    overflow-y: auto;
+    border: 1px solid #1E89B8;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    background: #ffffff;
+    z-index: 1000;
+    padding-left: 22px;
+
+}
+
+.custom-dropdown .dropdown-item {
+    cursor: pointer;
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.25rem;
+}
+
+.custom-dropdown .dropdown-item:hover {
+    background-color: rgba(30, 137, 184, 0.1);
+}
+
+.form-check-input {
+    accent-color: #1E89B8;
+}

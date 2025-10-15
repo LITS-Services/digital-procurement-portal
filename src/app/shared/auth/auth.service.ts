@@ -37,30 +37,34 @@ export class AuthService {
 
   // ===== Sign In =====
   signinUser(username: string, password: string): Observable<any> {
-    return new Observable((observer) => {
-      this.http.post<any>(`${this.baseUrl}/Auth/ProcurementLogin`, { username, password }).subscribe({
-        next: (res) => {
-          if (res && res.token) {
-            localStorage.setItem('token', res.token);
-            localStorage.setItem('userId', res.userId);
-            localStorage.setItem('userName', res.userName);
+  return new Observable((observer) => {
+    this.http.post<any>(`${this.baseUrl}/Auth/ProcurementLogin`, { username, password }).subscribe({
+      next: (res) => {
+        if (res && res.token) {
+          localStorage.setItem('token', res.token);
+          localStorage.setItem('userId', res.userId || '');
+          localStorage.setItem('userName', res.userName || '');
 
-            // Save roles array properly
-            const roles = res?.roles?.$values || [];
-            localStorage.setItem('roles', JSON.stringify(roles));
+          // ✅ Save role as a single string (e.g., "Admin")
+          const role = Array.isArray(res.roles) && res.roles.length > 0 ? res.roles[0] : '';
+          localStorage.setItem('role', role);
 
-            // Save companyIds
-            const companyIds = res?.companyIds?.$values || [];
-            localStorage.setItem('companyIds', JSON.stringify(companyIds));
-          }
+          // ✅ Also optional: keep the full array in case you ever support multiple roles
+          localStorage.setItem('roles', JSON.stringify(res.roles || []));
 
-          observer.next(res);
-          observer.complete();
-        },
-        error: (err) => observer.error(err)
-      });
+          // ✅ Save company IDs as array
+          const companyIds = Array.isArray(res.companyIds) ? res.companyIds : [];
+          localStorage.setItem('companyIds', JSON.stringify(companyIds));
+        }
+
+        observer.next(res);
+        observer.complete();
+      },
+      error: (err) => observer.error(err)
     });
-  }
+  });
+}
+
 
   // ===== Register =====
   register(userData: any): Observable<string> {

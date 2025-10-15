@@ -33,7 +33,7 @@ export class EmployeeComponent implements OnInit {
     private companyService: CompanyService,
     private authService: AuthService,
     private toastr: ToastrService,
-    private cdr: ChangeDetectorRef       // ✅ Added ChangeDetectorRef
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -78,29 +78,30 @@ export class EmployeeComponent implements OnInit {
   loadRoles() {
     this.companyService.getRoles().subscribe({
       next: (res: any) => {
-        this.roles = res?.$values || [];
-        this.cdr.detectChanges();       // ✅ Update roles in UI
+        this.roles = res?.$values || res || [];
+        this.cdr.detectChanges();
         if (this.isEditMode && this.companyId) this.loadEmployeeForEdit(this.companyId);
       },
       error: (err) => console.error('Error loading roles:', err)
     });
   }
 
-  loadCompanies() {
-    this.companyService.getProCompanies().subscribe({
-      next: (res: any) => {
-        this.companies = res?.$values || [];
-        this.cdr.detectChanges();       // ✅ Update companies in UI
-      },
-      error: (err) => console.error('Error loading companies:', err)
-    });
-  }
+ loadCompanies() {
+  this.companyService.getProCompanies().subscribe({
+    next: (res: any) => {
+      this.companies = res?.result || [];
+      this.cdr.detectChanges();
+    },
+    error: (err) => console.error('Error loading companies:', err)
+  });
+}
+
 
   loadEmployees() {
     this.companyService.getAllEmployees().subscribe({
       next: (res: any) => {
-        this.employees = res?.$values || [];
-        this.cdr.detectChanges();       // ✅ Update employees in UI
+        this.employees = res?.result || []; // ✅ Fixed: use res.result
+        this.cdr.detectChanges();
       },
       error: (err) => console.error('Error loading employees:', err)
     });
@@ -111,7 +112,7 @@ export class EmployeeComponent implements OnInit {
       next: (emp: any) => {
         this.companyForm.patchValue({
           employeeId: emp.id,
-          name: emp.Username || emp.userName,
+          name: emp.fullName || emp.Username || emp.userName,
           email: emp.email || '',
           isDeleted: emp.isDeleted || false
         });
@@ -121,17 +122,19 @@ export class EmployeeComponent implements OnInit {
         this.companyForm.get('password')?.disable();
         this.companyForm.get('confirmPassword')?.disable();
 
-        if (emp.roles && emp.roles.$values?.length) {
-          const roleName = emp.roles.$values[0].name;
+        if (emp.roles && (emp.roles.$values?.length || emp.roles.length)) {
+          const roleName = emp.roles.$values ? emp.roles.$values[0].name : emp.roles[0].name;
           const role = this.roles.find(r => r.name === roleName);
           this.companyForm.patchValue({ roleId: role?.id || null });
         }
 
-        if (emp.companies && emp.companies.$values?.length) {
-          this.selectedCompanyGUIDs = emp.companies.$values.map((c: any) => c.companyGUID);
+        if (emp.companies && (emp.companies.$values?.length || emp.companies.length)) {
+          this.selectedCompanyGUIDs = emp.companies.$values
+            ? emp.companies.$values.map((c: any) => c.companyGUID)
+            : emp.companies.map((c: any) => c.companyGUID);
         }
 
-        this.cdr.detectChanges();       // ✅ Update form after patching values
+        this.cdr.detectChanges();
       },
       error: (err) => console.error('Error fetching employee:', err)
     });
@@ -139,13 +142,13 @@ export class EmployeeComponent implements OnInit {
 
   onEmployeeSelect(event: Event) {
     const selectedId = (event.target as HTMLSelectElement).value;
-    const selectedEmp = this.employees.find(e => e.id == selectedId);
+    const selectedEmp = this.employees.find(e => e.id === selectedId);
     if (selectedEmp) {
-      this.companyForm.patchValue({ 
-        name: selectedEmp.Username, 
-        email: selectedEmp.email 
+      this.companyForm.patchValue({
+        name: selectedEmp.fullName,
+        email: selectedEmp.email
       });
-      this.cdr.detectChanges();         // ✅ Update form after selecting employee
+      this.cdr.detectChanges();
     }
   }
 
@@ -156,7 +159,7 @@ export class EmployeeComponent implements OnInit {
     } else {
       this.selectedCompanyGUIDs = this.selectedCompanyGUIDs.filter(c => c !== guid);
     }
-    this.cdr.detectChanges();           // ✅ Update UI when companies are toggled
+    this.cdr.detectChanges();
   }
 
   togglePassword(field: 'password' | 'confirmPassword') {
@@ -166,14 +169,14 @@ export class EmployeeComponent implements OnInit {
       } else {
         this.confirmPasswordFieldType = this.confirmPasswordFieldType === 'password' ? 'text' : 'password';
       }
-      this.cdr.detectChanges();         // ✅ Update password field toggle
+      this.cdr.detectChanges();
     }
   }
 
   toggleStatus() {
     const current = this.companyForm.get('isDeleted')?.value;
     this.companyForm.patchValue({ isDeleted: !current });
-    this.cdr.detectChanges();           // ✅ Update UI on status change
+    this.cdr.detectChanges();
   }
 
   onSubmit() {
@@ -196,9 +199,9 @@ export class EmployeeComponent implements OnInit {
     if (this.isEditMode) {
       const updatePayload = {
         id: formValues.employeeId,
-        fullName: formValues.name,
-        userName: formValues.name,
-        email: formValues.email,
+        fullName: this.companyForm.get('name')?.value,
+        userName: this.companyForm.get('name')?.value,
+        email: this.companyForm.get('email')?.value,
         phoneNumber: '',
         isDeleted: formValues.isDeleted,
         profilePicture: '',
@@ -212,7 +215,7 @@ export class EmployeeComponent implements OnInit {
         next: () => {
           this.toastr.success('Employee updated successfully');
           this.router.navigate(['/employee-list']);
-          this.cdr.detectChanges();     // ✅ Reflect UI after update
+          this.cdr.detectChanges();
         },
         error: (err) => {
           this.toastr.error('Failed to update employee');
@@ -246,7 +249,7 @@ export class EmployeeComponent implements OnInit {
         this.companyForm.reset();
         this.selectedCompanyGUIDs = [];
         this.companyFormSubmitted = false;
-        this.cdr.detectChanges();      
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.toastr.error('Failed to register employee');
@@ -260,7 +263,7 @@ export class EmployeeComponent implements OnInit {
     this.selectedCompanyGUIDs = [];
     this.companyFormSubmitted = false;
     if (this.isEditMode && this.companyId) this.loadEmployeeForEdit(this.companyId);
-    this.cdr.detectChanges();          
+    this.cdr.detectChanges();
   }
 
   goBack() {

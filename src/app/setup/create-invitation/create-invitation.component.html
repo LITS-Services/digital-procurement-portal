@@ -1,0 +1,138 @@
+<section class="container-fluid mt-3">
+    <!-- 🔹 Action Pane -->
+
+
+
+    <div class="card">
+        <div class="row">
+            <div class="col-md-6">
+                <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+                    <i class="ft-arrow-left"></i>
+                </button>
+                <span class="vl"></span>
+
+
+                <button type="button" class="btn btn-sm" (click)="resetForm()">
+                    <i class="ft-refresh-ccw"></i>
+                    <label class="ml-1 mt-1">Reset</label>
+                </button>
+
+                <button type="button" class="btn btn-sm" (click)="saveInvitation()">
+                    <i class="ft-save"></i>
+                    <label class="ml-1 mt-1">Send</label>
+                </button>
+
+
+            </div>
+        </div>
+    </div>
+
+   <!-- 🔹 Full Page Form -->
+  <div class="card full-form-card p-4 shadow-sm">
+    <h4 class="heading mb-4">New Invitation</h4>
+
+    <form [formGroup]="invitationForm" (ngSubmit)="saveInvitation()">
+      <div class="row">
+        <!-- Receiver Email -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Receiver Email <span class="text-danger">*</span></label>
+          <input
+            type="email"
+            class="form-control"
+            placeholder="Enter receiver email" 
+            formControlName="receiverEmail"
+            [ngClass]="{'is-invalid': submitted && f['receiverEmail'].errors}"
+          />
+          <div *ngIf="submitted && f['receiverEmail'].errors" class="invalid-feedback">
+            <div *ngIf="f['receiverEmail'].errors['required']">Receiver Email is required.</div>
+            <div *ngIf="f['receiverEmail'].errors['email']">Enter a valid email address.</div>
+          </div>
+        </div>
+
+        <!-- Subject -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Subject <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Enter subject"
+            formControlName="subject"
+            [ngClass]="{'is-invalid': submitted && f['subject'].errors}"
+          />
+          <div *ngIf="submitted && f['subject'].errors" class="invalid-feedback">
+            Subject is required.
+          </div>
+        </div>
+
+      
+
+        <!-- Body -->
+        <div class="col-md-12 mb-3">
+          <label class="form-label">Body <span class="text-danger">*</span></label>
+          <textarea
+            rows="6"
+            class="form-control"
+            placeholder="Write your message..."
+            formControlName="body"
+            [ngClass]="{'is-invalid': submitted && f['body'].errors}"
+          ></textarea>
+          <div *ngIf="submitted && f['body'].errors" class="invalid-feedback">
+            Body is required.
+          </div>
+        </div>
+
+        <!-- Regards -->
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Regards <span class="text-danger">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Your name or company name"
+            formControlName="regards"
+            [ngClass]="{'is-invalid': submitted && f['regards'].errors}"
+          />
+          <div *ngIf="submitted && f['regards'].errors" class="invalid-feedback">
+            Regards is required.
+          </div>
+        </div>
+          <!-- Company Multi-Select Dropdown -->
+        <div class="col-md-6 mb-3 position-relative">
+          <label class="form-label">Company <span class="text-danger">*</span></label>
+          <div class="dropdown w-100">
+            <button
+              type="button"
+              class="form-control dropdown-toggle text-start"
+              (click)="toggleDropdown()"
+            >
+              {{
+                invitationForm.value.companies.length > 0
+                  ? invitationForm.value.companies.join(', ')
+                  : 'Select Companies'
+              }}
+            </button>
+            <div
+              class="dropdown-menu show custom-dropdown"
+              *ngIf="dropdownOpen"
+            >
+              <div
+                *ngFor="let company of companies"
+                class="dropdown-item d-flex align-items-center"
+                (click)="selectCompany(company)"
+              >
+                <input
+                  type="checkbox"
+                  class="form-check-input me-2"
+                  [checked]="company.selected"
+                />
+                <span>{{ company.name }}</span>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="submitted && f['companies'].errors" class="text-danger small mt-1">
+            Please select at least one company.
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>

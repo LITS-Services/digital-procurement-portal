@@ -34,6 +34,9 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
   @ViewChild(DatatableComponent) table: DatatableComponent;
   mode: string = 'Create';
 
+  // NEW: Conditional field flag
+  hideConditionalFields = false;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -41,8 +44,7 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
     private WorkflowServiceService: WorkflowServiceService,
     private fb: FormBuilder,
     public toastr: ToastrService
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
 
@@ -58,12 +60,17 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
       usersList: [[]]
     });
 
+    // NEW: Watch for workflow type changes to hide/show fields
+    this.workflowsetupform.get('documentType')?.valueChanges.subscribe(value => {
+      this.updateConditionalFields(value);
+    });
+
     // Approver form (no validations)
     this.approverForm = this.fb.group({
       approverList: ['', Validators.required],
       amountFrom: [null],
       amountTo: [null],
-      approverLevel: [null,Validators.required],
+      approverLevel: [null, Validators.required],
       canApprove: [false],
       canReject: [false],
       canSendBack: [false],
@@ -72,7 +79,6 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
       approverName: [null],
       userId: [null]
     });
-
 
     // Check if editing existing request
     this.route.queryParamMap.subscribe(params => {
@@ -83,24 +89,47 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
       if (mode == 'Edit') {
         this.loadexistingWorkflowById(this.workflowmasterId);
       }
-
     });
-
   }
+
+  // NEW: Update conditional fields based on selected workflow type
+updateConditionalFields(selectedTypeId: any) {
+  if (!selectedTypeId) {
+    this.hideConditionalFields = false;
+    // Enable all relevant fields
+    this.approverForm.get('amountFrom')?.enable();
+    this.approverForm.get('amountTo')?.enable();
+    this.workflowsetupform.get('usersList')?.enable();
+    return;
+  }
+
+  const selectedType = this.workflowTypes.find(wf => wf.id == selectedTypeId);
+
+  if (selectedType && selectedType.typeName === 'Vendor Company Onboarding') {
+    this.hideConditionalFields = true; // optional, can be used elsewhere if needed
+    // Disable fields
+    this.approverForm.get('amountFrom')?.disable();
+    this.approverForm.get('amountTo')?.disable();
+    this.workflowsetupform.get('usersList')?.disable();
+  } else {
+    this.hideConditionalFields = false;
+    // Enable fields
+    this.approverForm.get('amountFrom')?.enable();
+    this.approverForm.get('amountTo')?.enable();
+    this.workflowsetupform.get('usersList')?.enable();
+  }
+}
+
+
 
   getWorkflowTypes(): void {
     this.WorkflowServiceService.getWorkflowTypes().subscribe({
       next: (data: any) => {
         console.log("Raw API Response:", data);
-
-        // Fix: Extract $values if it exists
         this.workflowTypes = data.$values ?? data;
-
         console.log("Extracted Workflow Types:", this.workflowTypes);
       },
-      error: (err) => {
-        console.error("Error fetching workflow types:", err);
-      }
+      error: (err) => console.error("Error fetching workflow types:", err)
     });
   }
 
@@ -108,15 +137,10 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
     this.WorkflowServiceService.getApproverList().subscribe({
       next: (data: any) => {
         console.log("Raw API Response:", data);
-
-        // Fix: Extract $values if it exists
         this.approverList = data.$values ?? data;
-
         console.log("Extracted Approver List:", this.approverList);
       },
-      error: (err) => {
-        console.error("Error fetching approver list:", err);
-      }
+      error: (err) => console.error("Error fetching approver list:", err)
     });
   }
 
@@ -124,18 +148,12 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
     this.WorkflowServiceService.getApproverList().subscribe({
       next: (data: any) => {
         console.log("Raw API Response:", data);
-
-        // Fix: Extract $values if it exists
         this.usersList = data.$values ?? data;
-
         console.log("Extracted Approver List:", this.usersList);
       },
-      error: (err) => {
-        console.error("Error fetching approver list:", err);
-      }
+      error: (err) => console.error("Error fetching approver list:", err)
     });
   }
-
 
 
   addApprover(): void {

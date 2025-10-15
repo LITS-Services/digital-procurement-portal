@@ -6,7 +6,7 @@
             <div class="row">
                 <div class="col-md-12" style=" margin-top: -0.25rem;">
                     <!-- <h4>Announcements</h4> -->
-                    <h4 class="heading">Vendor Companies</h4>
+                    <h4 class="heading">Invitations </h4>
                 </div>
                 <!-- <div class="col-md-6">
                 </div> -->
@@ -23,15 +23,10 @@
                         </button>
                         <span class="vl"></span>
 
-                        <!-- Create -->
-                        <!-- <button type="reset" ngbTooltip="Create new company" class="btn btn-sm" (click)="openEmpDetails()">
-        <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
-    </button> -->
-
-                        <!-- Update -->
-                        <button type="button" class="btn btn-sm" [disabled]="isEditButtonDisabled"
-                            (click)="editSelectedRow()">
-                            <i class="ft-edit"></i><label class="ml-1 mt-1">Company Review</label>
+                       
+                         <button type="button" class="btn btn-sm" (click)="CreatInvitations()">
+                            <i class="ft-mail"></i>
+                            <label class="ml-1 mt-1">Create Invitation</label>
                         </button>
 
                         <button type="button" class="btn btn-sm" (click)="showAll()">
@@ -48,23 +43,8 @@
                             <i class="ft-refresh-ccw"></i>
                             <label class="ml-1 mt-1">Recall</label>
                         </button>
-
-
-                        <!-- Delete -->
-                        <!-- <button type="button" class="btn btn-sm" [disabled]="isDeleteButtonDisabled" (click)="deleteSelectedRows()">
-        <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
-    </button> -->
-
-                        <!-- Approval -->
-                        <!-- <button type="button" class="btn btn-sm" [disabled]="isOpenButtonDisabled" (click)="approveSelectedRows()">
-        <i class="ft-check"></i><label class="ml-1 mt-1">Approval</label>
-    </button> -->
                     </div>
-
-
-
                 </div>
-
             </div>
             <!-- Content -->
             <ngx-datatable class="bootstrap core-bootstrap" [rows]="rows" [columnMode]="'force'"

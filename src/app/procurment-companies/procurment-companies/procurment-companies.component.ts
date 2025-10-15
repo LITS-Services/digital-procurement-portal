@@ -26,7 +26,8 @@ export class ProcurmentCompaniesComponent implements OnInit {
     { prop: 'id', name: 'ID', width: 80 },
     { prop: 'companyGUID', name: 'Company GUID', width: 200 },
     { prop: 'name', name: 'Name', width: 200 },
-    { prop: 'logo', name: 'Logo', width: 100 }
+    { prop: 'logo', name: 'Logo', width: 100 },
+    { prop: 'status', name: 'Status', width: 100 } // optional column for status
   ];
 
   constructor(
@@ -53,7 +54,15 @@ export class ProcurmentCompaniesComponent implements OnInit {
     this.loading = true;
     this.companyService.getProCompanies().subscribe({
       next: (res: any) => {
-        this.tenderingData = res.$values || [];
+        // Use paginated result array
+        const companies = res?.result || [];
+
+        this.tenderingData = companies.map((c: any) => ({
+          ...c,
+          status: c.isDeleted ? 'Inactive' : 'Active', // optional: show readable status
+          logo: c.logo || ''
+        }));
+
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -64,37 +73,31 @@ export class ProcurmentCompaniesComponent implements OnInit {
     });
   }
 
-  // Navigate to home/dashboard
   homePage() {
     this.router.navigate(['/dashboard/dashboard1']);
   }
 
-  // Toggle select all checkboxes
   toggleSelectAll(event: any) {
     this.isAllSelected = event.target.checked;
     this.chkBoxSelected = this.isAllSelected ? [...this.tenderingData] : [];
     this.updateActionButtons();
   }
 
-  // When individual checkbox is selected
   customChkboxOnSelect({ selected }: any) {
     this.chkBoxSelected = [...selected];
     this.updateActionButtons();
   }
 
-  // Navigate to create new company page
   openEmpDetails() {
     this.router.navigate(['/procurment-companies/procurment-companies-edit']);
   }
 
-  // Enable/disable action buttons
   updateActionButtons() {
     const selectedCount = this.chkBoxSelected.length;
-    this.isEditButtonDisabled = selectedCount !== 1;   // Only enable Edit if 1 row selected
-    this.isDeleteButtonDisabled = selectedCount === 0; // Enable Delete if at least 1 selected
+    this.isEditButtonDisabled = selectedCount !== 1;
+    this.isDeleteButtonDisabled = selectedCount === 0;
   }
 
-  // Edit selected company
   editSelectedRow() {
     if (this.chkBoxSelected.length === 1) {
       const selectedCompany = this.chkBoxSelected[0];
@@ -106,7 +109,6 @@ export class ProcurmentCompaniesComponent implements OnInit {
     }
   }
 
-  // Delete selected companies (soft delete can be implemented in service)
   deleteSelectedRows() {
     if (this.chkBoxSelected.length === 0) {
       alert('Please select at least one company to delete.');
@@ -121,7 +123,6 @@ export class ProcurmentCompaniesComponent implements OnInit {
     this.companyService.deleteProCompanies(idsToDelete).subscribe({
       next: () => {
         alert('Selected company(s) deleted successfully!');
-        // Reload data
         this.loadCompanyData();
         this.chkBoxSelected = [];
         this.updateActionButtons();
@@ -133,15 +134,11 @@ export class ProcurmentCompaniesComponent implements OnInit {
     });
   }
 
-  // Helper method to get status text based on isDeleted
-// Get status text based on isDeleted
-getStatus(row: any): string {
-  return row.isDeleted ? 'Inactive' : 'Active';
-}
+  getStatus(row: any): string {
+    return row.isDeleted ? 'Inactive' : 'Active';
+  }
 
-// Optional: CSS class for coloring
-getStatusClass(row: any): string {
-  return row.isDeleted ? '' : '';
-}
-
+  getStatusClass(row: any): string {
+    return row.isDeleted ? '' : '';
+  }
 }

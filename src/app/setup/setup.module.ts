@@ -20,13 +20,17 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { WorkflowApproverSetupComponent } from './workflow-approver-setup/workflow-approver-setup.component';
+import { EmailSetupComponent } from './email-setup/email-setup.component';
+import { CreateInvitationComponent } from './create-invitation/create-invitation.component';
 
 
 @NgModule({
   declarations: [
     WorkflowMasterSetupComponent,
     NewWorkflowmasterSetupComponent,
-    WorkflowApproverSetupComponent
+    WorkflowApproverSetupComponent,
+    EmailSetupComponent,
+    CreateInvitationComponent
   ],
   imports: [
     CommonModule,

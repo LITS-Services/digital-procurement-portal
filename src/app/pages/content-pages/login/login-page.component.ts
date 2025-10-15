@@ -45,7 +45,7 @@ export class LoginPageComponent {
     });
 
     this.authService.signinUser(
-      this.loginForm.value.username, 
+      this.loginForm.value.username,
       this.loginForm.value.password
     ).subscribe(
       (res: any) => {
@@ -60,9 +60,11 @@ export class LoginPageComponent {
         localStorage.setItem('userName', res.userName || '');
 
         // Save roles
-        const roles = res?.roles?.$values || [];
-        console.log('Extracted roles:', roles);
-        localStorage.setItem('roles', JSON.stringify(roles));
+    const roles = res?.roles || [];
+const role = roles.length > 0 ? roles[0] : '';
+localStorage.setItem('role', role);
+
+
 
         // Save roles $id
         const rolesId = res?.roles?.$id || '';
