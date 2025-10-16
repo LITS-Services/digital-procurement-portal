@@ -15,7 +15,7 @@
       </div>
 
       <!-- Action Pane -->
-      <div class="card">
+      <div class="card cstm-ui-card">
         <div class="row">
           <div class="col-md-6">
             <button class="btn btn-lg mr-1" type="button" (click)="homePage()"><i class="ft-arrow-left"></i></button>
@@ -23,40 +23,40 @@
 
             <!-- Create Mode: Save + Save as Draft -->
             <ng-container *ngIf="isNewForm && !viewMode">
-              <button class="btn btn-sm" [disabled]="newRfqForm.invalid" (click)="submitForm()">
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="newRfqForm.invalid" (click)="submitForm()">
                 <i class="ft-plus"></i><label class="ml-1 mt-1">Save</label>
               </button>
-              <button class="btn btn-sm" (click)="saveAsDraftAndGoBack()">
+              <button class="btn btn-sm cstm-ui-table-btn" (click)="saveAsDraftAndGoBack()">
                 <i class="ft-save"></i><label class="ml-1 mt-1">Save as Draft</label>
               </button>
             </ng-container>
 
             <!-- Update Mode: Update -->
             <ng-container *ngIf="!isNewForm && !viewMode">
-              <button class="btn btn-sm" [disabled]="newRfqForm.invalid || isStatusCompleted || !isSubmitter"
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="newRfqForm.invalid || isStatusCompleted || !isSubmitter"
                 (click)="submitForm()">
                 <i class="ft-edit-2"></i><label class="ml-1 mt-1">Update</label>
               </button>
             </ng-container>
 
             <ng-container *ngIf="viewMode && isSubmitter">
-              <button class="btn btn-sm" [disabled]="newRfqForm.invalid || isStatusCompleted || isStatusInProcess"
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="newRfqForm.invalid || isStatusCompleted || isStatusInProcess"
                 (click)="onSubmitForApproval()">
                 <i class="ft-edit-2"></i><label class="ml-1 mt-1">Submit For Approval</label>
               </button>
             </ng-container>
 
             <ng-container *ngIf="viewMode && !isSubmitter">
-              <button class="btn btn-sm" [disabled]="isStatusCompleted || isSubmitter"
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter"
                 (click)="onAddRemarks('Approve')">
                 <i class="ft-check"></i><label class="ml-1 mt-1">Approve</label>
               </button>
 
-              <button class="btn btn-sm" [disabled]="isStatusCompleted || isSubmitter" (click)="onAddRemarks('Reject')">
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter" (click)="onAddRemarks('Reject')">
                 <i class="ft-x"></i><label class="ml-1 mt-1">Reject</label>
               </button>
 
-              <button class="btn btn-sm" [disabled]="isStatusCompleted || isSubmitter"
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter"
                 (click)="onAddRemarks('SendBack')">
                 <i class="ft-arrow-left"></i><label class="ml-1 mt-1">Send Back</label>
               </button>
@@ -79,7 +79,7 @@
           </div>
 
           <div class="col-md-6 text-right" style="margin-top: 0.3rem;">
-            <button type="reset" class="btn btn-sm">
+            <button type="reset" class="btn btn-sm mr-2">
               <i class="ft-printer"></i><label class="ml-1 mt-1" for="">Print</label>
             </button>
 
@@ -107,7 +107,7 @@
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
                   <label>RFQ No.</label>
-                  <input type="text" formControlName="rfqNo" class="form-control" disabled />
+                  <input type="text" formControlName="rfqNo" class="form-control custom-input" disabled />
                 </div>
               </div>
 
@@ -115,7 +115,7 @@
                 <div class="form-group mb-2">
                   <label>PR No.</label>
                   <input type="text" formControlName="purchaseRequestNo" placeholder="Enter PR No."
-                    class="form-control" />
+                    class="form-control custom-input" />
                   <!-- <input type="text" formControlName="purchaseRequestNo" placeholder="Enter PR No."
                     class="form-control" /> -->
                 </div>
@@ -124,28 +124,28 @@
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
                   <label>Status</label>
-                  <input type="text" formControlName="status" class="form-control" disabled />
+                  <input type="text" formControlName="status" class="form-control custom-input"  disabled />
                 </div>
               </div>
 
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
                   <label>Owner</label>
-                  <input type="text" formControlName="owner" placeholder="Enter Owner" class="form-control" />
+                  <input type="text" formControlName="owner" placeholder="Enter Owner" class="form-control custom-input" />
                 </div>
               </div>
 
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
                   <label>Date</label>
-                  <input type="date" class="form-control" formControlName="date" />
+                  <input type="date" class="form-control custom-input" formControlName="date" />
                 </div>
               </div>
 
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
                   <label>Contact</label>
-                  <input type="text" formControlName="contact" placeholder="Enter Contact No." class="form-control" />
+                  <input type="text" formControlName="contact" placeholder="Enter Contact No." class="form-control  custom-input" />
                 </div>
               </div>
 
@@ -153,28 +153,28 @@
                 <div class="form-group mb-2">
                   <label>Delivery Location</label>
                   <input type="text" formControlName="deliveryLocation" placeholder="Enter Delivery Location"
-                    class="form-control" />
+                    class="form-control  custom-input" />
                 </div>
               </div>
 
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
                   <label>Start Date</label>
-                  <input type="date" class="form-control" formControlName="startDate" />
+                  <input type="date" class="form-control  custom-input" formControlName="startDate" />
                 </div>
               </div>
 
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
                   <label>End Date</label>
-                  <input type="date" class="form-control" formControlName="endDate" />
+                  <input type="date" class="form-control  custom-input" formControlName="endDate" />
                 </div>
               </div>
 
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
                   <label>Title</label>
-                  <input type="text" placeholder="Enter Title" class="form-control" formControlName="title" />
+                  <input type="text" placeholder="Enter Title" class="form-control custom-input" formControlName="title" />
                 </div>
               </div>
 
@@ -208,7 +208,7 @@
                 <div class="form-group mb-2">
                   <label>Comment</label>
                   <textarea name="" type="text" formControlName="comment" placeholder="Enter Comments"
-                    class="form-control"></textarea>
+                    class="form-control custom-input"></textarea>
                 </div>
               </div>
 
@@ -255,11 +255,11 @@
                       </button>
                     </div> -->
 
-                    <div class="col-12">
+                    <div class="col-12 mb-1">
                       <h5>Item Type</h5>
                     </div>
 
-                    <div class="col-6 mb-2">
+                    <div class="col-6">
                       <div class="form-check-inline">
                         <label class="form-check-label">
                           <input type="radio" class="form-check-input" name="itemType" value="Inventory"
@@ -268,7 +268,7 @@
                       </div>
                     </div>
 
-                    <div class="col-6 mb-2">
+                    <div class="col-6">
                       <div class="form-check-inline">
                         <label class="form-check-label">
                           <input type="radio" class="form-check-input" name="itemType" value="Non-Inventory"
@@ -310,7 +310,7 @@
                             <div class="col-md-6">
                               <div class="form-group mb-2">
                                 <label>U of M</label>
-                                <select class="form-control" formControlName="unitOfMeasurementId">
+                                <select class="form-control custom-input" formControlName="unitOfMeasurementId">
                                   <option value="" disabled selected>Select UOM</option>
                                   <option *ngFor="let uom of unitsOfMeasurementList" [ngValue]="uom.id">
                                     {{ uom.uomCode }} - {{ uom.uomName }}
@@ -324,7 +324,7 @@
                             <div class="col-md-6">
                               <div class="form-group mb-2">
                                 <label>Amount</label>
-                                <input type="number" placeholder="Enter Amount" class="form-control"
+                                <input type="number" placeholder="Enter Amount" class="form-control custom-input"
                                   formControlName="amount" />
                               </div>
                             </div>
@@ -332,7 +332,7 @@
                             <div class="col-md-6">
                               <div class="form-group mb-2">
                                 <label>Unit Cost</label>
-                                <input type="number" placeholder="Enter Unit Cost" class="form-control"
+                                <input type="number" placeholder="Enter Unit Cost" class="form-control custom-input"
                                   formControlName="unitCost" />
                               </div>
                             </div>
@@ -342,7 +342,7 @@
                             <div class="col-md-6">
                               <div class="form-group mb-2">
                                 <label>Order Quantity</label>
-                                <input type="number" placeholder="Enter Order Quantity" class="form-control"
+                                <input type="number" placeholder="Enter Order Quantity" class="form-control custom-input"
                                   formControlName="orderQuantity" />
                               </div>
                             </div>
@@ -350,7 +350,7 @@
                             <div class="col-md-6">
                               <div class="form-group mb-2">
                                 <label>Req. by Date</label>
-                                <input type="date" class="form-control" formControlName="reqByDate" />
+                                <input type="date" class="form-control custom-input" formControlName="reqByDate" />
                               </div>
                             </div>
                           </div>
@@ -358,13 +358,13 @@
                           <div class="form-group mb-2">
                             <label>Item Description</label>
                             <textarea name="" id="" rows="2" type="text" placeholder="Enter Item Description"
-                              class="form-control" formControlName="itemDescription"></textarea>
+                              class="form-control custom-input" formControlName="itemDescription"></textarea>
                           </div>
                         </div>
 
                         <div class="col-6">
                           <h5>Other Details</h5>
-                          <div *ngIf="!isNewForm" class="form-group mb-2">
+                          <div *ngIf="!isNewForm" class="form-group mb-2 ">
                             <label>Final Vendor</label>
                             <!-- <select class="form-control" formControlName="vendorUserId">
                               <option value="" disabled>Select Vendor</option>
@@ -372,7 +372,7 @@
                                 {{ vendor.name }}
                               </option>
                             </select> -->
-                            <select class="form-control" formControlName="vendorUserId"
+                            <select class="form-control custom-input" formControlName="vendorUserId"
                               (change)="onVendorChange($event.target.value)">
                               <option value="" disabled>Select Vendor</option>
                               <option *ngFor="let v of uniqueVendors" [value]="v.vendorId">
@@ -382,7 +382,7 @@
                           </div>
                           <div *ngIf="!isNewForm" class="form-group mb-2">
                             <label>Company</label>
-                            <select class="form-control" formControlName="vendorCompanyId">
+                            <select class="form-control custom-input" formControlName="vendorCompanyId">
                               <option value="" disabled>Select Company</option>
                               <option *ngFor="let c of filteredCompanies" [value]="c.companyId">
                                 {{ c.name }}
@@ -392,7 +392,7 @@
 
                           <!-- <div class="form-group mb-2">
                             <label>Account</label>
-                            <select class="form-control" formControlName="account">
+                            <select class="form-control custom-input" formControlName="account">
                               <option value="" selected disabled>Select Account</option>
                               <option value="ACC001 - Office Supplies">ACC001 - Office Supplies</option>
                               <option value="ACC002 - Medical Supplies">ACC002 - Medical Supplies</option>
@@ -401,7 +401,7 @@
                           </div> -->
                           <div class="form-group mb-2">
                             <label>Account</label>
-                            <select class="form-control" formControlName="accountId">
+                            <select class="form-control custom-input" formControlName="accountId">
                               <option value="" disabled selected>Select Account</option>
                               <option *ngFor="let acc of accountList" [value]="acc.id">
                                 {{ acc.code }} - {{ acc.name }}
@@ -412,7 +412,7 @@
                           <div class="form-group mb-2">
                             <label>Remarks</label>
                             <textarea name="" placeholder="Enter Remarks" id="" rows="5" type="text"
-                              class="form-control" formControlName="remarks"></textarea>
+                              class="form-control custom-input" formControlName="remarks"></textarea>
                           </div>
                         </div>
                       </div>
@@ -477,13 +477,11 @@
             </ngb-panel>
           </ngb-accordion>
 
+       
           <div class="col-12">
-            <hr>
-          </div>
-          <div class="col-12 mt-4">
             <div style="position: relative;">
               <ngx-datatable class="bootstrap core-bootstrap" [rows]="newQuotationItemData" [columnMode]="'force'"
-                [headerHeight]="50" [footerHeight]="50" rowHeight="50" [limit]="5" [scrollbarH]="true">
+                [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
                 <!-- [headerHeight]="50" [footerHeight]="50" rowHeight="50" [limit]="5" [scrollbarH]="true"> -->
 
                 <ngx-datatable-column name="Sr. No." [width]="50" [sortable]="false">
@@ -525,7 +523,8 @@
                 <ngx-datatable-column name="Attachments" [width]="70" [sortable]="false">
                   <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
                     <!-- Edit button -->
-                    <a matTooltip="Attachment" style="cursor: pointer; color: #d1d4d7;"
+                    <a matTooltip="Attachment"
+                    class="row-action-attachment"
                       (click)="openNewEntityModal(rowIndex)" [ngClass]="{'disabled': actionType === 'View'}">
                       <!-- <a matTooltip="Attachment" style="cursor: pointer; color: #d1d4d7;"
                       (click)="openNewEntityModal(rowIndex)" [ngClass]="{'disabled': actionType === 'View'}"> -->
@@ -539,14 +538,16 @@
                   <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
 
                     <!-- Edit button -->
-                    <a matTooltip="Edit Item" style="cursor: pointer; color: #d1d4d7;" (click)="editRow(row, rowIndex)"
-                      [ngClass]="{'disabled': actionType === 'View'}">
+                    <a matTooltip="Edit Item" (click)="editRow(row, rowIndex)"
+                       [ngClass]="viewMode ? 'disabled' : 'row-action-edit'">
                       <i style="font-size: 1.5rem;" class="ft-edit mr-1"></i>
                     </a>
 
                     <!-- Delete button -->
-                    <a matTooltip="Delete Item" style="cursor: pointer; color: #d1d4d7;" [disabled]="viewMode"
-                      (click)="deleteRow(rowIndex)" [ngClass]="{'disabled': actionType === 'View'}">
+                    <a matTooltip="Delete Item" style="cursor: pointer; color: #d1d4d7;"
+                      (click)="deleteRow(rowIndex)" 
+                       [ngClass]="viewMode ? 'disabled' : 'row-action-delete'"
+                      >
                       <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
                     </a>
 

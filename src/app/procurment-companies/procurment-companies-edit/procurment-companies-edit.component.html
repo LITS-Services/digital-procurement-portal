@@ -10,15 +10,15 @@
       </div>
 
       <!-- Action Pane -->
-      <div class="card">
+      <div class="card cstm-ui-card">
         <div class="row">
           <div class="col-md-6">
             <button class="btn btn-lg mr-1" type="button" (click)="goBack()"><i class="ft-arrow-left"></i></button>
             <span class="vl"></span>
-            <button type="submit" class="btn btn-sm" form="companyForm">
+            <button type="submit" class="btn btn-sm cstm-ui-table-btn" form="companyForm">
               <i class="ft-plus"></i><label class="ml-1 mt-1">Save</label>
             </button>
-            <button type="reset" class="btn btn-sm" (click)="onReset()">
+            <button type="reset" class="btn btn-sm cstm-ui-table-btn" (click)="onReset()">
               <i class="ft-refresh-ccw"></i><label class="ml-1 mt-1">Reset</label>
             </button>
           </div>
@@ -55,7 +55,7 @@
               <div class="col-lg-6 col-md-6 col-sm-12">
                 <div class="form-group mb-2">
                   <label>Logo</label>
-                  <input type="file" (change)="onFileSelect($event)" class="form-control" />
+                  <input type="file" (change)="onFileSelect($event)" class="form-control cstm-logo-div" />
                   <div *ngIf="previewUrl" class="mt-2">
                     <img [src]="previewUrl" alt="Logo Preview" width="120" class="img-thumbnail" />
                   </div>

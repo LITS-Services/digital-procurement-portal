@@ -13,7 +13,7 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-rfq',
   templateUrl: './rfq.component.html',
-  styleUrls: ['./rfq.component.scss']
+  styleUrls: ['./rfq.component.scss'],
 })
 
 export class RfqComponent implements OnInit {

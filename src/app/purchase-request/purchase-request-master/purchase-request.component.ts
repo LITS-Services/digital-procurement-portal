@@ -243,7 +243,7 @@ export class PurchaseRequestComponent implements OnInit {
    */
   onUpdate() {
     if (this.chkBoxSelected.length === 0) {
-      this.toastr.info('Please select a record to update.');
+      this.toastr.info('Please select a record to update.', );
       return;
     }
 

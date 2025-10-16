@@ -1,6 +1,6 @@
 <!--Login Page Starts-->
 <section id="login">
-  <div class="row auth-height full-height-vh m-0">    
+  <div class="row auth-height full-height-vh m-0">
     <div class="col-12 d-flex align-items-center justify-content-center">
       <div class="card overflow-hidden">
         <div class="card-content">
@@ -10,7 +10,12 @@
                 <img src="assets/img/gallery/login.png" alt="" class="img-fluid" width="300" height="230">
               </div> -->
               <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-12 px-4 py-3">
-                <div class="text-center mb-2"><img src="/assets/img/login-logo.webp" width="70" height="70" alt=""></div>
+                <div class="text-center mb-2"><img src="/assets/img/logos/Logo.png" width="120" height="120" alt="">
+                </div>
+                <div class="d-flex flex-column justify-content-center align-items-center my-4 g-2">
+                  <div class="login-title">Login Now</div>
+                  <div class="login-desc">Please enter your credentials</div>
+                </div>
                 <!-- <h2 class="mb-2 text-center" style="color: #1E89B8;">Login</h2>
                 <p class="mb-2 text-center">Please enter credentials</p> -->
                 <ngb-alert type="light-danger" class="mb-2" *ngIf="isLoginFailed" (close)="isLoginFailed = false">
@@ -18,7 +23,8 @@
                 </ngb-alert>
                 <form [formGroup]="loginForm">
                   <div class="form-group">
-                    <input type="text" formControlName="username" class="form-control" placeholder="Username"
+                    <input type="text" formControlName="username" class="form-control custom-input"
+                      placeholder="Enter your username"
                       [ngClass]="{ 'is-invalid': loginFormSubmitted && lf.username.invalid, 'is-valid': loginFormSubmitted && !lf.username.invalid }"
                       required>
                     <div *ngIf="loginFormSubmitted && (lf.username.invalid || lf.username.errors?.required)"
@@ -26,7 +32,8 @@
                       required</div>
                   </div>
                   <div class="form-group">
-                    <input type="password" formControlName="password" class="form-control" placeholder="Password"
+                    <input type="password" formControlName="password" class="form-control custom-input"
+                      placeholder="Enter your password"
                       [ngClass]="{ 'is-invalid': loginFormSubmitted && lf.password.invalid, 'is-valid': loginFormSubmitted && !lf.password.invalid }"
                       required>
                     <div *ngIf="loginFormSubmitted && (lf.password.invalid || lf.password.errors?.required)"
@@ -42,42 +49,41 @@
                     </div>
                     <a [routerLink]="['/pages/forgotpassword']">Forgot Password?</a>
                   </div> -->
-                
+                  <div class="checkbox d-flex justify-content-between my-3">
+                    <input type="checkbox" formControlName="rememberMe" class="form-control" id="rememberMe"
+                      (change)="rememberMe()">
+                    <label for="rememberMe"><span class="font-small-2 mb-3 font-weight-normal rm"
+                        style="color: #253E88;">Remember me</span></label>
+
+                    <a (click)="forgotpassword()" class="ml-3 fp" [ngClass]="'link'">Forgot password?</a>
+                  </div>
+
                   <div class="d-flex justify-content-between flex-sm-row">
                     <!-- <a [routerLink]="['/pages/register']" class="btn bg-light-primary mb-2 mb-sm-0">Register</a> -->
-                    <a  class="btn btn-primary w-100" (click)="onSubmit()">Login</a>
+                    <a class="btn btn-primary login-btn w-100" (click)="onSubmit()">Login</a>
                   </div>
-                  
+
                   <!-- <div class="d-flex"><a  class="btn btn-primary" (click)="onSubmit()">Login</a></div> -->
-                   <!-- Class"d-""  -->
+                  <!-- Class"d-""  -->
                 </form>
 
-                <div class="checkbox mb-2 mt-2">
-                  <input type="checkbox" formControlName="rememberMe" class="form-control" id="rememberMe"
-                    (change)="rememberMe()">
-                  <label for="rememberMe"><span class="font-small-2 mb-3 font-weight-normal rm"
-                      style="color: #253E88;">Remember me</span></label>
 
-                      <a (click)="forgotpassword()" class="ml-3 fp" [ngClass]="'link'">Forgot password?</a>
-                </div>
-                <div class="or-wrapper text-center">
-                  <div class="horizontal-line"></div>
-                  <div class="horizontal-line"></div>
+                <div class="or-divider">
+                  <span>OR</span>
                 </div>
 
-                <!-- <div class="d-flex flex-sm-row"> -->
-                  <!-- <a [routerLink]="['/pages/register']" class="" style="margin-left: 110px; position: absolute; bottom: -4px;color: black;">Register</a> -->
-                  <!-- <a  class="btn btn-primary mt-1 w-100 align-self-center justify-content-center" (click)="SSO($event)"><i class="ms-logo mr-3"></i><span
-                    class="text-white mt-1" for="">Sign in
-                    with microsoft</span></a>
-                </div> -->
+                <div class="d-flex flex-sm-row">
+                  <a class="btn ms-login-btn btn-primary mt-1 w-100 align-self-center justify-content-center"
+                    (click)="SSO($event)"><i class="ms-logo mr-3"></i><span class="" for="">Login
+                      with Microsoft</span></a>
+                </div>
                 <!-- <button class="btn btn-lg btn-primary-1 mt-2 msbtn" type="button" (click)="SSO($event)"><span
                     class="text-white mb-2" for=""><i class="ms-logo" style="margin-top: -1.3rem; background-color: ;"></i>Sign in
                     with microsoft</span></button> -->
                 <!-- <div class="row">
                   <div class="col-md-12"><button class="btn btn-primary" (click)="onSubmit()">Login</button></div>
                 </div> -->
-                
+
                 <!-- <hr>
                 <div class="d-flex justify-content-between align-items-center">
                   <h6 class="text-primary m-0">Or Login With</h6>
@@ -97,6 +103,6 @@
   </div>
 
 
-  
+
 </section>
 <!--Login Page Ends-->

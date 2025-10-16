@@ -15,7 +15,7 @@
             </div>
 
             <!-- Action Pane -->
-            <div class="card">
+            <div class="card cstm-ui-card">
                 <div class="row">
                     <div class="col-md-6">
                         <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
@@ -24,22 +24,22 @@
                         <span class="vl"></span>
 
                        
-                         <button type="button" class="btn btn-sm" (click)="CreatInvitations()">
+                         <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="CreatInvitations()">
                             <i class="ft-mail"></i>
                             <label class="ml-1 mt-1">Create Invitation</label>
                         </button>
 
-                        <button type="button" class="btn btn-sm" (click)="showAll()">
+                        <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="showAll()">
                             <i class="ft-align-left"></i>
                             <label class="ml-1 mt-1">All</label>
                         </button>
 
-                        <button type="button" class="btn btn-sm" (click)="showInProcess()">
+                        <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="showInProcess()">
                             <i class="ft-share-2"></i>
                             <label class="ml-1 mt-1">InProcess</label>
                         </button>
 
-                        <button type="button" class="btn btn-sm" (click)="showRecall()">
+                        <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="showRecall()">
                             <i class="ft-refresh-ccw"></i>
                             <label class="ml-1 mt-1">Recall</label>
                         </button>
@@ -48,7 +48,7 @@
             </div>
             <!-- Content -->
             <ngx-datatable class="bootstrap core-bootstrap" [rows]="rows" [columnMode]="'force'"
-                [headerHeight]="50" [footerHeight]="50" [columns]="columns" rowHeight="50" [limit]="15"
+                [headerHeight]="50" [footerHeight]="50" [columns]="columns" rowHeight="auto" [limit]="15"
                 [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
                 [selectionType]="SelectionType.checkbox" (sort)="onSort($event)"
                 (select)="customChkboxOnSelect($event)">
@@ -57,13 +57,13 @@
                 <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
                     [resizeable]="false">
                     <ng-template ngx-datatable-header-template>
-                        <div class="custom-control">
+                        <div class="custom-control cstm-checkbox-form">
                             <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
                         </div>
                     </ng-template>
                     <ng-template ngx-datatable-cell-template let-value="value" let-isSelected="isSelected"
                         let-onCheckboxChangeFn="onCheckboxChangeFn">
-                        <div class="custom-control custom-checkbox">
+                        <div class="custom-control custom-checkbox cstm-checkbox-form">
                             <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
                         </div>
                     </ng-template>

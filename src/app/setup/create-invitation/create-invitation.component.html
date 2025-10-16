@@ -3,7 +3,7 @@
 
 
 
-    <div class="card">
+    <div class="card cstm-ui-card">
         <div class="row">
             <div class="col-md-6">
                 <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
@@ -12,12 +12,12 @@
                 <span class="vl"></span>
 
 
-                <button type="button" class="btn btn-sm" (click)="resetForm()">
+                <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="resetForm()">
                     <i class="ft-refresh-ccw"></i>
                     <label class="ml-1 mt-1">Reset</label>
                 </button>
 
-                <button type="button" class="btn btn-sm" (click)="saveInvitation()">
+                <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="saveInvitation()">
                     <i class="ft-save"></i>
                     <label class="ml-1 mt-1">Send</label>
                 </button>
@@ -101,7 +101,7 @@
           <div class="dropdown w-100">
             <button
               type="button"
-              class="form-control dropdown-toggle text-start"
+              class="form-control dropdown-toggle cstm-dropdown text-start"
               (click)="toggleDropdown()"
             >
               {{

@@ -1,15 +1,10 @@
 form label, .form-group label {
-    text-transform: capitalize !important;
     font-size: 0.85rem;
-    font-weight: 500;
+    margin-bottom: 8px;
+    color: #262626 !important;
+    font-weight: 400;
   }
   .example-action-buttons {
     display: flex;
     justify-content: flex-end; /* Move buttons to the right */
   }
-
-  form label, .form-group label {
-    text-transform:none !important;
-    font-size: 0.85rem;
-    font-weight: 500;
-}

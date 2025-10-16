@@ -20,7 +20,7 @@
     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
       <div class="form-group">
         <label for="">Item</label>
-        <select class="form-control" [(ngModel)]="selectedItem" (change)="applyVendorItemFilter()">
+        <select class="form-control  custom-input" [(ngModel)]="selectedItem" (change)="applyVendorItemFilter()">
           <option value="">All Items</option>
           <option *ngFor="let item of vendorComparisonList" [value]="item.itemName">
             {{ item.itemName }} 
@@ -44,7 +44,7 @@
     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
       <div class="form-group">
         <label for="">Vendor</label>
-        <select class="form-control" [(ngModel)]="selectedVendorId" (change)="applyVendorItemFilter()">
+        <select class="form-control  custom-input" [(ngModel)]="selectedVendorId" (change)="applyVendorItemFilter()">
           <option value="">All Vendors</option>
           <option *ngFor="let v of vendors" [value]="v.vendorUserId">
             {{ v.vendorName }}
@@ -57,7 +57,7 @@
     <div class="col-12">
       <div class="form-group">
         <label for="">Description</label>
-        <textarea name="" id="" rows="2" placeholder="Enter Description" class="form-control"></textarea>
+        <textarea name="" id="" rows="2" placeholder="Enter Description" class="form-control  custom-input"></textarea>
       </div>
     </div>
   </div>
@@ -88,10 +88,10 @@
           [headerHeight]="50" [footerHeight]="40" [rowHeight]="60"
           style="border: 1px solid #dee2e6; border-radius: 6px;">
           <!-- <ngx-datatable-column name="Vendor ID" prop="vendorUserId"></ngx-datatable-column> -->
-          <ngx-datatable-column name="Vendor Name" prop="vendorName"></ngx-datatable-column>
-          <ngx-datatable-column name="Amount" prop="biddingAmount"></ngx-datatable-column>
-          <ngx-datatable-column name="Comment" prop="comment"></ngx-datatable-column>
-          <ngx-datatable-column name="Action" [sortable]="false">
+          <ngx-datatable-column [minWidth]="40" name="Vendor Name" prop="vendorName"></ngx-datatable-column>
+          <ngx-datatable-column [minWidth]="20" name="Amount" prop="biddingAmount"></ngx-datatable-column>
+          <ngx-datatable-column [minWidth]="20" name="Comment" prop="comment"></ngx-datatable-column>
+          <ngx-datatable-column [minWidth]="10" name="Action" [sortable]="false">
             <ng-template ngx-datatable-cell-template let-row="row">
               <button class="btn btn-sm mr-1" (click)="printVendor(row)">
                 <i class="ft-printer"></i>

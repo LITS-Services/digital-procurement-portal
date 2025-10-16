@@ -3,19 +3,30 @@
   color: #F55252  !important;
   border-color: #FEEFD0;
 }
-#login {
-  height: 100vh;
+#login{
+  position: relative;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: 
-    url('/assets/img/login-background.webp') left center / cover no-repeat,
-    white;
-    // url('/assets/img/login-right-img.png') right center / cover no-repeat;
-  // background-color: white; /* Fallback for no image */
-  background-size: 50% 100%; /* Ensures each image covers half the screen */
+  background: #F1F1F1;            /* right side stays clean/white */
+  overflow: hidden;
+}
+
+/* LEFT HALF: photo + blue transparent gradient */
+#login::before{
+  content: "";
+  position: absolute;
+  left: 0; top: 0;
+  width: 50%;                  /* left half only */
+  height: 100%;
+  background-image:
+    linear-gradient(168deg, rgba(17,106,239,.70) -20%, rgba(17,76,122,.70) 95%),
+    url('/assets/img/login-background-nocolor.jpg');
+  background-size: cover;      /* no stretch; crop instead */
+  background-position: left center;
   background-repeat: no-repeat;
-  position: relative;
+  z-index: 0;
 }
 .ms-logo{
   background-image: url('/assets/img/icons/ms-icon.png');
@@ -52,14 +63,38 @@
   align-items: center;
 }
 
+.custom-input {
+  height: 48px;
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid #E3EDF4;
+  border-radius: 10px;
+  background-color: #FFFCF7; /* soft off-white */
+  color: #2B2F33;
+  font-size: 15px;
+  transition: none !important;
+}
+
+#login .custom-input::placeholder {
+  color: #98A6B3;
+  opacity: 1;
+}
+
+#login .custom-input:focus {
+  outline: none;
+  border-color: #8DB9FF;
+  background-color: #FFFEFC;
+  box-shadow: 0 0 0 4px rgba(17,106,239,0.12);
+}
 .card {
   width: 100%;
   padding: 25px;
-  width: 400px; /* Adjust this width as needed */
+  width: 600px; /* Adjust this width as needed */
   margin: 0 auto;
   background: #E8F3F8; /* Slight transparency to show the background */
   border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid #D7D7D7 !important;
+  // box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 // @media screen and (max-width: 992px) {
@@ -107,4 +142,63 @@
   .card {
     background: white;
   }
+}
+
+.login-title{
+  font-size: 20px;
+  font-weight: 600;
+  color:#181818;
+}
+.login-desc{
+  color:#606060;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.login-btn{
+  background: linear-gradient(168deg, #116AEF 0%, #114C7A 100%);
+  padding: 16px 0px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.or-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  margin: 1.2rem 0;
+  color: #707070;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.or-divider::before,
+.or-divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #d9d9d9;
+}
+
+.or-divider:not(:empty)::before {
+  margin-right: 0.75em;
+}
+.or-divider:not(:empty)::after {
+  margin-left: 0.75em;
+}
+
+
+.ms-login-btn{
+  color: #2979F1 !important;
+  font-weight: 400 !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #F9FBFF;
+  border: 1.5px solid #2F80ED;
+    padding: 8px 0px !important;
+  border-radius: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }

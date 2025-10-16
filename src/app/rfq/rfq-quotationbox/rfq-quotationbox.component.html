@@ -29,7 +29,7 @@
         <hr>
 
         <ngx-datatable class="bootstrap core-bootstrap" [rows]="rfqData" [columnMode]="'flex'" [headerHeight]="50"
-            [footerHeight]="50" [columns]="columns" rowHeight="50" [limit]="5" [scrollbarH]="true"
+            [footerHeight]="50" [columns]="columns" rowHeight="auto" [limit]="5" [scrollbarH]="true"
             [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
             [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 
@@ -62,12 +62,12 @@
             <div class="row">
                 <div class="col-md-6 form-group">
                     <label>RFQ No.</label>
-                    <input type="text" formControlName="rfqNo" disabled class="form-control"
+                    <input type="text" formControlName="rfqNo" disabled class="form-control custom-input"
                         >
                 </div>
                 <div class="col-md-6 form-group">
                     <label>PR No.</label>
-                    <input type="text" formControlName="purchaseRequestNo" disabled class="form-control"
+                    <input type="text" formControlName="purchaseRequestNo" disabled class="form-control custom-input"
                         >
                 </div>
 
@@ -77,7 +77,7 @@
                 </div> -->
                 <div class="col-md-6 form-group">
                     <label>RFQ Date</label>
-                    <input type="date" formControlName="date" disabled class="form-control">
+                    <input type="date" formControlName="date" disabled class="form-control  custom-input">
                 </div>
 
                 <!-- <div class="col-md-6 form-group">
@@ -86,30 +86,30 @@
                 </div> -->
                 <div class="col-md-6 form-group">
                     <label>RFQ Owner</label>
-                    <input type="text" formControlName="owner" disabled class="form-control" placeholder="115">
+                    <input type="text" formControlName="owner" disabled class="form-control  custom-input" placeholder="115">
                 </div>
 
                 <div class="col-md-6 form-group">
                     <label>RFQ Title</label>
-                    <input type="text" formControlName="title" disabled class="form-control">
+                    <input type="text" formControlName="title" disabled class="form-control  custom-input">
                 </div>
 
                 <div class="col-md-6 form-group">
                     <label>RFQ Status</label>
-                    <input type="text" formControlName="requestStatus" disabled class="form-control">
+                    <input type="text" formControlName="requestStatus" disabled class="form-control  custom-input">
 
                 </div>
 
                 <div class="col-md-12 form-group">
                     <label>Comment</label>
                     <!-- <input type="text" formControlName="date" disabled  class="form-control" placeholder="Please enter your comment/remark"> -->
-                    <textarea type="text" formControlName="comment" class="form-control"></textarea>
+                    <textarea type="text" formControlName="comment" class="form-control  custom-input"></textarea>
                 </div>
             </div>
         </form>
 
         <ngx-datatable class="bootstrap core-bootstrap" [rows]="itemsData" [columnMode]="'force'" [headerHeight]="50"
-            [footerHeight]="50" [columns]="columns" rowHeight="50" [limit]="5" [scrollbarH]="true"
+            [footerHeight]="50" [columns]="columns" rowHeight="auto" [limit]="5" [scrollbarH]="true"
             [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
             [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 

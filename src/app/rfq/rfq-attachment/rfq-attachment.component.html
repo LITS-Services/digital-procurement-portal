@@ -47,14 +47,17 @@
           <ngx-datatable-column name="Actions" [width]="100">
             <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex">
 
-              <a matTooltip="Download File" style="cursor: pointer; color: #d1d4d7; margin-right: 10px;"
+              <a matTooltip="Download File"
+              class="row-action-edit"
+              style="margin-right: 10px;"
                 (click)="downloadLocalFile(uploadedFiles[rowIndex])"
                 [ngClass]="{'disabled': viewMode || uploadedFiles[rowIndex]?.isNew}">
                 <i style="font-size: 1.5rem;" class="ft-download"></i>
               </a>
 
-              <a *ngIf="!viewMode" matTooltip="Upload File" style="cursor: pointer; color: #d1d4d7;" [disabled]="viewMode"
-                (click)="deleteRow(rowIndex)" [ngClass]="{'disabled': actionType === 'View'}">
+              <a *ngIf="!viewMode" matTooltip="Upload File"
+               class="row-action-delete"
+                (click)="deleteRow(rowIndex)" [ngClass]="{'disabled': viewMode || uploadedFiles[rowIndex]?.isNew}">
                 <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
               </a>
 

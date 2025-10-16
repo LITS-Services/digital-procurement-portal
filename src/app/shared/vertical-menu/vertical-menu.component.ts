@@ -23,8 +23,8 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('toggleIcon') toggleIcon: ElementRef;
   public menuItems: any[];
   level: number = 0;
-  logoUrl: string = 'assets/img/icons/30px.png';
-  expandedLogoUrl: string = 'assets/img/logos/60px.png';
+  logoUrl: string = 'assets/img/logos/mini-logo.svg';
+  expandedLogoUrl: string = 'assets/img/logos/Logo.svg';
   currentLogoUrl: string = this.logoUrl;
   public config: any = {};
   protected innerWidth: any;
@@ -90,11 +90,11 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     if (this.config.layout.sidebar.backgroundColor === 'white') {
-      this.logoUrl = 'assets/img/icons/30px.png';
-      this.expandedLogoUrl = 'assets/img/logos/60px.png';
+      this.logoUrl = 'assets/img/logos/mini-logo.svg';
+      this.expandedLogoUrl = 'assets/img/img/logos/Logo.svg';
     } else {
-      this.logoUrl = 'assets/img/icons/30px.png';
-      this.expandedLogoUrl = 'assets/img/logos/60px.png';
+      this.logoUrl = 'assets/img/logos/mini-logo.svg';
+      this.expandedLogoUrl = 'assets/img/logos/Logo.svg';
     }
 
     this.updateLogo();

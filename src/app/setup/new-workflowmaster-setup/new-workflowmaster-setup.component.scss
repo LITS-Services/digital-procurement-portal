@@ -1,0 +1,91 @@
+::ng-deep .ng-select.custom-style .ng-select-container {
+  height: 48px;
+  width: 100%;
+  padding: 12px 6px;
+  border: 1.5px solid #D7D7D7;
+  border-radius: 10px;
+  color: #2B2F33;
+  font-size: 15px;
+  transition: all 0.25s ease;
+  background-color: white;
+  background-position: right 4px center;
+  background-repeat: no-repeat;
+  background-origin: content-box;
+}
+
+::ng-deep .ng-select.custom-style.ng-select-multiple 
+  .ng-select-container 
+  .ng-value-container 
+  .ng-placeholder {
+  padding-top: 8px;
+}
+
+
+.ngx-datatable ::ng-deep .datatable-header-inner{
+  background-color: #4188F2 !important;
+  border-radius: 10px;
+}
+.ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
+.ngx-datatable ::ng-deep .datatable-header-inner .sort-btn{
+  color: white !important;
+}
+
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-row.datatable-row-even {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+// .ngx-datatable.bootstrap .datatable-body .datatable-body-row {
+//   padding: 0.75rem;
+//   vertical-align: middle;
+//   border-top: 1px solid #1E89B8;
+// }
+
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-row .datatable-body-cell {
+  text-align: left;
+  padding: 0.75rem;
+  vertical-align:baseline;
+  
+}
+
+.datatable-body-cell {
+    padding: 0.30rem !important;
+    text-align: left !important;
+    vertical-align: top !important;
+    line-height: 20px !important;
+  }
+
+  ::ng-deep .ngx-datatable{
+  .sortable .sort-btn:before {
+      // font-family: data-table;
+      // content: "c";
+      display: none !important;
+  }
+  .sortable .sort-btn.datatable-icon-down:before {
+      // content: "f";
+      display: none !important;
+
+  }
+  .sortable .sort-btn.datatable-icon-up:before {
+      // content: "e";
+      display: none !important;
+  }
+}
+
+form label, .form-group label {
+     font-size: 0.85rem;
+    margin-bottom: 8px;
+    color: #262626 !important;
+    font-weight: 400;
+  }
+  .example-action-buttons {
+    display: flex;
+    justify-content: flex-end; /* Move buttons to the right */
+  }
+
+
+.vl {
+    border-left: 1.4px solid #cccccc;
+    height: 100%;
+    position: absolute;
+    margin-left: -3px;
+  }

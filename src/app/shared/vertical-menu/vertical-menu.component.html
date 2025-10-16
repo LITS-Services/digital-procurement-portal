@@ -4,17 +4,21 @@
     <a [routerLink]="['/dashboard/dashboard1']" class="logo-text float-left">
       <div class="logo-img">
         <!-- <img [src]="logoUrl" alt="vcp logo"/> -->
-        <img [src]="currentLogoUrl"/>
+        <img
+          [ngStyle]="{
+      width: collapseSidebar ? '36px' : 'auto',
+      transition: 'width 0.3s ease'
+    }"
+        [src]="collapseSidebar ? currentLogoUrl : expandedLogoUrl"/>
       </div>
       <!-- <span class="text align-middle">VCP</span> -->
     </a>
-    <a class="nav-toggle d-none d-lg-none d-xl-block" id="sidebarToggle" href="javascript:;"
-      (click)="toggleSidebar()">
-      <i #toggleIcon [ngClass]="{
-        'ft-toggle-left': config.layout.sidebar.collapsed,
-        'ft-toggle-right': !config.layout.sidebar.collapsed
-      }" class="toggle-icon"></i>
-    </a>
+  <a class="nav-toggle d-none d-lg-none d-xl-block" id="sidebarToggle" href="javascript:;" (click)="toggleSidebar()">
+  <i #toggleIcon [ngClass]="{
+    'ft-chevron-right': config.layout.sidebar.collapsed,
+    'ft-chevron-left': !config.layout.sidebar.collapsed
+  }" class="toggle-icon"></i>
+</a>
     <a class="nav-close d-block d-lg-block d-xl-none" id="sidebarClose" href="javascript:;" (click)="CloseSidebar()">
       <i class="ft-x"></i>
     </a>
@@ -23,7 +27,7 @@
 <!-- Sidebar Header Ends -->
 
 <!-- Sidebar Content starts -->
-<div class="sidebar-content main-menu-content" [perfectScrollbar]  [disabled]="!perfectScrollbarEnable">
+<div class="sidebar-content main-menu-content" [class.collapsed]="config.layout.sidebar.collapsed" [perfectScrollbar]  [disabled]="!perfectScrollbarEnable">
   <div class="nav-container">
     <ul class="navigation" appSidebarDropdown>
       <!-- First level menu -->

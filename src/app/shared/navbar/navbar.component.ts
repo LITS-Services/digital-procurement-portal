@@ -74,15 +74,18 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           if (res) {
             this.username = res.fullName || this.authService.getUserName();
             this.profilePicture = res.profilePicture || "assets/img/profile/user.png";
+            this.cdr.detectChanges();
           }
         },
         error: () => {
           this.username = this.authService.getUserName();
           this.profilePicture = "assets/img/profile/user.png";
+          this.cdr.detectChanges();
         }
       });
     } else {
       this.username = this.authService.getUserName();
+      this.cdr.detectChanges();
     }
   }
 

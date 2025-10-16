@@ -16,11 +16,9 @@
   }
   .vl {
       border-left: 1.4px solid #cccccc;
-      height: 36px;
+      height: 100%;
       position: absolute;
       margin-left: -3px;
-      top: 3px;
-      bottom: 3px;
     }
     .heading{
       color: #1E89B8;
@@ -31,8 +29,7 @@
   
     
   .ngx-datatable ::ng-deep .datatable-header-inner{
-    background-color: #1E89B8 !important;
-    padding: 0.5rem;
+     background-color: #4188F2 !important;
   // border-radius: 10px;
   }
   .ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,

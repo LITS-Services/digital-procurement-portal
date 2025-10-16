@@ -10,7 +10,7 @@
       </div>
 
       <!-- Action Pane -->
-      <div class="card">
+      <div class="card cstm-ui-card">
         <div class="row">
           <div class="col-md-6">
             <!-- Back Button -->
@@ -20,12 +20,12 @@
             <span class="vl"></span>
 
             <!-- Edit Button (Top) -->
-            <button type="button" class="btn btn-sm" [disabled]="isEditButtonDisabled"
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
               (click)="editSelectedRow()">
               <i class="ft-edit"></i>
               <label class="ml-1 mt-1">Edit User</label>
             </button>
-            <button type="button" class="btn btn-sm" (click)="registerUser()">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="registerUser()">
   <i class="ft-user-plus"></i>
   <label class="ml-1 mt-1">Register User</label>
 </button>
@@ -40,7 +40,7 @@
         [headerHeight]="50"
         [footerHeight]="50"
         [columns]="columns"
-        rowHeight="50"
+        [rowHeight]="'auto'"
         [limit]="15"
         [scrollbarH]="true"
         [loadingIndicator]="loading"

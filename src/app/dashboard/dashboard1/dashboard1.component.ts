@@ -310,54 +310,74 @@ loadPurchaseRequestsCounts(): void {
   // Line area chart 2 configuration Ends
 
   // Line chart configuration Starts
-  lineChart: Chart = {
-    type: 'Line', data: data['LineDashboard'],
-    options: {
-      axisX: {
-        showGrid: false
-      },
-      axisY: {
-        showGrid: false,
-        showLabel: false,
-        low: 0,
-        high: 100,
-        offset: 0,
-      },
-      plugins: [
-        ChartistTooltip({
-          appendToBody: true,
-          currency: '$',
-          pointClass: 'ct-point-circle'
-        })
-      ],
-      fullWidth: true,
-      offset: 0,
+lineChart: Chart = {
+  type: 'Line',
+  data: {
+    labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'],
+    series: [
+      [5000, 6000, 1500, 500, 4000, 2000, 3000, 4000]
+    ]
+  },
+  options: {
+    fullWidth: true,
+    low: 0,
+    showArea: true,                                    // ← important
+    lineSmooth: Chartist.Interpolation.cardinal({ tension: 0.3 }),
+    axisX: { showGrid: false },
+    axisY: {
+      offset: 40,
+      labelInterpolationFnc: (v: number) => v >= 1000 ? `${Math.round(v/1000)}k` : v
     },
-    events: {
-      draw(data: any): void {
-        var circleRadius = 4;
-        if (data.type === 'point') {
-          var circle = new Chartist.Svg('circle', {
-            cx: data.x,
-            cy: data.y,
-            r: circleRadius,
-            'ct:value': data.value.y,
-            'ct:meta': data.meta,
-            style: 'pointer-events: all !important',
-            class: 'ct-point-circle'
-          });
+    plugins: [
+      ChartistTooltip({
+        appendToBody: true,
+        pointClass: 'ct-point-circle',
+        transformTooltipTextFnc: (val: string) =>
+          new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
+            .format(Number(val))
+      })
+    ]
+  },
+  events: {
+    created(ctx: any): void {
+      const defs = ctx.svg.elem('defs');
 
-          data.element.replace(circle);
-        }
-        else if (data.type === 'label') {
-          // adjust label position for rotation
-          const dX = data.width / 2 + (30 - data.width)
-          data.element.attr({ x: data.element.attr('x') - dX })
-        }
+      // line color (solid blue)
+      defs.elem('linearGradient', {
+        id: 'sbLine',
+        x1: 0, y1: 1, x2: 1, y2: 0
+      }).elem('stop', { offset: 0, 'stop-color': '#116aef' })
+        .parent().elem('stop', { offset: 1, 'stop-color': '#116aef' });
+
+      // area gradient (blue → transparent)
+      defs.elem('linearGradient', {
+        id: 'sbArea',
+        x1: 0, y1: 0, x2: 0, y2: 1
+      }).elem('stop', { offset: 0, 'stop-color': '#116aef', 'stop-opacity': 0.35 })
+        .parent().elem('stop', { offset: 1, 'stop-color': '#116aef', 'stop-opacity': 0.02 });
+    },
+
+    draw(data: any): void {
+      if (data.type === 'line') {
+        data.element.attr({ style: 'stroke: url(#sbLine); stroke-width: 3px; fill: none;' });
       }
-    },
-
-  };
+      if (data.type === 'area') {
+        // ensure the area is visible and uses our gradient
+        data.element.attr({ style: 'fill: url(#sbArea); opacity: 1;' });
+      }
+      if (data.type === 'point') {
+        // styled dot so tooltip has a target
+        const circle = new Chartist.Svg('circle', {
+          cx: data.x, cy: data.y, r: 5,
+          class: 'ct-point-circle',
+          'ct:value': data.value.y, 'ct:meta': data.meta,
+          style: 'pointer-events: all; fill:#116aef; stroke:#fff; stroke-width:2px;'
+        });
+        data.element.replace(circle);
+      }
+    }
+  }
+};
   // Line chart configuration Ends
 
   // Donut chart configuration Starts

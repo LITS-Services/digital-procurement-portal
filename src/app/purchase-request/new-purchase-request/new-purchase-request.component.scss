@@ -1,18 +1,14 @@
 form label, .form-group label {
-    text-transform: capitalize !important;
     font-size: 0.85rem;
-    font-weight: 500;
+    margin-bottom: 8px;
+    color: #262626 !important;
+    font-weight: 400;
   }
   .example-action-buttons {
     display: flex;
     justify-content: flex-end; /* Move buttons to the right */
   }
 
-  form label, .form-group label {
-    text-transform:none !important;
-    font-size: 0.85rem;
-    font-weight: 500;
-}
 .trash-icon {
   // transition: transform 0.3s ease, color 0.3s ease;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
@@ -69,6 +65,9 @@ form label, .form-group label {
 
 
 
+   ::ng-deep ngb-accordion .card-body {
+      padding: 1.5rem 0px !important;
+    }
 
 ::ng-deep .ngx-datatable{
   .sortable .sort-btn:before {
@@ -113,21 +112,20 @@ form label, .form-group label {
  }
  a.disabled {
   cursor: not-allowed;
-  color: #d1d4d7;
+  color: #d1d4d7 !important;
   pointer-events: none; /* Prevents click interactions */
 }
 
 .card-accordion{
-    background-color: #e8f3f8;
+    background-color: #E7F0FD;
     padding: 1rem;
     border-radius: 0.5rem;
     
 }
 
 .ngx-datatable ::ng-deep .datatable-header-inner{
-  background-color: #1E89B8 !important;
-  padding: 0.5rem;
-border-radius: 10px;
+  background-color: #4188F2 !important;
+  border-radius: 10px;
 }
 .ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
 .ngx-datatable ::ng-deep .datatable-header-inner .sort-btn{
@@ -168,3 +166,10 @@ border-radius: 10px;
   padding: 5px !important;
   border-radius: 50% !important;
 }
+
+.vl {
+    border-left: 1.4px solid #cccccc;
+    height: 100%;
+    position: absolute;
+    margin-left: -3px;
+  }

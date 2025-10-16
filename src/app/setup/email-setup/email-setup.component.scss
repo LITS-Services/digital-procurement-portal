@@ -14,53 +14,46 @@
         display: none !important;
     }
   }
-  .vl {
-      border-left: 1.4px solid #cccccc;
-      height: 36px;
-      position: absolute;
-      margin-left: -3px;
-      top: 3px;
-      bottom: 3px;
-    }
-    .heading{
-      color: #1E89B8;
-      margin-top: 1rem;
-      margin-bottom: -0.5rem;
-      font-weight: 700;
-    }
-  
-    
-  .ngx-datatable ::ng-deep .datatable-header-inner{
-    background-color: #1E89B8 !important;
-    padding: 0.5rem;
-  // border-radius: 10px;
-  }
-  .ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
-  .ngx-datatable ::ng-deep .datatable-header-inner .sort-btn{
-    color: white !important;
-  
-  }
 
-  .ngx-datatable.bootstrap .datatable-footer {
-    background: #424242 !important;
-    color: #1E89B8;
-    margin-top: -1px;
-}
+    // .heading{
+    //   color: #1E89B8;
+    //   margin-top: 1rem;
+    //   margin-bottom: -0.5rem;
+    //   font-weight: 700;
+    // }
   
-  .ngx-datatable ::ng-deep .datatable-body .datatable-body-row.datatable-row-even {
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-  
-  // .ngx-datatable.bootstrap .datatable-body .datatable-body-row {
-  //   padding: 0.75rem;
-  //   vertical-align: middle;
-  //   border-top: 1px solid #1E89B8;
-  // }
-  
-  .ngx-datatable ::ng-deep .datatable-body .datatable-body-row .datatable-body-cell {
-    text-align: left;
-    padding: 0.75rem;
-    vertical-align:baseline;
     
-  }
+//   .ngx-datatable ::ng-deep .datatable-header-inner{
+//     background-color: #1E89B8 !important;
+//     padding: 0.5rem;
+//   // border-radius: 10px;
+//   }
+//   .ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
+//   .ngx-datatable ::ng-deep .datatable-header-inner .sort-btn{
+//     color: white !important;
+  
+//   }
+
+//   .ngx-datatable.bootstrap .datatable-footer {
+//     background: #424242 !important;
+//     color: #1E89B8;
+//     margin-top: -1px;
+// }
+  
+//   .ngx-datatable ::ng-deep .datatable-body .datatable-body-row.datatable-row-even {
+//     background-color: rgba(0, 0, 0, 0.05);
+//   }
+  
+//   // .ngx-datatable.bootstrap .datatable-body .datatable-body-row {
+//   //   padding: 0.75rem;
+//   //   vertical-align: middle;
+//   //   border-top: 1px solid #1E89B8;
+//   // }
+  
+//   .ngx-datatable ::ng-deep .datatable-body .datatable-body-row .datatable-body-cell {
+//     text-align: left;
+//     padding: 0.75rem;
+//     vertical-align:baseline;
+    
+//   }
   

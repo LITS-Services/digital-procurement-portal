@@ -141,15 +141,15 @@ body {
       top: 0;
       width: 100%;
       height: 100%;
-      border-right: solid 5px map-get($danger-color, base);
-      background: rgba(map-get($grey-color, lighten-2), 0.2);
+      // border-right: solid 5px map-get($danger-color, base);
+      // background: rgba(map-get($grey-color, lighten-2), 0.2);
       transition: 0.35s ease left;
     }
 
     &.sidebar-group-active {
       &:not(.open) {
-        border-right: solid 5px map-get($danger-color, base);
-        background: rgba(map-get($grey-color, lighten-2), 0.2);
+        // border-right: solid 5px map-get($danger-color, base);
+         background: rgba(map-get($grey-color, lighten-2), 0.2);
       }
     }
   }
@@ -169,8 +169,8 @@ body {
         top: 0;
         width: 100%;
         height: 100%;
-        border-right: solid 5px map-get($danger-color, base);
-        background: rgba(map-get($grey-color, lighten-2), 0.2);
+        // border-right: solid 5px map-get($danger-color, base);
+        // background: rgba(map-get($grey-color, lighten-2), 0.2);
         transition: 0.35s ease left;
       }
     }
@@ -252,10 +252,10 @@ body {
         >a:after {
           content: "\e844";
           font-family: "feather";
-          font-size: 1rem;
+          font-size: 1.2rem;
           display: inline-block;
           position: absolute;
-          right: 15px;
+          right: 26px;
           top: 10px;
           -webkit-transform: rotate(0);
           -moz-transform: rotate(0);
@@ -280,7 +280,8 @@ body {
         }
 
         >a {
-          background: rgba(map-get($grey-color, lighten-2), 0.2);
+                   background: rgba(map-get($grey-color, lighten-2), 0.2);
+
         }
       }
 
@@ -288,8 +289,8 @@ body {
         display: block;
         overflow: hidden;
         line-height: $font-size-base * 2;
-        padding: 10px 30px 10px 14px;
-        margin: 5px 0;
+        margin: 0px 8px 6px 8px !important;
+       padding: 10px 0px 10px 8px;
         background-color: transparent;
         color: $white;
         transition: all 300ms linear;
@@ -307,7 +308,16 @@ body {
       &:hover,
       &.active {
         >a {
-          background: rgba(map-get($grey-color, lighten-2), 0.2);
+          background: white;
+          border-radius: 10px;
+          color: #116AEF !important;
+          font-weight: 500;
+        }
+      }
+
+      &.active {
+        .menu-title{
+          font-weight: 500 !important;
         }
       }
 
@@ -336,13 +346,18 @@ body {
 
     .menu-title {
       margin: 0;
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: $font-weight-normal;
       letter-spacing: 0.6px;
       opacity: 1;
       height: auto;
       -webkit-transition: all 0.3s cubic-bezier(0, 0, 0.2, 1);
       transition: all 0.3s cubic-bezier(0, 0, 0.2, 1);
+    }
+
+
+    .app-sidebar .navigation li.active > a > .menu-title {
+      font-weight: 800;
     }
 
     .badge.badge-pill {
@@ -460,7 +475,7 @@ body {
   }
 
   &[data-background-color="info"] {
-    @include set-background-color(#1E89B8);
+   background-image: linear-gradient(175deg, #116aef -24%, #114c7a 99%);
   }
 
   &[data-background-color="success"] {
@@ -512,6 +527,7 @@ body {
   }
 }
 
+
 .sidenav-overlay {
   position: fixed;
   top: 0;
@@ -536,13 +552,14 @@ body {
   a.nav-toggle {
     display: inline-block;
     position: absolute;
-    width: 20px;
-    height: 20px;
+    width: 32px;
+    height: 32px;
     line-height: 20px;
+    font-size: 22px;
     text-align: center;
     right: 14px;
     top: 25px;
-    color: rgba($white, 0.55);
+    color: white;
   }
 
   a.nav-close {

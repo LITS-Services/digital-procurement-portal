@@ -12,18 +12,18 @@
       </div>
 
       <!-- Action Pane -->
-      <div class="card">
+      <div class="card cstm-ui-card">
         <div class="row">
           <div class="col-md-6">
-            <button class="btn btn-lg mr-1" type="button" (click)="homePage()"><i class="ft-arrow-left"></i></button>
+            <button class="btn btn-lg cstm-ui-table-btn mr-1" type="button" (click)="homePage()"><i class="ft-arrow-left"></i></button>
             <span class="vl"></span>
-            <button type="submit" class="btn btn-sm" [disabled]="workflowsetupform.invalid" *ngIf="mode !== 'Edit'" (click)="submitForm()">
+            <button type="submit" class="btn btn-sm cstm-ui-table-btn" [disabled]="workflowsetupform.invalid" *ngIf="mode !== 'Edit'" (click)="submitForm()">
               <i class="ft-plus"></i><label class="ml-1 mt-1">Save</label>
             </button>
-            <button [disabled]="mode !== 'Edit'" type="reset" class="btn btn-sm" (click)="updateForm()">
+            <button [disabled]="mode !== 'Edit'" type="reset" class="btn btn-sm cstm-ui-table-btn" (click)="updateForm()">
               <i class="ft-edit"></i><label class="ml-1 mt-1">{{ mode === 'Edit' ? 'Update' : 'Edit' }}</label>
             </button>
-            <button [disabled]="mode !== 'Edit'" type="reset" class="btn btn-sm">
+            <button [disabled]="mode !== 'Edit'" type="reset" class="btn btn-sm cstm-ui-table-btn">
               <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
             </button>
           </div>
@@ -38,12 +38,12 @@
               <!-- Basic Fields -->
               <div class="col-lg-4 mb-2">
                 <label>Workflow Name</label>
-                <input type="text" class="form-control" formControlName="workflowName" placeholder="Workflow Name" required>
+                <input type="text" class="form-control custom-input" formControlName="workflowName" placeholder="Workflow Name" required>
               </div>
 
               <div class="col-lg-4 mb-2">
                 <label>Document Type</label>
-                <select class="form-control" formControlName="documentType">
+                <select class="form-control custom-input" formControlName="documentType">
                   <option value="" disabled>Select Type</option>
                   <option *ngFor="let wf of workflowTypes" [value]="wf.id">{{ wf.typeName }}</option>
                 </select>
@@ -54,7 +54,7 @@
   <div class="form-group mb-2">
     <label>Workflow Initiator(s)</label>
     <ng-select 
-      [items]="usersList" 
+      class="custom-style" [items]="usersList" 
       bindLabel="userName" 
       bindValue="id" 
       [multiple]="true"
@@ -108,10 +108,10 @@
 
                   <div class="col-12 mt-4"><hr></div>
 
-                        <div class="col-lg-5 col-md-5 col-sm-5 col-xs-6">
+                        <div class="col-lg-6 col-md-5 col-sm-5 col-xs-6">
                           <div class="form-group mb-2">
                             <label>Approver</label>
-                            <select class="form-control" formControlName="approverList">
+                            <select class="form-control custom-input" formControlName="approverList">
                               <option value="" disabled>Select Approver</option>
                               <option *ngFor="let approver of approverList" [value]="approver.id">{{ approver.userName }}</option>
                             </select>
@@ -122,7 +122,7 @@
                 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
   <div class="form-group mb-2">
     <label>Amount From</label>
-    <input type="number" placeholder="Enter Amount" class="form-control" formControlName="amountFrom"
+    <input type="number" placeholder="Enter Amount" class="form-control custom-input" formControlName="amountFrom"
       [disabled]="hideConditionalFields" />
   </div>
 </div>
@@ -130,7 +130,7 @@
 <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6">
   <div class="form-group mb-2">
     <label>Amount To</label>
-    <input type="number" placeholder="Enter Amount" class="form-control" formControlName="amountTo"
+    <input type="number" placeholder="Enter Amount" class="form-control custom-input" formControlName="amountTo"
       [disabled]="hideConditionalFields" />
   </div>
 </div>
@@ -138,7 +138,7 @@
                     <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6">
                       <div class="form-group mb-2">
                         <label>Approver Level</label>
-                        <input type="number" placeholder="Enter Level" class="form-control" formControlName="approverLevel" />
+                        <input type="number" placeholder="Enter Level" class="form-control custom-input" formControlName="approverLevel" />
                       </div>
                     </div>
 
@@ -185,12 +185,10 @@
               </ng-template>
             </ngb-panel>
           </ngb-accordion>
-
-          <!-- Approver Table -->
-          <div class="col-12 mt-2">
+          <div class="col-12">
             <div style="position: relative;">
               <ngx-datatable class="bootstrap core-bootstrap" [rows]="newApproverData" [columnMode]="'force'"
-                [headerHeight]="50" [footerHeight]="50" rowHeight="50" [limit]="5" [scrollbarH]="true">
+                [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
                 <ngx-datatable-column name="Sr. No." [width]="50">
                   <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
                     <span>{{rowIndex + 1}}</span>

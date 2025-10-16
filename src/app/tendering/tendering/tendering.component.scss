@@ -17,11 +17,10 @@
   }
   .vl {
       border-left: 1.4px solid #cccccc;
-      height: 36px;
+      height: 100%;
       position: absolute;
       margin-left: -3px;
-      top: 3px;
-      bottom: 3px;
+
     }
     .heading{
       color: #1E89B8;
@@ -32,8 +31,7 @@
   
     
   .ngx-datatable ::ng-deep .datatable-header-inner{
-    background-color: #1E89B8 !important;
-    padding: 0.5rem 0rem !important;
+     background-color: #4188F2 !important;
   // border-radius: 10px;
   }
   .ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
@@ -48,9 +46,6 @@
     margin-top: -1px;
 }
   
-  .ngx-datatable ::ng-deep .datatable-body .datatable-body-row.datatable-row-even {
-    background-color: rgba(0, 0, 0, 0.05);
-  }
   
   // .ngx-datatable.bootstrap .datatable-body .datatable-body-row {
   //   padding: 0.75rem;
@@ -60,7 +55,6 @@
   
   .ngx-datatable ::ng-deep .datatable-body .datatable-body-row .datatable-body-cell {
     text-align: left;
-    padding: 0.75rem;
     vertical-align:baseline;
     
   }

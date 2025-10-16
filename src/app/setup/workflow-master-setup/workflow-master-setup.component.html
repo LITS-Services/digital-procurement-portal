@@ -10,20 +10,20 @@
       </div>
 
       <!-- Action Pane -->
-      <div class="card mb-2 p-2">
+      <div class="card cstm-ui-card">
         <div class="row">
           <div class="col-md-6">
             <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
               <i class="ft-arrow-left"></i>
             </button>
             <span class="vl"></span>
-            <button type="button" class="btn btn-sm" ngbTooltip="Create new workflow" (click)="setupnewWorkflow()">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new workflow" (click)="setupnewWorkflow()">
               <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
             </button>
-            <button type="button" class="btn btn-sm" (click)="onUpdate()">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()">
               <i class="ft-edit"></i><label class="ml-1 mt-1">Edit</label>
             </button>
-            <button type="button" class="btn btn-sm" (click)="openDeleteModal(deleteModal)">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal(deleteModal)">
               <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
             </button>
           </div>
@@ -40,11 +40,15 @@
         <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
           [resizeable]="false">
           <ng-template ngx-datatable-header-template>
+             <div class="custom-control cstm-checkbox-form">
             <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
+            </div>
           </ng-template>
           <ng-template ngx-datatable-cell-template let-isSelected="isSelected"
             let-onCheckboxChangeFn="onCheckboxChangeFn">
+            <div class="custom-control cstm-checkbox-form custom-checkbox ">
             <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+            </div>
           </ng-template>
         </ngx-datatable-column>
 
@@ -56,9 +60,9 @@
         </ngx-datatable-column>
 
         <!-- Request Info -->
-        <ngx-datatable-column name="Name" prop="workflowName" [width]="100"></ngx-datatable-column>
-        <ngx-datatable-column name="Document" prop="workflowType" [width]="100"></ngx-datatable-column>
-        <ngx-datatable-column name="Status" prop="isActive" [width]="100">
+        <ngx-datatable-column name="Name" prop="workflowName"></ngx-datatable-column>
+        <ngx-datatable-column name="Document" prop="workflowType"></ngx-datatable-column>
+        <ngx-datatable-column name="Status" prop="isActive">
           <ng-template ngx-datatable-cell-template let-row="row">
             <span>
               {{ row.isActive ? 'Active' : 'In Active' }}
@@ -66,7 +70,7 @@
           </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="Approver" prop="createdDate" [width]="100">
+        <ngx-datatable-column name="Approver" prop="createdDate">
           <ng-template let-row="row" ngx-datatable-cell-template>
             <button class="btn btn-primary btn-sm position-relative" (click)="openApproverModal(row)">
               <i class="ft-user-check"></i>
