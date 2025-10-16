@@ -3,6 +3,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { RfqService } from '../rfq.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-rfq-vendor-modal',
@@ -26,7 +27,8 @@ export class RfqVendorModalComponent implements OnInit {
   constructor(
     public activeModal: NgbActiveModal,
     private companyService: CompanyService,
-    private rfqService: RfqService
+    private rfqService: RfqService,
+    public toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -35,10 +37,10 @@ export class RfqVendorModalComponent implements OnInit {
   }
 
   fetchVendorsAndCompaniesForRfq() {
-    this.companyService.getVendorsAndCompaniesForRfq().subscribe({
+    this.rfqService.getVendorsAndCompaniesForRfq().subscribe({
       next: (res: any) => {
-        // if backend sends { $id: "1", $values: [ ... ] }
-        this.allVendorsandCompanies = res?.$values || [];
+
+        this.allVendorsandCompanies = res ?? res?.$values ?? [];
 
       },
       error: (err) => {
@@ -51,7 +53,7 @@ export class RfqVendorModalComponent implements OnInit {
   loadRfqVendors(quotationRequestId: number): void {
     this.rfqService.getVendorsByQuotationRequestId(quotationRequestId).subscribe({
       next: (res: any) => {
-        this.rfqVendors = res?.$values || [];
+        this.rfqVendors = res || res?.$values || [];
         this.fetchVendorsAndCompaniesForRfq();
       },
 
@@ -73,25 +75,24 @@ export class RfqVendorModalComponent implements OnInit {
   //   this.selectedVendors = [...this.selectedVendors, vendor];
   // }
   addVendor(vendor: any) {
-  const companyId = vendor.vendorCompanyEntityId ?? vendor.id;
+    const companyId = vendor.vendorCompanyEntityId ?? vendor.id;
 
-  if (this.isVendorAdded(companyId)) return;
+    if (this.isVendorAdded(companyId)) return;
 
-  const newVendor = {
-    vendorCompanyEntityId: companyId,
-    vendorName: vendor.vendorName,
-    companyName: vendor.companyName,
-    vendorId: vendor.vendorId,
-    companyGUID: vendor.companyGUID
-  };
+    const newVendor = {
+      vendorCompanyEntityId: companyId,
+      vendorName: vendor.vendorName,
+      companyName: vendor.companyName,
+      vendorId: vendor.vendorId,
+      companyGUID: vendor.companyGUID
+    };
 
-  // Add to RFQ vendors list (UI display)
-  this.rfqVendors = [...this.rfqVendors, newVendor];
+    // Add to RFQ vendors list (UI display)
+    this.rfqVendors = [...this.rfqVendors, newVendor];
 
-  // Track for submission
-  this.selectedVendors = [...this.selectedVendors, newVendor];
-}
-
+    // Track for submission
+    this.selectedVendors = [...this.selectedVendors, newVendor];
+  }
 
   onSubmit() {
     if (!this.quotationRequestId) {
@@ -111,8 +112,8 @@ export class RfqVendorModalComponent implements OnInit {
     // First add new vendors
     if (addPayload.length > 0) {
       this.rfqService.addVendorsToQuotation(addPayload).subscribe({
-        next: () => console.log("Added vendors successfully"),
-        error: (err) => console.error("Error adding vendors", err)
+        next: (res) => this.toastr.success(res.successMessage || "Vendors added successfully"),
+        error: (err) => this.toastr.error("Error adding vendors")
       });
     }
 
@@ -168,9 +169,9 @@ export class RfqVendorModalComponent implements OnInit {
   // }
 
   isVendorAdded(companyId: number): boolean {
-  return this.rfqVendors.some(
-    v => (v.vendorCompanyEntityId ?? v.id) === companyId
-  );
-}
+    return this.rfqVendors.some(
+      v => (v.vendorCompanyEntityId ?? v.id) === companyId
+    );
+  }
 
 }

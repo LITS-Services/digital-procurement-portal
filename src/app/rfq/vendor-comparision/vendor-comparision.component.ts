@@ -135,12 +135,12 @@ ngOnInit(): void {
 loadVendorComparison(quotationRequestId: number): void {
   this.rfqService.getVendorComparison(quotationRequestId).subscribe({
     next: (res) => {
-      const items = res?.items?.$values || [];
+      const items = res?.items || [];
 
       this.vendorComparisonList = items.map((item: any) => ({
         itemName: item.itemName,
         itemDescription: item.itemDescription,
-        vendorComparisonBid: (item.vendorComparisonBid?.$values || []).map((bid: any) => ({
+        vendorComparisonBid: (item.vendorComparisonBid || []).map((bid: any) => ({
           vendorUserId: bid.vendorUserId,
           vendorName: bid.vendorName,
           comment: bid.comment,

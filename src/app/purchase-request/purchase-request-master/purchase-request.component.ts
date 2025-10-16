@@ -14,12 +14,13 @@ import Swal from 'sweetalert2';
   templateUrl: './purchase-request.component.html',
   styleUrls: ['./purchase-request.component.scss']
 })
+
 export class PurchaseRequestComponent implements OnInit {
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
   isStatusCompleted: boolean = false;
-  hasRestrictedStatus: boolean = false;
+  hasRestrictedStatus: boolean = false; // for disabling delete button if PR status is InProcess or Completed
   activeFilter: string = ''; // default filter
   purchaseRequestData: any[] = [];
   chkBoxSelected: any[] = [];
@@ -31,6 +32,11 @@ export class PurchaseRequestComponent implements OnInit {
   isOpenButtonDisabled = true;
   isAllSelected = false;
   columns = [];
+
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = 0;
+  totalItems = 0;
 
   constructor(
     private router: Router,
@@ -47,37 +53,19 @@ export class PurchaseRequestComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  /**
-   * Load purchase requests from API and group clones
-   */
-
-  // loadPurchaseRequests() {
-  //   const userId = localStorage.getItem('userId');
-  //   this.loading = true;
-
-  //   this.purchaseRequestService.getPurchaseRequests(userId).subscribe({
-  //     next: (data: any) => {
-  //       // 🔹 Directly assign the values (skip grouping logic)
-  //       this.purchaseRequestData = data?.$values || [];
-  //       this.loading = false;
-  //       this.cdr.detectChanges();
-  //     },
-  //     error: (err) => {
-  //       console.error('Error fetching requests:', err);
-  //       this.loading = false;
-  //     }
-  //   });
-  // }
-
   loadPurchaseRequests() {
-    const userId = localStorage.getItem('userId');
     this.loading = true;
-    this.purchaseRequestService.getPurchaseRequests(userId).subscribe({
+
+    this.purchaseRequestService.getAllPurchaseRequests(this.currentPage, this.pageSize).subscribe({
       next: (data: any) => {
-        this.purchaseRequestData = (data?.$values || []).map((pr: any) => ({
+        this.purchaseRequestData = (data?.result || []).map((pr: any) => ({
           ...pr,
-          canGenerateRfq: pr.requestStatus === 'Completed'   // add flag
+          canGenerateRfq: pr.requestStatus === 'Completed'
         }));
+
+        // Capture pagination info
+        this.totalPages = data.totalPages;
+        this.totalItems = data.totalItems;
 
         this.loading = false;
         this.cdr.detectChanges();
@@ -89,37 +77,43 @@ export class PurchaseRequestComponent implements OnInit {
     });
   }
 
-
   loadFilteredRequests(status: string) {
-    const userId = localStorage.getItem('userId');
     this.activeFilter = status;
-    this.purchaseRequestService.getAllRequestsByStatus(userId, status).subscribe({
-      next: (data: any) => {
-        this.purchaseRequestData = (data?.$values || []).map((pr: any) => ({
-          ...pr,
-          canGenerateRfq: pr.requestStatus === 'Completed'   // add flag
-        })); this.cdr.detectChanges();
+    this.loading = true;
 
+    this.purchaseRequestService.getAllPurchaseRequestsByStatus(status, this.currentPage, this.pageSize).subscribe({
+      next: (data: any) => {
+        this.purchaseRequestData = (data?.result || []).map((pr: any) => ({
+          ...pr,
+          canGenerateRfq: pr.requestStatus === 'Completed'
+        }));
+
+        // Capture pagination info
+        this.totalPages = data.totalPages;
+        this.totalItems = data.totalItems;
+
+        this.loading = false;
+        this.cdr.detectChanges();
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        console.error('Error fetching filtered requests:', err);
+        this.loading = false;
+      }
     });
   }
 
-
   onView() {
     if (this.chkBoxSelected.length !== 1) {
-      alert('Please select exactly one record to view.');
+      this.toastr.info('Please select exactly one record to view.');
       return;
     }
 
     const selectedId = this.chkBoxSelected[0].requestId;
 
     this.router.navigate(['/purchase-request/new-purchase-request'], {
-      queryParams: { id: selectedId, mode: 'view' }
+      queryParams: { id: selectedId, mode: 'view' }, skipLocationChange: true
     });
   }
-
-
 
   /**
    * Navigate to dashboard home
@@ -171,84 +165,44 @@ export class PurchaseRequestComponent implements OnInit {
     this.enableDisableButtons();
   }
 
-  // enableDisableButtons() {
-  //   const selectedCount = this.chkBoxSelected.length;
-  //   this.isDeleteButtonDisabled = selectedCount === 0;
-  //   this.isEditButtonDisabled = selectedCount !== 1;
-  //   this.isOpenButtonDisabled = selectedCount === 0;
-  //   this.isAllSelected = this.purchaseRequestData.length === this.chkBoxSelected.length;
-  // }
-enableDisableButtons() {
-  const selectedCount = this.chkBoxSelected.length;
+  enableDisableButtons() {
+    const selectedCount = this.chkBoxSelected.length;
 
-  // Disable delete if no rows selected
-  this.isDeleteButtonDisabled = selectedCount === 0;
+    // Disable delete if no rows selected
+    this.isDeleteButtonDisabled = selectedCount === 0;
 
-  // Disable edit unless exactly one record is selected
-  this.isEditButtonDisabled = selectedCount !== 1;
+    // Disable edit unless exactly one record is selected
+    this.isEditButtonDisabled = selectedCount !== 1;
 
-  // Disable open button if no rows selected
-  this.isOpenButtonDisabled = selectedCount === 0;
+    // Disable open button if no rows selected
+    this.isOpenButtonDisabled = selectedCount === 0;
 
-  // Check "Select All" toggle
-  this.isAllSelected = this.purchaseRequestData.length === this.chkBoxSelected.length;
+    // Check "Select All" toggle
+    this.isAllSelected = this.purchaseRequestData.length === this.chkBoxSelected.length;
 
-  // Disable delete if any selected item has restricted status
-  const hasRestrictedStatus = this.chkBoxSelected.some(
-    item => item.requestStatus === 'InProcess' || item.requestStatus === 'Completed'
-  );
+    // Disable delete if any selected row has restricted status
+    const hasRestrictedStatus = this.chkBoxSelected.some(
+      row => row.requestStatus === 'InProcess' || row.requestStatus === 'Completed'
+    );
 
-  if (hasRestrictedStatus) {
-    this.isDeleteButtonDisabled = false; // still allow click
-    this.hasRestrictedStatus = true; // store flag for later use
-  } else {
-    this.hasRestrictedStatus = false;
+    if (hasRestrictedStatus) {
+      this.isDeleteButtonDisabled = false; // still allow click
+      this.hasRestrictedStatus = true; // store flag for later use
+    } else {
+      this.hasRestrictedStatus = false;
+    }
   }
-}
 
-
-
-  /**
-   * Open Delete Modal
-   */
-  // openDeleteModal(deleteModal) {
-  //   if (this.idsToDelete.length > 0) {
-  //     this.modalService.open(deleteModal, { backdrop: 'static', centered: true });
-  //   } else {
-  //     this.toastr.info('Please select at least one record to delete.');
-  //   }
-  // }
-
-  /**
-   * Confirm deletion of selected requests
-   */
-  // confirmDelete() {
-  //   if (this.idsToDelete.length === 0) return;
-
-  //   console.log('Deleting IDs:', this.idsToDelete);
-
-  //   this.purchaseRequestService.deletePurchaseRequest(this.idsToDelete).subscribe({
-  //     next: () => {
-  //       this.modalService.dismissAll();
-  //       this.loadPurchaseRequests();
-  //       this.chkBoxSelected = [];
-  //       this.idsToDelete = [];
-  //     },
-  //     error: (err) => {
-  //       console.error('Delete failed:', err);
-  //     }
-  //   });
-  // }
-
+  // OPEN DELETE MODAL
   openDeleteModal(): void {
-     if (this.idsToDelete.length === 0) {
-    this.toastr.info('Please select at least one record to delete.');
-    return;
-  }
-   if (this.hasRestrictedStatus) {
-    this.toastr.warning('Cannot delete records with status "InProcess" or "Completed".');
-    return;
-  }
+    if (this.idsToDelete.length === 0) {
+      this.toastr.info('Please select at least one record to delete.');
+      return;
+    }
+    if (this.hasRestrictedStatus) {
+      this.toastr.warning('Cannot delete records with status "InProcess" or "Completed".');
+      return;
+    }
 
     Swal.fire({
       title: 'Are you sure?',
@@ -266,9 +220,7 @@ enableDisableButtons() {
     });
   }
 
-  /**
-   * Confirm deletion of selected requests
-   */
+  // CONFIRM DELETION OF PURCHASE REQUEST
   confirmDelete(): void {
     if (this.idsToDelete.length === 0) return;
 
@@ -304,7 +256,7 @@ enableDisableButtons() {
     console.log('Navigating to update ID:', selectedId);
 
     this.router.navigate(['/purchase-request/new-purchase-request'], {
-      queryParams: { id: selectedId }
+      queryParams: { id: selectedId }, skipLocationChange: true
     });
   }
 
@@ -345,5 +297,10 @@ enableDisableButtons() {
     this.router.navigate(['/rfq/new-rfq'], {
       queryParams: { prId: row.requestId }
     });
+  }
+
+  onPageChange(event: any) {
+    this.currentPage = (event.offset ?? 0) + 1;
+    this.loadPurchaseRequests();
   }
 }

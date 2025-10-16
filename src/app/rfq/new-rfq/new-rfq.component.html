@@ -33,7 +33,8 @@
 
             <!-- Update Mode: Update -->
             <ng-container *ngIf="!isNewForm && !viewMode">
-              <button class="btn btn-sm" [disabled]="newRfqForm.invalid || isStatusCompleted || !isSubmitter" (click)="submitForm()">
+              <button class="btn btn-sm" [disabled]="newRfqForm.invalid || isStatusCompleted || !isSubmitter"
+                (click)="submitForm()">
                 <i class="ft-edit-2"></i><label class="ml-1 mt-1">Update</label>
               </button>
             </ng-container>
@@ -46,7 +47,8 @@
             </ng-container>
 
             <ng-container *ngIf="viewMode && !isSubmitter">
-              <button class="btn btn-sm" [disabled]="isStatusCompleted || isSubmitter" (click)="onAddRemarks('Approve')">
+              <button class="btn btn-sm" [disabled]="isStatusCompleted || isSubmitter"
+                (click)="onAddRemarks('Approve')">
                 <i class="ft-check"></i><label class="ml-1 mt-1">Approve</label>
               </button>
 
@@ -54,7 +56,8 @@
                 <i class="ft-x"></i><label class="ml-1 mt-1">Reject</label>
               </button>
 
-              <button class="btn btn-sm" [disabled]="isStatusCompleted || isSubmitter" (click)="onAddRemarks('SendBack')">
+              <button class="btn btn-sm" [disabled]="isStatusCompleted || isSubmitter"
+                (click)="onAddRemarks('SendBack')">
                 <i class="ft-arrow-left"></i><label class="ml-1 mt-1">Send Back</label>
               </button>
 
@@ -62,7 +65,6 @@
                 <i class="ft-check"></i><label class="ml-1 mt-1">Submit</label>
               </button> -->
             </ng-container>
-
 
             <!-- <button type="reset" class="btn btn-sm">
               <i class="ft-edit"></i><label class="ml-1 mt-1" for="">Edit</label>
@@ -105,8 +107,7 @@
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
                   <label>RFQ No.</label>
-                  <input type="text" formControlName="rfqNo"  class="form-control"
-                    disabled />
+                  <input type="text" formControlName="rfqNo" class="form-control" disabled />
                 </div>
               </div>
 
@@ -176,8 +177,6 @@
                   <input type="text" placeholder="Enter Title" class="form-control" formControlName="title" />
                 </div>
               </div>
-
-
 
               <!-- <div class="col-lg-4 mb-2">
                 <label>Workflow Type</label>
@@ -283,115 +282,115 @@
                     </div>
                     <!-- <ng-container *ngIf="itemForm.get('itemType')?.value === 'Inventory'"> -->
 
-                      <div class="col-12">
-                        <div class="row">
-                          <div class="col-6">
-                            <h5>Item Details</h5>
-                            <div class="row">
+                    <div class="col-12">
+                      <div class="row">
+                        <div class="col-6">
+                          <h5>Item Details</h5>
+                          <div class="row">
 
-                              <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                  <label>Item</label>
-                                  <select class="form-control" formControlName="itemId">
-                                    <option value="" disabled selected>Select Item</option>
-                                    <option *ngFor="let item of itemList" [value]="item.id">
-                                      {{ item.itemCode }} - {{ item.itemName }}
-                                    </option>
-                                  </select>
-                                </div>
+                            <div class="col-md-6">
+                              <div class="form-group mb-2">
+                                <label>Item</label>
+                                <select class="form-control" formControlName="itemId">
+                                  <option value="" disabled selected>Select Item</option>
+                                  <option *ngFor="let item of itemList" [value]="item.id">
+                                    {{ item.itemCode }} - {{ item.itemName }}
+                                  </option>
+                                </select>
                               </div>
+                            </div>
 
-                              <!-- <div class="col-md-6" *ngIf="itemType === 'Non-Inventory'">
+                            <!-- <div class="col-md-6" *ngIf="itemType === 'Non-Inventory'">
                               <div class="form-group mb-2">
                                 <label>Non-Inventory Item</label>
                                 <input type="text" class="form-control" formControlName="itemType" placeholder="Enter Non-Inventory Item">
                               </div>
                             </div> -->
 
-                              <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                  <label>U of M</label>
-                                  <select class="form-control" formControlName="unitOfMeasurementId">
-                                    <option value="" disabled selected>Select UOM</option>
-                                    <option *ngFor="let uom of unitsOfMeasurementList" [ngValue]="uom.id">
-                                      {{ uom.uomCode }} - {{ uom.uomName }}
-                                    </option>
-                                  </select>
-                                </div>
+                            <div class="col-md-6">
+                              <div class="form-group mb-2">
+                                <label>U of M</label>
+                                <select class="form-control" formControlName="unitOfMeasurementId">
+                                  <option value="" disabled selected>Select UOM</option>
+                                  <option *ngFor="let uom of unitsOfMeasurementList" [ngValue]="uom.id">
+                                    {{ uom.uomCode }} - {{ uom.uomName }}
+                                  </option>
+                                </select>
                               </div>
-                            </div>
-
-                            <div class="row">
-                              <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                  <label>Amount</label>
-                                  <input type="number" placeholder="Enter Amount" class="form-control"
-                                    formControlName="amount" />
-                                </div>
-                              </div>
-
-                              <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                  <label>Unit Cost</label>
-                                  <input type="number" placeholder="Enter Unit Cost" class="form-control"
-                                    formControlName="unitCost" />
-                                </div>
-                              </div>
-                            </div>
-
-                            <div class="row">
-                              <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                  <label>Order Quantity</label>
-                                  <input type="number" placeholder="Enter Order Quantity" class="form-control"
-                                    formControlName="orderQuantity" />
-                                </div>
-                              </div>
-
-                              <div class="col-md-6">
-                                <div class="form-group mb-2">
-                                  <label>Req. by Date</label>
-                                  <input type="date" class="form-control" formControlName="reqByDate" />
-                                </div>
-                              </div>
-                            </div>
-
-                            <div class="form-group mb-2">
-                              <label>Item Description</label>
-                              <textarea name="" id="" rows="2" type="text" placeholder="Enter Item Description"
-                                class="form-control" formControlName="itemDescription"></textarea>
                             </div>
                           </div>
 
-                          <div class="col-6">
-                            <h5>Other Details</h5>
-                            <div *ngIf="!isNewForm" class="form-group mb-2">
-                              <label>Final Vendor</label>
-                              <!-- <select class="form-control" formControlName="vendorUserId">
+                          <div class="row">
+                            <div class="col-md-6">
+                              <div class="form-group mb-2">
+                                <label>Amount</label>
+                                <input type="number" placeholder="Enter Amount" class="form-control"
+                                  formControlName="amount" />
+                              </div>
+                            </div>
+
+                            <div class="col-md-6">
+                              <div class="form-group mb-2">
+                                <label>Unit Cost</label>
+                                <input type="number" placeholder="Enter Unit Cost" class="form-control"
+                                  formControlName="unitCost" />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="row">
+                            <div class="col-md-6">
+                              <div class="form-group mb-2">
+                                <label>Order Quantity</label>
+                                <input type="number" placeholder="Enter Order Quantity" class="form-control"
+                                  formControlName="orderQuantity" />
+                              </div>
+                            </div>
+
+                            <div class="col-md-6">
+                              <div class="form-group mb-2">
+                                <label>Req. by Date</label>
+                                <input type="date" class="form-control" formControlName="reqByDate" />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="form-group mb-2">
+                            <label>Item Description</label>
+                            <textarea name="" id="" rows="2" type="text" placeholder="Enter Item Description"
+                              class="form-control" formControlName="itemDescription"></textarea>
+                          </div>
+                        </div>
+
+                        <div class="col-6">
+                          <h5>Other Details</h5>
+                          <div *ngIf="!isNewForm" class="form-group mb-2">
+                            <label>Final Vendor</label>
+                            <!-- <select class="form-control" formControlName="vendorUserId">
                               <option value="" disabled>Select Vendor</option>
                               <option *ngFor="let vendor of vendorUsers" [value]="vendor.id">
                                 {{ vendor.name }}
                               </option>
                             </select> -->
-                              <select class="form-control" formControlName="vendorUserId"
-                                (change)="onVendorChange($event.target.value)">
-                                <option value="" disabled>Select Vendor</option>
-                                <option *ngFor="let v of uniqueVendors" [value]="v.vendorId">
-                                  {{ v.vendorName }}
-                                </option>
-                              </select>
-                            </div>
-                            <div *ngIf="!isNewForm" class="form-group mb-2">
-                              <label>Company</label>
-                              <select class="form-control" formControlName="vendorCompanyId">
-                                <option value="" disabled>Select Company</option>
-                                <option *ngFor="let c of filteredCompanies" [value]="c.companyId">
-                                  {{ c.name }}
-                                </option>
-                              </select>
-                            </div>
+                            <select class="form-control" formControlName="vendorUserId"
+                              (change)="onVendorChange($event.target.value)">
+                              <option value="" disabled>Select Vendor</option>
+                              <option *ngFor="let v of uniqueVendors" [value]="v.vendorId">
+                                {{ v.vendorName }}
+                              </option>
+                            </select>
+                          </div>
+                          <div *ngIf="!isNewForm" class="form-group mb-2">
+                            <label>Company</label>
+                            <select class="form-control" formControlName="vendorCompanyId">
+                              <option value="" disabled>Select Company</option>
+                              <option *ngFor="let c of filteredCompanies" [value]="c.companyId">
+                                {{ c.name }}
+                              </option>
+                            </select>
+                          </div>
 
-                            <!-- <div class="form-group mb-2">
+                          <!-- <div class="form-group mb-2">
                             <label>Account</label>
                             <select class="form-control" formControlName="account">
                               <option value="" selected disabled>Select Account</option>
@@ -400,24 +399,24 @@
                               <option value="ACC003 - Maintenance">ACC003 - Maintenance</option>
                             </select>
                           </div> -->
-                            <div class="form-group mb-2">
-                              <label>Account</label>
-                              <select class="form-control" formControlName="accountId">
-                                <option value="" disabled selected>Select Account</option>
-                                <option *ngFor="let acc of accountList" [value]="acc.id">
-                                  {{ acc.code }} - {{ acc.name }}
-                                </option>
-                              </select>
-                            </div>
+                          <div class="form-group mb-2">
+                            <label>Account</label>
+                            <select class="form-control" formControlName="accountId">
+                              <option value="" disabled selected>Select Account</option>
+                              <option *ngFor="let acc of accountList" [value]="acc.id">
+                                {{ acc.code }} - {{ acc.name }}
+                              </option>
+                            </select>
+                          </div>
 
-                            <div class="form-group mb-2">
-                              <label>Remarks</label>
-                              <textarea name="" placeholder="Enter Remarks" id="" rows="5" type="text"
-                                class="form-control" formControlName="remarks"></textarea>
-                            </div>
+                          <div class="form-group mb-2">
+                            <label>Remarks</label>
+                            <textarea name="" placeholder="Enter Remarks" id="" rows="5" type="text"
+                              class="form-control" formControlName="remarks"></textarea>
                           </div>
                         </div>
                       </div>
+                    </div>
                     <!-- </ng-container> -->
 
                     <!-- <ng-container *ngIf="itemForm.get('itemType')?.value === 'Non-Inventory'">
@@ -432,16 +431,16 @@
                       <div *ngIf="!isNewForm" class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                         <label>Final Vendor</label> -->
 
-                        <!-- this should not be uncommented-->
-                        <!-- <select class="form-control" formControlName="vendorUserId">
+                    <!-- this should not be uncommented-->
+                    <!-- <select class="form-control" formControlName="vendorUserId">
                               <option value="" disabled>Select Vendor</option>
                               <option *ngFor="let vendor of vendorUsers" [value]="vendor.id">
                                 {{ vendor.name }}
                               </option>
                             </select> -->
-                        <!-- this should not be uncommented-->
+                    <!-- this should not be uncommented-->
 
-                        <!-- <select class="form-control" formControlName="vendorUserId"
+                    <!-- <select class="form-control" formControlName="vendorUserId"
                           (change)="onVendorChange($event.target.value)">
                           <option value="" disabled>Select Vendor</option>
                           <option *ngFor="let v of uniqueVendors" [value]="v.vendorId">

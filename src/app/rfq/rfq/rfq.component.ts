@@ -21,7 +21,7 @@ export class RfqComponent implements OnInit {
   public ColumnMode = ColumnMode;
 
   activeFilter: string = ''; // default filter
-  hasRestrictedStatus: boolean = false;
+  hasRestrictedStatus: boolean = false; // for disabling delete button if RFQ status is InProcess or Completed
   rfqData: any[] = [];
   chkBoxSelected: any[] = [];
   idsToDelete: number[] = [];
@@ -32,6 +32,11 @@ export class RfqComponent implements OnInit {
   isOpenButtonDisabled = true;
   isAllSelected = false;
   columns = [];
+
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = 0;
+  totalItems = 0;
 
   // public chkBoxSelected = [];
   // loading = false;
@@ -55,13 +60,18 @@ export class RfqComponent implements OnInit {
   }
 
   loadRfqs() {
-    const userId = localStorage.getItem('userId');
-
     this.loading = true;
-    this.rfqService.getAllQuotations(userId).subscribe({
+
+    this.rfqService.getAllQuotations(this.currentPage, this.pageSize).subscribe({
       next: (data: any) => {
-        this.rfqData = data?.$values || [];
-        console.log('Raw API Response:', data);
+
+        // Extract paginated data correctly
+        this.rfqData = data?.result || [];
+
+        // Capture pagination info
+        this.totalPages = data.totalPages;
+        this.totalItems = data.totalItems;
+
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -73,28 +83,37 @@ export class RfqComponent implements OnInit {
   }
 
   loadFilteredQuotations(status: string) {
-    const userId = localStorage.getItem('userId');
     this.activeFilter = status;
-    this.rfqService.getAllQuotationsByStatus(userId, status, false).subscribe({
-      next: (data: any) => {
-        this.rfqData = data?.$values
-        this.cdr.detectChanges();
+    this.loading = true;
 
+    this.rfqService.getAllQuotationsByStatus(status, this.currentPage, this.pageSize).subscribe({
+      next: (data: any) => {
+        this.rfqData = data?.result || [];
+
+        // Capture pagination info
+        this.totalPages = data.totalPages;
+        this.totalItems = data.totalItems;
+
+        this.loading = false;
+        this.cdr.detectChanges();
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        console.error('Error fetching filtered quotations:', err);
+        this.loading = false;
+      }
     });
   }
 
   onView() {
     if (this.chkBoxSelected.length !== 1) {
-      alert('Please select exactly one record to view.');
+      this.toastr.info('Please select exactly one record to view.');
       return;
     }
 
     const selectedId = this.chkBoxSelected[0].quotationId;
 
     this.router.navigate(['/rfq/new-rfq'], {
-      queryParams: { id: selectedId, mode: 'view' }
+      queryParams: { id: selectedId, mode: 'view' }, skipLocationChange: true
     });
   }
 
@@ -136,90 +155,66 @@ export class RfqComponent implements OnInit {
     this.enableDisableButtons();
   }
 
-  // enableDisableButtons() {
-  //   const selectedCount = this.chkBoxSelected.length;
-  //   this.isDeleteButtonDisabled = selectedCount === 0;
-  //   this.isEditButtonDisabled = selectedCount !== 1;
-  //   this.isOpenButtonDisabled = selectedCount === 0;
-  //   this.isAllSelected = this.rfqData.length === this.chkBoxSelected.length;
-  // }
-
   enableDisableButtons() {
-  const selectedCount = this.chkBoxSelected.length;
+    const selectedCount = this.chkBoxSelected.length;
 
-  // Disable delete if no rows selected
-  this.isDeleteButtonDisabled = selectedCount === 0;
+    // Disable delete if no rows selected
+    this.isDeleteButtonDisabled = selectedCount === 0;
 
-  // Disable edit unless exactly one record is selected
-  this.isEditButtonDisabled = selectedCount !== 1;
+    // Disable edit unless exactly one record is selected
+    this.isEditButtonDisabled = selectedCount !== 1;
 
-  // Disable open button if no rows selected
-  this.isOpenButtonDisabled = selectedCount === 0;
+    // Disable open button if no rows selected
+    this.isOpenButtonDisabled = selectedCount === 0;
 
-  // Check "Select All" toggle
-  this.isAllSelected = this.rfqData.length === this.chkBoxSelected.length;
+    // Check "Select All" toggle
+    this.isAllSelected = this.rfqData.length === this.chkBoxSelected.length;
 
-  // Disable delete if any selected item has restricted status
-  const hasRestrictedStatus = this.chkBoxSelected.some(
-    item => item.requestStatus === 'InProcess' || item.requestStatus === 'Completed'
-  );
+    // Disable delete if any selected item has restricted status
+    const hasRestrictedStatus = this.chkBoxSelected.some(
+      row => row.requestStatus === 'InProcess' || row.requestStatus === 'Completed'
+    );
 
-  if (hasRestrictedStatus) {
-    this.isDeleteButtonDisabled = false; // still allow click
-    this.hasRestrictedStatus = true; // store flag for later use
-  } else {
-    this.hasRestrictedStatus = false;
-  }
-}
-
-  openDeleteModal(): void {
-  if (this.idsToDelete.length === 0) {
-    this.toastr.info('Please select at least one record to delete.');
-    return;
-  }
-    if (this.hasRestrictedStatus) {
-    this.toastr.warning('Cannot delete records with status "InProcess" or "Completed".');
-    return;
-  }
-
-  Swal.fire({
-    title: 'Are you sure?',
-    text: `You are about to delete ${this.idsToDelete.length} record(s). This action cannot be undone.`,
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, delete',
-    cancelButtonText: 'Cancel',
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-  }).then((result) => {
-    if (result.isConfirmed) {
-      this.confirmDelete();
+    if (hasRestrictedStatus) {
+      this.isDeleteButtonDisabled = false; // still allow click
+      this.hasRestrictedStatus = true; // store flag for later use
+    } else {
+      this.hasRestrictedStatus = false;
     }
-  });
-}
+  }
 
-  // confirmDelete() {
-  //   if (this.idsToDelete.length === 0) return;
+  // OPEN DELETE MODAL
+  openDeleteModal(): void {
+    if (this.idsToDelete.length === 0) {
+      this.toastr.info('Please select at least one record to delete.');
+      return;
+    }
+    if (this.hasRestrictedStatus) {
+      this.toastr.warning('Cannot delete records with status "InProcess" or "Completed".');
+      return;
+    }
 
-  //   console.log('Deleting IDs:', this.idsToDelete);
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `You are about to delete ${this.idsToDelete.length} record(s). This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.confirmDelete();
+      }
+    });
+  }
 
-  //   this.rfqService.deleteQuotation(this.idsToDelete).subscribe({
-  //     next: () => {
-  //       this.modalService.dismissAll();
-  //       this.loadRfqs();
-  //       this.chkBoxSelected = [];
-  //       this.idsToDelete = [];
-  //     },
-  //     error: (err) => {
-  //       console.error('Delete failed:', err);
-  //     }
-  //   });
-  // }
-
+  //  CONFIRM DELETION OF QUOTATION REQUEST
   confirmDelete(): void {
     if (this.idsToDelete.length === 0) return;
-  
-    this.rfqService.deleteQuotation(this.idsToDelete).subscribe({
+
+    this.rfqService.deleteQuotatioRequests(this.idsToDelete).subscribe({
       next: () => {
         Swal.fire('Deleted!', 'Selected record(s) have been deleted successfully.', 'success');
         this.loadRfqs();
@@ -267,22 +262,13 @@ export class RfqComponent implements OnInit {
     modalRef.componentInstance.data = row;  // Pass selected row data if needed
   }
 
-openApprovalHistoryModal(row: any): void {
-  const modalRef = this.modalService.open(RfqApprovalHistoryComponent, { size: 'lg', backdrop: 'static', centered: true });
-  modalRef.componentInstance.rfqNo = row.rfqNo; // pass RfqNo
+  openApprovalHistoryModal(row: any): void {
+    const modalRef = this.modalService.open(RfqApprovalHistoryComponent, { size: 'lg', backdrop: 'static', centered: true });
+    modalRef.componentInstance.rfqNo = row.rfqNo; // pass RfqNo
+  }
+
+  onPageChange(event: any) {
+    this.currentPage = (event.offset ?? 0) + 1;
+    this.loadRfqs();
+  }
 }
-
-  //   openVendorComparisonModal(quotationRequestId: number) {
-  //   this.rfqService.getVendorComparison(quotationRequestId).subscribe({
-  //     next: (res) => {
-  //       const modalRef = this.modalService.open(VendorComparisionComponent, { size: 'lg', backdrop: 'static' });
-  //       modalRef.componentInstance.data = res; // Pass API response into modal
-  //     },
-  //     error: (err) => {
-  //       console.error('Failed to load vendor comparison', err);
-  //     }
-  //   });
-  // }
-
-}
-

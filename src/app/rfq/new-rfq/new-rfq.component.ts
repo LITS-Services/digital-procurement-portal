@@ -31,7 +31,7 @@ export class NewRfqComponent implements OnInit {
   attachmentList: any[] = [];
   pendingAttachment: any[] = [];
 
-    // new work
+  // new work
   itemList: any[] = [];
   unitsOfMeasurementList: any[] = [];
   accountList: any[] = [];
@@ -51,7 +51,6 @@ export class NewRfqComponent implements OnInit {
   // modifications
   quotationVendorUsers: any[] = [];   // all vendors + companies
   filteredCompanies: any[] = [];      // companies for selected vendor
-
 
   public rows = DatatableData;
   columns = [];
@@ -84,7 +83,7 @@ export class NewRfqComponent implements OnInit {
   ngOnInit(): void {
     this.loadVendorUsers();
     // this.getWorkflowTypes();
-        this.loadUnitsOfMeasurements();
+    this.loadUnitsOfMeasurements();
     this.loadAccounts();
     this.loadItems();
     this.route.queryParamMap.subscribe(params => {
@@ -104,6 +103,7 @@ export class NewRfqComponent implements OnInit {
       }
     });
 
+    // RFQ Form
     this.newRfqForm = this.fb.group({
       rfqNo: [''],
       purchaseRequestNo: [''],
@@ -121,13 +121,11 @@ export class NewRfqComponent implements OnInit {
       purchaseRequestId: [0],
       workflowName: [''],
       workflowType: [''],
-
     });
 
     this.newRfqForm.valueChanges.subscribe(() => {
       this.isFormDirty = true;
     });
-
 
     this.newRfqForm.get('workflowType')?.valueChanges.subscribe(selectedId => {
       if (selectedId) {
@@ -135,6 +133,7 @@ export class NewRfqComponent implements OnInit {
       }
     });
 
+    // RFQ Item Form
     this.itemForm = this.fb.group({
       id: [null],
       rfqNo: [''],
@@ -165,56 +164,120 @@ export class NewRfqComponent implements OnInit {
     }
   }
   homePage() {
-   if (this.isNewForm && this.isFormDirty) {
-     Swal.fire({
-       title: 'Save as Draft?',
-       text: 'Do you want to save this request as a draft?',
-       icon: 'question',
-       showCancelButton: true,
-       confirmButtonText: 'Yes, save it',
-       cancelButtonText: 'No, go back',
-     }).then((result) => {
-       if (result.isConfirmed) {
-         this.saveAsDraftAndGoBack();
-       } else {
-         this.router.navigate(['/rfq']);
-       }
-     });
-   } else {
-     this.router.navigate(['/rfq']);
-   }
- }
+    if (this.isNewForm && this.isFormDirty) {
+      Swal.fire({
+        title: 'Save as Draft?',
+        text: 'Do you want to save this request as a draft?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, save it',
+        cancelButtonText: 'No, go back',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.saveAsDraftAndGoBack();
+        } else {
+          this.router.navigate(['/rfq']);
+        }
+      });
+    } else {
+      this.router.navigate(['/rfq']);
+    }
+  }
 
   loadVendorUsers() {
-    this.companyService.getVendorUsers().subscribe(response => {
-      this.vendorUsers = response.$values ?? [];
+    this.companyService.getAllVendorUsers().subscribe({
+      next: (res: any) => {
+        this.vendorUsers = res?.value ?? [];
+      },
+      error: (err) => console.error('Error fetching vendor users:', err)
     });
   }
+  // loadVendorsAndCompanies(rfqId: number) {
+  //   this.rfqService.getVendorsByQuotationRequestId(rfqId).subscribe({
+  //     next: (res: any) => {
+  //       this.quotationVendorUsers = res?.$values || res || [];
+  //       console.log("Vendors & Companies:", this.quotationVendorUsers);
+  //     },
+  //     error: (err) => console.error("Error fetching vendors & companies", err)
+  //   });
+  // }
+
   loadVendorsAndCompanies(rfqId: number) {
     this.rfqService.getVendorsByQuotationRequestId(rfqId).subscribe({
       next: (res: any) => {
-        this.quotationVendorUsers = res?.$values || res || [];
+        // Normalize response safely
+        if (res?.value && Array.isArray(res.value)) {
+          this.quotationVendorUsers = res.value;
+        } else if (res?.$values && Array.isArray(res.$values)) {
+          this.quotationVendorUsers = res.$values;
+        } else if (Array.isArray(res)) {
+          this.quotationVendorUsers = res;
+        } else {
+          this.quotationVendorUsers = []; // fallback
+        }
+
         console.log("Vendors & Companies:", this.quotationVendorUsers);
       },
-      error: (err) => console.error("Error fetching vendors & companies", err)
+      error: (err) => {
+        console.error("Error fetching vendors & companies", err);
+        this.quotationVendorUsers = []; // ensure it's an array on error
+      }
     });
   }
 
-    loadUnitsOfMeasurements() {
-    this.purchaseRequestService.getAllUnitsOfMeasurements().subscribe(res => {
-      this.unitsOfMeasurementList = res.$values ?? [];
+  //   loadVendorsAndCompanies(rfqId: number) {
+  //   this.rfqService.getVendorsByQuotationRequestId(rfqId).subscribe({
+  //     next: (res: any) => {
+  //       this.quotationVendorUsers = res?.$values ?? res ?? [];
+  //       console.log("Vendors & Companies:", this.quotationVendorUsers);
+  //       this.cdr.detectChanges();
+  //     },
+  //     error: (err) => {
+  //       console.error("Error fetching vendors & companies:", err);
+  //       this.quotationVendorUsers = [];
+  //     }
+  //   });
+  // }
+
+  loadUnitsOfMeasurements() {
+    this.purchaseRequestService.getUnitsOfMeasurementDropdown().subscribe({
+      next: (res) => {
+        this.unitsOfMeasurementList = res ?? [];
+        console.log('UoM dropdown data:', this.unitsOfMeasurementList);
+      },
+      error: (err) => {
+        console.error('Failed to load UoM dropdown:', err);
+      }
     });
   }
 
   loadAccounts() {
-    this.purchaseRequestService.getAllAccounts().subscribe(res => {
-      this.accountList = res.$values ?? [];
+    this.purchaseRequestService.getAccountsDropdown().subscribe({
+      next: (res) => {
+        this.accountList = res ?? [];
+        console.log('Account dropdown data:', this.accountList);
+      },
+      error: (err) => {
+        console.error('Failed to load Account dropdown:', err);
+      }
     });
   }
 
+  // loadItems() {
+  //   this.purchaseRequestService.getAllItems().subscribe(res => {
+  //     this.itemList = res.$values ?? [];
+  //   });
+  // }
+
   loadItems() {
-    this.purchaseRequestService.getAllItems().subscribe(res => {
-      this.itemList = res.$values ?? [];
+    this.purchaseRequestService.getItemsDropdown().subscribe({
+      next: (res) => {
+        this.itemList = res ?? [];
+        console.log('Item dropdown data:', this.itemList);
+      },
+      error: (err) => {
+        console.error('Failed to load items dropdown:', err);
+      }
     });
   }
 
@@ -268,8 +331,6 @@ export class NewRfqComponent implements OnInit {
     });
   }
 
-
-
   // getVendorNameById(vendorId: number): string {
   //   const found = this.quotationVendorUsers.find(v => v.id === vendorId);
   //   return found ? found.vendorName : '';
@@ -284,7 +345,6 @@ export class NewRfqComponent implements OnInit {
     const d = new Date(date);
     return d.toISOString().split('T')[0];
   }
-
 
   getUomCodeById(id: number): string {
     const found = this.unitsOfMeasurementList.find(u => u.id === id);
@@ -370,7 +430,7 @@ export class NewRfqComponent implements OnInit {
         });
 
         //  Map PR items → RFQ items
-        this.newQuotationItemData = pr.items.$values.map((item: any) => ({
+        this.newQuotationItemData = pr.items?.map((item: any) => ({
           id: null,
           rfqNo: '',
           itemType: item.itemType,
@@ -388,7 +448,7 @@ export class NewRfqComponent implements OnInit {
           vendorUserId: null,
           vendorCompanyId: null,
 
-          quotationItemAttachments: item.attachments?.$values?.map((a: any) => ({
+          quotationItemAttachments: item.attachments?.map((a: any) => ({
             content: a.content || '',
             contentType: a.contentType || '',
             fileName: a.fileName || '',
@@ -415,26 +475,29 @@ export class NewRfqComponent implements OnInit {
 
     this.rfqService.getQuotationById(id).subscribe({
       next: async (data) => {
-        console.log("update data: ", data)
+
+        // unwrap the Ardalis.Result<T> wrapper
+        const requestData = data;
+
         const loggedInUserId = localStorage.getItem('userId');
-        this.isSubmitter = data.submitterId === loggedInUserId;
+        this.isSubmitter = requestData.submitterId === loggedInUserId;
         this.isNewForm = false;
-        this.currentQuotationId = data.id;
-        this.currentRfqNo = data.rfqNo;
+        this.currentQuotationId = requestData.id;
+        this.currentRfqNo = requestData.rfqNo;
 
         //  patch values with formatted dates
         this.newRfqForm.patchValue({
-          ...data,
-          date: this.toDateInputValue(data.date),
-          startDate: this.toDateInputValue(data.startDate),
-          endDate: this.toDateInputValue(data.endDate),
+          ...requestData,
+          date: this.toDateInputValue(requestData.date),
+          startDate: this.toDateInputValue(requestData.startDate),
+          endDate: this.toDateInputValue(requestData.endDate),
         });
 
-        if (data.requestStatus?.status) {
+        if (requestData.requestStatus) {
           this.newRfqForm.patchValue({
-            status: data.requestStatus.status
+            status: requestData.requestStatus
           });
-          if (data.requestStatus?.status === 'Completed') {
+          if (requestData.requestStatus === 'Completed') {
             this.isStatusCompleted = true;
             this.cdr.detectChanges();
           }
@@ -442,7 +505,7 @@ export class NewRfqComponent implements OnInit {
             this.isStatusCompleted = false;
             this.cdr.detectChanges();
           }
-          if (data.requestStatus?.status === 'InProcess') {
+          if (requestData.requestStatus === 'InProcess') {
             this.isStatusInProcess = true;
             this.cdr.detectChanges();
           }
@@ -452,8 +515,12 @@ export class NewRfqComponent implements OnInit {
           }
         }
 
-        if (data.quotationItems?.$values) {
-          this.newQuotationItemData = data.quotationItems.$values.map((item: any) => ({
+        // if (data.quotationItems?.$values) {
+        //   this.newQuotationItemData = data.quotationItems.$values.map((item: any) => ({
+        if (requestData.quotationItems) {
+          const itemList = requestData.quotationItems || [];
+
+          this.newQuotationItemData = itemList.map((item: any) => ({
             id: item.id,
             rfqNo: item.rfqNo,
             itemType: item.itemType,
@@ -469,27 +536,28 @@ export class NewRfqComponent implements OnInit {
             accountId: item.accountId,
             remarks: item.remarks,
             quotationRequestId: item.quotationRequestId,
-            quotationItemAttachments: item.quotationItemAttachments?.$values?.map((a: any) => ({
+            // quotationItemAttachments: item.quotationItemAttachments?.$values?.map((a: any) => ({
+            quotationItemAttachments: (item.quotationItemAttachments || []).map((a: any) => ({
               id: a.id,
-              content: a.content || '',
-              contentType: a.contentType || '',
-              fileName: a.fileName || '',
-              fromForm: a.fromForm || '',
+              content: a.content,
+              contentType: a.contentType,
+              fileName: a.fileName,
+              fromForm: a.fromForm,
               createdDate: a.createdDate,
               modifiedDate: a.modifiedDate,
-              createdBy: a.createdBy || 'current-user',
-              isDeleted: a.isDeleted || false,
+              createdBy: a.createdBy,
+              isDeleted: a.isDeleted,
               quotationItemId: a.quotationItemId || 0,
               isNew: false
-            })) || []
+            }))
           }));
         }
+        this.cdr.detectChanges();
       },
 
       error: (err) => console.error('Failed to load purchase request:', err)
     });
   }
-
 
   editRow(row: any, rowIndex: number) {
     this.itemForm.patchValue({
@@ -505,6 +573,7 @@ export class NewRfqComponent implements OnInit {
 
       itemDescription: row.itemDescription,
       vendorUserId: row.vendorUserId,
+
       accountId: row.accountId,
       remarks: row.remarks,
       quotationItemAttachments: row.quotationItemAttachments
@@ -516,7 +585,6 @@ export class NewRfqComponent implements OnInit {
       vendorCompanyId: row.vendorCompanyId
     });
   }
-
 
   submitForm() {
     //   if (!this.newPurchaseRequestForm.valid) {
@@ -541,18 +609,17 @@ export class NewRfqComponent implements OnInit {
         itemDescription: item.itemDescription || '',
         accountId: Number(item.accountId) || 0,
         remarks: item.remarks || '',
-        createdBy: item.createdBy || 'current-user',
+        createdBy: item.createdBy || '',
         quotationRequestId: item.quotationRequestId || 0,
         vendorUserId: item.vendorUserId || null,
         vendorCompanyId: item.vendorCompanyId || null,
         quotationItemAttachments: item.quotationItemAttachments?.map(att => ({
           id: att.id || null,   // very important
-
           content: att.content || '',
           contentType: att.contentType || '',
           fileName: att.fileName || '',
           fromForm: att.fromForm || '',
-          createdBy: 'current-user',
+          createdBy: att.createdBy || '',
           isDeleted: false,
           quotationItemId: att.quotationItemId || 0,
         }))
@@ -577,12 +644,12 @@ export class NewRfqComponent implements OnInit {
     };
 
     if (this.currentQuotationId) {
-      this.rfqService.updateQuotation(this.currentQuotationId, payload).subscribe({
+      this.rfqService.updateQuotation(this.currentQuotationId, { quotationRequest: payload }).subscribe({
         next: res => {
           console.log('Updated Quotation!', res);
           this.loading = false;
           this.router.navigate(['/rfq']);
-          this.toastr.success('Quotation is updated!', '');
+          // this.toastr.success('Quotation is updated!', '');
         },
         error: err => {
           console.error('Error updating Quotation:', err);
@@ -620,7 +687,7 @@ export class NewRfqComponent implements OnInit {
     const quotationItems = this.newQuotationItemData?.length
       ? this.newQuotationItemData.map(item => ({
         id: item.id || null,
-        rfqNo: item.rfqNo || '',
+        rfqNo: f.rfqNo || '',
         itemType: item.itemType || '',
         itemId: Number(item.itemId) || 0,
         unitOfMeasurementId: Number(item.unitOfMeasurementId) || 0,
@@ -631,7 +698,7 @@ export class NewRfqComponent implements OnInit {
         itemDescription: item.itemDescription || '',
         accountId: Number(item.accountId) || 0,
         remarks: item.remarks || '',
-        createdBy: item.createdBy || 'current-user',
+        createdBy: item.createdBy || '',
         quotationRequestId: item.quotationRequestId || 0,
         vendorUserId: item.vendorUserId || null,
         vendorCompanyId: item.vendorCompanyId || null,
@@ -641,7 +708,7 @@ export class NewRfqComponent implements OnInit {
           contentType: att.contentType || '',
           fileName: att.fileName || '',
           fromForm: att.fromForm || '',
-          createdBy: 'current-user',
+          createdBy: att.createdBy || '',
           isDeleted: false,
           quotationItemId: att.quotationItemId || 0,
         }))
@@ -661,7 +728,7 @@ export class NewRfqComponent implements OnInit {
       title: f.title || '',
       workflowMasterId: Number(f.workflowMasterId) || 0,
       comment: f.comment || '',
-      createdBy: f.createdBy || 'current-user',
+      createdBy: f.createdBy || '',
       purchaseRequestId: f.purchaseRequestId || null,
       quotationItems
     };
@@ -722,98 +789,109 @@ export class NewRfqComponent implements OnInit {
   //   this.itemForm.reset();
   // }
   get uniqueVendors() {
+    const users = Array.isArray(this.quotationVendorUsers) ? this.quotationVendorUsers : [];
     const map = new Map<string, any>();
-    this.quotationVendorUsers.forEach(v => {
-      if (!map.has(v.vendorId)) {
+    for (const v of users) {
+      if (v && !map.has(v.vendorId)) {
         map.set(v.vendorId, v);
       }
-    });
+    }
     return Array.from(map.values());
   }
 
+  // get uniqueVendors() {
+  //   const map = new Map<string, any>();
+  //   this.quotationVendorUsers.forEach(v => {
+  //     if (!map.has(v.vendorId)) {
+  //       map.set(v.vendorId, v);
+  //     }
+  //   });
+  //   return Array.from(map.values());
+  // }
+
   insertItem(): void {
-  const newItem = this.itemForm.value;
+    const newItem = this.itemForm.value;
 
-  // Normalize IDs
-  const newItemId = Number(newItem.itemId);
+    // Normalize IDs
+    const newItemId = Number(newItem.itemId);
 
-//   const itemType = newItem.itemType;
-//  //  Only check for itemId if the user selected "Inventory"
-//   if (itemType === 'Inventory' && (!newItemId || newItemId === 0)) {
-//     this.toastr.warning('Please select an item before adding.');
-//     return;
-//   }
+    //   const itemType = newItem.itemType;
+    //  //  Only check for itemId if the user selected "Inventory"
+    //   if (itemType === 'Inventory' && (!newItemId || newItemId === 0)) {
+    //     this.toastr.warning('Please select an item before adding.');
+    //     return;
+    //   }
 
-//   //  For Non-Inventory, ensure description is filled (optional but recommended)
-//   if (itemType === 'Non-Inventory' && !newItem.itemDescription?.trim()) {
-//     this.toastr.warning('Please enter an item description before adding.');
-//     return;
-//   }
+    //   //  For Non-Inventory, ensure description is filled (optional but recommended)
+    //   if (itemType === 'Non-Inventory' && !newItem.itemDescription?.trim()) {
+    //     this.toastr.warning('Please enter an item description before adding.');
+    //     return;
+    //   }
 
-  // Check for duplicate (only if not editing)
-  if (this.editingRowIndex === null) {
-    const duplicate = this.newQuotationItemData.some(
-      item => Number(item.itemId) === newItemId
-    );
+    // Check for duplicate (only if not editing)
+    if (this.editingRowIndex === null) {
+      const duplicate = this.newQuotationItemData.some(
+        item => Number(item.itemId) === newItemId
+      );
 
-    if (duplicate) {
-      this.toastr.warning('This item is already added. You can update it instead.');
-      return;
+      if (duplicate) {
+        this.toastr.warning('This item is already added. You can update it instead.');
+        return;
+      }
     }
+
+    if (this.editingRowIndex !== null) {
+      // --- Update existing item ---
+      const existing = this.newQuotationItemData[this.editingRowIndex];
+      const merged = {
+        ...existing,
+        ...newItem,
+        itemId: newItemId,
+        attachments: existing?.attachments ?? []
+      };
+
+      this.newQuotationItemData = this.newQuotationItemData.map((item, index) =>
+        index === this.editingRowIndex ? merged : item
+      );
+
+      this.toastr.success('Item updated successfully!');
+      this.editingRowIndex = null;
+    } else {
+      // --- Add new item ---
+      const withEmptyAttachments = {
+        ...newItem,
+        itemId: newItemId,
+        attachments: newItem.attachments?.length ? newItem.attachments : []
+      };
+      this.newQuotationItemData = [...this.newQuotationItemData, withEmptyAttachments];
+      this.toastr.success('Item added successfully!');
+    }
+
+    // Reset form
+    this.itemForm.reset({
+      amount: 0,
+      unitCost: 0,
+      orderQuantity: 1
+    });
   }
-
-  if (this.editingRowIndex !== null) {
-    // --- Update existing item ---
-    const existing = this.newQuotationItemData[this.editingRowIndex];
-    const merged = {
-      ...existing,
-      ...newItem,
-      itemId: newItemId,
-      attachments: existing?.attachments ?? []
-    };
-
-    this.newQuotationItemData = this.newQuotationItemData.map((item, index) =>
-      index === this.editingRowIndex ? merged : item
-    );
-
-    this.toastr.success('Item updated successfully!');
-    this.editingRowIndex = null;
-  } else {
-    // --- Add new item ---
-    const withEmptyAttachments = {
-      ...newItem,
-      itemId: newItemId,
-      attachments: newItem.attachments?.length ? newItem.attachments : []
-    };
-    this.newQuotationItemData = [...this.newQuotationItemData, withEmptyAttachments];
-    this.toastr.success('Item added successfully!');
-  }
-
-  // Reset form
-  this.itemForm.reset({
-    amount: 0,
-    unitCost: 0,
-    orderQuantity: 1
-  });
-}
   deleteRow(rowIndex: number): void {
-  Swal.fire({
-    title: 'Are you sure?',
-    text: 'Do you want to delete this item?',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, delete it',
-    cancelButtonText: 'Cancel',
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-  }).then((result) => {
-    if (result.isConfirmed) {
-    this.newQuotationItemData.splice(rowIndex, 1);
-    this.newQuotationItemData = [...this.newQuotationItemData]; // refresh table
-    this.toastr.success('Item deleted!', '');
-    }
-  });
-}
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to delete this item?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.newQuotationItemData.splice(rowIndex, 1);
+        this.newQuotationItemData = [...this.newQuotationItemData]; // refresh table
+        this.toastr.success('Item deleted!', '');
+      }
+    });
+  }
 
   // openNewEntityModal(row: any) {
   //   const modalRef = this.modalService.open(RfqAttachmentComponent, {
@@ -913,40 +991,39 @@ export class NewRfqComponent implements OnInit {
   // }
 
   onSubmitForApproval() {
-  Swal.fire({
-    title: 'Submit for Approval?',
-    text: 'Are you sure you want to submit this quotation for approval?',
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, submit it',
-    cancelButtonText: 'Cancel',
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
-        next: (res) => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Submitted!',
-            text: res.message || 'Quotation submitted for approval successfully.',
-            timer: 2000,
-            showConfirmButton: false
-          });
-          this.router.navigate(['/rfq']);
-        },
-        error: (err) => {
-          console.error(err);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Failed to submit quotation for approval.'
-          });
-        }
-      });
-    }
-  });
-}
+    Swal.fire({
+      title: 'Submit for Approval?',
+      text: 'Are you sure you want to submit this quotation for approval?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, submit it',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
+          next: (res) => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Submitted!',
+              text: res.message || 'Quotation submitted for approval successfully.',
+              confirmButtonColor: '#3085d6',
+            });
+            this.router.navigate(['/rfq']);
+          },
+          error: (err) => {
+            console.error(err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Failed to submit quotation for approval.'
+            });
+          }
+        });
+      }
+    });
+  }
 
   onAddRemarks(action: string): void {
     const modalRef = this.modalService.open(RfqRemarksComponent, {
@@ -985,7 +1062,6 @@ export class NewRfqComponent implements OnInit {
             }
           });
 
-
         }
       },
       (reason) => {
@@ -994,4 +1070,3 @@ export class NewRfqComponent implements OnInit {
     );
   }
 }
-

@@ -8,23 +8,24 @@ import { PurchaseRequestService } from 'app/shared/services/purchase-request-ser
   styleUrls: ['./pr-approval-history.component.scss']
 })
 export class PrApprovalHistoryComponent implements OnInit {
- 
-  @Input() requisitionNo!: string;   
+
+  @Input() requisitionNo!: string;
   approvalHistory: any[] = [];
   loading = true;
 
-constructor(
+  constructor(
     public activeModal: NgbActiveModal,
     private purchaseRequestService: PurchaseRequestService
   ) { }
- ngOnInit(): void {
+  ngOnInit(): void {
     this.loadApprovalHistory();
   }
 
   loadApprovalHistory() {
     this.purchaseRequestService.getApprovalHistoryByReqNo(this.requisitionNo).subscribe({
       next: (data: any) => {
-        this.approvalHistory = data?.$values;
+        // unwrap possible response formats
+        this.approvalHistory = data ?? data ?? [];
         this.loading = false;
       },
       error: (err) => {

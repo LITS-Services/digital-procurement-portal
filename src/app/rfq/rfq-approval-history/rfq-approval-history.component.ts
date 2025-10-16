@@ -22,9 +22,12 @@ export class RfqApprovalHistoryComponent implements OnInit {
   }
 
   loadApprovalHistory() {
+    this.loading = true;
+
     this.rfqService.getApprovalHistoryByRfqNo(this.rfqNo).subscribe({
       next: (data: any) => {
-        this.approvalHistory = data?.$values;
+        // unwrap possible response formats
+      this.approvalHistory = data ?? data?.$values ?? [];
         this.loading = false;
       },
       error: (err) => {

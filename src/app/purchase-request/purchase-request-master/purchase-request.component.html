@@ -26,9 +26,11 @@
             <button type="button" class="btn btn-sm" (click)="onUpdate()">
               <i class="ft-edit"></i><label class="ml-1 mt-1">Update</label>
             </button>
+
             <button type="button" class="btn btn-sm" (click)="openDeleteModal()" [disabled]="isDeleteButtonDisabled">
               <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
             </button>
+
             <button type="button" class="btn btn-sm" [disabled]="isEditButtonDisabled" (click)="onView()">
               <i class="ft-eye"></i><label class="ml-1 mt-1">View</label>
             </button>
@@ -43,19 +45,6 @@
 
             <button type="button" class="btn btn-sm" (click)="loadFilteredRequests('Completed')"><label
                 class="ml-1 mt-1">Completed</label></button>
-
-<!-- <div ngbDropdown class="ml-2">
-  <button class="btn btn-outline-primary btn-sm dropdown-toggle" ngbDropdownToggle>
-    By Status: {{ activeFilter || 'All' }}
-  </button>
-  <div ngbDropdownMenu>
-    <button class="dropdown-item" (click)="loadPurchaseRequests(); activeFilter='All'">All</button>
-    <button class="dropdown-item" (click)="loadFilteredRequests('New'); activeFilter='New'">New</button>
-    <button class="dropdown-item" (click)="loadFilteredRequests('InProcess'); activeFilter='InProcess'">In Process</button>
-    <button class="dropdown-item" (click)="loadFilteredRequests('Completed'); activeFilter='Completed'">Completed</button>
-  </div>
-</div> -->
-
 
             <!-- <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
               <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
@@ -75,7 +64,8 @@
 
       <!-- Data Table -->
       <ngx-datatable class="bootstrap core-bootstrap" [rows]="purchaseRequestData" [columnMode]="'force'"
-        [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [limit]="15"
+        [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [limit]="pageSize"
+        [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
         [loadingIndicator]="loading" [selected]="chkBoxSelected" [selectionType]="SelectionType.checkbox"
         (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 
@@ -109,20 +99,6 @@
           [width]="100"></ngx-datatable-column>
         <ngx-datatable-column name="Department" prop="department" [width]="100"></ngx-datatable-column>
 
-        <!-- <ngx-datatable-column name="Approval History" [width]="100" prop="action" [sortable]="false">
-          <ng-template let-row="row" ngx-datatable-cell-template>
-            <button class="btn btn-primary btn-sm" (click)="openApprovalHistoryModal(row)">
-              <i class="ft-list"></i>
-            </button>
-          </ng-template>
-        </ngx-datatable-column>
-        <ngx-datatable-column name="Actions" [width]="150">
-          <ng-template let-row="row" ngx-datatable-cell-template>
-            <button class="btn btn-sm btn-primary" (click)="generateRfq(row)" [disabled]="!row.canGenerateRfq">
-              <i class="ft-file-text" style="margin-right: 5px;"></i> Generate RFQ
-            </button>
-          </ng-template>
-        </ngx-datatable-column> -->
         <ngx-datatable-column name="Action" [width]="100" prop="action" [sortable]="false">
           <ng-template let-row="row" ngx-datatable-cell-template>
             <button type="button" class="btn btn-sm btn-primary" [ngbPopover]="actionToolbar"
@@ -137,10 +113,6 @@
                   <i class="ft-list"></i>
                 </button>
 
-                <!-- <button class="btn btn-light btn-sm m-1" ngbTooltip="Generate RFQ" (click)="generateRfq(row)"
-                  [disabled]="!row.canGenerateRfq">
-                  <i class="ft-file-text" style="margin-right: 5px;"></i>
-                </button> -->
                 <!-- If PR is completed, show active button -->
                 <button *ngIf="row.requestStatus === 'Completed'; else waitingTemplate" class="btn btn-light btn-sm m-1"
                   ngbTooltip="Generate RFQ" (click)="generateRfq(row)">

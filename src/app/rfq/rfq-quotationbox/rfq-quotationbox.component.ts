@@ -86,7 +86,7 @@ loadVendors(quotationRequestId: number) {
   this.rfqService.getBidSubmissionDetailsByQuotation(quotationRequestId).subscribe({
     next: (res: any) => {
       // Navigate into res.vendors.$values safely
-      const vendors = res?.vendors?.$values || [];
+      const vendors = res?.vendors || [];
       this.newQuotationBoxForm.patchValue({
         quotationRequestId: res?.quotationRequestId,
         rfqNo: res?.rfqNo,
@@ -109,7 +109,7 @@ console.log( "RFQ DATA: ", this.rfqData);
       this.vendorItemMap = {};
       vendors.forEach((vendor: any) => {
         this.vendorItemMap[vendor.vendorUserId] = {
-          items: vendor?.bids?.$values || []
+          items: vendor?.bids || []
         };
       });
       this.loading = false;

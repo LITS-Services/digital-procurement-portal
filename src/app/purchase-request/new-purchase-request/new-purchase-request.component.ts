@@ -1,23 +1,23 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbAccordion, NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAccordion, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, DatatableComponent, id, SelectionType } from '@swimlane/ngx-datatable';
 import { DatatableData } from 'app/data-tables/data/datatables.data';
 import { PurchaseRequestAttachmentModalComponent } from 'app/shared/modals/purchase-request-attachment-modal/purchase-request-attachment-modal.component';
-import { CompanyService, VendorUserDropdown } from 'app/shared/services/Company.services';
-import { PurchaseRequestService, UploadedFile } from 'app/shared/services/purchase-request-services/purchase-request.service';
+import { CompanyService } from 'app/shared/services/Company.services';
+import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
 import { ToastrService } from 'ngx-toastr';
 import { PurchaseRequestRemarksComponent } from '../purchase-request-remarks/purchase-request-remarks.component';
 import { WorkflowServiceService } from 'app/shared/services/WorkflowService/workflow-service.service';
 import Swal from 'sweetalert2';
-import { is } from 'core-js/core/object';
 
 @Component({
   selector: 'app-new-purchase-request',
   templateUrl: './new-purchase-request.component.html',
   styleUrls: ['./new-purchase-request.component.scss']
 })
+
 export class NewPurchaseRequestComponent implements OnInit {
   isNewForm = true; // true = create, false = edit
   isFormDirty = false; // track if any field was touched
@@ -40,7 +40,6 @@ export class NewPurchaseRequestComponent implements OnInit {
   itemList: any[] = [];
   unitsOfMeasurementList: any[] = [];
   accountList: any[] = [];
-
 
   vendorUsers: any[] = [];
 
@@ -101,34 +100,22 @@ export class NewPurchaseRequestComponent implements OnInit {
       // }
     });
 
-    // Main form
+    // Purchase Request Form
     this.newPurchaseRequestForm = this.fb.group({
       requisitionNo: [''],
       submittedDate: [null],
+      status: [null],
       deliveryLocation: [''],
       receiverName: [''],
       receiverContact: [''],
-      status: [''],
       department: [''],
       designation: [''],
       businessUnit: [''],
-      partialDeliveryAcceptable: [null],
-      exceptionPolicy: [null],
+      partialDeliveryAcceptable: [false],
+      exceptionPolicy: [false],
       subject: [''],
-      workflowMasterId: [0],
-      workflowName: [''],
-      workflowType: [''],
-      createdBy: [''],
-      // attachments: this.fb.group({
-      //   specifications: [false],
-      //   drawing: [false],
-      //   scopeOfWorks: [false],
-      //   billOfMaterials: [false],
-      //   other: [''],
-      //   attachment: [''],
-      //   specialInstructions: ['']
-      // })
     });
+
     this.newPurchaseRequestForm.valueChanges.subscribe(() => {
       this.isFormDirty = true;
     });
@@ -139,7 +126,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       }
     });
 
-    // Item form
+    // Purchase Item Form
     this.itemForm = this.fb.group({
       id: [null],
       requisitionNo: [''],
@@ -152,16 +139,14 @@ export class NewPurchaseRequestComponent implements OnInit {
       reqByDate: [null],
       itemDescription: [''],
       vendorUserId: [''],
-      createdBy: [''],
       accountId: [0],
       remarks: [''],
-      purchaseRequestId: [0],
       attachments: this.fb.group([])
     })
+
     this.itemForm.valueChanges.subscribe(() => {
       this.isFormDirty = true;
     });
-
 
     // // Check if editing existing request
     // this.route.queryParamMap.subscribe(params => {
@@ -178,27 +163,59 @@ export class NewPurchaseRequestComponent implements OnInit {
     }
   }
 
+  // loadVendorUsers() {
+  //   this.companyService.getVendorUsers().subscribe(response => {
+  //     this.vendorUsers = response.$values ?? [];
+  //   });
+  // }
   loadVendorUsers() {
-    this.companyService.getVendorUsers().subscribe(response => {
-      this.vendorUsers = response.$values ?? [];
+    this.companyService.getAllVendorUsers().subscribe({
+      next: (res: any) => {
+        this.vendorUsers = res?.value ?? [];
+      },
+      error: (err) => console.error('Error fetching vendor users:', err)
     });
   }
 
   loadUnitsOfMeasurements() {
-    this.purchaseRequestService.getAllUnitsOfMeasurements().subscribe(res => {
-      this.unitsOfMeasurementList = res.$values ?? [];
+    this.purchaseRequestService.getUnitsOfMeasurementDropdown().subscribe({
+      next: (res) => {
+        this.unitsOfMeasurementList = res ?? [];
+        console.log('UoM dropdown data:', this.unitsOfMeasurementList);
+      },
+      error: (err) => {
+        console.error('Failed to load UoM dropdown:', err);
+      }
     });
   }
 
   loadAccounts() {
-    this.purchaseRequestService.getAllAccounts().subscribe(res => {
-      this.accountList = res.$values ?? [];
+    this.purchaseRequestService.getAccountsDropdown().subscribe({
+      next: (res) => {
+        this.accountList = res ?? [];
+        console.log('Account dropdown data:', this.accountList);
+      },
+      error: (err) => {
+        console.error('Failed to load Account dropdown:', err);
+      }
     });
   }
 
+  // loadItems() {
+  //   this.purchaseRequestService.getAllItems().subscribe(res => {
+  //     this.itemList = res.$values ?? [];
+  //   });
+  // }
+
   loadItems() {
-    this.purchaseRequestService.getAllItems().subscribe(res => {
-      this.itemList = res.$values ?? [];
+    this.purchaseRequestService.getItemsDropdown().subscribe({
+      next: (res) => {
+        this.itemList = res ?? [];
+        console.log('Item dropdown data:', this.itemList);
+      },
+      error: (err) => {
+        console.error('Failed to load items dropdown:', err);
+      }
     });
   }
 
@@ -313,70 +330,69 @@ export class NewPurchaseRequestComponent implements OnInit {
   // }
 
   insertItem(): void {
-  const newItem = this.itemForm.value;
+    const newItem = this.itemForm.value;
 
-  // Normalize IDs
-  const newItemId = Number(newItem.itemId);
-// const itemType = newItem.itemType;
-//  //  Only check for itemId if the user selected "Inventory"
-//   if (itemType === 'Inventory' && (!newItemId || newItemId === 0)) {
-//     this.toastr.warning('Please select an item before adding.');
-//     return;
-//   }
+    // Normalize IDs
+    const newItemId = Number(newItem.itemId);
+    // const itemType = newItem.itemType;
+    //  //  Only check for itemId if the user selected "Inventory"
+    //   if (itemType === 'Inventory' && (!newItemId || newItemId === 0)) {
+    //     this.toastr.warning('Please select an item before adding.');
+    //     return;
+    //   }
 
-//   //  For Non-Inventory, ensure description is filled (optional but recommended)
-//   if (itemType === 'Non-Inventory' && !newItem.itemDescription?.trim()) {
-//     this.toastr.warning('Please enter an item description before adding.');
-//     return;
-//   }
+    //   //  For Non-Inventory, ensure description is filled (optional but recommended)
+    //   if (itemType === 'Non-Inventory' && !newItem.itemDescription?.trim()) {
+    //     this.toastr.warning('Please enter an item description before adding.');
+    //     return;
+    //   }
 
-  // Check for duplicate (only if not editing)
-  if (this.editingRowIndex === null) {
-    const duplicate = this.newPurchaseItemData.some(
-      item => Number(item.itemId) === newItemId
-    );
+    // Check for duplicate (only if not editing)
+    if (this.editingRowIndex === null) {
+      const duplicate = this.newPurchaseItemData.some(
+        item => Number(item.itemId) === newItemId
+      );
 
-    if (duplicate) {
-      this.toastr.warning('This item is already added. You can update it instead.');
-      return;
+      if (duplicate) {
+        this.toastr.warning('This item is already added. You can update it instead.');
+        return;
+      }
     }
+
+    if (this.editingRowIndex !== null) {
+      // --- Update existing item ---
+      const existing = this.newPurchaseItemData[this.editingRowIndex];
+      const merged = {
+        ...existing,
+        ...newItem,
+        itemId: newItemId,
+        attachments: existing?.attachments ?? []
+      };
+
+      this.newPurchaseItemData = this.newPurchaseItemData.map((item, index) =>
+        index === this.editingRowIndex ? merged : item
+      );
+
+      this.toastr.success('Item updated successfully!');
+      this.editingRowIndex = null;
+    } else {
+      // --- Add new item ---
+      const withEmptyAttachments = {
+        ...newItem,
+        itemId: newItemId,
+        attachments: newItem.attachments?.length ? newItem.attachments : []
+      };
+      this.newPurchaseItemData = [...this.newPurchaseItemData, withEmptyAttachments];
+      this.toastr.success('Item added successfully!');
+    }
+
+    // Reset form
+    this.itemForm.reset({
+      amount: 0,
+      unitCost: 0,
+      orderQuantity: 1
+    });
   }
-
-  if (this.editingRowIndex !== null) {
-    // --- Update existing item ---
-    const existing = this.newPurchaseItemData[this.editingRowIndex];
-    const merged = {
-      ...existing,
-      ...newItem,
-      itemId: newItemId,
-      attachments: existing?.attachments ?? []
-    };
-
-    this.newPurchaseItemData = this.newPurchaseItemData.map((item, index) =>
-      index === this.editingRowIndex ? merged : item
-    );
-
-    this.toastr.success('Item updated successfully!');
-    this.editingRowIndex = null;
-  } else {
-    // --- Add new item ---
-    const withEmptyAttachments = {
-      ...newItem,
-      itemId: newItemId,
-      attachments: newItem.attachments?.length ? newItem.attachments : []
-    };
-    this.newPurchaseItemData = [...this.newPurchaseItemData, withEmptyAttachments];
-    this.toastr.success('Item added successfully!');
-  }
-
-  // Reset form
-  this.itemForm.reset({
-    amount: 0,
-    unitCost: 0,
-    orderQuantity: 1
-  });
-}
-
 
   // Edit a row
   editRow(row: any, rowIndex: number) {
@@ -404,46 +420,48 @@ export class NewPurchaseRequestComponent implements OnInit {
   //   this.toastr.success('Item deleted!', '');
   // }
   deleteRow(rowIndex: number): void {
-  Swal.fire({
-    title: 'Are you sure?',
-    text: 'Do you want to delete this item?',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, delete it',
-    cancelButtonText: 'Cancel',
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-  }).then((result) => {
-    if (result.isConfirmed) {
-      this.newPurchaseItemData.splice(rowIndex, 1);
-      this.newPurchaseItemData = [...this.newPurchaseItemData]; // refresh table
-      this.toastr.success('Item deleted!', '');
-    }
-  });
-}
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you want to delete this item?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.newPurchaseItemData.splice(rowIndex, 1);
+        this.newPurchaseItemData = [...this.newPurchaseItemData]; // refresh table
+        this.toastr.success('Item deleted!', '');
+      }
+    });
+  }
 
   loadExistingRequest(id: number) {
     this.purchaseRequestService.getPurchaseRequestById(id).subscribe({
       next: async (data) => {
-        console.log("update data: ", data)
+
+        // unwrap the Ardalis.Result<T> wrapper
+        const requestData = data;
+
         const loggedInUserId = localStorage.getItem('userId');
-        this.isSubmitter = data.submitterId === loggedInUserId;
+        this.isSubmitter = requestData.submitterId === loggedInUserId;
 
         this.isNewForm = false;
-        this.currentRequestId = data.id;
-        this.currentRequisitionNo = data.requisitionNo;
-        // this.newPurchaseRequestForm.patchValue(data);
-        // patch values with formatted dates
+        this.currentRequestId = requestData.id;
+        this.currentRequisitionNo = requestData.requisitionNo;
+
         this.newPurchaseRequestForm.patchValue({
-          ...data,
-          submittedDate: this.toDateInputValue(data.submittedDate)
+          ...requestData,
+          submittedDate: this.toDateInputValue(requestData.submittedDate)
         });
 
-        if (data.requestStatus?.status) {
+        if (requestData.requestStatus) {
           this.newPurchaseRequestForm.patchValue({
-            status: data.requestStatus.status
+            status: requestData.requestStatus
           });
-          if (data.requestStatus?.status === 'Completed') {
+          if (requestData.requestStatus === 'Completed') {
             this.isStatusCompleted = true;
             this.cdr.detectChanges();
           }
@@ -451,7 +469,7 @@ export class NewPurchaseRequestComponent implements OnInit {
             this.isStatusCompleted = false;
             this.cdr.detectChanges();
           }
-          if (data.requestStatus?.status === 'InProcess') {
+          if (requestData.requestStatus === 'InProcess') {
             this.isStatusInProcess = true;
             this.cdr.detectChanges();
           }
@@ -461,8 +479,10 @@ export class NewPurchaseRequestComponent implements OnInit {
           }
         }
 
-        if (data.items.$values) {
-          this.newPurchaseItemData = data.items.$values.map((item: any) => ({
+        if (requestData.purchaseItems) {
+          const itemList = requestData.purchaseItems || [];
+
+          this.newPurchaseItemData = itemList.map((item: any) => ({
             id: item.id,
             requisitionNo: item.requisitionNo,
             itemType: item.itemType,
@@ -478,14 +498,8 @@ export class NewPurchaseRequestComponent implements OnInit {
             remarks: item.remarks,
             createdBy: item.createdBy,
             purchaseRequestId: item.purchaseRequestId,
-            attachments: item.attachments?.$values?.map((a: any) => ({
+            attachments: (item.attachments || []).map((a: any) => ({
               id: a.id,
-              // specifications: a.specifications || '',
-              // drawing: a.drawing || '',
-              // scopeOfWorks: a.scopeOfWorks || '',
-              // billOfMaterials: a.billOfMaterials || '',
-              // other: a.other || '',
-              // specialInstructions: a.specialInstructions || '',
               content: a.content || '',
               contentType: a.contentType || '',
               fileName: a.fileName || '',
@@ -496,59 +510,36 @@ export class NewPurchaseRequestComponent implements OnInit {
               isDeleted: a.isDeleted || false,
               purchaseItemId: a.purchaseItemId || 0,
               isNew: false
-            })) || []
+            }))
           }));
         }
-        // this.attachmentList = data.attachments?.$values.map((a: any) => ({
-        //   name: a.name,
-        //   type: a.type,
-        //   attachment: a.attachment,
-        //   isNew: false
-        // }))
-        // this.pendingAttachment = [];
-        // this.numberOfAttachments = this.attachmentList.length;
+        this.cdr.detectChanges();
       },
 
       error: (err) => console.error('Failed to load purchase request:', err)
-
     });
   }
-
-
-  // homePage() {
-  //   if (this.isNewForm && this.isFormDirty) {
-  //     const confirmSave = confirm('Do you want to save this request as a draft?');
-
-  //     if (confirmSave) {
-  //       this.saveAsDraftAndGoBack();
-  //     } else {
-  //       this.router.navigate(['/purchase-request']);
-  //     }
-  //   } else {
-  //     this.router.navigate(['/purchase-request']);
-  //   }
-  // }
 
   homePage() {
-  if (this.isNewForm && this.isFormDirty) {
-    Swal.fire({
-      title: 'Save as Draft?',
-      text: 'Do you want to save this request as a draft?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, save it',
-      cancelButtonText: 'No, go back',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.saveAsDraftAndGoBack();
-      } else {
-        this.router.navigate(['/purchase-request']);
-      }
-    });
-  } else {
-    this.router.navigate(['/purchase-request']);
+    if (this.isNewForm && this.isFormDirty) {
+      Swal.fire({
+        title: 'Save as Draft?',
+        text: 'Do you want to save this request as a draft?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, save it',
+        cancelButtonText: 'No, go back',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.saveAsDraftAndGoBack();
+        } else {
+          this.router.navigate(['/purchase-request']);
+        }
+      });
+    } else {
+      this.router.navigate(['/purchase-request']);
+    }
   }
-}
 
   saveAsDraftAndGoBack() {
     // if (this.newPurchaseRequestForm.invalid) {
@@ -571,7 +562,7 @@ export class NewPurchaseRequestComponent implements OnInit {
         itemDescription: item.itemDescription || '',
         accountId: Number(item.accountId) || 0,
         remarks: item.remarks || '',
-        createdBy: item.createdBy || 'current-user',
+        createdBy: item.createdBy || '',
         purchaseRequestId: item.purchaseRequestId || 0,
         vendorUserId: item.vendorUserId || '',
         requisitionNo: f.requisitionNo,
@@ -608,12 +599,11 @@ export class NewPurchaseRequestComponent implements OnInit {
       exceptionPolicy: f.exceptionPolicy || false,
       subject: f.subject || '',
       workflowMasterId: Number(f.workflowMasterId) || 0,
-      createdBy: f.createdBy || 'USER',
+      createdBy: f.createdBy || '',
       purchaseItems
     };
 
     this.loading = true;
-
 
     const request$ = this.purchaseRequestService.createPurchaseRequest({ purchaseRequest: payload, isDraft: true });
 
@@ -636,12 +626,11 @@ export class NewPurchaseRequestComponent implements OnInit {
     console.error('Error saving draft:', err);
   }
 
-
   submitForm() {
-    // if (!this.newPurchaseRequestForm.valid) {
-    //   console.warn('Form is invalid');
-    //   return;
-    // }
+    if (!this.newPurchaseRequestForm.valid) {
+      this.toastr.warning('Form is invalid');
+      return;
+    }
 
     const f = this.newPurchaseRequestForm.value;
     const submittedDateISO = f.submittedDate ? new Date(f.submittedDate).toISOString() : new Date().toISOString();
@@ -659,8 +648,8 @@ export class NewPurchaseRequestComponent implements OnInit {
         itemDescription: item.itemDescription || '',
         accountId: Number(item.accountId) || 0,
         remarks: item.remarks || '',
-        createdBy: item.createdBy || 'current-user',
-        purchaseRequestId: item.purchaseRequestId || 0,
+        createdBy: item.createdBy || '',
+        // purchaseRequestId: item.purchaseRequestId || 0,
         vendorUserId: item.vendorUserId || '',
         requisitionNo: f.requisitionNo,
         attachments: item.attachments?.map(att => ({
@@ -675,9 +664,9 @@ export class NewPurchaseRequestComponent implements OnInit {
           contentType: att.contentType || '',
           fileName: att.fileName || '',
           fromForm: att.fromForm || '',
-          createdBy: 'current-user',
-          isDeleted: false,
-          purchaseItemId: att.purchaseItemId || 0,
+          createdBy: att.createdBy || '',
+          // isDeleted: false,
+          // purchaseItemId: att.purchaseItemId || 0,
         }))
       }))
       : [];
@@ -695,22 +684,21 @@ export class NewPurchaseRequestComponent implements OnInit {
       partialDeliveryAcceptable: f.partialDeliveryAcceptable,
       exceptionPolicy: f.exceptionPolicy,
       subject: f.subject,
-      workflowMasterId: Number(f.workflowMasterId) || 0,
-      createdBy: f.createdBy || 'USER',
+      // workflowMasterId: Number(f.workflowMasterId) || 0,
+      // createdBy: f.createdBy || 'USER',
       purchaseItems
     };
 
     if (this.currentRequestId) {
-      this.purchaseRequestService.updatePurchaseRequest(this.currentRequestId, payload).subscribe({
+      this.purchaseRequestService.updatePurchaseRequest(this.currentRequestId, { purchaseRequest: payload }).subscribe({
         next: res => {
           console.log('Purchase Request Updated:', res);
           this.loading = false;
           this.router.navigate(['/purchase-request']);
-          this.toastr.success('Request is updated!', '');
         },
         error: err => {
           console.error('Error updating Purchase Request:', err);
-          this.toastr.success('Something went Wrong', '');
+          this.toastr.error('Something went wrong.', '');
           this.loading = false;
         }
       });
@@ -724,11 +712,10 @@ export class NewPurchaseRequestComponent implements OnInit {
           this.loading = false;
 
           this.router.navigate(['/purchase-request']);
-          this.toastr.success('Request is created!', '');
         },
         error: err => {
           console.error('Error creating Purchase Request:', err);
-          this.toastr.success('Something went wrong');
+          this.toastr.error('Something went wrong.');
           this.loading = false;
         }
       });
@@ -827,42 +814,41 @@ export class NewPurchaseRequestComponent implements OnInit {
   //   });
   // }
 
-onSubmitForApproval() {
-  Swal.fire({
-    title: 'Submit for Approval?',
-    text: 'Are you sure you want to submit this Purchase Request for approval?',
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, submit it!',
-    cancelButtonText: 'Cancel',
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-  }).then((result) => {
-    if (result.isConfirmed) {
-      this.purchaseRequestService.submitForApproval(this.currentRequestId).subscribe({
-        next: (res) => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Submitted!',
-            text: res.message || 'Purchase Request submitted for approval successfully!',
-            confirmButtonColor: '#3085d6',
-          }).then(() => {
-            this.router.navigate(['/purchase-request']);
-          });
-        },
-        error: (err) => {
-          console.error(err);
-          Swal.fire({
-            icon: 'error',
-            title: 'Failed!',
-            text: 'Failed to submit purchase request for approval.',
-          });
-        },
-      });
-    }
-  });
-}
-
+  onSubmitForApproval() {
+    Swal.fire({
+      title: 'Submit for Approval?',
+      text: 'Are you sure you want to submit this Purchase Request for approval?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, submit it',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.purchaseRequestService.submitForApproval(this.currentRequestId).subscribe({
+          next: (res) => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Submitted!',
+              text: res.message || 'Purchase Request submitted for approval successfully!',
+              confirmButtonColor: '#3085d6',
+            }).then(() => {
+              this.router.navigate(['/purchase-request']);
+            });
+          },
+          error: (err) => {
+            console.error(err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Failed!',
+              text: 'Failed to submit purchase request for approval.',
+            });
+          },
+        });
+      }
+    });
+  }
 
   onAddRemarks(action: string): void {
     const modalRef = this.modalService.open(PurchaseRequestRemarksComponent, {
@@ -900,7 +886,6 @@ onSubmitForApproval() {
               this.loading = false;
             }
           });
-
 
         }
       },
