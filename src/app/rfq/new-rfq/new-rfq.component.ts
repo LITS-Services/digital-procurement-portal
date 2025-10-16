@@ -1049,6 +1049,7 @@ export class NewRfqComponent implements OnInit {
             next: res => {
               this.loading = false;
               if (res.message == "Approved") {
+                this.cdr.detectChanges();
                 this.router.navigate(['/rfq']);
                 this.toastr.success(res.message);
               }

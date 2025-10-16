@@ -22,8 +22,7 @@ export class PurchaseRequestRemarksComponent implements OnInit {
        action: this.action,
        remarks: this.remarks
      });
-     this.router.navigate(['/purchase-request']);
-     this.cdr.detectChanges();
+     
    }
  
    cancel() {

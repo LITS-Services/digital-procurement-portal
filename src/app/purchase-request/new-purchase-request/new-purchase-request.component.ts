@@ -616,7 +616,7 @@ export class NewPurchaseRequestComponent implements OnInit {
   private handleDraftSuccess() {
 
     this.loading = false;
-    this.toastr.success('Draft saved successfully');
+    // this.toastr.success('Draft saved successfully');
     this.router.navigate(['/purchase-request']);
   }
 
@@ -874,7 +874,9 @@ export class NewPurchaseRequestComponent implements OnInit {
             next: res => {
               this.loading = false;
               if (res.message == "Approved") {
+                this.cdr.detectChanges();
                 this.router.navigate(['/purchase-request']);
+                
                 this.toastr.success(res.message);
               }
               else {

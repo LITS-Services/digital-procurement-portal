@@ -22,8 +22,6 @@ export class RfqRemarksComponent implements OnInit {
       action: this.action,
       remarks: this.remarks
     });
-    this.router.navigate(['/rfq']);
-    this.cdr.detectChanges();
   }
 
   cancel() {
