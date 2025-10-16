@@ -14,133 +14,106 @@ export interface VendorUserDropdown {
 export class CompanyService {
   private apiUrl = `${environment.apiUrl}/Company`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-
-getAllEmployees(): Observable<any[]> {
-return this.http.get<any[]>(`${environment.apiUrl}/Employee/GetAllEmployees`);
+  getAllEmployees(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/Employee/GetAllEmployees`);
   }
 
-registerEmployee(data: any): Observable<any> {
-  return this.http.post<any>(`${environment.apiUrl}/Employee/Create`, data);
-}
-getCompaniesByUserEntity(userId: string): Observable<any[]> {
-  return this.http.post<any[]>(`${environment.apiUrl}/Company/get-companies-by-user-entity`, {
-    userId: userId
-  });
-}
+  registerEmployee(data: any): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/Employee/Create`, data);
+  }
+  getCompaniesByUserEntity(userId: string): Observable<any[]> {
+    return this.http.post<any[]>(`${environment.apiUrl}/Company/get-companies-by-user-entity`, {
+      userId: userId
+    });
+  }
 
+  // Create a new procurement company
+  createProCompany(data: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/register-procurement-company`, data);
+  }
 
-// Create a new procurement company
-createProCompany(data: any): Observable<any> {
-  return this.http.post<any>(`${this.apiUrl}/register-procurement-company`, data);
-}
-
-   getProCompanies(): Observable<any[]> {
+  getProCompanies(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/get-all-procurement-companies`);
   }
-  
- deleteProCompanies(id: number[]): Observable<any> {
-  return this.http.delete<any>(`${this.apiUrl}/delete-procurement-company/${id}`);
-}
 
-  
+  deleteProCompanies(id: number[]): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/delete-procurement-company/${id}`);
+  }
+
   // Update multiple procurement companies (example)
   getproByid(id): Observable<any> {
-   return this.http.get<any>(`${this.apiUrl}/get-procurement-company/${id}`);
+    return this.http.get<any>(`${this.apiUrl}/get-procurement-company/${id}`);
   }
-  
+
   // Update single procurement company by ID
   updateProCompaniesById(id: number, data: any): Observable<any> {
-   return this.http.put<any>(`${this.apiUrl}/update-procurement-company/${id}`, data);
+    return this.http.put<any>(`${this.apiUrl}/update-procurement-company/${id}`, data);
   }
 
-
-
-
   //ProcurementUsers
-  getprocurementusers():Observable<any[]> {
+  getprocurementusers(): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiUrl}/ProcurementUsers/GetAll`);
   }
 
   deleteprocurementusers(id: string): Observable<any> {
-  return this.http.delete<any>(`${environment.apiUrl}/ProcurementUsers/Delete`);
+    return this.http.delete<any>(`${environment.apiUrl}/ProcurementUsers/Delete`);
   }
 
   enableProcurementUser(id: string): Observable<any> {
     return this.http.put<any>(`${environment}ProcurementUsers/Activate/${id}`, null);
   }
 
+  getprocurementusersbyid(id: string): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/ProcurementUsers/GetUserWithCompanies/${id}`);
+  }
 
-getprocurementusersbyid(id: string): Observable<any> {
-  return this.http.get<any>(`${environment.apiUrl}/ProcurementUsers/GetUserWithCompanies/${id}`);
-}
-
-getcompanydatabyid(id: string): Observable<any> {
+  getcompanydatabyid(id: string): Observable<any> {
     return this.http.get<any>(`${environment.apiUrl}/Procurement/GetUserCompanies/GetUserWithCompanies/${id}`);
   }
- 
-getRoles(): Observable<any[]> {
+
+  getRoles(): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiUrl}/ProcurementUsers/GetRoles`);
   }
 
-
-resetPassword(payload: any) {
-  return this.http.post(`${environment.apiUrl}/ProcurementUsers/ChangePassword/`, payload);
-}
-
-
-ProcurmentuserUpdate(id: string, data: any): Observable<any> {
-   return this.http.put<any>(`${environment.apiUrl}/ProcurementUsers/Update/${id}`, data);
+  resetPassword(payload: any) {
+    return this.http.post(`${environment.apiUrl}/ProcurementUsers/ChangePassword/`, payload);
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+  ProcurmentuserUpdate(id: string, data: any): Observable<any> {
+    return this.http.put<any>(`${environment.apiUrl}/ProcurementUsers/Update/${id}`, data);
+  }
 
   getVendorCompanies(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/get-all-vendor-companies`);
   }
 
-getVendorUsers(): Observable<VendorUserDropdown> {
-  return this.http.get<VendorUserDropdown>(`${this.apiUrl}/get-all-vendor-users`);
-}
+  // getVendorUsers(): Observable<VendorUserDropdown> {
+  //   return this.http.get<VendorUserDropdown>(`${this.apiUrl}/get-all-vendor-users`);
+  // }
+  getAllVendorUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/get-all-vendor-users`);
+  }
 
-
-//   // Get company by ID
+  //   // Get company by ID
   getCompanyById(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 
+  //   // Create company
+  //   createCompany(data: any): Observable<any> {
+  //     return this.http.post<any>(this.apiUrl, data);
+  //   }
 
-//   // Create company
-//   createCompany(data: any): Observable<any> {
-//     return this.http.post<any>(this.apiUrl, data);
-//   }
-
-//   // Update company
+  //   // Update company
   updateCompany(id: number, data: any): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/update-vendor-company/${id}`, data);
   }
 
-//   // Delete company
-//   deleteCompany(id: number): Observable<any> {
-//     return this.http.delete<any>(`${this.apiUrl}/${id}`);
-//   }
-
-// Done by Sahal
-getVendorsAndCompaniesForRfq(): Observable<any[]> {
-  return this.http.get<any[]>(`${this.apiUrl}/get-all-vendors-companies-for-rfq`);
-}
+  //   // Delete company
+  //   deleteCompany(id: number): Observable<any> {
+  //     return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  //   }
 
 }
