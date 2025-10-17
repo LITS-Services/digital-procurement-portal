@@ -1,0 +1,126 @@
+<section>
+  <div class="row">
+    <div class="col-12">
+
+      <!-- Header -->
+      <div class="row">
+        <div class="col-md-12" style=" margin-top: -0.25rem;">
+          <!-- <h4 class="heading">Create Purchase Request</h4> -->
+          <h4 class="heading">
+            <ng-container *ngIf="viewMode === false">
+              {{ isNewForm ? 'Create Global Configuration' : 'Update Global Configuration' }}
+            </ng-container>
+          </h4>
+        </div>
+      </div>
+
+      <!-- Action Pane -->
+      <div class="card cstm-ui-card">
+        <div class="row">
+          <div class="col-md-6">
+            <button class="btn btn-lg mr-1" type="button" (click)="homePage()"><i class="ft-arrow-left"></i></button>
+            <span class="vl"></span>
+
+            <!-- Create Mode: Save + Save as Draft -->
+            <ng-container *ngIf="isNewForm && !viewMode">
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="newGlobalConfigForm.invalid"
+                (click)="onSubmit()">
+                <i class="ft-plus"></i><label class="ml-1 mt-1">Save</label>
+              </button>
+
+            </ng-container>
+
+            <!-- Update Mode: Update -->
+            <ng-container *ngIf="!isNewForm && !viewMode">
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="newGlobalConfigForm.invalid" (click)="onSubmit()">
+                <i class="ft-edit-2"></i><label class="ml-1 mt-1">Update</label>
+              </button>
+            </ng-container>
+
+            <!-- <button type="reset" class="btn btn-sm">
+              <i class="ft-edit"></i><label class="ml-1 mt-1" for="">Edit</label>
+            </button>
+            <button type="reset" class="btn btn-sm">
+              <i class="ft-trash"></i><label class="ml-1 mt-1" for="">Delete</label>
+            </button>
+            <button type="reset" class="btn btn-sm">
+              <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
+            </button> -->
+
+          </div>
+
+          <div class="col-md-6 text-right" style="margin-top: 0.3rem;">
+            <!-- <button type="reset" class="btn btn-sm mr-2">
+              <i class="ft-printer"></i><label class="ml-1 mt-1" for="">Print</label>
+            </button> -->
+
+            <!-- <button type="reset" class="btn btn-sm" (click)="openNewEntityModal()">
+              <i class="ft-paperclip"></i><label class="ml-1 mt-1" for="">Attachment</label>
+              <span class="badge badge-primary ml-1">{{ numberOfAttachments }}</span>
+            </button> -->
+            <!-- <button type="reset" class="btn btn-sm">
+                <i class="ft-settings"></i><label class="ml-1 mt-1" for="">Account Budget Lookup</label>
+              </button>
+              <button type="reset" class="btn btn-sm">
+                <i class="ft-alert-circle"></i><label class="ml-1 mt-1" for="">Exception Policy</label>
+              </button> -->
+
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+
+          <form [formGroup]="newGlobalConfigForm" (ngSubmit)="onSubmit()">
+            <div class="form-row">
+
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>Name</label>
+                  <input type="text" formControlName="name" class="form-control custom-input" placeholder="Enter Name"
+                    required />
+                </div>
+              </div>
+
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>Value</label>
+                  <input type="text" formControlName="value" placeholder="Enter Value" required
+                    class="form-control custom-input" />
+                  <!-- <input type="text" formControlName="purchaseRequestNo" placeholder="Enter PR No."
+                    class="form-control" /> -->
+                </div>
+              </div>
+
+              <!-- <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>Type</label>
+                  <input type="text" formControlName="type" class="form-control custom-input" placeholder="Enter Type" required/>
+                </div>
+              </div> -->
+
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>Type</label>
+                  <select formControlName="type" class="form-control custom-input" required>
+                    <option value="" disabled selected>Select Type</option>
+                    <option value="int">int</option>
+                    <option value="decimal">decimal</option>
+                    <option value="string">string</option>
+                    <option value="bool">bool</option>
+                    <option value="DateTime">DateTime</option>
+                    <option value="float">float</option>
+                    <option value="double">double</option>
+                    <option value="long">long</option>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

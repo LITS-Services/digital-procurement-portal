@@ -12,6 +12,15 @@ export const ROUTES: RouteInfo[] = [
   { path: '/employee-list', title: 'Employee list', icon: 'fa fa-users', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [], roles: ['Admin'] },
   // Only Vendor role can see this
   { path: '/procurment-companies', title: 'Procurment Companies', icon: 'fa fa-building', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [], roles: ['Admin'] },
+  
+  { path: '', title: 'Configuration', icon: 'fa fa-sliders-h', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false, 
+    submenu: [
+      { path: '/configuration/global', title: 'Global Configuration', icon: 'fa fa-cogs', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+      // { path: '/configuration/exception-logs', title: 'Exception Logs', icon: 'fa fa-bug', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+      // { path: '/configuration/http-logs', title: 'Http Logs', icon: 'fa fa-globe', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+      { path: '/configuration/logs', title: 'Logs', icon: 'fa fa-globe', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+    ], roles: ['Admin'] 
+  },
 
   // {
   //   path: '', title: 'Reports', icon: 'ft-clipboard', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false,

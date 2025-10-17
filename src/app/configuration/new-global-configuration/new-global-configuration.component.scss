@@ -1,0 +1,175 @@
+form label, .form-group label {
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+    color: #262626 !important;
+    font-weight: 400;
+  }
+  .example-action-buttons {
+    display: flex;
+    justify-content: flex-end; /* Move buttons to the right */
+  }
+
+.trash-icon {
+  // transition: transform 0.3s ease, color 0.3s ease;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.center-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Ensure the content is vertically centered */
+}
+
+
+.trash-icon:hover {
+  transform: scale(2.5); /* Increase the size */
+  color: black; /* Change color on hover */
+}
+
+
+  .icon-btn{
+    padding: -0.1rem 1.25rem !important;
+  }
+  .example-action-buttons button {
+    margin-left: 10px; /* Add margin between buttons */
+  }
+  .avatar-container {
+    width: 64px; /* Set the width of the container */
+    height: 64px; /* Set the height of the container */
+    border-radius: 50%; /* Make it circular */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.avatar-container img {
+    border-radius: 50%; /* Ensure the image inside is also circular */
+}
+
+.panel-icon {
+    margin-right: 10px;
+    color: black;
+     /* Adjust the spacing between the icon and the title */
+  }
+  
+  /* Style the icon as needed */
+  .panel-icon i {
+    font-size: 1.5rem; /* Adjust the icon size */
+    vertical-align: middle; /* Align the icon vertically */
+  }
+  .border {
+    border: 1px solid #ced4da; /* Define border style */
+    border-radius: 4px; /* Optionally, add border-radius for rounded corners */
+    margin-bottom: 10px; /* Optionally, add some margin for spacing */
+}
+
+
+
+   ::ng-deep ngb-accordion .card-body {
+      padding: 1.5rem 0px !important;
+    }
+
+::ng-deep .ngx-datatable{
+  .sortable .sort-btn:before {
+      // font-family: data-table;
+      // content: "c";
+      display: none !important;
+  }
+  .sortable .sort-btn.datatable-icon-down:before {
+      // content: "f";
+      display: none !important;
+
+  }
+  .sortable .sort-btn.datatable-icon-up:before {
+      // content: "e";
+      display: none !important;
+  }
+}
+
+.datatable-body-cell {
+    padding: 0.30rem !important;
+    text-align: left !important;
+    vertical-align: top !important;
+    line-height: 20px !important;
+  }
+
+  .dropdown-content {
+    position: absolute; /* Set the dropdown to absolute position */
+    // top: calc(100% + 10px); /* Position it below the container */
+    left: 0;
+    overflow: visible !important;
+    // z-index: 9999; /* Set a high z-index */
+    display: none; /* Hide the modal by default */
+    background-color: #fff; /* Set background color */
+    border: 1px solid #ccc; /* Add border */
+    padding: 10px; /* Add padding */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add shadow */
+  }
+ .cashback-icon{
+  background-image: url(/assets/img/cashback.png);
+  height: 16px;
+  width: 16px;
+ }
+ a.disabled {
+  cursor: not-allowed;
+  color: #d1d4d7 !important;
+  pointer-events: none; /* Prevents click interactions */
+}
+
+.card-accordion{
+    background-color: #E7F0FD;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    
+}
+
+.ngx-datatable ::ng-deep .datatable-header-inner{
+  background-color: #4188F2 !important;
+  border-radius: 10px;
+}
+.ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
+.ngx-datatable ::ng-deep .datatable-header-inner .sort-btn{
+  color: white !important;
+}
+
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-row.datatable-row-even {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+// .ngx-datatable.bootstrap .datatable-body .datatable-body-row {
+//   padding: 0.75rem;
+//   vertical-align: middle;
+//   border-top: 1px solid #1E89B8;
+// }
+
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-row .datatable-body-cell {
+  text-align: left;
+  padding: 0.75rem;
+  vertical-align:baseline;
+  
+}
+
+.modal-centered .modal-dialog {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh; /* Vertically center the modal */
+}
+
+.modal-centered .modal-dialog-centered {
+  margin: 0; /* Remove margin to ensure true centering */
+}
+.btn .badge {
+  position: relative !important;
+  top: -1px !important;
+  left: -2px !important;
+  padding: 5px !important;
+  border-radius: 50% !important;
+}
+
+.vl {
+    border-left: 1.4px solid #cccccc;
+    height: 100%;
+    position: absolute;
+    margin-left: -3px;
+  }
