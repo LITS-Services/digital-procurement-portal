@@ -1,11 +1,15 @@
-<!-- <div class="row mb-3">
+<div class="row mb-3">
   <div class="col-12">
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-tabs custom-tabs">
       <li class="nav-item">
-        <a class="nav-link" [class.active]="selectedTab === 'exception'" (click)="selectTab('exception')">Exception Logs</a>
+        <a class="nav-link" [class.active]="selectedTab === 'exception'" (click)="selectTab('exception')">
+          Exception Logs
+        </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" [class.active]="selectedTab === 'http'" (click)="selectTab('http')">HTTP Logs</a>
+        <a class="nav-link" [class.active]="selectedTab === 'http'" (click)="selectTab('http')">
+          HTTP Logs
+        </a>
       </li>
     </ul>
   </div>
@@ -13,73 +17,14 @@
 
 <div class="row">
   <div class="col-12">
-    <ngx-datatable
-      class="bootstrap core-bootstrap"
-      [rows]="logsData"
-      [columnMode]="'force'"
-      [headerHeight]="50"
-      [footerHeight]="50"
-      [columns]="columns"
-      [rowHeight]="'auto'"
-      [limit]="pageSize"
-      [count]="totalItems"
-      [externalPaging]="true"
-      [offset]="currentPage - 1"
-      (page)="onPageChange($event)"
-      [scrollbarH]="true"
-      [loadingIndicator]="loading"
-      [selected]="chkBoxSelected"
-      [selectionType]="SelectionType.checkbox">
-
-      <ng-template #srNoTemplate let-rowIndex="rowIndex">
-        <span>{{ rowIndex + 1 }}</span>
-      </ng-template>
-
-      <ng-template #responseBodyTemplate let-value="value">
-        {{ value.length > 20 ? value.slice(0, 20) + '...' : value }}
-      </ng-template>
-
-    </ngx-datatable>
-  </div>
-</div> -->
-<div class="row mb-3">
-  <div class="col-12">
-    <ul class="nav nav-tabs custom-tabs">
-  <li class="nav-item">
-    <a class="nav-link" [class.active]="selectedTab === 'exception'" (click)="selectTab('exception')">
-      Exception Logs
-    </a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" [class.active]="selectedTab === 'http'" (click)="selectTab('http')">
-      HTTP Logs
-    </a>
-  </li>
-</ul>
-
-  </div>
-</div>
-
-<div class="row">
-  <div class="col-12">
 
     <!-- Exception Logs Table -->
-    <ngx-datatable *ngIf="selectedTab === 'exception'"
-      class="bootstrap core-bootstrap"
-      [rows]="logsData"
-      [columnMode]="'force'"
-      [headerHeight]="50"
-      [footerHeight]="50"
-      [rowHeight]="'auto'"
-      [limit]="pageSize"
-      [count]="totalItems"
-      [externalPaging]="true"
-      [offset]="currentPage - 1"
-      (page)="onPageChange($event)"
-      [scrollbarH]="true"
-      [loadingIndicator]="loading"
-      [selected]="chkBoxSelected"
-      [selectionType]="SelectionType.checkbox">
+    <ngx-datatable *ngIf="selectedTab === 'exception'" class="bootstrap core-bootstrap" [rows]="logsData"
+      [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="pageSize"
+      [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
+      [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected"
+      [selectionType]="SelectionType.single" (rowClick)="onRowClick($event)" (activate)="onActivate($event)"
+      (clickType)="'single'">
 
       <!-- Sr. No -->
       <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
@@ -90,29 +35,27 @@
 
       <ngx-datatable-column name="TimeStamp" prop="timestamp"></ngx-datatable-column>
       <ngx-datatable-column name="Exception Type" prop="exceptionType"></ngx-datatable-column>
-      <ngx-datatable-column name="Message" prop="message"></ngx-datatable-column>
+      <ngx-datatable-column name="Message" prop="message">
+        <ng-template ngx-datatable-cell-template let-value="value">
+          {{ value.length > 15 ? value.slice(0, 15) + '...' : value }}
+        </ng-template>
+      </ngx-datatable-column>
       <ngx-datatable-column name="Http Method" prop="httpMethod"></ngx-datatable-column>
-      <ngx-datatable-column name="Body" prop="body"></ngx-datatable-column>
+      <ngx-datatable-column name="Body" prop="body">
+        <ng-template ngx-datatable-cell-template let-value="value">
+          {{ value.length > 15 ? value.slice(0, 15) + '...' : value }}
+        </ng-template>
+      </ngx-datatable-column>
 
     </ngx-datatable>
 
     <!-- HTTP Logs Table -->
-    <ngx-datatable *ngIf="selectedTab === 'http'"
-      class="bootstrap core-bootstrap"
-      [rows]="logsData"
-      [columnMode]="'force'"
-      [headerHeight]="50"
-      [footerHeight]="50"
-      [rowHeight]="'auto'"
-      [limit]="pageSize"
-      [count]="totalItems"
-      [externalPaging]="true"
-      [offset]="currentPage - 1"
-      (page)="onPageChange($event)"
-      [scrollbarH]="true"
-      [loadingIndicator]="loading"
-      [selected]="chkBoxSelected"
-      [selectionType]="SelectionType.checkbox">
+    <ngx-datatable *ngIf="selectedTab === 'http'" class="bootstrap core-bootstrap" [rows]="logsData"
+      [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="pageSize"
+      [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
+      [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected"
+      [selectionType]="SelectionType.single" (rowClick)="onRowClick($event)" (activate)="onActivate($event)"
+      (clickType)="'single'">
 
       <!-- Sr. No -->
       <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
@@ -124,10 +67,14 @@
       <ngx-datatable-column name="TimeStamp" prop="timestamp"></ngx-datatable-column>
       <ngx-datatable-column name="Http Method" prop="httpMethod"></ngx-datatable-column>
       <ngx-datatable-column name="Url" prop="url"></ngx-datatable-column>
-      <ngx-datatable-column name="Request Body" prop="requestBody" [sortable]="false"></ngx-datatable-column>
+      <ngx-datatable-column name="Request Body" prop="requestBody" [sortable]="false">
+        <ng-template ngx-datatable-cell-template let-value="value">
+          {{ value.length > 15 ? value.slice(0, 15) + '...' : value }}
+        </ng-template>
+      </ngx-datatable-column>
       <ngx-datatable-column name="Response Body" prop="responseBody">
         <ng-template ngx-datatable-cell-template let-value="value">
-          {{ value.length > 20 ? value.slice(0, 20) + '...' : value }}
+          {{ value.length > 15 ? value.slice(0, 15) + '...' : value }}
         </ng-template>
       </ngx-datatable-column>
       <ngx-datatable-column name="Status" prop="status"></ngx-datatable-column>
@@ -136,3 +83,68 @@
 
   </div>
 </div>
+
+<!-- Place modal template here, after the tables -->
+<ng-template #logDetailModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">
+      {{ selectedTab === 'exception' ? 'Exception Log Details' : 'HTTP Log Details' }}
+    </h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+
+  <div class="modal-body">
+    <form *ngIf="selectedLog">
+      <!-- Common fields -->
+      <div class="mb-2">
+        <label class="form-label">Timestamp</label>
+        <input type="text" class="form-control" [value]="selectedLog.timestamp" disabled />
+      </div>
+
+      <div class="mb-2" *ngIf="selectedLog.httpMethod">
+        <label class="form-label">HTTP Method</label>
+        <input type="text" class="form-control" [value]="selectedLog.httpMethod" disabled />
+      </div>
+
+      <!-- Exception Log Fields -->
+      <ng-container *ngIf="selectedTab === 'exception'">
+        <div class="mb-2">
+          <label class="form-label">Exception Type</label>
+          <input type="text" class="form-control" [value]="selectedLog.exceptionType" disabled />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Message</label>
+          <textarea class="form-control" rows="3" [value]="selectedLog.message" disabled></textarea>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Body</label>
+          <textarea class="form-control" rows="3" [value]="selectedLog.body" disabled></textarea>
+        </div>
+      </ng-container>
+
+      <!-- HTTP Log Fields -->
+      <ng-container *ngIf="selectedTab === 'http'">
+        <div class="mb-2">
+          <label class="form-label">URL</label>
+          <input type="text" class="form-control" [value]="selectedLog.url" disabled />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Request Body</label>
+          <textarea class="form-control" rows="3" [value]="selectedLog.requestBody" disabled></textarea>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Response Body</label>
+          <textarea class="form-control" rows="3" [value]="selectedLog.responseBody" disabled></textarea>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Status</label>
+          <input type="text" class="form-control" [value]="selectedLog.status" disabled />
+        </div>
+      </ng-container>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
+  </div>
+</ng-template>

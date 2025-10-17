@@ -1,59 +1,61 @@
-
-::ng-deep .ngx-datatable{
-    .sortable .sort-btn:before {
-        // font-family: data-table;
-        // content: "c";
-        display: none !important;
-    }
-    .sortable .sort-btn.datatable-icon-down:before {
-        // content: "f";
-        display: none !important;
-  
-    }
-    .sortable .sort-btn.datatable-icon-up:before {
-        // content: "e";
-        display: none !important;
-    }
+::ng-deep .ngx-datatable {
+  .sortable .sort-btn:before {
+    // font-family: data-table;
+    // content: "c";
+    display: none !important;
   }
-  .vl {
-      border-left: 1.4px solid #cccccc;
-      height: 100%;
-      position: absolute;
-      margin-left: -3px;
 
-    }
-    .heading{
-      color: #1E89B8;
-      margin-top: 1rem;
-      margin-bottom: -0.5rem;
-      font-weight: 700;
-    }
-  
-    
-  .ngx-datatable ::ng-deep .datatable-header-inner{
-    background-color: #4188F2 !important;
-    // padding: 0.5rem;
+  .sortable .sort-btn.datatable-icon-down:before {
+    // content: "f";
+    display: none !important;
+
+  }
+
+  .sortable .sort-btn.datatable-icon-up:before {
+    // content: "e";
+    display: none !important;
+  }
+}
+
+.vl {
+  border-left: 1.4px solid #cccccc;
+  height: 100%;
+  position: absolute;
+  margin-left: -3px;
+
+}
+
+.heading {
+  color: #1E89B8;
+  margin-top: 1rem;
+  margin-bottom: -0.5rem;
+  font-weight: 700;
+}
+
+.ngx-datatable ::ng-deep .datatable-header-inner {
+  background-color: #4188F2 !important;
+  // padding: 0.5rem;
   // border-radius: 10px;
-  }
-  .ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
-  .ngx-datatable ::ng-deep .datatable-header-inner .sort-btn{
-    color: white !important;
-  
-  }
-  
+}
 
-  
-  // .ngx-datatable.bootstrap .datatable-body .datatable-body-row {
-  //   padding: 0.75rem;
-  //   vertical-align: middle;
-  //   border-top: 1px solid #1E89B8;
-  // }
-  
-  .ngx-datatable ::ng-deep .datatable-body .datatable-body-row .datatable-body-cell {
-    text-align: left;
-    vertical-align:baseline;
-    
-  }
+.ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
+.ngx-datatable ::ng-deep .datatable-header-inner .sort-btn {
+  color: white !important;
+
+}
+
+// .ngx-datatable.bootstrap .datatable-body .datatable-body-row {
+//   padding: 0.75rem;
+//   vertical-align: middle;
+//   border-top: 1px solid #1E89B8;
+// }
+
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-row .datatable-body-cell {
+  text-align: left;
+  vertical-align: baseline;
+
+}
+
 //   .ngx-datatable ::ng-deep .datatable-footer .selected-count .page-count {
 //     flex: 1 1 40%;
 //     background: #eaeaeb !important;
@@ -64,10 +66,11 @@
 //     color: #1E89B8;
 //     margin-top: -1px;
 // }
-.counter{
+.counter {
   top: -10px;
   right: -16px;
 }
+
 .badge {
   display: inline-block;
   padding: 0.4rem 0.5rem !important;
@@ -80,9 +83,12 @@
   border-radius: 0.35rem;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
+
 .custom-height-modal .modal-body {
-  height: 400px !important; /* or any height you want */
-  overflow-y: auto !important; /* optional: to make it scroll if content overflows */
+  height: 400px !important;
+  /* or any height you want */
+  overflow-y: auto !important;
+  /* optional: to make it scroll if content overflows */
 }
 
 ::ng-deep .action-popover {
@@ -98,19 +104,47 @@
 }
 
 .custom-tabs .nav-link {
-  border: 1px solid #dee2e6; /* border */
-  border-radius: 10px 10px 0 0; /* top-left & top-right curved */
-  margin-right: 5px; /* spacing between tabs */
+  border: 1px solid #dee2e6;
+  /* border */
+  border-radius: 10px 10px 0 0;
+  /* top-left & top-right curved */
+  margin-right: 5px;
+  /* spacing between tabs */
   color: #495057;
   background-color: #f8f9fa;
 }
 
 .custom-tabs .nav-link.active {
   background-color: #ffffff;
-  border-color: #dee2e6 #dee2e6 #fff; /* remove bottom border for active tab to blend with table */
+  border-color: #dee2e6 #dee2e6 #fff;
+  /* remove bottom border for active tab to blend with table */
   color: #000;
 }
 
 .custom-tabs .nav-item:last-child .nav-link {
   margin-right: 0;
+}
+
+input[disabled],
+textarea[disabled] {
+  background-color: #f8f9fa !important;
+  color: #495057 !important;
+}
+
+::ng-deep .modal-header {
+  background-color: #4188F2 !important;
+  /* blue background (same as your table header) */
+  color: white !important;
+  /* make all text white */
+}
+
+::ng-deep .modal-header .modal-title {
+  color: white !important;
+  /* ensure title specifically stays white */
+  font-weight: 600;
+}
+
+::ng-deep .modal-header .btn-close {
+  filter: invert(1);
+  /* makes close button visible on dark header */
 }
