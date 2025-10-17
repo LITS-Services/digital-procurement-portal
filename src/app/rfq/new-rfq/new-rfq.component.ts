@@ -67,6 +67,7 @@ export class NewRfqComponent implements OnInit {
   @ViewChild('tableRowDetails') tableRowDetails: any;
   @ViewChild('tableResponsive') tableResponsive: any;
 
+  compareIds = (a: string | null, b: string | null) => (a ?? '').toLowerCase() === (b ?? '').toLowerCase();
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -281,25 +282,17 @@ export class NewRfqComponent implements OnInit {
     });
   }
 
-  onVendorChange(vendorId: string) {
-    this.filteredCompanies = this.quotationVendorUsers
-      .filter(vc => vc.vendorId === vendorId)
-      .map(vc => ({
-        companyId: vc.vendorCompanyId,
-        name: vc.companyName
-      }));
+ onVendorChange(vendorId: string) {
+  this.filteredCompanies = (this.quotationVendorUsers || [])
+    .filter(vc => vc.vendorId === vendorId)
+    .map(vc => ({ companyId: vc.vendorCompanyId, name: vc.companyName }));
 
-    // Only reset when adding a new item, not when editing
-    if (!this.editingRowIndex) {
-      this.itemForm.patchValue({ vendorCompanyId: '' });
-    }
-    else {
-      const current = String(this.itemForm.get('vendorCompanyId')?.value ?? '');
-      if (!this.filteredCompanies.some(c => c.companyId === current)) {
-        this.itemForm.patchValue({ vendorCompanyId: '' });
-      }
-    }
+  // Only clear when ADDING (not editing)
+  if (this.editingRowIndex === null) {
+    this.itemForm.patchValue({ vendorCompanyId: null }, { emitEvent: false });
   }
+}
+
 
   onWorkflowTypeChange(selectedId: number): void {
     if (selectedId) {
@@ -560,6 +553,7 @@ export class NewRfqComponent implements OnInit {
   }
 
   editRow(row: any, rowIndex: number) {
+     this.editingRowIndex = rowIndex;
     this.itemForm.patchValue({
       id: row.id,
       itemType: row.itemType,
@@ -579,11 +573,11 @@ export class NewRfqComponent implements OnInit {
       quotationItemAttachments: row.quotationItemAttachments
     });
     this.onVendorChange(row.vendorUserId);
-    this.editingRowIndex = rowIndex;
 
-    this.itemForm.patchValue({
-      vendorCompanyId: row.vendorCompanyId
-    });
+      Promise.resolve().then(() => {
+    this.itemForm.patchValue({ vendorCompanyId: row.vendorCompanyId }, { emitEvent: false });
+  });
+  
   }
 
   submitForm() {

@@ -374,17 +374,19 @@
                             </select> -->
                             <select class="form-control custom-input" formControlName="vendorUserId"
                               (change)="onVendorChange($event.target.value)">
-                              <option value="" disabled>Select Vendor</option>
-                              <option *ngFor="let v of uniqueVendors" [value]="v.vendorId">
+                              <option [ngValue]="null" disabled>Select Vendor</option>
+                              <option *ngFor="let v of uniqueVendors" [ngValue]="v.vendorId">
                                 {{ v.vendorName }}
                               </option>
                             </select>
                           </div>
                           <div *ngIf="!isNewForm" class="form-group mb-2">
                             <label>Company</label>
-                            <select class="form-control custom-input" formControlName="vendorCompanyId">
-                              <option value="" disabled>Select Company</option>
-                              <option *ngFor="let c of filteredCompanies" [value]="c.companyId">
+                            <select class="form-control custom-input" formControlName="vendorCompanyId"
+                            [compareWith]="compareIds"
+                            >
+                              <option [ngValue]="null" disabled>Select Company</option>
+                              <option *ngFor="let c of filteredCompanies"  [ngValue]="c.companyId">
                                 {{ c.name }}
                               </option>
                             </select>
