@@ -37,18 +37,8 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { OtpComponent } from './pages/otp/otp.component';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { responseHandlerInterceptor } from "./shared/interceptor/response-handler.interceptor";
-
-var firebaseConfig = {
-  apiKey: "AIzaSyC9XfnIpwNoSv7cyAsoccFQ5EYPd7lZXrk", //YOUR_API_KEY
-  authDomain: "apex-angular.firebaseapp.com", //YOUR_AUTH_DOMAIN
-  databaseURL: "https://apex-angular.firebaseio.com", //YOUR_DATABASE_URL
-  projectId: "apex-angular", //YOUR_PROJECT_ID
-  storageBucket: "apex-angular.appspot.com", //YOUR_STORAGE_BUCKET
-  messagingSenderId: "447277845463", //YOUR_MESSAGING_SENDER_ID
-  appId: "1:447277845463:web:9a7db7aaeaf3a7217a9992", //YOUR_APP_ID
-  measurementId: "G-ZVSYZRJ211" //YOUR_MEASUREMENT_ID
-};
-
+import { environment } from '../environments/environment';
+import { AngularFireMessagingModule } from '@angular/fire/messaging';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
@@ -77,7 +67,8 @@ export function createTranslateLoader(http: HttpClient) {
        BrowserModule,
     ReactiveFormsModule,
     HttpClientModule,
-    AngularFireModule.initializeApp(firebaseConfig),
+    AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireMessagingModule,
     AngularFireAuthModule,
     ToastrModule.forRoot(),
     NgbModule,

@@ -5,6 +5,9 @@ import ChartistTooltip from 'chartist-plugin-tooltips-updated';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import { DashboardService } from 'app/shared/services/dashboard.service';
+import { FirebaseMessagingService } from '../../firebase-messaging.service';
+import { ToastrService } from 'ngx-toastr';
+import { ms } from 'date-fns/locale';
 
 declare var require: any;
 
@@ -45,7 +48,9 @@ export class Dashboard1Component implements OnInit{
 
 
   constructor(private http: HttpClient, public translate: TranslateService
-    , private dashboardService: DashboardService
+    , private dashboardService: DashboardService,
+    private messagingService: FirebaseMessagingService,
+    private toaster: ToastrService
   ) {
     this.translate.onLangChange.subscribe(() => {
       // Check if the current language is Arabic
@@ -60,6 +65,18 @@ export class Dashboard1Component implements OnInit{
   ngOnInit(): void {
     this.loadPurchaseRequestsCounts();
     this.loadQuotationRequestsCounts();
+
+    //Firebase Cloud Messaging Initialization
+    var userId = localStorage.getItem('userId');
+    this.messagingService.requestPermission(userId);
+    
+    this.messagingService.currentMessage.subscribe(msg => {
+      if (msg) {
+        this.toaster.success(msg.notification?.title || 'New Notification', msg.notification?.body || '');
+        // You can show a toast or alert here
+      }
+    });
+
   }
 loadPurchaseRequestsCounts(): void {
     this.dashboardService.getPurchaseRequestsCount().subscribe({

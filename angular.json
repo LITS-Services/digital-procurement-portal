@@ -37,7 +37,8 @@
             "polyfills": "src/polyfills.ts",
             "assets": [
               "src/assets",
-              "src/favicon.ico"
+              "src/favicon.ico",
+              "src/firebase-messaging-sw.js"
             ],
             "styles": [
               "node_modules/sweetalert2/dist/sweetalert2.min.css",
