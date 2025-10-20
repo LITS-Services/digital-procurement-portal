@@ -7,8 +7,8 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" [class.active]="selectedTab === 'http'" (click)="selectTab('http')">
-          HTTP Logs
+        <a class="nav-link" [class.active]="selectedTab === 'audit-trails'" (click)="selectTab('audit-trails')">
+          Audit Trails
         </a>
       </li>
     </ul>
@@ -49,8 +49,8 @@
 
     </ngx-datatable>
 
-    <!-- HTTP Logs Table -->
-    <ngx-datatable *ngIf="selectedTab === 'http'" class="bootstrap core-bootstrap" [rows]="logsData"
+    <!-- Audit Trails Table -->
+    <ngx-datatable *ngIf="selectedTab === 'audit-trails'" class="bootstrap core-bootstrap" [rows]="logsData"
       [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="pageSize"
       [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
       [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected"
@@ -64,21 +64,15 @@
         </ng-template>
       </ngx-datatable-column>
 
+      <ngx-datatable-column name="Table Name" prop="tableName"></ngx-datatable-column>
+      <ngx-datatable-column name="Action Type" prop="actionType"></ngx-datatable-column>
       <ngx-datatable-column name="TimeStamp" prop="timestamp"></ngx-datatable-column>
-      <ngx-datatable-column name="Http Method" prop="httpMethod"></ngx-datatable-column>
-      <ngx-datatable-column name="Url" prop="url"></ngx-datatable-column>
-      <ngx-datatable-column name="Request Body" prop="requestBody" [sortable]="false">
+      <ngx-datatable-column name="Username" prop="username"></ngx-datatable-column>
+      <ngx-datatable-column name="Changes" prop="changes">
         <ng-template ngx-datatable-cell-template let-value="value">
           {{ value.length > 15 ? value.slice(0, 15) + '...' : value }}
         </ng-template>
       </ngx-datatable-column>
-      <ngx-datatable-column name="Response Body" prop="responseBody">
-        <ng-template ngx-datatable-cell-template let-value="value">
-          {{ value.length > 15 ? value.slice(0, 15) + '...' : value }}
-        </ng-template>
-      </ngx-datatable-column>
-      <ngx-datatable-column name="Status" prop="status"></ngx-datatable-column>
-
     </ngx-datatable>
 
   </div>
@@ -88,7 +82,7 @@
 <ng-template #logDetailModal let-modal>
   <div class="modal-header">
     <h5 class="modal-title">
-      {{ selectedTab === 'exception' ? 'Exception Log Details' : 'HTTP Log Details' }}
+      {{ selectedTab === 'exception' ? 'Exception Log Details' : 'Audit Trail Details' }}
     </h5>
     <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
       <span aria-hidden="true">&times;</span>
@@ -103,13 +97,17 @@
         <input type="text" class="form-control" [value]="selectedLog.timestamp" disabled />
       </div>
 
-      <div class="mb-2" *ngIf="selectedLog.httpMethod">
+      <!-- <div class="mb-2" *ngIf="selectedLog.httpMethod">
         <label class="form-label">HTTP Method</label>
         <input type="text" class="form-control" [value]="selectedLog.httpMethod" disabled />
-      </div>
+      </div> -->
 
       <!-- Exception Log Fields -->
       <ng-container *ngIf="selectedTab === 'exception'">
+        <div class="mb-2">
+          <label class="form-label">Http Method</label>
+          <input type="text" class="form-control" [value]="selectedLog.httpMethod" disabled />
+        </div>
         <div class="mb-2">
           <label class="form-label">Exception Type</label>
           <input type="text" class="form-control" [value]="selectedLog.exceptionType" disabled />
@@ -124,23 +122,23 @@
         </div>
       </ng-container>
 
-      <!-- HTTP Log Fields -->
-      <ng-container *ngIf="selectedTab === 'http'">
+      <!-- Audit Trail Fields -->
+      <ng-container *ngIf="selectedTab === 'audit-trails'">
         <div class="mb-2">
-          <label class="form-label">URL</label>
-          <input type="text" class="form-control" [value]="selectedLog.url" disabled />
+          <label class="form-label">Table Name</label>
+          <input type="text" class="form-control" [value]="selectedLog.tableName"disabled />
         </div>
         <div class="mb-2">
-          <label class="form-label">Request Body</label>
-          <textarea class="form-control" rows="3" [value]="selectedLog.requestBody" disabled></textarea>
+          <label class="form-label">Action Type</label>
+          <input type="text" class="form-control" [value]="selectedLog.actionType"disabled />
         </div>
         <div class="mb-2">
-          <label class="form-label">Response Body</label>
-          <textarea class="form-control" rows="3" [value]="selectedLog.responseBody" disabled></textarea>
+          <label class="form-label">Username</label>
+          <input type="text" class="form-control" [value]="selectedLog.username" disabled />
         </div>
         <div class="mb-2">
-          <label class="form-label">Status</label>
-          <input type="text" class="form-control" [value]="selectedLog.status" disabled />
+          <label class="form-label">Changes</label>
+          <textarea type="text" class="form-control" rows="3" [value]="selectedLog.changes" disabled></textarea>
         </div>
       </ng-container>
     </form>

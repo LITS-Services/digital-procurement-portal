@@ -3,7 +3,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
 import { SystemService } from 'app/shared/services/system.service';
 
-type LogType = 'exception' | 'http';
+type LogType = 'exception' | 'audit-trails';
 
 @Component({
   selector: 'app-logs',
@@ -53,8 +53,15 @@ export class LogsComponent implements OnInit {
         next: (data: any) => this.handleResponse(data),
         error: () => this.loading = false
       });
-    } else if (this.selectedTab === 'http') {
-      this.systemService.getAllHttpLogs(this.currentPage, this.pageSize).subscribe({
+    } 
+    // else if (this.selectedTab === 'http') {
+    //   this.systemService.getAllHttpLogs(this.currentPage, this.pageSize).subscribe({
+    //     next: (data: any) => this.handleResponse(data),
+    //     error: () => this.loading = false
+    //   });
+    // }
+    else if (this.selectedTab === 'audit-trails') {
+      this.systemService.getAllAuditTrails(this.currentPage, this.pageSize).subscribe({
         next: (data: any) => this.handleResponse(data),
         error: () => this.loading = false
       });

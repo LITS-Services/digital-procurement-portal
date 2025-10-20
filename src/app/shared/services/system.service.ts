@@ -37,6 +37,11 @@ export class SystemService {
     );
   }
 
+  getAllAuditTrails(currentPage: number, pageSize: number): Observable<any> {
+    return this.http.get<any>(
+      `${this.baseUrl}/get-all-audit-trails?currentPage=${currentPage}&pageSize=${pageSize}`
+    );
+  }
   getAllGlobalConfigs(currentPage: number, pageSize: number): Observable<any> {
     return this.http.get<any>(
       `${this.baseUrl}/get-all-global-configs?currentPage=${currentPage}&pageSize=${pageSize}`

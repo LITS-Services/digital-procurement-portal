@@ -559,7 +559,7 @@ export class NewRfqComponent implements OnInit {
         },
         error: err => {
           console.error('Error updating Quotation:', err);
-          this.toastr.success('Something went Wrong', '');
+          this.toastr.error('Something went Wrong', '');
           this.loading = false;
         }
       });
@@ -571,11 +571,11 @@ export class NewRfqComponent implements OnInit {
           console.log('Created Quotation!', res);
           this.loading = false;
           this.router.navigate(['/rfq']);
-          this.toastr.success('Quotation is created!', '');
+          // this.toastr.success('Quotation is created!', '');
         },
         error: err => {
           console.error('Error creating Quotation:', err);
-          this.toastr.success('Something went Wrong', '');
+          this.toastr.error('Something went Wrong', '');
           this.loading = false;
         }
       });
