@@ -20,4 +20,8 @@ export class LookupService {
   getAllAccounts() {
     return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=account`);
   }
+
+  getAllGlobalConfigTypes() {
+    return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=global-config-type`);
+  }
 }

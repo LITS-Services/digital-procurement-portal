@@ -337,7 +337,7 @@ export class NewRfqComponent implements OnInit {
         });
 
         //  Map PR items → RFQ items
-        this.newQuotationItemData = pr.items?.map((item: any) => ({
+        this.newQuotationItemData = pr.purchaseItems?.map((item: any) => ({
           id: null,
           rfqNo: '',
           itemType: item.itemType,

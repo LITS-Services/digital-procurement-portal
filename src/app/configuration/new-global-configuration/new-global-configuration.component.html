@@ -32,7 +32,8 @@
 
             <!-- Update Mode: Update -->
             <ng-container *ngIf="!isNewForm && !viewMode">
-              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="newGlobalConfigForm.invalid" (click)="onSubmit()">
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="newGlobalConfigForm.invalid"
+                (click)="onSubmit()">
                 <i class="ft-edit-2"></i><label class="ml-1 mt-1">Update</label>
               </button>
             </ng-container>
@@ -104,19 +105,14 @@
                 <div class="form-group mb-2">
                   <label>Type</label>
                   <select formControlName="type" class="form-control custom-input" required>
-                    <option value="" disabled selected>Select Type</option>
-                    <option value="int">int</option>
-                    <option value="decimal">decimal</option>
-                    <option value="string">string</option>
-                    <option value="bool">bool</option>
-                    <option value="DateTime">DateTime</option>
-                    <option value="float">float</option>
-                    <option value="double">double</option>
-                    <option value="long">long</option>
+                    <option value="" disabled>Select Type</option>
+                    <option *ngFor="let t of globalConfigTypes" [value]="t.description">
+                      {{ t.description }}
+                    </option>
                   </select>
+
                 </div>
               </div>
-
             </div>
           </form>
         </div>

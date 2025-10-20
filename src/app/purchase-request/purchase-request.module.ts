@@ -43,9 +43,9 @@ import { PrApprovalHistoryComponent } from './pr-approval-history/pr-approval-hi
     NgxDatatableModule,
     NgbAccordionModule,
     NgbDatepickerModule,
-    ToastrModule.forRoot() ,
+    ToastrModule.forRoot(),
     NgxSpinnerModule,
-    
+
   ],
   declarations: [
     PurchaseRequestComponent,
