@@ -282,7 +282,7 @@
                           <select class="form-control  custom-input" formControlName="itemId">
                             <option value="" disabled selected>Select Item</option>
                             <option *ngFor="let item of itemList" [value]="item.id">
-                              {{ item.itemCode }} - {{ item.itemName }}
+                              {{ item.description }}
                             </option>
                           </select>
                         </div>
@@ -307,7 +307,7 @@
                           <select class="form-control custom-input" formControlName="unitOfMeasurementId">
                             <option value="" disabled selected>Select UOM</option>
                             <option *ngFor="let uom of unitsOfMeasurementList" [ngValue]="uom.id">
-                              {{ uom.uomCode }} - {{ uom.uomName }}
+                              {{ uom.description }}
                             </option>
                           </select>
                         </div>
@@ -391,7 +391,7 @@
                           <select class="form-control custom-input" formControlName="accountId">
                             <option value="" disabled selected>Select Account</option>
                             <option *ngFor="let acc of accountList" [value]="acc.id">
-                              {{ acc.code }} - {{ acc.name }}
+                              {{ acc.description }}
                             </option>
                           </select>
                         </div>

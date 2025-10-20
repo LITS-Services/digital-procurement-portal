@@ -11,6 +11,7 @@ import { ToastrService } from 'ngx-toastr';
 import { PurchaseRequestRemarksComponent } from '../purchase-request-remarks/purchase-request-remarks.component';
 import { WorkflowServiceService } from 'app/shared/services/WorkflowService/workflow-service.service';
 import Swal from 'sweetalert2';
+import { LookupService } from 'app/shared/services/lookup.service';
 
 @Component({
   selector: 'app-new-purchase-request',
@@ -69,6 +70,7 @@ export class NewPurchaseRequestComponent implements OnInit {
     private modalService: NgbModal,
     private purchaseRequestService: PurchaseRequestService,
     private companyService: CompanyService,
+    private lookupService: LookupService,
     private fb: FormBuilder,
     public toastr: ToastrService,
     private WorkflowServiceService: WorkflowServiceService,
@@ -148,26 +150,12 @@ export class NewPurchaseRequestComponent implements OnInit {
       this.isFormDirty = true;
     });
 
-    // // Check if editing existing request
-    // this.route.queryParamMap.subscribe(params => {
-    //   const id = params.get('id');
-    //   if (id) {
-    //     this.currentRequestId = +id;
-    //     this.loadExistingRequest(+id);
-    //   }
-    // });
-
     if (this.viewMode) {
       this.newPurchaseRequestForm.disable();
       this.itemForm.disable();
     }
   }
 
-  // loadVendorUsers() {
-  //   this.companyService.getVendorUsers().subscribe(response => {
-  //     this.vendorUsers = response.$values ?? [];
-  //   });
-  // }
   loadVendorUsers() {
     this.companyService.getAllVendorUsers().subscribe({
       next: (res: any) => {
@@ -178,7 +166,7 @@ export class NewPurchaseRequestComponent implements OnInit {
   }
 
   loadUnitsOfMeasurements() {
-    this.purchaseRequestService.getUnitsOfMeasurementDropdown().subscribe({
+    this.lookupService.getAllUnitsOfMeasurement().subscribe({
       next: (res) => {
         this.unitsOfMeasurementList = res ?? [];
         console.log('UoM dropdown data:', this.unitsOfMeasurementList);
@@ -190,7 +178,7 @@ export class NewPurchaseRequestComponent implements OnInit {
   }
 
   loadAccounts() {
-    this.purchaseRequestService.getAccountsDropdown().subscribe({
+    this.lookupService.getAllAccounts().subscribe({
       next: (res) => {
         this.accountList = res ?? [];
         console.log('Account dropdown data:', this.accountList);
@@ -201,14 +189,8 @@ export class NewPurchaseRequestComponent implements OnInit {
     });
   }
 
-  // loadItems() {
-  //   this.purchaseRequestService.getAllItems().subscribe(res => {
-  //     this.itemList = res.$values ?? [];
-  //   });
-  // }
-
   loadItems() {
-    this.purchaseRequestService.getItemsDropdown().subscribe({
+    this.lookupService.getAllItems().subscribe({
       next: (res) => {
         this.itemList = res ?? [];
         console.log('Item dropdown data:', this.itemList);
@@ -260,74 +242,17 @@ export class NewPurchaseRequestComponent implements OnInit {
 
   getUomCodeById(id: number): string {
     const found = this.unitsOfMeasurementList.find(u => u.id === id);
-    return found ? found.uomCode : '';
+    return found ? found.description : '';
   }
 
   getAccountNameById(id: number): string {
     const found = this.accountList.find(a => a.id === id);
-    return found ? found.name : '';
+    return found ? found.description : '';
   }
   getItemNameById(id: number): string {
     const found = this.itemList.find(i => i.id === id);
-    return found ? found.itemName : '';
+    return found ? found.description : '';
   }
-
-  // Insert or Update item
-  // insertItem(): void {
-  //   if (this.itemForm.invalid) {
-  //     console.warn("Item form is invalid");
-  //     return;
-  //   }
-
-  //   const newItem = this.itemForm.value;
-
-  //   if (this.editingRowIndex !== null) {
-  //     // Update existing row
-  //     this.newPurchaseRequestData[this.editingRowIndex] = newItem;
-  //     this.editingRowIndex = null; // reset editing
-  //   } else {
-  //     // Add new row
-  //     this.newPurchaseRequestData = [...this.newPurchaseRequestData, newItem];
-  //   }
-
-  //   // Reset form
-  //   this.itemForm.reset({
-  //     type: 'Inventory',
-  //     amount: 0,
-  //     unitCost: 0,
-  //     orderQuantity: 1
-  //   });
-  // }
-
-  // insertItem(): void {
-  //   const newItem = this.itemForm.value;
-
-  //   if (this.editingRowIndex !== null) {
-  //     const existing = this.newPurchaseItemData[this.editingRowIndex];
-
-  //     const merged = {
-  //       ...existing,
-  //       ...newItem,
-  //       attachments: existing?.attachments ?? []
-  //     };
-
-  //     this.newPurchaseItemData = this.newPurchaseItemData.map((item, index) =>
-  //       index === this.editingRowIndex ? merged : item
-  //     );
-
-  //     this.editingRowIndex = null;
-  //   } else {
-  //     const withEmptyAttachments = {
-  //       ...newItem,
-  //       itemId: Number(newItem.itemId) || 0,
-  //       attachments: newItem.attachments?.length ? newItem.attachments : []
-  //     };
-  //     this.newPurchaseItemData = [...this.newPurchaseItemData, withEmptyAttachments];
-  //   }
-  //   this.toastr.success('Item inserted!', '');
-
-  //   this.itemForm.reset();
-  // }
 
   insertItem(): void {
     const newItem = this.itemForm.value;
@@ -414,11 +339,6 @@ export class NewPurchaseRequestComponent implements OnInit {
     this.editingRowIndex = rowIndex;
   }
 
-  // deleteRow(rowIndex: number): void {
-  //   this.newPurchaseItemData.splice(rowIndex, 1);
-  //   this.newPurchaseItemData = [...this.newPurchaseItemData]; // refresh table
-  //   this.toastr.success('Item deleted!', '');
-  // }
   deleteRow(rowIndex: number): void {
     Swal.fire({
       title: 'Are you sure?',
@@ -567,12 +487,7 @@ export class NewPurchaseRequestComponent implements OnInit {
         vendorUserId: item.vendorUserId || '',
         requisitionNo: f.requisitionNo,
         attachments: item.attachments?.map(att => ({
-          // specifications: att.specifications || '',
-          // drawing: att.drawing || '',
-          // scopeOfWorks: att.scopeOfWorks || '',
-          // billOfMaterials: att.billOfMaterials || '',
-          // other: att.other || '',
-          // specialInstructions: att.specialInstructions || '',
+
           id: att.id || null,
           content: att.content || '',
           contentType: att.contentType || '',
@@ -653,12 +568,7 @@ export class NewPurchaseRequestComponent implements OnInit {
         vendorUserId: item.vendorUserId || '',
         requisitionNo: f.requisitionNo,
         attachments: item.attachments?.map(att => ({
-          // specifications: att.specifications || '',
-          // drawing: att.drawing || '',
-          // scopeOfWorks: att.scopeOfWorks || '',
-          // billOfMaterials: att.billOfMaterials || '',
-          // other: att.other || '',
-          // specialInstructions: att.specialInstructions || '',
+
           id: att.id || null,
           content: att.content || '',
           contentType: att.contentType || '',
@@ -722,30 +632,6 @@ export class NewPurchaseRequestComponent implements OnInit {
     }
   }
 
-  // openNewEntityModal() {
-  //   const modalRef = this.modalService.open(PurchaseRequestAttachmentModalComponent, {
-  //     backdrop: 'static',
-  //     size: 'lg',
-  //     centered: true,
-  //   });
-  //   modalRef.componentInstance.data = {
-  //     existingAttachment: this.attachmentList
-  //   }
-  //   modalRef.componentInstance.viewMode = this.viewMode;
-  //   modalRef.result.then((data: any[]) => {
-  //     this.pendingAttachment = data;
-  //     this.attachmentList = [
-  //       ...this.attachmentList, ...data.map(a => ({
-  //         name: a.name,
-  //         type: a.type,
-  //         attachment: a.attachment,
-  //         IsNew: true
-  //       }))
-  //     ]
-  //     this.numberOfAttachments = this.attachmentList.length;
-  //   })
-  // }
-
   openNewEntityModal(rowIndex: number): void {
     const sourceRow = rowIndex !== null
       ? this.newPurchaseItemData[rowIndex] : this.itemForm.value; // new item (not yet inserted)
@@ -767,12 +653,6 @@ export class NewPurchaseRequestComponent implements OnInit {
         const merged = [
           ...(sourceRow.attachments || []),
           ...data.map(a => ({
-            // specifications: a.specifications,
-            // drawing: a.drawing,
-            // scopeOfWorks: a.scopeOfWorks,
-            // billOfMaterials: a.billOfMaterials,
-            // other: a.other,
-            // specialInstructions: a.specialInstructions,
             fileName: a.fileName,
             contentType: a.contentType,
             content: a.content,
@@ -800,19 +680,6 @@ export class NewPurchaseRequestComponent implements OnInit {
   hasUnsavedChanges(): boolean {
     return this.newPurchaseRequestForm.dirty || this.itemForm.dirty || this.newPurchaseItemData.length > 0;
   }
-
-  //   onSubmitForApproval() {
-  //   this.purchaseRequestService.submitForApproval(this.currentRequestId).subscribe({
-  //     next: (res) => {
-  //       this.toastr.success(res.message || 'Purchase Request submitted for approval successfully!');
-  //       this.router.navigate(['/purchase-request']);
-  //     },
-  //     error: (err) => {
-  //       console.error(err);
-  //       this.toastr.error('Failed to submit purchase request for approval.');
-  //     }
-  //   });
-  // }
 
   onSubmitForApproval() {
     Swal.fire({
@@ -876,7 +743,7 @@ export class NewPurchaseRequestComponent implements OnInit {
               if (res.message == "Approved") {
                 this.cdr.detectChanges();
                 this.router.navigate(['/purchase-request']);
-                
+
                 this.toastr.success(res.message);
               }
               else {

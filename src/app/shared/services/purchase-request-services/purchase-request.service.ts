@@ -1,11 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, from } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, from } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import { environment } from 'environments/environment';
-import { ItemsDropdownVM } from 'app/shared/dropdowns/items';
-import { unitOfMeasurementDropdownVM } from 'app/shared/dropdowns/units-of-measurement';
-import { AccountsDropdownVM } from 'app/shared/dropdowns/accounts';
 
 export interface UploadedFile {
   name: string;
@@ -42,19 +38,6 @@ export class PurchaseRequestService {
 
   /** ============== API Calls ============== **/
 
-  // getPurchaseRequests(userId: string): Observable<any[]> {
-  //   return this.http.post<any[]>(`${this.baseUrl}/GetAllRequests`, {
-  //     params: new HttpParams().set('userId', userId)
-  //   });
-  // }
-
-  // getAllPurchaseRequests(currentPage: number, pageSize: number): Observable<any> {
-  //   return this.http.post<any>(`${this.baseUrl}/get-all-purchase-requests`, {
-  //     currentPage,
-  //     pageSize
-  //   });
-  // }
-
   getAllPurchaseRequests(currentPage: number, pageSize: number): Observable<any> {
     return this.http.get<any>(
       `${this.baseUrl}/get-all-purchase-requests?currentPage=${currentPage}&pageSize=${pageSize}`
@@ -73,31 +56,15 @@ export class PurchaseRequestService {
     return this.http.post<any>(`${this.baseUrl}/create-request`, data);
   }
 
-  // getPurchaseRequestById(id: number): Observable<any> {
-  //   return this.http.get<any>(`${this.baseUrl}/get-request-by-id/${id}`);
-  // }
   getPurchaseRequestById(id: number): Observable<any> {
-  return this.http.get<any>(`${this.baseUrl}/get-request-by-id`, {
-    params: { id: id.toString() }
-  });
-}
-
+    return this.http.get<any>(`${this.baseUrl}/get-request-by-id`, {
+      params: { id: id.toString() }
+    });
+  }
 
   addRemarksWithActionTaken(data: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/addRemarksWithActionTaken`, data);
   }
-
-  // getAllRequestsByStatus(userId: string, status: string): Observable<any[]> {
-  //   return this.http.get<any[]>(`${this.baseUrl}/get-requests-by-status?userId=${userId}&status=${status}`);
-  // }
-
-  // getAllPurchaseRequestsByStatus(status: string, currentPage: number, pageSize: number): Observable<any> {
-  //   return this.http.post<any>(`${this.baseUrl}/get-all-purchase-requests-by-status`, {
-  //     status,
-  //     currentPage,
-  //     pageSize
-  //   });
-  // }
 
   getAllPurchaseRequestsByStatus(status: string, currentPage: number, pageSize: number): Observable<any> {
     return this.http.get<any>(
@@ -105,21 +72,8 @@ export class PurchaseRequestService {
     );
   }
 
-
   getApprovalHistoryByReqNo(requisitionNo: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/get-request-approval-history?requisitionNo=${requisitionNo}`);
-  }
-
-  getUnitsOfMeasurementDropdown(): Observable<unitOfMeasurementDropdownVM[]> {
-    return this.http.get<unitOfMeasurementDropdownVM[]>(`${this.baseUrl}/units-of-measurement-dropdown`);
-  }
-
-  getItemsDropdown(): Observable<ItemsDropdownVM[]> {
-    return this.http.get<ItemsDropdownVM[]>(`${this.baseUrl}/items-dropdown`);
-  }
-
-  getAccountsDropdown(): Observable<AccountsDropdownVM[]> {
-    return this.http.get<AccountsDropdownVM[]>(`${this.baseUrl}/accounts-dropdown`);
   }
 
   submitForApproval(purchaseRequestId: number): Observable<any> {

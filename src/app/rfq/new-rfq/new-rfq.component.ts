@@ -12,6 +12,7 @@ import { CompanyService } from 'app/shared/services/Company.services';
 import { WorkflowServiceService } from 'app/shared/services/WorkflowService/workflow-service.service';
 import { RfqRemarksComponent } from '../rfq-remarks/rfq-remarks.component';
 import Swal from 'sweetalert2';
+import { LookupService } from 'app/shared/services/lookup.service';
 
 @Component({
   selector: 'app-new-rfq',
@@ -77,6 +78,7 @@ export class NewRfqComponent implements OnInit {
     private rfqService: RfqService,
     private companyService: CompanyService,
     private WorkflowServiceService: WorkflowServiceService,
+    private lookupService: LookupService,
     public cdr: ChangeDetectorRef,
     private purchaseRequestService: PurchaseRequestService
   ) { }
@@ -193,15 +195,6 @@ export class NewRfqComponent implements OnInit {
       error: (err) => console.error('Error fetching vendor users:', err)
     });
   }
-  // loadVendorsAndCompanies(rfqId: number) {
-  //   this.rfqService.getVendorsByQuotationRequestId(rfqId).subscribe({
-  //     next: (res: any) => {
-  //       this.quotationVendorUsers = res?.$values || res || [];
-  //       console.log("Vendors & Companies:", this.quotationVendorUsers);
-  //     },
-  //     error: (err) => console.error("Error fetching vendors & companies", err)
-  //   });
-  // }
 
   loadVendorsAndCompanies(rfqId: number) {
     this.rfqService.getVendorsByQuotationRequestId(rfqId).subscribe({
@@ -226,22 +219,8 @@ export class NewRfqComponent implements OnInit {
     });
   }
 
-  //   loadVendorsAndCompanies(rfqId: number) {
-  //   this.rfqService.getVendorsByQuotationRequestId(rfqId).subscribe({
-  //     next: (res: any) => {
-  //       this.quotationVendorUsers = res?.$values ?? res ?? [];
-  //       console.log("Vendors & Companies:", this.quotationVendorUsers);
-  //       this.cdr.detectChanges();
-  //     },
-  //     error: (err) => {
-  //       console.error("Error fetching vendors & companies:", err);
-  //       this.quotationVendorUsers = [];
-  //     }
-  //   });
-  // }
-
   loadUnitsOfMeasurements() {
-    this.purchaseRequestService.getUnitsOfMeasurementDropdown().subscribe({
+    this.lookupService.getAllUnitsOfMeasurement().subscribe({
       next: (res) => {
         this.unitsOfMeasurementList = res ?? [];
         console.log('UoM dropdown data:', this.unitsOfMeasurementList);
@@ -253,7 +232,7 @@ export class NewRfqComponent implements OnInit {
   }
 
   loadAccounts() {
-    this.purchaseRequestService.getAccountsDropdown().subscribe({
+    this.lookupService.getAllAccounts().subscribe({
       next: (res) => {
         this.accountList = res ?? [];
         console.log('Account dropdown data:', this.accountList);
@@ -264,14 +243,8 @@ export class NewRfqComponent implements OnInit {
     });
   }
 
-  // loadItems() {
-  //   this.purchaseRequestService.getAllItems().subscribe(res => {
-  //     this.itemList = res.$values ?? [];
-  //   });
-  // }
-
   loadItems() {
-    this.purchaseRequestService.getItemsDropdown().subscribe({
+    this.lookupService.getAllItems().subscribe({
       next: (res) => {
         this.itemList = res ?? [];
         console.log('Item dropdown data:', this.itemList);
@@ -282,17 +255,16 @@ export class NewRfqComponent implements OnInit {
     });
   }
 
- onVendorChange(vendorId: string) {
-  this.filteredCompanies = (this.quotationVendorUsers || [])
-    .filter(vc => vc.vendorId === vendorId)
-    .map(vc => ({ companyId: vc.vendorCompanyId, name: vc.companyName }));
+  onVendorChange(vendorId: string) {
+    this.filteredCompanies = (this.quotationVendorUsers || [])
+      .filter(vc => vc.vendorId === vendorId)
+      .map(vc => ({ companyId: vc.vendorCompanyId, name: vc.companyName }));
 
-  // Only clear when ADDING (not editing)
-  if (this.editingRowIndex === null) {
-    this.itemForm.patchValue({ vendorCompanyId: null }, { emitEvent: false });
+    // Only clear when ADDING (not editing)
+    if (this.editingRowIndex === null) {
+      this.itemForm.patchValue({ vendorCompanyId: null }, { emitEvent: false });
+    }
   }
-}
-
 
   onWorkflowTypeChange(selectedId: number): void {
     if (selectedId) {
@@ -324,10 +296,6 @@ export class NewRfqComponent implements OnInit {
     });
   }
 
-  // getVendorNameById(vendorId: number): string {
-  //   const found = this.quotationVendorUsers.find(v => v.id === vendorId);
-  //   return found ? found.vendorName : '';
-  // }
   getVendorNameById(vendorId: string): string {
     const found = this.quotationVendorUsers.find(v => v.vendorId === vendorId);
     return found ? found.vendorName : '';
@@ -341,71 +309,17 @@ export class NewRfqComponent implements OnInit {
 
   getUomCodeById(id: number): string {
     const found = this.unitsOfMeasurementList.find(u => u.id === id);
-    return found ? found.uomCode : '';
+    return found ? found.description : '';
   }
 
   getAccountNameById(id: number): string {
     const found = this.accountList.find(a => a.id === id);
-    return found ? found.name : '';
+    return found ? found.description : '';
   }
   getItemNameById(id: number): string {
     const found = this.itemList.find(i => i.id === id);
-    return found ? found.itemName : '';
+    return found ? found.description : '';
   }
-  // loadExistingQuotation(id: number) {
-  //   this.loadVendorsAndCompanies(id);
-
-  //   this.rfqService.getQuotationById(id).subscribe({
-  //     next: async (data) => {
-  //       console.log("update data: ", data)
-  //       this.isNewForm = false;
-  //       this.currentQuotationId = data.id;
-  //       this.currentRfqNo = data.rfqNo;
-  //         // ✅ store rfqNo here
-
-  //       this.newRfqForm.patchValue(data);
-
-  //       if (data.requestStatus?.status) {
-  //       this.newRfqForm.patchValue({
-  //         status: data.requestStatus.status
-  //       });
-  //     }
-  //       if (data.quotationItems.$values) {
-  //         this.newQuotationItemData = data.quotationItems.$values.map((item: any) => ({
-  //           id: item.id,
-  //           rfqNo: item.rfqNo,
-  //           itemType: item.itemType,
-  //           itemCode: item.itemCode,
-  //           itemDescription: item.itemDescription,
-  //           amount: item.amount,
-  //           unitCost: item.unitCost,
-  //           uofM: item.uofM,
-  //           orderQuantity: item.orderQuantity,
-  //           reqByDate: item.reqByDate,
-  //           vendorUserId: item.vendorUserId,
-  //           vendorCompanyId: item.vendorCompanyId,
-  //           account: item.account,
-  //           remarks: item.remarks,
-  //           quotationRequestId: item.quotationRequestId,
-  //           quotationItemAttachments: item.quotationItemAttachments?.$values?.map((a: any) => ({
-  //             content: a.content || '',
-  //             contentType: a.contentType || '',
-  //             fileName: a.fileName || '',
-  //             fromForm: a.fromForm || '',
-  //             createdDate: a.createdDate,
-  //             modifiedDate: a.modifiedDate,
-  //             createdBy: a.createdBy || 'current-user',
-  //             isDeleted: a.isDeleted || false,
-  //             quotationItemId: a.quotationItemId || 0,
-  //             isNew: false
-  //           })) || []
-  //         }));
-  //       }
-  //     },
-
-  //     error: (err) => console.error('Failed to load purchase request:', err)
-  //   });
-  // }
 
   loadFromPurchaseRequest(prId: number): void {
     this.purchaseRequestService.getPurchaseRequestById(prId).subscribe({
@@ -508,8 +422,6 @@ export class NewRfqComponent implements OnInit {
           }
         }
 
-        // if (data.quotationItems?.$values) {
-        //   this.newQuotationItemData = data.quotationItems.$values.map((item: any) => ({
         if (requestData.quotationItems) {
           const itemList = requestData.quotationItems || [];
 
@@ -553,7 +465,7 @@ export class NewRfqComponent implements OnInit {
   }
 
   editRow(row: any, rowIndex: number) {
-     this.editingRowIndex = rowIndex;
+    this.editingRowIndex = rowIndex;
     this.itemForm.patchValue({
       id: row.id,
       itemType: row.itemType,
@@ -574,10 +486,10 @@ export class NewRfqComponent implements OnInit {
     });
     this.onVendorChange(row.vendorUserId);
 
-      Promise.resolve().then(() => {
-    this.itemForm.patchValue({ vendorCompanyId: row.vendorCompanyId }, { emitEvent: false });
-  });
-  
+    Promise.resolve().then(() => {
+      this.itemForm.patchValue({ vendorCompanyId: row.vendorCompanyId }, { emitEvent: false });
+    });
+
   }
 
   submitForm() {
@@ -737,51 +649,6 @@ export class NewRfqComponent implements OnInit {
     });
   }
 
-  // insertItem(): void {
-  //   const newItem = this.itemForm.value;
-
-  //   if (this.editingRowIndex !== null) {
-  //     // Replace the item immutably
-  //     this.newQuotationItemData = this.newQuotationItemData.map((item, index) =>
-  //       index === this.editingRowIndex ? newItem : item
-  //     );
-  //     this.editingRowIndex = null;
-  //   } else {
-  //     // Add new item immutably
-  //     this.newQuotationItemData = [...this.newQuotationItemData, newItem];
-  //   }
-
-  //   this.itemForm.reset();
-  // }
-  // insertItem(): void {
-  //   const newItem = this.itemForm.value;
-
-  //   if (this.editingRowIndex !== null) {
-  //     const existing = this.newQuotationItemData[this.editingRowIndex];
-
-  //     const merged = {
-  //       ...existing,
-  //       ...newItem,
-  //       quotationItemAttachments: existing?.quotationItemAttachments ?? []
-  //     };
-
-  //     this.newQuotationItemData = this.newQuotationItemData.map((item, index) =>
-  //       index === this.editingRowIndex ? merged : item
-  //     );
-
-  //     this.editingRowIndex = null;
-  //   } else {
-  //     const withEmptyAttachments = {
-  //       ...newItem,
-  //       itemId: Number(newItem.itemId) || 0,
-  //       quotationItemAttachments: newItem.quotationItemAttachments?.length ? newItem.quotationItemAttachments : []
-  //     };
-  //     this.newQuotationItemData = [...this.newQuotationItemData, withEmptyAttachments];
-  //   }
-  //   this.toastr.success('Item inserted!', '');
-
-  //   this.itemForm.reset();
-  // }
   get uniqueVendors() {
     const users = Array.isArray(this.quotationVendorUsers) ? this.quotationVendorUsers : [];
     const map = new Map<string, any>();
@@ -792,16 +659,6 @@ export class NewRfqComponent implements OnInit {
     }
     return Array.from(map.values());
   }
-
-  // get uniqueVendors() {
-  //   const map = new Map<string, any>();
-  //   this.quotationVendorUsers.forEach(v => {
-  //     if (!map.has(v.vendorId)) {
-  //       map.set(v.vendorId, v);
-  //     }
-  //   });
-  //   return Array.from(map.values());
-  // }
 
   insertItem(): void {
     const newItem = this.itemForm.value;
@@ -887,33 +744,6 @@ export class NewRfqComponent implements OnInit {
     });
   }
 
-  // openNewEntityModal(row: any) {
-  //   const modalRef = this.modalService.open(RfqAttachmentComponent, {
-  //     backdrop: 'static',
-  //     size: 'lg', // Adjust the size as needed
-  //     centered: true,
-  //   });
-  //   const quotationItemId = row.id;
-  //   modalRef.componentInstance.data = {
-  //     quotationItemId: quotationItemId,
-  //     existingAttachment: this.attachmentList
-  //   }
-  //   modalRef.result.then((data: any[]) => {
-  //     this.pendingAttachment = data;
-  //     this.attachmentList = [
-  //       ...this.attachmentList, ...data.map(a => ({
-  //         fileName: a.fileName,
-  //         contentType: a.contentType,
-  //         content: a.content,
-  //         fromForm: a.fromForm,
-  //         quotationItemId: a.quotationItemId,
-  //         IsNew: true
-  //       }))
-  //     ]
-  //     this.numberOfAttachments = this.attachmentList.length;
-  //   })
-  // }
-
   openNewEntityModal(rowIndex: number): void {
     const sourceRow = rowIndex !== null
       ? this.newQuotationItemData[rowIndex] : this.itemForm.value; // new item (not yet inserted)
@@ -970,19 +800,6 @@ export class NewRfqComponent implements OnInit {
     this.toastr.error('Failed to save draft');
     console.error('Error saving draft:', err);
   }
-
-  // onSubmitForApproval() {
-  //   this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
-  //     next: (res) => {
-  //       this.toastr.success(res.message || 'Quotation submitted for approval successfully!');
-  //       this.router.navigate(['/rfq']);
-  //     },
-  //     error: (err) => {
-  //       console.error(err);
-  //       this.toastr.error('Failed to submit quotation for approval.');
-  //     }
-  //   });
-  // }
 
   onSubmitForApproval() {
     Swal.fire({
