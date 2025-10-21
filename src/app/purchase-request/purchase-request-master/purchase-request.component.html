@@ -27,11 +27,13 @@
               <i class="ft-edit"></i><label class="ml-1 mt-1">Update</label>
             </button>
 
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()" [disabled]="isDeleteButtonDisabled">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()"
+              [disabled]="isDeleteButtonDisabled">
               <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
             </button>
 
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled" (click)="onView()">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
+              (click)="onView()">
               <i class="ft-eye"></i><label class="ml-1 mt-1">View</label>
             </button>
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="loadPurchaseRequests()"><label
@@ -40,11 +42,11 @@
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="loadFilteredRequests('New')"><label
                 class="ml-1 mt-1">New</label></button>
 
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="loadFilteredRequests('InProcess')"><label
-                class="ml-1 mt-1">InProcess</label></button>
+            <button type="button" class="btn btn-sm cstm-ui-table-btn"
+              (click)="loadFilteredRequests('InProcess')"><label class="ml-1 mt-1">InProcess</label></button>
 
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="loadFilteredRequests('Completed')"><label
-                class="ml-1 mt-1">Completed</label></button>
+            <button type="button" class="btn btn-sm cstm-ui-table-btn"
+              (click)="loadFilteredRequests('Completed')"><label class="ml-1 mt-1">Completed</label></button>
 
             <!-- <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
               <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
@@ -73,15 +75,17 @@
         <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
           [resizeable]="false">
           <ng-template ngx-datatable-header-template>
-          <div class="custom-control cstm-checkbox-form">
-            <input type="checkbox" class="cstm-checkbox-form" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
-          </div>
+            <div class="custom-control cstm-checkbox-form">
+              <input type="checkbox" class="cstm-checkbox-form" [checked]="isAllSelected"
+                (change)="toggleSelectAll($event)" />
+            </div>
           </ng-template>
           <ng-template ngx-datatable-cell-template let-isSelected="isSelected"
             let-onCheckboxChangeFn="onCheckboxChangeFn">
             <div class="custom-control cstm-checkbox-form custom-checkbox ">
-            <input type="checkbox" class="cstm-checkbox-form" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
-          </div>
+              <input type="checkbox" class="cstm-checkbox-form" [checked]="isSelected"
+                (change)="onCheckboxChangeFn($event)" />
+            </div>
           </ng-template>
         </ngx-datatable-column>
 

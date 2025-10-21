@@ -56,9 +56,9 @@ export class PurchaseRequestService {
     return this.http.post<any>(`${this.baseUrl}/create-request`, data);
   }
 
-  getPurchaseRequestById(id: number): Observable<any> {
+  getPurchaseRequestById(id: number, forRfq: boolean = false): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/get-request-by-id`, {
-      params: { id: id.toString() }
+      params: { id: id.toString(), forRfq }
     });
   }
 

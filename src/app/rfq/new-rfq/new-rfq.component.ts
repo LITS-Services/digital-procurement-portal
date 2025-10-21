@@ -59,6 +59,9 @@ export class NewRfqComponent implements OnInit {
   viewMode = false;
   currentQuotationId: number | null = null;
 
+  // new work
+  purchaseRequestId: number | null = null;
+
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
   newPurchaseRequestForm: FormGroup;
@@ -102,6 +105,8 @@ export class NewRfqComponent implements OnInit {
         this.loadExistingQuotation(+id);
       }
       else if (prId) {
+        // new work
+        this.purchaseRequestId = +prId;
         this.loadFromPurchaseRequest(+prId);
       }
     });
@@ -322,7 +327,9 @@ export class NewRfqComponent implements OnInit {
   }
 
   loadFromPurchaseRequest(prId: number): void {
-    this.purchaseRequestService.getPurchaseRequestById(prId).subscribe({
+    //new work
+    this.purchaseRequestId = prId;
+    this.purchaseRequestService.getPurchaseRequestById(prId, true).subscribe({
       next: (pr) => {
         if (!pr) return;
 
@@ -339,6 +346,7 @@ export class NewRfqComponent implements OnInit {
         //  Map PR items → RFQ items
         this.newQuotationItemData = pr.purchaseItems?.map((item: any) => ({
           id: null,
+          purchaseItemId: item.id, // NEW: Keep track of the PR line item ID
           rfqNo: '',
           itemType: item.itemType,
           itemId: item.itemId,
@@ -493,17 +501,22 @@ export class NewRfqComponent implements OnInit {
   }
 
   submitForm() {
-    //   if (!this.newPurchaseRequestForm.valid) {
-    //   console.warn('Form is invalid');
-    //   return;
-    // }
     const f = this.newRfqForm.value;
     const dateISO = f.date ? new Date(f.date).toISOString() : new Date().toISOString();
 
-    const quotationItems = this.newQuotationItemData?.length
-      ? this.newQuotationItemData.map(item => ({
-        id: item.id || null,   //  very important
+    let quotationItems = [];
 
+    //  Only apply selection logic if this RFQ was opened from a Purchase Request
+    if (this.purchaseRequestId) {
+      const selectedItems = (this.newQuotationItemData || []).filter(i => i.selected);
+      if (selectedItems.length === 0) {
+        this.toastr.info('Please select at least one item to generate RFQ.');
+        return;
+      }
+
+      quotationItems = selectedItems.map(item => ({
+        purchaseItemId: item.purchaseItemId || null,
+        id: item.id || null,
         rfqNo: f.rfqNo || '',
         itemType: item.itemType || '',
         itemId: Number(item.itemId) || 0,
@@ -520,7 +533,7 @@ export class NewRfqComponent implements OnInit {
         vendorUserId: item.vendorUserId || null,
         vendorCompanyId: item.vendorCompanyId || null,
         quotationItemAttachments: item.quotationItemAttachments?.map(att => ({
-          id: att.id || null,   // very important
+          id: att.id || null,
           content: att.content || '',
           contentType: att.contentType || '',
           fileName: att.fileName || '',
@@ -529,9 +542,41 @@ export class NewRfqComponent implements OnInit {
           isDeleted: false,
           quotationItemId: att.quotationItemId || 0,
         }))
-      }))
-      : [];
+      }));
+    }
+    else {
+      // 🧾 Normal RFQ creation — use all items as before
+      quotationItems = this.newQuotationItemData?.map(item => ({
+        id: item.id || null,
+        rfqNo: f.rfqNo || '',
+        itemType: item.itemType || '',
+        itemId: Number(item.itemId) || 0,
+        unitOfMeasurementId: Number(item.unitOfMeasurementId) || 0,
+        amount: item.amount || 0,
+        unitCost: item.unitCost || 0,
+        orderQuantity: item.orderQuantity || 0,
+        reqByDate: item.reqByDate || new Date(),
+        itemDescription: item.itemDescription || '',
+        accountId: Number(item.accountId) || 0,
+        remarks: item.remarks || '',
+        createdBy: item.createdBy || '',
+        quotationRequestId: item.quotationRequestId || 0,
+        vendorUserId: item.vendorUserId || null,
+        vendorCompanyId: item.vendorCompanyId || null,
+        quotationItemAttachments: item.quotationItemAttachments?.map(att => ({
+          id: att.id || null,
+          content: att.content || '',
+          contentType: att.contentType || '',
+          fileName: att.fileName || '',
+          fromForm: att.fromForm || '',
+          createdBy: att.createdBy || '',
+          isDeleted: false,
+          quotationItemId: att.quotationItemId || 0,
+        }))
+      })) || [];
+    }
 
+    // ✅ Common payload & service calls remain unchanged
     const payload = {
       rfqNo: f.rfqNo,
       purchaseRequestNo: f.purchaseRequestNo,
@@ -549,6 +594,11 @@ export class NewRfqComponent implements OnInit {
       quotationItems
     };
 
+    // if (this.currentQuotationId) {
+    //   this.rfqService.updateQuotation(this.currentQuotationId, { quotationRequest: payload }).subscribe(...);
+    // } else {
+    //   this.rfqService.createQuotation({ quotationRequest: payload, isDraft: false }).subscribe(...);
+    // }
     if (this.currentQuotationId) {
       this.rfqService.updateQuotation(this.currentQuotationId, { quotationRequest: payload }).subscribe({
         next: res => {

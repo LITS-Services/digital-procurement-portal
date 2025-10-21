@@ -417,6 +417,13 @@
                 [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
                 <!-- [headerHeight]="50" [footerHeight]="50" rowHeight="50" [limit]="5" [scrollbarH]="true"> -->
 
+                <!-- selection of items on generate rfq -->
+                <ngx-datatable-column *ngIf="purchaseRequestId" name="Select" [width]="60" [sortable]="false">
+                  <ng-template ngx-datatable-cell-template let-row="row">
+                    <input type="checkbox" [(ngModel)]="row.selected" />
+                  </ng-template>
+                </ngx-datatable-column>
+
                 <ngx-datatable-column name="Sr. No." [width]="50" [sortable]="false">
                   <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
                     <span>{{rowIndex + 1}}</span>
