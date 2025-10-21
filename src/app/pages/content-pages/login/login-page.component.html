@@ -31,11 +31,18 @@
                       class="help-block mt-1 text-danger"> <i class="ft-alert-circle align-middle"></i> This is
                       required</div>
                   </div>
-                  <div class="form-group">
-                    <input type="password" formControlName="password" class="form-control custom-input"
+                  <div class="form-group cstm-pass-div">
+                    
+                    <input type="{{ hidePassword ? 'password' : 'text' }}" formControlName="password" class="form-control custom-input"
                       placeholder="Enter your password"
                       [ngClass]="{ 'is-invalid': loginFormSubmitted && lf.password.invalid, 'is-valid': loginFormSubmitted && !lf.password.invalid }"
                       required>
+                          <i 
+                          class="eye-icon pass-icon"
+                            [ngClass]="hidePassword ? 'ft ft-eye-off' : 'ft ft-eye'"
+                            (click)="togglePasswordVisibility()"></i>
+                 
+                      
                     <div *ngIf="loginFormSubmitted && (lf.password.invalid || lf.password.errors?.required)"
                       class="help-block mt-1 text-danger"> <i class="ft-alert-circle align-middle"></i> This is required
                     </div>

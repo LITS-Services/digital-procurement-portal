@@ -202,3 +202,20 @@
   cursor: pointer;
   transition: all 0.25s ease;
 }
+
+
+.pass-icon{
+      position: absolute;
+    right: 16px;
+    top: 16px;
+    z-index: 999;
+    cursor: pointer;
+}
+
+.cstm-pass-div{
+  position: relative !important;
+}
+
+::ng-deep .was-validated .form-control:valid, .form-control.is-valid {
+  background-position: right calc(0.375em + 1.1875rem) center !important;
+}
