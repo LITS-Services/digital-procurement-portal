@@ -55,38 +55,49 @@ export class responseHandlerInterceptor implements HttpInterceptor {
 
         if ('isSuccess' in body && 'errors' in body && 'status' in body) {
           if (body.isSuccess) {
-            if(isWriteMethod){
-                   const msg = (body.successMessage && body.successMessage.trim().length > 0)
-              ? body.successMessage
-              : 'Operation completed successfully.';
-            this.toastr.success(msg);
-            }
-       
+              if (isWriteMethod) {
+                const success = body.successMessage?.trim?.();
+                if (success) {
+                  this.toastr.success(success);
+                }
+              }
               } else {
             const msg = this.extractErrorMessage(body);
-            this.toastr.error(msg || 'Something went wrong.');
+            if(msg){
+              this.toastr.error(msg);
+            }
+            
           }
         }
       }
     },
     error: (err: any) => {
-      if (skip) return;
+      if (skip || err?.status === 401) return;
 
-      if (err instanceof HttpErrorResponse) {
-        const maybeEnvelope = err.error as Partial<responseDTO> | undefined;
-        if (maybeEnvelope && typeof maybeEnvelope === 'object' && 'isSuccess' in maybeEnvelope) {
-          const msg = this.extractErrorMessage(maybeEnvelope as responseDTO);
-          this.toastr.error(msg || `Request failed (${err.status}).`);
-        } else {
-          const msg = err?.error?.message || err?.message || `Request failed (${err.status}).`;
-          this.toastr.error(msg);
-        }
-      } else {
-        this.toastr.error('Unexpected error occurred.');
+      if(err?.error?.[0]?.ErrorMessage.includes('token expired')){
+        return;
       }
-    }
 
-  }),
+    if (err instanceof HttpErrorResponse) {
+            const maybeEnvelope = err.error as Partial<responseDTO> | undefined;
+
+            // only toast if it *looks like* your envelope
+            const looksLikeEnvelope =
+              maybeEnvelope && typeof maybeEnvelope === 'object' &&
+              ('isSuccess' in maybeEnvelope || 'errors' in maybeEnvelope || 'validationErrors' in maybeEnvelope);
+
+            if (looksLikeEnvelope) {
+              const msg = this.extractErrorMessage(maybeEnvelope as responseDTO);
+              if (msg) this.toastr.error(msg);
+            }
+
+            // else: do nothing → error will still propagate (good for console/network)
+          } else {
+            // Non-HttpErrorResponse: ignore toast so it still bubbles up
+          }
+          // Important: RETURN nothing here; tap won't swallow it—the error continues downstream.
+        }
+      }),
 
   // pass value on successful responses
   map((event: HttpEvent<any>) => {

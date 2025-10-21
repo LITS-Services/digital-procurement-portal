@@ -3,6 +3,7 @@ import { NgForm, UntypedFormGroup, UntypedFormControl, Validators } from '@angul
 import { Router, ActivatedRoute } from "@angular/router";
 import { AuthService } from 'app/shared/auth/auth.service';
 import { NgxSpinnerService } from "ngx-spinner";
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login-page',
@@ -14,6 +15,8 @@ export class LoginPageComponent {
   loginFormSubmitted = false;
   isLoginFailed = false;
 
+  hidePassword: boolean = true;
+
   loginForm = new UntypedFormGroup({
     username: new UntypedFormControl('', [Validators.required]),
     password: new UntypedFormControl('', [Validators.required]),
@@ -24,8 +27,18 @@ export class LoginPageComponent {
     private router: Router,
     private authService: AuthService,
     private spinner: NgxSpinnerService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    public toastr: ToastrService
   ) { }
+
+  ngOnInit() { 
+       const msg = sessionStorage.getItem('authFlash');
+            if (msg) {
+                sessionStorage.removeItem('authFlash');
+                this.toastr.warning(msg, 'Session expired', { timeOut: 10000 });
+            }
+        
+  }
 
   get lf() {
     return this.loginForm.controls;
@@ -92,6 +105,9 @@ localStorage.setItem('role', role);
     );
   }
 
+   togglePasswordVisibility() {
+    this.hidePassword = !this.hidePassword;
+  }
   rememberMe() {
     // implement if needed
   }
