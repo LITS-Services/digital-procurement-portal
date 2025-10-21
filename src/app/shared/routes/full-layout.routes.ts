@@ -16,6 +16,10 @@ export const Full_ROUTES: Routes = [
     loadChildren: () => import('../../rfq/rfq.module').then(m => m.RFQModule)
   },
   {
+    path: 'purchase-order',
+    loadChildren: () => import('../../purchase-order/purchase-order.module').then(m => m.PurchaseOrderModule)
+  },
+  {
     path: 'tendering',
     loadChildren: () => import('../../tendering/tendering.module').then(m => m.TenderingModule)
   },

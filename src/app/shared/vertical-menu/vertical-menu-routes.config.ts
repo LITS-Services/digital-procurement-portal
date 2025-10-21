@@ -7,6 +7,8 @@ export const ROUTES: RouteInfo[] = [
   },
   { path: '/purchase-request', title: 'Purchase Request', icon: 'ft-file-plus', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
   { path: '/rfq', title: 'RFQ', icon: 'fa fa-envelope-o', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+    { path: '/purchase-order', title: 'Purchase Order', icon: 'fa fa-file-invoice', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+
   { path: '/tendering', title: 'Tendering', icon: 'fa fa-handshake-o', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
   { path: '/company', title: 'Company', icon: 'fa fa-briefcase', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
   { path: '/employee-list', title: 'Employee list', icon: 'fa fa-users', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [], roles: ['Admin'] },
