@@ -53,6 +53,13 @@ set refreshToken(token: string | null) {
     localStorage.removeItem('refreshToken');
   }
 }
+   createEmailInvitation(userData: any): Observable<string> {
+    return this.http.post(`${this.baseUrl}/Auth/create-email-invitation`, userData, { responseType: 'text' });
+  }
+
+  getUserInvitation(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/Auth/get-email-logs`);
+  }
 
   // ===== SSO Login =====
   initiateSSOLogin(returnUrl: string = '/dashboard/dashboard1'): Observable<any> {

@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
 import { AuthService } from 'app/shared/auth/auth.service';
-import { CompanyService } from 'app/shared/services/Company.services';
 
 @Component({
   selector: 'app-email-setup',
@@ -15,161 +14,87 @@ export class EmailSetupComponent implements OnInit {
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
-  tenderingData: any[] = [];       // filtered list for table
-  allCompanies: any[] = [];        // full list (for ALL button)
   public chkBoxSelected = [];
   loading = false;
   public rows = [];
+  public allEmailLogs = []; // ✅ To store all records
   columns = [];
   announcementId: number;
   isEditButtonDisabled = true;
   isDeleteButtonDisabled = true;
   isOpenButtonDisabled = true;
-  isAddNewDisable = true;
   isAllSelected = false;
 
   constructor(
     private router: Router,
     private modalService: NgbModal,
-    private companyService: CompanyService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) { }
 
-  gotoEditCompany() {
-    this.router.navigateByUrl('/company/company-edit');
-  }
-
   ngOnInit(): void {
-    this.getCompanyData();
+    this.getEmailLogs();
 
-    // Define the table columns
+    // ✅ Table Columns
     this.columns = [
-      { prop: 'name', name: 'Name' },
-      { prop: 'companyStatus', name: 'Status' },
-      { prop: 'street', name: 'Street' },
-      { prop: 'city', name: 'City' },
-      { prop: 'contactNumber', name: 'Contact Number' },
-      { prop: 'edit', name: 'Edit' }
+      { prop: 'receiverEmail', name: 'Receiver Email' },
+      { prop: 'requestStatusName', name: 'Request Status' },
+      { prop: 'subject', name: 'Subject' },
+      { prop: 'body', name: 'Body' }
     ];
   }
 
-  getCompanyData() {
+  // ✅ Fetch Email Logs
+  getEmailLogs() {
     this.loading = true;
 
-    const isAdmin = this.authService.hasRole('Admin');
+    this.authService.getUserInvitation().subscribe({
+      next: (res: any[]) => {
+        this.allEmailLogs = res.map(item => ({
+          id: item.id,
+          receiverEmail: item.receiverEmail,
+          requestStatusName: item.requestStatusName,
+          subject: this.truncateText(item.subject),
+          body: this.truncateText(item.body)
+        }));
 
-    if (isAdmin) {
-      this.companyService.getVendorCompanies().subscribe({
-        next: (res: any) => {
-          const companies = res?.$values || [];
+        // ✅ Default → show all
+        this.rows = [...this.allEmailLogs];
 
-          // ✅ Store all companies
-          this.allCompanies = companies.map(c => this.mapCompany(c));
-
-          // ✅ Default → show Inprocess & Approved
-          this.tenderingData = this.allCompanies.filter(c =>
-            c.companyStatus.toLowerCase() === 'inprocess' ||
-            c.companyStatus.toLowerCase() === 'approve'
-          );
-
-          this.rows = [...this.tenderingData];
-          this.cdr.detectChanges();
-          this.loading = false;
-        },
-        error: (err) => {
-          console.error('Error fetching vendor companies:', err);
-          this.loading = false;
-        }
-      });
-
-    } else {
-      const userId = localStorage.getItem('userId');
-      if (!userId) {
-        console.warn('No userId found in localStorage');
-        this.tenderingData = [];
-        this.rows = [];
         this.loading = false;
-        return;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error fetching email logs:', err);
+        this.loading = false;
       }
-
-      this.companyService.getCompaniesByUserEntity(userId).subscribe({
-        next: (res: any) => {
-          const companies = res?.$values || [];
-
-          // ✅ Store all companies
-          this.allCompanies = companies.map(c => this.mapCompany(c));
-
-          // ✅ Default → show Inprocess & Approved
-          this.tenderingData = this.allCompanies.filter(c =>
-            c.companyStatus.toLowerCase() === 'inprocess' ||
-            c.companyStatus.toLowerCase() === 'approve'
-          );
-
-          this.rows = [...this.tenderingData];
-          this.loading = false;
-        },
-        error: (err) => {
-          console.error('Error fetching companies by user:', err);
-          this.loading = false;
-        }
-      });
-    }
+    });
   }
 
-  private mapCompany(c: any) {
-    const primaryAddress = c.addressesVM?.$values?.[0] || {};
-    const primaryContact = c.contactsVM?.$values?.[0] || {};
-    const demographics = c.purchasingDemographics || {};
-
-    return {
-      id: c.id,
-      name: c.name,
-      companyStatus: c.status || '',
-      street: primaryAddress.street || '',
-      city: primaryAddress.city || '',
-      contactNumber: primaryContact.contactNumber || '',
-      remarks: c.remarks || '',
-      approverId: c.approverId,
-      vendorId: c.vendorId,
-      vendorType: demographics.vendorType || '',
-      primaryCurrency: demographics.primaryCurrency || ''
-    };
-  }
-
+  // ✅ Filters
   showAll() {
-   this.rows = this.allCompanies.filter(c =>
-      c.companyStatus.toLowerCase() === 'inprocess'  ||
-       c.companyStatus.toLowerCase() === 'approve'
-    );  
-                  this.cdr.detectChanges()
-
+    this.rows = [...this.allEmailLogs];
   }
 
   showInProcess() {
-    this.rows = this.allCompanies.filter(c =>
-      c.companyStatus.toLowerCase() === 'inprocess'
+    this.rows = this.allEmailLogs.filter(log =>
+      log.requestStatusName?.toLowerCase() === 'inprocess'
     );
-                      this.cdr.detectChanges()
-
   }
 
   showRecall() {
-    this.rows = this.allCompanies.filter(c =>
-      c.companyStatus.toLowerCase() === 'sendback'
+    this.rows = this.allEmailLogs.filter(log =>
+      log.requestStatusName?.toLowerCase() === 'recall' || 
+      log.requestStatusName?.toLowerCase() === 'sendback' // Optional: include SendBack if needed
     );
-                      this.cdr.detectChanges()
-
   }
 
-  homePage() {
-    this.router.navigate(['/dashboard/dashboard1']);
+  // ✅ Truncate Long Text
+  truncateText(text: string, limit: number = 50): string {
+    return text && text.length > limit ? text.substring(0, limit) + '...' : text;
   }
 
-  openEmpDetails() {
-    this.router.navigate(['/purchase-request/new-purchase-request']);
-  }
-
+  // ✅ Sorting
   onSort(event) {
     this.loading = true;
     setTimeout(() => {
@@ -183,6 +108,7 @@ export class EmailSetupComponent implements OnInit {
     }, 1000);
   }
 
+  // ✅ Checkbox Selection
   customChkboxOnSelect({ selected }) {
     this.chkBoxSelected = [];
     this.chkBoxSelected.splice(0, this.chkBoxSelected.length);
@@ -198,10 +124,14 @@ export class EmailSetupComponent implements OnInit {
     this.isEditButtonDisabled = selectedRowCount !== 1;
     this.isOpenButtonDisabled = selectedRowCount === 0;
 
-    this.isAllSelected = this.tenderingData.length === selectedRowCount;
+    this.isAllSelected = this.rows.length === selectedRowCount;
+  }
+
+  homePage() {
+    this.router.navigate(['/dashboard/dashboard1']);
   }
 
   CreatInvitations() {
-      this.router.navigate(['/setup/create-invitation']);
+    this.router.navigate(['/setup/create-invitation']);
   }
 }

@@ -69,6 +69,10 @@ export class CompanyService {
     return this.http.get<any>(`${environment.apiUrl}/ProcurementUsers/GetUserWithCompanies/${id}`);
   }
 
+  getUserByEntity(id: number): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/ProcurementUsers/get-procurement-users-by-company/${id}`);
+  }
+
   getcompanydatabyid(id: string): Observable<any> {
     return this.http.get<any>(`${environment.apiUrl}/Procurement/GetUserCompanies/GetUserWithCompanies/${id}`);
   }
@@ -88,6 +92,9 @@ export class CompanyService {
   getVendorCompanies(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/get-all-vendor-companies`);
   }
+
+  
+
 
   // getVendorUsers(): Observable<VendorUserDropdown> {
   //   return this.http.get<VendorUserDropdown>(`${this.apiUrl}/get-all-vendor-users`);

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgbAccordion, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { PurchaseRequestAttachmentModalComponent } from 'app/shared/modals/purchase-request-attachment-modal/purchase-request-attachment-modal.component';
+import { CompanyService } from 'app/shared/services/Company.services';
 import { WorkflowServiceService } from 'app/shared/services/WorkflowService/workflow-service.service';
 import { ToastrService } from 'ngx-toastr';
 
@@ -33,11 +34,15 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
   @ViewChild('accordion') accordion: NgbAccordion;
   @ViewChild(DatatableComponent) table: DatatableComponent;
   mode: string = 'Create';
+  entitiesList: any[] = [];
+isVendorOnboarding: boolean = false;
+
 
   // NEW: Conditional field flag
   hideConditionalFields = false;
 
   constructor(
+   private companyService: CompanyService,
     private router: Router,
     private route: ActivatedRoute,
     private modalService: NgbModal,
@@ -94,31 +99,58 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
 
   // NEW: Update conditional fields based on selected workflow type
 updateConditionalFields(selectedTypeId: any) {
-  if (!selectedTypeId) {
-    this.hideConditionalFields = false;
-    // Enable all relevant fields
-    this.approverForm.get('amountFrom')?.enable();
-    this.approverForm.get('amountTo')?.enable();
-    this.workflowsetupform.get('usersList')?.enable();
-    return;
-  }
-
   const selectedType = this.workflowTypes.find(wf => wf.id == selectedTypeId);
 
-  if (selectedType && selectedType.typeName === 'Vendor Company Onboarding') {
-    this.hideConditionalFields = true; // optional, can be used elsewhere if needed
-    // Disable fields
+  if (selectedType?.typeName === 'Vendor Company Onboarding') {
+    this.isVendorOnboarding = true;
+    this.hideConditionalFields = true;
+
+    // Reset users selection
+    this.workflowsetupform.get('usersList')?.reset();
+    this.workflowsetupform.get('usersList')?.enable();
+
+    // Disable Amount fields in approver form
     this.approverForm.get('amountFrom')?.disable();
     this.approverForm.get('amountTo')?.disable();
-    this.workflowsetupform.get('usersList')?.disable();
+
+    // Fetch Entities
+    this.getEntities();
   } else {
+    this.isVendorOnboarding = false;
     this.hideConditionalFields = false;
-    // Enable fields
+
+    // Restore Amount fields
     this.approverForm.get('amountFrom')?.enable();
     this.approverForm.get('amountTo')?.enable();
-    this.workflowsetupform.get('usersList')?.enable();
+
+    // Restore Users List
+    this.getDepartmentUsersList();
   }
 }
+
+getEntities(): void {
+  this.companyService.getProCompanies().subscribe({
+    next: (res: any) => {
+      this.entitiesList = res.result || [];
+    },
+    error: (err) => console.error('Error fetching entities:', err)
+  });
+}
+
+onEntitySelected(entityId: number) {
+  if (!entityId) return;
+
+  console.log('Selected Entity ID:', entityId); 
+
+  this.companyService.getUserByEntity(entityId).subscribe({
+    next: (res: any) => {
+      this.approverList = res?.result || [];
+      this.approverForm.get('approverList')?.reset();
+    },
+    error: (err) => console.error('Error fetching approvers:', err)
+  });
+}
+
 
 
 
@@ -314,49 +346,45 @@ updateConditionalFields(selectedTypeId: any) {
 
 
 
-  loadexistingWorkflowById(id: number) {
+ loadexistingWorkflowById(id: number) {
+  this.WorkflowServiceService.GetWorkflowById(id).subscribe({
+    next: (res: any) => {
+      // API returns array, so take first object
+      const master = Array.isArray(res) ? res[0] : res;
 
-    this.WorkflowServiceService.GetWorkflowById(id).subscribe({
-      next: (data) => {
-        const master = data.$values[0];
+      this.workflowmasterId = master.workflowMasterId;
 
-        // master.users might be wrapped with $values
-        const selectedUsers: string[] = master.users?.$values ?? [];
+      // Patch main form
+      this.workflowsetupform.patchValue({
+        workflowName: master.workflowName,
+        documentType: master.workflowTypeId,
+        status: master.isActive,
+        usersList: master.users || [] // Already array of userIds (strings)
+      });
 
-        // Now filter against usersList
-        const validSelectedUsers = this.usersList
-          .filter((u: any) => selectedUsers.includes(u.id))
-          .map((u: any) => u.id);
+      // Map workflow details to table array
+      this.newApproverData = (master.workflowDetails || []).map((d: any) => ({
+        approverName: d.approverName || '',
+        approverList: d.userId,        // This should match your dropdown value binding
+        amountFrom: d.amountFrom,
+        amountTo: d.amountTo,
+        approverLevel: d.approverLevel,
+        canApprove: d.canApprove,
+        canReject: d.canReject,
+        canSendBack: d.canSendBack,
+        canSubmit: d.canSubmit,
+        isApprovalCompulsory: d.isApprovalCompulsory,
+        userId: d.userId,
+        workflowDetailsId: d.workflowDetailsId
+      }));
 
-        this.workflowmasterId = master.workflowMasterId;
-        this.workflowsetupform.patchValue({
-          workflowName: master.workflowName,
-          documentType: master.workflowTypeId,
-          status: master.isActive,
-          usersList: selectedUsers
-        });
-        if (master.workflowDetails?.$values?.length) {
-          this.newApproverData = master.workflowDetails.$values.map((d: any) => ({
-            approverName: d.approverName || '',
-            approverList: d.userId || '',
-            amountFrom: d.amountFrom,
-            amountTo: d.amountTo,
-            approverLevel: d.approverLevel,
-            canApprove: d.canApprove,
-            canReject: d.canReject,
-            canSendBack: d.canSendBack,
-            canSubmit: d.canSubmit,
-            isApprovalCompulsory: d.isApprovalCompulsory,
-            userId: d.userId,
-            workflowDetailsId: d.workflowDetailsId,
-          }));
-        } else {
-          this.newApproverData = [];
-        }
-      },
-      error: (err) => console.error('Failed to load workflow:', err)
-    });
-  }
+      // Refresh table
+      this.newApproverData = [...this.newApproverData];
+    },
+    error: (err) => console.error('Failed to load workflow:', err)
+  });
+}
+
 
   updateForm() {
     if (!this.workflowsetupform.valid) {

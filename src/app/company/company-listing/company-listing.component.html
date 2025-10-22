@@ -4,14 +4,9 @@
 
             <!-- Header -->
             <div class="row">
-                <div class="col-md-12" style=" margin-top: -0.25rem;">
-                    <!-- <h4>Announcements</h4> -->
+                <div class="col-md-12" style="margin-top: -0.25rem;">
                     <h4 class="heading">Vendor Companies</h4>
                 </div>
-                <!-- <div class="col-md-6">
-                </div> -->
-
-
             </div>
 
             <!-- Action Pane -->
@@ -23,12 +18,7 @@
                         </button>
                         <span class="vl"></span>
 
-                        <!-- Create -->
-                        <!-- <button type="reset" ngbTooltip="Create new company" class="btn btn-sm" (click)="openEmpDetails()">
-        <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
-    </button> -->
-
-                        <!-- Update -->
+                        <!-- Action Buttons -->
                         <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
                             (click)="editSelectedRow()">
                             <i class="ft-edit"></i><label class="ml-1 mt-1">Company Review</label>
@@ -48,25 +38,11 @@
                             <i class="ft-refresh-ccw"></i>
                             <label class="ml-1 mt-1">Recall</label>
                         </button>
-
-
-                        <!-- Delete -->
-                        <!-- <button type="button" class="btn btn-sm" [disabled]="isDeleteButtonDisabled" (click)="deleteSelectedRows()">
-        <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
-    </button> -->
-
-                        <!-- Approval -->
-                        <!-- <button type="button" class="btn btn-sm" [disabled]="isOpenButtonDisabled" (click)="approveSelectedRows()">
-        <i class="ft-check"></i><label class="ml-1 mt-1">Approval</label>
-    </button> -->
                     </div>
-
-
-
                 </div>
-
             </div>
-            <!-- Content -->
+
+            <!-- Table Content -->
             <ngx-datatable class="bootstrap core-bootstrap" [rows]="rows" [columnMode]="'force'"
                 [headerHeight]="50" [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'" [limit]="15"
                 [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
@@ -89,34 +65,27 @@
                     </ng-template>
                 </ngx-datatable-column>
 
-                <!-- Sr No -->
+                <!-- Sr No Column -->
                 <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
                     <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
                         <span>{{ rowIndex + 1 }}</span>
                     </ng-template>
                 </ngx-datatable-column>
 
-
-                <!-- ✅ New Columns -->
+                <!-- Data Columns -->
                 <ngx-datatable-column name="Name" prop="name" [width]="120"></ngx-datatable-column>
-                <ngx-datatable-column name="Status" prop="companyStatus" [width]="100"></ngx-datatable-column>
-                <!-- <ngx-datatable-column name="Street" prop="street" [width]="150"></ngx-datatable-column> -->
+
+                <!-- Conditionally Display Status Column -->
+                <ngx-datatable-column *ngIf="showStatusColumn" name="Status" prop="companyStatus" [width]="100"></ngx-datatable-column>
+
                 <ngx-datatable-column name="City" prop="city" [width]="120"></ngx-datatable-column>
-                <!-- <ngx-datatable-column name="Contact Number" prop="contactNumber" [width]="150"></ngx-datatable-column> -->
+
                 <ngx-datatable-column name="Vendor Type" prop="vendorType" [width]="120"></ngx-datatable-column>
+                
                 <ngx-datatable-column name="Currency" prop="primaryCurrency" [width]="100"></ngx-datatable-column>
 
-
-                <!-- Edit Action Column -->
-                <!-- <ngx-datatable-column name="Edit" [width]="80" [sortable]="false">
-  <ng-template ngx-datatable-cell-template let-row="row">
-    <button class="btn btn-sm btn-primary" (click)="editRow(row)">
-      <i class="ft-edit"></i>
-    </button>
-  </ng-template>
-</ngx-datatable-column> -->
-
-
+                <!-- New Entity Column -->
+                <!-- <ngx-datatable-column name="Entity" prop="entity" [width]="120"></ngx-datatable-column> -->
 
             </ngx-datatable>
 
