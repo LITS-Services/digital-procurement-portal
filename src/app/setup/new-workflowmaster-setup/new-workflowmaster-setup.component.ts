@@ -158,7 +158,7 @@ onEntitySelected(entityId: number) {
     this.WorkflowServiceService.getWorkflowTypes().subscribe({
       next: (data: any) => {
         console.log("Raw API Response:", data);
-        this.workflowTypes = data.$values ?? data;
+        this.workflowTypes = data ?? data;
         console.log("Extracted Workflow Types:", this.workflowTypes);
       },
       error: (err) => console.error("Error fetching workflow types:", err)
@@ -169,7 +169,7 @@ onEntitySelected(entityId: number) {
     this.WorkflowServiceService.getApproverList().subscribe({
       next: (data: any) => {
         console.log("Raw API Response:", data);
-        this.approverList = data.$values ?? data;
+        this.approverList = data ?? data;
         console.log("Extracted Approver List:", this.approverList);
       },
       error: (err) => console.error("Error fetching approver list:", err)
@@ -180,7 +180,7 @@ onEntitySelected(entityId: number) {
     this.WorkflowServiceService.getApproverList().subscribe({
       next: (data: any) => {
         console.log("Raw API Response:", data);
-        this.usersList = data.$values ?? data;
+        this.usersList = data ?? data;
         console.log("Extracted Approver List:", this.usersList);
       },
       error: (err) => console.error("Error fetching approver list:", err)
