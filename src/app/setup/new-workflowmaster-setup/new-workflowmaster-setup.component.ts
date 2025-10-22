@@ -126,7 +126,7 @@ updateConditionalFields(selectedTypeId: any) {
     this.WorkflowServiceService.getWorkflowTypes().subscribe({
       next: (data: any) => {
         console.log("Raw API Response:", data);
-        this.workflowTypes = data.$values ?? data;
+        this.workflowTypes = data ?? data;
         console.log("Extracted Workflow Types:", this.workflowTypes);
       },
       error: (err) => console.error("Error fetching workflow types:", err)
@@ -137,7 +137,7 @@ updateConditionalFields(selectedTypeId: any) {
     this.WorkflowServiceService.getApproverList().subscribe({
       next: (data: any) => {
         console.log("Raw API Response:", data);
-        this.approverList = data.$values ?? data;
+        this.approverList = data ?? data;
         console.log("Extracted Approver List:", this.approverList);
       },
       error: (err) => console.error("Error fetching approver list:", err)
@@ -148,7 +148,7 @@ updateConditionalFields(selectedTypeId: any) {
     this.WorkflowServiceService.getApproverList().subscribe({
       next: (data: any) => {
         console.log("Raw API Response:", data);
-        this.usersList = data.$values ?? data;
+        this.usersList = data ?? data;
         console.log("Extracted Approver List:", this.usersList);
       },
       error: (err) => console.error("Error fetching approver list:", err)
@@ -318,10 +318,10 @@ updateConditionalFields(selectedTypeId: any) {
 
     this.WorkflowServiceService.GetWorkflowById(id).subscribe({
       next: (data) => {
-        const master = data.$values[0];
+        const master = data[0];
 
         // master.users might be wrapped with $values
-        const selectedUsers: string[] = master.users?.$values ?? [];
+        const selectedUsers: string[] = master.users ?? [];
 
         // Now filter against usersList
         const validSelectedUsers = this.usersList
@@ -335,8 +335,8 @@ updateConditionalFields(selectedTypeId: any) {
           status: master.isActive,
           usersList: selectedUsers
         });
-        if (master.workflowDetails?.$values?.length) {
-          this.newApproverData = master.workflowDetails.$values.map((d: any) => ({
+        if (master.workflowDetails?.length) {
+          this.newApproverData = master.workflowDetails.map((d: any) => ({
             approverName: d.approverName || '',
             approverList: d.userId || '',
             amountFrom: d.amountFrom,
