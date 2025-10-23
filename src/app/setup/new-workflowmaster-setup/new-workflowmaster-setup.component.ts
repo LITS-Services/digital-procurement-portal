@@ -113,8 +113,13 @@ updateConditionalFields(selectedTypeId: any) {
     this.approverForm.get('amountFrom')?.disable();
     this.approverForm.get('amountTo')?.disable();
 
-    // Fetch Entities
+    // Fetch Entities for dropdown
     this.getEntities();
+
+    // Clear previous approvers
+    this.approverList = [];
+    this.approverForm.get('approverList')?.reset();
+
   } else {
     this.isVendorOnboarding = false;
     this.hideConditionalFields = false;
@@ -123,10 +128,11 @@ updateConditionalFields(selectedTypeId: any) {
     this.approverForm.get('amountFrom')?.enable();
     this.approverForm.get('amountTo')?.enable();
 
-    // Restore Users List
+    // Restore Users List from default approvers
     this.getDepartmentUsersList();
   }
 }
+
 
 getEntities(): void {
   this.companyService.getProCompanies().subscribe({
@@ -140,17 +146,27 @@ getEntities(): void {
 onEntitySelected(entityId: number) {
   if (!entityId) return;
 
-  console.log('Selected Entity ID:', entityId); 
+  console.log('Selected Entity ID:', entityId);
 
   this.companyService.getUserByEntity(entityId).subscribe({
     next: (res: any) => {
-      this.approverList = res?.result || [];
-      this.approverForm.get('approverList')?.reset();
+      const users = res?.result || [];
+
+      // Only show these users in Approver dropdown
+      if (this.isVendorOnboarding) {
+        this.approverList = users;
+
+        // Also populate workflow usersList
+        const userIds = users.map(u => u.id);
+        this.workflowsetupform.get('usersList')?.setValue(userIds);
+
+        // Reset Approver selection
+        this.approverForm.get('approverList')?.reset();
+      }
     },
-    error: (err) => console.error('Error fetching approvers:', err)
+    error: (err) => console.error('Error fetching entity users:', err)
   });
 }
-
 
 
 
