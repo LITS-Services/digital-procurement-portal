@@ -1,28 +1,34 @@
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, UrlTree } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private auth: AuthService, private router: Router) { }
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    // Check authentication
-    if (!this.authService.isAuthenticated()) {
-      this.router.navigate(['/pages/login']);
-      return false;
-    }
+   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot)
+  : Observable<boolean | UrlTree> {
+    // Try to ensure a valid access token (will refresh if needed)
+    return this.auth.ensureValidAccessToken$().pipe(
+      map(token => {
+        if (token) {
+          // Optional: role check after token is ensured
+          const expectedRole: string | undefined = route.data['role'];
+          if (!expectedRole) return true;
 
-    // Check role if route has role data
-    const expectedRole: string = route.data['role'];
-    const userRoles: string[] = this.authService.getUserRoles(); // array of roles from login
+          const roles = this.auth.getUserRoles().map(r => r.toLowerCase());
+          return roles.includes(expectedRole.toLowerCase())
+            ? true
+            : this.router.createUrlTree(['/unauthorized']);
+        }
 
-    if (expectedRole && !userRoles.some(role => role.toLowerCase() === expectedRole.toLowerCase())) {
-      this.router.navigate(['/unauthorized']);
-      return false;
-    }
-
-    return true;
+        // No token even after refresh attempt
+        return this.router.createUrlTree(['/pages/login']);
+      }),
+      catchError(() => of(this.router.createUrlTree(['/pages/login'])))
+    );
   }
 }

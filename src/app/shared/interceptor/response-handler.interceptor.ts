@@ -84,7 +84,7 @@ export class responseHandlerInterceptor implements HttpInterceptor {
             // only toast if it *looks like* your envelope
             const looksLikeEnvelope =
               maybeEnvelope && typeof maybeEnvelope === 'object' &&
-              ('isSuccess' in maybeEnvelope || 'errors' in maybeEnvelope || 'validationErrors' in maybeEnvelope);
+              ('isSuccess' in maybeEnvelope && 'errors' in maybeEnvelope);
 
             if (looksLikeEnvelope) {
               const msg = this.extractErrorMessage(maybeEnvelope as responseDTO);

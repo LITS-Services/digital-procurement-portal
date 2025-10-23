@@ -50,6 +50,7 @@ export class AuthInterceptor implements HttpInterceptor {
               return this.auth.ensureValidAccessToken$().pipe(
                 switchMap((newToken) => {
                   if (!newToken) {
+                    console.log("in switchmap")
                     this.auth.performLogout();
                     return throwError(() => err);
                   }
@@ -57,6 +58,7 @@ export class AuthInterceptor implements HttpInterceptor {
                 }),
                 catchError((refreshErr) => {
                   console.error('[AUTH] Refresh failed after retry — logging out.');
+                      console.log("in catcherror")
                   this.auth.performLogout();
                   return throwError(() => refreshErr);
                 })
@@ -68,10 +70,12 @@ export class AuthInterceptor implements HttpInterceptor {
                 if (msg.includes('token expired')) {
                   sessionStorage.setItem('authFlash', 'Your session has expired. Please sign in again.');
                 }
+                    console.log("in refresh")
                 this.auth.performLogout();
+            
               }
 
-            return throwError(() => err);
+            return throwError(err);
           })
         );
       })
