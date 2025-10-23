@@ -83,15 +83,15 @@
                 <!-- <ngx-datatable-column name="Date" prop="date" [width]="50">
                 </ngx-datatable-column> -->
 
-                
-
                 <ngx-datatable-column name="RFQ No." prop="rfqNo">
+                </ngx-datatable-column>
+                <ngx-datatable-column name="Status" prop="requestStatus">
                 </ngx-datatable-column>
                 <ngx-datatable-column name="Item" prop="itemName">
                 </ngx-datatable-column>
                 <ngx-datatable-column name="Description" prop="itemDescription">
                 </ngx-datatable-column>
-                <ngx-datatable-column name="Req By Date" prop="reqByDate" >
+                <ngx-datatable-column name="Req By Date" prop="reqByDate">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         {{ row.reqByDate | date:'yyyy-MM-dd' }}
                     </ng-template>
