@@ -545,7 +545,7 @@ export class NewRfqComponent implements OnInit {
       }));
     }
     else {
-      // 🧾 Normal RFQ creation — use all items as before
+      // Normal RFQ creation — use all items as before
       quotationItems = this.newQuotationItemData?.map(item => ({
         id: item.id || null,
         rfqNo: f.rfqNo || '',

@@ -60,6 +60,9 @@ export class NewPurchaseRequestComponent implements OnInit {
   public ColumnMode = ColumnMode;
   currentRequestId: number | null = null;
 
+  isSelectingFinalVendor: boolean = false;
+  finalVendors: any[] = [];
+
   @ViewChild('accordion') accordion: NgbAccordion;
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
@@ -80,7 +83,7 @@ export class NewPurchaseRequestComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.loadVendorUsers();
+    // this.loadVendorUsers();
     this.loadUnitsOfMeasurements();
     this.loadAccounts();
     this.loadItems();
@@ -94,6 +97,11 @@ export class NewPurchaseRequestComponent implements OnInit {
       if (id) {
         this.currentRequestId = +id;
         this.loadExistingRequest(+id);
+      }
+      //  Add this part for Final Vendor mode
+      if (mode === 'selectVendor') {
+        this.isSelectingFinalVendor = true;
+        this.loadFinalVendors();
       }
 
       // if (this.viewMode) {
@@ -140,7 +148,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       orderQuantity: [0],
       reqByDate: [null],
       itemDescription: [''],
-      vendorUserId: [''],
+      vendorUserId: [null],
       accountId: [0],
       remarks: [''],
       attachments: this.fb.group([])
@@ -156,14 +164,14 @@ export class NewPurchaseRequestComponent implements OnInit {
     }
   }
 
-  loadVendorUsers() {
-    this.companyService.getAllVendorUsers().subscribe({
-      next: (res: any) => {
-        this.vendorUsers = res?.value ?? [];
-      },
-      error: (err) => console.error('Error fetching vendor users:', err)
-    });
-  }
+  // loadVendorUsers() {
+  //   this.companyService.getAllVendorUsers().subscribe({
+  //     next: (res: any) => {
+  //       this.vendorUsers = res?.value ?? [];
+  //     },
+  //     error: (err) => console.error('Error fetching vendor users:', err)
+  //   });
+  // }
 
   loadUnitsOfMeasurements() {
     this.lookupService.getAllUnitsOfMeasurement().subscribe({
@@ -230,10 +238,15 @@ export class NewPurchaseRequestComponent implements OnInit {
       }
     });
   }
+  // getVendorNameById(id: number): string {
+  //   const found = this.vendorUsers.find(v => v.id === id);
+  //   return found ? found.name : '';
+  // }
   getVendorNameById(id: number): string {
-    const found = this.vendorUsers.find(v => v.id === id);
-    return found ? found.name : '';
+    const found = this.finalVendors.find(v => v.stringId === id);
+    return found ? found.description : '';
   }
+
   private toDateInputValue(date: any): string | null {
     if (!date) return null;
     const d = new Date(date);
@@ -533,7 +546,7 @@ export class NewPurchaseRequestComponent implements OnInit {
         remarks: item.remarks || '',
         createdBy: item.createdBy || '',
         purchaseRequestId: item.purchaseRequestId || 0,
-        vendorUserId: item.vendorUserId || '',
+        vendorUserId: item.vendorUserId || null,
         requisitionNo: f.requisitionNo,
         attachments: item.attachments?.map(att => ({
 
@@ -614,7 +627,7 @@ export class NewPurchaseRequestComponent implements OnInit {
         remarks: item.remarks || '',
         createdBy: item.createdBy || '',
         // purchaseRequestId: item.purchaseRequestId || 0,
-        vendorUserId: item.vendorUserId || '',
+        vendorUserId: item.vendorUserId || null,
         requisitionNo: f.requisitionNo,
         attachments: item.attachments?.map(att => ({
 
@@ -811,6 +824,21 @@ export class NewPurchaseRequestComponent implements OnInit {
         console.log(`Modal dismissed: ${reason}`);
       }
     );
+  }
+  loadFinalVendors() {
+    const loggedInUserId = localStorage.getItem('userId');
+    if (!loggedInUserId) return;
+
+    this.lookupService.getFinalVendorsForSelectionOnPr(loggedInUserId)
+      .subscribe({
+        next: (res) => {
+          this.finalVendors = res;
+          console.log('Final vendors loaded:', res);
+        },
+        error: (err) => {
+          console.error('Error loading final vendors:', err);
+        }
+      });
   }
 
 }  

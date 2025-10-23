@@ -42,7 +42,7 @@ export class PurchaseRequestComponent implements OnInit {
   showFilterBar = false;
   selectedStatusLabel = 'All';
 
-  statusTouched:boolean = false;
+  statusTouched: boolean = false;
 
   constructor(
     private router: Router,
@@ -84,14 +84,13 @@ export class PurchaseRequestComponent implements OnInit {
   }
 
   toggleFilterBar() {
-  this.showFilterBar = !this.showFilterBar;
-}
+    this.showFilterBar = !this.showFilterBar;
+  }
 
   loadFilteredRequests(status: string) {
-    if (status !== this.activeFilter) 
-      {
-        this.currentPage = 1
-      };
+    if (status !== this.activeFilter) {
+      this.currentPage = 1
+    };
     this.activeFilter = status;
     this.loading = true;
 
@@ -118,18 +117,18 @@ export class PurchaseRequestComponent implements OnInit {
 
   selectStatus(status: 'New' | 'InProcess' | 'Completed' | null) {
     this.statusTouched = true;
-  if (status === null) {
-    this.selectedStatusLabel = 'All';
-    this.activeFilter = '';           // optional: clear your flag
-    this.currentPage = 1;             // reset paging if needed
-    this.loadPurchaseRequests();      // use your existing method
-  } else {
-    this.selectedStatusLabel = status;
-    this.activeFilter = status;
-    this.currentPage = 1;
-    this.loadFilteredRequests(status); // use your existing method
+    if (status === null) {
+      this.selectedStatusLabel = 'All';
+      this.activeFilter = '';           // optional: clear your flag
+      this.currentPage = 1;             // reset paging if needed
+      this.loadPurchaseRequests();      // use your existing method
+    } else {
+      this.selectedStatusLabel = status;
+      this.activeFilter = status;
+      this.currentPage = 1;
+      this.loadFilteredRequests(status); // use your existing method
+    }
   }
-}
 
   onView() {
     if (this.chkBoxSelected.length !== 1) {
@@ -346,6 +345,22 @@ export class PurchaseRequestComponent implements OnInit {
       if (result) {
         this.loadPurchaseRequests(); // refresh main list
       }
+    });
+  }
+
+  selectFinalVendor(row: any): void {
+    if (row.requestStatus !== 'Completed') {
+      this.toastr.info('Final Vendor can only be selected when PR is Completed.');
+      return;
+    }
+
+    // Navigate to new-purchase-request form and patch existing PR
+    this.router.navigate(['/purchase-request/new-purchase-request'], {
+      queryParams: {
+        id: row.requestId,
+        mode: 'selectVendor' // optional flag to differentiate
+      },
+      skipLocationChange: true
     });
   }
 

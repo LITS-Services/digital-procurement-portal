@@ -24,4 +24,14 @@ export class LookupService {
   getAllGlobalConfigTypes() {
     return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=global-config-type`);
   }
+
+  getFinalVendorsForSelectionOnPr(userId: string) {
+    const url = `${this.baseUrl}/dropdowns`;
+    const params = {
+      name: 'pr-final-vendors',
+      id: userId
+    };
+    return this.http.get<any[]>(url, { params });
+  }
+
 }
