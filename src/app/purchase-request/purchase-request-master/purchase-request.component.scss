@@ -15,12 +15,13 @@
       display: none !important;
   }
 }
-.vl {
-    border-left: 1.4px solid #cccccc;
-    height: 100%;
-    position: absolute;
-    margin-left: -3px;
-  }
+// .vl {
+//     border-left: 1.4px solid #cccccc;
+//     height: 100% !important;
+//     position: absolute;
+//     margin-left: -3px;
+//     top: 0 !important;
+//   }
   .heading{
     color: #1E89B8;
     margin-top: 1rem;
@@ -42,7 +43,26 @@
 .ngx-datatable ::ng-deep .datatable-body .datatable-body-row.datatable-row-even {
   background-color: rgba(0, 0, 0, 0.05);
 }
+.more-btn{
+  margin-top: 4px !important;
+}
+.more-btn.dropdown-toggle::after {
+  display: none !important;
+}
 
+
+
+// .filter-wrapper { flex-wrap: wrap; }                                  
+// .filter-search  { flex: 1 1 clamp(220px, 40vw, 460px); }             
+// .filter-item    { flex: 1 1 180px; min-width: 150px; max-width: 240px; }
+
+// .cstm-filter-dropdown{
+//   margin-left: 12px;
+//     height: 42px;
+//     padding: 12px 16px;
+//     border: 1.5px solid #D7D7D7;
+//     border-radius: 10px !important;
+// }
 // .ngx-datatable.bootstrap .datatable-body .datatable-body-row {
 //   padding: 0.75rem;
 //   vertical-align: middle;

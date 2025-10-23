@@ -11,8 +11,10 @@
 
       <!-- Action Pane -->
       <div class="card cstm-ui-card">
-        <div class="row">
-          <div class="col-md-8">
+        <div>
+            <div class="d-flex justify-content-between align-items-center">
+
+            <div class="position-relative">
             <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
               <i class="ft-arrow-left"></i>
             </button>
@@ -36,7 +38,7 @@
               (click)="onView()">
               <i class="ft-eye"></i><label class="ml-1 mt-1">View</label>
             </button>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="loadPurchaseRequests()"><label
+            <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="loadPurchaseRequests()"><label
                 class="ml-1 mt-1">All</label></button>
 
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="loadFilteredRequests('New')"><label
@@ -46,25 +48,75 @@
               (click)="loadFilteredRequests('InProcess')"><label class="ml-1 mt-1">InProcess</label></button>
 
             <button type="button" class="btn btn-sm cstm-ui-table-btn"
-              (click)="loadFilteredRequests('Completed')"><label class="ml-1 mt-1">Completed</label></button>
+              (click)="loadFilteredRequests('Completed')"><label class="ml-1 mt-1">Completed</label></button> -->
 
             <!-- <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
               <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
             </button> -->
-          </div>
+         
+            </div>
 
-          <div class="col-md-4 text-right" style="margin-top: 0.3rem;">
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openAblModal()">
+            <div class="d-flex align-items-center">
+         
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="toggleFilterBar()">
+            <i class="ft-sliders"></i><label class="ml-1 mt-1">Filter</label>
+            </button>
+
+            <div class="dropdown" ngbDropdown>
+               <button type="button" class="btn dropdown-toggle more-btn" 
+            ngbDropdownToggle
+            > <i class="ft-more-vertical"></i> 
+            </button>
+              <div  class="dropdown-menu" ngbDropdownMenu>
+                    <button type="button" class="btn btn-sm cstm-ui-table-btn dropdown-item " (click)="openAblModal()">
               <i class="ft-settings"></i><label class="ml-1 mt-1">Account Budget Lookup</label>
             </button>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openExceptionPolicyModal()">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn dropdown-item" (click)="openExceptionPolicyModal()">
               <i class="ft-alert-circle"></i><label class="ml-1 mt-1">Exception Policy</label>
             </button>
-          </div>
+            </div>
+            </div>
+        
+            </div>
+
+            </div>
+          
+         
         </div>
       </div>
 
       <!-- Data Table -->
+            <div *ngIf="showFilterBar" class="filter-bar">
+              <div class="d-flex align-items-center justify-content-between pl-3 pr-1 py-2 filter-wrapper">
+                <div class="filter-search">
+                  <i class="ft-filter search-icon"></i>
+                  <input type="text" placeholder="Search by keywords" class="form-control form-control-sm search-input" [(ngModel)]="searchText">
+                </div>
+
+
+                <div class="d-flex filter-btns-div">
+                        <div class="dropdown filter-dropdown" ngbDropdown [ngbTooltip]="statusTouched ? 'Status' : null">
+                  <button class="btn btn-sm filter-btn dropdown-toggle" ngbDropdownToggle>
+                    <span class="filter-label">{{ !statusTouched ? "Status" : selectedStatusLabel }} </span>
+                    <i class="ft-chevron-down"></i> 
+                  </button>
+                  <div class="dropdown-menu" ngbDropdownMenu>
+                    <button class="dropdown-item" (click)="selectStatus(null)">All</button>
+                    <button class="dropdown-item" (click)="selectStatus('New')">New</button>
+                    <button class="dropdown-item" (click)="selectStatus('InProcess')">InProcess</button>
+                    <button class="dropdown-item" (click)="selectStatus('Completed')">Completed</button>
+                  </div>
+                </div>
+
+            
+
+                <button class="btn px-1 btn-sm" (click)="showFilterBar = false">✕</button>
+                </div>
+                
+            
+                
+              </div>
+            </div>
       <ngx-datatable class="bootstrap core-bootstrap" [rows]="purchaseRequestData" [columnMode]="'force'"
         [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [limit]="pageSize"
         [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"

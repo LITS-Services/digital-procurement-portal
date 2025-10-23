@@ -1,5 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
-
+@import './app/shared/custom-style/filter-bar.css';
 .rtl {
     direction: rtl !important;
     /* // color: red !important;
@@ -186,8 +186,7 @@ form label, .form-group label {
 
       .ngx-datatable .datatable-scroll .datatable-body-row .datatable-body-cell{
     padding: 0.85rem;
-    display: flex;
-    align-items: center;
+   display: block;  
   }
 
   .ngx-datatable.bootstrap .datatable-footer {
@@ -228,6 +227,8 @@ form label, .form-group label {
     vertical-align:baseline;
     
   }
+
+  
   
 datatable-scroller {
   width: 100% !important;

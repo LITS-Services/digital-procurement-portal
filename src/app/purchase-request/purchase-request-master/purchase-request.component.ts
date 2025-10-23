@@ -39,6 +39,11 @@ export class PurchaseRequestComponent implements OnInit {
   totalPages = 0;
   totalItems = 0;
 
+  showFilterBar = false;
+  selectedStatusLabel = 'All';
+
+  statusTouched:boolean = false;
+
   constructor(
     private router: Router,
     private modalService: NgbModal,
@@ -78,6 +83,10 @@ export class PurchaseRequestComponent implements OnInit {
     });
   }
 
+  toggleFilterBar() {
+  this.showFilterBar = !this.showFilterBar;
+}
+
   loadFilteredRequests(status: string) {
     if (status !== this.activeFilter) 
       {
@@ -106,6 +115,21 @@ export class PurchaseRequestComponent implements OnInit {
       }
     });
   }
+
+  selectStatus(status: 'New' | 'InProcess' | 'Completed' | null) {
+    this.statusTouched = true;
+  if (status === null) {
+    this.selectedStatusLabel = 'All';
+    this.activeFilter = '';           // optional: clear your flag
+    this.currentPage = 1;             // reset paging if needed
+    this.loadPurchaseRequests();      // use your existing method
+  } else {
+    this.selectedStatusLabel = status;
+    this.activeFilter = status;
+    this.currentPage = 1;
+    this.loadFilteredRequests(status); // use your existing method
+  }
+}
 
   onView() {
     if (this.chkBoxSelected.length !== 1) {

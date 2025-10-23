@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { RfqQuotationboxComponent } from '../rfq-quotationbox/rfq-quotationbox.component';
 import { RfqVendorModalComponent } from '../rfq-vendor-modal/rfq-vendor-modal.component';
 import { VendorComparisionComponent } from '../vendor-comparision/vendor-comparision.component';
@@ -17,6 +17,8 @@ import { ToastrService } from 'ngx-toastr';
 })
 
 export class RfqComponent implements OnInit {
+  @ViewChild(DatatableComponent) table!: DatatableComponent;
+
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
@@ -38,6 +40,12 @@ export class RfqComponent implements OnInit {
   totalPages = 0;
   totalItems = 0;
 
+    showFilterBar = false;
+  selectedStatusLabel = 'All';
+
+  statusTouched:boolean = false;
+
+  private _resizeT?: any;
   // public chkBoxSelected = [];
   // loading = false;
   // public rows = [];
@@ -59,6 +67,29 @@ export class RfqComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+    ngAfterViewInit(): void {
+    setTimeout(() => {
+       this.table.recalculate()
+       window.dispatchEvent(new Event('resize'));
+
+    }, 150);
+  }
+
+
+
+  @HostListener('window:resize')
+  onWinResize() {
+    clearTimeout(this._resizeT);
+    this._resizeT = setTimeout(() => {
+      if (!this.table) return;
+      this.table.recalculate();
+    }, 1000);
+    }
+
+    toggleFilterBar() {
+    this.showFilterBar = !this.showFilterBar;
+    }
+
   loadRfqs() {
     this.loading = true;
 
@@ -67,7 +98,7 @@ export class RfqComponent implements OnInit {
 
         // Extract paginated data correctly
         this.rfqData = data?.result || [];
-
+        
         // Capture pagination info
         this.totalPages = data.totalPages;
         this.totalItems = data.totalItems;
@@ -81,6 +112,21 @@ export class RfqComponent implements OnInit {
       }
     });
   }
+
+    selectStatus(status: 'New' | 'InProcess' | 'Completed' | null) {
+    this.statusTouched = true;
+  if (status === null) {
+    this.selectedStatusLabel = 'All';
+    this.activeFilter = '';           // optional: clear your flag
+    this.currentPage = 1;             // reset paging if needed
+    this.loadRfqs();      // use your existing method
+  } else {
+    this.selectedStatusLabel = status;
+    this.activeFilter = status;
+    this.currentPage = 1;
+    this.loadFilteredQuotations(status); // use your existing method
+  }
+}
 
   loadFilteredQuotations(status: string) {
     if (status !== this.activeFilter) {

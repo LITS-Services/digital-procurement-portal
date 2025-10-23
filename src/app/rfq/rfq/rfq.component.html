@@ -12,12 +12,15 @@
 
             <!-- Action Pane -->
             <div class="card cstm-ui-card">
-                <div class="row">
-                    <div class="col-md-12 row">
-                        <div class="col-md-5">
+                <div>
+                <div class="d-flex justify-content-between align-items-center">
+                   
+                        <div class="position-relative">
+                            
                             <button class="btn btn-lg mr-1 " type="button" (click)="homePage()">
                                 <i class="ft-arrow-left"></i></button>
                             <span class="vl"></span>
+                          
                             <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new RFQ"
                                 (click)="openEmpDetails()">
                                 <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
@@ -36,26 +39,49 @@
                                 <i class="ft-eye"></i><label class="ml-1 mt-1">View</label>
                             </button>
                         </div>
-                        <div class="col-md-6">
-                            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="loadRfqs()"><label
-                                    class="ml-1 mt-1">All</label></button>
-
-                            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="loadFilteredQuotations('New')"><label
-                                    class="ml-1 mt-1">New</label></button>
-
-                            <button type="button" class="btn btn-sm cstm-ui-table-btn"
-                                (click)="loadFilteredQuotations('InProcess')"><label
-                                    class="ml-1 mt-1">InProcess</label></button>
-
-                            <button type="button" class="btn btn-sm cstm-ui-table-btn"
-                                (click)="loadFilteredQuotations('Completed')"><label
-                                    class="ml-1 mt-1">Completed</label></button>
+                        <div class="d-flex align-items-center">
+                             <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
+                                <i class="ft-sliders"></i><label class="ml-1 mt-1">Filter</label>
+                                </button>
                         </div>
                         <!-- <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
                             <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
                         </button> -->
-                    </div>
+                  
                 </div>
+                </div>
+            </div>
+
+            <div *ngIf="showFilterBar" class="filter-bar">
+              <div class="d-flex align-items-center justify-content-between pl-3 pr-1 py-2 filter-wrapper">
+                <div class="filter-search">
+                  <i class="ft-filter search-icon"></i>
+                  <input type="text" placeholder="Search by keywords" class="form-control form-control-sm search-input" [(ngModel)]="searchText">
+                </div>
+
+
+                <div class="d-flex filter-btns-div">
+                        <div class="dropdown filter-dropdown" ngbDropdown [ngbTooltip]="statusTouched ? 'Status' : null">
+                  <button class="btn btn-sm filter-btn dropdown-toggle" ngbDropdownToggle>
+                    <span class="filter-label">{{ !statusTouched ? "Status" : selectedStatusLabel }} </span>
+                    <i class="ft-chevron-down"></i> 
+                  </button>
+                  <div class="dropdown-menu" ngbDropdownMenu>
+                    <button class="dropdown-item" (click)="selectStatus(null)">All</button>
+                    <button class="dropdown-item" (click)="selectStatus('New')">New</button>
+                    <button class="dropdown-item" (click)="selectStatus('InProcess')">InProcess</button>
+                    <button class="dropdown-item" (click)="selectStatus('Completed')">Completed</button>
+                  </div>
+                </div>
+
+            
+
+                <button class="btn px-1 btn-sm" (click)="showFilterBar = false">✕</button>
+                </div>
+                
+            
+                
+              </div>
             </div>
 
             <!-- Content -->
