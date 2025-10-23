@@ -1,5 +1,6 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, SelectionType, NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 
@@ -9,7 +10,8 @@ import { PurchaseOrderService } from 'app/shared/services/purchase-order.service
   styleUrls: ['./purchase-order-list.component.scss'],
 })
 export class PurchaseOrderListComponent implements OnInit {
-
+@ViewChild('purchaseOrderDetail') purchaseOrderDetail: TemplateRef<any>;
+  selectedPO: any;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
@@ -29,9 +31,12 @@ export class PurchaseOrderListComponent implements OnInit {
   totalPages = 0;
   totalItems = 0;
 
+
   constructor(private purchaseOrderService: PurchaseOrderService,
     public cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+        private modalService: NgbModal
+
   ) { }
 
   ngOnInit(): void {
@@ -117,5 +122,25 @@ export class PurchaseOrderListComponent implements OnInit {
 
     // Check "Select All" toggle
     this.isAllSelected = this.purchaseOrderData.length === this.chkBoxSelected.length;
+  }
+
+  // onRowClick(event: any) {
+  //   const clicked = event.row;
+  //   this.selectedPO = clicked;
+  //   this.modalService.open(this.purchaseOrderDetail, { size: 'lg', centered: true });
+  // }
+  onRowClick(event: any) {
+    console.log('Row clicked:', event);
+
+    this.selectedPO = event.row;
+    this.modalService.open(this.purchaseOrderDetail, { size: 'lg', centered: true });
+  }
+
+  onActivate(event: any) {
+    // We only want clicks, not mouseenter or keydown etc.
+    if (event.type === 'click' && event.row) {
+      this.selectedPO = event.row;
+      this.modalService.open(this.purchaseOrderDetail, { size: 'lg', centered: true });
+    }
   }
 }
