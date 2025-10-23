@@ -37,6 +37,7 @@ selectedEntityIdForWorkflow: number | null = null;
   mode: string = 'Create';
   entitiesList: any[] = [];
 isVendorOnboarding: boolean = false;
+dataLoaded = false;
 
 
   // NEW: Conditional field flag
@@ -52,51 +53,53 @@ isVendorOnboarding: boolean = false;
     public toastr: ToastrService
   ) {}
 
-  ngOnInit(): void {
+ ngOnInit(): void {
 
-    // Main form
-    this.getDepartmentUsersList();
-    this.getWorkflowTypes();
-    this.getApproverList();
+  // Main form
+  this.getDepartmentUsersList();
+  this.getWorkflowTypes();
+  this.getApproverList();
 
-    this.workflowsetupform = this.fb.group({
-      workflowName: ['', Validators.required],
-      documentType: ['', Validators.required],
-      status: [false],
-      usersList: [[]]
-    });
+  this.workflowsetupform = this.fb.group({
+    workflowName: ['', Validators.required],
+    documentType: ['', Validators.required],
+    status: [false],
+    usersList: [[]],
+  });
 
-    // NEW: Watch for workflow type changes to hide/show fields
-    this.workflowsetupform.get('documentType')?.valueChanges.subscribe(value => {
-      this.updateConditionalFields(value);
-    });
+  // 👇 Automatically load Procurement Companies on component load
+  this.getEntities();  // <---- 🆕 Add this line
 
-    // Approver form (no validations)
-    this.approverForm = this.fb.group({
-      approverList: ['', Validators.required],
-      amountFrom: [null],
-      amountTo: [null],
-      approverLevel: [null, Validators.required],
-      canApprove: [false],
-      canReject: [false],
-      canSendBack: [false],
-      canSubmit: [false],
-      isApprovalCompulsory: [false],
-      approverName: [null],
-      userId: [null]
-    });
+  // Watch for workflow type changes to hide/show fields
+  this.workflowsetupform.get('documentType')?.valueChanges.subscribe(value => {
+    this.updateConditionalFields(value);
+  });
 
-    // Check if editing existing request
-    this.route.queryParamMap.subscribe(params => {
-      const id = params.get('id');
-      this.mode = params.get('mode') || 'Create';
-      const mode = params.get('mode');
-      this.workflowmasterId = id ? Number(id) : 0;
-      if (mode == 'Edit') {
-        this.loadexistingWorkflowById(this.workflowmasterId);
-      }
-    });
-  }
+  // Approver form (no validations)
+  this.approverForm = this.fb.group({
+    approverList: ['', Validators.required],
+    amountFrom: [null],
+    amountTo: [null],
+    approverLevel: [null, Validators.required],
+    canApprove: [false],
+    canReject: [false],
+    canSendBack: [false],
+    canSubmit: [false],
+    isApprovalCompulsory: [false],
+    approverName: [null],
+    userId: [null]
+  });
+
+  // Check if editing existing request
+  this.route.queryParamMap.subscribe(params => {
+    const id = params.get('id');
+    this.mode = params.get('mode') || 'Create';
+    this.workflowmasterId = id ? Number(id) : 0;
+    if (this.mode === 'Edit') {
+      this.loadexistingWorkflowById(this.workflowmasterId);
+    }
+  });
+}
 
   // NEW: Update conditional fields based on selected workflow type
 updateConditionalFields(selectedTypeId: any) {
@@ -139,31 +142,35 @@ getEntities(): void {
   this.companyService.getProCompanies().subscribe({
     next: (res: any) => {
       this.entitiesList = res.result || [];
+      this.dataLoaded = true;   // <-- mark as loaded here
     },
-    error: (err) => console.error('Error fetching entities:', err)
+    error: (err) => {
+      console.error('Error fetching entities:', err);
+      this.dataLoaded = true;   // or false depending on your UX (maybe show error UI)
+    }
   });
 }
+
 
 onEntitySelected(entityId: number) {
   if (!entityId) return;
 
-  this.selectedEntityIdForWorkflow = entityId; // ✅ Store selected ProcurementCompany ID
-
+  this.selectedEntityIdForWorkflow = entityId;
+this.loading = true; 
   this.companyService.getUserByEntity(entityId).subscribe({
     next: (res: any) => {
       const users = res?.result || [];
       if (this.isVendorOnboarding) {
         this.approverList = users;
-        const userIds = users.map(u => u.id);
-        this.workflowsetupform.get('usersList')?.setValue(userIds);
         this.approverForm.get('approverList')?.reset();
-      }
+        // ❌ DO NOT modify usersList form control here
+      } this.loading = false;
     },
-    error: (err) => console.error('Error fetching entity users:', err)
+   error: (err) => {
+      console.error('Error fetching entity users:', err);
+      this.loading = false; }
   });
 }
-
-
 
 
   getWorkflowTypes(): void {
@@ -321,12 +328,12 @@ submitForm() {
     workflowDetails: workflowDetails
   };
 
-  // ✅ Properly send selected ProcurementCompany in entity array
-  if (this.isVendorOnboarding) {
-    payload.entity = this.selectedEntityIdForWorkflow ? [this.selectedEntityIdForWorkflow] : [];
-  } else {
-    payload.users = f.usersList || [];
-  }
+if (this.isVendorOnboarding) {
+  const selectedEntity = this.entitiesList.find(e => e.id === this.selectedEntityIdForWorkflow);
+  payload.entity = selectedEntity ? [selectedEntity] : [];
+} else {
+  payload.users = f.usersList || [];
+}
 
 
 
@@ -352,49 +359,62 @@ submitForm() {
 
 
 
- loadexistingWorkflowById(id: number) {
-  this.getEntities(); // fetch entities first
-
+loadexistingWorkflowById(id: number) {
   this.WorkflowServiceService.GetWorkflowById(id).subscribe({
     next: (res: any) => {
       const master = Array.isArray(res) ? res[0] : res;
-
       this.workflowmasterId = master.workflowMasterId;
 
-      // Detect if workflow type is Vendor Onboarding
-      const selectedType = this.workflowTypes.find(wf => wf.id === master.workflowTypeId);
-      if (selectedType?.typeName === 'Vendor Company Onboarding') {
-        this.isVendorOnboarding = true;
-        this.hideConditionalFields = true;
-
-        // Patch the entity into form
-        this.selectedEntityIdForWorkflow = master.entity?.[0] || null;
-        this.workflowsetupform.patchValue({
-          usersList: this.selectedEntityIdForWorkflow
-        });
-
-        // Fetch users for the selected entity
-        if (this.selectedEntityIdForWorkflow) {
-          this.onEntitySelected(this.selectedEntityIdForWorkflow);
-        }
-      } else {
-        this.isVendorOnboarding = false;
-        this.hideConditionalFields = false;
-
-        // Patch normal usersList
-        this.workflowsetupform.patchValue({
-          usersList: master.users || []
-        });
-      }
-
-      // Patch main form
+      // Patch common workflow fields
       this.workflowsetupform.patchValue({
         workflowName: master.workflowName,
         documentType: master.workflowTypeId,
         status: master.isActive
       });
 
-      // Map workflow details to table array
+      // Detect Vendor Onboarding workflow
+      const isVendorType = master.workflowDetails?.[0]?.workflowType === 'Vendor Company Onboarding';
+      this.isVendorOnboarding = isVendorType;
+
+      if (isVendorType) {
+        const selectedEntity = master.entity?.[0];
+        if (selectedEntity) {
+          // Fetch all available entities first
+          this.companyService.getProCompanies().subscribe({
+            next: (res: any) => {
+              this.entitiesList = res?.result || [];
+
+              // Try to find a match by id or name
+              const matchedEntity =
+                this.entitiesList.find(
+                  (e: any) => e.id === selectedEntity.id || e.name === selectedEntity.name
+                ) || null;
+
+              if (matchedEntity) {
+                this.selectedEntityIdForWorkflow = matchedEntity.id;
+
+                // ✅ Patch matched entity so dropdown shows correct name
+                this.workflowsetupform.patchValue({
+                  usersList: matchedEntity.id
+                });
+
+                // ✅ Load users for this entity
+                this.onEntitySelected(matchedEntity.id);
+              } else {
+                console.warn('No matching entity found in company list for:', selectedEntity);
+              }
+            },
+            error: (err) => console.error('Error fetching entities for vendor workflow:', err)
+          });
+        }
+      } else {
+        // Normal workflow path
+        this.workflowsetupform.patchValue({
+          usersList: master.users || []
+        });
+      }
+
+      // Map workflow details (approvers)
       this.newApproverData = (master.workflowDetails || []).map((d: any) => ({
         approverName: d.approverName || '',
         approverList: d.userId,
@@ -418,65 +438,74 @@ submitForm() {
 
 
 
-  updateForm() {
-    if (!this.workflowsetupform.valid) {
-      console.warn('Form is invalid');
-      return;
-    }
 
-    const f = this.workflowsetupform.value;
-
-    const selectedUsers = f.usersList || [];
-    // Map approvers -> workflowDetails
-    const workflowDetails = this.newApproverData.map(a => ({
-      WorkflowMasterId: this.workflowmasterId,
-      WorkflowDetailsId: a.workflowDetailsId,
-      approverList: a.approverList || '',
-      userId: a.approverList || '',
-      amountFrom: Number(a.amountFrom) || 0,
-      amountTo: Number(a.amountTo) || 0,
-      approverLevel: Number(a.approverLevel) || 0,
-      canApprove: !!a.canApprove,
-      canReject: !!a.canReject,
-      canSendBack: !!a.canSendBack,
-      canSubmit: !!a.canSubmit,
-      isApprovalCompulsory: !!a.isApprovalCompulsory
-    }));
-
-    // Final payload matches WorkflowVM
-    const payload = {
-      workflowMasterId: this.workflowmasterId,
-      workflowTypeId: f.documentType,
-      workflowName: f.workflowName,
-      isActive: f.status === true,
-      createdDate: new Date().toISOString(),
-      workflowDetails: workflowDetails,
-      users: selectedUsers,
-    };
-
-    this.loading = true;
-
-    this.WorkflowServiceService.updateWorkflowdetails(payload).subscribe({
-      next: (res) => {
-        this.toastr.success('Workflow updated successfully!', '');
-        this.loading = false;
-
-        // Reset form + list
-        this.workflowsetupform.reset({
-          workflowName: '',
-          documentType: '',
-          status: false
-        });
-        this.newApproverData = [];
-        this.router.navigateByUrl('/setup/workflow');
-      },
-      error: (err) => {
-        console.error('Error updating workflow:', err);
-        this.toastr.error('Failed to update workflow', '');
-        this.loading = false;
-      }
-    });
+updateForm() {
+  if (!this.workflowsetupform.valid) {
+    console.warn('Form is invalid');
+    return;
   }
+
+  const f = this.workflowsetupform.value;
+
+  // Map approvers -> workflowDetails
+  const workflowDetails = this.newApproverData.map(a => ({
+    WorkflowMasterId: this.workflowmasterId,
+    WorkflowDetailsId: a.workflowDetailsId,
+    approverList: a.approverList || '',
+    userId: a.approverList || '',
+    amountFrom: Number(a.amountFrom) || 0,
+    amountTo: Number(a.amountTo) || 0,
+    approverLevel: Number(a.approverLevel) || 0,
+    canApprove: !!a.canApprove,
+    canReject: !!a.canReject,
+    canSendBack: !!a.canSendBack,
+    canSubmit: !!a.canSubmit,
+    isApprovalCompulsory: !!a.isApprovalCompulsory
+  }));
+
+  // Build payload base
+  const payload: any = {
+    workflowMasterId: this.workflowmasterId,
+    workflowTypeId: f.documentType,
+    workflowName: f.workflowName,
+    isActive: f.status === true,
+    createdDate: new Date().toISOString(),
+    workflowDetails: workflowDetails,
+  };
+
+  // Add entity or users based on onboarding flag (just like submitForm)
+if (this.isVendorOnboarding) {
+  const selectedEntity = this.entitiesList.find(e => e.id === this.selectedEntityIdForWorkflow);
+  payload.entity = selectedEntity ? [selectedEntity] : [];
+} else {
+  payload.users = f.usersList || [];
+}
+
+
+  this.loading = true;
+
+  this.WorkflowServiceService.updateWorkflowdetails(payload).subscribe({
+    next: (res) => {
+      this.toastr.success('Workflow updated successfully!', '');
+      this.loading = false;
+
+      // Reset form + list
+      this.workflowsetupform.reset({
+        workflowName: '',
+        documentType: '',
+        status: false
+      });
+      this.newApproverData = [];
+      this.router.navigateByUrl('/setup/workflow');
+    },
+    error: (err) => {
+      console.error('Error updating workflow:', err);
+      this.toastr.error('Failed to update workflow', '');
+      this.loading = false;
+    }
+  });
+}
+
 
 
 }
