@@ -134,6 +134,18 @@
                   </button>
                 </ng-template>
 
+
+                <button *ngIf="row.requestStatus === 'Completed'; else poWaitingTemplate"
+                  class="btn btn-light btn-sm m-1" ngbTooltip="Create Purchase Order" (click)="openCreatePoModal(row)">
+                  <i class="ft-shopping-cart"></i>
+                </button>
+
+                <ng-template #poWaitingTemplate>
+                  <button class="btn btn-light btn-sm m-1" disabled
+                    ngbTooltip="PO can only be created when PR is Completed.">
+                    <i class="ft-shopping-cart" style="opacity: 0.5;"></i>
+                  </button>
+                </ng-template>
               </div>
             </ng-template>
           </ng-template>

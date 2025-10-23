@@ -1,0 +1,48 @@
+<div class="modal-header bg-primary text-white">
+  <h4 class="modal-title">Create Purchase Order</h4>
+  <button type="button" class="close text-white" aria-label="Close" (click)="activeModal.dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <ngx-datatable class="bootstrap core-bootstrap" [rows]="items" [columnMode]="'force'" [headerHeight]="50"
+    [footerHeight]="50" [rowHeight]="50" [limit]="10">
+    <ngx-datatable-column name="Select">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        <input type="checkbox" [disabled]="!row.isEligibleForPO"
+          (change)="toggleSelection(row.itemId, $event.target.checked)" />
+      </ng-template>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column name="Item Name" prop="itemName"></ngx-datatable-column>
+    <ngx-datatable-column name="Description" prop="itemDescription"></ngx-datatable-column>
+    <ngx-datatable-column name="Amount">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        {{ row.amount | number: '1.2-2' }}
+      </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column name="RFQ No" prop="rfqNo">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        {{ row.rfqNo || '-' }}
+      </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column name="RFQ Status" prop="rfqStatus">
+      <ng-template let-row="row" ngx-datatable-cell-template>
+        {{ row.rfqStatus || '-' }}
+      </ng-template>
+    </ngx-datatable-column>
+  </ngx-datatable>
+
+  <div *ngIf="loading" class="text-center mt-3">
+    <span class="spinner-border spinner-border-sm"></span> Loading...
+  </div>
+</div>
+
+<div class="modal-footer">
+  <button class="btn btn-secondary" (click)="activeModal.dismiss()">Close</button>
+  <button class="btn btn-primary" [disabled]="loading" (click)="createPurchaseOrder()">
+    <i class="fa fa-plus" style="margin-right: 6px;"></i>Create
+  </button>
+
+</div>

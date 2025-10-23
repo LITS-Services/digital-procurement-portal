@@ -112,7 +112,7 @@ export class RfqVendorModalComponent implements OnInit {
     // First add new vendors
     if (addPayload.length > 0) {
       this.rfqService.addVendorsToQuotation(addPayload).subscribe({
-        next: (res) => this.toastr.success(res.successMessage || "Vendors added successfully"),
+        next: (res) => console.log("Vendors added successfully"),
         error: (err) => this.toastr.error("Error adding vendors")
       });
     }

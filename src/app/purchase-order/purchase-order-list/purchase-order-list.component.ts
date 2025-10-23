@@ -38,8 +38,7 @@ export class PurchaseOrderListComponent implements OnInit {
     this.loadPurchaseOrders();
   }
 
-
-    loadPurchaseOrders() {
+  loadPurchaseOrders() {
     this.loading = true;
 
     this.purchaseOrderService.getAllPurchaseOrders(this.currentPage, this.pageSize).subscribe({
@@ -62,11 +61,11 @@ export class PurchaseOrderListComponent implements OnInit {
     });
   }
 
-    onPageChange(event: any) {
+  onPageChange(event: any) {
     this.currentPage = (event.offset ?? 0) + 1;
     this.loadPurchaseOrders();
   }
-    homePage() {
+  homePage() {
     this.router.navigate(['/dashboard/dashboard1']);
   }
 

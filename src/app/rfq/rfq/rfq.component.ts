@@ -83,6 +83,9 @@ export class RfqComponent implements OnInit {
   }
 
   loadFilteredQuotations(status: string) {
+    if (status !== this.activeFilter) {
+      this.currentPage = 1
+    };
     this.activeFilter = status;
     this.loading = true;
 
@@ -269,6 +272,10 @@ export class RfqComponent implements OnInit {
 
   onPageChange(event: any) {
     this.currentPage = (event.offset ?? 0) + 1;
-    this.loadRfqs();
+    if (this.activeFilter !== '') {
+      this.loadFilteredQuotations(this.activeFilter);
+    } else {
+      this.loadRfqs();
+    }
   }
 }

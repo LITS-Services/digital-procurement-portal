@@ -712,37 +712,19 @@ export class NewRfqComponent implements OnInit {
 
   insertItem(): void {
     const newItem = this.itemForm.value;
-
-    // Normalize IDs
     const newItemId = Number(newItem.itemId);
 
-    //   const itemType = newItem.itemType;
-    //  //  Only check for itemId if the user selected "Inventory"
-    //   if (itemType === 'Inventory' && (!newItemId || newItemId === 0)) {
-    //     this.toastr.warning('Please select an item before adding.');
-    //     return;
-    //   }
+    // Duplicate check — works for add and edit both
+    const duplicate = this.newQuotationItemData.some((item, index) =>
+      index !== this.editingRowIndex && Number(item.itemId) === newItemId
+    );
 
-    //   //  For Non-Inventory, ensure description is filled (optional but recommended)
-    //   if (itemType === 'Non-Inventory' && !newItem.itemDescription?.trim()) {
-    //     this.toastr.warning('Please enter an item description before adding.');
-    //     return;
-    //   }
-
-    // Check for duplicate (only if not editing)
-    if (this.editingRowIndex === null) {
-      const duplicate = this.newQuotationItemData.some(
-        item => Number(item.itemId) === newItemId
-      );
-
-      if (duplicate) {
-        this.toastr.warning('This item is already added. You can update it instead.');
-        return;
-      }
+    if (duplicate) {
+      this.toastr.warning('This item is already added. You can update it instead.');
+      return;
     }
 
     if (this.editingRowIndex !== null) {
-      // --- Update existing item ---
       const existing = this.newQuotationItemData[this.editingRowIndex];
       const merged = {
         ...existing,
@@ -751,14 +733,16 @@ export class NewRfqComponent implements OnInit {
         attachments: existing?.attachments ?? []
       };
 
-      this.newQuotationItemData = this.newQuotationItemData.map((item, index) =>
-        index === this.editingRowIndex ? merged : item
+      // Immutable update to trigger ngx-datatable refresh
+      this.newQuotationItemData = this.newQuotationItemData.map((item, idx) =>
+        idx === this.editingRowIndex ? merged : item
       );
 
       this.toastr.success('Item updated successfully!');
       this.editingRowIndex = null;
+
     } else {
-      // --- Add new item ---
+      // Add new
       const withEmptyAttachments = {
         ...newItem,
         itemId: newItemId,
@@ -768,13 +752,79 @@ export class NewRfqComponent implements OnInit {
       this.toastr.success('Item added successfully!');
     }
 
-    // Reset form
     this.itemForm.reset({
       amount: 0,
       unitCost: 0,
       orderQuantity: 1
     });
   }
+
+
+  // insertItem(): void {
+  //   const newItem = this.itemForm.value;
+
+  //   // Normalize IDs
+  //   const newItemId = Number(newItem.itemId);
+
+  //   //   const itemType = newItem.itemType;
+  //   //  //  Only check for itemId if the user selected "Inventory"
+  //   //   if (itemType === 'Inventory' && (!newItemId || newItemId === 0)) {
+  //   //     this.toastr.warning('Please select an item before adding.');
+  //   //     return;
+  //   //   }
+
+  //   //   //  For Non-Inventory, ensure description is filled (optional but recommended)
+  //   //   if (itemType === 'Non-Inventory' && !newItem.itemDescription?.trim()) {
+  //   //     this.toastr.warning('Please enter an item description before adding.');
+  //   //     return;
+  //   //   }
+
+  //   // Check for duplicate (only if not editing)
+  //   if (this.editingRowIndex === null) {
+  //     const duplicate = this.newQuotationItemData.some(
+  //       item => Number(item.itemId) === newItemId
+  //     );
+
+  //     if (duplicate) {
+  //       this.toastr.warning('This item is already added. You can update it instead.');
+  //       return;
+  //     }
+  //   }
+
+  //   if (this.editingRowIndex !== null) {
+  //     // --- Update existing item ---
+  //     const existing = this.newQuotationItemData[this.editingRowIndex];
+  //     const merged = {
+  //       ...existing,
+  //       ...newItem,
+  //       itemId: newItemId,
+  //       attachments: existing?.attachments ?? []
+  //     };
+
+  //     this.newQuotationItemData = this.newQuotationItemData.map((item, index) =>
+  //       index === this.editingRowIndex ? merged : item
+  //     );
+
+  //     this.toastr.success('Item updated successfully!');
+  //     this.editingRowIndex = null;
+  //   } else {
+  //     // --- Add new item ---
+  //     const withEmptyAttachments = {
+  //       ...newItem,
+  //       itemId: newItemId,
+  //       attachments: newItem.attachments?.length ? newItem.attachments : []
+  //     };
+  //     this.newQuotationItemData = [...this.newQuotationItemData, withEmptyAttachments];
+  //     this.toastr.success('Item added successfully!');
+  //   }
+
+  //   // Reset form
+  //   this.itemForm.reset({
+  //     amount: 0,
+  //     unitCost: 0,
+  //     orderQuantity: 1
+  //   });
+  // }
   deleteRow(rowIndex: number): void {
     Swal.fire({
       title: 'Are you sure?',

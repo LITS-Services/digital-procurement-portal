@@ -4,11 +4,13 @@ import { CommonModule } from '@angular/common';
 import { PurchaseOrderRoutingModule } from './purchase-order-routing.module';
 import { PurchaseOrderListComponent } from './purchase-order-list/purchase-order-list.component';
 import { NgxDatatableModule } from "@swimlane/ngx-datatable";
+import { CreatePurchaseOrderComponent } from './create-purchase-order/create-purchase-order.component';
 
 
 @NgModule({
   declarations: [
-    PurchaseOrderListComponent
+    PurchaseOrderListComponent,
+    CreatePurchaseOrderComponent
   ],
   imports: [
     CommonModule,

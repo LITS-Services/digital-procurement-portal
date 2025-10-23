@@ -8,6 +8,7 @@ import { PurchaseRequestExceptionPolicyComponent } from 'app/shared/modals/purch
 import { PrApprovalHistoryComponent } from '../pr-approval-history/pr-approval-history.component';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
+import { CreatePurchaseOrderComponent } from 'app/purchase-order/create-purchase-order/create-purchase-order.component';
 
 @Component({
   selector: 'app-purchase-request',
@@ -78,6 +79,10 @@ export class PurchaseRequestComponent implements OnInit {
   }
 
   loadFilteredRequests(status: string) {
+    if (status !== this.activeFilter) 
+      {
+        this.currentPage = 1
+      };
     this.activeFilter = status;
     this.loading = true;
 
@@ -243,7 +248,7 @@ export class PurchaseRequestComponent implements OnInit {
    */
   onUpdate() {
     if (this.chkBoxSelected.length === 0) {
-      this.toastr.info('Please select a record to update.', );
+      this.toastr.info('Please select a record to update.',);
       return;
     }
 
@@ -301,6 +306,23 @@ export class PurchaseRequestComponent implements OnInit {
 
   onPageChange(event: any) {
     this.currentPage = (event.offset ?? 0) + 1;
-    this.loadPurchaseRequests();
+    if (this.activeFilter !== '') {
+      this.loadFilteredRequests(this.activeFilter);
+    } else {
+      this.loadPurchaseRequests();
+    }
   }
+
+  openCreatePoModal(row: any): void {
+    console.log('Opening modal for PR ID:', row); // for debugging
+    const modalRef = this.modalService.open(CreatePurchaseOrderComponent, { size: 'lg', backdrop: 'static', centered: true });
+    modalRef.componentInstance.purchaseRequestId = row.requestId;
+
+    modalRef.closed.subscribe((result) => {
+      if (result) {
+        this.loadPurchaseRequests(); // refresh main list
+      }
+    });
+  }
+
 }
