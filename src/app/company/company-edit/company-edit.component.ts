@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { CompanyActionsComponent } from '../company-actions/company-actions.component';
 
 @Component({
   selector: 'app-company-edit',
@@ -11,6 +12,7 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 export class CompanyEditComponent implements OnInit {
 
   companyId: number | null = null;
+  procurementCompanyId: number | null = null; // ✅ Added this
   companyGUID: string | null = null;
   vendorId: string = '';
   companyName: string = '';
@@ -28,7 +30,7 @@ export class CompanyEditComponent implements OnInit {
   error: string = '';
   remark: string = '';
   message: string = '';
-  actionType!: number; // 2 = Approve, 4 = Recall
+  actionType!: string;
   private modalRef!: NgbModalRef;
 
   constructor(
@@ -36,13 +38,15 @@ export class CompanyEditComponent implements OnInit {
     private route: ActivatedRoute,
     private companyService: CompanyService,
     private cdr: ChangeDetectorRef,
-    private modalService: NgbModal
-  ) {}
+    private modalService: NgbModal,
+    private cdRef: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       if (params['id']) {
         this.companyId = +params['id'];
+        this.procurementCompanyId = params['procurementCompanyId'] ? +params['procurementCompanyId'] : null; // ✅ Capture ID
         this.loadCompanyById(this.companyId);
       }
     });
@@ -110,6 +114,56 @@ export class CompanyEditComponent implements OnInit {
     });
   }
 
+ onActions(action: string): void {
+  const modalRef = this.modalService.open(CompanyActionsComponent, {
+    size: 'lg',
+    backdrop: 'static',
+    centered: true
+  });
+
+  modalRef.componentInstance.action = action;
+
+  modalRef.result.then(
+    (result) => {
+      if (result) {
+        this.isLoading = true;
+
+        const payload = {
+          vendorCompanyId: this.companyId,
+          procurementCompanyId: this.procurementCompanyId || 0,
+          actionTaken: action,       // separate action
+          remarks: result.remarks,   // plain string from modal
+          approverId: localStorage.getItem('userId') || ''
+        };
+
+        this.companyService.VendorCompanyAction(payload).subscribe({
+          next: (res) => {
+            this.isLoading = false;
+            this.message =
+              action === 'Approve'
+                ? 'Company Approved Successfully!'
+                : action === 'Reject'
+                ? 'Company Rejected Successfully!'
+                : 'Company Sent Back Successfully!';
+            this.cdr.detectChanges();
+            this.router.navigate(['/company']);
+          },
+          error: (err) => {
+            this.isLoading = false;
+            this.error = 'Failed to perform action!';
+            console.error(err);
+          }
+        });
+      }
+    },
+    (reason) => {
+      console.log(`Modal dismissed: ${reason}`);
+    }
+  );
+}
+
+
+
   downloadAttachment(file: any) {
     if (!file?.fileContent) {
       this.message = 'File content not available for download.';
@@ -128,125 +182,6 @@ export class CompanyEditComponent implements OnInit {
     a.download = file.fileName || 'attachment';
     a.click();
     window.URL.revokeObjectURL(url);
-  }
-
-  openRemarkModal(action: number, content: any) {
-    this.actionType = action;
-    this.remark = '';
-    this.modalRef = this.modalService.open(content, { backdrop: 'static', size: 'md' });
-  }
-
-  submitRemark() {
-    if (!this.remark.trim()) {
-      alert('Please enter a remark');
-      return;
-    }
-
-    this.reviewCompany(this.actionType, this.remark);
-    this.modalRef.close();
-  }
-
-  async reviewCompany(requestStatusId: number, remark?: string) {
-    if (!this.companyId) {
-      this.error = 'Company ID missing! Cannot proceed.';
-      return;
-    }
-
-    this.isLoading = true;
-    this.error = '';
-    this.message = '';
-    this.remark = remark || this.remark;
-
-    this.attachedFiles = await Promise.all(this.attachedFiles.map(async f => {
-      if (f.file && !f.fileContent) {
-        f.fileContent = await this.convertFileToBase64(f.file);
-      }
-      return f;
-    }));
-
-    const approverId = localStorage.getItem('userId') || '';
-
-    const payload = {
-      Id: this.companyId || 0,
-      VendorCompany: {
-        Id: this.companyId || 0,
-        CompanyGUID: this.companyGUID || null,
-        Name: this.companyName,
-        Logo: '',
-        approverId: approverId,
-        Remarks: this.remark || '',
-        RequestStatusId: requestStatusId,
-        VendorId: this.vendorId || '',
-        Attachments: this.attachedFiles.map((f: any) => ({
-          Id: f.id || 0,
-          VendorCompanyId: this.companyId || 0,
-          FileName: f.fileName,
-          FileFormat: f.format,
-          FileContent: f.fileContent,
-          AttachedBy: f.attachedBy || '',
-          Remarks: f.remarks || '',
-          AttachedAt: f.attachedAt || new Date().toISOString()
-        })),
-        Addresses: this.addressList.map((a: any) => ({
-          Id: a.id || 0,
-          VendorCompanyId: this.companyId || 0,
-          Street: a.street,
-          City: a.city,
-          State: a.state,
-          Zip: a.zip,
-          Country: a.country,
-          IsPrimary: a.isPrimary
-        })),
-        Contacts: this.contactList.map((c: any) => ({
-          Id: c.id || 0,
-          VendorCompanyId: this.companyId || 0,
-          Description: c.description,
-          Type: c.type,
-          ContactNumber: c.contactNumber,
-          Extension: c.extension,
-          IsPrimary: c.isPrimary
-        })),
-        PurchasingDemographics: {
-          Id: 0,
-          VendorCompanyId: this.companyId || 0,
-          PrimaryCurrency: this.primaryCurrency,
-          PrimaryContactId: 0,
-          VendorType: this.vendorCategory,
-          LineOfBusiness: this.lineOfBusiness,
-          BirthCountry: '',
-          EmployeeResponsible: this.employeeResponsible,
-          Segment: '',
-          Speciality: '',
-          Chain: '',
-          Note: this.note
-        }
-      },
-      VendorUserId: this.vendorId
-    };
-
-    this.companyService.updateCompany(this.companyId, payload).subscribe({
-      next: () => {
-        this.message = requestStatusId === 2 
-            ? 'Company Approved Successfully!' 
-            : 'Company Recalled Successfully!';
-        this.isLoading = false;
-        this.router.navigate(['/company']);
-      },
-      error: (err) => {
-        console.error('Error updating company:', err);
-        this.error = 'Failed to update company!';
-        this.isLoading = false;
-      }
-    });
-  }
-
-  convertFileToBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve((reader.result as string).split(',')[1]);
-      reader.onerror = error => reject(error);
-    });
   }
 
   goBack() {

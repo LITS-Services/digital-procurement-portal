@@ -89,25 +89,31 @@ export class CompanyListingComponent implements OnInit {
     });
   }
 
-  private mapCompany(c: any) {
-    // Safely get first address/contact if available
-    const primaryAddress = Array.isArray(c.addressesVM) && c.addressesVM.length ? c.addressesVM[0] : {};
-    const primaryContact = Array.isArray(c.contactsVM) && c.contactsVM.length ? c.contactsVM[0] : {};
-    const demographics = c.purchasingDemographics || {};
+ private mapCompany(c: any) {
+  const primaryAddress = Array.isArray(c.addressesVM) && c.addressesVM.length ? c.addressesVM[0] : {};
+  const primaryContact = Array.isArray(c.contactsVM) && c.contactsVM.length ? c.contactsVM[0] : {};
+  const demographics = c.purchasingDemographics || {};
+  
+  // pick the appropriate entity record (you can adjust logic if needed)
+  const selectedEntity =
+    (c.vendorUseCompaniesVM?.find((v) => v.status?.toLowerCase() === 'inprocess')) ||
+    (c.vendorUseCompaniesVM?.[0] || null);
 
-    return {
-      id: c.id,
-      name: c.name || '',
-      companyStatus: c.status || '',
-      street: primaryAddress.street || '',
-      city: primaryAddress.city || '',
-      contactNumber: primaryContact.contactNumber || '',
-      remarks: c.remarks || '',
-      vendorType: demographics.vendorType || '',
-      primaryCurrency: demographics.primaryCurrency || '',
-      entity: c.entity || '' // Add Entity field
-    };
-  }
+  return {
+    id: c.id,
+    name: c.name || '',
+    companyStatus: c.status || '',
+    street: primaryAddress.street || '',
+    city: primaryAddress.city || '',
+    contactNumber: primaryContact.contactNumber || '',
+    remarks: c.remarks || '',
+    vendorType: demographics.vendorType || '',
+    primaryCurrency: demographics.primaryCurrency || '',
+    entity: selectedEntity?.procurementCompany || '', // existing visible field
+    procurementCompanyId: selectedEntity?.procurementCompanyId || null // ✅ NEW FIELD
+  };
+}
+
 
   showAll() {
     this.rows = this.allCompanies.filter(c =>
@@ -159,6 +165,10 @@ export class CompanyListingComponent implements OnInit {
     this.chkBoxSelected.splice(0, this.chkBoxSelected.length);
     this.chkBoxSelected.push(...selected);
     this.announcementId = selected[0]?.id;
+     this.chkBoxSelected = [...selected];
+  this.announcementId = selected[0]?.id;
+
+  console.log("Selected ProcurementCompanyId: ", selected[0]?.procurementCompanyId);
     this.enableDisableButtons();
   }
 
@@ -172,13 +182,19 @@ export class CompanyListingComponent implements OnInit {
     this.isAllSelected = this.tenderingData.length === selectedRowCount;
   }
 
-  editSelectedRow() {
-    if (this.chkBoxSelected.length === 1) {
-      const row = this.chkBoxSelected[0];
-      this.router.navigate(['/company/company-edit'], { queryParams: { id: row.id } });
-    } else {
-      alert('Please select a single company to update.');
-    }
+editSelectedRow() {
+  if (this.chkBoxSelected.length === 1) {
+    const row = this.chkBoxSelected[0];
+    this.router.navigate(['/company/company-edit'], { 
+      queryParams: { 
+        id: row.id, 
+        procurementCompanyId: row.procurementCompanyId 
+      } 
+    });
+  } else {
+    alert('Please select a single company to update.');
   }
+}
+
 
 }

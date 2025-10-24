@@ -18,13 +18,29 @@
             </button>
             <span class="vl"></span>
 
-            <button class="btn btn-sm" [disabled]="!companyId" (click)="openRemarkModal(2, remarkModal)">
+            <!-- <button class="btn btn-sm" [disabled]="!companyId" (click)="openRemarkModal(2, remarkModal)">
               <i class="fa fa-circle-check"></i> Approve
             </button>
 
             <button class="btn btn-sm" [disabled]="!companyId" (click)="openRemarkModal(4, remarkModal)">
               <i class="fa fa-rotate-left"></i> Recall
-            </button>
+            </button> -->
+
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId"
+                (click)="onActions('Approve')">
+                <i class="ft-check"></i><label class="ml-1 mt-1">Approve</label>
+              </button>
+
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId"
+                (click)="onActions('Reject')">
+                <i class="ft-x"></i><label class="ml-1 mt-1">Reject</label>
+              </button>
+
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId"
+                (click)="onActions('SendBack')">
+                <i class="ft-arrow-left"></i><label class="ml-1 mt-1">Send Back</label>
+              </button>
+
           </div>
         </div>
       </div>

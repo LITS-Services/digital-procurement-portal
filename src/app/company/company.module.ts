@@ -17,12 +17,14 @@ import { TagInputModule } from 'ngx-chips';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { QuillModule } from 'ngx-quill';
 import { PipeModule } from 'app/shared/pipes/pipe.module';
+import { CompanyActionsComponent } from './company-actions/company-actions.component';
 
 
 @NgModule({
   declarations: [
     CompanyListingComponent,
-    CompanyEditComponent
+    CompanyEditComponent,
+    CompanyActionsComponent
   ],
   imports: [
     CommonModule,

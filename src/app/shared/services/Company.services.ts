@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'environments/environment';
 
+
+
 export interface VendorUserDropdown {
   $id: string,
   $values: [];
@@ -94,6 +96,14 @@ export class CompanyService {
   }
 
   
+// company
+VendorCompanyAction(payload: any) {
+  return this.http.post(`${environment.apiUrl}/Company/VendorCompanyAction`, payload);
+}
+
+
+
+
 
 
   // getVendorUsers(): Observable<VendorUserDropdown> {
