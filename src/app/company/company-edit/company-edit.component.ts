@@ -25,6 +25,8 @@ export class CompanyEditComponent implements OnInit {
   attachedFiles: any[] = [];
   addressList: any[] = [];
   contactList: any[] = [];
+  purchasingDemographicsList: any[] = [];
+  bankDetailsList: any[] = [];
   isEditMode: boolean = false;
   isLoading: boolean = false;
   error: string = '';
@@ -40,7 +42,7 @@ export class CompanyEditComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private modalService: NgbModal,
     private cdRef: ChangeDetectorRef
-  ) { }
+  ) {  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -51,6 +53,69 @@ export class CompanyEditComponent implements OnInit {
       }
     });
   }
+
+  // loadCompanyById(id: number) {
+  //   this.isLoading = true;
+  //   this.error = '';
+  //   this.message = '';
+
+  //   this.companyService.getCompanyById(id).subscribe({
+  //     next: (res: any) => {
+  //       const company = res?.vendorCompany || res;
+  //       if (company) {
+  //         this.companyId = company.id || 0;
+  //         this.companyGUID = company.companyGUID || null;
+  //         this.vendorId = company.vendorId || '';
+  //         this.companyName = company.name || '';
+  //         this.aboutCompany = company.aboutCompany || '';
+  //         this.vendorCategory = company.purchasingDemographics?.vendorType || '';
+  //         this.primaryCurrency = company.purchasingDemographics?.primaryCurrency || '';
+  //         this.lineOfBusiness = company.purchasingDemographics?.lineOfBusiness || '';
+  //         this.employeeResponsible = company.purchasingDemographics?.employeeResponsible || '';
+  //         this.note = company.purchasingDemographics?.note || '';
+
+  //         this.addressList = (company.addresses?.$values || []).map((a: any) => ({
+  //           id: a.id,
+  //           street: a.street,
+  //           city: a.city,
+  //           state: a.state,
+  //           zip: a.zip,
+  //           country: a.country,
+  //           isPrimary: a.isPrimary
+  //         }));
+
+  //         this.contactList = (company.contacts?.$values || []).map((c: any) => ({
+  //           id: c.id,
+  //           description: c.description,
+  //           type: c.type,
+  //           contactNumber: c.contactNumber,
+  //           extension: c.extension,
+  //           isPrimary: c.isPrimary
+  //         }));
+
+  //         this.attachedFiles = (company.attachments?.$values || []).map((f: any) => ({
+  //           id: f.id,
+  //           fileName: f.fileName,
+  //           format: f.fileFormat,
+  //           fileContent: f.fileContent,
+  //           attachedBy: f.attachedBy,
+  //           remarks: f.remarks,
+  //           attachedAt: f.attachedAt
+  //         }));
+
+  //         this.isEditMode = true;
+  //       }
+  //       this.isLoading = false;
+  //       this.cdr.markForCheck();
+  //     },
+  //     error: (err) => {
+  //       console.error('Error loading company:', err);
+  //       this.error = 'Failed to load company.';
+  //       this.isLoading = false;
+  //     }
+  //   });
+  // }
+
 
   loadCompanyById(id: number) {
     this.isLoading = true;
@@ -66,13 +131,64 @@ export class CompanyEditComponent implements OnInit {
           this.vendorId = company.vendorId || '';
           this.companyName = company.name || '';
           this.aboutCompany = company.aboutCompany || '';
-          this.vendorCategory = company.purchasingDemographics?.vendorType || '';
-          this.primaryCurrency = company.purchasingDemographics?.primaryCurrency || '';
-          this.lineOfBusiness = company.purchasingDemographics?.lineOfBusiness || '';
-          this.employeeResponsible = company.purchasingDemographics?.employeeResponsible || '';
-          this.note = company.purchasingDemographics?.note || '';
+          // this.vendorCategory = company.purchasingDemographics?.vendorType || '';
+          // this.primaryCurrency = company.purchasingDemographics?.primaryCurrency || '';
+          // this.lineOfBusiness = company.purchasingDemographics?.lineOfBusiness || '';
+          // this.employeeResponsible = company.purchasingDemographics?.employeeResponsible || '';
+          // this.note = company.purchasingDemographics?.note || '';
 
-          this.addressList = (company.addresses?.$values || []).map((a: any) => ({
+          const demographics = company.purchasingDemographics || null;
+          this.purchasingDemographicsList = demographics
+            ? [ // convert object → single-element array
+              {
+                vendorType: demographics.vendorType,
+                primaryCurrency: demographics.primaryCurrency,
+                lineOfBusiness: demographics.lineOfBusiness,
+                employeeResponsible: demographics.employeeResponsible,
+                note: demographics.note
+              }
+            ]
+            : [];
+
+          console.log('Purchasing Demographics List:', this.purchasingDemographicsList);
+
+
+          const rawBankDetails = company.bankDetails?.$values || company.bankDetails || [];
+
+          this.bankDetailsList = rawBankDetails.map((b: any) => ({
+            id: b.id,
+            bankName: b.bankName,
+            branchName: b.branchName,
+            branchAddress: b.branchAddress,
+            accountHolderName: b.accountHolderName,
+            accountNumber: b.accountNumber,
+            iban: b.iban,
+            swifT_BIC_Code: b.swifT_BIC_Code,
+            country: b.country,
+            currency: b.currency,
+          }));
+
+          console.log('Bank Details List:', this.bankDetailsList);
+
+
+
+
+          // this.addressList = (company.addresses?.$values || []).map((a: any) => ({
+          //   id: a.id,
+          //   street: a.street,
+          //   city: a.city,
+          //   state: a.state,
+          //   zip: a.zip,
+          //   country: a.country,
+          //   isPrimary: a.isPrimary
+          // }));
+
+
+
+
+          const rawAddresses = company.addresses?.$values || company.addresses || [];
+
+          this.addressList = rawAddresses.map((a: any) => ({
             id: a.id,
             street: a.street,
             city: a.city,
@@ -82,7 +198,18 @@ export class CompanyEditComponent implements OnInit {
             isPrimary: a.isPrimary
           }));
 
-          this.contactList = (company.contacts?.$values || []).map((c: any) => ({
+          // this.contactList = (company.contacts?.$values || []).map((c: any) => ({
+          //   id: c.id,
+          //   description: c.description,
+          //   type: c.type,
+          //   contactNumber: c.contactNumber,
+          //   extension: c.extension,
+          //   isPrimary: c.isPrimary
+          // }));
+
+
+          const rawContacts = company.contacts?.$values || company.contacts || [];
+          this.contactList = rawContacts.map((c: any) => ({
             id: c.id,
             description: c.description,
             type: c.type,
@@ -91,7 +218,29 @@ export class CompanyEditComponent implements OnInit {
             isPrimary: c.isPrimary
           }));
 
-          this.attachedFiles = (company.attachments?.$values || []).map((f: any) => ({
+          // this.attachedFiles = (company.attachments?.$values || []).map((f: any) => ({
+          //   id: f.id,
+          //   fileName: f.fileName,
+          //   format: f.fileFormat,
+          //   fileContent: f.fileContent,
+          //   attachedBy: f.attachedBy,
+          //   remarks: f.remarks,
+          //   attachedAt: f.attachedAt
+          // }));
+
+          // this.attachedFiles = (company.attachments?.$values || []).map((f: any) => ({
+          //   id: f.id,
+          //   fileName: f.fileName,
+          //   format: f.fileFormat,
+          //   fileContent: f.fileContent,
+          //   attachedBy: f.attachedBy,
+          //   remarks: f.remarks,
+          //   attachedAt: f.attachedAt
+          // }));
+          // console.log('Attachments:', this.attachedFiles);
+
+
+          this.attachedFiles = (company.attachments || []).map((f: any) => ({
             id: f.id,
             fileName: f.fileName,
             format: f.fileFormat,
@@ -100,6 +249,8 @@ export class CompanyEditComponent implements OnInit {
             remarks: f.remarks,
             attachedAt: f.attachedAt
           }));
+
+
 
           this.isEditMode = true;
         }

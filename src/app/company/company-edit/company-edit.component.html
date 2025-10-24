@@ -48,91 +48,182 @@
       <!-- Company Info -->
       <div class="card">
         <div class="card-body">
-          <div *ngIf="isLoading" class="alert alert-info">Loading company data...</div>
-          <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+          <!-- <div *ngIf="isLoading" class="alert alert-info">Loading company data...</div>
+          <div *ngIf="error" class="alert alert-danger">{{ error }}</div> -->
 
-          <form *ngIf="!isLoading && !error">
-            <div class="form-row">
-              <div class="col-lg-4 mb-2">
-                <label>Company Name</label>
-                <input type="text" class="form-control" [value]="companyName" readonly>
-              </div>
-              <div class="col-lg-8 mb-2">
-                <label>About Company</label>
-                <textarea class="form-control" [value]="aboutCompany" rows="2" readonly></textarea>
-              </div>
-            </div>
+          <div class="accordion-section">
+            <ngb-accordion #accordion="ngbAccordion" [activeIds]="'tab-1,tab-2,tab-3,tab-4,tab-5,tab-6'"
+              [closeOthers]="false">
+              <!-- General Information -->
+              <ngb-panel id="tab-1" title="General Information">
+                <ng-template ngbPanelContent>
+                  <div class="row">
+                    <div class="col-md-3">
 
-            <!-- Purchasing Demographics -->
-            <h4 class="mt-4">Purchasing Demographics</h4>
-            <div class="border p-3 rounded mb-3">
-              <div class="form-row">
-                <div class="col-lg-4 mb-2"><strong>Currency:</strong> {{ primaryCurrency }}</div>
-                <div class="col-lg-4 mb-2"><strong>Vendor Type:</strong> {{ vendorCategory }}</div>
-                <div class="col-lg-4 mb-2"><strong>Line of Business:</strong> {{ lineOfBusiness }}</div>
-                <div class="col-lg-4 mb-2"><strong>Employee Responsible:</strong> {{ employeeResponsible }}</div>
-                <div class="col-lg-8 mb-2"><strong>Note:</strong> {{ note }}</div>
-              </div>
-            </div>
+                      <p style="font-size: 18px;">
+                        <span style="font-weight:bold ;margin-right:4px;"> Company Name:</span>
+                        <span style="font-size: 16px;">{{ companyName }}</span>
+                      </p>
 
-            <!-- Addresses -->
-            <h4 class="mt-4">Addresses</h4>
-            <div *ngIf="addressList.length > 0; else noAddresses" class="border p-3 rounded mb-3">
-              <div *ngFor="let address of addressList; let i = index" class="mb-2">
-                <strong>Address {{ i + 1 }}:</strong>
-                <div>{{ address.street }}, {{ address.city }}, {{ address.state }}, {{ address.zip }}, {{ address.country }}</div>
-                <div><em>Primary:</em> {{ address.isPrimary ? 'Yes' : 'No' }}</div>
-              </div>
-            </div>
-            <ng-template #noAddresses>
-              <p class="text-muted">No addresses available</p>
-            </ng-template>
+                      <!-- <label style="font-weight: 700;">Company Name</label> : {{companyName}}
+                      <input type="text" class="form-control" [(ngModel)]="companyName" [disabled]="true"> -->
+                    </div>
+                  </div>
+                </ng-template>
+              </ngb-panel>
 
-            <!-- Contacts -->
-            <h4 class="mt-4">Contacts</h4>
-            <div *ngIf="contactList.length > 0; else noContacts" class="border p-3 rounded mb-3">
-              <div *ngFor="let contact of contactList; let i = index" class="mb-2">
-                <strong>Contact {{ i + 1 }}:</strong>
-                <div>{{ contact.description }} ({{ contact.type }}) - {{ contact.contactNumber }} {{ contact.extension ? ' Ext: ' + contact.extension : '' }}</div>
-                <div><em>Primary:</em> {{ contact.isPrimary ? 'Yes' : 'No' }}</div>
-              </div>
-            </div>
-            <ng-template #noContacts>
-              <p class="text-muted">No contacts available</p>
-            </ng-template>
+              <!-- Addresses -->
+              <ngb-panel id="tab-2" title="Addresses">
+                <ng-template ngbPanelContent>
+                  <ngx-datatable [columnMode]="'force'" *ngIf="addressList && addressList.length > 0" class="bootstrap"
+                    [rows]="addressList" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="5">
+                    <ngx-datatable-column [sortable]="false" name="Street" prop="street"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="City" prop="city"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="State" prop="state"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Zip" prop="zip"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Country" prop="country"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Primary">
 
-            <!-- Attachments -->
-            <h4 class="mt-4">Attachments</h4>
-            <div *ngIf="attachedFiles.length > 0; else noAttachments">
-              <div *ngFor="let file of attachedFiles" class="d-flex align-items-center mb-2">
-                <span class="me-3">{{ file.fileName }}</span>
-                <button type="button" class="btn btn-sm btn-outline-primary" (click)="downloadAttachment(file)">
-                  Download
-                </button>
-              </div>
-            </div>
-            <ng-template #noAttachments>
-              <p class="text-muted">No attachments available</p>
-            </ng-template>
-          </form>
+                      <ng-template let-row="row" ngx-datatable-cell-template>
+
+                        <i style="font-size: 20px;" class="fa"
+                          [ngClass]="{ 'fa-circle-check': row.isPrimary === true,'fa-circle-xmark': row.isPrimary === false}"></i>
+
+                      </ng-template>
+
+                    </ngx-datatable-column>
+
+                  </ngx-datatable>
+                </ng-template>
+              </ngb-panel>
+
+              <!-- Company Contact Details -->
+
+              <ngb-panel id="tab-3" title="Company Contact Details">
+                <ng-template ngbPanelContent>
+                  <ngx-datatable [columnMode]="'force'" *ngIf="addressList && contactList.length > 0" class="bootstrap"
+                    [rows]="contactList" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="5">
+                    <ngx-datatable-column [sortable]="false" name="Description"
+                      prop="description"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Type" prop="type"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Contact Number"
+                      prop="contactNumber"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Extension" prop="extension"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Primary">
+                      <ng-template let-row="row" ngx-datatable-cell-template>
+
+                        <i style="font-size: 20px;" class="fa"
+                          [ngClass]="{ 'fa-circle-check': row.isPrimary === true,'fa-circle-xmark': row.isPrimary === false}"></i>
+
+                      </ng-template>
+                    </ngx-datatable-column>
+                  </ngx-datatable>
+
+                </ng-template>
+              </ngb-panel>
+
+              <!-- Purchasing Demographics -->
+              <ngb-panel id="tab-4" title="Purchasing Demographics">
+                <ng-template ngbPanelContent>
+                  <ngx-datatable [columnMode]="'force'"
+                    *ngIf="purchasingDemographicsList && purchasingDemographicsList.length > 0" class="bootstrap"
+                    [rows]="purchasingDemographicsList" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'"
+                    [limit]="5">
+
+                    <ngx-datatable-column [sortable]="false" name="Vendor Type"
+                      prop="vendorType"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Primary Currency"
+                      prop="primaryCurrency"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Line of Business"
+                      prop="lineOfBusiness"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Employee Responsible"
+                      prop="employeeResponsible"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Note" prop="note"></ngx-datatable-column>
+
+                  </ngx-datatable>
+
+                </ng-template>
+              </ngb-panel>
+
+              <!-- Bank Details -->
+              <ngb-panel id="tab-5" title="Bank Details">
+                <ng-template ngbPanelContent>
+                  <ngx-datatable *ngIf="bankDetailsList && bankDetailsList.length > 0" class="bootstrap"
+                    [rows]="bankDetailsList" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="5"
+                    [columnMode]="'force'" [sortable]="false">
+                    <ngx-datatable-column [sortable]="false" name="Bank Name" prop="bankName"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Branch Name"
+                      prop="branchName"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Branch Address"
+                      prop="branchAddress"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Account Holder"
+                      prop="accountHolderName"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Account Number"
+                      prop="accountNumber"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="IBAN" prop="iban"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="SWIFT/BIC"
+                      prop="swifT_BIC_Code"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Country" prop="country"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Currency" prop="currency"></ngx-datatable-column>
+                  </ngx-datatable>
+
+                </ng-template>
+              </ngb-panel>
+
+              <!-- Attachments -->
+               
+              <ngb-panel id="tab-6" title="Attachments">
+                <ng-template ngbPanelContent>
+                  <ngx-datatable *ngIf="attachedFiles && attachedFiles.length > 0" class="bootstrap"
+                    [rows]="attachedFiles" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="5"
+                    [columnMode]="'force'">
+                    <ngx-datatable-column [sortable]="false" name="File Name" prop="fileName"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Format" prop="format"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Attached By"
+                      prop="attachedBy"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Remarks" prop="remarks"></ngx-datatable-column>
+                    <ngx-datatable-column [sortable]="false" name="Attached At" prop="attachedAt">
+                      <ng-template let-value="value" ngx-datatable-cell-template>
+                        {{ value | date:'medium' }}
+                      </ng-template>
+                    </ngx-datatable-column>
+
+                    <ngx-datatable-column [sortable]="false" name="Action">
+                      <ng-template let-row="row" ngx-datatable-cell-template>
+                        <i (click)="downloadAttachment(row)" class="fa fa-circle-down"
+                          style="font-size: 20px;cursor:pointer"></i>
+                      </ng-template>
+                    </ngx-datatable-column>
+                  </ngx-datatable>
+
+                  <div *ngIf="attachedFiles.length === 0" class="text-muted p-2">
+                    No attachments found.
+                  </div>
+                </ng-template>
+              </ngb-panel>
+
+
+            </ngb-accordion>
+
+          </div>
+
         </div>
+
+        <!-- Remark Modal -->
+        <ng-template #remarkModal let-modal>
+          <div class="modal-header">
+            <h5 class="modal-title" style="color: white;">{{ actionType === 2 ? 'Approve' : 'Recall' }} Company</h5>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+          </div>
+          <div class="modal-body">
+            <textarea class="form-control" [(ngModel)]="remark" placeholder="Enter remark..." rows="3"></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="submitRemark()">Submit</button>
+          </div>
+        </ng-template>
       </div>
-
-      <!-- Remark Modal -->
-      <ng-template #remarkModal let-modal>
-        <div class="modal-header">
-          <h5 class="modal-title" style="color: white;">{{ actionType === 2 ? 'Approve' : 'Recall' }} Company</h5>
-          <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
-        </div>
-        <div class="modal-body">
-          <textarea class="form-control" [(ngModel)]="remark" placeholder="Enter remark..." rows="3"></textarea>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
-          <button type="button" class="btn btn-primary" (click)="submitRemark()">Submit</button>
-        </div>
-      </ng-template>
-
     </div>
   </div>
 </section>

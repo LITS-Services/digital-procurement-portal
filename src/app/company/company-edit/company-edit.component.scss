@@ -1,3 +1,41 @@
-.ngx-datatable  .datatable-header-inner {
+.ngx-datatable .datatable-header-inner {
     background-color: #1E89B8 !important;
+}
+
+
+.accordion-section ::ng-deep .accordion .card .card-header button {
+    padding: 1rem;
+    width: 100%;
+    text-align: start;
+    align-self: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: #115ec3 !important;
+    // background: linear-gradient(168deg, #116AEF 0%, #114C7A 100%); 
+    background: #fff !important;
+}
+
+.accordion-section ::ng-deep .accordion .card .card-header {
+    border-bottom: 1px solid #D7D7D7 !important;
+}
+
+
+.accordion-section ::ng-deep .badge-pill {
+  border-radius: 27rem !important;
+  width: 20px !important;
+  height: 20px !important;
+  padding: 4px !important;
+}
+
+
+.accordion-section ::ng-deep .badge {
+  font-size: 92% !important;
+}
+
+.accordion-section ::ng-deep  .badge-bg {
+  background-color: #4188f2 !important;
+}
+
+.accordion-section ::ng-deep  .badge-green {
+  background-color: #4188f2 !important;
 }

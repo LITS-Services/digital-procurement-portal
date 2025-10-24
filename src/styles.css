@@ -173,7 +173,7 @@ form label, .form-group label {
   }
 
   .ngx-datatable.bootstrap .datatable-body .datatable-body-row.active{
-    background-color: #1483ff !important;
+    background-color: #8ec3ff!important;
   }
 
 /* after change */
@@ -218,7 +218,7 @@ form label, .form-group label {
   }
 
   .ngx-datatable.bootstrap .datatable-body .datatable-body-row.active{
-    background-color: #1483ff !important;
+    background-color: #8ec3ff!important;
   }
 
   .ngx-datatable.bootstrap .datatable-body .datatable-body-row .datatable-body-cell {
