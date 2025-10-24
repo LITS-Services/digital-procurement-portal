@@ -39,10 +39,50 @@
                 <!-- <button class="icon-btn">
                  <i class="ft-moon"></i>
                 </button> -->
-                <button class="icon-btn notification-bell">
-                    <i class="ft-bell"></i>
-                  <span class="dot"></span>
-                </button>
+                        <div class="notification-wrapper" #notifRoot>
+                          <button class="icon-btn notification-bell" (click)="togglePanel()" aria-haspopup="true"
+                            [attr.aria-expanded]="notifOpen">
+                            <i class="ft-bell"></i>
+                            <span class="dot" *ngIf="unreadCount > 0">{{unreadCount}}</span>
+                          </button>
+                        
+                          <!-- Floating Panel -->
+                          <div class="notif-panel" *ngIf="notifOpen" [class.show]="notifOpen" (click)="$event.stopPropagation()">
+                            <div class="panel-header">
+                              <div class="panel-row">
+                              <span class="title">Notifications</span>
+                              <span *ngIf="notificationCount > 0" class="count-div">{{notificationCount}}</span>
+                              </div>
+                              <button class="icon-btn xs" (click)="closePanel()" aria-label="Close">
+                                <i class="ft-x"></i>
+                              </button>
+                            </div>
+                        
+                            <div class="panel-body">
+                              <ng-container *ngIf="notifications?.length; else emptyState">
+                                <div class="notif-item" 
+                                [ngClass]="{ 'unread-notif': n.status === 0 }"
+                                *ngFor="let n of notifications">
+                                  <div class="row-1">
+                                    <div class="title text-ellipsis d-flex align-items-center">{{ n.title }}
+                                    <span *ngIf="n.status === 0" class="dot-unread ml-1"></span>
+                                    </div>
+                                    <span [container]="'body'" [ngbTooltip]="n.createdOn | date: 'short'" class="time">{{ n.timeAgo }}</span>
+                                  </div>
+                                  <div  class="message text-ellipsis-2" *ngIf="n.message">{{ n.message }}</div>
+                                </div>
+                              </ng-container>
+                        
+                              <ng-template #emptyState>
+                                <div class="empty p-2">No Notifcation: You're all caught up</div>
+                              </ng-template>
+                            </div>
+                        
+                            <!-- <div class="panel-footer">
+                              <a class="view-all" [routerLink]="['/notifications']">View all</a>
+                            </div> -->
+                          </div>
+                        </div>
               </div>
               </div>
        

@@ -8,6 +8,9 @@ import { CompanyService } from 'app/shared/services/Company.services';
 import { UntypedFormControl } from '@angular/forms';
 import { LISTITEMS } from '../data/template-search';
 import { Subscription } from 'rxjs';
+import { NotifcationService } from '../services/notification.service';
+import { FirebaseMessagingService } from 'app/firebase-messaging.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: "app-navbar",
@@ -43,6 +46,16 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   control = new UntypedFormControl();
   public config: any = {};
 
+   @ViewChild('notifRoot', { static: false }) notifRoot!: ElementRef<HTMLElement>;
+
+  notifOpen = false;
+
+  notifications: any[] = [
+  ];
+  unreadCount:number = null;
+  notificationCount:number = null;
+
+
   constructor(
     public translate: TranslateService,
     private layoutService: LayoutService,
@@ -50,7 +63,10 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     public authService: AuthService,
     private configService: ConfigService,
     private companyService: CompanyService,
-    private cdr: ChangeDetectorRef
+    private notificationService: NotifcationService,
+    private cdr: ChangeDetectorRef,
+    private messagingService:FirebaseMessagingService,
+    private toaster:ToastrService
   ) {
     const browserLang: string = translate.getBrowserLang();
     translate.use(browserLang.match(/en|es|pt|de|ar/) ? browserLang : "en");
@@ -62,12 +78,27 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
+
+
   ngOnInit() {
+    this.getNotification(); 
+     
+
+    //Firebase Cloud Messaging Initialization
+    const userId = localStorage.getItem('userId');
+    this.messagingService.requestPermission(userId);
+    
+    this.messagingService.currentMessage.subscribe(msg => {
+      if (msg) {
+        this.toaster.success(msg.notification?.title || 'New Notification', msg.notification?.body || '');
+        this.getNotification(); 
+        // You can show a toast or alert here
+      }
+    });
     this.listItems = LISTITEMS;
     this.isSmallScreen = this.innerWidth < 1200;
 
-    // Fetch user data from API
-    const userId = localStorage.getItem('userId');
+    // Fetch user data from AP
     if (userId) {
       this.companyService.getprocurementusersbyid(userId).subscribe({
         next: (res: any) => {
@@ -100,6 +131,49 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     if (this.layoutSub) this.layoutSub.unsubscribe();
     if (this.configSub) this.configSub.unsubscribe();
+  }
+
+    //   get getNotificationCount(): number {
+  //   return this.notifications.length
+  // }
+
+  togglePanel(): void {
+    this.notifOpen = !this.notifOpen;
+  }
+
+  closePanel(): void {
+    this.notifOpen = false;
+  }
+
+
+
+
+    @HostListener('document:click', ['$event'])
+  onDocClick(ev: MouseEvent): void {
+    if (!this.notifOpen) return;
+    const root = this.notifRoot?.nativeElement;
+    if (root && !root.contains(ev.target as Node)) {
+      this.closePanel();
+      
+    }
+  }
+
+
+
+  getNotification(){
+    this.notificationService.getNotification().subscribe((res: any) => {
+          this.notifications = res.messages.map((m: any, index: number) => ({
+      title: `PR-RQ-${index + 1}`, 
+      message: m.message,
+      timeAgo: this.timeSince(new Date(m.createdOn)),  
+      read: false, 
+      status: m.status,
+      createdOn: m.createdOn
+    }));
+    this.notificationCount = res.messages?.length;
+    this.unreadCount = res.unreadCount;
+       this.cdr.detectChanges();
+    });
   }
 
   @HostListener('window:resize', ['$event'])
@@ -186,4 +260,27 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   toggleSidebar() {
     this.layoutService.toggleSidebarSmallScreen(this.hideSidebar);
   }
+
+timeSince(date: Date): string {
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+
+  if (seconds < 30) return 'just now';
+
+  const units = [
+    { label: 'y', secs: 31536000 },
+    { label: 'mo', secs: 2592000 },
+    { label: 'w', secs: 604800 },
+    { label: 'd', secs: 86400 },
+    { label: 'h', secs: 3600 },
+    { label: 'm', secs: 60 }
+  ];
+
+  for (const u of units) {
+    const v = Math.floor(seconds / u.secs);
+    if (v >= 1) return `${v}${u.label} ago`;
+  }
+  // Fallback: seconds level shows as "1m ago" minimum; we handled <30s above
+  return '1m ago';
 }
+}
+

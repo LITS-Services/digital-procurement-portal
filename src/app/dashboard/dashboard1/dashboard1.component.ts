@@ -47,8 +47,8 @@ export class Dashboard1Component implements OnInit{
   rfqCounts!: QuotationRequestsCountVM;
 
 
-  constructor(private http: HttpClient, public translate: TranslateService
-    , private dashboardService: DashboardService,
+  constructor(private http: HttpClient, public translate: TranslateService, 
+    private dashboardService: DashboardService,
     private messagingService: FirebaseMessagingService,
     private toaster: ToastrService
   ) {
@@ -66,16 +66,7 @@ export class Dashboard1Component implements OnInit{
     this.loadPurchaseRequestsCounts();
     this.loadQuotationRequestsCounts();
 
-    //Firebase Cloud Messaging Initialization
-    var userId = localStorage.getItem('userId');
-    this.messagingService.requestPermission(userId);
     
-    this.messagingService.currentMessage.subscribe(msg => {
-      if (msg) {
-        this.toaster.success(msg.notification?.title || 'New Notification', msg.notification?.body || '');
-        // You can show a toast or alert here
-      }
-    });
 
   }
 loadPurchaseRequestsCounts(): void {
