@@ -162,8 +162,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getNotification(){
     this.notificationService.getNotification().subscribe((res: any) => {
-          this.notifications = res.messages.map((m: any, index: number) => ({
-      title: `PR-RQ-${index + 1}`, 
+      this.notifications = res.messages.map((m: any, index: number) => ({
+      title: m.title, 
       message: m.message,
       timeAgo: this.timeSince(new Date(m.createdOn)),  
       read: false, 
