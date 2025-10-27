@@ -38,6 +38,7 @@ export const ROUTES: RouteInfo[] = [
     submenu: [
       { path: '/setup/workflow', title: 'Workflow Setup', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
       { path: '/setup/email-setup', title: 'invitation', icon: 'ft-mail submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+      { path: '/setup/email-templatelist', title: 'Email Template List', icon: 'ft-mail submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
     ]
   },
 

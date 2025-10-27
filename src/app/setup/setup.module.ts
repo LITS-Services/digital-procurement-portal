@@ -22,6 +22,8 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { WorkflowApproverSetupComponent } from './workflow-approver-setup/workflow-approver-setup.component';
 import { EmailSetupComponent } from './email-setup/email-setup.component';
 import { CreateInvitationComponent } from './create-invitation/create-invitation.component';
+import { EmailTemplateListComponent } from './email-template-list/email-template-list.component';
+import { CreatEmailTemplateComponent } from './creat-email-template/creat-email-template.component';
 
 
 @NgModule({
@@ -30,7 +32,9 @@ import { CreateInvitationComponent } from './create-invitation/create-invitation
     NewWorkflowmasterSetupComponent,
     WorkflowApproverSetupComponent,
     EmailSetupComponent,
-    CreateInvitationComponent
+    CreateInvitationComponent,
+    EmailTemplateListComponent,
+    CreatEmailTemplateComponent
   ],
   imports: [
     CommonModule,

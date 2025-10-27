@@ -4,6 +4,8 @@ import { WorkflowMasterSetupComponent } from './workflow-master-setup/workflow-m
 import { NewWorkflowmasterSetupComponent } from './new-workflowmaster-setup/new-workflowmaster-setup.component';
 import { EmailSetupComponent } from './email-setup/email-setup.component';
 import { CreateInvitationComponent } from './create-invitation/create-invitation.component';
+import { EmailTemplateListComponent } from './email-template-list/email-template-list.component';
+import { CreatEmailTemplateComponent } from './creat-email-template/creat-email-template.component';
 
 const routes: Routes = [
 
@@ -37,6 +39,21 @@ const routes: Routes = [
         component: CreateInvitationComponent,
         data: {
           title: 'Create Invitation'
+        }
+      },
+
+      {
+        path: 'email-templatelist',
+        component: EmailTemplateListComponent,
+        data: {
+          title: 'Email Template List'
+        }
+      },
+      {
+        path: 'create-email-template',
+        component: CreatEmailTemplateComponent,
+        data: {
+          title: 'Create Email Template'
         }
       },
 

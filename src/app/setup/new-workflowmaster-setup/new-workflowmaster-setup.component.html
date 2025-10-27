@@ -58,12 +58,18 @@
                 <div class="form-group mb-2">
                   <label>{{ isVendorOnboarding ? 'Select Entity' : 'Workflow Initiator(s)' }}</label>
 
-                  <ng-select class="custom-style" [items]="isVendorOnboarding ? entitiesList : usersList"
-                    [bindLabel]="isVendorOnboarding ? 'name' : 'userName'" bindValue="id"
-                    [multiple]="!isVendorOnboarding" [closeOnSelect]="isVendorOnboarding" [searchable]="true"
-                    placeholder="{{ isVendorOnboarding ? 'Select Entity' : 'Select Users' }}"
-                    formControlName="usersList" (change)="isVendorOnboarding ? onEntitySelected($event?.id) : null">
-                  </ng-select>
+<ng-select class="custom-style" 
+           [items]="isVendorOnboarding ? entitiesList : usersList"
+           [bindLabel]="isVendorOnboarding ? 'name' : 'userName'" 
+           bindValue="id"
+           [multiple]="!isVendorOnboarding" 
+           [closeOnSelect]="isVendorOnboarding" 
+           [searchable]="true"
+           placeholder="{{ isVendorOnboarding ? 'Select Entity' : 'Select Users' }}"
+           formControlName="usersList"
+           (change)="isVendorOnboarding ? onEntitySelected($event?.id) : null">
+</ng-select>
+
 
                 </div>
               </div>
@@ -238,4 +244,14 @@
       </div>
     </div>
   </div>
+  <div *ngIf="dataLoaded; else loadingTemplate">
+  <!-- Your main content here, e.g. the form, dropdowns, etc. -->
+</div>
+
+<ng-template #loadingTemplate>
+  <div class="loading-spinner">
+    Loading...
+  </div>
+</ng-template>
+
 </section>

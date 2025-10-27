@@ -103,6 +103,12 @@ VendorCompanyAction(payload: any) {
 
 
 
+//
+CreatEmailTemplate(payload: any) {
+  return this.http.post(`${environment.apiUrl}/EmailTemplate/Create`, payload);
+}
+
+
 
 
 

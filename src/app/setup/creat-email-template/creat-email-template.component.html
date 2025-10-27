@@ -1,0 +1,113 @@
+<section class="container-fluid mt-3">
+
+    <div class="card cstm-ui-card">
+        <div class="row">
+            <div class="col-md-6">
+                <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+                    <i class="ft-arrow-left"></i>
+                </button>
+                <span class="vl"></span>
+
+                <!-- Reset Button -->
+                <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="resetForm()">
+                    <label class="ft-refresh-ccw"> Reset</label>
+                </button>
+
+                <!-- Save/Update Button -->
+                <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="saveEmailTemplate()">
+                    <i class="ft-save"></i>
+                    <label class="ml-1 mt-1">
+                        <span class="ms-1">{{ isEditMode ? 'Update' : 'Save' }}</span>
+                    </label>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Page Form -->
+    <div class="card full-form-card p-4 shadow-sm">
+        <h4 class="heading mb-4">New Email Template</h4>
+
+        <form [formGroup]="invitationForm" (ngSubmit)="saveEmailTemplate()">
+            <div class="row">
+
+                <!-- Subject -->
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Subject <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" placeholder="Enter subject" formControlName="subject"
+                        [ngClass]="{ 'is-invalid': submitted && f['subject'].errors }" />
+                    <div *ngIf="submitted && f['subject'].errors" class="invalid-feedback">
+                        Subject is required.
+                    </div>
+                </div>
+
+                <!-- Entities Dropdown -->
+                <!-- Entities Dropdown -->
+                <div class="col-md-3 mb-3 position-relative">
+                    <label class="form-label">Entities <span class="text-danger">*</span></label>
+
+                    <div ngbDropdown class="w-100">
+                        <button ngbDropdownToggle type="button" class="form-control text-start"
+                            (click)="$event.stopPropagation()">
+                            {{ invitationForm.value.companies?.length > 0
+                            ? invitationForm.value.companies.join(', ')
+                            : 'Select Companies' }}
+                        </button>
+                        <div ngbDropdownMenu class="w-100" style="max-height: 220px; overflow-y: auto;"
+                            (click)="$event.stopPropagation()">
+                            <div *ngFor="let company of companies" class="dropdown-item d-flex align-items-center">
+                                <input type="checkbox" class="form-check-input me-2" [checked]="company.selected"
+                                    (change)="selectCompany(company); $event.stopPropagation()">
+                                <span>{{ company.name }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="submitted && f['companies'].errors" class="text-danger mt-1">
+                        Please select at least one company.
+                    </div>
+                </div>
+
+                <!-- Type Dropdown -->
+                <div class="col-md-3 mb-3 position-relative">
+                    <label class="form-label">Type <span class="text-danger">*</span></label>
+
+                    <div ngbDropdown class="w-100">
+                        <button ngbDropdownToggle type="button" class="form-control text-start"
+                            (click)="$event.stopPropagation()">
+                            {{ invitationForm.value.actions?.length > 0
+                            ? invitationForm.value.actions.join(', ')
+                            : 'Select Actions' }}
+                        </button>
+                        <div ngbDropdownMenu class="w-100" style="max-height: 220px; overflow-y: auto;"
+                            (click)="$event.stopPropagation()">
+                            <div *ngFor="let type of workflowTypes" class="dropdown-item d-flex align-items-center">
+                                <input type="checkbox" class="form-check-input me-2" [checked]="type.selected"
+                                    (change)="selectAction(type); $event.stopPropagation()">
+                                <span>{{ type.name }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div *ngIf="submitted && f['actions'].errors" class="text-danger mt-1">
+                        Please select at least one action.
+                    </div>
+                </div>
+
+
+                <!-- Body -->
+                <div class="col-md-12 mb-3">
+                    <label class="form-label">Body <span class="text-danger">*</span></label>
+                    <div style="filter: drop-shadow(0px 4px 18px rgba(0, 0, 0, 0.25));">
+                        <textarea id="emailEditor" name="content" rows="8" class="form-control"
+                            placeholder="Write your message..." formControlName="body"
+                            [ngClass]="{ 'is-invalid': submitted && f['body'].errors }"></textarea>
+                    </div>
+                    <div *ngIf="submitted && f['body'].errors" class="invalid-feedback mt-1">
+                        Body is required.
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+</section>
