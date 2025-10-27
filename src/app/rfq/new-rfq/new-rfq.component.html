@@ -182,12 +182,13 @@
               <div class="col-12">
                 <hr>
               </div>
+              
             </div>
             <br>
 
           </form>
 
-          <ngb-accordion *ngIf="!viewMode" #accordion="ngbAccordion" activeIds="ngb-panel-0">
+          <ngb-accordion   *ngIf="!viewMode" #accordion="ngbAccordion" class="mb-2 items-acc" activeIds="ngb-panel-0">
             <ngb-panel id="ngb-panel-0">
               <ng-template ngbPanelTitle>
                 <div class="row">
@@ -354,6 +355,9 @@
                         </div>
                       </div>
                     </div>
+
+
+            
                     <!-- </ng-container> -->
 
                     <!-- <ng-container *ngIf="itemForm.get('itemType')?.value === 'Non-Inventory'">
@@ -400,24 +404,13 @@
                   <br>
 
                 </div>
-              </ng-template>
-              <!-- <ng-template ngbPanelTitle>
-                <div class="row">
-                  <div class="col-md-6"> <span class="panel-icon">
-                      <label class="text-white">Remarks</label> 
-                    </span></div>
-                </div>
-              </ng-template> -->
-            </ngb-panel>
-          </ngb-accordion>
 
-          <div class="col-12">
-            <div style="position: relative;">
+                <div class="vendor-datatable-div">
               <ngx-datatable class="bootstrap core-bootstrap" [rows]="newQuotationItemData" [columnMode]="'force'"
                 [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
-                <!-- [headerHeight]="50" [footerHeight]="50" rowHeight="50" [limit]="5" [scrollbarH]="true"> -->
+             
 
-                <!-- selection of items on generate rfq -->
+           
                 <ngx-datatable-column *ngIf="purchaseRequestId" name="Select" [width]="60" [sortable]="false">
                   <ng-template ngx-datatable-cell-template let-row="row">
                     <input type="checkbox" [(ngModel)]="row.selected" />
@@ -430,33 +423,33 @@
                   </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Type" prop="itemType" [width]="70" [sortable]="false">
+                <ngx-datatable-column [width]="100" name="Type" prop="itemType" [sortable]="false">
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Item" [width]="150">
+                <ngx-datatable-column name="Item">
                   <ng-template let-row="row" ngx-datatable-cell-template>
                     {{ getItemNameById(row.itemId) }}
                   </ng-template>
 
                 </ngx-datatable-column>
-                <ngx-datatable-column name="Description" [width]="150" [sortable]="false" prop="itemDescription">
+                <ngx-datatable-column name="Description" [sortable]="false" prop="itemDescription">
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Amount" prop="amount" [width]="180" [sortable]="false">
+                <ngx-datatable-column [width]="90"  name="Amount" prop="amount" [sortable]="false">
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Vendor Name" [width]="100" [sortable]="false">
+                <ngx-datatable-column name="Vendor Name" [sortable]="false">
                   <ng-template let-row="row" ngx-datatable-cell-template>
                     {{ getVendorNameById(row.vendorUserId) }}
                   </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Remarks" prop="remarks" [width]="100" [sortable]="false">
+                <ngx-datatable-column name="Remarks" prop="remarks"  [sortable]="false">
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Attachments" [width]="70" [sortable]="false">
+                <ngx-datatable-column [width]="100" name="Attachments" [sortable]="false">
                   <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
-                    <!-- Edit button -->
+               
                     <a matTooltip="Attachment" class="row-action-attachment" (click)="openNewEntityModal(rowIndex)"
                       [ngClass]="{'disabled': actionType === 'View'}">
                       <i style="font-size: 1.5rem;" class="ft-paperclip mr-1"></i>
@@ -465,16 +458,16 @@
                   </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column *ngIf="!viewMode" name="Actions" [width]="70" [sortable]="false">
+                <ngx-datatable-column [width]="100" *ngIf="!viewMode" name="Actions"  [sortable]="false">
                   <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
 
-                    <!-- Edit button -->
+      
                     <a matTooltip="Edit Item" (click)="editRow(row, rowIndex)"
                       [ngClass]="viewMode ? 'disabled' : 'row-action-edit'">
                       <i style="font-size: 1.5rem;" class="ft-edit mr-1"></i>
                     </a>
 
-                    <!-- Delete button -->
+
                     <a matTooltip="Delete Item" style="cursor: pointer; color: #d1d4d7;" (click)="deleteRow(rowIndex)"
                       [ngClass]="viewMode ? 'disabled' : 'row-action-delete'">
                       <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
@@ -483,8 +476,89 @@
                   </ng-template>
                 </ngx-datatable-column>
               </ngx-datatable>
-            </div>
-          </div>
+              </div>
+              </ng-template>
+              <!-- <ng-template ngbPanelTitle>
+                <div class="row">
+                  <div class="col-md-6"> <span class="panel-icon">
+                      <label class="text-white">Remarks</label> 
+                    </span></div>
+                </div>
+              </ng-template> -->
+
+              
+            </ngb-panel>
+
+              
+          </ngb-accordion>
+
+
+
+             <ngb-accordion *ngIf="!viewMode && !isNewForm" #accordion="ngbAccordion" class="vendor-acc" activeIds="ngb-panel-1">
+            <ngb-panel id="ngb-panel-1">
+              <ng-template ngbPanelTitle>
+                <div class="row">
+                  <div class="col-md-6"> <span class="panel-icon">
+                      <label class="text-white">Selected Vendors</label> <!-- Bootstrap icon example -->
+                    </span></div>
+                </div>
+              </ng-template>
+              <ng-template ngbPanelContent>
+
+              <div class="vendor-datatable-div">
+              <ngx-datatable class="bootstrap core-bootstrap" [rows]="selectedVendorsData" [columnMode]="'force'"
+                [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
+            
+                <ngx-datatable-column name="Sr. No." 
+                  [width]="100"
+                  [minWidth]="100"
+                  [maxWidth]="100"
+                [sortable]="false">
+                  <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
+                    <span>{{rowIndex + 1}}</span>
+                  </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="Vendor" prop="vendorName" [sortable]="false">
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="Company"  prop="companyName" [sortable]="false">
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="Created Date"[sortable]="false">
+                     <ng-template let-row="row" ngx-datatable-cell-template>
+                    {{ row.createdDate | date:'short'}}
+                  </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column [width]="100" *ngIf="!viewMode" name="Actions"  [sortable]="false">
+                  <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
+
+      
+                    <a matTooltip="View Vendor" (click)="editVendorRow(row)"
+                      [ngClass]="viewMode ? 'disabled' : 'row-action-edit'">
+                      <i style="font-size: 1.5rem;" class="ft-message-circle mr-1"></i>
+                    </a>
+
+                  </ng-template>
+                </ngx-datatable-column>
+              </ngx-datatable>
+              </div>
+
+              </ng-template>
+              <!-- <ng-template ngbPanelTitle>
+                <div class="row">
+                  <div class="col-md-6"> <span class="panel-icon">
+                      <label class="text-white">Remarks</label> 
+                    </span></div>
+                </div>
+              </ng-template> -->
+
+              
+            </ngb-panel>
+
+              
+          </ngb-accordion>
         </div>
       </div>
     </div>

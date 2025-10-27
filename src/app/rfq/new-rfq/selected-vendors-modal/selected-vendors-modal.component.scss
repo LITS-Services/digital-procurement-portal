@@ -1,0 +1,41 @@
+.datatable-wrapper {
+  position: relative;
+}
+
+.datatable-spinner {
+  position: absolute;
+  top: 50px; /* same as headerHeight */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.6);
+  z-index: 10;
+}
+
+.label-chip{
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+    display: inline-block;
+    vertical-align: middle;
+    width: 100px;
+    text-align: center;
+}
+
+.proc{
+   color: #1166de;
+   border: 1px solid #bfd9ff;
+   background: #e7f1ff;
+   display: inline-block;
+    width: 105px;
+    text-align: center;
+}
+
+.vendor{
+    color: #249D57;
+    background: #e5fff0;
+    border: 1px solid #c7ffdf
+}

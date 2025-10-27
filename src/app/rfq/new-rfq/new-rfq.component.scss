@@ -69,6 +69,17 @@ form label, .form-group label {
       padding: 1.5rem 0px !important;
     }
 
+     ::ng-deep ngb-accordion.vendor-acc .card-body {
+      padding: 0.5rem 0px !important;
+    }
+
+     ::ng-deep ngb-accordion.items-acc .card{
+      border-bottom: 1px solid #e4e4e4 !important;
+    margin-bottom: 18px !important;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0px;
+    }
+
 ::ng-deep .ngx-datatable{
   .sortable .sort-btn:before {
       // font-family: data-table;
@@ -84,6 +95,12 @@ form label, .form-group label {
       // content: "e";
       display: none !important;
   }
+}
+
+.vendor-datatable-div{
+  width: 100% !important;
+  padding: 0px !important;
+  margin-top: 12px;
 }
 
 .datatable-body-cell {
@@ -125,7 +142,6 @@ form label, .form-group label {
 
 .ngx-datatable ::ng-deep .datatable-header-inner{
   background-color: #4188F2 !important;
-  border-radius: 10px;
 }
 .ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
 .ngx-datatable ::ng-deep .datatable-header-inner .sort-btn{

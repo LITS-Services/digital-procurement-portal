@@ -13,6 +13,7 @@ import { WorkflowServiceService } from 'app/shared/services/WorkflowService/work
 import { RfqRemarksComponent } from '../rfq-remarks/rfq-remarks.component';
 import Swal from 'sweetalert2';
 import { LookupService } from 'app/shared/services/lookup.service';
+import { SelectedVendorsModalComponent } from './selected-vendors-modal/selected-vendors-modal.component';
 
 @Component({
   selector: 'app-new-rfq',
@@ -41,6 +42,7 @@ export class NewRfqComponent implements OnInit {
   itemForm: FormGroup;
   editingRowIndex: number | null = null; // Track row being edited
   newQuotationItemData = [];
+  selectedVendorsData: any[] = [];
   public chkBoxSelected = [];
   loading = false;
 
@@ -399,6 +401,8 @@ export class NewRfqComponent implements OnInit {
         this.isNewForm = false;
         this.currentQuotationId = requestData.id;
         this.currentRfqNo = requestData.rfqNo;
+        this.selectedVendorsData = requestData.selectedVendors || [];
+        console.log("selectedVendorsData", this.selectedVendorsData);
 
         //  patch values with formatted dates
         this.newRfqForm.patchValue({
@@ -888,6 +892,21 @@ export class NewRfqComponent implements OnInit {
       }
     }).catch(() => { });
   }
+
+editVendorRow(row: any): void {
+  const modalRef = this.modalService.open(SelectedVendorsModalComponent, {
+    backdrop: "static",
+    size: "lg",
+    centered: true,
+  });
+
+  modalRef.componentInstance.viewMode = this.viewMode;
+
+  modalRef.componentInstance.vendorId = row.vendorId ?? row.vendorID;
+  modalRef.componentInstance.vendorName = row.vendorName ?? row.vendor;
+  modalRef.componentInstance.vendorCompanyId = row.vendorCompanyId;
+  modalRef.componentInstance.quotationId = this.currentQuotationId ?? 0;
+}
 
   private handleDraftSuccess() {
     this.loading = false;

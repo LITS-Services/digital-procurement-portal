@@ -81,6 +81,15 @@ export class RfqService {
       params: { quotationRequestId: quotationRequestId.toString() }
     });
   }
+    getRFQComments(vendorId: string, quotationId: number, vendorComapnyId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/quotation-request-comment`, {
+      params: { vendorId:vendorId ,quotationId: quotationId, vendorComapnyId: vendorComapnyId }
+    });
+  }
+
+  addRfqComment(data: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/quotation-request-comment`, data);
+  }
 
   removeVendorsFromQuotation(payload: any) {
     return this.http.post((`${this.baseUrl}/remove-vendors`), payload);

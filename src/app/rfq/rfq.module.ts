@@ -24,6 +24,7 @@ import { RfqAttachmentComponent } from './rfq-attachment/rfq-attachment.componen
 import { RfqRemarksComponent } from './rfq-remarks/rfq-remarks.component';
 import { RfqApprovalHistoryComponent } from './rfq-approval-history/rfq-approval-history.component';
 import { AgmCoreModule } from "@agm/core";
+import { SelectedVendorsModalComponent } from './new-rfq/selected-vendors-modal/selected-vendors-modal.component';
 
 
 @NgModule({
@@ -35,7 +36,8 @@ import { AgmCoreModule } from "@agm/core";
     NewRfqComponent,
     RfqAttachmentComponent,
     RfqRemarksComponent,
-    RfqApprovalHistoryComponent
+    RfqApprovalHistoryComponent,
+    SelectedVendorsModalComponent
   ],
   imports: [
     CommonModule,
