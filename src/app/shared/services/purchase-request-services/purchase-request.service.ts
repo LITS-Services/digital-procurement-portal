@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, from } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from 'environments/environment';
 
 export interface UploadedFile {
@@ -10,6 +10,14 @@ export interface UploadedFile {
   file: File;
   base64Data?: string;
 }
+
+export interface PRQuery {
+    currentPage: number,
+    pageSize: number,
+    userId: string | null,
+    status: string | null,
+    prNo: string | null
+  }
 
 export interface Dropdown {
   $id: string,
@@ -38,9 +46,25 @@ export class PurchaseRequestService {
 
   /** ============== API Calls ============== **/
 
-  getAllPurchaseRequests(currentPage: number, pageSize: number): Observable<any> {
+  getAllPurchaseRequests( q: {
+    currentPage: number, 
+    pageSize: number,
+    userId?: string | null,
+    status?: string | null,
+    prNo?: string | null
+  }): Observable<any> {
+
+    
+    let params = new HttpParams()
+      .set("currentPage", q.currentPage)
+      .set("pageSize", q.pageSize);
+
+    if (q.status) params = params.set("status", q.status);
+    if (q.prNo) params = params.set("prNo", q.prNo);
+    if (q.userId) params = params.set("userId", q.userId);
+      
     return this.http.get<any>(
-      `${this.baseUrl}/get-all-purchase-requests?currentPage=${currentPage}&pageSize=${pageSize}`
+      `${this.baseUrl}/get-all-purchase-requests`, { params }
     );
   }
 

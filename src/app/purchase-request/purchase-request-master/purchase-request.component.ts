@@ -2,13 +2,15 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, id, SelectionType } from '@swimlane/ngx-datatable';
-import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
+import { PRQuery, PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
 import { PurchaseRequestAccountBudgetLookupModalComponent } from 'app/shared/modals/purchase-request-account-budget-lookup-modal/purchase-request-account-budget-lookup-modal.component';
 import { PurchaseRequestExceptionPolicyComponent } from 'app/shared/modals/purchase-request-exception-policy/purchase-request-exception-policy.component';
 import { PrApprovalHistoryComponent } from '../pr-approval-history/pr-approval-history.component';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
 import { CreatePurchaseOrderComponent } from 'app/purchase-order/create-purchase-order/create-purchase-order.component';
+import { LookupService } from 'app/shared/services/lookup.service';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-purchase-request',
@@ -34,15 +36,26 @@ export class PurchaseRequestComponent implements OnInit {
   isAllSelected = false;
   columns = [];
 
-  currentPage = 1;
-  pageSize = 10;
+
   totalPages = 0;
   totalItems = 0;
+
+     query: PRQuery = {
+      currentPage: 1,
+      pageSize: 10,
+      status: null,
+      userId: null,
+      prNo: null
+    };
 
   showFilterBar = false;
   selectedStatusLabel = 'All';
 
+    status:any
+
   statusTouched: boolean = false;
+    searchText = '';
+    private searchChanged$ = new Subject<string>();
 
   constructor(
     private router: Router,
@@ -50,11 +63,13 @@ export class PurchaseRequestComponent implements OnInit {
     private purchaseRequestService: PurchaseRequestService,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    public lookupService:LookupService
 
   ) { }
 
   ngOnInit(): void {
+    this.loadStatus();
     this.loadPurchaseRequests();
     this.cdr.detectChanges();
   }
@@ -62,7 +77,7 @@ export class PurchaseRequestComponent implements OnInit {
   loadPurchaseRequests() {
     this.loading = true;
 
-    this.purchaseRequestService.getAllPurchaseRequests(this.currentPage, this.pageSize).subscribe({
+    this.purchaseRequestService.getAllPurchaseRequests(this.query).subscribe({
       next: (data: any) => {
         this.purchaseRequestData = (data?.result || []).map((pr: any) => ({
           ...pr,
@@ -83,52 +98,66 @@ export class PurchaseRequestComponent implements OnInit {
     });
   }
 
+      loadStatus() {
+      this.lookupService.getAllRequestStatus().subscribe({
+        next: (data: any) => {
+          this.status = data;
+        },
+        error: (err) => {
+          console.error('Error fetching Status:', err);
+        }
+      });
+    }
+
+    onStatusChange(status: any) {
+    if(status === 'All') {
+      this.selectedStatusLabel = "All"
+    }
+    else{
+       this.selectedStatusLabel = status?.description;
+    }
+    this.statusTouched = true;
+    this.query.status = status?.description;;
+    this.query.currentPage = 1 ;
+    this.loadPurchaseRequests();
+  }
+
+    onSearchChange(text: string) {
+    this.searchText = text;
+    this.searchChanged$.next(text);
+  }
+
   toggleFilterBar() {
     this.showFilterBar = !this.showFilterBar;
   }
 
-  loadFilteredRequests(status: string) {
-    if (status !== this.activeFilter) {
-      this.currentPage = 1
-    };
-    this.activeFilter = status;
-    this.loading = true;
+  // loadFilteredRequests(status: string) {
+  //   if (status !== this.activeFilter) {
+  //     this.currentPage = 1
+  //   };
+  //   this.activeFilter = status;
+  //   this.loading = true;
 
-    this.purchaseRequestService.getAllPurchaseRequestsByStatus(status, this.currentPage, this.pageSize).subscribe({
-      next: (data: any) => {
-        this.purchaseRequestData = (data?.result || []).map((pr: any) => ({
-          ...pr,
-          canGenerateRfq: pr.requestStatus === 'Completed'
-        }));
+  //   this.purchaseRequestService.getAllPurchaseRequestsByStatus(status, this.currentPage, this.pageSize).subscribe({
+  //     next: (data: any) => {
+  //       this.purchaseRequestData = (data?.result || []).map((pr: any) => ({
+  //         ...pr,
+  //         canGenerateRfq: pr.requestStatus === 'Completed'
+  //       }));
 
-        // Capture pagination info
-        this.totalPages = data.totalPages;
-        this.totalItems = data.totalItems;
+  //       // Capture pagination info
+  //       this.totalPages = data.totalPages;
+  //       this.totalItems = data.totalItems;
 
-        this.loading = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error fetching filtered requests:', err);
-        this.loading = false;
-      }
-    });
-  }
-
-  selectStatus(status: 'New' | 'InProcess' | 'Completed' | null) {
-    this.statusTouched = true;
-    if (status === null) {
-      this.selectedStatusLabel = 'All';
-      this.activeFilter = '';           // optional: clear your flag
-      this.currentPage = 1;             // reset paging if needed
-      this.loadPurchaseRequests();      // use your existing method
-    } else {
-      this.selectedStatusLabel = status;
-      this.activeFilter = status;
-      this.currentPage = 1;
-      this.loadFilteredRequests(status); // use your existing method
-    }
-  }
+  //       this.loading = false;
+  //       this.cdr.detectChanges();
+  //     },
+  //     error: (err) => {
+  //       console.error('Error fetching filtered requests:', err);
+  //       this.loading = false;
+  //     }
+  //   });
+  // }
 
   onView() {
     if (this.chkBoxSelected.length !== 1) {
@@ -328,12 +357,8 @@ export class PurchaseRequestComponent implements OnInit {
   }
 
   onPageChange(event: any) {
-    this.currentPage = (event.offset ?? 0) + 1;
-    if (this.activeFilter !== '') {
-      this.loadFilteredRequests(this.activeFilter);
-    } else {
-      this.loadPurchaseRequests();
-    }
+    this.query.currentPage = (event?.offset ?? 0) + 1;
+    this.loadPurchaseRequests();
   }
 
   openCreatePoModal(row: any): void {

@@ -5,7 +5,7 @@ import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-dat
 import { RfqQuotationboxComponent } from '../rfq-quotationbox/rfq-quotationbox.component';
 import { RfqVendorModalComponent } from '../rfq-vendor-modal/rfq-vendor-modal.component';
 import { VendorComparisionComponent } from '../vendor-comparision/vendor-comparision.component';
-import { PRQuery, RfqService } from '../rfq.service';
+import { RFQQuery, RfqService } from '../rfq.service';
 import { RfqApprovalHistoryComponent } from '../rfq-approval-history/rfq-approval-history.component';
 import Swal from 'sweetalert2';
 import { ToastrService } from 'ngx-toastr';
@@ -60,7 +60,7 @@ export class RfqComponent implements OnInit {
   // isAddNewDisable:boolean= true;
   // isAllSelected: boolean = false;
 
-    query: PRQuery = {
+    query: RFQQuery = {
     currentPage: 1,
     pageSize: 10,
     status: null,

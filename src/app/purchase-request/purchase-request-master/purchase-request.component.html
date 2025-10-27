@@ -100,21 +100,25 @@
                 <i class="ft-chevron-down"></i>
               </button>
               <div class="dropdown-menu" ngbDropdownMenu>
-                <button class="dropdown-item" (click)="selectStatus(null)">All</button>
-                <button class="dropdown-item" (click)="selectStatus('New')">New</button>
-                <button class="dropdown-item" (click)="selectStatus('InProcess')">InProcess</button>
-                <button class="dropdown-item" (click)="selectStatus('Completed')">Completed</button>
+                <button class="dropdown-item" (click)="onStatusChange('All')">
+                  All
+                </button>
+                <button class="dropdown-item" *ngFor="let s of status" (click)="onStatusChange(s)">
+                  {{ s.description }}
+                </button>
               </div>
             </div>
-
+          
+          
+          
             <button class="btn px-1 btn-sm" (click)="showFilterBar = false">✕</button>
           </div>
 
         </div>
       </div>
       <ngx-datatable class="bootstrap core-bootstrap" [rows]="purchaseRequestData" [columnMode]="'force'"
-        [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [limit]="pageSize"
-        [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
+        [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [limit]="query.pageSize"
+        [count]="totalItems" [externalPaging]="true" [offset]="query.currentPage - 1" (page)="onPageChange($event)"
         [loadingIndicator]="loading" [selected]="chkBoxSelected" [selectionType]="SelectionType.checkbox"
         (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 

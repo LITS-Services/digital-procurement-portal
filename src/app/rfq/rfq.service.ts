@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 
-export interface PRQuery {
+export interface RFQQuery {
     currentPage: number,
     pageSize: number,
     userId: string | null,
@@ -31,8 +31,8 @@ export class RfqService {
   ): Observable<any> {
 
       let params = new HttpParams()
-      .set('currentPage', String(q.currentPage))
-      .set('pageSize', String(q.pageSize));
+      .set('currentPage', q.currentPage)
+      .set('pageSize', q.pageSize);
 
       if (q.status)   params = params.set('status', q.status);
       if (q.rfqNo)    params = params.set('rfqNo', q.rfqNo);
