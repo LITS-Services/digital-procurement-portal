@@ -25,6 +25,7 @@ export class LookupService {
     return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=global-config-type`);
   }
 
+
   getFinalVendorsForSelectionOnPr(userId: string) {
     const url = `${this.baseUrl}/dropdowns`;
     const params = {
@@ -33,5 +34,10 @@ export class LookupService {
     };
     return this.http.get<any[]>(url, { params });
   }
+
+    getAllRequestStatus() {
+    return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=status`);
+  }
+
 
 }

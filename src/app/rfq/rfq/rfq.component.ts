@@ -5,10 +5,13 @@ import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-dat
 import { RfqQuotationboxComponent } from '../rfq-quotationbox/rfq-quotationbox.component';
 import { RfqVendorModalComponent } from '../rfq-vendor-modal/rfq-vendor-modal.component';
 import { VendorComparisionComponent } from '../vendor-comparision/vendor-comparision.component';
-import { RfqService } from '../rfq.service';
+import { PRQuery, RfqService } from '../rfq.service';
 import { RfqApprovalHistoryComponent } from '../rfq-approval-history/rfq-approval-history.component';
 import Swal from 'sweetalert2';
 import { ToastrService } from 'ngx-toastr';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { LookupService } from 'app/shared/services/lookup.service';
 
 @Component({
   selector: 'app-rfq',
@@ -35,8 +38,8 @@ export class RfqComponent implements OnInit {
   isAllSelected = false;
   columns = [];
 
-  currentPage = 1;
-  pageSize = 10;
+  // currentPage = 1;
+  // pageSize = 10;
   totalPages = 0;
   totalItems = 0;
 
@@ -57,14 +60,38 @@ export class RfqComponent implements OnInit {
   // isAddNewDisable:boolean= true;
   // isAllSelected: boolean = false;
 
+    query: PRQuery = {
+    currentPage: 1,
+    pageSize: 10,
+    status: null,
+    userId: null,
+    rfqNo: null
+  };
+
+  status:any
+
+  searchText = '';
+  private searchChanged$ = new Subject<string>();
+
   constructor(private router: Router, private modalService: NgbModal,
     private route: ActivatedRoute, private rfqService: RfqService,
-    private cdr: ChangeDetectorRef, public toastr: ToastrService
+    private cdr: ChangeDetectorRef, public toastr: ToastrService,
+    public lookupService:LookupService
   ) { }
 
   ngOnInit(): void {
+   this.searchChanged$
+    .pipe(debounceTime(300), distinctUntilChanged())
+    .subscribe(text => {
+      this.query.rfqNo = text?.trim() || null;
+      this.query.currentPage = 1;
+      this.loadRfqs(); 
+    });
+
+    this.loadStatus();
+
     this.loadRfqs();
-    this.cdr.detectChanges();
+    
   }
 
     ngAfterViewInit(): void {
@@ -90,10 +117,21 @@ export class RfqComponent implements OnInit {
     this.showFilterBar = !this.showFilterBar;
     }
 
+    loadStatus() {
+      this.lookupService.getAllRequestStatus().subscribe({
+        next: (data: any) => {
+          this.status = data;
+        },
+        error: (err) => {
+          console.error('Error fetching Status:', err);
+        }
+      });
+    }
+
   loadRfqs() {
     this.loading = true;
 
-    this.rfqService.getAllQuotations(this.currentPage, this.pageSize).subscribe({
+    this.rfqService.getAllQuotations(this.query).subscribe({
       next: (data: any) => {
 
         // Extract paginated data correctly
@@ -113,45 +151,25 @@ export class RfqComponent implements OnInit {
     });
   }
 
-    selectStatus(status: 'New' | 'InProcess' | 'Completed' | null) {
+  onStatusChange(status: any) {
+    if(status === 'All') {
+      this.selectedStatusLabel = "All"
+    }
+    else{
+       this.selectedStatusLabel = status?.description;
+    }
     this.statusTouched = true;
-  if (status === null) {
-    this.selectedStatusLabel = 'All';
-    this.activeFilter = '';           // optional: clear your flag
-    this.currentPage = 1;             // reset paging if needed
-    this.loadRfqs();      // use your existing method
-  } else {
-    this.selectedStatusLabel = status;
-    this.activeFilter = status;
-    this.currentPage = 1;
-    this.loadFilteredQuotations(status); // use your existing method
+    this.query.status = status?.description;;
+    this.query.currentPage = 1 ;
+    this.loadRfqs();
   }
-}
 
-  loadFilteredQuotations(status: string) {
-    if (status !== this.activeFilter) {
-      this.currentPage = 1
-    };
-    this.activeFilter = status;
-    this.loading = true;
-
-    this.rfqService.getAllQuotationsByStatus(status, this.currentPage, this.pageSize).subscribe({
-      next: (data: any) => {
-        this.rfqData = data?.result || [];
-
-        // Capture pagination info
-        this.totalPages = data.totalPages;
-        this.totalItems = data.totalItems;
-
-        this.loading = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error fetching filtered quotations:', err);
-        this.loading = false;
-      }
-    });
+    onSearchChange(text: string) {
+    this.searchText = text;
+    this.searchChanged$.next(text);
   }
+
+
 
   onView() {
     if (this.chkBoxSelected.length !== 1) {
@@ -316,12 +334,10 @@ export class RfqComponent implements OnInit {
     modalRef.componentInstance.rfqNo = row.rfqNo; // pass RfqNo
   }
 
-  onPageChange(event: any) {
-    this.currentPage = (event.offset ?? 0) + 1;
-    if (this.activeFilter !== '') {
-      this.loadFilteredQuotations(this.activeFilter);
-    } else {
-      this.loadRfqs();
-    }
+
+    onPageChange(event: any) {
+    // ngx-datatable gives 0-based offset
+    this.query.currentPage = (event?.offset ?? 0) + 1;
+    this.loadRfqs();
   }
 }

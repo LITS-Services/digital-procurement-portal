@@ -3,17 +3,44 @@ import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 
+export interface PRQuery {
+    currentPage: number,
+    pageSize: number,
+    userId: string | null,
+    status: string | null,
+    rfqNo: string | null
+  }
+
 @Injectable({
   providedIn: 'root'
 })
+
 
 export class RfqService {
   private baseUrl = `${environment.apiUrl}/Quotation`;
   constructor(private http: HttpClient) { }
 
-  getAllQuotations(currentPage: number, pageSize: number): Observable<any> {
+  getAllQuotations( q: {
+    currentPage: number, 
+    pageSize: number,
+    userId?: string | null,
+    status?: string | null,
+    rfqNo?: string | null
+  }
+
+  ): Observable<any> {
+
+      let params = new HttpParams()
+      .set('currentPage', String(q.currentPage))
+      .set('pageSize', String(q.pageSize));
+
+      if (q.status)   params = params.set('status', q.status);
+      if (q.rfqNo)    params = params.set('rfqNo', q.rfqNo);
+      if (q.userId)   params = params.set('userId', q.userId);
+  
+
     return this.http.get<any>(
-      `${this.baseUrl}/get-all-quotations?currentPage=${currentPage}&pageSize=${pageSize}`
+      `${this.baseUrl}/get-all-quotations`, { params }
     );
   }
 

@@ -56,7 +56,10 @@
               <div class="d-flex align-items-center justify-content-between pl-3 pr-1 py-2 filter-wrapper">
                 <div class="filter-search">
                   <i class="ft-filter search-icon"></i>
-                  <input type="text" placeholder="Search by keywords" class="form-control form-control-sm search-input" [(ngModel)]="searchText">
+                  <input 
+                   [ngModel]="searchText"
+                   (ngModelChange)="onSearchChange($event)"
+                  type="text" placeholder="Search by rfq no #" class="form-control form-control-sm search-input">
                 </div>
 
 
@@ -67,10 +70,13 @@
                     <i class="ft-chevron-down"></i> 
                   </button>
                   <div class="dropdown-menu" ngbDropdownMenu>
-                    <button class="dropdown-item" (click)="selectStatus(null)">All</button>
-                    <button class="dropdown-item" (click)="selectStatus('New')">New</button>
-                    <button class="dropdown-item" (click)="selectStatus('InProcess')">InProcess</button>
-                    <button class="dropdown-item" (click)="selectStatus('Completed')">Completed</button>
+                    <button class="dropdown-item" (click)="onStatusChange('All')">
+                        All
+                    </button>
+                    <button class="dropdown-item" *ngFor="let s of status"
+                            (click)="onStatusChange(s)">
+                            {{ s.description }}
+                    </button>
                   </div>
                 </div>
 
@@ -86,8 +92,8 @@
 
             <!-- Content -->
             <ngx-datatable class="bootstrap core-bootstrap" [rows]="rfqData" [columnMode]="'force'" [headerHeight]="50"
-                [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'" [limit]="pageSize" [count]="totalItems"
-                [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)" [scrollbarH]="true"
+                [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'" [limit]="query.pageSize" [count]="totalItems"
+                [externalPaging]="true" [offset]="query.currentPage - 1" (page)="onPageChange($event)" [scrollbarH]="true"
                 [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
                 [selectionType]="SelectionType.checkbox" (sort)="onSort($event)"
                 (select)="customChkboxOnSelect($event)">
