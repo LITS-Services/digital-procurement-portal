@@ -1,6 +1,7 @@
-.spacer{
+.spacer {
     flex-grow: 1;
 }
+
 .accordion .card .card-header button {
     padding: 0.5rem !important;
     width: 100%;
@@ -11,6 +12,7 @@
     color: #fff;
     background: linear-gradient(to right, #0f4d6b, #1E89B8);
 }
+
 .modal-body {
     position: relative;
     flex: 1 1 auto;
@@ -18,6 +20,7 @@
     height: 500px !important;
     overflow-y: auto !important;
 }
+
 .ngx-datatable.bootstrap .datatable-footer {
     background: #424242;
     color: #ededed;
@@ -40,26 +43,26 @@
     vertical-align: top;
 }
 
-   ::ng-deep ngb-accordion .card-body {
-      padding: 1.5rem 0px !important;
-    }
+::ng-deep ngb-accordion .card-body {
+    padding: 1.5rem 0px !important;
+}
 
-    ::ng-deep .accordion .card {
-        box-shadow: none !important;
-    }
+::ng-deep .accordion .card {
+    box-shadow: none !important;
+}
 
-    ::ng-deep .ngx-datatable.bootstrap {
-  width: 100% !important;
-  min-width: 100% !important;
-  display: block;
+::ng-deep .ngx-datatable.bootstrap {
+    width: 100% !important;
+    min-width: 100% !important;
+    display: block;
 }
 
 ::ng-deep .datatable-body,
 ::ng-deep .datatable-scroll {
-  width: 100% !important;
+    width: 100% !important;
 }
 
 ::ng-deep .datatable-header,
 ::ng-deep .datatable-footer {
-  width: 100% !important;
+    width: 100% !important;
 }

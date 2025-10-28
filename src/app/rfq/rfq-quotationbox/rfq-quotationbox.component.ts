@@ -103,6 +103,7 @@ loadVendors(quotationRequestId: number) {
         vendorUserId: vendor.vendorUserId,
         vendorName: vendor.vendorName,
         amount: vendor.amount,
+        owner: res?.owner
       }));
 console.log( "RFQ DATA: ", this.rfqData);
  // Vendor → Items map (children)

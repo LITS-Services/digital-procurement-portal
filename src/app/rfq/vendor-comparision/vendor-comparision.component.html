@@ -10,37 +10,17 @@
 
   <div class="form-row">
     <!-- Commented as requested -->
-
-    <!-- <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-      <div class="form-group mb-2">
-        <label>Item Code</label>
-        <input type="text" placeholder="GS-DPD009" disabled class="form-control" />
-      </div>
-    </div> -->
     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
       <div class="form-group">
         <label for="">Item</label>
         <select class="form-control  custom-input" [(ngModel)]="selectedItem" (change)="applyVendorItemFilter()">
           <option value="">All Items</option>
           <option *ngFor="let item of vendorComparisonList" [value]="item.itemName">
-            {{ item.itemName }} 
+            {{ item.itemName }}
           </option>
         </select>
       </div>
     </div>
-
-
-    <!-- <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-      <div class="form-group">
-        <label for="">Vendor</label>
-        <select name="" id="" class="form-control">
-          <option value="null">Select Final Vendor</option>
-          <option value="">AFI Flight Inspection GmbH</option>
-          <option value="">Atlas Safety Products</option>
-          <option value="">AudiViz Technologies</option>
-        </select>
-      </div>
-    </div> -->
     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
       <div class="form-group">
         <label for="">Vendor</label>
@@ -53,7 +33,6 @@
       </div>
     </div>
 
-
     <div class="col-12">
       <div class="form-group">
         <label for="">Description</label>
@@ -65,7 +44,7 @@
   <hr class="my-4" />
   <h4 class="mb-3">Vendor Quotations</h4>
 
-  <!-- 🔥 Dynamic accordion loop -->
+  <!--  Dynamic accordion loop -->
   <div *ngIf="filteredVendorComparisonList.length > 0; else noBids"></div>
   <ngb-accordion #accordion="ngbAccordion" *ngFor="let item of filteredVendorComparisonList; let i = index"
     [activeIds]="'ngb-panel-' + i">
@@ -75,7 +54,7 @@
           <div class="col-md-6">
             <span class="panel-icon">
               <!-- Item Code from backend -->
-              <label class="text-white"> Item:  {{ item.itemName }}</label>
+              <label class="text-white"> Item: {{ item.itemName }}</label>
               <span class="spacer"></span>
               <i class="ft-chevron-down"></i>
             </span>
@@ -91,6 +70,18 @@
           <ngx-datatable-column [minWidth]="40" name="Vendor Name" prop="vendorName"></ngx-datatable-column>
           <ngx-datatable-column [minWidth]="20" name="Amount" prop="biddingAmount"></ngx-datatable-column>
           <ngx-datatable-column [minWidth]="20" name="Comment" prop="comment"></ngx-datatable-column>
+          <ngx-datatable-column [minWidth]="20" name="Attachments" [sortable]="false">
+            <ng-template ngx-datatable-cell-template let-row="row">
+              <!-- <button class="btn btn-sm btn-outline-secondary" (click)="openAttachmentsModal(row)">
+                <i class="fa fa-paperclip"></i>
+              </button> -->
+              <button class="btn btn-link p-0 text-secondary" (click)="openAttachmentsModal(row)" ngbTooltip="View">
+  <i class="fa fa-paperclip fs-5"></i>
+</button>
+
+            </ng-template>
+          </ngx-datatable-column>
+
           <ngx-datatable-column [minWidth]="10" name="Action" [sortable]="false">
             <ng-template ngx-datatable-cell-template let-row="row">
               <button class="btn btn-sm mr-1" (click)="printVendor(row)">
@@ -106,5 +97,43 @@
 <ng-template #noBids>
   <div class="alert alert-warning text-center mt-3">
     No bid found for the selected item and vendor.
+  </div>
+</ng-template>
+
+<!-- 🔹 Attachments Modal Template -->
+<ng-template #attachmentsModal let-modal>
+  <div class="modal-header bg-light">
+    <h5 class="modal-title me-2">
+      <i class="fa fa-paperclip me-2 text-white"></i>
+      Vendor Attachments
+    </h5>
+    <button type="button" class="close text-white" aria-label="Close" (click)="modal.dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  </div>
+
+  <div class="modal-body">
+    <div *ngIf="selectedBid?.vendorAttachments?.length; else noAttachments">
+      <ul class="list-group">
+        <li class="list-group-item d-flex justify-content-between align-items-center"
+          *ngFor="let att of selectedBid.vendorAttachments">
+          <span>
+            <i class="fa fa-file text-secondary me-2"></i>
+            {{ att.fileName }}
+          </span>
+          <button class="btn btn-sm btn-outline-secondary" (click)="downloadAttachment(att)">
+            <i class="fa fa-download me-1"></i> Download
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <ng-template #noAttachments>
+      <p class="text-muted mb-0">No attachments available for this bid.</p>
+    </ng-template>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
   </div>
 </ng-template>

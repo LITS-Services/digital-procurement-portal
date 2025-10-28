@@ -24,10 +24,7 @@
           <i class="ft-paperclip"></i> Attachment
         </button> -->
         </div>
-
-
         <hr>
-
         <ngx-datatable class="bootstrap core-bootstrap" [rows]="rfqData" [columnMode]="'flex'" [headerHeight]="50"
             [footerHeight]="50" [columns]="columns" rowHeight="auto" [limit]="5" [scrollbarH]="true"
             [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
@@ -45,7 +42,7 @@
             </ngx-datatable-column>
 
             <!-- Vendor Code takes 2x space -->
-            <ngx-datatable-column name="Vendor Name" prop="vendorName" [flexGrow]="2"></ngx-datatable-column>
+            <ngx-datatable-column name="Vendor Name" prop="vendorName" [flexGrow]="1"></ngx-datatable-column>
 
             <!-- Amount takes 1x space -->
             <ngx-datatable-column name="Amount" prop="amount" [flexGrow]="1"></ngx-datatable-column>
@@ -54,7 +51,6 @@
             <ngx-datatable-column name="Owner" prop="owner" [flexGrow]="1"></ngx-datatable-column>
 
         </ngx-datatable>
-
     </div>
 
     <div *ngIf="isCreateMode" class="create-form-view animate-slide-in">
@@ -62,13 +58,11 @@
             <div class="row">
                 <div class="col-md-6 form-group">
                     <label>RFQ No.</label>
-                    <input type="text" formControlName="rfqNo" disabled class="form-control custom-input"
-                        >
+                    <input type="text" formControlName="rfqNo" disabled class="form-control custom-input">
                 </div>
                 <div class="col-md-6 form-group">
                     <label>PR No.</label>
-                    <input type="text" formControlName="purchaseRequestNo" disabled class="form-control custom-input"
-                        >
+                    <input type="text" formControlName="purchaseRequestNo" disabled class="form-control custom-input">
                 </div>
 
                 <!-- <div class="col-md-6 form-group">
@@ -86,7 +80,7 @@
                 </div> -->
                 <div class="col-md-6 form-group">
                     <label>RFQ Owner</label>
-                    <input type="text" formControlName="owner" disabled class="form-control  custom-input" placeholder="115">
+                    <input type="text" formControlName="owner" disabled class="form-control  custom-input">
                 </div>
 
                 <div class="col-md-6 form-group">
@@ -97,7 +91,6 @@
                 <div class="col-md-6 form-group">
                     <label>RFQ Status</label>
                     <input type="text" formControlName="requestStatus" disabled class="form-control  custom-input">
-
                 </div>
 
                 <div class="col-md-12 form-group">
@@ -122,14 +115,9 @@
                     {{ row.reqByDate | date:'yyyy-MM-dd' }}
                 </ng-template>
             </ngx-datatable-column>
-
-
             <ngx-datatable-column name="Bid Price" prop="biddingAmount"></ngx-datatable-column>
             <ngx-datatable-column name="Comment" prop="comment"></ngx-datatable-column>
-
-
         </ngx-datatable>
-
     </div>
 </div>
 
