@@ -197,7 +197,7 @@
                     </span></div>
                 </div>
               </ng-template>
-              <ng-template ngbPanelContent>
+              <ng-template *ngIf="hasUnusedItems" ngbPanelContent>
                 <div class="card-accordion">
                   <div class="form-row position-relative" [formGroup]="itemForm">
 

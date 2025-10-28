@@ -1,80 +1,63 @@
 <div class="modal-header">
-    <h4 class="modal-title text-white">RFQ Vendors</h4>
-    <button type="button" class="close text-white" aria-label="Close" (click)="closeDialog()">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  
-  <div class="modal-body">
-    <h4 class="mb-3">All Vendors</h4>
-    <ngx-datatable
-      class="bootstrap core-bootstrap"
-      [rows]="allVendorsandCompanies"
-      [columnMode]="'force'"
-      [headerHeight]="50"
-      [footerHeight]="40"
-      [rowHeight]="50"
-      [limit]="5"
-      [scrollbarH]="true"
-      style="border: 1px solid #dee2e6; border-radius: 6px;">
-  
-      <ngx-datatable-column  [sortable]="false">
-        <ng-template ngx-datatable-cell-template let-row="row">
-            <!-- <button
+  <h4 class="modal-title text-white">RFQ Vendors</h4>
+  <button type="button" class="close text-white" aria-label="Close" (click)="closeDialog()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <h4 class="mb-3">All Vendors</h4>
+  <ngx-datatable class="bootstrap core-bootstrap" [rows]="allVendorsandCompanies" [columnMode]="'force'"
+    [headerHeight]="50" [footerHeight]="40" [rowHeight]="50" [limit]="5" [scrollbarH]="true"
+    style="border: 1px solid #dee2e6; border-radius: 6px;">
+
+    <ngx-datatable-column [sortable]="false">
+      <ng-template ngx-datatable-cell-template let-row="row">
+        <!-- <button
             class="btn btn-sm text-bold btn-info"
             [disabled]="isVendorAdded(row.id)"
             (click)="addVendor(row)">
             <i class="ft-plus"></i>
           </button> -->
-          <button
-  class="btn btn-sm text-bold btn-info"
-  [disabled]="isVendorAdded(row.vendorCompanyEntityId ?? row.id)"
-  (click)="addVendor(row)">
-  <i class="ft-plus"></i>
-</button>
+        <button class="btn btn-sm text-bold btn-info" [disabled]="isVendorAdded(row.vendorCompanyEntityId ?? row.id)"
+          (click)="addVendor(row)">
+          <i class="ft-plus"></i>
+        </button>
 
+      </ng-template>
+    </ngx-datatable-column>
 
-        </ng-template>
-      </ngx-datatable-column>
-  
-      <ngx-datatable-column name="Vendor" prop="vendorName" ></ngx-datatable-column>
-      <ngx-datatable-column name="Company" prop="companyName" ></ngx-datatable-column>
-    </ngx-datatable>
-  
-    <hr class="my-4" />
-  
-    <h4 class="mb-3">RFQ Vendors</h4>
-    <ngx-datatable
-    class="bootstrap core-bootstrap"
-      [rows]="rfqVendors"
-      [columnMode]="'force'"
-      [headerHeight]="50"
-      [footerHeight]="40"
-      [rowHeight]="60"
-      [scrollbarH]="true"
-      style="border: 1px solid #dee2e6; border-radius: 6px;">
-  
-      <ngx-datatable-column  [sortable]="false">
-        <ng-template ngx-datatable-cell-template let-row="row">
-          <button type="button" class="btn btn-sm btn-danger" (click)="removeVendor(row)">❌</button>
-        </ng-template>
-      </ngx-datatable-column>
-  
-      <ngx-datatable-column name="Vendor" prop="vendorName" ></ngx-datatable-column>
-      <ngx-datatable-column name="Company" prop="companyName" ></ngx-datatable-column>
-  
-      <ngx-datatable-column name="Action" [sortable]="false">
-        <ng-template ngx-datatable-cell-template let-row="row">
-            <!-- <div class="row d-flex"> -->
-                <button class="btn btn-sm mr-1" (click)="printVendor(row)"><i class="ft-printer"></i></button>
-          <!-- <button class="btn btn-sm " (click)="emailVendor(row)"><i class="ft-mail"></i></button> -->
-            <!-- </div> -->
-          
-        </ng-template>
-      </ngx-datatable-column>
-    </ngx-datatable>
-  </div>
-  
-  <div class="modal-footer">
+    <ngx-datatable-column name="Vendor" prop="vendorName"></ngx-datatable-column>
+    <ngx-datatable-column name="Company" prop="companyName"></ngx-datatable-column>
+  </ngx-datatable>
+
+  <hr class="my-4" />
+
+  <h4 class="mb-3">RFQ Vendors</h4>
+  <ngx-datatable class="bootstrap core-bootstrap" [rows]="rfqVendors" [columnMode]="'force'" [headerHeight]="50"
+    [footerHeight]="40" [rowHeight]="60" [scrollbarH]="true" style="border: 1px solid #dee2e6; border-radius: 6px;">
+
+    <ngx-datatable-column [sortable]="false">
+      <ng-template ngx-datatable-cell-template let-row="row">
+        <button type="button" class="btn btn-sm btn-danger" (click)="removeVendor(row)">❌</button>
+      </ng-template>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column name="Vendor" prop="vendorName"></ngx-datatable-column>
+    <ngx-datatable-column name="Company" prop="companyName"></ngx-datatable-column>
+
+    <ngx-datatable-column name="Action" [sortable]="false">
+      <ng-template ngx-datatable-cell-template let-row="row">
+        <!-- <div class="row d-flex"> -->
+        <button class="btn btn-sm mr-1" (click)="printVendor(row)"><i class="ft-printer"></i></button>
+        <!-- <button class="btn btn-sm " (click)="emailVendor(row)"><i class="ft-mail"></i></button> -->
+        <!-- </div> -->
+
+      </ng-template>
+    </ngx-datatable-column>
+  </ngx-datatable>
+</div>
+
+<div class="modal-footer">
   <button class="btn btn-primary" (click)="onSubmit()">Submit</button>
 </div>

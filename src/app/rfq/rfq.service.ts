@@ -99,9 +99,14 @@ export class RfqService {
     return this.http.post<any>(`${this.baseUrl}/addRemarksWithActionTaken`, data);
   }
 
-  getVendorsAndCompaniesForRfq(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/get-all-vendors-companies-for-rfq`);
-  }
+  // getVendorsAndCompaniesForRfq(): Observable<any[]> {
+  //   return this.http.get<any[]>(`${this.baseUrl}/get-all-vendors-companies-for-rfq`);
+  // }
+   getVendorsAndCompaniesForRfq(procurementUserId: string): Observable<any[]> {
+    return this.http.get<any>(`${this.baseUrl}/get-all-vendors-companies-for-rfq`,
+      { params: { procurementUserId } });
+    }
+  
 
   getAllQuotationsByStatus(status: string, currentPage: number, pageSize: number): Observable<any> {
     return this.http.get<any>(

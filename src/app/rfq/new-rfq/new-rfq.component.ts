@@ -63,6 +63,7 @@ export class NewRfqComponent implements OnInit {
 
   // new work
   purchaseRequestId: number | null = null;
+  hasUnusedItems: boolean = true;
 
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
@@ -345,6 +346,15 @@ export class NewRfqComponent implements OnInit {
           date: this.toDateInputValue(pr.submittedDate),
         });
 
+        // Map PR items → RFQ items, only include items not already used
+      const unusedItems = pr.purchaseItems?.filter((item: any) => !item.usedInRfq) || [];
+
+      this.hasUnusedItems = unusedItems.length > 0; // <--- flag
+
+      if (!this.hasUnusedItems) {
+        this.toastr.info('All items from this PR have already been used in previous RFQ(s).');
+        return;
+      }
         //  Map PR items → RFQ items
         this.newQuotationItemData = pr.purchaseItems?.map((item: any) => ({
           id: null,
@@ -377,9 +387,9 @@ export class NewRfqComponent implements OnInit {
             quotationItemId: a.quotationItemId || 0,
           })) || []
         }));
-
         //  Refresh datatable
         this.newQuotationItemData = [...this.newQuotationItemData];
+        
       },
       error: (err) => {
         console.error('Error loading PR', err);
@@ -512,6 +522,11 @@ export class NewRfqComponent implements OnInit {
 
     //  Only apply selection logic if this RFQ was opened from a Purchase Request
     if (this.purchaseRequestId) {
+        if (this.allItemsUsedForRFQ()) {
+    this.toastr.info('All items from this Purchase Request have already been used in RFQs. Cannot generate a new RFQ.');
+    return; // Stop execution
+  }
+
       const selectedItems = (this.newQuotationItemData || []).filter(i => i.selected);
       if (selectedItems.length === 0) {
         this.toastr.info('Please select at least one item to generate RFQ.');
@@ -1000,4 +1015,13 @@ editVendorRow(row: any): void {
       }
     );
   }
+
+  private allItemsUsedForRFQ(): boolean {
+  // newQuotationItemData has all items from PR
+  if (!this.newQuotationItemData || this.newQuotationItemData.length === 0) return true;
+
+  // Check if all items already have a quotationRequestId (already part of RFQ)
+  return this.newQuotationItemData.every(item => item.quotationRequestId && item.quotationRequestId > 0);
+}
+
 }

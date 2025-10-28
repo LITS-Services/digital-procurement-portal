@@ -36,18 +36,30 @@ export class RfqVendorModalComponent implements OnInit {
     this.loadRfqVendors(this.quotationRequestId);
   }
 
+  // fetchVendorsAndCompaniesForRfq() {
+  //   this.rfqService.getVendorsAndCompaniesForRfq().subscribe({
+  //     next: (res: any) => {
+
+  //       this.allVendorsandCompanies = res ?? res?.$values ?? [];
+
+  //     },
+  //     error: (err) => {
+  //       console.error('Error fetching vendors', err);
+
+  //     }
+  //   });
+  // }
   fetchVendorsAndCompaniesForRfq() {
-    this.rfqService.getVendorsAndCompaniesForRfq().subscribe({
-      next: (res: any) => {
-
-        this.allVendorsandCompanies = res ?? res?.$values ?? [];
-
-      },
-      error: (err) => {
-        console.error('Error fetching vendors', err);
-
-      }
-    });
+    const procurementUserId = localStorage.getItem('userId');
+    this.rfqService.getVendorsAndCompaniesForRfq(procurementUserId)
+      .subscribe({
+        next: (res: any) => {
+          this.allVendorsandCompanies = res ?? res?.$values ?? [];
+        },
+        error: (err) => {
+          console.error('Error fetching vendors', err);
+        }
+      });
   }
 
   loadRfqVendors(quotationRequestId: number): void {
