@@ -101,7 +101,7 @@
 </ng-template>
 
 <!-- 🔹 Attachments Modal Template -->
-<ng-template #attachmentsModal let-modal>
+<!-- <ng-template #attachmentsModal let-modal>
   <div class="modal-header bg-light">
     <h5 class="modal-title me-2">
       <i class="fa fa-paperclip me-2 text-white"></i>
@@ -134,6 +134,51 @@
   </div>
 
   <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
+  </div>
+</ng-template> -->
+
+<ng-template #attachmentsModal let-modal>
+  <div class="modal-header bg-light">
+    <h5 class="modal-title me-2">
+      <i class="fa fa-paperclip me-2 text-white"></i>
+      Vendor Attachments
+    </h5>
+    <button type="button" class="close text-white" aria-label="Close" (click)="modal.dismiss()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  </div>
+
+  <div class="modal-body p-2">
+    <div *ngIf="selectedBid?.vendorAttachments?.length; else noAttachments">
+      <ul
+        class="list-group"
+        [ngStyle]="{
+          'max-height': selectedBid.vendorAttachments.length > 5 ? '300px' : 'auto',
+          'overflow-y': selectedBid.vendorAttachments.length > 5 ? 'auto' : 'visible'
+        }"
+      >
+        <li
+           class="list-group-item d-flex justify-content-between align-items-center"
+          *ngFor="let att of selectedBid.vendorAttachments"
+        >
+          <span>
+            <i class="fa fa-file text-secondary me-2"></i>
+            {{ att.fileName }}
+          </span>
+          <button class="btn btn-sm btn-outline-secondary" (click)="downloadAttachment(att)">
+            <i class="fa fa-download me-1"></i> Download
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <ng-template #noAttachments>
+      <p class="text-muted mb-0 small">No attachments available for this bid.</p>
+    </ng-template>
+  </div>
+
+  <div class="modal-footer py-2">
     <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
   </div>
 </ng-template>

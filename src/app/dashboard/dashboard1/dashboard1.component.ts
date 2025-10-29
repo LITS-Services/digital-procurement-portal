@@ -31,9 +31,10 @@ export interface PurchaseRequestsCountVM {
 
 export interface QuotationRequestsCountVM {
   totalQuotations: number;
-  newQuotations: number;
+  //newQuotations: number;
   inProcessQuotations: number;
   completedQuotations: number;
+  rejectedQuotations: number;
 }
 
 @Component({
