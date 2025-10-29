@@ -91,7 +91,7 @@
             </div>
 
             <!-- Content -->
-            <ngx-datatable class="bootstrap core-bootstrap" [rows]="rfqData" [columnMode]="'force'" [headerHeight]="50"
+            <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="rfqData" [columnMode]="'force'" [headerHeight]="50"
                 [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'" [limit]="query.pageSize" [count]="totalItems"
                 [externalPaging]="true" [offset]="query.currentPage - 1" (page)="onPageChange($event)" [scrollbarH]="true"
                 [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
@@ -148,31 +148,35 @@
                 <ngx-datatable-column name="Action" [width]="100" prop="action" [sortable]="false">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         <button type="button" class="btn btn-sm btn-primary" [ngbPopover]="actionToolbar"
-                            popoverClass="action-popover" placement="left" container="body">
+                            popoverClass="action-popover" placement="bottom" container="body">
                             <i class="ft-settings"></i>
                         </button>
 
                         <!-- Popover Template -->
                         <ng-template #actionToolbar>
-                            <div class="d-flex justify-content-around">
-                                <button class="btn btn-light btn-sm m-1" ngbTooltip="Quotation Box"
+                            <div class="d-flex justify-content-around flex-column">
+                                <button class="btn popover-btn btn-sm m-1" ngbTooltip="Quotation Box"
                                     (click)="openQuotationBoxModal(row)">
-                                    <i class="ft-mail"></i>
+                                     <span class="popover-icon"><i class="ft-mail"></i></span>
+                                     Quotation Box
                                 </button>
 
-                                <button class="btn btn-light btn-sm m-1" ngbTooltip="Vendor Comparison"
+                                <button class="btn popover-btn btn-sm m-1" ngbTooltip="Vendor Comparison"
                                     (click)="openVendorComparisonModal(row)">
-                                    <i class="ft-bar-chart-2"></i>
+                                    <span class="popover-icon"><i class="ft-bar-chart-2"></i></span>
+                                    Vendor Comparison
                                 </button>
 
-                                <button class="btn btn-light btn-sm m-1" ngbTooltip="Vendors"
+                                <button class="btn popover-btn btn-sm m-1" ngbTooltip="Vendors"
                                     (click)="openVendorsModal(row)">
-                                    <i class="ft-user-check"></i>
+                                    <span class="popover-icon"><i class="ft-user-check"></i></span>
+                                    Vendors
                                 </button>
 
-                                <button class="btn btn-light btn-sm m-1" ngbTooltip="Approval History"
+                                <button class="btn popover-btn btn-sm m-1" ngbTooltip="Approval History"
                                     (click)="openApprovalHistoryModal(row)">
-                                    <i class="ft-list"></i>
+                                    <span class="popover-icon"><i class="ft-list"></i></span>
+                                    Approval History
                                 </button>
                             </div>
                         </ng-template>

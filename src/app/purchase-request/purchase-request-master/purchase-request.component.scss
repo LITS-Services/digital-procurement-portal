@@ -76,3 +76,22 @@
   
 // }
 
+::ng-deep .action-popover .popover-body{
+    padding: 0.4rem 0rem;
+    color: #342E49;
+}
+
+.popover-btn{
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 8px;
+}
+
+.popover-icon{
+    background: #efefef;
+    padding: 0px 8px;
+    border-radius: 6px;
+    color: black;
+    font-weight: 600;
+}

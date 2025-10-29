@@ -13,7 +13,7 @@
           font-weight: 600;
       }
       .dropdown-item {
-          width: auto;
+          width: 100%;
           &:active {
               background-color: $primary !important;
           }

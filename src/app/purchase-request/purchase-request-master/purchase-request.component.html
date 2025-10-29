@@ -88,9 +88,9 @@
       <div *ngIf="showFilterBar" class="filter-bar">
         <div class="d-flex align-items-center justify-content-between pl-3 pr-1 py-2 filter-wrapper">
           <div class="filter-search">
-            <i class="ft-filter search-icon"></i>
+            <!-- <i class="ft-filter search-icon"></i>
             <input type="text" placeholder="Search by keywords" class="form-control form-control-sm search-input"
-              [(ngModel)]="searchText">
+              [(ngModel)]="searchText"> -->
           </div>
 
           <div class="d-flex filter-btns-div">
@@ -116,7 +116,7 @@
 
         </div>
       </div>
-      <ngx-datatable class="bootstrap core-bootstrap" [rows]="purchaseRequestData" [columnMode]="'force'"
+      <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="purchaseRequestData" [columnMode]="'force'"
         [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [limit]="query.pageSize"
         [count]="totalItems" [externalPaging]="true" [offset]="query.currentPage - 1" (page)="onPageChange($event)"
         [loadingIndicator]="loading" [selected]="chkBoxSelected" [selectionType]="SelectionType.checkbox"
@@ -160,53 +160,62 @@
         <ngx-datatable-column name="Action" [width]="100" prop="action" [sortable]="false">
           <ng-template let-row="row" ngx-datatable-cell-template>
             <button type="button" class="btn btn-sm btn-primary" [ngbPopover]="actionToolbar"
-              popoverClass="action-popover" placement="left" container="body">
+              popoverClass="action-popover" placement="bottom" container="body">
               <i class="ft-settings"></i>
             </button>
             <ng-template #actionToolbar>
-              <div class="d-flex justify-content-around">
+              <div class="d-flex justify-content-around flex-column">
 
-                <button class="btn btn-light btn-sm m-1" ngbTooltip="Approval History"
+                <button class="btn popover-btn btn-sm m-1" ngbTooltip="Approval History"
                   (click)="openApprovalHistoryModal(row)">
-                  <i class="ft-list"></i>
+                  <span class="popover-icon"> <i class="ft-list"></i> </span>
+                  Approval History
                 </button>
 
                 <!-- If PR is completed, show active button -->
-                <button *ngIf="row.requestStatus === 'Completed'; else waitingTemplate" class="btn btn-light btn-sm m-1"
+                <button *ngIf="row.requestStatus === 'Completed'; else waitingTemplate" class="btn popover-btn btn-sm m-1"
                   ngbTooltip="Generate RFQ" (click)="generateRfq(row)">
-                  <i class="ft-file-text"></i>
+                  <span class="popover-icon"> <i class="ft-file-text"></i></span>
+                  
+                  Generate
                 </button>
 
                 <!-- Template for PRs not completed -->
                 <ng-template #waitingTemplate>
-                  <button class="btn btn-light btn-sm m-1" disabled
+                  <button class="btn popover-btn btn-sm m-1" disabled
                     ngbTooltip="RFQ can only be generated when PR is Completed.">
-                    <i class="ft-file-text" style="opacity: 0.5;"></i>
+                    <span class="popover-icon"> <i class="ft-file-text" style="opacity: 0.5;"></i> </span>
+                     Generate
                   </button>
+                 
                 </ng-template>
 
                 <!-- Select Final Vendor Button -->
                 <button *ngIf="row.requestStatus === 'Completed'; else selectVendorDisabled"
-                  class="btn btn-light btn-sm m-1" ngbTooltip="Select Final Vendor" (click)="selectFinalVendor(row)">
-                  <i class="ft-user-check"></i>
+                  class="btn popover-btn btn-sm m-1" ngbTooltip="Select Final Vendor" (click)="selectFinalVendor(row)">
+                       <span class="popover-icon"><i class="ft-user-check"></i> </span>
+                  Select Final Vendor
                 </button>
 
                 <ng-template #selectVendorDisabled>
-                  <button class="btn btn-light btn-sm m-1" disabled
+                  <button class="btn popover-btn  btn-sm m-1" disabled
                     ngbTooltip="Final Vendor can only be selected when PR is Completed.">
-                    <i class="ft-user-check" style="opacity: 0.5;"></i>
+                    <span class="popover-icon"><i class="ft-user-check" style="opacity: 0.5;"></i></span>
+                     Select Final Vendor
                   </button>
                 </ng-template>
 
                 <button *ngIf="row.requestStatus === 'Completed'; else poWaitingTemplate"
-                  class="btn btn-light btn-sm m-1" ngbTooltip="Create Purchase Order" (click)="openCreatePoModal(row)">
-                  <i class="ft-shopping-cart"></i>
+                  class="btn popover-btn btn-sm m-1" ngbTooltip="Create Purchase Order" (click)="openCreatePoModal(row)">
+                 <span class="popover-icon"> <i class="ft-shopping-cart"></i> </span>
+                  Create Purchase Order
                 </button>
 
                 <ng-template #poWaitingTemplate>
-                  <button class="btn btn-light btn-sm m-1" disabled
+                  <button class="btn popover-btn btn-sm m-1" disabled
                     ngbTooltip="PO can only be created when PR is Completed.">
-                    <i class="ft-shopping-cart" style="opacity: 0.5;"></i>
+                    <span class="popover-icon"><i class="ft-shopping-cart" style="opacity: 0.5;"></i> </span>
+                            Create Purchase Order
                   </button>
                 </ng-template>
               </div>

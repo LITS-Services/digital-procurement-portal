@@ -86,13 +86,34 @@
 }
 
 ::ng-deep .action-popover {
-  padding: 0.5rem;
+  //padding: 0.5rem;
   border-radius: 8px;
   min-width: auto;
 }
 
 ::ng-deep .action-popover .btn {
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  //border-radius: 50%;
+  margin: 4px 0px !important;
+  width: 100%;
+  height: 100%;
+}
+
+.popover-btn{
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 8px;
+}
+
+.popover-icon{
+    background: #efefef;
+    padding: 0px 8px;
+    border-radius: 6px;
+    color: black;
+    font-weight: 600;
+}
+
+::ng-deep .action-popover .popover-body{
+    padding: 0.4rem 0rem;
+    color: #342E49;
 }

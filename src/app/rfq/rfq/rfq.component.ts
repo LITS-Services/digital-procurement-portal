@@ -20,7 +20,6 @@ import { LookupService } from 'app/shared/services/lookup.service';
 })
 
 export class RfqComponent implements OnInit {
-  @ViewChild(DatatableComponent) table!: DatatableComponent;
 
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
@@ -94,24 +93,6 @@ export class RfqComponent implements OnInit {
     
   }
 
-    ngAfterViewInit(): void {
-    setTimeout(() => {
-       this.table.recalculate()
-       window.dispatchEvent(new Event('resize'));
-
-    }, 150);
-  }
-
-
-
-  @HostListener('window:resize')
-  onWinResize() {
-    clearTimeout(this._resizeT);
-    this._resizeT = setTimeout(() => {
-      if (!this.table) return;
-      this.table.recalculate();
-    }, 1000);
-    }
 
     toggleFilterBar() {
     this.showFilterBar = !this.showFilterBar;

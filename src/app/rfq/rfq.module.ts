@@ -25,6 +25,7 @@ import { RfqRemarksComponent } from './rfq-remarks/rfq-remarks.component';
 import { RfqApprovalHistoryComponent } from './rfq-approval-history/rfq-approval-history.component';
 import { AgmCoreModule } from "@agm/core";
 import { SelectedVendorsModalComponent } from './new-rfq/selected-vendors-modal/selected-vendors-modal.component';
+import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
 
 
 @NgModule({
@@ -59,7 +60,8 @@ import { SelectedVendorsModalComponent } from './new-rfq/selected-vendors-modal/
     NgbDatepickerModule,
     ToastrModule.forRoot(),
     NgxSpinnerModule,
-    AgmCoreModule
+    AgmCoreModule,
+    AutoResizeDatatableDirective
 ]
 })
 export class RFQModule { }

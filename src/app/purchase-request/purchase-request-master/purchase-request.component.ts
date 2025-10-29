@@ -40,13 +40,13 @@ export class PurchaseRequestComponent implements OnInit {
   totalPages = 0;
   totalItems = 0;
 
-     query: PRQuery = {
-      currentPage: 1,
-      pageSize: 10,
-      status: null,
-      userId: null,
-      prNo: null
-    };
+  query: PRQuery = {
+  currentPage: 1,
+  pageSize: 10,
+  status: null,
+  userId: null,
+  prNo: null
+  };
 
   showFilterBar = false;
   selectedStatusLabel = 'All';

@@ -21,6 +21,8 @@ import { PurchaseRequestApprovalComponent } from './purchase-request-approval/pu
 import { NewPurchaseRequestComponent } from './new-purchase-request/new-purchase-request.component';
 import { PurchaseRequestRemarksComponent } from './purchase-request-remarks/purchase-request-remarks.component';
 import { PrApprovalHistoryComponent } from './pr-approval-history/pr-approval-history.component';
+import { SharedModule } from 'app/shared/shared.module';
+import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
 
 
 @NgModule({
@@ -45,6 +47,7 @@ import { PrApprovalHistoryComponent } from './pr-approval-history/pr-approval-hi
     NgbDatepickerModule,
     ToastrModule.forRoot(),
     NgxSpinnerModule,
+    AutoResizeDatatableDirective,
 
   ],
   declarations: [
