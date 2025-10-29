@@ -24,6 +24,7 @@ import { EmailSetupComponent } from './email-setup/email-setup.component';
 import { CreateInvitationComponent } from './create-invitation/create-invitation.component';
 import { EmailTemplateListComponent } from './email-template-list/email-template-list.component';
 import { CreatEmailTemplateComponent } from './creat-email-template/creat-email-template.component';
+import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
 
 
 @NgModule({
@@ -59,6 +60,7 @@ import { CreatEmailTemplateComponent } from './creat-email-template/creat-email-
         NgbDatepickerModule,
         ToastrModule.forRoot() ,
         NgxSpinnerModule,
+        AutoResizeDatatableDirective
   ]
 })
 export class SetupModule { }

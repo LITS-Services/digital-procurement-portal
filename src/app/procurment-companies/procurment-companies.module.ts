@@ -18,6 +18,7 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { ProcurmentCompaniesEditComponent } from './procurment-companies-edit/procurment-companies-edit.component';
+import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
 
 
 @NgModule({
@@ -46,6 +47,7 @@ import { ProcurmentCompaniesEditComponent } from './procurment-companies-edit/pr
         NgbDatepickerModule,
         ToastrModule.forRoot(),
         NgxSpinnerModule,
+        AutoResizeDatatableDirective
   ]
 })
 export class ProcurmentCompaniesModule { }

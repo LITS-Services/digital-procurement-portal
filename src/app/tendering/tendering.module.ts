@@ -17,6 +17,7 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { NewTenderingRequestComponent } from './new-tendering-request/new-tendering-request.component';
+import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
 
 
 @NgModule({
@@ -44,6 +45,7 @@ import { NewTenderingRequestComponent } from './new-tendering-request/new-tender
     NgbDatepickerModule,
     ToastrModule.forRoot() ,
     NgxSpinnerModule,
+    AutoResizeDatatableDirective
   ]
 })
 export class TenderingModule { }

@@ -291,7 +291,7 @@ export class RfqComponent implements OnInit {
     console.log('Navigating to update ID:', selectedId);
 
     this.router.navigate(['/rfq/new-rfq'], {
-      queryParams: { id: selectedId }
+      queryParams: { id: selectedId }, skipLocationChange: true
     });
   }
 

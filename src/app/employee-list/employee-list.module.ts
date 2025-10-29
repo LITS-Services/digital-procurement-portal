@@ -18,6 +18,7 @@ import { TagInputModule } from 'ngx-chips';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
             NgbDatepickerModule,
             ToastrModule.forRoot(),
             NgxSpinnerModule,
-      
+            AutoResizeDatatableDirective
   ]
 })
 export class EmployeeListModule { }

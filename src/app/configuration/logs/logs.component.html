@@ -19,7 +19,7 @@
   <div class="col-12">
 
     <!-- Exception Logs Table -->
-    <ngx-datatable *ngIf="selectedTab === 'exception'" class="bootstrap core-bootstrap" [rows]="logsData"
+    <ngx-datatable autoResize *ngIf="selectedTab === 'exception'" class="bootstrap core-bootstrap" [rows]="logsData"
       [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="pageSize"
       [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
       [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected"
@@ -50,7 +50,7 @@
     </ngx-datatable>
 
     <!-- Audit Trails Table -->
-    <ngx-datatable *ngIf="selectedTab === 'audit-trails'" class="bootstrap core-bootstrap" [rows]="logsData"
+    <ngx-datatable autoResize *ngIf="selectedTab === 'audit-trails'" class="bootstrap core-bootstrap" [rows]="logsData"
       [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="pageSize"
       [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
       [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected"

@@ -6,6 +6,7 @@ import { NgxDatatableModule } from "@swimlane/ngx-datatable";
 import { NewGlobalConfigurationComponent } from './new-global-configuration/new-global-configuration.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LogsComponent } from './logs/logs.component';
+import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import { LogsComponent } from './logs/logs.component';
     CommonModule,
     ConfigurationRoutingModule,
     NgxDatatableModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    AutoResizeDatatableDirective
 ]
 })
 export class ConfigurationModule { }

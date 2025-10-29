@@ -42,7 +42,7 @@
       </div>
 
       <!-- Content -->
-      <ngx-datatable class="bootstrap core-bootstrap" [rows]="tenderingData" [columnMode]="'force'" [headerHeight]="50"
+      <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="tenderingData" [columnMode]="'force'" [headerHeight]="50"
         [footerHeight]="50" [rowHeight]="'auto'" [selectionType]="SelectionType.checkbox" [selected]="chkBoxSelected"
         (select)="customChkboxOnSelect($event)">
         <!-- Checkbox Column -->
