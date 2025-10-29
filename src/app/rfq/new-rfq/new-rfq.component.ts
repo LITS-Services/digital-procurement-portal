@@ -217,8 +217,6 @@ export class NewRfqComponent implements OnInit {
         } else {
           this.quotationVendorUsers = []; // fallback
         }
-
-        console.log("Vendors & Companies:", this.quotationVendorUsers);
       },
       error: (err) => {
         console.error("Error fetching vendors & companies", err);
@@ -231,7 +229,6 @@ export class NewRfqComponent implements OnInit {
     this.lookupService.getAllUnitsOfMeasurement().subscribe({
       next: (res) => {
         this.unitsOfMeasurementList = res ?? [];
-        console.log('UoM dropdown data:', this.unitsOfMeasurementList);
       },
       error: (err) => {
         console.error('Failed to load UoM dropdown:', err);
@@ -243,7 +240,6 @@ export class NewRfqComponent implements OnInit {
     this.lookupService.getAllAccounts().subscribe({
       next: (res) => {
         this.accountList = res ?? [];
-        console.log('Account dropdown data:', this.accountList);
       },
       error: (err) => {
         console.error('Failed to load Account dropdown:', err);
@@ -255,7 +251,6 @@ export class NewRfqComponent implements OnInit {
     this.lookupService.getAllItems().subscribe({
       next: (res) => {
         this.itemList = res ?? [];
-        console.log('Item dropdown data:', this.itemList);
       },
       error: (err) => {
         console.error('Failed to load items dropdown:', err);
@@ -347,14 +342,14 @@ export class NewRfqComponent implements OnInit {
         });
 
         // Map PR items → RFQ items, only include items not already used
-      const unusedItems = pr.purchaseItems?.filter((item: any) => !item.usedInRfq) || [];
+        const unusedItems = pr.purchaseItems?.filter((item: any) => !item.usedInRfq) || [];
 
-      this.hasUnusedItems = unusedItems.length > 0; // <--- flag
+        this.hasUnusedItems = unusedItems.length > 0; // <--- flag
 
-      if (!this.hasUnusedItems) {
-        this.toastr.info('All items from this PR have already been used in previous RFQ(s).');
-        return;
-      }
+        if (!this.hasUnusedItems) {
+          this.toastr.info('All items from this PR have already been used in previous RFQ(s).');
+          return;
+        }
         //  Map PR items → RFQ items
         this.newQuotationItemData = pr.purchaseItems?.map((item: any) => ({
           id: null,
@@ -389,7 +384,7 @@ export class NewRfqComponent implements OnInit {
         }));
         //  Refresh datatable
         this.newQuotationItemData = [...this.newQuotationItemData];
-        
+
       },
       error: (err) => {
         console.error('Error loading PR', err);
@@ -402,7 +397,6 @@ export class NewRfqComponent implements OnInit {
 
     this.rfqService.getQuotationById(id).subscribe({
       next: async (data) => {
-
         // unwrap the Ardalis.Result<T> wrapper
         const requestData = data;
 
@@ -412,7 +406,6 @@ export class NewRfqComponent implements OnInit {
         this.currentQuotationId = requestData.id;
         this.currentRfqNo = requestData.rfqNo;
         this.selectedVendorsData = requestData.selectedVendors || [];
-        console.log("selectedVendorsData", this.selectedVendorsData);
 
         //  patch values with formatted dates
         this.newRfqForm.patchValue({
@@ -422,6 +415,7 @@ export class NewRfqComponent implements OnInit {
           endDate: this.toDateInputValue(requestData.endDate),
         });
 
+        //  this.newQuotationItemData = requestData.quotationItems || [];
         if (requestData.requestStatus) {
           this.newRfqForm.patchValue({
             status: requestData.requestStatus
@@ -522,10 +516,10 @@ export class NewRfqComponent implements OnInit {
 
     //  Only apply selection logic if this RFQ was opened from a Purchase Request
     if (this.purchaseRequestId) {
-        if (this.allItemsUsedForRFQ()) {
-    this.toastr.info('All items from this Purchase Request have already been used in RFQs. Cannot generate a new RFQ.');
-    return; // Stop execution
-  }
+      if (this.allItemsUsedForRFQ()) {
+        this.toastr.info('All items from this Purchase Request have already been used in RFQs. Cannot generate a new RFQ.');
+        return; // Stop execution
+      }
 
       const selectedItems = (this.newQuotationItemData || []).filter(i => i.selected);
       if (selectedItems.length === 0) {
@@ -595,7 +589,7 @@ export class NewRfqComponent implements OnInit {
       })) || [];
     }
 
-    // ✅ Common payload & service calls remain unchanged
+    // Common payload & service calls remain unchanged
     const payload = {
       rfqNo: f.rfqNo,
       purchaseRequestNo: f.purchaseRequestNo,
@@ -613,11 +607,6 @@ export class NewRfqComponent implements OnInit {
       quotationItems
     };
 
-    // if (this.currentQuotationId) {
-    //   this.rfqService.updateQuotation(this.currentQuotationId, { quotationRequest: payload }).subscribe(...);
-    // } else {
-    //   this.rfqService.createQuotation({ quotationRequest: payload, isDraft: false }).subscribe(...);
-    // }
     if (this.currentQuotationId) {
       this.rfqService.updateQuotation(this.currentQuotationId, { quotationRequest: payload }).subscribe({
         next: res => {
@@ -778,72 +767,6 @@ export class NewRfqComponent implements OnInit {
     });
   }
 
-
-  // insertItem(): void {
-  //   const newItem = this.itemForm.value;
-
-  //   // Normalize IDs
-  //   const newItemId = Number(newItem.itemId);
-
-  //   //   const itemType = newItem.itemType;
-  //   //  //  Only check for itemId if the user selected "Inventory"
-  //   //   if (itemType === 'Inventory' && (!newItemId || newItemId === 0)) {
-  //   //     this.toastr.warning('Please select an item before adding.');
-  //   //     return;
-  //   //   }
-
-  //   //   //  For Non-Inventory, ensure description is filled (optional but recommended)
-  //   //   if (itemType === 'Non-Inventory' && !newItem.itemDescription?.trim()) {
-  //   //     this.toastr.warning('Please enter an item description before adding.');
-  //   //     return;
-  //   //   }
-
-  //   // Check for duplicate (only if not editing)
-  //   if (this.editingRowIndex === null) {
-  //     const duplicate = this.newQuotationItemData.some(
-  //       item => Number(item.itemId) === newItemId
-  //     );
-
-  //     if (duplicate) {
-  //       this.toastr.warning('This item is already added. You can update it instead.');
-  //       return;
-  //     }
-  //   }
-
-  //   if (this.editingRowIndex !== null) {
-  //     // --- Update existing item ---
-  //     const existing = this.newQuotationItemData[this.editingRowIndex];
-  //     const merged = {
-  //       ...existing,
-  //       ...newItem,
-  //       itemId: newItemId,
-  //       attachments: existing?.attachments ?? []
-  //     };
-
-  //     this.newQuotationItemData = this.newQuotationItemData.map((item, index) =>
-  //       index === this.editingRowIndex ? merged : item
-  //     );
-
-  //     this.toastr.success('Item updated successfully!');
-  //     this.editingRowIndex = null;
-  //   } else {
-  //     // --- Add new item ---
-  //     const withEmptyAttachments = {
-  //       ...newItem,
-  //       itemId: newItemId,
-  //       attachments: newItem.attachments?.length ? newItem.attachments : []
-  //     };
-  //     this.newQuotationItemData = [...this.newQuotationItemData, withEmptyAttachments];
-  //     this.toastr.success('Item added successfully!');
-  //   }
-
-  //   // Reset form
-  //   this.itemForm.reset({
-  //     amount: 0,
-  //     unitCost: 0,
-  //     orderQuantity: 1
-  //   });
-  // }
   deleteRow(rowIndex: number): void {
     Swal.fire({
       title: 'Are you sure?',
@@ -908,20 +831,20 @@ export class NewRfqComponent implements OnInit {
     }).catch(() => { });
   }
 
-editVendorRow(row: any): void {
-  const modalRef = this.modalService.open(SelectedVendorsModalComponent, {
-    backdrop: "static",
-    size: "lg",
-    centered: true,
-  });
+  editVendorRow(row: any): void {
+    const modalRef = this.modalService.open(SelectedVendorsModalComponent, {
+      backdrop: "static",
+      size: "lg",
+      centered: true,
+    });
 
-  modalRef.componentInstance.viewMode = this.viewMode;
+    modalRef.componentInstance.viewMode = this.viewMode;
 
-  modalRef.componentInstance.vendorId = row.vendorId ?? row.vendorID;
-  modalRef.componentInstance.vendorName = row.vendorName ?? row.vendor;
-  modalRef.componentInstance.vendorCompanyId = row.vendorCompanyId;
-  modalRef.componentInstance.quotationId = this.currentQuotationId ?? 0;
-}
+    modalRef.componentInstance.vendorId = row.vendorId ?? row.vendorID;
+    modalRef.componentInstance.vendorName = row.vendorName ?? row.vendor;
+    modalRef.componentInstance.vendorCompanyId = row.vendorCompanyId;
+    modalRef.componentInstance.quotationId = this.currentQuotationId ?? 0;
+  }
 
   private handleDraftSuccess() {
     this.loading = false;
@@ -1017,11 +940,11 @@ editVendorRow(row: any): void {
   }
 
   private allItemsUsedForRFQ(): boolean {
-  // newQuotationItemData has all items from PR
-  if (!this.newQuotationItemData || this.newQuotationItemData.length === 0) return true;
+    // newQuotationItemData has all items from PR
+    if (!this.newQuotationItemData || this.newQuotationItemData.length === 0) return true;
 
-  // Check if all items already have a quotationRequestId (already part of RFQ)
-  return this.newQuotationItemData.every(item => item.quotationRequestId && item.quotationRequestId > 0);
-}
+    // Check if all items already have a quotationRequestId (already part of RFQ)
+    return this.newQuotationItemData.every(item => item.quotationRequestId && item.quotationRequestId > 0);
+  }
 
 }

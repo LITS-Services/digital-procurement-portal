@@ -188,7 +188,7 @@
 
           </form>
 
-          <ngb-accordion   *ngIf="!viewMode" #accordion="ngbAccordion" class="mb-2 items-acc" activeIds="ngb-panel-0">
+          <ngb-accordion    #accordion="ngbAccordion" class="mb-2 items-acc" activeIds="ngb-panel-0">
             <ngb-panel id="ngb-panel-0">
               <ng-template ngbPanelTitle>
                 <div class="row">
@@ -198,7 +198,7 @@
                 </div>
               </ng-template>
               <ng-template *ngIf="hasUnusedItems" ngbPanelContent>
-                <div class="card-accordion">
+                <div *ngIf="!viewMode" class="card-accordion">
                   <div class="form-row position-relative" [formGroup]="itemForm">
 
                     <button [disabled]="viewMode" (click)="insertItem()" class="btn btn-primary position-absolute"
