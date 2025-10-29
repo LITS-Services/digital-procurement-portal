@@ -62,38 +62,38 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    tinymce.init({
-      selector: '#emailEditor',
-      height: 500,
-      setup: (editor: any) => {
-        const updateForm = () => this.invitationForm.patchValue({ body: editor.getContent() });
-        editor.on('change', updateForm);
-        editor.on('keyup', updateForm);
-        editor.on('paste', updateForm);
-        editor.on('undo', updateForm);
-        editor.on('redo', updateForm);
-      },
-      menubar: true,
-      plugins: [
-        'advlist autolink lists link image charmap preview anchor',
-        'searchreplace visualblocks code fullscreen insertdatetime media',
-        'table emoticons help wordcount autosave directionality visualchars',
-        'codesample pagebreak quickbars nonbreaking template'
-      ],
-      toolbar: [
-        'undo redo | blocks | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify',
-        'bullist numlist outdent indent | link image media table emoticons codesample | removeformat',
-        'ltr rtl | pagebreak | preview fullscreen | code help'
-      ].join(' | '),
-      toolbar_mode: 'sliding',
-      quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote',
-      contextmenu: 'link image table spellchecker',
-      autosave_ask_before_unload: true,
-      autosave_interval: '30s',
-      image_advtab: true,
-      content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px; padding:10px; }'
-    });
-  }
+  tinymce.init({
+    selector: '#emailEditor',
+    height: 500,
+    menubar: true, // Show all menus
+    branding: false,
+    plugins: [
+      'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor',
+      'searchreplace', 'visualblocks', 'code', 'fullscreen', 'insertdatetime', 'media',
+      'table', 'emoticons', 'help', 'wordcount', 'autosave', 'directionality', 'visualchars',
+      'codesample', 'pagebreak', 'quickbars', 'nonbreaking', 'template'
+    ],
+    toolbar: [
+      'undo redo | blocks | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify',
+      'bullist numlist outdent indent | link image media table emoticons codesample | removeformat',
+      'ltr rtl | pagebreak | preview fullscreen | code help'
+    ].join(' | '),
+    toolbar_mode: 'sliding',
+    quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote',
+    contextmenu: 'link image table spellchecker',
+    autosave_ask_before_unload: true,
+    autosave_interval: '30s',
+    image_advtab: true,
+    content_style: `
+      body {
+        font-family:Helvetica,Arial,sans-serif;
+        font-size:14px;
+        padding:10px;
+      }
+    `
+  });
+}
+
 
   get f() { return this.invitationForm.controls; }
 

@@ -74,6 +74,10 @@ set refreshToken(token: string | null) {
   verifyOtp(otp: string): Observable<string> {
     return this.http.post(`${this.baseUrl}/Auth/VerifyProcurementOtp`, { otp }, { responseType: 'text' });
   }
+  
+  resetPassword(payload: any) {
+    return this.http.post(`${environment.apiUrl}/ProcurementUsers/ChangePassword/`, payload);
+  }
 
   // ===== Sign In =====
   signinUser(username: string, password: string): Observable<any> {
