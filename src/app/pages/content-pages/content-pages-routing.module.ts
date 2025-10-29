@@ -8,65 +8,89 @@ import { LockScreenPageComponent } from "./lock-screen/lock-screen-page.componen
 import { LoginPageComponent } from "./login/login-page.component";
 import { MaintenancePageComponent } from "./maintenance/maintenance-page.component";
 import { RegisterPageComponent } from "./register/register-page.component";
+import { MainLayoutComponent } from './main-layout/main-layout.component';
 
 
 const routes: Routes = [
+  // {
+  //   path: '',
+  //   children: [
+  //     {
+  //       path: 'comingsoon',
+  //       component: ComingSoonPageComponent,
+  //       data: {
+  //         title: 'Coming Soon page'
+  //       }
+  //     },
+  //     {
+  //       path: 'error',
+  //       component: ErrorPageComponent,
+  //       data: {
+  //         title: 'Error Page'
+  //       }
+  //     },
+  //     // {
+  //     //   path: 'forgotpassword',
+  //     //   component: ForgotPasswordPageComponent,
+  //     //   data: {
+  //     //     title: 'Forgot Password Page'
+  //     //   }
+  //     // },   
+      
+  //     {
+  //       path: 'lockscreen',
+  //       component: LockScreenPageComponent,
+  //       data: {
+  //         title: 'Lock Screen page'
+  //       }
+  //     },   
+  //     // {
+  //     //   path: 'login',
+  //     //   component: LoginPageComponent,
+  //     //   data: {
+  //     //     title: 'Login Page'
+  //     //   }
+  //     // },
+  //     {
+  //       path: 'maintenance',
+  //       component: MaintenancePageComponent,
+  //       data: {
+  //         title: 'Maintenance Page'
+  //       }
+  //     },
+  //     {
+  //       path: 'register',
+  //       component: RegisterPageComponent,
+  //       data: {
+  //         title: 'Register Page'
+  //       }
+  //     }   
+      
+  //   ]
+  // },
   {
     path: '',
+    component: MainLayoutComponent,
     children: [
       {
-        path: 'comingsoon',
-        component: ComingSoonPageComponent,
-        data: {
-          title: 'Coming Soon page'
-        }
-      },
-      {
-        path: 'error',
-        component: ErrorPageComponent,
-        data: {
-          title: 'Error Page'
-        }
+        path: 'login',
+        component: LoginPageComponent,
+        data: { title: 'Login Page' }
       },
       {
         path: 'forgotpassword',
         component: ForgotPasswordPageComponent,
-        data: {
-          title: 'Forgot Password Page'
-        }
-      },   
-      
-      {
-        path: 'lockscreen',
-        component: LockScreenPageComponent,
-        data: {
-          title: 'Lock Screen page'
-        }
-      },   
-      {
-        path: 'login',
-        component: LoginPageComponent,
-        data: {
-          title: 'Login Page'
-        }
-      },
-      {
-        path: 'maintenance',
-        component: MaintenancePageComponent,
-        data: {
-          title: 'Maintenance Page'
-        }
+        data: { title: 'Forgot Password Page' }
       },
       {
         path: 'register',
         component: RegisterPageComponent,
-        data: {
-          title: 'Register Page'
-        }
-      }   
-      
+        data: { title: 'Register Page' }
+      },
+      // Add other auth-related routes if needed
     ]
-  }
+  },
+
 ];
 
 @NgModule({

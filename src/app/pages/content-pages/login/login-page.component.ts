@@ -31,13 +31,13 @@ export class LoginPageComponent {
     public toastr: ToastrService
   ) { }
 
-  ngOnInit() { 
-       const msg = sessionStorage.getItem('authFlash');
-            if (msg) {
-                sessionStorage.removeItem('authFlash');
-                this.toastr.warning(msg, 'Session expired', { timeOut: 10000 });
-            }
-        
+  ngOnInit() {
+    const msg = sessionStorage.getItem('authFlash');
+    if (msg) {
+      sessionStorage.removeItem('authFlash');
+      this.toastr.warning(msg, 'Session expired', { timeOut: 10000 });
+    }
+
   }
 
   get lf() {
@@ -73,9 +73,9 @@ export class LoginPageComponent {
         localStorage.setItem('userName', res.userName || '');
 
         // Save roles
-    const roles = res?.roles || [];
-const role = roles.length > 0 ? roles[0] : '';
-localStorage.setItem('role', role);
+        const roles = res?.roles || [];
+        const role = roles.length > 0 ? roles[0] : '';
+        localStorage.setItem('role', role);
 
 
 
@@ -105,7 +105,7 @@ localStorage.setItem('role', role);
     );
   }
 
-   togglePasswordVisibility() {
+  togglePasswordVisibility() {
     this.hidePassword = !this.hidePassword;
   }
   rememberMe() {
@@ -113,7 +113,7 @@ localStorage.setItem('role', role);
   }
 
   forgotpassword() {
-    // implement if needed
+    this.router.navigate(['forgotpassword'], { relativeTo: this.route.parent });
   }
 
   SSO(event: Event) {
