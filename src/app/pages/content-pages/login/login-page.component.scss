@@ -216,6 +216,22 @@
   position: relative !important;
 }
 
+.fp {
+  position: relative;
+  z-index: 10; /* make sure it’s above anything else */
+  cursor: pointer;
+}
+
+.fp.link {
+  color: #007bff; /* or your theme color */
+  text-decoration: underline;
+}
+
+.fp.link:hover {
+  color: #0056b3;
+  text-decoration: none;
+}
+
 ::ng-deep .was-validated .form-control:valid, .form-control.is-valid {
   background-position: right calc(0.375em + 1.1875rem) center !important;
 }
