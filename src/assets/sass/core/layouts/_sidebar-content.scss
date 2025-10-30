@@ -48,7 +48,7 @@
   top: 0;
   height: 100%;
   overflow: hidden;
-  min-height: calc(100vh - 3.98rem);
+  min-height: calc(100vh - 5.98rem);
 
   .content-header {
     font-weight: 500;
@@ -585,7 +585,7 @@ body {
     position: relative;
     -webkit-transition: all 0.3s ease;
     transition: all 0.3s ease;
-    min-height: calc((var(--vh, 1vh) * 100) - 7.39rem);
+    min-height: calc((var(--vh, 1vh) * 100) - 9.39rem);
   }
 
   div {
