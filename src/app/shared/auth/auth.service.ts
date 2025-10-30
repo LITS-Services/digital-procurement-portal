@@ -65,17 +65,30 @@ set refreshToken(token: string | null) {
   initiateSSOLogin(returnUrl: string = '/dashboard/dashboard1'): Observable<any> {
     return this.http.get(`${this.baseUrl}/Auth/sso/login-url?returnUrl=${encodeURIComponent(returnUrl)}`);
   }
+// =======ForgotPassword====
+
+forgetPassword(email: string): Observable<any> {
+  return this.http.post(`${environment.apiUrl}/Auth/ProcurementForgotPassword`, { email });
+}
+
+// ResetPassword(payload: any): Observable<any> {
+//   return this.http.post<any>(`${environment.apiUrl}/Auth/VendorResetPassword`, payload);
+// }
 
   // ===== OTP =====
   resendOtp(username: string, portalType: string): Observable<string> {
     return this.http.post(`${this.baseUrl}/Auth/ResendOtp`, { username, portalType }, { responseType: 'text' });
   }
 
-  verifyOtp(otp: string): Observable<string> {
-    return this.http.post(`${this.baseUrl}/Auth/VerifyProcurementOtp`, { otp }, { responseType: 'text' });
+  verifyOtp(email: string, otp: string, resetOtp: boolean = true): Observable<string> {
+    const payload = { email, otp: Number(otp), resetOtp };
+    return this.http.post(`${this.baseUrl}/Auth/VerifyProcurementOtp`, payload, { responseType: 'text' });
   }
+
+
+
   
-  resetPassword(payload: any) {
+  ResetPassword(payload: any) {
     return this.http.post(`${environment.apiUrl}/ProcurementUsers/ChangePassword/`, payload);
   }
 

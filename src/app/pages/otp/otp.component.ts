@@ -62,25 +62,25 @@ export class OtpComponent implements OnInit {
 
   this.spinner.show();
 
-  this.authService.verifyOtp(this.otpForm.value.otp).subscribe({
-    next: (res: string) => {
-      this.spinner.hide();
+  // this.authService.verifyOtp(this.otpForm.value.otp).subscribe({
+  //   next: (res: string) => {
+  //     this.spinner.hide();
 
-      if (res.toLowerCase().includes('verified') || res.toLowerCase().includes('completed')) {
-        this.toastr.success(res);
-        this.router.navigate(['/dashboard/dashboard1']);
-      } else {
-        this.isOtpFailed = true;
-        this.toastr.error(res || 'Invalid or Expired OTP ❌');
-      }
-    },
-    error: (err: any) => {
-      this.spinner.hide();
-      this.isOtpFailed = true;
-      this.toastr.error('Invalid or Expired OTP ❌');
-      console.error('OTP verification failed:', err);
-    }
-  });
+  //     if (res.toLowerCase().includes('verified') || res.toLowerCase().includes('completed')) {
+  //       this.toastr.success(res);
+  //       this.router.navigate(['/dashboard/dashboard1']);
+  //     } else {
+  //       this.isOtpFailed = true;
+  //       this.toastr.error(res || 'Invalid or Expired OTP ❌');
+  //     }
+  //   },
+  //   error: (err: any) => {
+  //     this.spinner.hide();
+  //     this.isOtpFailed = true;
+  //     this.toastr.error('Invalid or Expired OTP ❌');
+  //     console.error('OTP verification failed:', err);
+  //   }
+  // });
 }
 
 
