@@ -14,7 +14,6 @@ import { AccountSettingsComponent } from './account-settings/account-settings.co
 import { UsersListComponent } from './users/users-list/users-list.component';
 import { UsersViewComponent } from './users/users-view/users-view.component';
 import { UsersEditComponent } from './users/users-edit/users-edit.component';
-import { OtpComponent } from '../otp/otp.component';
 
 const routes: Routes = [
   {
