@@ -26,29 +26,18 @@
               <label class="ml-1 mt-1">Edit User</label>
             </button>
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="registerUser()">
-  <i class="ft-user-plus"></i>
-  <label class="ml-1 mt-1">Register User</label>
-</button>
+              <i class="ft-user-plus"></i>
+              <label class="ml-1 mt-1">Register User</label>
+            </button>
           </div>
         </div>
       </div>
 
       <!-- Table -->
-      <ngx-datatable autoResize class="bootstrap core-bootstrap"
-        [rows]="tenderingData"
-        [columnMode]="'force'"
-        [headerHeight]="50"
-        [footerHeight]="50"
-        [columns]="columns"
-        [rowHeight]="'auto'"
-        [limit]="15"
-        [scrollbarH]="true"
-        [loadingIndicator]="loading"
-        [selected]="chkBoxSelected"
-        [swapColumns]="false"
-        [selectionType]="SelectionType.checkbox"
-        (sort)="onSort($event)"
-        (select)="customChkboxOnSelect($event)">
+      <ngx-datatable class="bootstrap core-bootstrap" [rows]="tenderingData" [columnMode]="'force'" [headerHeight]="50"
+        [footerHeight]="50" [rowHeight]="'auto'" [limit]="15" [scrollbarH]="true" [loadingIndicator]="loading"
+        [selected]="chkBoxSelected" [swapColumns]="false" [selectionType]="SelectionType.checkbox"
+        (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 
         <!-- Checkbox Column -->
         <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
@@ -86,14 +75,12 @@
         <ngx-datatable-column name="Phone" prop="phoneNumber" [width]="150"></ngx-datatable-column>
 
         <!-- Status -->
-        <ngx-datatable-column name="Status" prop="status" [width]="120">
+        <ngx-datatable-column name="Status" prop="isDeleted" [width]="120">
           <ng-template let-row="row" ngx-datatable-cell-template>
             <span [ngClass]="row.isDeleted ? 'badge badge-danger' : 'badge badge-success'">
-              {{ row.isDeleted ? 'Inactive' : 'Active' }}
-            </span>
-          </ng-template>
+              {{ row.isDeleted ? 'In Active' : 'Active' }}
+            </span> </ng-template>
         </ngx-datatable-column>
-
       </ngx-datatable>
 
     </div>

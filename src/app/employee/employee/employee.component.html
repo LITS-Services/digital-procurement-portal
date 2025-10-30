@@ -15,7 +15,7 @@
               <i class="ft-arrow-left"></i>
             </button>
             <span class="vl"></span>
-            <button type="submit" class="btn btn-sm cstm-ui-table-btn" form="companyForm">
+            <button (click)="onSubmit()" type="submit" class="btn btn-sm cstm-ui-table-btn" form="companyForm">
               <i class="ft-plus"></i><label class="ml-1 mt-1">Save</label>
             </button>
             <button type="reset" class="btn btn-sm cstm-ui-table-btn" (click)="onReset()">
@@ -27,7 +27,8 @@
 
       <div class="card">
         <div class="card-body">
-          <form [formGroup]="companyForm" id="companyForm" (ngSubmit)="onSubmit()">
+          <!-- (ngSubmit)="onSubmit()" -->
+          <form [formGroup]="companyForm" id="companyForm">
             <div class="form-row">
 
               <!-- Employee dropdown (only in create mode) -->
@@ -117,15 +118,31 @@
               <!-- Status toggle button -->
               <div class="form-group mb-2">
                 <label>Status</label>
-                <div>
+                <!-- <div>
                   <button type="button" class="btn"
                     [ngClass]="companyForm.get('isDeleted')?.value ? 'btn-danger' : 'btn-success'"
                     (click)="toggleStatus()">
                     {{ companyForm.get('isDeleted')?.value ? 'Inactive' : 'Active' }}
                   </button>
+                </div> -->
+                <div>
+                  <div class="checkbox-wrapper-4">
+                    <!-- <input formControlName="isDeleted" class="inp-cbx" id="Active" type="checkbox" /> -->
+                    <input id="Active" type="checkbox" class="inp-cbx" [checked]="!companyForm.get('isDeleted')?.value"
+                      (change)="onActiveChange($event)" />
+                    <label class="cbx" for="Active"><span>
+                        <svg width="12px" height="10px">
+                          <use xlink:href="#check-4"></use>
+                        </svg></span><span>Active</span></label>
+                    <svg class="inline-svg">
+                      <symbol id="check-4" viewbox="0 0 12 10">
+                        <polyline points="1.5 6 4.5 9 10.5 1">
+                        </polyline>
+                      </symbol>
+                    </svg>
+                  </div>
                 </div>
               </div>
-
               <!-- Companies -->
               <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="companies.length">
                 <div class="form-group mb-2">

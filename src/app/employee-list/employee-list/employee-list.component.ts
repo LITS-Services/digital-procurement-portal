@@ -60,11 +60,10 @@ export class EmployeeListComponent implements OnInit {
           userName: u.userName || '-',
           email: u.email || '-',
           phoneNumber: u.phoneNumber || 'N/A',
-          status: u.isDeleted ? 'Deleted' : 'Active',
+          isDeleted: u.isDeleted,
           profilePicture: u.profilePicture || '',    // New field
           emailConfirmed: u.emailConfirmed || false // New field
         }));
-
         this.cdr.detectChanges();
         this.loading = false;
       },

@@ -46,19 +46,35 @@ export class EmployeeComponent implements OnInit {
     this.companyId = this.route.snapshot.queryParamMap.get('id');
     this.isEditMode = !!this.companyId;
 
+    // this.companyForm = this.fb.group({
+    //   employeeId: [null], // optional for create
+    //   name: [{ value: '', disabled: this.isEditMode }, Validators.required],
+    //   email: [{ value: '', disabled: this.isEditMode }, [Validators.required, Validators.email]],
+    //   password: ['', this.isEditMode ? [] : [
+    //     Validators.required,
+    //     Validators.minLength(6),
+    //     Validators.pattern(/^(?=.*[A-Z])(?=.*[!@#$%^&*]).{6,}$/)
+    //   ]],
+    //   confirmPassword: ['', this.isEditMode ? [] : Validators.required],
+    //   roleId: [null, Validators.required],
+    //   isDeleted: [false]
+    // }, { validators: this.passwordMatchValidator });
+
     this.companyForm = this.fb.group({
-      employeeId: [null], // optional for create
+      employeeId: [null],
       name: [{ value: '', disabled: this.isEditMode }, Validators.required],
       email: [{ value: '', disabled: this.isEditMode }, [Validators.required, Validators.email]],
-      password: ['', this.isEditMode ? [] : [
+      password: [{ value: '', disabled: this.isEditMode }, this.isEditMode ? [] : [
         Validators.required,
         Validators.minLength(6),
         Validators.pattern(/^(?=.*[A-Z])(?=.*[!@#$%^&*]).{6,}$/)
       ]],
-      confirmPassword: ['', this.isEditMode ? [] : Validators.required],
+      confirmPassword: [{ value: '', disabled: this.isEditMode }, this.isEditMode ? [] : Validators.required],
+
       roleId: [null, Validators.required],
       isDeleted: [false]
     }, { validators: this.passwordMatchValidator });
+
 
     this.loadRoles();
     this.loadCompanies();
@@ -86,28 +102,33 @@ export class EmployeeComponent implements OnInit {
     });
   }
 
- loadCompanies() {
-  this.companyService.getProCompanies().subscribe({
-    next: (res: any) => {
-      this.companies = res?.result || [];
-      this.cdr.detectChanges();
-    },
-    error: (err) => console.error('Error loading companies:', err)
-  });
-}
+  loadCompanies() {
+    this.companyService.getProCompanies().subscribe({
+      next: (res: any) => {
+        this.companies = res?.result || [];
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error loading companies:', err)
+    });
+  }
 
 
   loadEmployees() {
     this.companyService.getAllEmployees().subscribe({
       next: (res: any) => {
-        this.employees = res?.result || []; // ✅ Fixed: use res.result
+        // this.employees = res?.result || []; // ✅ Fixed: use res.result
+        this.employees = Array.isArray(res.result) ? res.result : res;
+        console.log("employees agaye ", this.employees);
         this.cdr.detectChanges();
+
       },
       error: (err) => console.error('Error loading employees:', err)
     });
   }
 
   loadEmployeeForEdit(id: string) {
+    this.companyForm.patchValue({ isDeleted: false });
+
     this.companyService.getprocurementusersbyid(id).subscribe({
       next: (emp: any) => {
         this.companyForm.patchValue({
@@ -139,6 +160,13 @@ export class EmployeeComponent implements OnInit {
       error: (err) => console.error('Error fetching employee:', err)
     });
   }
+
+  onActiveChange(event: Event) {
+    const checked = (event.target as HTMLInputElement).checked;
+    // If Active is checked => isDeleted should be false
+    this.companyForm.patchValue({ isDeleted: !checked });
+  }
+
 
   onEmployeeSelect(event: Event) {
     const selectedId = (event.target as HTMLSelectElement).value;
@@ -173,14 +201,17 @@ export class EmployeeComponent implements OnInit {
     }
   }
 
-  toggleStatus() {
-    const current = this.companyForm.get('isDeleted')?.value;
-    this.companyForm.patchValue({ isDeleted: !current });
-    this.cdr.detectChanges();
-  }
+  // toggleStatus() {
+  //   const current = this.companyForm.get('isDeleted')?.value;
+  //   this.companyForm.patchValue({ isDeleted: !current });
+  //   this.cdr.detectChanges();
+  // }
 
   onSubmit() {
     this.companyFormSubmitted = true;
+    console.log(this.companyForm.errors, this.companyForm.status, this.companyForm.value);
+    console.log(this.companyForm.getRawValue());
+    console.log(this.companyForm);
 
     if (this.companyForm.invalid) {
       this.toastr.warning('Please fill all required fields correctly.');
@@ -240,6 +271,8 @@ export class EmployeeComponent implements OnInit {
       roleNames: selectedRole ? [selectedRole.name] : [],
       password: formValues.password
     };
+
+    console.log("createpayload", createPayload);
 
     this.companyService.registerEmployee(createPayload).subscribe({
       next: () => {
