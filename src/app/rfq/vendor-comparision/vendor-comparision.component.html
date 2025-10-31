@@ -63,14 +63,14 @@
       </ng-template>
 
       <ng-template ngbPanelContent>
-        <ngx-datatable class="bootstrap core-bootstrap" [rows]="item.vendorComparisonBid" [columnMode]="'standard'"
+        <ngx-datatable class="bootstrap core-bootstrap" [rows]="item.vendorComparisonBid" [columnMode]="'force'"
           [headerHeight]="50" [footerHeight]="40" [rowHeight]="60"
           style="border: 1px solid #dee2e6; border-radius: 6px;">
           <!-- <ngx-datatable-column name="Vendor ID" prop="vendorUserId"></ngx-datatable-column> -->
-          <ngx-datatable-column [minWidth]="40" name="Vendor Name" prop="vendorName"></ngx-datatable-column>
-          <ngx-datatable-column [minWidth]="20" name="Amount" prop="biddingAmount"></ngx-datatable-column>
-          <ngx-datatable-column [minWidth]="20" name="Comment" prop="comment"></ngx-datatable-column>
-          <ngx-datatable-column [minWidth]="20" name="Attachments" [sortable]="false">
+          <ngx-datatable-column  name="Vendor Name" prop="vendorName"></ngx-datatable-column>
+          <ngx-datatable-column  name="Amount" prop="biddingAmount"></ngx-datatable-column>
+          <ngx-datatable-column  name="Comment" prop="comment"></ngx-datatable-column>
+          <ngx-datatable-column  name="Attachments" [sortable]="false">
             <ng-template ngx-datatable-cell-template let-row="row">
               <!-- <button class="btn btn-sm btn-outline-secondary" (click)="openAttachmentsModal(row)">
                 <i class="fa fa-paperclip"></i>
@@ -82,7 +82,7 @@
             </ng-template>
           </ngx-datatable-column>
 
-          <ngx-datatable-column [minWidth]="10" name="Action" [sortable]="false">
+          <ngx-datatable-column  name="Action" [sortable]="false">
             <ng-template ngx-datatable-cell-template let-row="row">
               <button class="btn btn-sm mr-1" (click)="printVendor(row)">
                 <i class="ft-printer"></i>
