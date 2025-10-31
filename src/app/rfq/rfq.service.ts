@@ -4,12 +4,12 @@ import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 
 export interface RFQQuery {
-    currentPage: number,
-    pageSize: number,
-    userId: string | null,
-    status: string | null,
-    rfqNo: string | null
-  }
+  currentPage: number,
+  pageSize: number,
+  userId: string | null,
+  status: string | null,
+  rfqNo: string | null
+}
 
 @Injectable({
   providedIn: 'root'
@@ -20,8 +20,8 @@ export class RfqService {
   private baseUrl = `${environment.apiUrl}/Quotation`;
   constructor(private http: HttpClient) { }
 
-  getAllQuotations( q: {
-    currentPage: number, 
+  getAllQuotations(q: {
+    currentPage: number,
     pageSize: number,
     userId?: string | null,
     status?: string | null,
@@ -30,25 +30,36 @@ export class RfqService {
 
   ): Observable<any> {
 
-      let params = new HttpParams()
+    let params = new HttpParams()
       .set('currentPage', q.currentPage)
       .set('pageSize', q.pageSize);
 
-      if (q.status)   params = params.set('status', q.status);
-      if (q.rfqNo)    params = params.set('rfqNo', q.rfqNo);
-      if (q.userId)   params = params.set('userId', q.userId);
-  
+    if (q.status) params = params.set('status', q.status);
+    if (q.rfqNo) params = params.set('rfqNo', q.rfqNo);
+    if (q.userId) params = params.set('userId', q.userId);
+
 
     return this.http.get<any>(
       `${this.baseUrl}/get-all-quotations`, { params }
     );
   }
 
+  // getQuotationById(id: number): Observable<any> {
+  //   return this.http.get<any>(`${this.baseUrl}/get-quotation-by-id`, {
+  //     params: { id: id.toString() }
+  //   });
+  // }
   getQuotationById(id: number): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/get-quotation-by-id`, {
-      params: { id: id.toString() }
-    });
-  }
+  const params = new HttpParams()
+    .set('id', id)
+    .set('isVendor', false); // procurement always false
+
+  return this.http.get<any>(
+    `${this.baseUrl}/get-quotation-by-id`,
+    { params }
+  );
+}
+
 
   createQuotation(data: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/create-Quotation`, data);
@@ -81,9 +92,9 @@ export class RfqService {
       params: { quotationRequestId: quotationRequestId.toString() }
     });
   }
-    getRFQComments(vendorId: string, quotationId: number, vendorComapnyId: string): Observable<any[]> {
+  getRFQComments(vendorId: string, quotationId: number, vendorComapnyId: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/quotation-request-comment`, {
-      params: { vendorId:vendorId ,quotationId: quotationId, vendorComapnyId: vendorComapnyId }
+      params: { vendorId: vendorId, quotationId: quotationId, vendorComapnyId: vendorComapnyId }
     });
   }
 
@@ -102,11 +113,11 @@ export class RfqService {
   // getVendorsAndCompaniesForRfq(): Observable<any[]> {
   //   return this.http.get<any[]>(`${this.baseUrl}/get-all-vendors-companies-for-rfq`);
   // }
-   getVendorsAndCompaniesForRfq(procurementUserId: string): Observable<any[]> {
+  getVendorsAndCompaniesForRfq(procurementUserId: string): Observable<any[]> {
     return this.http.get<any>(`${this.baseUrl}/get-all-vendors-companies-for-rfq`,
       { params: { procurementUserId } });
-    }
-  
+  }
+
 
   getAllQuotationsByStatus(status: string, currentPage: number, pageSize: number): Observable<any> {
     return this.http.get<any>(
@@ -120,6 +131,10 @@ export class RfqService {
 
   submitForApproval(quotationRequestId: number): Observable<any> {
     return this.http.post(`${this.baseUrl}/submit-for-approval/${quotationRequestId}`, {});
+  }
+
+  rejectOrReviseBid(payload: any) {
+    return this.http.post(`${this.baseUrl}/reject-or-revise-bid`, payload);
   }
 
 }

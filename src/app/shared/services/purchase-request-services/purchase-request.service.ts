@@ -12,12 +12,12 @@ export interface UploadedFile {
 }
 
 export interface PRQuery {
-    currentPage: number,
-    pageSize: number,
-    userId: string | null,
-    status: string | null,
-    prNo: string | null
-  }
+  currentPage: number,
+  pageSize: number,
+  userId: string | null,
+  status: string | null,
+  prNo: string | null
+}
 
 export interface Dropdown {
   $id: string,
@@ -46,15 +46,15 @@ export class PurchaseRequestService {
 
   /** ============== API Calls ============== **/
 
-  getAllPurchaseRequests( q: {
-    currentPage: number, 
+  getAllPurchaseRequests(q: {
+    currentPage: number,
     pageSize: number,
     userId?: string | null,
     status?: string | null,
     prNo?: string | null
   }): Observable<any> {
 
-    
+
     let params = new HttpParams()
       .set("currentPage", q.currentPage)
       .set("pageSize", q.pageSize);
@@ -62,7 +62,7 @@ export class PurchaseRequestService {
     if (q.status) params = params.set("status", q.status);
     if (q.prNo) params = params.set("prNo", q.prNo);
     if (q.userId) params = params.set("userId", q.userId);
-      
+
     return this.http.get<any>(
       `${this.baseUrl}/get-all-purchase-requests`, { params }
     );
@@ -103,4 +103,10 @@ export class PurchaseRequestService {
   submitForApproval(purchaseRequestId: number): Observable<any> {
     return this.http.post(`${this.baseUrl}/submit-for-approval/${purchaseRequestId}`, {});
   }
+
+  getVendorsAndCompanyForFinalSelection(procurementUserId: string) {
+    return this.http.get<any>(`${this.baseUrl}/vendors-and-company-for-final-selection?ProcurementUserId=${procurementUserId}`
+    );
+  }
+
 }

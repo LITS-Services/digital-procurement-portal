@@ -53,15 +53,17 @@ export class RfqAttachmentComponent implements OnInit {
   uploadFiles() {
     if (this.viewMode) return;
 
-    const payload = this.uploadedFiles.filter(a => a.isNew).map(a => ({
-      content: a.content,
-      contentType: a.contentType,
-      fileName: a.fileName,
-      fromForm: a.fromForm,
-      quotationItemId: a.quotationItemId
-    }));
+    // const payload = this.uploadedFiles.filter(a => a.isNew).map(a => ({
+    //   content: a.content,
+    //   contentType: a.contentType,
+    //   fileName: a.fileName,
+    //   fromForm: a.fromForm,
+    //   quotationItemId: a.quotationItemId,
+    //   visibleToVendor: a.visibleToVendor ?? false
+    // }));
+    
 
-    this.activeModal.close(payload);
+    this.activeModal.close([...this.uploadedFiles]);
   }
 
 
@@ -85,6 +87,7 @@ export class RfqAttachmentComponent implements OnInit {
         content: base64,
         fromForm: 'Quotation Item Attachment',
         quotationItemId: quotationItemId,
+        visibleToVendor: false,
         isNew: true
       };
 
@@ -95,6 +98,13 @@ export class RfqAttachmentComponent implements OnInit {
       console.error('Failed to convert file to base64:', error);
     }
   }
+// onVisibilityChange(index: number) {
+//   // If editing an existing attachment, mark it for update
+//   if (!this.uploadedFiles[index].isNew && this.uploadedFiles[index].visibleToVendor
+// ) {
+//     this.uploadedFiles[index].isUpdated = true;
+//   }
+// }
 
   removeFile(index: number) {
     this.uploadedFiles.splice(index, 1);

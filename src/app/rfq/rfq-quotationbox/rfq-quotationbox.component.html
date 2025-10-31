@@ -117,6 +117,7 @@
             </ngx-datatable-column>
             <ngx-datatable-column name="Bid Price" prop="biddingAmount"></ngx-datatable-column>
             <ngx-datatable-column name="Comment" prop="comment"></ngx-datatable-column>
+            <ngx-datatable-column name="Status" prop="bidRequestStatus"></ngx-datatable-column>
         </ngx-datatable>
     </div>
 </div>
@@ -124,8 +125,9 @@
 <div class="modal-footer" *ngIf="isCreateMode">
     <button class="btn btn-secondary" (click)="backToVendors()">Back</button>
     <span class="spacer"></span>
-    <button class="btn btn-danger" (click)="closeDialog()">Reject</button>
-    <button class="btn btn-primary" (click)="closeDialog()">Revise</button>
+    <button class="btn btn-danger" (click)="rejectVendor()">Reject</button>
+    <button class="btn btn-primary" (click)="reviseVendor()">Revise</button>
+
     <span class="spacer"></span>
     <button class="btn btn-primary" (click)="closeDialog()">Submit</button>
 </div>

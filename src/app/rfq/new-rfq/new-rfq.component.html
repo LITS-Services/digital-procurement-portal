@@ -5,7 +5,6 @@
       <!-- Header -->
       <div class="row">
         <div class="col-md-12" style=" margin-top: -0.25rem;">
-          <!-- <h4 class="heading">Create Purchase Request</h4> -->
           <h4 class="heading">
             <ng-container *ngIf="viewMode === false">
               {{ isNewForm ? 'Create Quotation Request' : 'Update Quotation Request' }}
@@ -75,17 +74,12 @@
               <i class="ft-printer"></i><label class="ml-1 mt-1" for="">Print</label>
             </button>
 
-            <!-- <button type="reset" class="btn btn-sm" (click)="openNewEntityModal()">
-              <i class="ft-paperclip"></i><label class="ml-1 mt-1" for="">Attachment</label>
-              <span class="badge badge-primary ml-1">{{ numberOfAttachments }}</span>
-            </button> -->
             <!-- <button type="reset" class="btn btn-sm">
                 <i class="ft-settings"></i><label class="ml-1 mt-1" for="">Account Budget Lookup</label>
               </button>
               <button type="reset" class="btn btn-sm">
                 <i class="ft-alert-circle"></i><label class="ml-1 mt-1" for="">Exception Policy</label>
               </button> -->
-
           </div>
         </div>
       </div>
@@ -182,13 +176,12 @@
               <div class="col-12">
                 <hr>
               </div>
-              
             </div>
             <br>
 
           </form>
 
-          <ngb-accordion    #accordion="ngbAccordion" class="mb-2 items-acc" activeIds="ngb-panel-0">
+          <ngb-accordion #accordion="ngbAccordion" class="mb-2 items-acc" activeIds="ngb-panel-0">
             <ngb-panel id="ngb-panel-0">
               <ng-template ngbPanelTitle>
                 <div class="row">
@@ -232,7 +225,6 @@
                     <div class="col-12">
                       <hr>
                     </div>
-                    <!-- <ng-container *ngIf="itemForm.get('itemType')?.value === 'Inventory'"> -->
 
                     <div class="col-12">
                       <div class="row">
@@ -252,13 +244,6 @@
                               </div>
                             </div>
 
-                            <!-- <div class="col-md-6" *ngIf="itemType === 'Non-Inventory'">
-                              <div class="form-group mb-2">
-                                <label>Non-Inventory Item</label>
-                                <input type="text" class="form-control" formControlName="itemType" placeholder="Enter Non-Inventory Item">
-                              </div>
-                            </div> -->
-
                             <div class="col-md-6">
                               <div class="form-group mb-2">
                                 <label>U of M</label>
@@ -275,9 +260,9 @@
                           <div class="row">
                             <div class="col-md-6">
                               <div class="form-group mb-2">
-                                <label>Amount</label>
-                                <input type="number" placeholder="Enter Amount" class="form-control custom-input"
-                                  formControlName="amount" />
+                                <label>Order Quantity</label>
+                                <input type="number" placeholder="Enter Order Quantity"
+                                  class="form-control custom-input" formControlName="orderQuantity" />
                               </div>
                             </div>
 
@@ -293,9 +278,9 @@
                           <div class="row">
                             <div class="col-md-6">
                               <div class="form-group mb-2">
-                                <label>Order Quantity</label>
-                                <input type="number" placeholder="Enter Order Quantity"
-                                  class="form-control custom-input" formControlName="orderQuantity" />
+                                <label>Amount</label>
+                                <input type="number" readonly class="form-control custom-input"
+                                  formControlName="amount" />
                               </div>
                             </div>
 
@@ -355,128 +340,79 @@
                         </div>
                       </div>
                     </div>
-
-
-            
-                    <!-- </ng-container> -->
-
-                    <!-- <ng-container *ngIf="itemForm.get('itemType')?.value === 'Non-Inventory'">
-                      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <div class="form-group mb-2">
-                          <label>Item Description</label>
-                          <textarea rows="5" placeholder="Enter Item Description" class="form-control"
-                            formControlName="itemDescription"></textarea>
-                        </div>
-                      </div>
-
-                      <div *ngIf="!isNewForm" class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <label>Final Vendor</label> -->
-
-                    <!-- this should not be uncommented-->
-                    <!-- <select class="form-control" formControlName="vendorUserId">
-                              <option value="" disabled>Select Vendor</option>
-                              <option *ngFor="let vendor of vendorUsers" [value]="vendor.id">
-                                {{ vendor.name }}
-                              </option>
-                            </select> -->
-                    <!-- this should not be uncommented-->
-
-                    <!-- <select class="form-control" formControlName="vendorUserId"
-                          (change)="onVendorChange($event.target.value)">
-                          <option value="" disabled>Select Vendor</option>
-                          <option *ngFor="let v of uniqueVendors" [value]="v.vendorId">
-                            {{ v.vendorName }}
-                          </option>
-                        </select>
-                      </div>
-                      <div *ngIf="!isNewForm" class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <label>Company</label>
-                        <select class="form-control" formControlName="vendorCompanyId">
-                          <option value="" disabled>Select Company</option>
-                          <option *ngFor="let c of filteredCompanies" [value]="c.companyId">
-                            {{ c.name }}
-                          </option>
-                        </select>
-                      </div>
-
-                    </ng-container> -->
                   </div>
                   <br>
 
                 </div>
 
                 <div class="vendor-datatable-div">
-              <ngx-datatable class="bootstrap core-bootstrap" [rows]="newQuotationItemData" [columnMode]="'force'"
-                [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
-             
+                  <ngx-datatable class="bootstrap core-bootstrap" [rows]="newQuotationItemData" [columnMode]="'force'"
+                    [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
 
-           
-                <ngx-datatable-column *ngIf="purchaseRequestId" name="Select" [width]="60" [sortable]="false">
-                  <ng-template ngx-datatable-cell-template let-row="row">
-                    <input type="checkbox" [(ngModel)]="row.selected" />
-                  </ng-template>
-                </ngx-datatable-column>
+                    <ngx-datatable-column *ngIf="purchaseRequestId" name="Select" [width]="60" [sortable]="false">
+                      <ng-template ngx-datatable-cell-template let-row="row">
+                        <input type="checkbox" [(ngModel)]="row.selected" />
+                      </ng-template>
+                    </ngx-datatable-column>
 
-                <ngx-datatable-column name="Sr. No." [width]="50" [sortable]="false">
-                  <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
-                    <span>{{rowIndex + 1}}</span>
-                  </ng-template>
-                </ngx-datatable-column>
+                    <ngx-datatable-column name="Sr. No." [width]="50" [sortable]="false">
+                      <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
+                        <span>{{rowIndex + 1}}</span>
+                      </ng-template>
+                    </ngx-datatable-column>
 
-                <ngx-datatable-column [width]="100" name="Type" prop="itemType" [sortable]="false">
-                </ngx-datatable-column>
+                    <ngx-datatable-column [width]="100" name="Type" prop="itemType" [sortable]="false">
+                    </ngx-datatable-column>
 
-                <ngx-datatable-column name="Item">
-                  <ng-template let-row="row" ngx-datatable-cell-template>
-                    {{ getItemNameById(row.itemId) }}
-                  </ng-template>
+                    <ngx-datatable-column name="Item">
+                      <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{ getItemNameById(row.itemId) }}
+                      </ng-template>
 
-                </ngx-datatable-column>
-                <ngx-datatable-column name="Description" [sortable]="false" prop="itemDescription">
-                </ngx-datatable-column>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="Description" [sortable]="false" prop="itemDescription">
+                    </ngx-datatable-column>
 
-                <ngx-datatable-column [width]="90"  name="Amount" prop="amount" [sortable]="false">
-                </ngx-datatable-column>
+                    <ngx-datatable-column [width]="90" name="Amount" prop="amount" [sortable]="false">
+                    </ngx-datatable-column>
 
-                <ngx-datatable-column name="Vendor Name" [sortable]="false">
-                  <ng-template let-row="row" ngx-datatable-cell-template>
-                    {{ getVendorNameById(row.vendorUserId) }}
-                  </ng-template>
-                </ngx-datatable-column>
+                    <ngx-datatable-column name="Vendor Name" [sortable]="false">
+                      <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{ getVendorNameById(row.vendorUserId) }}
+                      </ng-template>
+                    </ngx-datatable-column>
 
-                <ngx-datatable-column name="Remarks" prop="remarks"  [sortable]="false">
-                </ngx-datatable-column>
+                    <ngx-datatable-column name="Remarks" prop="remarks" [sortable]="false">
+                    </ngx-datatable-column>
 
-                <ngx-datatable-column [width]="100" name="Attachments" [sortable]="false">
-                  <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
-               
-                    <a matTooltip="Attachment" class="row-action-attachment" (click)="openNewEntityModal(rowIndex)"
-                      [ngClass]="{'disabled': actionType === 'View'}">
-                      <i style="font-size: 1.5rem;" class="ft-paperclip mr-1"></i>
-                    </a>
+                    <ngx-datatable-column [width]="100" name="Attachments" [sortable]="false">
+                      <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
 
-                  </ng-template>
-                </ngx-datatable-column>
+                        <a matTooltip="Attachment" class="row-action-attachment" (click)="openNewEntityModal(rowIndex)"
+                          [ngClass]="{'disabled': actionType === 'View'}">
+                          <i style="font-size: 1.5rem;" class="ft-paperclip mr-1"></i>
+                        </a>
 
-                <ngx-datatable-column [width]="100" *ngIf="!viewMode" name="Actions"  [sortable]="false">
-                  <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
+                      </ng-template>
+                    </ngx-datatable-column>
 
-      
-                    <a matTooltip="Edit Item" (click)="editRow(row, rowIndex)"
-                      [ngClass]="viewMode ? 'disabled' : 'row-action-edit'">
-                      <i style="font-size: 1.5rem;" class="ft-edit mr-1"></i>
-                    </a>
+                    <ngx-datatable-column [width]="100" *ngIf="!viewMode" name="Actions" [sortable]="false">
+                      <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
 
+                        <a matTooltip="Edit Item" (click)="editRow(row, rowIndex)"
+                          [ngClass]="viewMode ? 'disabled' : 'row-action-edit'">
+                          <i style="font-size: 1.5rem;" class="ft-edit mr-1"></i>
+                        </a>
 
-                    <a matTooltip="Delete Item" style="cursor: pointer; color: #d1d4d7;" (click)="deleteRow(rowIndex)"
-                      [ngClass]="viewMode ? 'disabled' : 'row-action-delete'">
-                      <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
-                    </a>
+                        <a matTooltip="Delete Item" style="cursor: pointer; color: #d1d4d7;"
+                          (click)="deleteRow(rowIndex)" [ngClass]="viewMode ? 'disabled' : 'row-action-delete'">
+                          <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
+                        </a>
 
-                  </ng-template>
-                </ngx-datatable-column>
-              </ngx-datatable>
-              </div>
+                      </ng-template>
+                    </ngx-datatable-column>
+                  </ngx-datatable>
+                </div>
               </ng-template>
               <!-- <ng-template ngbPanelTitle>
                 <div class="row">
@@ -486,15 +422,12 @@
                 </div>
               </ng-template> -->
 
-              
             </ngb-panel>
 
-              
           </ngb-accordion>
 
-
-
-             <ngb-accordion *ngIf="!viewMode && !isNewForm" #accordion="ngbAccordion" class="vendor-acc" activeIds="ngb-panel-1">
+          <ngb-accordion *ngIf="!viewMode && !isNewForm" #accordion="ngbAccordion" class="vendor-acc"
+            activeIds="ngb-panel-1">
             <ngb-panel id="ngb-panel-1">
               <ng-template ngbPanelTitle>
                 <div class="row">
@@ -505,45 +438,41 @@
               </ng-template>
               <ng-template ngbPanelContent>
 
-              <div class="vendor-datatable-div">
-              <ngx-datatable class="bootstrap core-bootstrap" [rows]="selectedVendorsData" [columnMode]="'force'"
-                [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
-            
-                <ngx-datatable-column name="Sr. No." 
-                  [width]="100"
-                  [minWidth]="100"
-                  [maxWidth]="100"
-                [sortable]="false">
-                  <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
-                    <span>{{rowIndex + 1}}</span>
-                  </ng-template>
-                </ngx-datatable-column>
+                <div class="vendor-datatable-div">
+                  <ngx-datatable class="bootstrap core-bootstrap" [rows]="selectedVendorsData" [columnMode]="'force'"
+                    [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
 
-                <ngx-datatable-column name="Vendor" prop="vendorName" [sortable]="false">
-                </ngx-datatable-column>
+                    <ngx-datatable-column name="Sr. No." [width]="100" [minWidth]="100" [maxWidth]="100"
+                      [sortable]="false">
+                      <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
+                        <span>{{rowIndex + 1}}</span>
+                      </ng-template>
+                    </ngx-datatable-column>
 
-                <ngx-datatable-column name="Company"  prop="companyName" [sortable]="false">
-                </ngx-datatable-column>
+                    <ngx-datatable-column name="Vendor" prop="vendorName" [sortable]="false">
+                    </ngx-datatable-column>
 
-                <ngx-datatable-column name="Created Date"[sortable]="false">
-                     <ng-template let-row="row" ngx-datatable-cell-template>
-                    {{ row.createdDate | date:'short'}}
-                  </ng-template>
-                </ngx-datatable-column>
+                    <ngx-datatable-column name="Company" prop="companyName" [sortable]="false">
+                    </ngx-datatable-column>
 
-                <ngx-datatable-column [width]="100" *ngIf="!viewMode" name="Actions"  [sortable]="false">
-                  <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
+                    <ngx-datatable-column name="Created Date" [sortable]="false">
+                      <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{ row.createdDate | date:'short'}}
+                      </ng-template>
+                    </ngx-datatable-column>
 
-      
-                    <a matTooltip="View Vendor" (click)="editVendorRow(row)"
-                      [ngClass]="viewMode ? 'disabled' : 'row-action-edit'">
-                      <i style="font-size: 1.5rem;" class="ft-message-circle mr-1"></i>
-                    </a>
+                    <ngx-datatable-column [width]="100" *ngIf="!viewMode" name="Actions" [sortable]="false">
+                      <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
 
-                  </ng-template>
-                </ngx-datatable-column>
-              </ngx-datatable>
-              </div>
+                        <a matTooltip="View Vendor" (click)="editVendorRow(row)"
+                          [ngClass]="viewMode ? 'disabled' : 'row-action-edit'">
+                          <i style="font-size: 1.5rem;" class="ft-message-circle mr-1"></i>
+                        </a>
+
+                      </ng-template>
+                    </ngx-datatable-column>
+                  </ngx-datatable>
+                </div>
 
               </ng-template>
               <!-- <ng-template ngbPanelTitle>
@@ -554,10 +483,8 @@
                 </div>
               </ng-template> -->
 
-              
             </ngb-panel>
 
-              
           </ngb-accordion>
         </div>
       </div>
