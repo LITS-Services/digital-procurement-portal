@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -29,10 +29,11 @@ export class RfqQuotationboxComponent implements OnInit {
   newQuotationBoxForm: FormGroup;
   constructor(
     private router: Router,
-    public activeModal: NgbActiveModal,
+    //public activeModal: NgbActiveModal,
     private fb: FormBuilder,
     private rfqService: RfqService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    public cdr: ChangeDetectorRef
 
   ) { }
 
@@ -105,7 +106,8 @@ loadVendors(quotationRequestId: number) {
         amount: vendor.amount,
         owner: res?.owner
       }));
-console.log( "RFQ DATA: ", this.rfqData);
+      this.cdr.detectChanges();
+    console.log( "RFQ DATA: ", this.rfqData);
  // Vendor → Items map (children)
       this.vendorItemMap = {};
       vendors.forEach((vendor: any) => {
@@ -146,9 +148,9 @@ console.log( "RFQ DATA: ", this.rfqData);
   }
 
 
-  closeDialog() {
-    this.activeModal.close(false);
-  }
+  // closeDialog() {
+  //   this.activeModal.close(false);
+  // }
 
 
   openCreateForm() {

@@ -189,3 +189,75 @@ form label, .form-group label {
     position: absolute;
     margin-left: -3px;
   }
+
+
+  ///tabs
+  
+
+  .tabs-pill.nav-tabs {
+  border-bottom: 0;
+  background: transparent;
+  padding: 0.25rem;
+}
+
+/* Base tab look */
+.tabs-pill .nav-link {
+  border: 0 !important;
+  margin-right: .375rem;
+  border-radius: 9999px;               /* full pill */
+  padding: .5rem 1rem;
+  color: #4b5563;                       /* gray-700 */
+  background: transparent;
+  line-height: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  transition: background .2s ease, color .2s ease, box-shadow .2s ease;
+}
+
+/* Hover (inactive) */
+.tabs-pill .nav-link:not(.active):hover {
+  background: #f3f4f6;                  /* gray-100 */
+  color: #111827;                        /* gray-900 */
+}
+
+/* Active pill — tweak colors to match your theme */
+.tabs-pill .nav-link.active {
+  color: #111827;                        /* text dark */
+  background: #eef5ff;                   /* light bluish bg */
+  box-shadow: inset 0 0 0 1px #cfe0ff;   /* thin inner border */
+  position: relative;
+}
+
+/* Optional: subtle “cap” illusion that overlaps content top border */
+.tabs-pill .nav-link.active::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: -6px;
+  height: 6px;
+  background: #eef5ff;                   /* same as active bg */
+  border-bottom-left-radius: 9999px;
+  border-bottom-right-radius: 9999px;
+}
+
+/* Divider bar between the two labels */
+.tabs-pill .tab-divider {
+  opacity: .6;
+  margin: 0 .25rem;
+}
+
+/* Small caret; hide on very small screens if you want */
+.tabs-pill .tab-caret {
+  margin-left: .25rem;
+  font-size: .8rem;
+  line-height: 1;
+  opacity: .7;
+}
+
+/* Disabled look (if you add .disabled on link) */
+.tabs-pill .nav-link.disabled {
+  pointer-events: none;
+  opacity: .5;
+}

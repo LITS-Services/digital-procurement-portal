@@ -195,6 +195,11 @@ export class NewRfqComponent implements OnInit {
     }
   }
 
+  selectedTab: 'rfq-input' | 'quotation-box' | 'vendors' = 'rfq-input'; // default
+
+selectTab(tab: 'rfq-input' | 'quotation-box' | 'vendors') {
+  this.selectedTab = tab;
+}
   loadVendorUsers() {
     this.companyService.getAllVendorUsers().subscribe({
       next: (res: any) => {
