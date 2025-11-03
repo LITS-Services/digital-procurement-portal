@@ -5,17 +5,19 @@ import { ConfigService } from '../services/config.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { CompanyService } from 'app/shared/services/Company.services';
-import { UntypedFormControl } from '@angular/forms';
+import { FormControl, UntypedFormControl } from '@angular/forms';
 import { LISTITEMS } from '../data/template-search';
-import { Subscription } from 'rxjs';
-import { NotifcationService } from '../services/notification.service';
+import { fromEvent, of, Subject, Subscription } from 'rxjs';
+import { NotifcationService, ReferenceType } from '../services/notification.service';
 import { FirebaseMessagingService } from 'app/firebase-messaging.service';
 import { ToastrService } from 'ngx-toastr';
+import { tr } from 'date-fns/locale';
+import { catchError, debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 
 @Component({
   selector: "app-navbar",
   templateUrl: "./navbar.component.html",
-  styleUrls: ["./navbar.component.scss"]
+  styleUrls: ["./navbar.component.scss"],
 })
 export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   currentLang = "en";
@@ -23,8 +25,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedLanguageFlag = "./assets/img/flags/us.png";
   toggleClass = "ft-maximize";
   placement = "bottom-right";
-  logoUrl = 'assets/img/logo.png';
-  menuPosition = 'Side';
+  logoUrl = "assets/img/logo.png";
+  menuPosition = "Side";
   isSmallScreen = false;
   protected innerWidth: any;
   searchOpenClass = "";
@@ -36,26 +38,34 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   username: string;
   profilePicture: string = "assets/img/profile/user.png"; // default avatar
 
-  @ViewChild('search') searchElement: ElementRef;
-  @ViewChildren('searchResults') searchResults: QueryList<any>;
+  @ViewChild("search") searchElement: ElementRef;
+  @ViewChildren("searchResults") searchResults: QueryList<any>;
+
+  @ViewChild("searchRoot", { static: true }) searchRoot!: ElementRef;
 
   @Output() toggleHideSidebar = new EventEmitter<Object>();
   @Output() seachTextEmpty = new EventEmitter<boolean>();
 
+  searchCtrl = new FormControl("");
   listItems = [];
   control = new UntypedFormControl();
   public config: any = {};
 
-   @ViewChild('notifRoot', { static: false }) notifRoot!: ElementRef<HTMLElement>;
+  @ViewChild("notifRoot", { static: false })
+  notifRoot!: ElementRef<HTMLElement>;
 
   notifOpen = false;
 
-  notifications: any[] = [
-  ];
-  unreadCount:number = null;
-  notificationCount:number = null;
+  notifications: any[] = [];
+  unreadCount: number = null;
+  notificationCount: number = null;
 
+  results: any[] = [];
+  panelOpen = false;
+  loading = false;
+  activeIndex = -1;
 
+  private destroy$ = new Subject<void>();
   constructor(
     public translate: TranslateService,
     private layoutService: LayoutService,
@@ -65,8 +75,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     private companyService: CompanyService,
     private notificationService: NotifcationService,
     private cdr: ChangeDetectorRef,
-    private messagingService:FirebaseMessagingService,
-    private toaster:ToastrService
+    private messagingService: FirebaseMessagingService,
+    private toaster: ToastrService
   ) {
     const browserLang: string = translate.getBrowserLang();
     translate.use(browserLang.match(/en|es|pt|de|ar/) ? browserLang : "en");
@@ -74,24 +84,26 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.innerWidth = window.innerWidth;
 
     this.layoutSub = layoutService.toggleSidebar$.subscribe(
-      isShow => this.hideSidebar = !isShow
+      (isShow) => (this.hideSidebar = !isShow)
     );
   }
 
-
-
   ngOnInit() {
-    this.getNotification(); 
-     
+    this.bindSearch();
+    this.setupClickOutside();
+    this.getNotification();
 
     //Firebase Cloud Messaging Initialization
-    const userId = localStorage.getItem('userId');
+    const userId = localStorage.getItem("userId");
     this.messagingService.requestPermission(userId);
-    
-    this.messagingService.currentMessage.subscribe(msg => {
+
+    this.messagingService.currentMessage.subscribe((msg) => {
       if (msg) {
-        this.toaster.success(msg.notification?.title || 'New Notification', msg.notification?.body || '');
-        this.getNotification(); 
+        this.toaster.success(
+          msg.notification?.title || "New Notification",
+          msg.notification?.body || ""
+        );
+        this.getNotification();
         // You can show a toast or alert here
       }
     });
@@ -104,7 +116,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         next: (res: any) => {
           if (res) {
             this.username = res.fullName || this.authService.getUserName();
-            this.profilePicture = res.profilePicture || "assets/img/profile/user.png";
+            this.profilePicture =
+              res.profilePicture || "assets/img/profile/user.png";
             this.cdr.detectChanges();
           }
         },
@@ -112,7 +125,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
           this.username = this.authService.getUserName();
           this.profilePicture = "assets/img/profile/user.png";
           this.cdr.detectChanges();
-        }
+        },
       });
     } else {
       this.username = this.authService.getUserName();
@@ -121,11 +134,13 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.configSub = this.configService.templateConf$.subscribe((templateConf) => {
-      if (templateConf) this.config = templateConf;
-      this.loadLayout();
-      this.cdr.markForCheck();
-    });
+    this.configSub = this.configService.templateConf$.subscribe(
+      (templateConf) => {
+        if (templateConf) this.config = templateConf;
+        this.loadLayout();
+        this.cdr.markForCheck();
+      }
+    );
   }
 
   ngOnDestroy() {
@@ -133,7 +148,98 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.configSub) this.configSub.unsubscribe();
   }
 
-    //   get getNotificationCount(): number {
+  bindSearch(): void {
+    this.searchCtrl.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        tap((q) => {
+          this.panelOpen = !!q;
+          this.loading = !!q;
+          this.activeIndex = -1;
+          this.cdr.markForCheck();
+        }),
+        switchMap((q) =>
+          q
+            ? this.notificationService.getSearch(q).pipe(
+                catchError(() => of([])),
+                finalize(() => {
+                  this.loading = false;
+                  this.cdr.markForCheck(); 
+                })
+              )
+            : of([])
+        ),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((res) => {
+        this.results = res || [];
+        this.cdr.markForCheck(); 
+      });
+  }
+
+  setupClickOutside(): void {
+    fromEvent<MouseEvent>(document, "click")
+      .pipe(
+        filter(
+          (ev) =>
+            this.searchRoot &&
+            !this.searchRoot.nativeElement.contains(ev.target as Node)
+        ),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => this.closePanel());
+  }
+
+  openPanel(): void {
+    if ((this.searchCtrl.value || "").length) this.panelOpen = true;
+  }
+
+  closePanelsearch(): void {
+    this.panelOpen = false;
+    this.activeIndex = -1;
+  }
+
+  onKeyDown(ev: KeyboardEvent): void {
+    if (!this.panelOpen) return;
+    const max = this.results.length - 1;
+
+    switch (ev.key) {
+      case "ArrowDown":
+        ev.preventDefault();
+        this.activeIndex = this.activeIndex < max ? this.activeIndex + 1 : 0;
+        break;
+      case "ArrowUp":
+        ev.preventDefault();
+        this.activeIndex = this.activeIndex > 0 ? this.activeIndex - 1 : max;
+        break;
+      case "Enter":
+        if (this.activeIndex > -1 && this.results[this.activeIndex]) {
+          this.selectResult(this.results[this.activeIndex]);
+          ev.preventDefault();
+        }
+        break;
+      case "Escape":
+        this.closePanelsearch();
+        break;
+    }
+  }
+
+  selectResult(item: any): void {
+    this.redirection(item.referenceType, item.referenceId);
+    this.closePanelsearch();
+    // TODO: adapt navigation based on your data
+    // Example:
+    // this.router.navigate(['/rfq/new-rfq'], { queryParams: { id: item.id }, skipLocationChange: true });
+    // Or emit an event, or open a detail, etc.
+    console.log("Selected search item:", item);
+  }
+
+  trackById(_: number, item: any) {
+    return item?.id ?? item?.Id ?? item?.code ?? item?.DocumentNo ?? item;
+  }
+
+  //   get getNotificationCount(): number {
   //   return this.notifications.length
   // }
 
@@ -145,38 +251,91 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.notifOpen = false;
   }
 
-
-
-
-    @HostListener('document:click', ['$event'])
+  @HostListener("document:click", ["$event"])
   onDocClick(ev: MouseEvent): void {
     if (!this.notifOpen) return;
     const root = this.notifRoot?.nativeElement;
     if (root && !root.contains(ev.target as Node)) {
       this.closePanel();
-      
     }
   }
 
-
-
-  getNotification(){
+  getNotification() {
     this.notificationService.getNotification().subscribe((res: any) => {
       this.notifications = res.messages.map((m: any, index: number) => ({
-      title: m.title, 
-      message: m.message,
-      timeAgo: this.timeSince(new Date(m.createdOn)),  
-      read: false, 
-      status: m.status,
-      createdOn: m.createdOn
-    }));
-    this.notificationCount = res.messages?.length;
-    this.unreadCount = res.unreadCount;
-       this.cdr.detectChanges();
+        id: m.id,
+        title: m.title,
+        message: m.message,
+        timeAgo: this.timeSince(new Date(m.createdOn)),
+        read: false,
+        status: m.status,
+        createdOn: m.createdOn,
+        referenceType: m.referenceType as ReferenceType,
+        referenceId: m.referenceId,
+      }));
+      this.notificationCount = res.messages?.length;
+      this.unreadCount = res.unreadCount;
+      this.cdr.detectChanges();
     });
   }
 
-  @HostListener('window:resize', ['$event'])
+  redirection(referenceType: any, referenceId: any) {
+    switch (referenceType) {
+      case ReferenceType.RFQ:
+        this.router.navigate(["/rfq/new-rfq"], {
+          queryParams: { id: referenceId, mode: "view" },
+          skipLocationChange: true,
+        });
+        break;
+
+      case ReferenceType.PR:
+        this.router.navigate(["/purchase-request/new-purchase-request"], {
+          queryParams: { id: referenceId, mode: "view" },
+          skipLocationChange: true,
+        });
+        break;
+
+      case ReferenceType.PO:
+
+      // this.selectedPO = { id: n.referenceId };
+      // this.modalService.open(this.purchaseOrderDetail, { size: 'lg', centered: true });
+      // break;
+
+      case ReferenceType.Default:
+        return ReferenceType.Default;
+
+      default:
+        console.warn("Unhandled reference type:", referenceType);
+        break;
+    }
+  }
+
+  onSearch() {}
+
+  onNotifClick(n: any): void {
+    const wasUnread = n.status === 0;
+    n.status = 1;
+    if (wasUnread && this.unreadCount > 0) this.unreadCount--;
+
+    this.notificationService.markAsRead(n.id).subscribe({
+      next: () => {
+        var a = this.redirection(n.referenceType, n.referenceId);
+        if (a == ReferenceType.Default) {
+          this.notifications.filter((m: any) => m.id === n.id)[0].status = 1;
+        }
+
+        this.closePanel();
+      },
+      error: () => {
+        if (wasUnread) {
+          n.status = 0;
+          this.unreadCount++;
+        }
+      },
+    });
+  }
+
+  @HostListener("window:resize", ["$event"])
   onResize(event) {
     this.innerWidth = event.target.innerWidth;
     this.isSmallScreen = this.innerWidth < 1200;
@@ -185,32 +344,43 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   logout(): void {
     this.authService.logout().subscribe({
       next: () => this.authService.performLogout(),
-      error: () => this.authService.performLogout()
+      error: () => this.authService.performLogout(),
     });
   }
 
   loadLayout() {
-    if (this.config.layout.menuPosition) this.menuPosition = this.config.layout.menuPosition;
-    this.logoUrl = (this.config.layout.variant === "Light") ? 'assets/img/logo-dark.png' : 'assets/img/logo.png';
-    this.transparentBGClass = (this.config.layout.variant === "Transparent") ? this.config.layout.sidebar.backgroundColor : "";
+    if (this.config.layout.menuPosition)
+      this.menuPosition = this.config.layout.menuPosition;
+    this.logoUrl =
+      this.config.layout.variant === "Light"
+        ? "assets/img/logo-dark.png"
+        : "assets/img/logo.png";
+    this.transparentBGClass =
+      this.config.layout.variant === "Transparent"
+        ? this.config.layout.sidebar.backgroundColor
+        : "";
   }
 
   onSearchKey(event: any) {
     if (this.searchResults && this.searchResults.length > 0) {
-      this.searchResults.first.host.nativeElement.classList.add('first-active-item');
+      this.searchResults.first.host.nativeElement.classList.add(
+        "first-active-item"
+      );
     }
     this.seachTextEmpty.emit(event.target.value === "");
   }
 
   removeActiveClass() {
     if (this.searchResults && this.searchResults.length > 0) {
-      this.searchResults.first.host.nativeElement.classList.remove('first-active-item');
+      this.searchResults.first.host.nativeElement.classList.remove(
+        "first-active-item"
+      );
     }
   }
 
   onEscEvent() {
     this.control.setValue("");
-    this.searchOpenClass = '';
+    this.searchOpenClass = "";
     this.seachTextEmpty.emit(true);
   }
 
@@ -219,7 +389,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       let url = this.searchResults.first.url;
       if (url) {
         this.control.setValue("");
-        this.searchOpenClass = '';
+        this.searchOpenClass = "";
         this.router.navigate([url]);
         this.seachTextEmpty.emit(true);
       }
@@ -234,21 +404,37 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   ChangeLanguage(language: string) {
     this.translate.use(language);
     switch (language) {
-      case 'en': this.selectedLanguageText = "English"; this.selectedLanguageFlag = "./assets/img/flags/us.png"; break;
-      case 'es': this.selectedLanguageText = "Spanish"; this.selectedLanguageFlag = "./assets/img/flags/es.png"; break;
-      case 'pt': this.selectedLanguageText = "Portuguese"; this.selectedLanguageFlag = "./assets/img/flags/pt.png"; break;
-      case 'de': this.selectedLanguageText = "German"; this.selectedLanguageFlag = "./assets/img/flags/de.png"; break;
-      case 'ar': this.selectedLanguageText = "Arabic"; this.selectedLanguageFlag = "./assets/img/flags/de.png"; break;
+      case "en":
+        this.selectedLanguageText = "English";
+        this.selectedLanguageFlag = "./assets/img/flags/us.png";
+        break;
+      case "es":
+        this.selectedLanguageText = "Spanish";
+        this.selectedLanguageFlag = "./assets/img/flags/es.png";
+        break;
+      case "pt":
+        this.selectedLanguageText = "Portuguese";
+        this.selectedLanguageFlag = "./assets/img/flags/pt.png";
+        break;
+      case "de":
+        this.selectedLanguageText = "German";
+        this.selectedLanguageFlag = "./assets/img/flags/de.png";
+        break;
+      case "ar":
+        this.selectedLanguageText = "Arabic";
+        this.selectedLanguageFlag = "./assets/img/flags/de.png";
+        break;
     }
   }
 
   ToggleClass() {
-    this.toggleClass = this.toggleClass === "ft-maximize" ? "ft-minimize" : "ft-maximize";
+    this.toggleClass =
+      this.toggleClass === "ft-maximize" ? "ft-minimize" : "ft-maximize";
   }
 
   toggleSearchOpenClass(display) {
     this.control.setValue("");
-    this.searchOpenClass = display ? 'open' : '';
+    this.searchOpenClass = display ? "open" : "";
     if (display) setTimeout(() => this.searchElement.nativeElement.focus(), 0);
     this.seachTextEmpty.emit(true);
   }
@@ -261,26 +447,26 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.layoutService.toggleSidebarSmallScreen(this.hideSidebar);
   }
 
-timeSince(date: Date): string {
-  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  timeSince(date: Date): string {
+    const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
 
-  if (seconds < 30) return 'just now';
+    if (seconds < 30) return "just now";
 
-  const units = [
-    { label: 'y', secs: 31536000 },
-    { label: 'mo', secs: 2592000 },
-    { label: 'w', secs: 604800 },
-    { label: 'd', secs: 86400 },
-    { label: 'h', secs: 3600 },
-    { label: 'm', secs: 60 }
-  ];
+    const units = [
+      { label: "y", secs: 31536000 },
+      { label: "mo", secs: 2592000 },
+      { label: "w", secs: 604800 },
+      { label: "d", secs: 86400 },
+      { label: "h", secs: 3600 },
+      { label: "m", secs: 60 },
+    ];
 
-  for (const u of units) {
-    const v = Math.floor(seconds / u.secs);
-    if (v >= 1) return `${v}${u.label} ago`;
+    for (const u of units) {
+      const v = Math.floor(seconds / u.secs);
+      if (v >= 1) return `${v}${u.label} ago`;
+    }
+    // Fallback: seconds level shows as "1m ago" minimum; we handled <30s above
+    return "1m ago";
   }
-  // Fallback: seconds level shows as "1m ago" minimum; we handled <30s above
-  return '1m ago';
-}
 }
 
