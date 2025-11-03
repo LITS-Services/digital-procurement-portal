@@ -12,6 +12,7 @@ import { PurchaseRequestRemarksComponent } from '../purchase-request-remarks/pur
 import { WorkflowServiceService } from 'app/shared/services/WorkflowService/workflow-service.service';
 import Swal from 'sweetalert2';
 import { LookupService } from 'app/shared/services/lookup.service';
+import { CompanyVM, VendorAndCompanyForFinalSelectionVM } from 'app/shared/interfaces/vendor-company-final-selection.model';
 
 @Component({
   selector: 'app-new-purchase-request',
@@ -20,6 +21,7 @@ import { LookupService } from 'app/shared/services/lookup.service';
 })
 
 export class NewPurchaseRequestComponent implements OnInit {
+
   isNewForm = true; // true = create, false = edit
   isFormDirty = false; // track if any field was touched
   currentRequisitionNo!: string;
@@ -61,7 +63,14 @@ export class NewPurchaseRequestComponent implements OnInit {
   currentRequestId: number | null = null;
 
   isSelectingFinalVendor: boolean = false;
-  finalVendors: any[] = [];
+  // finalVendors: any[] = [];
+
+  // ---------------
+  finalVendors: VendorAndCompanyForFinalSelectionVM[] = [];
+  filteredCompanies = [];
+
+  procurementUserId = localStorage.getItem('userId');
+  compareIds = (a: string | null, b: string | null) => (a ?? '').toLowerCase() === (b ?? '').toLowerCase();
 
   @ViewChild('accordion') accordion: NgbAccordion;
   @ViewChild(DatatableComponent) table: DatatableComponent;
@@ -101,13 +110,9 @@ export class NewPurchaseRequestComponent implements OnInit {
       //  Add this part for Final Vendor mode
       if (mode === 'selectVendor') {
         this.isSelectingFinalVendor = true;
-        this.loadFinalVendors();
+        this.loadVendorsFinalSelection();
       }
 
-      // if (this.viewMode) {
-      //   this.newPurchaseRequestForm.disable();
-      //   this.itemForm.disable();
-      // }
     });
 
     // Purchase Request Form
@@ -149,10 +154,16 @@ export class NewPurchaseRequestComponent implements OnInit {
       reqByDate: [null],
       itemDescription: [''],
       vendorUserId: [null],
+      vendorCompanyId: [null],
       accountId: [0],
       remarks: [''],
       attachments: this.fb.group([])
     })
+
+    this.itemForm.valueChanges.subscribe(values => {
+      const total = (values.unitCost || 0) * (values.orderQuantity || 0);
+      this.itemForm.patchValue({ amount: total }, { emitEvent: false });
+    });
 
     this.itemForm.valueChanges.subscribe(() => {
       this.isFormDirty = true;
@@ -163,15 +174,6 @@ export class NewPurchaseRequestComponent implements OnInit {
       this.itemForm.disable();
     }
   }
-
-  // loadVendorUsers() {
-  //   this.companyService.getAllVendorUsers().subscribe({
-  //     next: (res: any) => {
-  //       this.vendorUsers = res?.value ?? [];
-  //     },
-  //     error: (err) => console.error('Error fetching vendor users:', err)
-  //   });
-  // }
 
   loadUnitsOfMeasurements() {
     this.lookupService.getAllUnitsOfMeasurement().subscribe({
@@ -238,13 +240,10 @@ export class NewPurchaseRequestComponent implements OnInit {
       }
     });
   }
-  // getVendorNameById(id: number): string {
-  //   const found = this.vendorUsers.find(v => v.id === id);
-  //   return found ? found.name : '';
-  // }
-  getVendorNameById(id: number): string {
-    const found = this.finalVendors.find(v => v.stringId === id);
-    return found ? found.description : '';
+
+  getVendorNameById(id: string): string {
+    const found = this.finalVendors.find(v => v.vendorId === id);
+    return found ? found.vendorName : '';
   }
 
   private toDateInputValue(date: any): string | null {
@@ -316,73 +315,9 @@ export class NewPurchaseRequestComponent implements OnInit {
     });
   }
 
-  // insertItem(): void {
-  //   const newItem = this.itemForm.value;
-
-  //   // Normalize IDs
-  //   const newItemId = Number(newItem.itemId);
-  //   // const itemType = newItem.itemType;
-  //   //  //  Only check for itemId if the user selected "Inventory"
-  //   //   if (itemType === 'Inventory' && (!newItemId || newItemId === 0)) {
-  //   //     this.toastr.warning('Please select an item before adding.');
-  //   //     return;
-  //   //   }
-
-  //   //   //  For Non-Inventory, ensure description is filled (optional but recommended)
-  //   //   if (itemType === 'Non-Inventory' && !newItem.itemDescription?.trim()) {
-  //   //     this.toastr.warning('Please enter an item description before adding.');
-  //   //     return;
-  //   //   }
-
-  //   // Check for duplicate (only if not editing)
-  //   if (this.editingRowIndex === null) {
-  //     const duplicate = this.newPurchaseItemData.some(
-  //       item => Number(item.itemId) === newItemId
-  //     );
-
-  //     if (duplicate) {
-  //       this.toastr.warning('This item is already added. You can update it instead.');
-  //       return;
-  //     }
-  //   }
-
-  //   if (this.editingRowIndex !== null) {
-  //     // --- Update existing item ---
-  //     const existing = this.newPurchaseItemData[this.editingRowIndex];
-  //     const merged = {
-  //       ...existing,
-  //       ...newItem,
-  //       itemId: newItemId,
-  //       attachments: existing?.attachments ?? []
-  //     };
-
-  //     this.newPurchaseItemData = this.newPurchaseItemData.map((item, index) =>
-  //       index === this.editingRowIndex ? merged : item
-  //     );
-
-  //     this.toastr.success('Item updated successfully!');
-  //     this.editingRowIndex = null;
-  //   } else {
-  //     // --- Add new item ---
-  //     const withEmptyAttachments = {
-  //       ...newItem,
-  //       itemId: newItemId,
-  //       attachments: newItem.attachments?.length ? newItem.attachments : []
-  //     };
-  //     this.newPurchaseItemData = [...this.newPurchaseItemData, withEmptyAttachments];
-  //     this.toastr.success('Item added successfully!');
-  //   }
-
-  //   // Reset form
-  //   this.itemForm.reset({
-  //     amount: 0,
-  //     unitCost: 0,
-  //     orderQuantity: 1
-  //   });
-  // }
-
   // Edit a row
   editRow(row: any, rowIndex: number) {
+    this.editingRowIndex = rowIndex;
     this.itemForm.patchValue({
       id: row.id,
       itemType: row.itemType,
@@ -394,11 +329,19 @@ export class NewPurchaseRequestComponent implements OnInit {
       reqByDate: this.toDateInputValue(row.reqByDate),
       itemDescription: row.itemDescription,
       vendorUserId: row.vendorUserId,
+      // vendorCompanyId: row.vendorCompanyId,
       accountId: row.accountId,
       remarks: row.remarks,
       attachments: row.attachments
     });
-    this.editingRowIndex = rowIndex;
+
+    this.onVendorChange(row.vendorUserId);
+
+    Promise.resolve().then(() => {
+      this.itemForm.patchValue({ vendorCompanyId: row.vendorCompanyId }, { emitEvent: false });
+    });
+
+    // this.editingRowIndex = rowIndex;
   }
 
   deleteRow(rowIndex: number): void {
@@ -476,6 +419,7 @@ export class NewPurchaseRequestComponent implements OnInit {
             orderQuantity: item.orderQuantity,
             reqByDate: this.toDateInputValue(item.reqByDate),
             vendorUserId: item.vendorUserId,
+            vendorCompanyId: item.vendorCompanyId,
             accountId: item.accountId,
             remarks: item.remarks,
             createdBy: item.createdBy,
@@ -547,6 +491,7 @@ export class NewPurchaseRequestComponent implements OnInit {
         createdBy: item.createdBy || '',
         purchaseRequestId: item.purchaseRequestId || 0,
         vendorUserId: item.vendorUserId || null,
+        vendorCompanyId: item.vendorCompanyId || null,
         requisitionNo: f.requisitionNo,
         attachments: item.attachments?.map(att => ({
 
@@ -628,6 +573,7 @@ export class NewPurchaseRequestComponent implements OnInit {
         createdBy: item.createdBy || '',
         // purchaseRequestId: item.purchaseRequestId || 0,
         vendorUserId: item.vendorUserId || null,
+        vendorCompanyId: item.vendorCompanyId || null,
         requisitionNo: f.requisitionNo,
         attachments: item.attachments?.map(att => ({
 
@@ -825,20 +771,20 @@ export class NewPurchaseRequestComponent implements OnInit {
       }
     );
   }
-  loadFinalVendors() {
-    const loggedInUserId = localStorage.getItem('userId');
-    if (!loggedInUserId) return;
-
-    this.lookupService.getFinalVendorsForSelectionOnPr(loggedInUserId)
-      .subscribe({
-        next: (res) => {
-          this.finalVendors = res;
-          console.log('Final vendors loaded:', res);
-        },
-        error: (err) => {
-          console.error('Error loading final vendors:', err);
-        }
+  loadVendorsFinalSelection() {
+    this.purchaseRequestService.getVendorsAndCompanyForFinalSelection(this.procurementUserId)
+      .subscribe(res => {
+        this.finalVendors = res.value ?? res.data ?? res;
       });
   }
 
+  onVendorChange(vendorId: string) {
+    const vendor = this.finalVendors.find(v => v.vendorId === vendorId);
+    this.filteredCompanies = vendor ? vendor.companies : [];
+    // Only clear when ADDING (not editing)
+    if (this.editingRowIndex === null) {
+      this.itemForm.patchValue({ vendorCompanyId: null }, { emitEvent: false });
+    }
+    // this.itemForm.patchValue({ vendorCompanyId: null });
+  }
 }  

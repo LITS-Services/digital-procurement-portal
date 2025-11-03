@@ -12,6 +12,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { LookupService } from 'app/shared/services/lookup.service';
+import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 
 @Component({
   selector: 'app-rfq',
@@ -75,7 +76,7 @@ export class RfqComponent implements OnInit {
   constructor(private router: Router, private modalService: NgbModal,
     private route: ActivatedRoute, private rfqService: RfqService,
     private cdr: ChangeDetectorRef, public toastr: ToastrService,
-    public lookupService:LookupService
+    public lookupService:LookupService, private purchaseOrderService: PurchaseOrderService
   ) { }
 
   ngOnInit(): void {
@@ -315,6 +316,31 @@ export class RfqComponent implements OnInit {
     modalRef.componentInstance.rfqNo = row.rfqNo; // pass RfqNo
   }
 
+  createPO(row: any) {
+  
+      Swal.fire({
+        title: 'Create Purchase Order?',
+        text: 'This will generate PO(s) automatically for all items based on vendor assignment.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Create PO',
+        cancelButtonText: 'Cancel',
+      }).then((result) => {
+        if (result.isConfirmed) {
+  
+          this.purchaseOrderService.createPurchaseOrderFromRFQ(row.quotationId).subscribe({
+            next: () => {
+              console.log("Successfully created PO");
+              this.loadRfqs();
+            },
+            error: () => {
+              this.toastr.error('Something went wrong while creating PO.');
+            }
+          });
+  
+        }
+      });
+    }
 
     onPageChange(event: any) {
     // ngx-datatable gives 0-based offset

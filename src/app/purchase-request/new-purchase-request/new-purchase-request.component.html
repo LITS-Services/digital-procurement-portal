@@ -5,48 +5,14 @@
       <!-- Header -->
       <div class="row">
         <div class="col-md-12" style=" margin-top: -0.25rem;">
-          <!-- <h4 class="heading">Create Purchase Request</h4> -->
           <h4 class="heading">
             <ng-container *ngIf="viewMode === false">
               {{ isNewForm ? 'Create Purchase Request' : 'Update Purchase Request' }}
             </ng-container>
           </h4>
-
         </div>
       </div>
-
-      <!-- Action Pane -->
-      <!-- <div class="card">
-        <div class="row">
-          <div class="col-md-6">
-            <button class="btn btn-lg mr-1" type="button" (click)="homePage()"><i class="ft-arrow-left"></i></button>
-            <span class="vl"></span>
-        <button type="submit" class="btn btn-sm" [disabled]="newPurchaseRequestForm.invalid" (click)="submitForm()" [disabled]="viewMode">
-              <i class="ft-plus"></i><label class="ml-1 mt-1">Save</label>
-            </button>
-            <button type="reset" class="btn btn-sm">
-              <i class="ft-edit"></i><label class="ml-1 mt-1" for="">Edit</label>
-            </button>
-            <button type="reset" class="btn btn-sm">
-              <i class="ft-trash"></i><label class="ml-1 mt-1" for="">Delete</label>
-            </button>
-            <button type="reset" class="btn btn-sm">
-              <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
-            </button>
-          </div>
-          <div class="col-md-6 text-right" style="margin-top: 0.3rem;">
-            <button type="reset" class="btn btn-sm">
-              <i class="ft-printer"></i><label class="ml-1 mt-1" for="">Print</label>
-            </button> 
-            <button type="reset" class="btn btn-sm" (click)="openNewEntityModal()">
-              <i class="ft-paperclip"></i><label class="ml-1 mt-1" for="">Attachment</label>
-              <span class="badge badge-primary ml-1">{{ numberOfAttachments }}</span>
-            </button>
-          </div>
-
-        </div>
-
-      </div> -->
+      
       <div class="card cstm-ui-card">
         <div class="row">
           <div class="col-md-6">
@@ -107,10 +73,6 @@
             <button type="reset" class="btn btn-sm cstm-ui-table-btn mr-2">
               <i class="ft-printer"></i><label class="ml-1 mt-1" for="">Print</label>
             </button>
-            <!-- <button type="reset" class="btn btn-sm" (click)="openNewEntityModal()">
-              <i class="ft-paperclip"></i><label class="ml-1 mt-1" for="">Attachment</label>
-              <span class="badge badge-primary ml-1">{{ numberOfAttachments }}</span>
-            </button> -->
           </div>
           <!-- View Mode: No buttons -->
         </div>
@@ -147,17 +109,7 @@
                 <input type="text" class="form-control custom-input" formControlName="receiverContact"
                   placeholder="Enter Receiver Contact">
               </div>
-              <!-- <div class="col-lg-4 mb-2">
-                <label>Status</label>
-                <select class="form-control" formControlName="status">
-                  <option value="" disabled>Select Status</option>
-                  <option>Draft</option>
-                  <option>In-Progress</option>
-                  <option>Completed</option>
-                  <option>Cancelled</option>
-                  <option>Rejected</option>
-                </select>
-              </div> -->
+
               <div class="col-lg-4 mb-2">
                 <div class="form-group mb-2">
                   <label>Status</label>
@@ -259,22 +211,10 @@
                     <div class="col-12">
                       <hr>
                     </div>
-                    <!-- <ng-container *ngIf="itemForm.get('itemType')?.value === 'Inventory'"> -->
                     <div class="col-12">
                       <h5>Item Details</h5>
                     </div>
 
-                    <!-- <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                      <div class="form-group mb-2">
-                        <label>Item Code</label>
-                        <select class="form-control" formControlName="itemCode">
-                          <option value="" selected disabled>Select Item</option>
-                          <option value="ITM001 - Bandage">ITM001 - Bandage</option>
-                          <option value="ITM002 - Syringe">ITM002 - Syringe</option>
-                          <option value="ITM003 - Gloves">ITM003 - Gloves</option>
-                        </select>
-                      </div>
-                    </div> -->
                     <!-- Item Code -->
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                       <div class="form-group mb-2">
@@ -288,17 +228,6 @@
                       </div>
                     </div>
 
-                    <!-- <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-                      <div class="form-group mb-2">
-                        <label>U of M</label>
-                        <select class="form-control custom-input" formControlName="uofM">
-                          <option value="" selected disabled>Select UOM</option>
-                          <option value="PCS">PCS</option>
-                          <option value="BOX">BOX</option>
-                          <option value="PACK">PACK</option>
-                        </select>
-                      </div>
-                    </div> -->
                     <!-- U of M -->
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                       <div class="form-group mb-2">
@@ -312,13 +241,6 @@
                       </div>
                     </div>
 
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
-                      <div class="form-group mb-2">
-                        <label>Amount</label>
-                        <input type="number" placeholder="Enter Amount" class="form-control custom-input"
-                          formControlName="amount" />
-                      </div>
-                    </div>
 
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
                       <div class="form-group mb-2">
@@ -336,6 +258,12 @@
                       </div>
                     </div>
 
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
+                      <div class="form-group mb-2">
+                        <label>Budget Amount</label>
+                        <input type="number" readonly class="form-control custom-input" formControlName="amount" />
+                      </div>
+                    </div>
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
                       <div class="form-group mb-2">
                         <label>Req. by Date</label>
@@ -362,30 +290,29 @@
                     <div *ngIf="isSelectingFinalVendor" class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                       <div class="form-group mb-2">
                         <label>Final Vendor</label>
-                        <select class="form-control custom-input" formControlName="vendorUserId">
-                          <option value="" disabled>Select Final Vendor</option>
-                          <!-- <option *ngFor="let vendor of vendorUsers" [value]="vendor.id">
-                                                  {{ vendor.name }}
-                                                </option> -->
-                          <option *ngFor="let vendor of finalVendors" [value]="vendor.stringId">
-                            {{ vendor.description }}
+                        <select class="form-control custom-input" formControlName="vendorUserId"
+                          (change)="onVendorChange($event.target.value)">
+                          <option [ngValue]="null" disabled>Select Final Vendor</option>
+                          <option *ngFor="let v of finalVendors" [value]="v.vendorId">
+                            {{ v.vendorName }}
                           </option>
-
                         </select>
                       </div>
                     </div>
 
-                    <!-- <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+                    <div *ngIf="isSelectingFinalVendor" class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                       <div class="form-group mb-2">
-                        <label>Account</label>
-                        <select class="form-control" formControlName="account">
-                          <option value="" selected disabled>Select Account</option>
-                          <option value="ACC001 - Office Supplies">ACC001 - Office Supplies</option>
-                          <option value="ACC002 - Medical Supplies">ACC002 - Medical Supplies</option>
-                          <option value="ACC003 - Maintenance">ACC003 - Maintenance</option>
+                        <label>Vendor Company</label>
+                        <select class="form-control custom-input" formControlName="vendorCompanyId"
+                          [compareWith]="compareIds">
+                          <option [ngValue]="null" disabled>Select Company</option>
+                          <option *ngFor="let c of filteredCompanies" [ngValue]="c.companyId">
+                            {{ c.companyName }}
+                          </option>
                         </select>
                       </div>
-                    </div> -->
+                    </div>
+
                     <!-- Account -->
                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                       <div class="form-group mb-2">
@@ -405,22 +332,8 @@
                           formControlName="remarks"></textarea>
                       </div>
                     </div>
-                    <!-- </ng-container> -->
-
-                    <!-- <ng-container *ngIf="itemForm.get('itemType')?.value === 'Non-Inventory'">
-
-                      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                        <div class="form-group mb-2">
-                          <label>Item Description</label>
-                          <textarea rows="5" placeholder="Enter Item Description" class="form-control"
-                            formControlName="itemDescription"></textarea>
-                        </div>
-                      </div>
-                    </ng-container> -->
                   </div>
-
                   <br>
-
                 </div>
               </ng-template>
             </ngb-panel>
@@ -437,20 +350,21 @@
                     <span>{{rowIndex + 1}}</span>
                   </ng-template>
                 </ngx-datatable-column>
+                
                 <ngx-datatable-column name="Type" prop="itemType" [width]="70">
                 </ngx-datatable-column>
+                
                 <ngx-datatable-column name="Item" [width]="150">
                   <ng-template let-row="row" ngx-datatable-cell-template>
                     {{ getItemNameById(row.itemId) }}
                   </ng-template>
                 </ngx-datatable-column>
+                
                 <ngx-datatable-column name="Description" [width]="150" prop="itemDescription">
                 </ngx-datatable-column>
+               
                 <ngx-datatable-column name="Amount" prop="amount" [width]="180">
                 </ngx-datatable-column>
-
-                <!-- <ngx-datatable-column name="Vendor Name" prop="vendorName" [width]="100">
-                </ngx-datatable-column> -->
 
                 <ngx-datatable-column *ngIf="isSelectingFinalVendor" name="Final Vendor" [width]="100">
                   <ng-template let-row="row" ngx-datatable-cell-template>
@@ -489,10 +403,8 @@
                     </a>
                   </ng-template>
                 </ngx-datatable-column>
-
               </ngx-datatable>
             </div>
-
           </div>
         </div>
       </div>

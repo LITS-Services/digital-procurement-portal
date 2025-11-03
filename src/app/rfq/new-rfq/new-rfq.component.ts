@@ -14,6 +14,7 @@ import { RfqRemarksComponent } from '../rfq-remarks/rfq-remarks.component';
 import Swal from 'sweetalert2';
 import { LookupService } from 'app/shared/services/lookup.service';
 import { SelectedVendorsModalComponent } from './selected-vendors-modal/selected-vendors-modal.component';
+import { visitAll } from '@angular/compiler';
 
 @Component({
   selector: 'app-new-rfq',
@@ -164,7 +165,10 @@ export class NewRfqComponent implements OnInit {
       vendorCompanyId: [null],
       quotationItemAttachments: this.fb.array([])
     })
-
+    this.itemForm.valueChanges.subscribe(values => {
+      const total = (values.unitCost || 0) * (values.orderQuantity || 0);
+      this.itemForm.patchValue({ amount: total }, { emitEvent: false });
+    });
     this.itemForm.valueChanges.subscribe(() => {
       this.isFormDirty = true;
     });
@@ -380,6 +384,7 @@ selectTab(tab: 'rfq-input' | 'quotation-box' | 'vendors') {
             contentType: a.contentType || '',
             fileName: a.fileName || '',
             fromForm: a.fromForm || '',
+            visibleToVendor: a.visibleToVendor,
             createdDate: a.createdDate,
             modifiedDate: a.modifiedDate,
             createdBy: a.createdBy || 'current-user',
@@ -469,6 +474,7 @@ selectTab(tab: 'rfq-input' | 'quotation-box' | 'vendors') {
               contentType: a.contentType,
               fileName: a.fileName,
               fromForm: a.fromForm,
+              visibleToVendor: a.visibleToVendor,
               createdDate: a.createdDate,
               modifiedDate: a.modifiedDate,
               createdBy: a.createdBy,
@@ -556,6 +562,7 @@ selectTab(tab: 'rfq-input' | 'quotation-box' | 'vendors') {
           contentType: att.contentType || '',
           fileName: att.fileName || '',
           fromForm: att.fromForm || '',
+          visibleToVendor: att.visibleToVendor || false,
           createdBy: att.createdBy || '',
           isDeleted: false,
           quotationItemId: att.quotationItemId || 0,
@@ -587,6 +594,7 @@ selectTab(tab: 'rfq-input' | 'quotation-box' | 'vendors') {
           contentType: att.contentType || '',
           fileName: att.fileName || '',
           fromForm: att.fromForm || '',
+          visibleToVendor: att.visibleToVendor || false,
           createdBy: att.createdBy || '',
           isDeleted: false,
           quotationItemId: att.quotationItemId || 0,
@@ -816,6 +824,7 @@ selectTab(tab: 'rfq-input' | 'quotation-box' | 'vendors') {
             contentType: a.contentType,
             content: a.content,
             fromForm: a.fromForm,
+            visibleToVendor: a.visibleToVendor,
             quotationItemId: sourceRow?.id ?? 0,
             isNew: true
           }))
@@ -824,12 +833,12 @@ selectTab(tab: 'rfq-input' | 'quotation-box' | 'vendors') {
         if (rowIndex !== null) {
           // immutably update the edited row in the grid
           this.newQuotationItemData = this.newQuotationItemData.map((r, i) =>
-            i === rowIndex ? { ...r, quotationItemAttachments: merged } : r
+            i === rowIndex ? { ...r, quotationItemAttachments: data } : r
           );
 
         } else {
           // reflect on the form for a new (not yet inserted) item
-          this.itemForm.patchValue({ quotationItemAttachments: merged });
+          this.itemForm.patchValue({ quotationItemAttachments: data });
         }
         // this.numberOfAttachments = this.attachmentList.length;
       }
@@ -935,7 +944,6 @@ selectTab(tab: 'rfq-input' | 'quotation-box' | 'vendors') {
               this.loading = false;
             }
           });
-
         }
       },
       (reason) => {

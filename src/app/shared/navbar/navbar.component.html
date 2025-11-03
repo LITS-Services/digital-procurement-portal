@@ -33,8 +33,40 @@
           <div class="search-bar-container">
             <div class="search-input-wrapper">
               <i class="ft-search search-icon"></i>
-              <input type="text" class="custom-input search-input" placeholder="Search" />
+              <input type="text" class="custom-input search-input" [formControl]="searchCtrl"
+                 (focus)="openPanel()"
+                  (keydown)="onKeyDown($event)"
+              placeholder="Search" />
             </div>
+
+                    <div class="search-panel" *ngIf="panelOpen" (click)="$event.stopPropagation()">
+            <div class="panel-body">
+              <div *ngIf="loading" class="loading">Searching…</div>
+
+              <ng-container *ngIf="!loading">
+                <div *ngIf="results?.length; else emptyState">
+                  <div
+                    class="result-item"
+                    *ngFor="let r of results; let i = index; trackBy: trackById"
+                    [class.active]="i === activeIndex"
+                    (mouseenter)="activeIndex = i"
+                    (click)="selectResult(r)"
+                  >
+                    <div class="title text-ellipsis">
+                      {{ r.message }}
+                    </div>
+                    <!-- <div class="subtitle text-ellipsis" *ngIf="r.subtitle || r.description">
+                      {{ r.subtitle || r.description }}
+                    </div> -->
+                  </div>
+                </div>
+
+                <ng-template #emptyState>
+                  <div class="empty">No results</div>
+                </ng-template>
+              </ng-container>
+            </div>
+          </div>
               <div class="icon-buttons">
                 <!-- <button class="icon-btn">
                  <i class="ft-moon"></i>
@@ -62,7 +94,7 @@
                               <ng-container *ngIf="notifications?.length; else emptyState">
                                 <div class="notif-item" 
                                 [ngClass]="{ 'unread-notif': n.status === 0 }"
-                                *ngFor="let n of notifications">
+                                *ngFor="let n of notifications" (click)="onNotifClick(n)">
                                   <div class="row-1">
                                     <div class="title text-ellipsis d-flex align-items-center">{{ n.title }}
                                     <span *ngIf="n.status === 0" class="dot-unread ml-1"></span>
