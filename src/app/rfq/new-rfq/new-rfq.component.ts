@@ -867,46 +867,75 @@ export class NewRfqComponent implements OnInit {
     console.error('Error saving draft:', err);
   }
 
+  // onSubmitForApproval() {
+  //   Swal.fire({
+  //     title: 'Submit for Approval?',
+  //     text: 'Are you sure you want to submit this quotation for approval?',
+  //     icon: 'question',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Yes, submit it',
+  //     cancelButtonText: 'Cancel',
+  //     confirmButtonColor: '#3085d6',
+  //     cancelButtonColor: '#d33'
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
+  //         next: (res) => {
+  //           if (
+  //             res?.errors
+  //           ) {
+  //             this.router.navigate(['/rfq']);
+  //             return;
+  //           }
+  //           Swal.fire({
+  //             icon: 'success',
+  //             title: 'Submitted!',
+  //             text: res.message || 'Quotation submitted for approval successfully.',
+  //             confirmButtonColor: '#3085d6',
+  //           });
+  //           this.router.navigate(['/rfq']);
+  //         },
+  //         error: (err) => {
+  //           console.error(err);
+  //           Swal.fire({
+  //             icon: 'error',
+  //             title: 'Error',
+  //             text: 'Failed to submit quotation for approval.'
+  //           });
+  //         }
+  //       });
+  //     }
+  //   });
+  // }
+
   onSubmitForApproval() {
-    Swal.fire({
-      title: 'Submit for Approval?',
-      text: 'Are you sure you want to submit this quotation for approval?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, submit it',
-      cancelButtonText: 'Cancel',
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
-          next: (res) => {
-            if (
-              res?.errors
-            ) {
-              this.router.navigate(['/rfq']);
-              return;
-            }
-            Swal.fire({
-              icon: 'success',
-              title: 'Submitted!',
-              text: res.message || 'Quotation submitted for approval successfully.',
-              confirmButtonColor: '#3085d6',
-            });
-            this.router.navigate(['/rfq']);
-          },
-          error: (err) => {
-            console.error(err);
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Failed to submit quotation for approval.'
-            });
-          }
-        });
+  Swal.fire({
+    title: 'Submit for Approval?',
+    text: 'Are you sure you want to submit this quotation for approval?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, submit it',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33'
+  }).then((result) => {
+    if (!result.isConfirmed) return;
+
+    this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
+      next: () => {
+
+        // Navigate only on success
+        this.router.navigate(['/rfq']);
+      },
+      error: () => {
+        // don't show Swal — interceptor already shows error toast
+        // do nothing here
+        this.router.navigate(['/rfq']);
       }
     });
-  }
+  });
+}
+
 
   onAddRemarks(action: string): void {
     const modalRef = this.modalService.open(RfqRemarksComponent, {
