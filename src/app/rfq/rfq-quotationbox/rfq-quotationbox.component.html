@@ -1,132 +1,116 @@
-<!-- <div class="modal-header">
-    <h4 class="modal-title text-white">Quotation Box</h4>
-    <button type="button" class="close text-white" aria-label="Close" (click)="closeDialog()">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div> -->
+<!-- Header removed (unchanged for you) -->
 
 <div class="modal-body">
-    <div *ngIf="!isCreateMode" class="datatable-view animate-slide-in">
-        <div class="d-flex">
-            <button class="btn btn-sm  mr-1" (click)="view()">
-                <i class="ft-eye"></i> View Quotation
-            </button>
-            <!-- <button class="btn btn-sm mr-1" [disabled]="isEditButtonDisabled">
-          <i class="ft-edit"></i> Edit
+  <div class="row no-gutters">
+    <!-- LEFT: vendors list -->
+    <div class="col-md-3 pr-md-3 mb-3 mb-md-0">
+       <div class="small ml-1 vendor-owner mb-2">
+         total: {{ rfqData.length }}
+      </div>
+
+      <div class="vendor-list border rounded">
+        <!-- simple list, no search -->
+        <button
+          type="button"
+          class="vendor-item"
+          *ngFor="let v of rfqData; trackBy: trackVendor"
+          [class.active]="selectedVendor?.vendorUserId === v.vendorUserId"
+          (click)="selectVendor(v)"
+        >
+          <div class="d-flex justify-content-between w-100">
+            <div class="text-left">
+              <div class="vendor-title">{{ v.vendorName }}</div>
+              <div class="small vendor-owner">{{ v.owner }}</div>
+            </div>
+            <div class="text-right amount-text">
+              {{ v.amount | number:'1.2-2' }}
+            </div>
+          </div>
         </button>
-        <button class="btn btn-sm mr-1" [disabled]="isDeleteButtonDisabled">
-          <i class="ft-trash"></i> Delete
-        </button>
-        <div class="flex-grow-1"></div>
+      </div>
 
-        <button class="btn btn-sm ">
-          <i class="ft-paperclip"></i> Attachment
-        </button> -->
-        </div>
-        <hr>
-        <ngx-datatable class="bootstrap core-bootstrap" [rows]="rfqData" [columnMode]="'flex'" [headerHeight]="50"
-            [footerHeight]="50" [columns]="columns" rowHeight="auto" [limit]="5" [scrollbarH]="true"
-            [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
-            [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
-
-            <!-- Checkbox column fixed -->
-            <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false">
-                <ng-template ngx-datatable-header-template>
-                    <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
-                </ng-template>
-                <ng-template ngx-datatable-cell-template let-value="value" let-isSelected="isSelected"
-                    let-onCheckboxChangeFn="onCheckboxChangeFn">
-                    <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
-                </ng-template>
-            </ngx-datatable-column>
-
-            <!-- Vendor Code takes 2x space -->
-            <ngx-datatable-column name="Vendor Name" prop="vendorName" [flexGrow]="1"></ngx-datatable-column>
-
-            <!-- Amount takes 1x space -->
-            <ngx-datatable-column name="Amount" prop="amount" [flexGrow]="1"></ngx-datatable-column>
-
-            <!-- Owner takes 1x space -->
-            <ngx-datatable-column name="Owner" prop="owner" [flexGrow]="1"></ngx-datatable-column>
-
-        </ngx-datatable>
+   
     </div>
 
-    <div *ngIf="isCreateMode" class="create-form-view animate-slide-in">
-        <form [formGroup]="newQuotationBoxForm">
-            <div class="row">
-                <div class="col-md-6 form-group">
-                    <label>RFQ No.</label>
-                    <input type="text" formControlName="rfqNo" disabled class="form-control custom-input">
-                </div>
-                <div class="col-md-6 form-group">
-                    <label>PR No.</label>
-                    <input type="text" formControlName="purchaseRequestNo" disabled class="form-control custom-input">
-                </div>
+    <!-- RIGHT: details (form + items grid) -->
+    <div class="col-md-9">
+      <div *ngIf="!selectedVendor" class="py-4 text-center">
+        Select a vendor from the left to view their quotation.
+      </div>
 
-                <!-- <div class="col-md-6 form-group">
-                    <label>Requisition Date</label>
-                    <input type="date" formControlName="date" disabled class="form-control">
-                </div> -->
-                <div class="col-md-6 form-group">
-                    <label>RFQ Date</label>
-                    <input type="date" formControlName="date" disabled class="form-control  custom-input">
-                </div>
-
-                <!-- <div class="col-md-6 form-group">
-                    <label>Requisition Owner</label>
-                    <input type="text" formControlName="date" disabled class="form-control" placeholder="Fahad">
-                </div> -->
-                <div class="col-md-6 form-group">
-                    <label>RFQ Owner</label>
-                    <input type="text" formControlName="owner" disabled class="form-control  custom-input">
-                </div>
-
-                <div class="col-md-6 form-group">
-                    <label>RFQ Title</label>
-                    <input type="text" formControlName="title" disabled class="form-control  custom-input">
-                </div>
-
-                <div class="col-md-6 form-group">
-                    <label>RFQ Status</label>
-                    <input type="text" formControlName="requestStatus" disabled class="form-control  custom-input">
-                </div>
-
-                <div class="col-md-12 form-group">
-                    <label>Comment</label>
-                    <!-- <input type="text" formControlName="date" disabled  class="form-control" placeholder="Please enter your comment/remark"> -->
-                    <textarea type="text" formControlName="comment" class="form-control  custom-input"></textarea>
-                </div>
+      <div *ngIf="selectedVendor" class="create-form-view card cstm-ui-card animate-slide-in">
+        <form [formGroup]="newQuotationBoxForm" class="card-body">
+          <div class="row">
+            <div class="col-md-6 form-group">
+              <label>RFQ No.</label>
+              <input type="text" formControlName="rfqNo" disabled class="form-control custom-input" />
             </div>
+            <div class="col-md-6 form-group">
+              <label>PR No.</label>
+              <input type="text" formControlName="purchaseRequestNo" disabled class="form-control custom-input" />
+            </div>
+
+            <div class="col-md-6 form-group">
+              <label>RFQ Date</label>
+              <input type="date" formControlName="date" disabled class="form-control custom-input" />
+            </div>
+
+            <div class="col-md-6 form-group">
+              <label>RFQ Owner</label>
+              <input type="text" formControlName="owner" disabled class="form-control custom-input" />
+            </div>
+
+            <div class="col-md-6 form-group">
+              <label>RFQ Title</label>
+              <input type="text" formControlName="title" disabled class="form-control custom-input" />
+            </div>
+
+            <div class="col-md-6 form-group">
+              <label>RFQ Status</label>
+              <input type="text" formControlName="requestStatus" disabled class="form-control custom-input" />
+            </div>
+
+            <div class="col-md-12 form-group">
+              <label>Comment</label>
+              <textarea formControlName="comment" class="form-control custom-input"></textarea>
+            </div>
+          </div>
         </form>
 
-        <ngx-datatable class="bootstrap core-bootstrap" [rows]="itemsData" [columnMode]="'force'" [headerHeight]="50"
-            [footerHeight]="50" [columns]="columns" rowHeight="auto" [limit]="5" [scrollbarH]="true"
-            [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
-            [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
-
-            <ngx-datatable-column name="Item" prop="itemName"></ngx-datatable-column>
-            <ngx-datatable-column name="Description" prop="itemDescription"></ngx-datatable-column>
-            <!-- <ngx-datatable-column name="Req By Date" prop="reqByDate"></ngx-datatable-column> -->
-
-            <ngx-datatable-column name="Req By Date" prop="reqByDate">
-                <ng-template let-row="row" ngx-datatable-cell-template>
-                    {{ row.reqByDate | date:'yyyy-MM-dd' }}
-                </ng-template>
-            </ngx-datatable-column>
-            <ngx-datatable-column name="Bid Price" prop="biddingAmount"></ngx-datatable-column>
-            <ngx-datatable-column name="Comment" prop="comment"></ngx-datatable-column>
-            <ngx-datatable-column name="Status" prop="bidRequestStatus"></ngx-datatable-column>
+        <!-- items grid: unchanged -->
+        <ngx-datatable
+          class="bootstrap core-bootstrap"
+          [rows]="itemsData"
+          [columnMode]="'force'"
+          [headerHeight]="50"
+          [footerHeight]="50"
+          [columns]="columns"
+          rowHeight="auto"
+          [limit]="5"
+          [scrollbarH]="true"
+          [loadingIndicator]="loading"
+        >
+          <ngx-datatable-column name="Item" prop="itemName"></ngx-datatable-column>
+          <ngx-datatable-column name="Description" prop="itemDescription"></ngx-datatable-column>
+          <ngx-datatable-column name="Req By Date" prop="reqByDate">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+              {{ row.reqByDate | date:'yyyy-MM-dd' }}
+            </ng-template>
+          </ngx-datatable-column>
+          <ngx-datatable-column name="Bid Price" prop="biddingAmount"></ngx-datatable-column>
+          <ngx-datatable-column name="Comment" prop="comment"></ngx-datatable-column>
         </ngx-datatable>
+      </div>
+
+        <div>
+            <button class="btn btn-secondary">Back</button>
+            <span class="spacer"></span>
+            <button class="btn btn-danger" (click)="rejectVendor()">Reject</button>
+            <button class="btn btn-primary" (click)="reviseVendor()">Revise</button>
+            <span class="spacer"></span>
+            <button class="btn btn-primary">Submit</button>
+        </div>
+
     </div>
+  </div>
 </div>
-
-<!-- <div class="modal-footer" *ngIf="isCreateMode">
-    <button class="btn btn-secondary" (click)="backToVendors()">Back</button>
-    <span class="spacer"></span>
-    <button class="btn btn-danger" (click)="rejectVendor()">Reject</button>
-    <button class="btn btn-primary" (click)="reviseVendor()">Revise</button>
-
-    <span class="spacer"></span>
-    <button class="btn btn-primary" (click)="closeDialog()">Submit</button>
-</div> -->

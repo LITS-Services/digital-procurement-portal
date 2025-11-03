@@ -5,6 +5,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
 import { RfqService } from '../rfq.service';
 import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-rfq-quotationbox',
@@ -124,12 +125,9 @@ export class RfqQuotationboxComponent implements OnInit {
   trackVendor = (_: number, v: any) => v.vendorUserId;
 
     rejectVendor() {
-    if (this.chkBoxSelected.length !== 1) {
-      this.toastr.info('Please select one vendor to reject.');
-      return;
-    }
+   
 
-    const vendor = this.chkBoxSelected[0];
+    const vendor =  this.selectedVendor
 
     Swal.fire({
       title: 'Reject Vendor?',
@@ -149,8 +147,8 @@ export class RfqQuotationboxComponent implements OnInit {
         this.rfqService.rejectOrReviseBid(payload).subscribe({
 
           next: () => {
-            this.activeModal.close(true);
-          },
+ 
+       ``   },
           error: () => {
           }
         });
@@ -159,12 +157,8 @@ export class RfqQuotationboxComponent implements OnInit {
   }
 
   reviseVendor() {
-    if (this.chkBoxSelected.length !== 1) {
-      this.toastr.info('Please select one vendor to revise.');
-      return;
-    }
 
-    const vendor = this.chkBoxSelected[0];
+    const vendor = this.selectedVendor
 
     Swal.fire({
       title: 'Send for Revision?',
@@ -183,7 +177,7 @@ export class RfqQuotationboxComponent implements OnInit {
 
         this.rfqService.rejectOrReviseBid(payload).subscribe({
           next: () => {
-            this.activeModal.close(true);
+            // this.activeModal.close(true);
           },
           error: () => {
           }
