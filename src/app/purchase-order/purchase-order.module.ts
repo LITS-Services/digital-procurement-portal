@@ -11,7 +11,7 @@ import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-r
 @NgModule({
   declarations: [
     PurchaseOrderListComponent,
-    CreatePurchaseOrderComponent
+    CreatePurchaseOrderComponent,
   ],
   imports: [
     CommonModule,

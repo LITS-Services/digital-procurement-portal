@@ -178,6 +178,12 @@
                                     <span class="popover-icon"><i class="ft-list"></i></span>
                                     Approval History
                                 </button>
+
+                                <button *ngIf="row.requestStatus === 'Completed'; else poWaitingTemplate"
+                  class="btn popover-btn btn-sm m-1" ngbTooltip="Create Purchase Order" (click)="createPO(row)">
+                  <span class="popover-icon"> <i class="ft-shopping-cart"></i> </span>
+                  Create Purchase Order
+                </button>
                             </div>
                         </ng-template>
                     </ng-template>

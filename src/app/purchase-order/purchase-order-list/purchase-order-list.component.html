@@ -1,24 +1,24 @@
 <section>
-    <div class="row">
-        <div class="col-12">
+  <div class="row">
+    <div class="col-12">
 
-            <!-- Header -->
-            <div class="row">
-                <div class="col-md-12" style="margin-top: -0.25rem;">
-                    <!-- <h4>Announcements</h4> -->
-                    <h4 class="heading">Purchase Orders</h4>
-                </div>
-            </div>
+      <!-- Header -->
+      <div class="row">
+        <div class="col-md-12" style="margin-top: -0.25rem;">
+          <!-- <h4>Announcements</h4> -->
+          <h4 class="heading">Purchase Orders</h4>
+        </div>
+      </div>
 
-            <!-- Action Pane -->
-            <div class="card cstm-ui-card">
-                <div class="row">
-                    <div class="col-md-12 row">
-                        <div class="col-md-5">
-                            <button class="btn btn-lg mr-1 " type="button" (click)="homePage()">
-                                <i class="ft-arrow-left"></i></button>
-                            <span class="vl"></span>
-                            <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn"
+      <!-- Action Pane -->
+      <div class="card cstm-ui-card">
+        <div class="row">
+          <div class="col-md-12 row">
+            <div class="col-md-5">
+              <button class="btn btn-lg mr-1 " type="button" (click)="homePage()">
+                <i class="ft-arrow-left"></i></button>
+              <span class="vl"></span>
+              <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn"
                                 ngbTooltip="Create new Global Configuration" (click)="openEmpDetails()">
                                 <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
                             </button>
@@ -26,34 +26,32 @@
                                 <i class="ft-edit"></i><label class="ml-1 mt-1">Update</label>
                             </button> -->
 
-                            <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()"
+              <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()"
                                 [disabled]="isDeleteButtonDisabled">
                                 <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
                             </button> -->
 
-                            <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
+              <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
                                 (click)="onView()">
                                 <i class="ft-eye"></i><label class="ml-1 mt-1">View</label>
                             </button> -->
-                        </div>
-
-                        <!-- <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
-                            <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
-                        </button> -->
-                    </div>
-                </div>
             </div>
 
-            <!-- Content -->
-            <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="purchaseOrderData" [columnMode]="'force'"
-                [headerHeight]="50" [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'" [limit]="pageSize"
-                [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
-                [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
-                 (sort)="onSort($event)"
-                (select)="customChkboxOnSelect($event)" 
-                [selectionType]="SelectionType.single" (rowClick)="onRowClick($event)" (activate)="onActivate($event)"
-      (clickType)="'single'">>
-                <!-- <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+            <!-- <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
+                            <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
+                        </button> -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="purchaseOrderData" [columnMode]="'force'"
+        [headerHeight]="50" [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'" [limit]="pageSize"
+        [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
+        [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
+        (sort)="onSort($event)" (select)="customChkboxOnSelect($event)" [selectionType]="SelectionType.single"
+        (rowClick)="onRowClick($event)" (activate)="onActivate($event)" (clickType)="'single'">>
+        <!-- <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
                     [resizeable]="false">
                     <ng-template ngx-datatable-header-template>
                         <div class="custom-control cstm-checkbox-form">
@@ -69,47 +67,49 @@
                     </ng-template>
                 </ngx-datatable-column> -->
 
-                <!-- Sr. No -->
-                <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false" [sortable]="false">
-                    <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                        <span>{{ rowIndex + 1 }}</span>
-                    </ng-template>
-                </ngx-datatable-column>
+        <!-- Sr. No -->
+        <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false" [sortable]="false">
+          <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
+            <span>{{ rowIndex + 1 }}</span>
+          </ng-template>
+        </ngx-datatable-column>
 
-                <ngx-datatable-column name="PO No." prop="purchaseOrderNo" [sortable]="false">
-                </ngx-datatable-column>
+        <ngx-datatable-column name="PO No." prop="purchaseOrderNo" [sortable]="false">
+        </ngx-datatable-column>
 
-                <ngx-datatable-column name="Requisition No." prop="requisitionNo" [sortable]="false">
-                </ngx-datatable-column>
+        <ngx-datatable-column name="Requisition No." prop="requisitionNo" [sortable]="false">
+        </ngx-datatable-column>
 
-                <!-- <ngx-datatable-column name="Date" prop="date" [width]="50">
+        <!-- <ngx-datatable-column name="Date" prop="date" [width]="50">
                 </ngx-datatable-column> -->
 
-                <ngx-datatable-column name="RFQ No." prop="rfqNo" [sortable]="false">
-                </ngx-datatable-column>
-                <ngx-datatable-column name="Status" prop="requestStatus" [sortable]="false">
-                </ngx-datatable-column>
-                <ngx-datatable-column name="Item" prop="itemName" [sortable]="false">
-                </ngx-datatable-column>
-                <ngx-datatable-column name="Description" prop="itemDescription" [sortable]="false">
-                </ngx-datatable-column>
-                <ngx-datatable-column name="Req By Date" prop="reqByDate" [sortable]="false">
-                    <ng-template let-row="row" ngx-datatable-cell-template>
-                        {{ row.reqByDate | date:'yyyy-MM-dd' }}
-                    </ng-template>
-                </ngx-datatable-column>
-                <ngx-datatable-column name="Amount" prop="amount" [sortable]="false">
-                </ngx-datatable-column>
+        <ngx-datatable-column name="RFQ No." prop="rfqNo" [sortable]="false">
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Vendor" prop="vendorName" [sortable]="false">
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Status" prop="requestStatus" [sortable]="false">
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Total Items" prop="itemsCount" [sortable]="false">
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Total Amount" prop="totalAmount" [sortable]="false">
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Date" prop="createdDate" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            {{ row.createdDate | date:'yyyy-MM-dd' }}
+          </ng-template>
+        </ngx-datatable-column>
+        <!-- <ngx-datatable-column name="Amount" prop="amount" [sortable]="false">
+                </ngx-datatable-column> -->
 
-                <!-- <ngx-datatable-column name="Comments" prop="comment">
+        <!-- <ngx-datatable-column name="Comments" prop="comment">
                 </ngx-datatable-column>
 
                 <ngx-datatable-column name="Total Amount" prop="amount" [sortable]="false">
                 </ngx-datatable-column> -->
 
-            </ngx-datatable>
-        </div>
+      </ngx-datatable>
     </div>
+  </div>
 </section>
 <!-- Purchase Order Details Template -->
 <ng-template #purchaseOrderDetail let-modal>
@@ -117,7 +117,7 @@
     <h5 class="modal-title mb-0 text-white">
       <i class="fa fa-file-invoice me-3"></i> Purchase Order Details
     </h5>
-     <button type="button" class="close text-white" aria-label="Close" (click)="modal.dismiss('Cross click')">
+    <button type="button" class="close text-white" aria-label="Close" (click)="modal.dismiss('Cross click')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
@@ -134,9 +134,7 @@
         <div class="col-md-6 text-md-end">
           <p>
             <span class="label">Status:</span>
-            <span
-              class="status-badge"
-              [ngClass]="{
+            <span class="status-badge" [ngClass]="{
                 'bg-success': selectedPO.requestStatus === 'Approved',
                 'bg-warning text-dark': selectedPO.requestStatus === 'Pending',
                 'bg-danger': selectedPO.requestStatus === 'Rejected',
@@ -162,7 +160,7 @@
               <th class="text-end">Amount</th>
             </tr>
           </thead>
-          <tbody>
+          <!-- <tbody>
             <tr>
               <td>{{ selectedPO.itemName }}</td>
               <td>{{ selectedPO.itemDescription || '-' }}</td>
@@ -170,7 +168,17 @@
               <td class="text-end">{{ selectedPO.unitPrice }}</td>
               <td class="text-end">{{ selectedPO.amount }}</td>
             </tr>
+          </tbody> -->
+          <tbody>
+            <tr *ngFor="let item of selectedPO.items">
+              <td>{{ item.itemName }}</td>
+              <td>{{ item.itemDescription || '-' }}</td>
+              <td class="text-center">{{ item.quantity || '-' }}</td>
+              <td class="text-end">{{ item.unitPrice }}</td>
+              <td class="text-end">{{ item.amount }}</td>
+            </tr>
           </tbody>
+
         </table>
       </div>
 
@@ -179,11 +187,11 @@
           <tbody>
             <tr>
               <td>Subtotal</td>
-              <td class="text-end">{{ selectedPO.amount }}</td>
+              <td class="text-end">{{ selectedPO.totalAmount }}</td>
             </tr>
             <tr class="total-row">
               <td><strong>Total</strong></td>
-              <td class="text-end"><strong>{{ selectedPO.amount }}</strong></td>
+              <td class="text-end"><strong>{{ selectedPO.totalAmount }}</strong></td>
             </tr>
           </tbody>
         </table>
@@ -193,12 +201,10 @@
 
   <div class="modal-footer border-top-0">
     <button type="button" class="btn btn-outline-secondary px-4" (click)="modal.close()">
-       Close
+      Close
     </button>
   </div>
 </ng-template>
-
-
 
 <!-- Delete Modal -->
 <!-- <ng-template #deleteModal let-c="close" let-d="dismiss">
