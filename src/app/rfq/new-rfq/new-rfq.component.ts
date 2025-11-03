@@ -881,6 +881,12 @@ export class NewRfqComponent implements OnInit {
       if (result.isConfirmed) {
         this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
           next: (res) => {
+            if (
+              res?.errors
+            ) {
+              this.router.navigate(['/rfq']);
+              return;
+            }
             Swal.fire({
               icon: 'success',
               title: 'Submitted!',

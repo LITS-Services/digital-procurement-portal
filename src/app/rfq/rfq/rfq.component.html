@@ -184,6 +184,13 @@
                   <span class="popover-icon"> <i class="ft-shopping-cart"></i> </span>
                   Create Purchase Order
                 </button>
+                 <ng-template #poWaitingTemplate>
+                  <button class="btn popover-btn btn-sm m-1" disabled
+                    ngbTooltip="PO can only be created when RFQ is Completed.">
+                    <span class="popover-icon"><i class="ft-shopping-cart" style="opacity: 0.5;"></i> </span>
+                    Create Purchase Order
+                  </button>
+                </ng-template>
                             </div>
                         </ng-template>
                     </ng-template>
