@@ -13,6 +13,7 @@ import { FirebaseMessagingService } from 'app/firebase-messaging.service';
 import { ToastrService } from 'ngx-toastr';
 import { tr } from 'date-fns/locale';
 import { catchError, debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { UserServiceService } from '../services/user-service.service';
 
 @Component({
   selector: "app-navbar",
@@ -37,6 +38,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   configSub: Subscription;
   username: string;
   profilePicture: string = "assets/img/profile/user.png"; // default avatar
+  private sub!: Subscription;
 
   @ViewChild("search") searchElement: ElementRef;
   @ViewChildren("searchResults") searchResults: QueryList<any>;
@@ -76,7 +78,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     private notificationService: NotifcationService,
     private cdr: ChangeDetectorRef,
     private messagingService: FirebaseMessagingService,
-    private toaster: ToastrService
+    private toaster: ToastrService,
+    private userService: UserServiceService
   ) {
     const browserLang: string = translate.getBrowserLang();
     translate.use(browserLang.match(/en|es|pt|de|ar/) ? browserLang : "en");
@@ -89,6 +92,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.sub = this.userService.profilePicture$.subscribe(url => {
+      this.profilePicture = url || 'assets/img/profile/user.png';
+    });
     this.bindSearch();
     this.setupClickOutside();
     this.getNotification();
@@ -162,19 +168,19 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         switchMap((q) =>
           q
             ? this.notificationService.getSearch(q).pipe(
-                catchError(() => of([])),
-                finalize(() => {
-                  this.loading = false;
-                  this.cdr.markForCheck(); 
-                })
-              )
+              catchError(() => of([])),
+              finalize(() => {
+                this.loading = false;
+                this.cdr.markForCheck();
+              })
+            )
             : of([])
         ),
         takeUntil(this.destroy$)
       )
       .subscribe((res) => {
         this.results = res || [];
-        this.cdr.markForCheck(); 
+        this.cdr.markForCheck();
       });
   }
 
@@ -310,7 +316,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  onSearch() {}
+  onSearch() { }
 
   onNotifClick(n: any): void {
     const wasUnread = n.status === 0;

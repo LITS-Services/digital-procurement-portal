@@ -1,19 +1,256 @@
 .btn-custom-primary {
-        background-color: rgb(30, 137, 184);
-        border-color: rgb(30, 137, 184);
-        color: white; /* Ensure text is white for contrast */
-    }
-    .btn-custom-primary:hover {
-        background-color: rgb(24, 109, 147); /* Slightly darker on hover */
-        border-color: rgb(24, 109, 147);
-        color: white;
-    }
-    .text-custom-primary {
-        color: rgb(30, 137, 184) !important;
-    }
-    .border-custom-primary {
-        border-color: rgb(30, 137, 184) !important;
-    }
-    .bg-custom-primary {
-        background-color: rgb(30, 137, 184) !important;
-    }
+    background-color: rgb(30, 137, 184);
+    border-color: rgb(30, 137, 184);
+    color: white;
+    /* Ensure text is white for contrast */
+}
+
+.btn-custom-primary:hover {
+    background-color: rgb(24, 109, 147);
+    /* Slightly darker on hover */
+    border-color: rgb(24, 109, 147);
+    color: white;
+}
+
+.text-custom-primary {
+    color: rgb(30, 137, 184) !important;
+}
+
+.border-custom-primary {
+    border-color: rgb(30, 137, 184) !important;
+}
+
+.bg-custom-primary {
+    background-color: rgb(30, 137, 184) !important;
+}
+
+.ngx-datatable .datatable-header-inner {
+    background-color: #1E89B8 !important;
+}
+
+
+.accordion-section ::ng-deep .accordion .card .card-header button {
+    padding: 1rem;
+    width: 100%;
+    text-align: start;
+    align-self: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: #115ec3 !important;
+    // background: linear-gradient(168deg, #116AEF 0%, #114C7A 100%); 
+    background: #fff !important;
+}
+
+.accordion-section ::ng-deep .accordion .card .card-header {
+    border-bottom: 1px solid #D7D7D7 !important;
+}
+
+
+.accordion-section ::ng-deep .badge-pill {
+    border-radius: 27rem !important;
+    width: 20px !important;
+    height: 20px !important;
+    padding: 4px !important;
+}
+
+
+.accordion-section ::ng-deep .badge {
+    font-size: 92% !important;
+}
+
+.accordion-section ::ng-deep .badge-bg {
+    background-color: #4188f2 !important;
+}
+
+.accordion-section ::ng-deep .badge-green {
+    background-color: #4188f2 !important;
+}
+
+.profile-image-upload-area {
+    position: relative;
+    display: inline-block;
+}
+
+/* Wrap image + overlay together */
+.profile-image-wrapper {
+    position: relative;
+    display: inline-block;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Image styling */
+.user-profile-image {
+    display: block;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    transition: filter 0.3s ease;
+}
+
+/* Overlay (perfect circle on top) */
+.camera-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Icon animation */
+.camera-overlay i {
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+}
+
+/* Hover effects */
+label:hover .profile-image-wrapper {
+    transform: scale(1.05);
+    // box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+label:hover .user-profile-image {
+    filter: brightness(0.8);
+}
+
+label:hover .camera-overlay {
+    opacity: 1;
+}
+
+label:hover .camera-overlay i {
+    transform: scale(1);
+}
+
+
+/* Password input container */
+.password-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* Input styling (inherits your global styles but ensures space for icon) */
+.password-input-group input {
+  width: 100%;
+  padding-right: 40px;
+  /* space for the eye icon */
+  height: 45px;
+  border-radius: 10px;
+  border: 1px solid #ced4da;
+  font-size: 14px;
+  transition: border-color 0.2s ease-in-out;
+}
+
+/* Focus effect */
+.password-input-group input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.25);
+}
+
+/* Eye icon styling */
+.password-input-group .eye-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #888;
+  cursor: pointer;
+  z-index: 2;
+  pointer-events: auto;
+  transition: color 0.2s ease-in-out;
+}
+
+/* Hover effect */
+.password-input-group .eye-icon:hover {
+  color: #007bff;
+}
+
+
+.user-info-card {
+  width: 100%;
+}
+
+.user-info-item .label {
+  font-weight: 600; /* Bold label text */
+  color: #6c757d;   /* Muted gray for labels */
+  font-size: 0.9rem;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.user-info-item .value {
+  font-weight: 500;
+  color: #212529;
+  font-size: 1rem;
+}
+
+
+.custom-tabs-container {
+//   border: 1px solid #dee2e6;
+//   border-radius: 10px;
+//   background: #fff;
+  overflow: hidden;
+}
+
+/* Header */
+.custom-tabs-header {
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.custom-tabs-header .tab-btn {
+  padding: 12px 20px;
+  border: none;
+  background: none;
+  font-weight: 600;
+  color: #6c757d;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border-bottom: 3px solid transparent;
+
+}
+
+.custom-tabs-header .tab-btn:hover {
+  color: #1E89B8;
+  background-color: rgba(30, 137, 184, 0.08);
+}
+
+.custom-tabs-header .tab-btn.active {
+  color: #1E89B8;
+  border-bottom: 3px solid #1E89B8;
+  background-color: #fff;
+}
+
+/* Tab content animation */
+.tab-content {
+  background-color: #fff;
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+.fade-in {
+  animation: fadeIn 0.25s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Optional shadow */
+.shadow-sm {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}

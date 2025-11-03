@@ -21,7 +21,9 @@ export class LoginPageComponent implements OnInit {
   loginForm = new UntypedFormGroup({
     username: new UntypedFormControl('', [Validators.required]),
     password: new UntypedFormControl('', [Validators.required]),
-    rememberMe: new UntypedFormControl(true)
+    rememberMe: new UntypedFormControl(true),
+    recaptchaReactive: new UntypedFormControl('', [Validators.required])
+
   });
 
   constructor(
@@ -79,6 +81,12 @@ export class LoginPageComponent implements OnInit {
   // 🔹 Normal login
   onSubmit() {
     this.loginFormSubmitted = true;
+    // captcha
+    if (this.loginForm.controls['recaptchaReactive'].invalid) {
+      this.toastr.warning('Please verify the CAPTCHA to proceed.');
+      return;
+    }
+
     if (this.loginForm.invalid) return;
 
     this.spinner.show(undefined, {
@@ -157,7 +165,7 @@ export class LoginPageComponent implements OnInit {
     this.hidePassword = !this.hidePassword;
   }
 
-  rememberMe() {}
+  rememberMe() { }
 
   forgotpassword() {
     this.router.navigate(['forgotpassword'], { relativeTo: this.route.parent });
