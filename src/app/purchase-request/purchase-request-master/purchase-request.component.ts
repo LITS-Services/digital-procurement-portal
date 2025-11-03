@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import { CreatePurchaseOrderComponent } from 'app/purchase-order/create-purchase-order/create-purchase-order.component';
 import { LookupService } from 'app/shared/services/lookup.service';
 import { Subject } from 'rxjs';
+import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 
 @Component({
   selector: 'app-purchase-request',
@@ -36,26 +37,25 @@ export class PurchaseRequestComponent implements OnInit {
   isAllSelected = false;
   columns = [];
 
-
   totalPages = 0;
   totalItems = 0;
 
   query: PRQuery = {
-  currentPage: 1,
-  pageSize: 10,
-  status: null,
-  userId: null,
-  prNo: null
+    currentPage: 1,
+    pageSize: 10,
+    status: null,
+    userId: null,
+    prNo: null
   };
 
   showFilterBar = false;
   selectedStatusLabel = 'All';
 
-    status:any
+  status: any
 
   statusTouched: boolean = false;
-    searchText = '';
-    private searchChanged$ = new Subject<string>();
+  searchText = '';
+  private searchChanged$ = new Subject<string>();
 
   constructor(
     private router: Router,
@@ -64,7 +64,8 @@ export class PurchaseRequestComponent implements OnInit {
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     private toastr: ToastrService,
-    public lookupService:LookupService
+    public lookupService: LookupService,
+    private purchaseOrderService: PurchaseOrderService
 
   ) { }
 
@@ -98,31 +99,31 @@ export class PurchaseRequestComponent implements OnInit {
     });
   }
 
-      loadStatus() {
-      this.lookupService.getAllRequestStatus().subscribe({
-        next: (data: any) => {
-          this.status = data;
-        },
-        error: (err) => {
-          console.error('Error fetching Status:', err);
-        }
-      });
-    }
+  loadStatus() {
+    this.lookupService.getAllRequestStatus().subscribe({
+      next: (data: any) => {
+        this.status = data;
+      },
+      error: (err) => {
+        console.error('Error fetching Status:', err);
+      }
+    });
+  }
 
-    onStatusChange(status: any) {
-    if(status === 'All') {
+  onStatusChange(status: any) {
+    if (status === 'All') {
       this.selectedStatusLabel = "All"
     }
-    else{
-       this.selectedStatusLabel = status?.description;
+    else {
+      this.selectedStatusLabel = status?.description;
     }
     this.statusTouched = true;
     this.query.status = status?.description;;
-    this.query.currentPage = 1 ;
+    this.query.currentPage = 1;
     this.loadPurchaseRequests();
   }
 
-    onSearchChange(text: string) {
+  onSearchChange(text: string) {
     this.searchText = text;
     this.searchChanged$.next(text);
   }
@@ -361,14 +362,39 @@ export class PurchaseRequestComponent implements OnInit {
     this.loadPurchaseRequests();
   }
 
-  openCreatePoModal(row: any): void {
-    console.log('Opening modal for PR ID:', row); // for debugging
-    const modalRef = this.modalService.open(CreatePurchaseOrderComponent, { size: 'lg', backdrop: 'static', centered: true });
-    modalRef.componentInstance.purchaseRequestId = row.requestId;
+  // openCreatePoModal(row: any): void {
+  //   console.log('Opening modal for PR ID:', row); // for debugging
+  //   const modalRef = this.modalService.open(CreatePurchaseOrderComponent, { size: 'lg', backdrop: 'static', centered: true });
+  //   modalRef.componentInstance.purchaseRequestId = row.requestId;
 
-    modalRef.closed.subscribe((result) => {
-      if (result) {
-        this.loadPurchaseRequests(); // refresh main list
+  //   modalRef.closed.subscribe((result) => {
+  //     if (result) {
+  //       this.loadPurchaseRequests(); // refresh main list
+  //     }
+  //   });
+  // }
+  createPO(row: any) {
+
+    Swal.fire({
+      title: 'Create Purchase Order?',
+      text: 'This will generate PO(s) automatically for all items based on vendor assignment.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Create PO',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        this.purchaseOrderService.createPurchaseOrderFromPR(row.requestId).subscribe({
+          next: () => {
+            console.log("Successfully created PO");
+            this.loadPurchaseRequests();
+          },
+          error: () => {
+            this.toastr.error('Something went wrong while creating PO.');
+          }
+        });
+
       }
     });
   }

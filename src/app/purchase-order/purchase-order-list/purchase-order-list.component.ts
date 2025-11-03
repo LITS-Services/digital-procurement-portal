@@ -10,7 +10,7 @@ import { PurchaseOrderService } from 'app/shared/services/purchase-order.service
   styleUrls: ['./purchase-order-list.component.scss'],
 })
 export class PurchaseOrderListComponent implements OnInit {
-@ViewChild('purchaseOrderDetail') purchaseOrderDetail: TemplateRef<any>;
+  @ViewChild('purchaseOrderDetail') purchaseOrderDetail: TemplateRef<any>;
   selectedPO: any;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
@@ -31,11 +31,10 @@ export class PurchaseOrderListComponent implements OnInit {
   totalPages = 0;
   totalItems = 0;
 
-
   constructor(private purchaseOrderService: PurchaseOrderService,
     public cdr: ChangeDetectorRef,
     private router: Router,
-        private modalService: NgbModal
+    private modalService: NgbModal
 
   ) { }
 
@@ -125,16 +124,24 @@ export class PurchaseOrderListComponent implements OnInit {
   }
 
   // onRowClick(event: any) {
-  //   const clicked = event.row;
-  //   this.selectedPO = clicked;
+  //   console.log('Row clicked:', event);
+
+  //   this.selectedPO = event.row;
   //   this.modalService.open(this.purchaseOrderDetail, { size: 'lg', centered: true });
   // }
   onRowClick(event: any) {
-    console.log('Row clicked:', event);
+  console.log('Row clicked:', event);
 
-    this.selectedPO = event.row;
-    this.modalService.open(this.purchaseOrderDetail, { size: 'lg', centered: true });
-  }
+  const row = event.row;
+
+  this.selectedPO = {
+    ...row,
+    items: row.items || row.Items || [] // support both keys
+  };
+
+  this.modalService.open(this.purchaseOrderDetail, { size: 'lg', centered: true });
+}
+
 
   onActivate(event: any) {
     // We only want clicks, not mouseenter or keydown etc.
