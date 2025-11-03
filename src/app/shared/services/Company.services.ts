@@ -95,18 +95,26 @@ export class CompanyService {
     return this.http.get<any[]>(`${this.apiUrl}/get-all-vendor-companies`);
   }
 
-  
-// company
-VendorCompanyAction(payload: any) {
-  return this.http.post(`${environment.apiUrl}/Company/VendorCompanyAction`, payload);
-}
 
 
 
-//
-CreatEmailTemplate(payload: any) {
-  return this.http.post(`${environment.apiUrl}/EmailTemplate/Create`, payload);
-}
+
+  // company
+  VendorCompanyAction(payload: any) {
+    return this.http.post(`${environment.apiUrl}/Company/VendorCompanyAction`, payload);
+  }
+
+  getApprovalHistoryByProcurmentcompanyId(ProcurementCompanyId: number, vendorComapnyId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/Company/get-company-approval-history?ProcurementCompanyId=${ProcurementCompanyId}&VendorCompanyId=${vendorComapnyId}`);
+  }
+
+
+
+
+  //
+  CreatEmailTemplate(payload: any) {
+    return this.http.post(`${environment.apiUrl}/EmailTemplate/Create`, payload);
+  }
 
 
 

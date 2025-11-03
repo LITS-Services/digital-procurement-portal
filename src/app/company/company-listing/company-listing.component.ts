@@ -4,6 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { AuthService } from 'app/shared/auth/auth.service';
+import { CompanyApprovalHistoryComponent } from '../company-approval-history/company-approval-history.component';
 
 @Component({
   selector: 'app-company-listing',
@@ -28,6 +29,12 @@ export class CompanyListingComponent implements OnInit {
   isAddNewDisable = true;
   isAllSelected = false;
   showStatusColumn = true; // Flag to toggle the Status column visibility
+  searchTerm: string = '';
+
+  // Filter dropdown state
+  activeFilter: string = 'All';
+  selectedStatusLabel: string = 'All';
+  statusTouched: boolean = false;
 
   constructor(
     private router: Router,
@@ -40,7 +47,7 @@ export class CompanyListingComponent implements OnInit {
   ngOnInit(): void {
     this.getCompanyData();
 
-    // Define the table columns initially without 'Status' as it's conditional
+    // Define the table columns initially
     this.columns = [
       { prop: 'name', name: 'Name' },
       { prop: 'companyStatus', name: 'Status', visible: true },
@@ -56,7 +63,6 @@ export class CompanyListingComponent implements OnInit {
     this.loading = true;
 
     const userId = localStorage.getItem('userId');
-
     if (!userId) {
       console.warn('No userId found in localStorage');
       this.tenderingData = [];
@@ -65,7 +71,6 @@ export class CompanyListingComponent implements OnInit {
       return;
     }
 
-    // Always call getCompaniesByUserEntity regardless of role
     this.companyService.getCompaniesByUserEntity(userId).subscribe({
       next: (res: any) => {
         const companies = res?.result || res || [];
@@ -89,37 +94,40 @@ export class CompanyListingComponent implements OnInit {
     });
   }
 
- private mapCompany(c: any) {
-  const primaryAddress = Array.isArray(c.addressesVM) && c.addressesVM.length ? c.addressesVM[0] : {};
-  const primaryContact = Array.isArray(c.contactsVM) && c.contactsVM.length ? c.contactsVM[0] : {};
-  const demographics = c.purchasingDemographics || {};
-  
-  // pick the appropriate entity record (you can adjust logic if needed)
-  const selectedEntity =
-    (c.vendorUseCompaniesVM?.find((v) => v.status?.toLowerCase() === 'inprocess')) ||
-    (c.vendorUseCompaniesVM?.[0] || null);
+  private mapCompany(c: any) {
+    const primaryAddress = Array.isArray(c.addressesVM) && c.addressesVM.length ? c.addressesVM[0] : {};
+    const primaryContact = Array.isArray(c.contactsVM) && c.contactsVM.length ? c.contactsVM[0] : {};
+    const demographics = c.purchasingDemographics || {};
 
-  return {
-    id: c.id,
-    name: c.name || '',
-    companyStatus: c.status || '',
-    street: primaryAddress.street || '',
-    city: primaryAddress.city || '',
-    contactNumber: primaryContact.contactNumber || '',
-    remarks: c.remarks || '',
-    vendorType: demographics.vendorType || '',
-    primaryCurrency: demographics.primaryCurrency || '',
-    entity: selectedEntity?.procurementCompany || '', // existing visible field
-    procurementCompanyId: selectedEntity?.procurementCompanyId || null // ✅ NEW FIELD
-  };
-}
+    const selectedEntity =
+      (c.vendorUseCompaniesVM?.find((v) => v.status?.toLowerCase() === 'inprocess')) ||
+      (c.vendorUseCompaniesVM?.[0] || null);
 
+    return {
+      id: c.id,
+      name: c.name || '',
+      companyStatus: c.status || '',
+      street: primaryAddress.street || '',
+      city: primaryAddress.city || '',
+      contactNumber: primaryContact.contactNumber || '',
+      remarks: c.remarks || '',
+      vendorType: demographics.vendorType || '',
+      primaryCurrency: demographics.primaryCurrency || '',
+      entity: selectedEntity?.procurementCompany || '',
+      procurementCompanyId: selectedEntity?.procurementCompanyId || null,
+      vendorComapnyId: selectedEntity?.vendorComapnyId || null
+    };
+  }
 
+  /** FILTER BUTTONS LOGIC */
   showAll() {
     this.rows = this.allCompanies.filter(c =>
       !c.companyStatus || ['inprocess', 'approve'].includes(c.companyStatus.toLowerCase())
     );
-    this.showStatusColumn = true; // Show the Status column when viewing all companies
+    this.activeFilter = 'All';
+    this.selectedStatusLabel = 'All';
+    this.statusTouched = true;
+    this.showStatusColumn = true;
     this.cdr.detectChanges();
   }
 
@@ -127,7 +135,10 @@ export class CompanyListingComponent implements OnInit {
     this.rows = this.allCompanies.filter(c =>
       c.companyStatus.toLowerCase() === 'inprocess'
     );
-    this.showStatusColumn = true; // Show Status for in-process companies
+    this.activeFilter = 'InProcess';
+    this.selectedStatusLabel = 'InProcess';
+    this.statusTouched = true;
+    this.showStatusColumn = true;
     this.cdr.detectChanges();
   }
 
@@ -135,7 +146,10 @@ export class CompanyListingComponent implements OnInit {
     this.rows = this.allCompanies.filter(c =>
       c.companyStatus.toLowerCase() === 'sendback'
     );
-    this.showStatusColumn = false; // Hide Status for recalled companies
+    this.activeFilter = 'Recall';
+    this.selectedStatusLabel = 'Recall';
+    this.statusTouched = true;
+    this.showStatusColumn = false;
     this.cdr.detectChanges();
   }
 
@@ -153,22 +167,42 @@ export class CompanyListingComponent implements OnInit {
       const rows = [...this.rows];
       const sort = event.sorts[0];
       rows.sort((a, b) =>
-        a[sort.prop].localeCompare(b[sort.prop]) * (sort.dir === 'desc' ? -1 : 1)
+        a[sort.prop]?.toString().localeCompare(b[sort.prop]?.toString() || '') * (sort.dir === 'desc' ? -1 : 1)
       );
       this.rows = rows;
       this.loading = false;
     }, 1000);
   }
 
-  customChkboxOnSelect({ selected }) {
-    this.chkBoxSelected = [];
-    this.chkBoxSelected.splice(0, this.chkBoxSelected.length);
-    this.chkBoxSelected.push(...selected);
-    this.announcementId = selected[0]?.id;
-     this.chkBoxSelected = [...selected];
-  this.announcementId = selected[0]?.id;
+  openApprovalHistoryModal(selectedRow: any): void {
+    const modalRef = this.modalService.open(CompanyApprovalHistoryComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      centered: true
+    });
 
-  console.log("Selected ProcurementCompanyId: ", selected[0]?.procurementCompanyId);
+    modalRef.componentInstance.ProcurementCompanyId = selectedRow.procurementCompanyId;
+    modalRef.componentInstance.vendorComapnyId = selectedRow.id;
+    modalRef.componentInstance.entity = selectedRow.entity;
+    console.log('Selected Row:', selectedRow);
+    console.log(' sent to modal:', selectedRow.vendorComapnyId);
+  }
+
+  customChkboxOnSelect({ selected }) {
+    this.chkBoxSelected = [...selected];
+    this.announcementId = selected[0]?.id;
+
+    console.log("Selected ProcurementCompanyId: ", selected[0]?.procurementCompanyId);
+    this.enableDisableButtons();
+  }
+
+  toggleSelectAll(event: any) {
+    if (event.target.checked) {
+      this.chkBoxSelected = [...this.rows];
+    } else {
+      this.chkBoxSelected = [];
+    }
+    this.isAllSelected = event.target.checked;
     this.enableDisableButtons();
   }
 
@@ -179,22 +213,45 @@ export class CompanyListingComponent implements OnInit {
     this.isEditButtonDisabled = selectedRowCount !== 1;
     this.isOpenButtonDisabled = selectedRowCount === 0;
 
-    this.isAllSelected = this.tenderingData.length === selectedRowCount;
+    this.isAllSelected = this.rows.length === selectedRowCount;
   }
 
-editSelectedRow() {
-  if (this.chkBoxSelected.length === 1) {
-    const row = this.chkBoxSelected[0];
-    this.router.navigate(['/company/company-edit'], { 
-      queryParams: { 
-        id: row.id, 
-        procurementCompanyId: row.procurementCompanyId 
-      } 
-    });
-  } else {
-    alert('Please select a single company to update.');
+  applySearchFilter() {
+    const term = this.searchTerm.trim().toLowerCase();
+
+    if (!term) {
+      // Reset filter to current selected filter
+      if (this.activeFilter === 'All') this.showAll();
+      else if (this.activeFilter === 'InProcess') this.showInProcess();
+      else if (this.activeFilter === 'Recall') this.showRecall();
+      return;
+    }
+    this.rows = this.allCompanies.filter(c =>
+      (c.entity?.toLowerCase().includes(term) || c.name?.toLowerCase().includes(term)) &&
+      (
+        this.activeFilter === 'All'
+          ? (!c.companyStatus || ['inprocess', 'approve'].includes(c.companyStatus.toLowerCase()))
+          : this.activeFilter === 'InProcess'
+            ? c.companyStatus?.toLowerCase() === 'inprocess'
+            : c.companyStatus?.toLowerCase() === 'sendback'
+      )
+    );
+
+    this.cdr.detectChanges();
   }
-}
 
 
+  editSelectedRow() {
+    if (this.chkBoxSelected.length === 1) {
+      const row = this.chkBoxSelected[0];
+      this.router.navigate(['/company/company-edit'], {
+        queryParams: {
+          id: row.id,
+          procurementCompanyId: row.procurementCompanyId
+        }
+      });
+    } else {
+      alert('Please select a single company to update.');
+    }
+  }
 }

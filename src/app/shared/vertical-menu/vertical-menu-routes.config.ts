@@ -34,13 +34,13 @@ export const ROUTES: RouteInfo[] = [
   //   ]
   // },
   {
-    path: '', title: 'Setup', icon: 'ft-settings', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false,
+    path: '', title: 'Setup', icon: 'ft-settings', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false, 
     submenu: [
       { path: '/setup/workflow', title: 'Workflow Setup', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
       { path: '/setup/email-setup', title: 'invitation', icon: 'ft-mail submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
       { path: '/setup/email-templatelist', title: 'Email Template List', icon: 'ft-mail submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-    ]
-  },
+    ],
+    roles: ['Admin'] },
 
 
 

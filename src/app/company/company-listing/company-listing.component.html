@@ -1,94 +1,141 @@
 <section>
-    <div class="row">
-        <div class="col-12">
+  <div class="row">
+    <div class="col-12">
 
-            <!-- Header -->
-            <div class="row">
-                <div class="col-md-12" style="margin-top: -0.25rem;">
-                    <h4 class="heading">Vendor Companies</h4>
-                </div>
-            </div>
-
-            <!-- Action Pane -->
-            <div class="card cstm-ui-card">
-                <div class="row">
-                    <div class="col-md-6">
-                        <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
-                            <i class="ft-arrow-left"></i>
-                        </button>
-                        <span class="vl"></span>
-
-                        <!-- Action Buttons -->
-                        <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
-                            (click)="editSelectedRow()">
-                            <i class="ft-edit"></i><label class="ml-1 mt-1">Company Review</label>
-                        </button>
-
-                        <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="showAll()">
-                            <i class="ft-align-left"></i>
-                            <label class="ml-1 mt-1">All</label>
-                        </button>
-
-                        <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="showInProcess()">
-                            <i class="ft-share-2"></i>
-                            <label class="ml-1 mt-1">InProcess</label>
-                        </button>
-
-                        <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="showRecall()">
-                            <i class="ft-refresh-ccw"></i>
-                            <label class="ml-1 mt-1">Recall</label>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Table Content -->
-            <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="rows" [columnMode]="'force'"
-                [headerHeight]="50" [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'" [limit]="15"
-                [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
-                [selectionType]="SelectionType.checkbox" (sort)="onSort($event)"
-                (select)="customChkboxOnSelect($event)">
-
-                <!-- Checkbox Column -->
-                <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
-                    [resizeable]="false">
-                    <ng-template ngx-datatable-header-template>
-                        <div class="custom-control cstm-checkbox-form">
-                            <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
-                        </div>
-                    </ng-template>
-                    <ng-template ngx-datatable-cell-template let-value="value" let-isSelected="isSelected"
-                        let-onCheckboxChangeFn="onCheckboxChangeFn">
-                        <div class="custom-control custom-checkbox cstm-checkbox-form">
-                            <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
-                        </div>
-                    </ng-template>
-                </ngx-datatable-column>
-
-                <!-- Sr No Column -->
-                <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
-                    <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                        <span>{{ rowIndex + 1 }}</span>
-                    </ng-template>
-                </ngx-datatable-column>
-
-                <!-- Data Columns -->
-                <ngx-datatable-column name="Name" prop="name" [width]="120"></ngx-datatable-column>
-
-                <!-- Conditionally Display Status Column -->
-                <ngx-datatable-column *ngIf="showStatusColumn" name="Status" prop="companyStatus" [width]="100"></ngx-datatable-column>
-
-                <ngx-datatable-column name="City" prop="city" [width]="120"></ngx-datatable-column>
-
-                <ngx-datatable-column name="Vendor Type" prop="vendorType" [width]="120"></ngx-datatable-column>
-                
-                <ngx-datatable-column name="Currency" prop="primaryCurrency" [width]="100"></ngx-datatable-column>
-
-                <!-- New Entity Column -->
-                <!-- <ngx-datatable-column name="Entity" prop="entity" [width]="120"></ngx-datatable-column> -->
-
-            </ngx-datatable>
-
+      <!-- Header -->
+      <div class="row">
+        <div class="col-md-12" style="margin-top: -0.25rem;">
+          <h4 class="heading">Vendor Companies</h4>
         </div>
+      </div>
+
+      <!-- Action Pane -->
+      <div class="card cstm-ui-card">
+        <div class="row align-items-center p-2">
+          <div class="col-md-7 d-flex align-items-center flex-wrap">
+
+            <!-- Back Button -->
+            <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+              <i class="ft-arrow-left"></i>
+            </button>
+            <span class="vl"></span>
+
+            <!-- Company Review Button -->
+            <button type="button" class="btn btn-sm cstm-ui-table-btn ml-2" [disabled]="isEditButtonDisabled"
+              (click)="editSelectedRow()">
+              <i class="ft-edit"></i>
+              <label class="ml-1 mt-1">Company Review</label>
+            </button>
+
+            <!-- Filter Dropdown -->
+            <div ngbDropdown class="d-inline-block ml-2">
+              <button class="btn btn-sm cstm-ui-table-btn" ngbDropdownToggle>
+                <i class="ft-filter"></i>
+                <label class="ml-1 mt-1">{{ selectedStatusLabel }}</label>
+                <i class="ft-chevron-down ml-1"></i>
+              </button>
+              <div ngbDropdownMenu>
+                <button class="dropdown-item" (click)="showAll()">All</button>
+                <button class="dropdown-item" (click)="showInProcess()">InProcess</button>
+                <button class="dropdown-item" (click)="showRecall()">Recall</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="col-md-5 mt-2 mt-md-0">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text bg-transparent border-right-0">
+                  <i class="ft-search"></i>
+                </span>
+              </div>
+              <input type="text" class="form-control border-left-0 cstm-ui-input"
+                placeholder="Search by Entity or Company..." [(ngModel)]="searchTerm" (input)="applySearchFilter()" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Content -->
+      <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="rows" [columnMode]="'force'"
+        [headerHeight]="50" [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'" [limit]="15"
+        [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
+        [selectionType]="SelectionType.checkbox" (sort)="onSort($event)"
+        (select)="customChkboxOnSelect($event)">
+
+        <!-- Checkbox Column -->
+        <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+          [resizeable]="false">
+          <ng-template ngx-datatable-header-template>
+            <div class="custom-control cstm-checkbox-form">
+              <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
+            </div>
+          </ng-template>
+          <ng-template ngx-datatable-cell-template let-isSelected="isSelected"
+            let-onCheckboxChangeFn="onCheckboxChangeFn">
+            <div class="custom-control custom-checkbox cstm-checkbox-form">
+              <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Sr No Column -->
+        <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+          <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
+            <span>{{ rowIndex + 1 }}</span>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Entity Column -->
+        <ngx-datatable-column name="Entity" prop="entity" [width]="150">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <span>{{ row.entity }}</span>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Company Name Column -->
+        <ngx-datatable-column name="Company" prop="name" [width]="150">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <span>{{ row.name }}</span>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Conditionally Display Status Column -->
+        <ngx-datatable-column *ngIf="showStatusColumn" name="Status" prop="companyStatus" [width]="100">
+        </ngx-datatable-column>
+
+        <!-- City -->
+        <ngx-datatable-column name="City" prop="city" [width]="120"></ngx-datatable-column>
+
+        <!-- Vendor Type -->
+        <ngx-datatable-column name="Vendor Type" prop="vendorType" [width]="120"></ngx-datatable-column>
+
+        <!-- Currency -->
+        <ngx-datatable-column name="Currency" prop="primaryCurrency" [width]="100"></ngx-datatable-column>
+
+        <!-- Action Column -->
+        <ngx-datatable-column name="Action" [width]="100" prop="action" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <button type="button" class="btn btn-sm btn-primary" [ngbPopover]="actionToolbar"
+              popoverClass="action-popover" placement="bottom" container="body">
+              <i class="ft-settings"></i>
+            </button>
+
+            <!-- Popover Template -->
+            <ng-template #actionToolbar>
+              <div class="d-flex justify-content-around flex-column">
+                <button class="btn popover-btn btn-sm m-1" ngbTooltip="Approval History"
+                  (click)="openApprovalHistoryModal(row)">
+                  <span class="popover-icon"><i class="ft-list"></i></span>
+                  Approval History
+                </button>
+              </div>
+            </ng-template>
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
+
     </div>
+  </div>
 </section>
