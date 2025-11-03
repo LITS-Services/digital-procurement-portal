@@ -63,7 +63,7 @@ set refreshToken(token: string | null) {
 
   // ===== SSO Login =====
   initiateSSOLogin(returnUrl: string = '/dashboard/dashboard1'): Observable<any> {
-    return this.http.get(`${this.baseUrl}/Auth/sso/login-url?returnUrl=${encodeURIComponent(returnUrl)}`);
+    return this.http.get(`${this.baseUrl}/Auth/procurement-sso/login-url?returnUrl=${encodeURIComponent(returnUrl)}`);
   }
 // =======ForgotPassword====
 
