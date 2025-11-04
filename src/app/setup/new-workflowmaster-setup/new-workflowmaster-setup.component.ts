@@ -6,7 +6,9 @@ import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-dat
 import { PurchaseRequestAttachmentModalComponent } from 'app/shared/modals/purchase-request-attachment-modal/purchase-request-attachment-modal.component';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { WorkflowServiceService } from 'app/shared/services/WorkflowService/workflow-service.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-new-workflowmaster-setup',
@@ -49,7 +51,8 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
     private modalService: NgbModal,
     private WorkflowServiceService: WorkflowServiceService,
     private fb: FormBuilder,
-    public toastr: ToastrService
+    public toastr: ToastrService,
+    private spinner: NgxSpinnerService
   ) { }
 
   ngOnInit(): void {
@@ -141,37 +144,43 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
   }
 
   getEntities(): void {
-    this.companyService.getProCompanies().subscribe({
-      next: (res: any) => {
-        this.entitiesList = res.result || [];
-        this.dataLoaded = true;   // <-- mark as loaded here
-      },
-      error: (err) => {
-        console.error('Error fetching entities:', err);
-        this.dataLoaded = true;   // or false depending on your UX (maybe show error UI)
-      }
-    });
+    debugger;
+    this.spinner.show();
+    this.companyService.getProCompanies()
+      .pipe(finalize(() => this.spinner.hide()))
+      .subscribe({
+        next: (res: any) => {
+          this.entitiesList = res.result || [];
+          this.dataLoaded = true;
+        },
+        error: (err) => {
+          console.error('Error fetching entities:', err);
+          this.dataLoaded = true;
+        }
+      });
   }
+
 
   onEntitySelected(entityId: number) {
     if (!entityId) return;
 
     this.selectedEntityIdForWorkflow = entityId;
-    this.loading = true;
-    this.companyService.getUserByEntity(entityId).subscribe({
-      next: (res: any) => {
-        const users = res?.result || [];
-        if (this.isVendorOnboarding) {
-          this.approverList = users;
-          this.approverForm.get('approverList')?.reset();
-          // ❌ DO NOT modify usersList form control here
-        } this.loading = false;
-      },
-      error: (err) => {
-        console.error('Error fetching entity users:', err);
-        this.loading = false;
-      }
-    });
+    this.spinner.show(); // show loader before API call
+
+    this.companyService.getUserByEntity(entityId)
+      .pipe(finalize(() => this.spinner.hide())) // always hide loader
+      .subscribe({
+        next: (res: any) => {
+          const users = res?.result || [];
+          if (this.isVendorOnboarding) {
+            this.approverList = users;
+            this.approverForm.get('approverList')?.reset();
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching entity users:', err);
+        }
+      });
   }
 
   getWorkflowTypes(): void {
