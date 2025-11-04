@@ -1,5 +1,35 @@
-<section class="page-user-profile container-fluid py-5" style="background-color: #f8f9fa;">
-  <div class="row justify-content-center g-4"> 
+<section class="page-user-profile container-fluid py-2">
+
+
+  <div class="row">
+    <div class="col-md-12" style="margin-top: -0.25rem;">
+      <h4 class="heading">User Profile</h4>
+    </div>
+  </div>
+
+
+  <div class="card cstm-ui-card">
+    <div class="row">
+      <div class="col-md-6">
+        <!-- Back Button -->
+        <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+          <i class="ft-arrow-left"></i>
+        </button>
+        <span class="vl"></span>
+        <button style="cursor: pointer;" type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="resetPasswordForm.invalid"
+          (click)="onResetPassword()">
+          <i class="ft-lock"></i>
+          <label class="ml-1 mt-1">Change Password</label>
+        </button>
+        <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="registerUser()">
+          <i class="ft-user-plus"></i>
+          <label class="ml-1 mt-1">Register User</label>
+        </button> -->
+      </div>
+    </div>
+  </div>
+
+  <div class="row justify-content-center g-4 d-none">
     <!-- Profile Card -->
     <div class="col-lg-4 col-md-10">
       <div class="card p-4 h-100 shadow-lg border-0" style="border-radius: 12px;">
@@ -7,18 +37,16 @@
 
           <!-- Profile Image Upload -->
           <div class="profile-image-upload-area position-relative d-inline-block mb-4">
-            <img [src]="profileImage" 
-                 class="user-profile-image rounded-circle border border-5 border-custom-primary shadow-sm" 
-                 alt="User Profile Image" 
-                 height="180" width="180" 
-                 style="object-fit: cover;">
+            <img [src]="profileImage"
+              class="user-profile-image rounded-circle border border-5 border-custom-primary shadow-sm"
+              alt="User Profile Image" height="180" width="180" style="object-fit: cover;">
 
-            <input type="file" (change)="onProfileImageChange($event)" id="profileImageUpload" accept="image/*" style="display: none;">
+            <input type="file" (change)="onProfileImageChange($event)" id="profileImageUpload" accept="image/*"
+              style="display: none;">
 
-            <label for="profileImageUpload" 
-                   class="profile-upload-overlay-btn btn btn-custom-primary btn-sm rounded-circle position-absolute p-2 text-white" 
-                   title="Change Profile Picture" 
-                   style="bottom: 5px; right: 5px; cursor: pointer;">
+            <label for="profileImageUpload"
+              class="profile-upload-overlay-btn btn btn-custom-primary btn-sm rounded-circle position-absolute p-2 text-white"
+              title="Change Profile Picture" style="bottom: 5px; right: 5px; cursor: pointer;">
               <i class="fas fa-camera fa-lg"></i>
             </label>
           </div>
@@ -29,17 +57,19 @@
               <i class="fas fa-user-circle me-2 text-custom-primary"></i> {{ userForm.get('fullName')?.value }}
             </h4>
             <p class="text-muted mb-0 d-flex align-items-center justify-content-center">
-              <i class="fas fa-envelope me-2 text-secondary"style="margin-right: 5px;"></i> {{ userForm.get('email')?.value }}
+              <i class="fas fa-envelope me-2 text-secondary" style="margin-right: 5px;"></i> {{
+              userForm.get('email')?.value }}
             </p>
             <span class="badge bg-custom-primary mt-3 py-2 px-3">
-              <i class="fas fa-code me-1"></i> 
+              <i class="fas fa-code me-1"></i>
               {{ userForm.get('roles')?.value[0]?.name || 'Role' }}
             </span>
           </div>
 
           <!-- Reset Password Button -->
           <div class="d-grid gap-3 w-100 mt-auto pt-4 border-top">
-            <button type="button" class="btn btn-danger btn-md shadow-sm" (click)="openResetPassword(resetPasswordModal)">
+            <button type="button" class="btn btn-danger btn-md shadow-sm"
+              (click)="openResetPassword(resetPasswordModal)">
               <i class="fas fa-lock me-2"></i> Reset Password
             </button>
           </div>
@@ -52,17 +82,17 @@
     <div class="col-lg-7 col-md-10">
       <div class="card p-5 h-100 shadow-lg border-0 position-relative" style="border-radius: 12px;">
 
-        <h3 class="mb-5 fw-light text-custom-primary border-bottom pb-3"> 
-          <i class="fas fa-edit me-2"></i> Edit Employee Details
+        <h3 class="mb-5 fw-light text-custom-primary border-bottom pb-3">
+          <i class="fas fa-edit me-2"></i>Employee Details
         </h3>
 
         <form [formGroup]="userForm" (ngSubmit)="saveChanges()" class="h-100 d-flex flex-column">
-          <div class="row g-5 flex-grow-1"> 
+          <div class="row g-5 flex-grow-1">
 
             <!-- Username (disabled) -->
             <div class="col-md-6">
               <label class="form-label d-flex align-items-center mb-2">
-                <i class="fas fa-user me-2 text-secondary"style=" margin-right: 7px;"></i> Username
+                <i class="fas fa-user me-2 text-secondary" style=" margin-right: 7px;"></i> Username
               </label>
               <input type="text" class="form-control form-control-sm" formControlName="userName" disabled>
             </div>
@@ -70,7 +100,7 @@
             <!-- Full Name (disabled) -->
             <div class="col-md-6">
               <label class="form-label d-flex align-items-center mb-2">
-                <i class="fas fa-id-badge me-2 text-secondary"style=" margin-right: 7px;"></i> Full Name
+                <i class="fas fa-id-badge me-2 text-secondary" style=" margin-right: 7px;"></i> Full Name
               </label>
               <input type="text" class="form-control form-control-sm" formControlName="fullName" disabled>
             </div>
@@ -87,7 +117,8 @@
 
           <!-- Buttons aligned bottom-right -->
           <div class="d-flex justify-content-end mt-4">
-            <button type="reset" class="btn btn-outline-secondary btn-sm px-4 me-3 shadow-sm" style=" margin-right: 7px;">
+            <button type="reset" class="btn btn-outline-secondary btn-sm px-4 me-3 shadow-sm"
+              style=" margin-right: 7px;">
               <i class="fas fa-times me-2"></i> Cancel
             </button>
             <button type="submit" class="btn btn-custom-primary btn-sm px-4 shadow-sm">
@@ -98,6 +129,282 @@
       </div>
     </div>
   </div>
+
+  <div class="card p-4 h-100 shadow-lg border-0" style="border-radius: 12px;">
+
+    <div class="row">
+      <div class="col-md-4" style="display: flex;justify-content: center;margin-top: 3.5em;">
+        <!-- Profile Image Upload -->
+        <div class="d-flex justify-content-center">
+          <div class="profile-image-upload-area position-relative d-inline-block mb-4">
+            <label for="profileImageUpload" class="d-block m-0 position-relative cursor-pointer">
+              <div class="profile-image-wrapper position-relative">
+                <img [src]="profileImage"
+                  class="user-profile-image rounded-circle border border-5 border-custom-primary"
+                  alt="User Profile Image" height="280" width="280"
+                  style="object-fit: cover; box-shadow: 17px 1rem 0.25rem rgba(0, 0, 0, 0.075) !important;">
+
+                <div
+                  class="camera-overlay d-flex align-items-center justify-content-center position-absolute rounded-circle"
+                  title="Change Profile Picture">
+                  <i class="fas fa-camera text-white" style="font-size:3.5em"></i>
+                </div>
+              </div>
+            </label>
+
+            <input type="file" id="profileImageUpload" (change)="onProfileImageChange($event)" accept="image/*" hidden>
+          </div>
+        </div>
+
+        <!-- Profile Info -->
+        <!-- <div class="w-100 mb-5">
+            <h4 class="mb-1 fw-bolder text-dark">
+              <i class="fas fa-user-circle me-2 text-custom-primary"></i> {{ userForm.get('fullName')?.value }}
+            </h4>
+            <p class="">
+              <i class="fas fa-envelope me-2 text-secondary" style="margin-right: 5px;"></i> {{
+              userForm.get('email')?.value }}
+            </p>
+            <span class="badge bg-custom-primary mt-3 py-2 px-3">
+              <i class="fas fa-code me-1"></i>
+              {{ userForm.get('roles')?.value[0]?.name || 'Role' }}
+            </span>
+          </div> -->
+
+      </div>
+      <div class="col-md-8">
+
+        <div class="accordion-section d-none">
+          <ngb-accordion #accordion="ngbAccordion" [activeIds]="'tab-2'" [closeOthers]="false">
+            <!-- User Details -->
+            <ngb-panel id="tab-1" title="User Details">
+              <ng-template ngbPanelContent>
+                <div class="user-info-container">
+                  <div class="user-info-card rounded-3">
+
+                    <div class="user-info-item mb-3">
+                      <div class="label">Full Name</div>
+                      <div class="value">{{ userForm.get('fullName')?.value || '—' }}</div>
+                    </div>
+
+                    <div class="user-info-item mb-3">
+                      <div class="label">Email</div>
+                      <div class="value">{{ userForm.get('email')?.value || '—' }}</div>
+                    </div>
+
+                    <div class="user-info-item">
+                      <div class="label">Role</div>
+                      <div class="value">{{ userForm.get('roles')?.value[0]?.name || '—' }}</div>
+                    </div>
+
+                  </div>
+                </div>
+              </ng-template>
+            </ngb-panel>
+
+
+
+            <!-- Change Password -->
+            <ngb-panel id="tab-2" title="Change Password">
+              <ng-template ngbPanelContent>
+                <div class="row">
+                  <div class="col-md-12">
+
+                    <form [formGroup]="resetPasswordForm" (ngSubmit)="onResetPassword()">
+                      <div class="modal-body p-4">
+
+                        <!-- Old Password -->
+                        <div class="mb-3">
+                          <label class="form-label"><i class="fas fa-lock me-2 text-secondary"></i> Old Password</label>
+                          <!-- <div class="input-group">
+                            <input [type]="showOldPassword ? 'text' : 'password'" formControlName="oldPassword"
+                              class="form-control form-control-sm" placeholder="Enter old password">
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                              (click)="showOldPassword = !showOldPassword">
+                              <i class="fas" [ngClass]="showOldPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            </button>
+                          </div> -->
+
+
+                          <div class="password-input-group">
+                            <input [type]="hideOldPassword ? 'password' : 'text'" formControlName="oldPassword"
+                              class="form-control custom-input" placeholder="Enter Old password" />
+                            <i class="eye-icon ft" [ngClass]="hideOldPassword ? 'ft-eye-off' : 'ft-eye'"
+                              (click)="togglePasswordVisibility('oldPassword')"></i>
+                          </div>
+                        </div>
+
+                        <!-- New Password -->
+                        <div class="mb-3">
+                          <label class="form-label">
+                            <i class="fas fa-unlock-alt me-2 text-secondary"></i> New Password
+                          </label>
+                          <!-- <div class="input-group">
+                            <input [type]="showNewPassword ? 'text' : 'password'" formControlName="newPassword"
+                              class="form-control form-control-sm" placeholder="Enter new password">
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                              (click)="showNewPassword = !showNewPassword">
+                              <i class="fas" [ngClass]="showNewPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            </button>
+                          </div> -->
+
+
+                          <div class="password-input-group">
+                            <input [type]="hidePassword ? 'password' : 'text'" formControlName="newPassword"
+                              class="form-control custom-input" placeholder="Enter new password" />
+                            <i class="eye-icon ft" [ngClass]="hidePassword ? 'ft-eye-off' : 'ft-eye'"
+                              (click)="togglePasswordVisibility('password')"></i>
+                          </div>
+
+
+                          <small class="text-danger"
+                            *ngIf="resetPasswordForm.get('newPassword')?.invalid && resetPasswordForm.get('newPassword')?.touched">
+                            Password must be at least 6 characters, include 1 uppercase letter and 1 number, and must
+                            not match old
+                            password.
+                          </small>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="mb-3">
+                          <label class="form-label"><i class="fas fa-check-circle me-2 text-secondary"></i> Confirm
+                            Password</label>
+
+                          <!-- <div class="input-group">
+                            <input [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword"
+                              class="form-control form-control-sm" placeholder="Confirm new password">
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                              (click)="showConfirmPassword = !showConfirmPassword">
+                              <i class="fas" [ngClass]="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            </button>
+                          </div> -->
+
+                          <div class="password-input-group">
+                            <input [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword"
+                              class="form-control custom-input" placeholder="Confirm new password" />
+                            <i class="eye-icon ft" [ngClass]="hideConfirmPassword ? 'ft-eye-off' : 'ft-eye'"
+                              (click)="togglePasswordVisibility('confirmPassword')"></i>
+                          </div>
+
+
+
+                          <small class="text-danger"
+                            *ngIf="resetPasswordForm.hasError('passwordMismatch') && resetPasswordForm.get('confirmPassword')?.touched">
+                            Passwords do not match.
+                          </small>
+                        </div>
+
+                      </div>
+                      <!-- <div class="Footer">
+                        <button type="button" class="btn btn-outline-secondary btn-sm px-4 me-2" (click)="modal.dismiss()">Close</button>
+                        <button type="submit" class="btn btn-danger btn-sm px-4" [disabled]="resetPasswordForm.invalid">
+                          Change Password</button>
+                      </div> -->
+                    </form>
+
+                  </div>
+                </div>
+              </ng-template>
+            </ngb-panel>
+          </ngb-accordion>
+        </div>
+
+        <div class="custom-tabs-container">
+          <!-- Tabs Header -->
+          <div class="custom-tabs-header d-flex">
+            <button class="tab-btn" [ngClass]="{ 'active': activeTab === 'details' }" (click)="activeTab = 'details'">
+              <i class="fas fa-user mr-2"></i> User Details
+            </button>
+
+            <button class="tab-btn" [ngClass]="{ 'active': activeTab === 'password' }" (click)="activeTab = 'password'">
+              <i class="fas fa-key mr-2"></i> Change Password
+            </button>
+          </div>
+
+          <!-- Tabs Body -->
+          <div class="custom-tabs-body p-3">
+            <!-- User Details -->
+            <div *ngIf="activeTab === 'details'" class="tab-content fade-in">
+              <div class="user-info-card rounded-3 p-4 shadow-sm bg-white border border-light">
+                <div class="user-info-item mb-3">
+                  <div class="label">Full Name</div>
+                  <div class="value">{{ userForm.get('fullName')?.value || '—' }}</div>
+                </div>
+
+                <div class="user-info-item mb-3">
+                  <div class="label">Email</div>
+                  <div class="value">{{ userForm.get('email')?.value || '—' }}</div>
+                </div>
+
+                <div class="user-info-item">
+                  <div class="label">Role</div>
+                  <div class="value">{{ userForm.get('roles')?.value[0]?.name || '—' }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Change Password -->
+            <div *ngIf="activeTab === 'password'" class="tab-content fade-in">
+              <form [formGroup]="resetPasswordForm" (ngSubmit)="onResetPassword()"
+                class="p-4 shadow-sm rounded-3 bg-white border border-light">
+
+                <!-- Old Password -->
+                <div class="mb-3">
+                  <label class="form-label"><i class="fas fa-lock me-2 text-secondary"></i> Old Password</label>
+                  <div class="password-input-group">
+                    <input [type]="hideOldPassword ? 'password' : 'text'" formControlName="oldPassword"
+                      class="form-control custom-input" placeholder="Enter old password" />
+                    <i class="eye-icon ft" [ngClass]="hideOldPassword ? 'ft-eye-off' : 'ft-eye'"
+                      (click)="togglePasswordVisibility('oldPassword')"></i>
+                  </div>
+                </div>
+
+                <!-- New Password -->
+                <div class="mb-3">
+                  <label class="form-label"><i class="fas fa-unlock-alt me-2 text-secondary"></i> New Password</label>
+                  <div class="password-input-group">
+                    <input [type]="hidePassword ? 'password' : 'text'" formControlName="newPassword"
+                      class="form-control custom-input" placeholder="Enter new password" />
+                    <i class="eye-icon ft" [ngClass]="hidePassword ? 'ft-eye-off' : 'ft-eye'"
+                      (click)="togglePasswordVisibility('password')"></i>
+                  </div>
+                  <small class="text-danger"
+                    *ngIf="resetPasswordForm.get('newPassword')?.invalid && resetPasswordForm.get('newPassword')?.touched">
+                    Password must be at least 6 characters, include 1 uppercase letter and 1 number, and must not match
+                    old password.
+                  </small>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="mb-3">
+                  <label class="form-label"><i class="fas fa-check-circle me-2 text-secondary"></i> Confirm
+                    Password</label>
+                  <div class="password-input-group">
+                    <input [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword"
+                      class="form-control custom-input" placeholder="Confirm new password" />
+                    <i class="eye-icon ft" [ngClass]="hideConfirmPassword ? 'ft-eye-off' : 'ft-eye'"
+                      (click)="togglePasswordVisibility('confirmPassword')"></i>
+                  </div>
+                  <small class="text-danger"
+                    *ngIf="resetPasswordForm.hasError('passwordMismatch') && resetPasswordForm.get('confirmPassword')?.touched">
+                    Passwords do not match.
+                  </small>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+
+
+  </div>
+
+
+
 </section>
 
 <!-- Reset Password Modal using NgbModal -->
@@ -116,8 +423,8 @@
       <div class="mb-3">
         <label class="form-label"><i class="fas fa-lock me-2 text-secondary"></i> Old Password</label>
         <div class="input-group">
-          <input [type]="showOldPassword ? 'text' : 'password'" formControlName="oldPassword" 
-                 class="form-control form-control-sm" placeholder="Enter old password">
+          <input [type]="showOldPassword ? 'text' : 'password'" formControlName="oldPassword"
+            class="form-control form-control-sm" placeholder="Enter old password">
           <button type="button" class="btn btn-outline-secondary btn-sm" (click)="showOldPassword = !showOldPassword">
             <i class="fas" [ngClass]="showOldPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
           </button>
@@ -128,14 +435,16 @@
       <div class="mb-3">
         <label class="form-label"><i class="fas fa-unlock-alt me-2 text-secondary"></i> New Password</label>
         <div class="input-group">
-          <input [type]="showNewPassword ? 'text' : 'password'" formControlName="newPassword" 
-                 class="form-control form-control-sm" placeholder="Enter new password">
+          <input [type]="showNewPassword ? 'text' : 'password'" formControlName="newPassword"
+            class="form-control form-control-sm" placeholder="Enter new password">
           <button type="button" class="btn btn-outline-secondary btn-sm" (click)="showNewPassword = !showNewPassword">
             <i class="fas" [ngClass]="showNewPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
           </button>
         </div>
-        <small class="text-danger" *ngIf="resetPasswordForm.get('newPassword')?.invalid && resetPasswordForm.get('newPassword')?.touched">
-          Password must be at least 6 characters, include 1 uppercase letter and 1 number, and must not match old password.
+        <small class="text-danger"
+          *ngIf="resetPasswordForm.get('newPassword')?.invalid && resetPasswordForm.get('newPassword')?.touched">
+          Password must be at least 6 characters, include 1 uppercase letter and 1 number, and must not match old
+          password.
         </small>
       </div>
 
@@ -143,21 +452,24 @@
       <div class="mb-3">
         <label class="form-label"><i class="fas fa-check-circle me-2 text-secondary"></i> Confirm Password</label>
         <div class="input-group">
-          <input [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword" 
-                 class="form-control form-control-sm" placeholder="Confirm new password">
-          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="showConfirmPassword = !showConfirmPassword">
+          <input [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword"
+            class="form-control form-control-sm" placeholder="Confirm new password">
+          <button type="button" class="btn btn-outline-secondary btn-sm"
+            (click)="showConfirmPassword = !showConfirmPassword">
             <i class="fas" [ngClass]="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
           </button>
         </div>
-        <small class="text-danger" *ngIf="resetPasswordForm.hasError('passwordMismatch') && resetPasswordForm.get('confirmPassword')?.touched">
+        <small class="text-danger"
+          *ngIf="resetPasswordForm.hasError('passwordMismatch') && resetPasswordForm.get('confirmPassword')?.touched">
           Passwords do not match.
         </small>
       </div>
 
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-outline-secondary btn-sm px-4 me-2" (click)="modal.dismiss()">Close</button>
-      <button type="submit" class="btn btn-danger btn-sm px-4" [disabled]="resetPasswordForm.invalid">Change Password</button>
+      <!-- <button type="button" class="btn btn-outline-secondary btn-sm px-4 me-2" (click)="modal.dismiss()">Close</button> -->
+      <button type="submit" class="btn btn-danger btn-sm px-4" [disabled]="resetPasswordForm.invalid">Change
+        Password</button>
     </div>
   </form>
 </ng-template>
