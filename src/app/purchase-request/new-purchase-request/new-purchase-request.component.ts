@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbAccordion, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, DatatableComponent, id, SelectionType } from '@swimlane/ngx-datatable';
@@ -13,6 +13,8 @@ import { WorkflowServiceService } from 'app/shared/services/WorkflowService/work
 import Swal from 'sweetalert2';
 import { LookupService } from 'app/shared/services/lookup.service';
 import { CompanyVM, VendorAndCompanyForFinalSelectionVM } from 'app/shared/interfaces/vendor-company-final-selection.model';
+import * as XLSX from 'xlsx';
+
 
 @Component({
   selector: 'app-new-purchase-request',
@@ -21,6 +23,7 @@ import { CompanyVM, VendorAndCompanyForFinalSelectionVM } from 'app/shared/inter
 })
 
 export class NewPurchaseRequestComponent implements OnInit {
+  uploadedItems: any[] = [];
 
   isNewForm = true; // true = create, false = edit
   isFormDirty = false; // track if any field was touched
@@ -68,6 +71,13 @@ export class NewPurchaseRequestComponent implements OnInit {
   // ---------------
   finalVendors: VendorAndCompanyForFinalSelectionVM[] = [];
   filteredCompanies = [];
+
+  vendorList: any[] = [];
+  vendorCompanyList: any[] = [];
+  // accountList: any[] = [];
+  // itemList: any[] = [];
+  uomList: any[] = [];
+
 
   procurementUserId = localStorage.getItem('userId');
   compareIds = (a: string | null, b: string | null) => (a ?? '').toLowerCase() === (b ?? '').toLowerCase();
@@ -145,7 +155,7 @@ export class NewPurchaseRequestComponent implements OnInit {
     this.itemForm = this.fb.group({
       id: [null],
       requisitionNo: [''],
-      itemType: [''],
+      itemType: ['', Validators.required],
       itemId: [0],
       unitOfMeasurementId: [0],
       amount: [0],
@@ -159,6 +169,25 @@ export class NewPurchaseRequestComponent implements OnInit {
       remarks: [''],
       attachments: this.fb.group([])
     })
+
+    // this.itemForm = this.fb.group({
+    //   id: [null],
+    //   requisitionNo: [''],
+    //   itemType: ['', Validators.required],
+    //   itemId: [0, Validators.required],
+    //   unitOfMeasurementId: [0, Validators.required],
+    //   amount: [0],
+    //   unitCost: [0, Validators.required],
+    //   orderQuantity: [0, Validators.required],
+    //   reqByDate: [null, Validators.required],
+    //   itemDescription: ['', Validators.required],
+    //   vendorUserId: [null],
+    //   vendorCompanyId: [null],
+    //   accountId: [0, Validators.required],
+    //   remarks: ['', Validators.required],
+    //   attachments: this.fb.group({})
+    // });
+
 
     this.itemForm.valueChanges.subscribe(values => {
       const total = (values.unitCost || 0) * (values.orderQuantity || 0);
@@ -246,11 +275,21 @@ export class NewPurchaseRequestComponent implements OnInit {
     return found ? found.vendorName : '';
   }
 
-  private toDateInputValue(date: any): string | null {
-    if (!date) return null;
+  // private toDateInputValue(date: any): string | null {
+  //   if (!date) return null;
+  //   const d = new Date(date);
+  //   return d.toISOString().split('T')[0];
+  // }
+
+  toDateInputValue(date: any): string {
+    if (!date) return '';
     const d = new Date(date);
-    return d.toISOString().split('T')[0];
+    const year = d.getFullYear();
+    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const day = d.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`; // correct format for input[type="date"]
   }
+
 
   getUomCodeById(id: number): string {
     const found = this.unitsOfMeasurementList.find(u => u.id === id);
@@ -266,21 +305,67 @@ export class NewPurchaseRequestComponent implements OnInit {
     return found ? found.description : '';
   }
 
+  // insertItem(): void {
+  //   const newItem = this.itemForm.value;
+  //   const newItemId = Number(newItem.itemId);
+
+  //   // Duplicate check — works for add and edit both
+  //   const duplicate = this.newPurchaseItemData.some((item, index) =>
+  //     index !== this.editingRowIndex && Number(item.itemId) === newItemId
+  //   );
+
+  //   if (duplicate) {
+  //     this.toastr.warning('This item is already added. You can update it instead.');
+  //     return;
+  //   }
+
+  //   if (this.editingRowIndex !== null) {
+  //     const existing = this.newPurchaseItemData[this.editingRowIndex];
+  //     const merged = {
+  //       ...existing,
+  //       ...newItem,
+  //       itemId: newItemId,
+  //       attachments: existing?.attachments ?? []
+  //     };
+
+  //     // Immutable update to trigger ngx-datatable refresh
+  //     this.newPurchaseItemData = this.newPurchaseItemData.map((item, idx) =>
+  //       idx === this.editingRowIndex ? merged : item
+  //     );
+
+  //     this.toastr.success('Item updated successfully!');
+  //     this.editingRowIndex = null;
+
+  //   } else {
+  //     // Add new
+  //     const withEmptyAttachments = {
+  //       ...newItem,
+  //       itemId: newItemId,
+  //       attachments: newItem.attachments?.length ? newItem.attachments : []
+  //     };
+  //     this.newPurchaseItemData = [...this.newPurchaseItemData, withEmptyAttachments];
+  //     this.toastr.success('Item added successfully!');
+  //   }
+
+  //   this.itemForm.reset({
+  //     amount: 0,
+  //     unitCost: 0,
+  //     orderQuantity: 1
+  //   });
+  // }
+
   insertItem(): void {
-    const newItem = this.itemForm.value;
-    const newItemId = Number(newItem.itemId);
-
-    // Duplicate check — works for add and edit both
-    const duplicate = this.newPurchaseItemData.some((item, index) =>
-      index !== this.editingRowIndex && Number(item.itemId) === newItemId
-    );
-
-    if (duplicate) {
-      this.toastr.warning('This item is already added. You can update it instead.');
+    if (this.itemForm.invalid) {
+      this.itemForm.markAllAsTouched();
+      this.toastr.warning('Please fill all required fields before inserting.');
       return;
     }
 
+    const newItem = this.itemForm.value;
+    const newItemId = Number(newItem.itemId);
+
     if (this.editingRowIndex !== null) {
+      //  Edit mode: update the selected row (manual or bulk)
       const existing = this.newPurchaseItemData[this.editingRowIndex];
       const merged = {
         ...existing,
@@ -289,25 +374,25 @@ export class NewPurchaseRequestComponent implements OnInit {
         attachments: existing?.attachments ?? []
       };
 
-      // Immutable update to trigger ngx-datatable refresh
       this.newPurchaseItemData = this.newPurchaseItemData.map((item, idx) =>
         idx === this.editingRowIndex ? merged : item
       );
 
-      this.toastr.success('Item updated successfully!');
+      this.toastr.success('Row updated successfully!');
       this.editingRowIndex = null;
-
     } else {
-      // Add new
+      //  Always append a new manual row (no duplicate restriction)
       const withEmptyAttachments = {
         ...newItem,
         itemId: newItemId,
         attachments: newItem.attachments?.length ? newItem.attachments : []
       };
+
       this.newPurchaseItemData = [...this.newPurchaseItemData, withEmptyAttachments];
       this.toastr.success('Item added successfully!');
     }
 
+    //  Reset form after add/update
     this.itemForm.reset({
       amount: 0,
       unitCost: 0,
@@ -316,32 +401,69 @@ export class NewPurchaseRequestComponent implements OnInit {
   }
 
   // Edit a row
+  // editRow(row: any, rowIndex: number) {
+  //   this.editingRowIndex = rowIndex;
+  //   this.itemForm.patchValue({
+  //     id: row.id,
+  //     itemType: row.itemType,
+  //     itemId: row.itemId,
+  //     unitOfMeasurementId: row.unitOfMeasurementId,
+  //     amount: row.amount,
+  //     unitCost: row.unitCost,
+  //     orderQuantity: row.orderQuantity,
+  //     reqByDate: this.toDateInputValue(row.reqByDate),
+  //     itemDescription: row.itemDescription,
+  //     vendorUserId: row.vendorUserId,
+  //     // vendorCompanyId: row.vendorCompanyId,
+  //     accountId: row.accountId,
+  //     remarks: row.remarks,
+  //     attachments: row.attachments
+  //   });
+
+  //   this.onVendorChange(row.vendorUserId);
+
+  //   Promise.resolve().then(() => {
+  //     this.itemForm.patchValue({ vendorCompanyId: row.vendorCompanyId }, { emitEvent: false });
+  //   });
+
+  //   // this.editingRowIndex = rowIndex;
+  // }
+
   editRow(row: any, rowIndex: number) {
+    // mark which row is being edited
     this.editingRowIndex = rowIndex;
+
+    // patch form values from the selected row
     this.itemForm.patchValue({
-      id: row.id,
-      itemType: row.itemType,
-      itemId: row.itemId,
-      unitOfMeasurementId: row.unitOfMeasurementId,
-      amount: row.amount,
-      unitCost: row.unitCost,
-      orderQuantity: row.orderQuantity,
-      reqByDate: this.toDateInputValue(row.reqByDate),
-      itemDescription: row.itemDescription,
-      vendorUserId: row.vendorUserId,
-      // vendorCompanyId: row.vendorCompanyId,
-      accountId: row.accountId,
-      remarks: row.remarks,
-      attachments: row.attachments
+      id: row.id || null,
+      itemType: row.itemType || '',
+      itemId: Number(row.itemId) || null,
+      unitOfMeasurementId: Number(row.unitOfMeasurementId) || null,
+      orderQuantity: Number(row.orderQuantity) || 1,
+      unitCost: Number(row.unitCost) || 0,
+      amount: Number(row.amount) || 0,
+      // reqByDate: row.reqByDate ? this.toDateInputValue(row.reqByDate) : '',
+      reqByDate: row.reqByDate ? this.toDateInputValue(row.reqByDate) : '', // <-- fixed
+      itemDescription: row.itemDescription || '',
+      vendorUserId: Number(row.vendorUserId) || null,
+      vendorCompanyId: Number(row.vendorCompanyId) || null,
+      accountId: Number(row.accountId) || null,
+      remarks: row.remarks || '',
+      attachments: row.attachments || []
     });
 
-    this.onVendorChange(row.vendorUserId);
+    // if vendor changes, refresh vendor company list
+    if (row.vendorUserId) {
+      this.onVendorChange(row.vendorUserId);
+    }
 
+    // ensure vendor company dropdown syncs after async data
     Promise.resolve().then(() => {
-      this.itemForm.patchValue({ vendorCompanyId: row.vendorCompanyId }, { emitEvent: false });
+      this.itemForm.patchValue(
+        { vendorCompanyId: Number(row.vendorCompanyId) || null },
+        { emitEvent: false }
+      );
     });
-
-    // this.editingRowIndex = rowIndex;
   }
 
   deleteRow(rowIndex: number): void {
@@ -787,4 +909,239 @@ export class NewPurchaseRequestComponent implements OnInit {
     }
     // this.itemForm.patchValue({ vendorCompanyId: null });
   }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+      const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+
+      console.log('Parsed Excel JSON:', jsonData);
+      this.uploadedItems = jsonData;
+      // this.toastr.success(`${jsonData.length} items loaded from Excel.`);
+      console.log('Parsed Excel JSON:', jsonData);
+
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  // bulkInsert(): void {
+  //   // if (!this.uploadedItems.length) {
+  //   //   this.toastr.warning('No items to insert.');
+  //   //   return;
+  //   // }
+
+  //   //  Case 1: No uploaded items at all
+  //   if (!this.uploadedItems.length) {
+  //     if (this.newPurchaseItemData.length > 0) {
+  //       this.toastr.info('Items already inserted.');
+  //     } else {
+  //       this.toastr.warning('No items to insert.');
+  //     }
+  //     return;
+  //   }
+
+  //   //  Allow flexible header for date
+  //   const requiredColumns = [
+  //     'Item Type',
+  //     'Item',
+  //     'U of M',
+  //     'Unit Cost',
+  //     'Order Quantity',
+  //     'Amount',
+  //     'Item Description',
+  //     'Final Vendor',
+  //     'Vendor Company',
+  //     'Account',
+  //     'Remarks'
+  //   ];
+
+  //   //  Include both possible date header variants
+  //   const hasReqByDate = this.uploadedItems.some(
+  //     (item) => 'Req By Date' in item || 'Req. by Date' in item
+  //   );
+
+  //   if (!hasReqByDate) {
+  //     this.toastr.error('Invalid file! Missing column: Req. by Date (or Req By Date)');
+  //     return;
+  //   }
+
+  //   //  Now check for other required columns
+  //   const missingColumns: string[] = [];
+  //   for (const col of requiredColumns) {
+  //     const firstRow = this.uploadedItems[0];
+  //     if (!(col in firstRow)) {
+  //       missingColumns.push(col);
+  //     }
+  //   }
+
+  //   if (missingColumns.length > 0) {
+  //     this.toastr.error(`Invalid file! Missing columns: ${missingColumns.join(', ')}`);
+  //     return;
+  //   }
+
+  //   //  Proceed if columns are valid
+  //   const mappedData = this.uploadedItems.map((item) => {
+  //     const rawDate = item['Req By Date'] || item['Req. by Date'];
+  //     let parsedDate: Date | null = null;
+
+  //     if (rawDate) {
+  //       if (!isNaN(rawDate)) {
+  //         // Excel numeric date (e.g. 45973)
+  //         parsedDate = this.excelSerialToDate(Number(rawDate));
+  //       } else {
+  //         // Normal string date (e.g. 2025-11-03 or 03/11/2025)
+  //         parsedDate = new Date(rawDate);
+  //       }
+  //     }
+
+  //     return {
+  //       itemType: item['Item Type'] || 'Inventory',
+  //       itemId: this.getItemIdByName(item['Item']) || null,
+  //       unitOfMeasurementId: this.getUOMIdByName(item['U of M']) || null,
+  //       unitCost: Number(item['Unit Cost']) || 0,
+  //       orderQuantity: Number(item['Order Quantity']) || 1,
+  //       amount: Number(item['Unit Cost']) * Number(item['Order Quantity']),
+  //       reqByDate: parsedDate,
+  //       itemDescription: item['Item Description'] || '',
+  //       vendorUserId: this.getVendorIdByName(item['Final Vendor']) || null,
+  //       vendorCompanyId: this.getVendorCompanyIdByName(item['Vendor Company']) || null,
+  //       accountId: this.getAccountIdByName(item['Account']) || null,
+  //       remarks: item['Remarks'] || '',
+  //       attachments: []
+  //     };
+  //   });
+
+  //   // this.newPurchaseItemData = [...this.newPurchaseItemData, ...mappedData];
+  //   this.newPurchaseItemData = [...mappedData];
+  //   this.uploadedItems = [];
+  //   this.toastr.success('Bulk items inserted successfully!');
+  // }
+  bulkInsert(): void {
+    if (!this.uploadedItems.length) {
+      if (this.newPurchaseItemData.length > 0) {
+        this.toastr.info('Items already inserted.');
+      } else {
+        this.toastr.warning('No items to insert.');
+      }
+      return;
+    }
+
+    const requiredColumns = [
+      'Item Type',
+      'Item',
+      'U of M',
+      'Unit Cost',
+      'Order Quantity',
+      'Amount',
+      'Item Description',
+      'Final Vendor',
+      'Vendor Company',
+      'Account',
+      'Remarks'
+    ];
+
+    const hasReqByDate = this.uploadedItems.some(
+      (item) => 'Req By Date' in item || 'Req. by Date' in item
+    );
+
+    if (!hasReqByDate) {
+      this.toastr.error('Invalid file! Missing column: Req. by Date (or Req By Date)');
+      return;
+    }
+
+    const firstRow = this.uploadedItems[0];
+    const missingColumns = requiredColumns.filter(col => !(col in firstRow));
+
+    if (missingColumns.length > 0) {
+      this.toastr.error(`Invalid file! Missing columns: ${missingColumns.join(', ')}`);
+      return;
+    }
+
+    //  Map Excel data
+    const mappedData = this.uploadedItems.map((item) => {
+      const rawDate = item['Req By Date'] || item['Req. by Date'];
+      let parsedDate: Date | null = null;
+
+      if (rawDate) {
+        if (!isNaN(rawDate)) parsedDate = this.excelSerialToDate(Number(rawDate));
+        else parsedDate = new Date(rawDate);
+      }
+
+      return {
+        itemType: item['Item Type'] || 'Inventory',
+        itemId: this.getItemIdByName(item['Item']) || null,
+        unitOfMeasurementId: this.getUOMIdByName(item['U of M']) || null,
+        unitCost: Number(item['Unit Cost']) || 0,
+        orderQuantity: Number(item['Order Quantity']) || 1,
+        amount: Number(item['Unit Cost']) * Number(item['Order Quantity']),
+        reqByDate: parsedDate,
+        itemDescription: item['Item Description'] || '',
+        vendorUserId: this.getVendorIdByName(item['Final Vendor']) || null,
+        vendorCompanyId: this.getVendorCompanyIdByName(item['Vendor Company']) || null,
+        accountId: this.getAccountIdByName(item['Account']) || null,
+        remarks: item['Remarks'] || '',
+        attachments: []
+      };
+    });
+
+    //  Always append new bulk data after existing manual entries
+    console.log('Before merge:', this.newPurchaseItemData);
+    this.newPurchaseItemData = [...this.newPurchaseItemData, ...mappedData];
+    console.log('After merge:', this.newPurchaseItemData);
+
+    this.uploadedItems = [];
+    this.toastr.success('Bulk items appended successfully!');
+  }
+
+  getItemIdByName(name: string): number | null {
+    const item = this.itemList.find(
+      (x) => x.description?.trim().toLowerCase() === name?.trim().toLowerCase()
+    );
+    return item ? item.id : null;
+  }
+
+  getUOMIdByName(name: string): number | null {
+    const uom = this.unitsOfMeasurementList.find(
+      (x) => x.description?.trim().toLowerCase() === name?.trim().toLowerCase()
+    );
+    return uom ? uom.id : null;
+  }
+
+  getVendorIdByName(name: string): number | null {
+    const vendor = this.finalVendors.find(
+      (x) => x.vendorName?.trim().toLowerCase() === name?.trim().toLowerCase()
+    );
+    return vendor ? Number(vendor.vendorId) : null;
+  }
+
+  getVendorCompanyIdByName(name: string): number | null {
+    const company = this.filteredCompanies.find(
+      (x) => x.companyName?.trim().toLowerCase() === name?.trim().toLowerCase()
+    );
+    return company ? company.companyId : null;
+  }
+
+  getAccountIdByName(name: string): number | null {
+    const account = this.accountList.find(
+      (x) => x.description?.trim().toLowerCase() === name?.trim().toLowerCase()
+    );
+    return account ? account.id : null;
+  }
+
+  excelSerialToDate(serial: number): Date | null {
+    if (!serial || isNaN(serial)) return null;
+    const utc_days = Math.floor(serial - 25569);
+    const utc_value = utc_days * 86400;
+    const date_info = new Date(utc_value * 1000);
+    return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate());
+  }
+
+
 }  
