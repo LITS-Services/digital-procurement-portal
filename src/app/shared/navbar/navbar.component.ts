@@ -94,6 +94,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.sub = this.userService.profilePicture$.subscribe(url => {
       this.profilePicture = url || 'assets/img/profile/user.png';
+      this.cdr.detectChanges();
     });
     this.bindSearch();
     this.setupClickOutside();
