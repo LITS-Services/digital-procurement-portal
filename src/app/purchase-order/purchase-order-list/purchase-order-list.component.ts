@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, SelectionType, NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
@@ -34,7 +34,8 @@ export class PurchaseOrderListComponent implements OnInit {
   constructor(private purchaseOrderService: PurchaseOrderService,
     public cdr: ChangeDetectorRef,
     private router: Router,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private route: ActivatedRoute
 
   ) { }
 
@@ -123,31 +124,18 @@ export class PurchaseOrderListComponent implements OnInit {
     this.isAllSelected = this.purchaseOrderData.length === this.chkBoxSelected.length;
   }
 
-  // onRowClick(event: any) {
-  //   console.log('Row clicked:', event);
-
-  //   this.selectedPO = event.row;
-  //   this.modalService.open(this.purchaseOrderDetail, { size: 'lg', centered: true });
-  // }
-  onRowClick(event: any) {
-  console.log('Row clicked:', event);
-
-  const row = event.row;
-
-  this.selectedPO = {
-    ...row,
-    items: row.items || row.Items || [] // support both keys
-  };
-
-  this.modalService.open(this.purchaseOrderDetail, { size: 'lg', centered: true });
-}
-
-
   onActivate(event: any) {
-    // We only want clicks, not mouseenter or keydown etc.
-    if (event.type === 'click' && event.row) {
-      this.selectedPO = event.row;
-      this.modalService.open(this.purchaseOrderDetail, { size: 'lg', centered: true });
+    if (event.type === 'click') {
+      const poId = event.row.id;
+      this.router.navigate([poId], { relativeTo: this.route });
+
+    }
+  }
+  onRowClick(event: any) {
+    const id = event?.row?.id;
+    if (id) {
+      this.router.navigate([id], { relativeTo: this.route });
+
     }
   }
 }

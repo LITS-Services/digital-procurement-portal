@@ -14,7 +14,6 @@ import { RfqRemarksComponent } from '../rfq-remarks/rfq-remarks.component';
 import Swal from 'sweetalert2';
 import { LookupService } from 'app/shared/services/lookup.service';
 import { SelectedVendorsModalComponent } from './selected-vendors-modal/selected-vendors-modal.component';
-import { visitAll } from '@angular/compiler';
 
 @Component({
   selector: 'app-new-rfq',
@@ -909,33 +908,32 @@ export class NewRfqComponent implements OnInit {
   // }
 
   onSubmitForApproval() {
-  Swal.fire({
-    title: 'Submit for Approval?',
-    text: 'Are you sure you want to submit this quotation for approval?',
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, submit it',
-    cancelButtonText: 'Cancel',
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33'
-  }).then((result) => {
-    if (!result.isConfirmed) return;
+    Swal.fire({
+      title: 'Submit for Approval?',
+      text: 'Are you sure you want to submit this quotation for approval?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, submit it',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33'
+    }).then((result) => {
+      if (!result.isConfirmed) return;
 
-    this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
-      next: () => {
+      this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
+        next: () => {
 
-        // Navigate only on success
-        this.router.navigate(['/rfq']);
-      },
-      error: () => {
-        // don't show Swal — interceptor already shows error toast
-        // do nothing here
-        this.router.navigate(['/rfq']);
-      }
+          // Navigate only on success
+          this.router.navigate(['/rfq']);
+        },
+        error: () => {
+          // don't show Swal — interceptor already shows error toast
+          // do nothing here
+          this.router.navigate(['/rfq']);
+        }
+      });
     });
-  });
-}
-
+  }
 
   onAddRemarks(action: string): void {
     const modalRef = this.modalService.open(RfqRemarksComponent, {
@@ -989,5 +987,4 @@ export class NewRfqComponent implements OnInit {
     // Check if all items already have a quotationRequestId (already part of RFQ)
     return this.newQuotationItemData.every(item => item.quotationRequestId && item.quotationRequestId > 0);
   }
-
 }

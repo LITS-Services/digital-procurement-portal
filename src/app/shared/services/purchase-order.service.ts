@@ -37,4 +37,8 @@ export class PurchaseOrderService {
   createPurchaseOrderFromRFQ(quotationRequestId: number) {
     return this.http.post(`${this.baseUrl}/create-rfq-purchase-order?quotationRequestId=${quotationRequestId}`, {});
   }
+
+    getPurchaseOrderById(id: number) {
+    return this.http.get<any>(`${this.baseUrl}/get-purchase-order-by-id?id=${id}`);
+  }
 }

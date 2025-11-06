@@ -8,7 +8,7 @@ import { RfqService } from '../rfq.service';
   styleUrls: ['./rfq-approval-history.component.scss']
 })
 export class RfqApprovalHistoryComponent implements OnInit {
-  @Input() rfqNo!: string;   
+  @Input() rfqNo!: string;
   approvalHistory: any[] = [];
   loading = true;
 
@@ -27,7 +27,7 @@ export class RfqApprovalHistoryComponent implements OnInit {
     this.rfqService.getApprovalHistoryByRfqNo(this.rfqNo).subscribe({
       next: (data: any) => {
         // unwrap possible response formats
-      this.approvalHistory = data ?? data?.$values ?? [];
+        this.approvalHistory = data ?? data?.$values ?? [];
         this.loading = false;
       },
       error: (err) => {

@@ -1,0 +1,104 @@
+
+
+        <!-- Action Bar -->
+        <!-- <div class="card cstm-ui-card mb-3 py-2 px-3 d-flex justify-content-start flex-wrap">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-lg position-relative me-2" type="button" (click)="goBack()">
+                    <i class="ft-arrow-left"></i>
+                </button>
+                <h5 class="mt-2 fw-bold">Good Receiving Notes</h5>
+            </div>
+        </div> -->
+
+        <div class="card cstm-ui-card mb-4">
+            <div class="card-body">
+
+                <div class="row">
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <label>GRN No</label>
+                    <input class="form-control form-control-sm" [value]="grnDetails.grnNo" disabled>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <label>PO No</label>
+                    <input class="form-control form-control-sm" [value]="grnDetails.poNo" disabled>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <label>Vendor</label>
+                    <input class="form-control form-control-sm" [value]="grnDetails.vendorName" disabled>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <label>Delivered By</label>
+                    <input class="form-control form-control-sm" [value]="grnDetails.deliveredBy" disabled>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <label>Delivery Challan No</label>
+                    <input class="form-control form-control-sm" [value]="grnDetails.deliveryChallan" disabled>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <label>Invoice No</label>
+                    <input class="form-control form-control-sm" [value]="grnDetails.invoiceNo" disabled>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <label>Received Date</label>
+                    <input class="form-control form-control-sm" [value]="grnDetails.receivedDate" disabled>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <label>Warehouse</label>
+                    <input class="form-control form-control-sm" [value]="grnDetails.warehouse" disabled>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <label>Received By</label>
+                    <input class="form-control form-control-sm" [value]="grnDetails.receivedBy" disabled>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-3">
+                    <label>Remarks</label>
+                    <textarea class="form-control form-control-sm" disabled rows="2">{{ grnDetails.remarks }}</textarea>
+                </div>
+                </div>
+            </div>
+        </div>
+  <!-- Items Section -->
+        <h5 class="heading mb-3 fw-bold" (click)="toggleItems()" style="cursor: pointer;">
+            Items
+            <i class="fa" [ngClass]="itemsExpanded ? 'fa-chevron-down' : 'fa-chevron-up'" style="font-size: 12px;"></i>
+        </h5>
+
+        <div [@expandCollapse]="itemsExpanded ? 'expanded' : 'collapsed'" style="overflow: hidden;">
+            <div class="card cstm-ui-card border-0 shadow-sm">
+                <div class="card-body p-0">
+
+                    <div class="table-responsive">
+                        <table class="table table-sm pro-table mb-0">
+                            <thead>
+                                <tr>
+                        <th>Item</th>
+                        <th class="text-center">UOM</th>
+                        <th class="text-center">Ordered Qty</th>
+                        <th class="text-center">Received Qty</th>
+                        <th class="text-center">Balance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of grnDetails.items">
+                        <td>{{ item.itemName }}</td>
+                        <td class="text-center">{{ item.uom }}</td>
+                        <td class="text-center">{{ item.orderedQty }}</td>
+                        <td class="text-center">{{ item.receivedQty }}</td>
+                        <td class="text-center fw-bold" [ngClass]="{ 'text-danger': item.balance > 0 }">{{ item.balance
+                            }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+      </div>
+            </div>
+        </div>

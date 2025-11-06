@@ -1,0 +1,70 @@
+
+
+        <!-- Shipment Details Card -->
+        <div class="card cstm-ui-card mb-4">
+            <div class="card-body">
+                <!-- <h5 class="fw-bold mb-3">Shipment Details</h5> -->
+
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <label>Shipment No</label>
+                        <input class="form-control custom-input" [value]="shipmentDetails?.shipmentDetailNo || '-'"
+                            disabled>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <label>Vendor Name</label>
+                        <input class="form-control custom-input" [value]="shipmentDetails?.vendorName || '-'" disabled>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <label>Status</label>
+                        <input class="form-control custom-input" [value]="shipmentDetails?.requestStatus || '-'"
+                            disabled>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <label>Shipment Date</label>
+                        <input class="form-control custom-input"
+                            [value]="shipmentDetails?.shipmentDate | date:'yyyy-MM-dd'" disabled>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <label>Delivery Date</label>
+                        <input class="form-control custom-input"
+                            [value]="shipmentDetails?.deliveryDate | date:'yyyy-MM-dd'" disabled>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <label>Country</label>
+                        <input class="form-control custom-input" [value]="shipmentDetails?.country || '-'" disabled>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <label>City</label>
+                        <input class="form-control custom-input" [value]="shipmentDetails?.city || '-'" disabled>
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label>Shipping Address</label>
+                        <textarea rows="2" class="form-control custom-input"
+                            [value]="shipmentDetails?.shippingAddress || '-'" disabled></textarea>
+                    </div>
+
+                    <div class="col-12">
+                        <label>Notes</label>
+                        <textarea rows="2" class="form-control custom-input" [value]="shipmentDetails?.notes || '-'"
+                            disabled></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+<ng-template #loader>
+    <div class="text-center mt-5">
+        <div class="spinner-border"></div>
+        <p>Loading Shipment details...</p>
+    </div>
+</ng-template>
