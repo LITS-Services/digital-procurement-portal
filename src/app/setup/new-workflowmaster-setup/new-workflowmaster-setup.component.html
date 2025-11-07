@@ -58,22 +58,15 @@
                 <div class="form-group mb-2">
                   <label>{{ isVendorOnboarding ? 'Select Entity' : 'Workflow Initiator(s)' }}</label>
 
-<ng-select class="custom-style" 
-           [items]="isVendorOnboarding ? entitiesList : usersList"
-           [bindLabel]="isVendorOnboarding ? 'name' : 'userName'" 
-           bindValue="id"
-           [multiple]="!isVendorOnboarding" 
-           [closeOnSelect]="isVendorOnboarding" 
-           [searchable]="true"
-           placeholder="{{ isVendorOnboarding ? 'Select Entity' : 'Select Users' }}"
-           formControlName="usersList"
-           (change)="isVendorOnboarding ? onEntitySelected($event?.id) : null">
-</ng-select>
-
+                  <ng-select class="custom-style" [items]="isVendorOnboarding ? entitiesList : usersList"
+                    [bindLabel]="isVendorOnboarding ? 'name' : 'userName'" bindValue="id"
+                    [multiple]="!isVendorOnboarding" [closeOnSelect]="isVendorOnboarding" [searchable]="true"
+                    placeholder="{{ isVendorOnboarding ? 'Select Entity' : 'Select Users' }}"
+                    formControlName="usersList" (change)="isVendorOnboarding ? onEntitySelected($event?.id) : null">
+                  </ng-select>
 
                 </div>
               </div>
-
 
             </div>
 
@@ -124,7 +117,6 @@
                       </div>
                     </div>
 
-
                     <!-- Amount From & To: hide for Vendor Company Onboarding -->
                     <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
                       <div class="form-group mb-2">
@@ -150,42 +142,66 @@
                       </div>
                     </div>
 
+                    <div class="col-lg-6 col-md-5 col-sm-5 col-xs-6">
+                      <div class="form-group mb-2">
+                        <label>Proxy Approver</label>
+                        <select class="form-control custom-input" formControlName="proxyApproverId">
+                          <option value="" disabled>Select Proxy Approver</option>
+                          <option *ngFor="let approver of approverList" [value]="approver.id">{{ approver.userName }}
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6">
+                      <div class="form-group mb-2">
+                        <label>Grace Days</label>
+                        <input type="number" placeholder="Enter Grace Days" class="form-control custom-input"
+                          formControlName="graceDays" />
+                      </div>
+                    </div>
+
                     <!-- Switches -->
-                    <div class="col-lg-2 mb-2">
-                      <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="canApprove"
-                          formControlName="canApprove">
-                        <label class="custom-control-label" for="canApprove">Approve</label>
-                      </div>
-                    </div>
+                    <div class="col-lg-12 mb-2 d-flex">
 
-                    <div class="col-lg-2 mb-2">
-                      <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="canReject" formControlName="canReject">
-                        <label class="custom-control-label" for="canReject">canReject</label>
+                      <div class="col-lg-2 mb-2">
+                        <div class="custom-control custom-switch">
+                          <input type="checkbox" class="custom-control-input" id="canApprove"
+                            formControlName="canApprove">
+                          <label class="custom-control-label" for="canApprove">Approve</label>
+                        </div>
                       </div>
-                    </div>
 
-                    <div class="col-lg-2 mb-3">
-                      <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="canSendBack"
-                          formControlName="canSendBack">
-                        <label class="custom-control-label" for="canSendBack">Send Back</label>
+                      <div class="col-lg-2 mb-2">
+                        <div class="custom-control custom-switch">
+                          <input type="checkbox" class="custom-control-input" id="canReject"
+                            formControlName="canReject">
+                          <label class="custom-control-label" for="canReject">Can Reject</label>
+                        </div>
                       </div>
-                    </div>
 
-                    <div class="col-lg-2 mb-3">
-                      <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="canSubmit" formControlName="canSubmit">
-                        <label class="custom-control-label" for="canSubmit">Submit</label>
+                      <div class="col-lg-2 mb-3">
+                        <div class="custom-control custom-switch">
+                          <input type="checkbox" class="custom-control-input" id="canSendBack"
+                            formControlName="canSendBack">
+                          <label class="custom-control-label" for="canSendBack">Send Back</label>
+                        </div>
                       </div>
-                    </div>
 
-                    <div class="col-lg-2 mb-3">
-                      <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="isApprovalCompulsory"
-                          formControlName="isApprovalCompulsory">
-                        <label class="custom-control-label" for="isApprovalCompulsory">Is Compulsory</label>
+                      <div class="col-lg-2 mb-3">
+                        <div class="custom-control custom-switch">
+                          <input type="checkbox" class="custom-control-input" id="canSubmit"
+                            formControlName="canSubmit">
+                          <label class="custom-control-label" for="canSubmit">Submit</label>
+                        </div>
+                      </div>
+
+                      <div class="col-lg-2 mb-3">
+                        <div class="custom-control custom-switch">
+                          <input type="checkbox" class="custom-control-input" id="isApprovalCompulsory"
+                            formControlName="isApprovalCompulsory">
+                          <label class="custom-control-label" for="isApprovalCompulsory">Is Compulsory</label>
+                        </div>
                       </div>
                     </div>
 
@@ -216,6 +232,9 @@
                 <ngx-datatable-column name="Amount To" prop="amountTo" [width]="70"
                   *ngIf="!hideConditionalFields"></ngx-datatable-column>
 
+                <ngx-datatable-column name="Proxy Approver" prop="proxyApproverName" [width]="70"></ngx-datatable-column>
+                <ngx-datatable-column name="Grace Days" prop="graceDays" [width]="70"></ngx-datatable-column>
+                
                 <ngx-datatable-column name="Approve" prop="canApprove" [width]="70"></ngx-datatable-column>
                 <ngx-datatable-column name="Reject" prop="canReject" [width]="70"></ngx-datatable-column>
                 <ngx-datatable-column name="Send Back" prop="canSendBack" [width]="70"></ngx-datatable-column>
@@ -245,13 +264,13 @@
     </div>
   </div>
   <div *ngIf="dataLoaded; else loadingTemplate">
-  <!-- Your main content here, e.g. the form, dropdowns, etc. -->
-</div>
-
-<ng-template #loadingTemplate>
-  <div class="loading-spinner">
-    Loading...
+    <!-- Your main content here, e.g. the form, dropdowns, etc. -->
   </div>
-</ng-template>
+
+  <ng-template #loadingTemplate>
+    <div class="loading-spinner">
+      Loading...
+    </div>
+  </ng-template>
 
 </section>

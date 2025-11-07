@@ -50,7 +50,8 @@
         [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
         [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
         (sort)="onSort($event)" (select)="customChkboxOnSelect($event)" [selectionType]="SelectionType.single"
-        (rowClick)="onRowClick($event)" (activate)="onActivate($event)" (clickType)="'single'">>
+        (activate)="onActivate($event)" (rowClick)="onRowClick($event)"
+(clickType)="'single'">>
         <!-- <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
                     [resizeable]="false">
                     <ng-template ngx-datatable-header-template>
@@ -112,99 +113,7 @@
   </div>
 </section>
 <!-- Purchase Order Details Template -->
-<ng-template #purchaseOrderDetail let-modal>
-  <div class="modal-header detail-header">
-    <h5 class="modal-title mb-0 text-white">
-      <i class="fa fa-file-invoice me-3"></i> Purchase Order Details
-    </h5>
-    <button type="button" class="close text-white" aria-label="Close" (click)="modal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
 
-  <div class="modal-body detail-body">
-    <div *ngIf="selectedPO" class="po-card">
-      <!-- Header Info -->
-      <div class="row mb-4">
-        <div class="col-md-6">
-          <p><span class="label">PO Number:</span> {{ selectedPO.purchaseOrderNo }}</p>
-          <p><span class="label">Requisition No:</span> {{ selectedPO.requisitionNo }}</p>
-          <p><span class="label">RFQ No:</span> {{ selectedPO.rfqNo }}</p>
-        </div>
-        <div class="col-md-6 text-md-end">
-          <p>
-            <span class="label">Status:</span>
-            <span class="status-badge" [ngClass]="{
-                'bg-success': selectedPO.requestStatus === 'Approved',
-                'bg-warning text-dark': selectedPO.requestStatus === 'Pending',
-                'bg-danger': selectedPO.requestStatus === 'Rejected',
-                'bg-secondary': !selectedPO.requestStatus
-              }">
-              {{ selectedPO.requestStatus || 'N/A' }}
-            </span>
-          </p>
-          <p><span class="label">Required By:</span> {{ selectedPO.reqByDate | date: 'mediumDate' }}</p>
-        </div>
-      </div>
-
-      <h6 class="section-title mt-4"><i class="fa fa-box me-3"></i>Item Details</h6>
-
-      <div class="table-responsive">
-        <table class="table detail-table">
-          <thead>
-            <tr>
-              <th>Item Name</th>
-              <th>Description</th>
-              <th class="text-center">Quantity</th>
-              <th class="text-end">Unit Price</th>
-              <th class="text-end">Amount</th>
-            </tr>
-          </thead>
-          <!-- <tbody>
-            <tr>
-              <td>{{ selectedPO.itemName }}</td>
-              <td>{{ selectedPO.itemDescription || '-' }}</td>
-              <td class="text-center">{{ selectedPO.quantity || '-' }}</td>
-              <td class="text-end">{{ selectedPO.unitPrice }}</td>
-              <td class="text-end">{{ selectedPO.amount }}</td>
-            </tr>
-          </tbody> -->
-          <tbody>
-            <tr *ngFor="let item of selectedPO.items">
-              <td>{{ item.itemName }}</td>
-              <td>{{ item.itemDescription || '-' }}</td>
-              <td class="text-center">{{ item.quantity || '-' }}</td>
-              <td class="text-end">{{ item.unitPrice }}</td>
-              <td class="text-end">{{ item.amount }}</td>
-            </tr>
-          </tbody>
-
-        </table>
-      </div>
-
-      <div class="d-flex justify-content-end mt-4">
-        <table class="table totals-table w-auto">
-          <tbody>
-            <tr>
-              <td>Subtotal</td>
-              <td class="text-end">{{ selectedPO.totalAmount }}</td>
-            </tr>
-            <tr class="total-row">
-              <td><strong>Total</strong></td>
-              <td class="text-end"><strong>{{ selectedPO.totalAmount }}</strong></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-footer border-top-0">
-    <button type="button" class="btn btn-outline-secondary px-4" (click)="modal.close()">
-      Close
-    </button>
-  </div>
-</ng-template>
 
 <!-- Delete Modal -->
 <!-- <ng-template #deleteModal let-c="close" let-d="dismiss">

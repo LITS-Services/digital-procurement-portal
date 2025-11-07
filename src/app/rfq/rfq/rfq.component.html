@@ -13,14 +13,13 @@
             <!-- Action Pane -->
             <div class="card cstm-ui-card">
                 <div>
-                <div class="d-flex justify-content-between align-items-center">
-                   
+                    <div class="d-flex justify-content-between align-items-center">
                         <div class="position-relative">
-                            
+
                             <button class="btn btn-lg mr-1 " type="button" (click)="homePage()">
                                 <i class="ft-arrow-left"></i></button>
                             <span class="vl"></span>
-                          
+
                             <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new RFQ"
                                 (click)="openEmpDetails()">
                                 <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
@@ -40,63 +39,54 @@
                             </button>
                         </div>
                         <div class="d-flex align-items-center">
-                             <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
+                            <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
                                 <i class="ft-sliders"></i><label class="ml-1 mt-1">Filter</label>
-                                </button>
+                            </button>
                         </div>
                         <!-- <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
                             <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
                         </button> -->
-                  
-                </div>
+                    </div>
                 </div>
             </div>
 
             <div *ngIf="showFilterBar" class="filter-bar">
-              <div class="d-flex align-items-center justify-content-between pl-3 pr-1 py-2 filter-wrapper">
-                <div class="filter-search">
-                  <i class="ft-filter search-icon"></i>
-                  <input 
-                   [ngModel]="searchText"
-                   (ngModelChange)="onSearchChange($event)"
-                  type="text" placeholder="Search by rfq no #" class="form-control form-control-sm search-input">
+                <div class="d-flex align-items-center justify-content-between pl-3 pr-1 py-2 filter-wrapper">
+                    <div class="filter-search">
+                        <i class="ft-filter search-icon"></i>
+                        <input [ngModel]="searchText" (ngModelChange)="onSearchChange($event)" type="text"
+                            placeholder="Search by rfq no #" class="form-control form-control-sm search-input">
+                    </div>
+
+                    <div class="d-flex filter-btns-div">
+                        <div class="dropdown filter-dropdown" ngbDropdown
+                            [ngbTooltip]="statusTouched ? 'Status' : null">
+                            <button class="btn btn-sm filter-btn dropdown-toggle" ngbDropdownToggle>
+                                <span class="filter-label">{{ !statusTouched ? "Status" : selectedStatusLabel }} </span>
+                                <i class="ft-chevron-down"></i>
+                            </button>
+                            <div class="dropdown-menu" ngbDropdownMenu>
+                                <button class="dropdown-item" (click)="onStatusChange('All')">
+                                    All
+                                </button>
+                                <button class="dropdown-item" *ngFor="let s of status" (click)="onStatusChange(s)">
+                                    {{ s.description }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <button class="btn px-1 btn-sm" (click)="showFilterBar = false">✕</button>
+                    </div>
                 </div>
-
-
-                <div class="d-flex filter-btns-div">
-                        <div class="dropdown filter-dropdown" ngbDropdown [ngbTooltip]="statusTouched ? 'Status' : null">
-                  <button class="btn btn-sm filter-btn dropdown-toggle" ngbDropdownToggle>
-                    <span class="filter-label">{{ !statusTouched ? "Status" : selectedStatusLabel }} </span>
-                    <i class="ft-chevron-down"></i> 
-                  </button>
-                  <div class="dropdown-menu" ngbDropdownMenu>
-                    <button class="dropdown-item" (click)="onStatusChange('All')">
-                        All
-                    </button>
-                    <button class="dropdown-item" *ngFor="let s of status"
-                            (click)="onStatusChange(s)">
-                            {{ s.description }}
-                    </button>
-                  </div>
-                </div>
-
-            
-
-                <button class="btn px-1 btn-sm" (click)="showFilterBar = false">✕</button>
-                </div>
-                
-            
-                
-              </div>
             </div>
 
             <!-- Content -->
-            <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="rfqData" [columnMode]="'force'" [headerHeight]="50"
-                [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'" [limit]="query.pageSize" [count]="totalItems"
-                [externalPaging]="true" [offset]="query.currentPage - 1" (page)="onPageChange($event)" [scrollbarH]="true"
-                [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
-                [selectionType]="SelectionType.checkbox" (sort)="onSort($event)"
-                (select)="customChkboxOnSelect($event)">
+            <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="rfqData" [columnMode]="'force'"
+                [headerHeight]="50" [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'"
+                [limit]="query.pageSize" [count]="totalItems" [externalPaging]="true" [offset]="query.currentPage - 1"
+                (page)="onPageChange($event)" [scrollbarH]="true" [loadingIndicator]="loading"
+                [selected]="chkBoxSelected" [swapColumns]="false" [selectionType]="SelectionType.checkbox"
+                (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
                 <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
                     [resizeable]="false">
                     <ng-template ngx-datatable-header-template>
@@ -114,13 +104,13 @@
                 </ngx-datatable-column>
 
                 <!-- Sr. No -->
-                <ngx-datatable-column name="Sr. No." [width]="50"  [resizeable]="false">
+                <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
                     <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
                         <span>{{ rowIndex + 1 }}</span>
                     </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="RFQ No." prop="rfqNo" >
+                <ngx-datatable-column name="RFQ No." prop="rfqNo">
                 </ngx-datatable-column>
 
                 <ngx-datatable-column name="Status" prop="requestStatus">
@@ -129,14 +119,14 @@
                 <!-- <ngx-datatable-column name="Date" prop="date" [width]="50">
                 </ngx-datatable-column> -->
 
-                <ngx-datatable-column name="Date" prop="date" >
+                <ngx-datatable-column name="Date" prop="date">
                     <ng-template let-row="row" ngx-datatable-cell-template>
                         {{ row.date | date:'yyyy-MM-dd' }}
                     </ng-template>
                 </ngx-datatable-column>
 
 
-                <ngx-datatable-column name="Owner" prop="owner" >
+                <ngx-datatable-column name="Owner" prop="owner">
                 </ngx-datatable-column>
 
                 <ngx-datatable-column name="Comments" prop="comment">
@@ -157,8 +147,8 @@
                             <div class="d-flex justify-content-around flex-column">
                                 <button class="btn popover-btn btn-sm m-1" ngbTooltip="Quotation Box"
                                     (click)="openQuotationBoxModal(row)">
-                                     <span class="popover-icon"><i class="ft-mail"></i></span>
-                                     Quotation Box
+                                    <span class="popover-icon"><i class="ft-mail"></i></span>
+                                    Quotation Box
                                 </button>
 
                                 <button class="btn popover-btn btn-sm m-1" ngbTooltip="Vendor Comparison"
@@ -180,10 +170,19 @@
                                 </button>
 
                                 <button *ngIf="row.requestStatus === 'Completed'; else poWaitingTemplate"
-                  class="btn popover-btn btn-sm m-1" ngbTooltip="Create Purchase Order" (click)="createPO(row)">
-                  <span class="popover-icon"> <i class="ft-shopping-cart"></i> </span>
-                  Create Purchase Order
-                </button>
+                                    class="btn popover-btn btn-sm m-1" ngbTooltip="Create Purchase Order"
+                                    (click)="createPO(row)">
+                                    <span class="popover-icon"> <i class="ft-shopping-cart"></i> </span>
+                                    Create Purchase Order
+                                </button>
+                                <ng-template #poWaitingTemplate>
+                                    <button class="btn popover-btn btn-sm m-1" disabled
+                                        ngbTooltip="PO can only be created when RFQ is Completed.">
+                                        <span class="popover-icon"><i class="ft-shopping-cart"
+                                                style="opacity: 0.5;"></i> </span>
+                                        Create Purchase Order
+                                    </button>
+                                </ng-template>
                             </div>
                         </ng-template>
                     </ng-template>

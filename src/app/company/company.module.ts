@@ -19,13 +19,15 @@ import { QuillModule } from 'ngx-quill';
 import { PipeModule } from 'app/shared/pipes/pipe.module';
 import { CompanyActionsComponent } from './company-actions/company-actions.component';
 import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
+import { CompanyApprovalHistoryComponent } from './company-approval-history/company-approval-history.component';
 
 
 @NgModule({
   declarations: [
     CompanyListingComponent,
     CompanyEditComponent,
-    CompanyActionsComponent
+    CompanyActionsComponent,
+    CompanyApprovalHistoryComponent
   ],
   imports: [
     CommonModule,

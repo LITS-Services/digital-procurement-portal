@@ -12,7 +12,7 @@
           </h4>
         </div>
       </div>
-      
+
       <div class="card cstm-ui-card">
         <div class="row">
           <div class="col-md-6">
@@ -178,13 +178,40 @@
               <ng-template ngbPanelContent class="">
                 <div class="card-accordion">
 
+                  <div class="d-flex align-items-center justify-content-end mb-3" style="gap:1em">
+                    <!-- File Input -->
+                    <input style="padding: 6px 16px;" type="file" accept=".xlsx,.xls,.csv"
+                      (change)="onFileSelected($event)" class="form-control w-auto" />
+
+                    <!-- Bulk Insert Button -->
+                    <button class="btn btn-primary" (click)="bulkInsert()">
+                      <i class="fa-solid fa-file-import mr-1"></i>
+                      Bulk Insert
+                    </button>
+
+                    <!-- Insert Button -->
+                    <!-- <button class="btn btn-primary" (click)="insertItem()" [disabled]="viewMode">
+                      <i class="ft-pocket mr-1"></i>
+                      Insert
+                    </button> -->
+
+                    <!-- Insert / Update Button -->
+                    <button class="btn btn-primary" (click)="insertItem()" [disabled]="viewMode">
+                      <i class="ft-pocket mr-1"></i>
+                      {{ editingRowIndex !== null ? 'Update' : 'Insert' }}
+                    </button>
+
+                  </div>
+
+
+
                   <div class="form-row position-relative" [formGroup]="itemForm">
 
-                    <button class="btn btn-primary position-absolute" style="top: 0; right: 0; z-index: 10;"
+                    <!-- <button class="btn btn-primary position-absolute" style="top: 0; right: 0; z-index: 10;"
                       (click)="insertItem()" [disabled]="viewMode">
                       <i class="ft-pocket mr-1"></i>
                       Insert
-                    </button>
+                    </button> -->
 
                     <div class="col-12 mb-1">
                       <h5>Item Type</h5>
@@ -241,20 +268,18 @@
                       </div>
                     </div>
 
-
-                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
-                      <div class="form-group mb-2">
-                        <label>Unit Cost</label>
-                        <input type="number" placeholder="Enter Unit Cost" class="form-control custom-input"
-                          formControlName="unitCost" />
-                      </div>
-                    </div>
-
                     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
                       <div class="form-group mb-2">
                         <label>Order Quantity</label>
                         <input type="number" placeholder="Enter Order Quantity" class="form-control custom-input"
                           formControlName="orderQuantity" />
+                      </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
+                      <div class="form-group mb-2">
+                        <label>Unit Cost</label>
+                        <input type="number" placeholder="Enter Unit Cost" class="form-control custom-input"
+                          formControlName="unitCost" />
                       </div>
                     </div>
 
@@ -350,19 +375,19 @@
                     <span>{{rowIndex + 1}}</span>
                   </ng-template>
                 </ngx-datatable-column>
-                
+
                 <ngx-datatable-column name="Type" prop="itemType" [width]="70">
                 </ngx-datatable-column>
-                
+
                 <ngx-datatable-column name="Item" [width]="150">
                   <ng-template let-row="row" ngx-datatable-cell-template>
                     {{ getItemNameById(row.itemId) }}
                   </ng-template>
                 </ngx-datatable-column>
-                
+
                 <ngx-datatable-column name="Description" [width]="150" prop="itemDescription">
                 </ngx-datatable-column>
-               
+
                 <ngx-datatable-column name="Amount" prop="amount" [width]="180">
                 </ngx-datatable-column>
 

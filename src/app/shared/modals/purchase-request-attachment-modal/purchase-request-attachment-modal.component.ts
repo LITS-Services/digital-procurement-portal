@@ -10,11 +10,9 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./purchase-request-attachment-modal.component.scss']
 })
 
-
-
 export class PurchaseRequestAttachmentModalComponent implements OnInit {
-@Input() viewMode: boolean = false;
-  @Input() attachments: any[] = []; 
+  @Input() viewMode: boolean = false;
+  @Input() attachments: any[] = [];
   @Output() attachmentsChange = new EventEmitter<any[]>();
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
@@ -65,7 +63,6 @@ export class PurchaseRequestAttachmentModalComponent implements OnInit {
 
     this.activeModal.close(payload);
   }
-
 
   downloadLocalFile(file: any) {
     const link = document.createElement('a');
@@ -131,7 +128,7 @@ export class PurchaseRequestAttachmentModalComponent implements OnInit {
       reader.onerror = error => reject(error);
     });
   }
- deleteRow(rowIndex: number): void {
+  deleteRow(rowIndex: number): void {
     this.uploadedFiles.splice(rowIndex, 1);
     this.uploadedFiles = [...this.uploadedFiles]; // refresh table
     this.toastr.success('Attachment removed!', '');

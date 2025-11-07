@@ -24,7 +24,7 @@
         <textarea id="additionalInfo" formControlName="remarks" class="form-control" rows="3"
           placeholder="Enter any additional information here..."></textarea>
       </div> -->
-      
+
       <div class="col-12 form-group mt-3" *ngIf="uploadedFiles.length > 0">
         <ngx-datatable class="bootstrap core-bootstrap" [rows]="uploadedFiles" [columnMode]="'standard'"
           [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
@@ -43,34 +43,26 @@
 
           <!-- <ngx-datatable-column name="Remarks" [width]="150" prop="remarks">
           </ngx-datatable-column> -->
-<ngx-datatable-column name="Visible to Vendor" [width]="150">
-  <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
+          <ngx-datatable-column name="Visible to Vendor" [width]="150">
+            <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
 
-    <input 
-      type="checkbox" 
-      [disabled]="viewMode"
-      [ngModelOptions]="{ standalone: true }"
-      [(ngModel)]="uploadedFiles[rowIndex].visibleToVendor"
-      (ngModelChange)="onVisibilityChange(rowIndex)"
-    />
+              <input type="checkbox" [disabled]="viewMode" [ngModelOptions]="{ standalone: true }"
+                [(ngModel)]="uploadedFiles[rowIndex].visibleToVendor" (ngModelChange)="onVisibilityChange(rowIndex)" />
 
-  </ng-template>
-</ngx-datatable-column>
+            </ng-template>
+          </ngx-datatable-column>
 
           <ngx-datatable-column name="Actions" [width]="100">
             <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex">
 
-              <a matTooltip="Download File"
-              class="row-action-edit"
-              style="margin-right: 10px;"
+              <a matTooltip="Download File" class="row-action-edit" style="margin-right: 10px;"
                 (click)="downloadLocalFile(uploadedFiles[rowIndex])"
                 [ngClass]="{'disabled': viewMode || uploadedFiles[rowIndex]?.isNew}">
                 <i style="font-size: 1.5rem;" class="ft-download"></i>
               </a>
 
-              <a *ngIf="!viewMode" matTooltip="Upload File"
-               class="row-action-delete"
-                (click)="deleteRow(rowIndex)" [ngClass]="{'disabled': viewMode || uploadedFiles[rowIndex]?.isNew}">
+              <a *ngIf="!viewMode" matTooltip="Upload File" class="row-action-delete" (click)="deleteRow(rowIndex)"
+                [ngClass]="{'disabled': viewMode || uploadedFiles[rowIndex]?.isNew}">
                 <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
               </a>
 

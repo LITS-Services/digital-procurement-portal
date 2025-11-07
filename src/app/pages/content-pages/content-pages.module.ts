@@ -17,6 +17,8 @@ import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MainLayoutComponent } from './main-layout/main-layout.component';
+import { NgOtpInputModule } from 'ng-otp-input';
+import { NgHcaptchaModule } from 'ng-hcaptcha';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
@@ -27,6 +29,8 @@ export function createTranslateLoader(http: HttpClient) {
     CommonModule,
     ContentPagesRoutingModule,
     FormsModule,
+    NgOtpInputModule,
+    NgHcaptchaModule.forRoot({ siteKey: '1b1afe16-c082-4211-accf-2921906c959b' }),
     ReactiveFormsModule,
     NgbModule,
     TranslateModule.forChild({

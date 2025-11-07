@@ -42,11 +42,8 @@
           <ngx-datatable-column name="Actions" [width]="100">
             <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex">
 
-
-              <a 
-                matTooltip="Download File" class="row-action-edit" style="margin-right: 10px;"
-                (click)="downloadLocalFile(uploadedFiles[rowIndex])"
-                [ngClass]="{'disabled': viewMode || uploadedFiles[rowIndex]?.isNew}">
+              <a matTooltip="Download File" class="row-action-edit" style="margin-right: 10px;"
+                (click)="downloadLocalFile(uploadedFiles[rowIndex])">
                 <i style="font-size: 1.5rem;" class="ft-download"></i>
               </a>
 
@@ -54,21 +51,19 @@
                 [ngClass]="{'disabled':viewMode || uploadedFiles[rowIndex]?.isNew}">
                 <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
               </a>
-
-
-
             </ng-template>
           </ngx-datatable-column>
         </ngx-datatable>
-      </div>
-    </div>
 
+      </div>
+      <div class="col-12 mt-3 text-center" *ngIf="uploadedFiles.length === 0 && viewMode">
+  <p class="text-muted">No attachments available</p>
+</div>
+    </div>
 
     <!-- Submit Button -->
     <div class="form-group mt-3">
       <button type="submit" class="btn btn-primary" (click)="uploadFiles()" *ngIf="!viewMode">Upload</button>
     </div>
   </form>
-
-
 </div>

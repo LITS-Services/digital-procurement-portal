@@ -12,7 +12,7 @@ import { DatatableComponent } from '@swimlane/ngx-datatable';
 
 export class RfqAttachmentComponent implements OnInit {
   @Input() viewMode: boolean = false;
-  @Input() attachments: any[] = []; 
+  @Input() attachments: any[] = [];
   @Output() attachmentsChange = new EventEmitter<any[]>();
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
@@ -61,8 +61,6 @@ export class RfqAttachmentComponent implements OnInit {
     //   quotationItemId: a.quotationItemId,
     //   visibleToVendor: a.visibleToVendor ?? false
     // }));
-    
-
     this.activeModal.close([...this.uploadedFiles]);
   }
 
@@ -98,13 +96,14 @@ export class RfqAttachmentComponent implements OnInit {
       console.error('Failed to convert file to base64:', error);
     }
   }
-// onVisibilityChange(index: number) {
-//   // If editing an existing attachment, mark it for update
-//   if (!this.uploadedFiles[index].isNew && this.uploadedFiles[index].visibleToVendor
-// ) {
-//     this.uploadedFiles[index].isUpdated = true;
-//   }
-// }
+
+  // onVisibilityChange(index: number) {
+  //   // If editing an existing attachment, mark it for update
+  //   if (!this.uploadedFiles[index].isNew && this.uploadedFiles[index].visibleToVendor
+  // ) {
+  //     this.uploadedFiles[index].isUpdated = true;
+  //   }
+  // }
 
   removeFile(index: number) {
     this.uploadedFiles.splice(index, 1);

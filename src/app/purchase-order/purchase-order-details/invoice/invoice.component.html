@@ -1,0 +1,107 @@
+
+
+    <!-- Action Bar -->
+    <!-- <div class="card cstm-ui-card mb-3 py-2 px-3 d-flex justify-content-start flex-wrap">
+      <div class="d-flex align-items-center">
+        <button class="btn btn-lg position-relative me-2" type="button" (click)="goBack()">
+          <i class="ft-arrow-left"></i>
+        </button>
+        <h5 class="mt-2 fw-bold">Invoice Details</h5>
+      </div>
+    </div> -->
+
+        <div class="card cstm-ui-card mb-4">
+            <div class="card-body">
+
+                <div class="row">
+        <div class="col-lg-4 col-md-6 mb-3">
+          <label>Invoice No</label>
+          <input class="form-control form-control-sm" [value]="invoiceDetails.invoiceNo" disabled>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-3">
+          <label>PO No</label>
+          <input class="form-control form-control-sm" [value]="invoiceDetails.poNo" disabled>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-3">
+          <label>Vendor</label>
+          <input class="form-control form-control-sm" [value]="invoiceDetails.vendorName" disabled>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-3">
+          <label>Invoice Date</label>
+          <input class="form-control form-control-sm" [value]="invoiceDetails.invoiceDate" disabled>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-3">
+          <label>GRN No</label>
+          <input class="form-control form-control-sm" [value]="invoiceDetails.grnNo" disabled>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-3">
+          <label>Delivery Challan No</label>
+          <input class="form-control form-control-sm" [value]="invoiceDetails.deliveryChallan" disabled>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-3">
+          <label>Payment Terms</label>
+          <input class="form-control form-control-sm" [value]="invoiceDetails.paymentTerms" disabled>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-3">
+          <label>Due Date</label>
+          <input class="form-control form-control-sm" [value]="invoiceDetails.dueDate" disabled>
+        </div>
+
+        <div class="col-lg-4 col-md-6 mb-3">
+          <label>Remarks</label>
+          <textarea class="form-control form-control-sm" disabled rows="2">{{ invoiceDetails.remarks }}</textarea>
+        </div>
+      </div>
+            </div>
+    </div>
+
+       <!-- Items Section -->
+        <h5 class="heading mb-3 fw-bold" (click)="toggleItems()" style="cursor: pointer;">
+            Items
+            <i class="fa" [ngClass]="itemsExpanded ? 'fa-chevron-down' : 'fa-chevron-up'" style="font-size: 12px;"></i>
+        </h5>
+
+        <div [@expandCollapse]="itemsExpanded ? 'expanded' : 'collapsed'" style="overflow: hidden;">
+            <div class="card cstm-ui-card border-0 shadow-sm">
+                <div class="card-body p-0">
+
+                    <div class="table-responsive">
+                        <table class="table table-sm pro-table mb-0">
+                            <thead>
+                                <tr>
+            <th>Item</th>
+            <th class="text-center">Qty</th>
+            <th class="text-end">Unit Price</th>
+            <th class="text-end">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of invoiceDetails.items">
+            <td>{{ item.itemName }}</td>
+            <td class="text-center">{{ item.qty }}</td>
+            <td class="text-end">{{ item.price | number:'1.2-2' }}</td>
+            <td class="text-end fw-bold">{{ item.amount | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+      </div>
+            </div>
+        </div>
+    <!-- Totals -->
+<div class="d-flex justify-content-end mt-2">
+  <div class="text-end">
+    <div><strong>Subtotal:</strong> {{ invoiceDetails.subtotal | number:'1.2-2' }}</div>
+    <div><strong>Tax:</strong> {{ invoiceDetails.tax | number:'1.2-2' }}</div>
+    <div><strong>Other Charges:</strong> {{ invoiceDetails.otherCharges | number:'1.2-2' }}</div>
+    <h6 class="fw-bold mt-1">Total: {{ invoiceDetails.total | number:'1.2-2' }}</h6>
+  </div>
+</div>
+

@@ -14,7 +14,6 @@ import { RfqRemarksComponent } from '../rfq-remarks/rfq-remarks.component';
 import Swal from 'sweetalert2';
 import { LookupService } from 'app/shared/services/lookup.service';
 import { SelectedVendorsModalComponent } from './selected-vendors-modal/selected-vendors-modal.component';
-import { visitAll } from '@angular/compiler';
 
 @Component({
   selector: 'app-new-rfq',
@@ -872,6 +871,47 @@ selectTab(tab: 'rfq-input' | 'quotation-box' | 'vendors') {
     console.error('Error saving draft:', err);
   }
 
+  // onSubmitForApproval() {
+  //   Swal.fire({
+  //     title: 'Submit for Approval?',
+  //     text: 'Are you sure you want to submit this quotation for approval?',
+  //     icon: 'question',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Yes, submit it',
+  //     cancelButtonText: 'Cancel',
+  //     confirmButtonColor: '#3085d6',
+  //     cancelButtonColor: '#d33'
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
+  //         next: (res) => {
+  //           if (
+  //             res?.errors
+  //           ) {
+  //             this.router.navigate(['/rfq']);
+  //             return;
+  //           }
+  //           Swal.fire({
+  //             icon: 'success',
+  //             title: 'Submitted!',
+  //             text: res.message || 'Quotation submitted for approval successfully.',
+  //             confirmButtonColor: '#3085d6',
+  //           });
+  //           this.router.navigate(['/rfq']);
+  //         },
+  //         error: (err) => {
+  //           console.error(err);
+  //           Swal.fire({
+  //             icon: 'error',
+  //             title: 'Error',
+  //             text: 'Failed to submit quotation for approval.'
+  //           });
+  //         }
+  //       });
+  //     }
+  //   });
+  // }
+
   onSubmitForApproval() {
     Swal.fire({
       title: 'Submit for Approval?',
@@ -883,27 +923,20 @@ selectTab(tab: 'rfq-input' | 'quotation-box' | 'vendors') {
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33'
     }).then((result) => {
-      if (result.isConfirmed) {
-        this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
-          next: (res) => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Submitted!',
-              text: res.message || 'Quotation submitted for approval successfully.',
-              confirmButtonColor: '#3085d6',
-            });
-            this.router.navigate(['/rfq']);
-          },
-          error: (err) => {
-            console.error(err);
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Failed to submit quotation for approval.'
-            });
-          }
-        });
-      }
+      if (!result.isConfirmed) return;
+
+      this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
+        next: () => {
+
+          // Navigate only on success
+          this.router.navigate(['/rfq']);
+        },
+        error: () => {
+          // don't show Swal — interceptor already shows error toast
+          // do nothing here
+          this.router.navigate(['/rfq']);
+        }
+      });
     });
   }
 
@@ -959,5 +992,4 @@ selectTab(tab: 'rfq-input' | 'quotation-box' | 'vendors') {
     // Check if all items already have a quotationRequestId (already part of RFQ)
     return this.newQuotationItemData.every(item => item.quotationRequestId && item.quotationRequestId > 0);
   }
-
 }

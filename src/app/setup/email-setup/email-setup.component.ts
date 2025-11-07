@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
-import { AuthService } from 'app/shared/auth/auth.service';
+import { EmailTemplateService } from 'app/shared/services/EmailTemplateService';
 
 @Component({
   selector: 'app-email-setup',
@@ -17,25 +17,25 @@ export class EmailSetupComponent implements OnInit {
   public chkBoxSelected = [];
   loading = false;
   public rows = [];
-  public allEmailLogs = []; // ✅ To store all records
+  public allEmailLogs = [];
   columns = [];
   announcementId: number;
   isEditButtonDisabled = true;
   isDeleteButtonDisabled = true;
   isOpenButtonDisabled = true;
+  isResendButtonDisabled = true; // ✅ New button disable state
   isAllSelected = false;
 
   constructor(
     private router: Router,
     private modalService: NgbModal,
-    private authService: AuthService,
+    private EmailTemplateService: EmailTemplateService,
     private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
     this.getEmailLogs();
 
-    // ✅ Table Columns
     this.columns = [
       { prop: 'receiverEmail', name: 'Receiver Email' },
       { prop: 'requestStatusName', name: 'Request Status' },
@@ -44,11 +44,10 @@ export class EmailSetupComponent implements OnInit {
     ];
   }
 
-  // ✅ Fetch Email Logs
   getEmailLogs() {
     this.loading = true;
 
-    this.authService.getUserInvitation().subscribe({
+    this.EmailTemplateService.getUserInvitation().subscribe({
       next: (res: any[]) => {
         this.allEmailLogs = res.map(item => ({
           id: item.id,
@@ -58,9 +57,7 @@ export class EmailSetupComponent implements OnInit {
           body: this.truncateText(item.body)
         }));
 
-        // ✅ Default → show all
         this.rows = [...this.allEmailLogs];
-
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -71,30 +68,27 @@ export class EmailSetupComponent implements OnInit {
     });
   }
 
-  // ✅ Filters
   showAll() {
     this.rows = [...this.allEmailLogs];
   }
 
   showInProcess() {
     this.rows = this.allEmailLogs.filter(log =>
-      log.requestStatusName?.toLowerCase() === 'inprocess'
+      log.requestStatusName?.toLowerCase() === 'send'
     );
   }
 
   showRecall() {
     this.rows = this.allEmailLogs.filter(log =>
-      log.requestStatusName?.toLowerCase() === 'recall' || 
-      log.requestStatusName?.toLowerCase() === 'sendback' // Optional: include SendBack if needed
+      log.requestStatusName?.toLowerCase() === 'resend' ||
+      log.requestStatusName?.toLowerCase() === 'sendback'
     );
   }
 
-  // ✅ Truncate Long Text
   truncateText(text: string, limit: number = 50): string {
     return text && text.length > limit ? text.substring(0, limit) + '...' : text;
   }
 
-  // ✅ Sorting
   onSort(event) {
     this.loading = true;
     setTimeout(() => {
@@ -108,22 +102,18 @@ export class EmailSetupComponent implements OnInit {
     }, 1000);
   }
 
-  // ✅ Checkbox Selection
   customChkboxOnSelect({ selected }) {
-    this.chkBoxSelected = [];
-    this.chkBoxSelected.splice(0, this.chkBoxSelected.length);
-    this.chkBoxSelected.push(...selected);
+    this.chkBoxSelected = [...selected];
     this.announcementId = selected[0]?.id;
     this.enableDisableButtons();
   }
 
   enableDisableButtons() {
     const selectedRowCount = this.chkBoxSelected.length;
-
     this.isDeleteButtonDisabled = selectedRowCount === 0;
     this.isEditButtonDisabled = selectedRowCount !== 1;
     this.isOpenButtonDisabled = selectedRowCount === 0;
-
+    this.isResendButtonDisabled = selectedRowCount !== 1; // ✅ Only one selection allows resend
     this.isAllSelected = this.rows.length === selectedRowCount;
   }
 
@@ -133,5 +123,14 @@ export class EmailSetupComponent implements OnInit {
 
   CreatInvitations() {
     this.router.navigate(['/setup/create-invitation']);
+  }
+
+  // ✅ NEW: Resend button logic
+  resendInvitation() {
+    if (this.announcementId) {
+      this.router.navigate(['/setup/create-invitation'], {
+        queryParams: { id: this.announcementId, mode: 'resend' }
+      });
+    }
   }
 }

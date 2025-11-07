@@ -37,16 +37,13 @@ export class RfqComponent implements OnInit {
   isOpenButtonDisabled = true;
   isAllSelected = false;
   columns = [];
-
-  // currentPage = 1;
-  // pageSize = 10;
   totalPages = 0;
   totalItems = 0;
 
-    showFilterBar = false;
+  showFilterBar = false;
   selectedStatusLabel = 'All';
 
-  statusTouched:boolean = false;
+  statusTouched: boolean = false;
 
   private _resizeT?: any;
   // public chkBoxSelected = [];
@@ -60,7 +57,7 @@ export class RfqComponent implements OnInit {
   // isAddNewDisable:boolean= true;
   // isAllSelected: boolean = false;
 
-    query: RFQQuery = {
+  query: RFQQuery = {
     currentPage: 1,
     pageSize: 10,
     status: null,
@@ -68,47 +65,45 @@ export class RfqComponent implements OnInit {
     rfqNo: null
   };
 
-  status:any
-
+  status: any
   searchText = '';
   private searchChanged$ = new Subject<string>();
 
   constructor(private router: Router, private modalService: NgbModal,
     private route: ActivatedRoute, private rfqService: RfqService,
     private cdr: ChangeDetectorRef, public toastr: ToastrService,
-    public lookupService:LookupService, private purchaseOrderService: PurchaseOrderService
+    public lookupService: LookupService, private purchaseOrderService: PurchaseOrderService
   ) { }
 
   ngOnInit(): void {
-   this.searchChanged$
-    .pipe(debounceTime(300), distinctUntilChanged())
-    .subscribe(text => {
-      this.query.rfqNo = text?.trim() || null;
-      this.query.currentPage = 1;
-      this.loadRfqs(); 
-    });
+    this.searchChanged$
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe(text => {
+        this.query.rfqNo = text?.trim() || null;
+        this.query.currentPage = 1;
+        this.loadRfqs();
+      });
 
     this.loadStatus();
 
     this.loadRfqs();
-    
+
   }
 
-
-    toggleFilterBar() {
+  toggleFilterBar() {
     this.showFilterBar = !this.showFilterBar;
-    }
+  }
 
-    loadStatus() {
-      this.lookupService.getAllRequestStatus().subscribe({
-        next: (data: any) => {
-          this.status = data;
-        },
-        error: (err) => {
-          console.error('Error fetching Status:', err);
-        }
-      });
-    }
+  loadStatus() {
+    this.lookupService.getAllRequestStatus().subscribe({
+      next: (data: any) => {
+        this.status = data;
+      },
+      error: (err) => {
+        console.error('Error fetching Status:', err);
+      }
+    });
+  }
 
   loadRfqs() {
     this.loading = true;
@@ -118,7 +113,7 @@ export class RfqComponent implements OnInit {
 
         // Extract paginated data correctly
         this.rfqData = data?.result || [];
-        
+
         // Capture pagination info
         this.totalPages = data.totalPages;
         this.totalItems = data.totalItems;
@@ -134,19 +129,19 @@ export class RfqComponent implements OnInit {
   }
 
   onStatusChange(status: any) {
-    if(status === 'All') {
+    if (status === 'All') {
       this.selectedStatusLabel = "All"
     }
-    else{
-       this.selectedStatusLabel = status?.description;
+    else {
+      this.selectedStatusLabel = status?.description;
     }
     this.statusTouched = true;
     this.query.status = status?.description;;
-    this.query.currentPage = 1 ;
+    this.query.currentPage = 1;
     this.loadRfqs();
   }
 
-    onSearchChange(text: string) {
+  onSearchChange(text: string) {
     this.searchText = text;
     this.searchChanged$.next(text);
   }
@@ -317,32 +312,32 @@ export class RfqComponent implements OnInit {
   }
 
   createPO(row: any) {
-  
-      Swal.fire({
-        title: 'Create Purchase Order?',
-        text: 'This will generate PO(s) automatically for all items based on vendor assignment.',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, Create PO',
-        cancelButtonText: 'Cancel',
-      }).then((result) => {
-        if (result.isConfirmed) {
-  
-          this.purchaseOrderService.createPurchaseOrderFromRFQ(row.quotationId).subscribe({
-            next: () => {
-              console.log("Successfully created PO");
-              this.loadRfqs();
-            },
-            error: () => {
-              this.toastr.error('Something went wrong while creating PO.');
-            }
-          });
-  
-        }
-      });
-    }
 
-    onPageChange(event: any) {
+    Swal.fire({
+      title: 'Create Purchase Order?',
+      text: 'This will generate PO(s) automatically for all items based on vendor assignment.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Create PO',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        this.purchaseOrderService.createPurchaseOrderFromRFQ(row.quotationId).subscribe({
+          next: () => {
+            console.log("Successfully created PO");
+            this.loadRfqs();
+          },
+          error: () => {
+            this.toastr.error('Something went wrong while creating PO.');
+          }
+        });
+
+      }
+    });
+  }
+
+  onPageChange(event: any) {
     // ngx-datatable gives 0-based offset
     this.query.currentPage = (event?.offset ?? 0) + 1;
     this.loadRfqs();

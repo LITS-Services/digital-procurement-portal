@@ -1,8 +1,8 @@
 import { Component, ElementRef, HostListener, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AuthService } from 'app/shared/auth/auth.service'; // import AuthService
-// import { CompanyService } from 'app/shared/services/Company.services'; // ❌ Commented
+import { ActivatedRoute, Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { EmailTemplateService } from 'app/shared/services/EmailTemplateService';
 
 @Component({
   selector: 'app-create-invitation',
@@ -14,14 +14,16 @@ export class CreateInvitationComponent implements OnInit {
   submitted = false;
   dropdownOpen = false;
   senderName: string = '';
-  // companies: any[] = [];  // ❌ Commented: No longer needed
+  isResendMode = false;   // ✅ Check if resend mode
+  emailId: number | null = null; // ✅ Store ID from query param
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private eRef: ElementRef,
-    private authService: AuthService, // ✅ Kept
-    // private companyService: CompanyService // ❌ Commented
+    private EmailTemplateService: EmailTemplateService,
+    private route: ActivatedRoute,
+    private toastr: ToastrService // ✅ Added Toastr
   ) {}
 
   ngOnInit(): void {
@@ -32,27 +34,40 @@ export class CreateInvitationComponent implements OnInit {
       receiverEmail: ['', [Validators.required, Validators.email]],
       subject: ['', Validators.required],
       body: [this.getDefaultBody(), Validators.required],
-      // companies: [[], Validators.required] // ❌ Commented
     });
 
-    // this.loadCompanies(); // ❌ Commented
+    // ✅ Check for ID in query param (Resend case)
+    this.route.queryParams.subscribe(params => {
+      if (params['id']) {
+        this.emailId = +params['id'];
+        this.isResendMode = true;
+        this.loadEmailDetails(this.emailId);
+      }
+    });
   }
 
   get f() {
     return this.invitationForm.controls;
   }
 
-  toggleDropdown() {
-    this.dropdownOpen = !this.dropdownOpen;
+  // ✅ Load Email Details by ID
+  loadEmailDetails(id: number) {
+    this.EmailTemplateService.getEmailInvitationById(id).subscribe({
+      next: (res: any) => {
+        if (res) {
+          this.invitationForm.patchValue({
+            receiverEmail: res.receiverEmail || '',
+            subject: res.subject || '',
+            body: res.body || this.getDefaultBody(),
+          });
+        }
+      },
+      error: (err) => {
+        console.error('Error loading email details:', err);
+        this.toastr.error('Failed to load invitation details.', 'Error');
+      }
+    });
   }
-
-  // selectCompany(company: any) {
-  //   company.selected = !company.selected;
-  //   const selectedCompanies = this.companies
-  //     .filter((c) => c.selected)
-  //     .map((c) => c.name);
-  //   this.invitationForm.patchValue({ companies: selectedCompanies });
-  // }
 
   homePage() {
     this.router.navigate(['/setup/email-setup']);
@@ -60,40 +75,53 @@ export class CreateInvitationComponent implements OnInit {
 
   resetForm() {
     this.invitationForm.reset();
-    // this.companies.forEach((c) => (c.selected = false)); // ❌ Commented
     this.submitted = false;
     this.invitationForm.patchValue({
       body: this.getDefaultBody()
     });
   }
 
- saveInvitation() {
-  this.submitted = true;
-  if (this.invitationForm.invalid) return;
+  // ✅ Save or Resend Invitation
+  saveInvitation() {
+    this.submitted = true;
+    if (this.invitationForm.invalid) return;
 
-  // Prepare form data to send to API
-  const userData = {
-    submitterEmail: this.senderName + '@example.com', // or get actual submitter email
-    receiverEmail: this.invitationForm.value.receiverEmail,
-    subject: this.invitationForm.value.subject,
-    body: this.invitationForm.value.body
-  };
+    const userData = {
+      submitterEmail: this.senderName + '@example.com',
+      receiverEmail: this.invitationForm.value.receiverEmail,
+      subject: this.invitationForm.value.subject,
+      body: this.invitationForm.value.body
+    };
 
-  // Call AuthService API
-  this.authService.createEmailInvitation(userData).subscribe({
-    next: (res) => {
-      console.log('Invitation sent:', res);
-      alert('Invitation sent successfully!');
-      this.resetForm();
-      this.router.navigate(['/setup/email-setup']); // ✅ Redirect added here
-    },
-    error: (err) => {
-      console.error('Error sending invitation:', err);
-      alert('Failed to send invitation.');
+    if (this.isResendMode && this.emailId) {
+      // ✅ RESEND MODE → Call update API
+      this.EmailTemplateService.updateEmailInvitation(this.emailId, userData).subscribe({
+        next: (res) => {
+          console.log('Invitation resent:', res);
+          this.toastr.success('Invitation resent successfully!', 'Success');
+          this.router.navigate(['/setup/email-setup']);
+        },
+        error: (err) => {
+          console.error('Error resending invitation:', err);
+          this.toastr.error('Failed to resend invitation.', 'Error');
+        }
+      });
+    } else {
+      // ✅ NORMAL CREATE MODE
+      this.EmailTemplateService.createEmailInvitation(userData).subscribe({
+        next: (res) => {
+          console.log('Invitation sent:', res);
+          this.toastr.success('Invitation sent successfully!', 'Success');
+          this.resetForm();
+          this.router.navigate(['/setup/email-setup']);
+        },
+        error: (err) => {
+          console.error('Error sending invitation:', err);
+          this.toastr.error('Failed to send invitation.', 'Error');
+        }
+      });
     }
-  });
-}
-
+  }
 
   getDefaultBody(): string {
     return (
@@ -102,7 +130,7 @@ export class CreateInvitationComponent implements OnInit {
       `Please click the link below to complete your registration process.\n` +
       `http://localhost:4200/pages/registeration\n\n` +
       `Best Regards,\n` +
-      `${this.senderName}` 
+      `${this.senderName}`
     );
   }
 
@@ -112,19 +140,4 @@ export class CreateInvitationComponent implements OnInit {
       this.dropdownOpen = false;
     }
   }
-
-  // loadCompanies() {
-  //   this.companyService.getProCompanies().subscribe({
-  //     next: (res: any) => {
-  //       this.companies = (res?.result || res || []).map((c: any) => ({
-  //         id: c.id,
-  //         name: c.name,
-  //         selected: false
-  //       }));
-  //     },
-  //     error: (err) => {
-  //       console.error('Error fetching companies:', err);
-  //     }
-  //   });
-  // }
 }

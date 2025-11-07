@@ -17,6 +17,10 @@ import { CompanyService } from 'app/shared/services/Company.services';
 import { ToastrService } from 'ngx-toastr';
 import { SwiperDirective, SwiperConfigInterface } from 'ngx-swiper-wrapper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Router } from '@angular/router';
+import { UserServiceService } from 'app/shared/services/user-service.service';
+import { finalize } from 'rxjs/operators';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-user-profile-page',
@@ -37,7 +41,11 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
 
   public userForm: FormGroup;
   public resetPasswordForm: FormGroup;
-  public profileImage: string | ArrayBuffer | null = 'assets/img/profile/user.png';
+  // public profileImage: string | ArrayBuffer | null = 'assets/img/profile/user.png';
+  public profileImage: string = 'assets/img/profile/user.png';
+  activeTab: 'details' | 'password' = 'password'; // default active tab
+
+
   public userId: string = '';
 
   public roles: any[] = [];
@@ -46,6 +54,10 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
   showOldPassword = false;
   showNewPassword = false;
   showConfirmPassword = false;
+
+  hidePassword: boolean = true;
+  hideOldPassword: boolean = true;
+  hideConfirmPassword: boolean = true;
 
   constructor(
     private configService: ConfigService,
@@ -56,11 +68,15 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
     private fb: FormBuilder,
     private companyService: CompanyService,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private userService: UserServiceService,
+    private router: Router,
+    private spinner: NgxSpinnerService
+
   ) {
     this.config = this.configService.templateConf;
 
-    // ✅ Initialize User Profile Form
+    // Initialize User Profile Form
     this.userForm = this.fb.group({
       userName: [{ value: '', disabled: true }],
       fullName: [{ value: '', disabled: true }],
@@ -70,7 +86,7 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
       companies: [[]]
     });
 
-    // ✅ Initialize Reset Password Form
+    // Initialize Reset Password Form
     this.resetPasswordForm = this.fb.group({
       oldPassword: ['', Validators.required],
       newPassword: ['', [Validators.required, Validators.minLength(6)]],
@@ -78,7 +94,7 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
     }, { validators: this.passwordMatchValidator });
   }
 
-  // ✅ Password Validators (unchanged)
+  // Password Validators (unchanged)
   passwordMatchValidator(group: FormGroup) {
     const newPass = group.get('newPassword')?.value;
     const confirmPass = group.get('confirmPassword')?.value;
@@ -92,6 +108,7 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   ngOnInit() {
+    this.activeTab = 'details';
     this.layoutSub = this.configService.templateConf$.subscribe(conf => {
       if (conf) {
         this.config = conf;
@@ -126,7 +143,7 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
     this.cdr.detectChanges();
   }
 
-  // ✅ Load roles for dropdown
+  // Load roles for dropdown
   loadRoles() {
     this.companyService.getRoles().subscribe({
       next: (res: any) => {
@@ -137,7 +154,7 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
     });
   }
 
-  // ✅ Load companies for dropdown
+  // Load companies for dropdown
   loadCompanies() {
     this.companyService.getProCompanies().subscribe({
       next: (res: any) => {
@@ -148,7 +165,7 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
     });
   }
 
-  // ✅ Load User Data
+  // Load User Data
   loadUserData(id: string) {
     this.companyService.getprocurementusersbyid(id).subscribe({
       next: (res: any) => {
@@ -176,15 +193,15 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
     });
   }
 
-  // ✅ Open Reset Password Modal (same logic)
+  // Open Reset Password Modal (same logic)
   openResetPassword(content: any) {
     this.resetPasswordForm.reset();
     this.modalService.open(content, { centered: true, backdrop: 'static' });
     this.cdr.detectChanges();
   }
 
-  // ✅ KEEP SAME RESET PASSWORD LOGIC
-  onResetPassword(modal: any) {
+  // KEEP SAME RESET PASSWORD LOGIC
+  onResetPassword() {
     if (this.resetPasswordForm.invalid || !this.userId) {
       this.toastr.error("Please fill all fields correctly");
       this.cdr.detectChanges();
@@ -201,7 +218,7 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
       next: () => {
         this.toastr.success('Password updated successfully');
         this.resetPasswordForm.reset();
-        modal.close();
+        // modal.close();
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -212,20 +229,76 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
     });
   }
 
-  // ✅ Profile image upload preview
+  // Profile image upload preview
+  // onProfileImageChange(event: any) {
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onload = (e) => {
+  //       this.profileImage = e.target?.result as string;
+  //       // this.userService.updateProfilePicture(this.profileImage); // updates shared state
+  //       this.cdr.detectChanges();
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // }
+
   onProfileImageChange(event: any) {
     const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.profileImage = e.target?.result as string;
-        this.cdr.detectChanges();
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.profileImage = e.target?.result as string;
+      this.cdr.detectChanges();
+
+      if (!this.userId) {
+        this.toastr.warning('User ID not found.');
+        return;
+      }
+
+      const companies = this.userForm.get('companies')?.value || [];
+      const selectedCompanyIds: number[] = companies.map((c: any) => Number(c.id));
+
+      const roles = this.userForm.get('roles')?.value || [];
+      const selectedRoleIds: string[] = roles.map((r: any) => r.id);
+
+      const payload = {
+        id: this.userId,
+        fullName: this.userForm.get('fullName')?.value,
+        userName: this.userForm.get('userName')?.value,
+        email: this.userForm.get('email')?.value,
+        phoneNumber: this.userForm.get('phoneNumber')?.value || '',
+        isDeleted: false,
+        profilePicture: this.profileImage,
+        selectedCompanyIds,
+        selectedRoleIds
       };
-      reader.readAsDataURL(file);
-    }
+
+      // 🔹 Show spinner before API call
+      this.spinner.show();
+
+      this.companyService.ProcurmentuserUpdate(this.userId, payload)
+        .pipe(finalize(() => {
+          this.spinner.hide(); // 🔹 Always hide spinner
+          this.cdr.detectChanges();
+        }))
+        .subscribe({
+          next: () => {
+            this.toastr.success('Profile picture updated successfully');
+            this.userService.updateProfilePicture(this.profileImage);
+          },
+          error: (err) => {
+            console.error('Error updating profile picture:', err);
+            this.toastr.error('Failed to update profile picture');
+          }
+        });
+    };
+
+    reader.readAsDataURL(file);
   }
 
-  // ✅ Save user changes
+  // Save user changes
   saveChanges() {
     if (!this.userId) {
       this.toastr.warning('User ID not found.');
@@ -251,8 +324,9 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
     };
 
     this.companyService.ProcurmentuserUpdate(this.userId, payload).subscribe({
-      next: () => {
+      next: (response) => {
         this.toastr.success('User updated successfully');
+        this.userService.updateProfilePicture(this.profileImage); // update after saving too
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -261,5 +335,27 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
         this.cdr.detectChanges();
       }
     });
+  }
+
+  // Navigate back to dashboard
+  homePage() {
+    this.router.navigate(['/dashboard/dashboard1']);
+  }
+
+
+  // Password Visibility
+
+  togglePasswordVisibility(field: string) {
+    switch (field) {
+      case 'password':
+        this.hidePassword = !this.hidePassword;
+        break;
+      case 'oldPassword':
+        this.hideOldPassword = !this.hideOldPassword;
+        break;
+      case 'confirmPassword':
+        this.hideConfirmPassword = !this.hideConfirmPassword;
+        break;
+    }
   }
 }

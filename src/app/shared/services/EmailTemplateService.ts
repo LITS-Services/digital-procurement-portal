@@ -45,4 +45,20 @@ getEmailTemplateById(id: number): Observable<any> {
 
 
 
+    createEmailInvitation(userData: any): Observable<string> {
+        return this.http.post(`${environment.apiUrl}/EmailLogs/create-email-invitation`, userData, { responseType: 'text' });
+    }
+
+    getUserInvitation(): Observable<any[]> {
+        return this.http.get<any[]>(`${environment.apiUrl}/EmailLogs/get-email-logs`);
+    }
+
+    updateEmailInvitation(id: number, template: Partial<any>): Observable<any> {
+    return this.http.put<any>(`${environment.apiUrl}/EmailLogs/UpdateEmailinvitation${id}`, template);
+  }
+  getEmailInvitationById(id: number): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/EmailLogs/GetEmailinvitation${id}`);
+  }
+
+
 }

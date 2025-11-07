@@ -26,34 +26,34 @@ export class AuthService {
     this.user.subscribe(user => this.userDetails = user || null);
   }
 
-  
+
   // ===== Token Work =====
-    get accessToken(): string | null {
+  get accessToken(): string | null {
     return localStorage.getItem('token');
   }
- set accessToken(token: string | null) {
-  if (token) {
-    console.log('[AUTH] Setting accessToken:', token.slice(0, 12) + '...');
-    localStorage.setItem('token', token);
-  } else {
-    console.log('[AUTH] Clearing accessToken');
-    localStorage.removeItem('token');
+  set accessToken(token: string | null) {
+    if (token) {
+      console.log('[AUTH] Setting accessToken:', token.slice(0, 12) + '...');
+      localStorage.setItem('token', token);
+    } else {
+      console.log('[AUTH] Clearing accessToken');
+      localStorage.removeItem('token');
+    }
   }
-}
 
   get refreshToken(): string | null {
     return localStorage.getItem('refreshToken');
   }
-set refreshToken(token: string | null) {
-  if (token) {
-    console.log('[AUTH] Setting refreshToken:', token.slice(0, 12) + '...');
-    localStorage.setItem('refreshToken', token);
-  } else {
-    console.log('[AUTH] Clearing refreshToken');
-    localStorage.removeItem('refreshToken');
+  set refreshToken(token: string | null) {
+    if (token) {
+      console.log('[AUTH] Setting refreshToken:', token.slice(0, 12) + '...');
+      localStorage.setItem('refreshToken', token);
+    } else {
+      console.log('[AUTH] Clearing refreshToken');
+      localStorage.removeItem('refreshToken');
+    }
   }
-}
-   createEmailInvitation(userData: any): Observable<string> {
+  createEmailInvitation(userData: any): Observable<string> {
     return this.http.post(`${this.baseUrl}/Auth/create-email-invitation`, userData, { responseType: 'text' });
   }
 
@@ -63,17 +63,17 @@ set refreshToken(token: string | null) {
 
   // ===== SSO Login =====
   initiateSSOLogin(returnUrl: string = '/dashboard/dashboard1'): Observable<any> {
-    return this.http.get(`${this.baseUrl}/Auth/sso/login-url?returnUrl=${encodeURIComponent(returnUrl)}`);
+    return this.http.get(`${this.baseUrl}/Auth/procurement-sso/login-url?returnUrl=${encodeURIComponent(returnUrl)}`);
   }
-// =======ForgotPassword====
+  // =======ForgotPassword====
 
-forgetPassword(email: string): Observable<any> {
-  return this.http.post(`${environment.apiUrl}/Auth/ProcurementForgotPassword`, { email });
-}
+  forgetPassword(email: string): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/Auth/ProcurementForgotPassword`, { email });
+  }
 
-// ResetPassword(payload: any): Observable<any> {
-//   return this.http.post<any>(`${environment.apiUrl}/Auth/VendorResetPassword`, payload);
-// }
+  ProcurementResetPassword(payload: any): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/Auth/ProcurementResetPassword`, payload);
+  }
 
   // ===== OTP =====
   resendOtp(username: string, portalType: string): Observable<string> {
@@ -87,27 +87,27 @@ forgetPassword(email: string): Observable<any> {
 
 
 
-  
+
   ResetPassword(payload: any) {
     return this.http.post(`${environment.apiUrl}/ProcurementUsers/ChangePassword/`, payload);
   }
 
   // ===== Sign In =====
   signinUser(username: string, password: string): Observable<any> {
-  return new Observable((observer) => {
-    this.http.post<any>(`${this.baseUrl}/Auth/ProcurementLogin`, { username, password }).subscribe({
-      next: (res) => {
-        if (res && res.token) {
-          this._setSessionFromLogin(res);
-        }
+    return new Observable((observer) => {
+      this.http.post<any>(`${this.baseUrl}/Auth/ProcurementLogin`, { username, password }).subscribe({
+        next: (res) => {
+          if (res && res.token) {
+            this._setSessionFromLogin(res);
+          }
 
-        observer.next(res);
-        observer.complete();
-      },
-      error: (err) => observer.error(err)
+          observer.next(res);
+          observer.complete();
+        },
+        error: (err) => observer.error(err)
+      });
     });
-  });
-}
+  }
 
 
   // ===== Register =====
@@ -160,7 +160,7 @@ forgetPassword(email: string): Observable<any> {
     return JSON.parse(localStorage.getItem('companyIds') || '[]');
   }
 
-   /** Call this before protected calls (used by interceptor). */
+  /** Call this before protected calls (used by interceptor). */
   ensureValidAccessToken$(): Observable<string | null> {
     const token = this.accessToken;
 
@@ -186,17 +186,17 @@ forgetPassword(email: string): Observable<any> {
       .pipe(
         tap((resp) => {
           // EXPECTED: { token, refreshToken? (optional rotation), userId?, userName?, roles?, companyIds? }
-           console.log('[AUTH] Refresh success: new tokens received');
+          console.log('[AUTH] Refresh success: new tokens received');
           this._applySessionFromRefresh(resp);
         }),
         map((resp) => resp?.token ?? null),
-        tap((newToken) =>{
-         
+        tap((newToken) => {
+
           this._refreshSubject.next(newToken)
-        } ),
+        }),
         catchError((err) => {
           // refresh failed → clean up & notify observers
-           console.error('[REFRESH] Refresh failed:', err);
+          console.error('[REFRESH] Refresh failed:', err);
           this._refreshSubject.next(null);
           return of(null);
         }),
@@ -216,25 +216,25 @@ forgetPassword(email: string): Observable<any> {
     this.accessToken = res.token ?? null;
     this.refreshToken = res.refreshToken ?? null;
 
-    console.log('[AUTH] Login session set. accessToken:', this.accessToken.slice(0, 12) + '...', 'refreshToken:',this.refreshToken.slice(0, 12) + '...');
+    console.log('[AUTH] Login session set. accessToken:', this.accessToken.slice(0, 12) + '...', 'refreshToken:', this.refreshToken.slice(0, 12) + '...');
 
     if (res.userId) localStorage.setItem('userId', res.userId);
     if (res.userName) localStorage.setItem('userName', res.userName);
 
-     const role = Array.isArray(res.roles) && res.roles.length > 0 ? res.roles[0] : '';
+    const role = Array.isArray(res.roles) && res.roles.length > 0 ? res.roles[0] : '';
     localStorage.setItem('role', role);
-    
+
     localStorage.setItem('roles', JSON.stringify(res.roles || []));
 
-     const companyIds = Array.isArray(res.companyIds) ? res.companyIds : [];
-          localStorage.setItem('companyIds', JSON.stringify(companyIds));
+    const companyIds = Array.isArray(res.companyIds) ? res.companyIds : [];
+    localStorage.setItem('companyIds', JSON.stringify(companyIds));
   }
 
   private _applySessionFromRefresh(res: any): void {
     if (res?.token) this.accessToken = res.token;
     if (res?.refreshToken) this.refreshToken = res.refreshToken; // rotate if provided
 
-    console.log('[REFRESH] Applied new tokens from refresh. accessToken:', 
+    console.log('[REFRESH] Applied new tokens from refresh. accessToken:',
       this.accessToken.slice(0, 12) + '...', 'refreshToken:', this.refreshToken.slice(0, 12) + '...');
 
 
@@ -243,11 +243,11 @@ forgetPassword(email: string): Observable<any> {
     if (res?.userName) localStorage.setItem('userName', res.userName);
 
     if (res?.roles) {
-      
-     const role = Array.isArray(res.roles) && res.roles.length > 0 ? res.roles[0] : '';
-    localStorage.setItem('role', role);
-    
-    localStorage.setItem('roles', JSON.stringify(res.roles || []));
+
+      const role = Array.isArray(res.roles) && res.roles.length > 0 ? res.roles[0] : '';
+      localStorage.setItem('role', role);
+
+      localStorage.setItem('roles', JSON.stringify(res.roles || []));
     }
     if (res?.companyIds) {
       const companyIds = res?.companyIds?.$values || res.companyIds || [];

@@ -36,7 +36,7 @@ const routes: Routes = [
   //     //     title: 'Forgot Password Page'
   //     //   }
   //     // },   
-      
+
   //     {
   //       path: 'lockscreen',
   //       component: LockScreenPageComponent,
@@ -65,7 +65,7 @@ const routes: Routes = [
   //         title: 'Register Page'
   //       }
   //     }   
-      
+
   //   ]
   // },
   {
@@ -87,6 +87,14 @@ const routes: Routes = [
         component: RegisterPageComponent,
         data: { title: 'Register Page' }
       },
+      {
+        path: 'error',
+        component: ErrorPageComponent,
+        data: {
+          title: 'Error Page'
+        }
+      },
+
       // Add other auth-related routes if needed
     ]
   },

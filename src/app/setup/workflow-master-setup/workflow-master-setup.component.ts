@@ -174,7 +174,7 @@ export class WorkflowMasterSetupComponent implements OnInit {
     const workflowMasterId = this.chkBoxSelected[0].workflowMasterId;
     console.log('Navigating to update ID:', workflowMasterId);
   this.router.navigate(['/setup/create-workflow'], {
-      queryParams: { id: workflowMasterId, mode: 'Edit' }
+      queryParams: { id: workflowMasterId, mode: 'Edit' }, skipLocationChange: true
     });
   }
 
