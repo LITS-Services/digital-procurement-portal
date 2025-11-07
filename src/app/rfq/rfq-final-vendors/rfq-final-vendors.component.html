@@ -1,0 +1,43 @@
+<div class="modal-body card">
+    <div class="card-body cstm-body">
+        <div class="d-flex justify-content-end mb-2 mr-2 mt-2">
+            <button class="btn btn-primary" (click)="onSubmit()">Submit Final Vendors</button>
+        </div>
+
+        <ngx-datatable class="bootstrap core-bootstrap" [rows]="itemsData" [columnMode]="'force'" [headerHeight]="50"
+            [footerHeight]="40" [rowHeight]="50" [limit]="5" [scrollbarH]="true">
+            <ngx-datatable-column name="Sr. No." [width]="10" [sortable]="false">
+                <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
+                    <span>{{rowIndex + 1}}</span>
+                </ng-template>
+            </ngx-datatable-column>
+
+
+            <ngx-datatable-column name="Item">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    {{row.itemName}}
+                </ng-template>
+
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Amount" prop="amount" [sortable]="false">
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Final Vendor" [sortable]="false" [cellClass]="'cstm-cell'" [headerClass]="'cstm-cell-header'">
+                <ng-template ngx-datatable-cell-template let-row="row" class="cstm-cell">
+                    <select class="form-control custom-finalVen-dropdown" [ngModel]="selected[row.id] || null"
+                        (ngModelChange)="selected[row.id] = $event" [ngModelOptions]="{ standalone: true }">
+                        <option [ngValue]="null" disabled>Select Company</option>
+                        <option *ngFor="let v of vendorData" [ngValue]="v">
+                            {{ v.vendorName }}
+                        </option>
+                    </select>
+                </ng-template>
+            </ngx-datatable-column>
+
+
+        </ngx-datatable>
+    </div>
+
+
+</div>

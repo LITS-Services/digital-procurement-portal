@@ -43,42 +43,142 @@
         overflow-x: hidden !important;
     }
 
-    .ngx-datatable ::ng-deep .datatable-footer .selected-count .page-count {
-        flex: 1 1 40%;
-        background: #eaeaeb !important;
-        color: #1E89B8 !important;
-    }
+    // .ngx-datatable ::ng-deep .datatable-footer .selected-count .page-count {
+    //     flex: 1 1 40%;
+    //     background: #eaeaeb !important;
+    //     color: #1E89B8 !important;
+    // }
 
     .spacer{
         flex-grow: 1;
     }
-    .ngx-datatable.bootstrap ::ng-deep .datatable-footer {
-        background: #eaeaeb !important;
-        color: #1E89B8 !important;
-        margin-top: -1px;
+    // .ngx-datatable.bootstrap ::ng-deep .datatable-footer {
+    //     background: #eaeaeb !important;
+    //     color: #1E89B8 !important;
+    //     margin-top: -1px;
+    // }
+    // .ngx-datatable.bootstrap ::ng-deep .datatable-footer .datatable-pager ul li:not(.disabled).active a, .ngx-datatable.bootstrap .datatable-footer .datatable-pager ul li:not(.disabled):hover a {
+    //     background: #eaeaeb !important;
+    //     color: #1E89B8 !important;
+    //     font-weight: bold;
+    // }
+    // .ngx-datatable.bootstrap ::ng-deep .datatable-footer .datatable-pager a {
+    //     height: 22px;
+    //     min-width: 24px;
+    //     line-height: 22px;
+    //     padding: 0;
+    //     border-radius: 3px;
+    //     margin: 0 3px;
+    //     text-align: center;
+    //     vertical-align: top;
+    //     text-decoration: none;
+    //     vertical-align: bottom;
+    //     color: #6c757d !important;
+    // }
+
+    .ngx-datatable.bootstrap ::ng-deep .datatable-footer .datatable-footer-inner {
+       height: auto !important;
     }
-    .ngx-datatable.bootstrap ::ng-deep .datatable-footer .datatable-pager ul li:not(.disabled).active a, .ngx-datatable.bootstrap .datatable-footer .datatable-pager ul li:not(.disabled):hover a {
-        background: #eaeaeb !important;
-        color: #1E89B8 !important;
-        font-weight: bold;
+
+    .modal-body{
+        padding: 0 !important;
     }
-    .ngx-datatable.bootstrap ::ng-deep .datatable-footer .datatable-pager a {
-        height: 22px;
-        min-width: 24px;
-        line-height: 22px;
-        padding: 0;
-        border-radius: 3px;
-        margin: 0 3px;
-        text-align: center;
-        vertical-align: top;
-        text-decoration: none;
-        vertical-align: bottom;
-        color: #6c757d !important;
-    }
-    .modal-body {
-        position: relative;
-        flex: 1 1 auto;
-        padding: 1rem;
-        height: 500px !important;
-        overflow-y: auto !important;
-    }
+
+
+
+    ////new
+    
+.vendor-picker {
+  .picker-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .panel {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 420px;
+    height: calc(100vh - 40vh) !important;
+  }
+
+.submit-approval-btn{
+  background-color: white;
+  padding: 5px 8px;
+  border: 1px solid #dadada;
+  font-size: 14px !important;
+  transition-duration: 250ms;
+  cursor: pointer;
+}
+
+.submit-approval-btn:hover{
+    background-color: rgb(201, 201, 201);
+}
+
+  .panel-header {
+    padding: 14px 16px;
+    background: linear-gradient(90deg, #1565c0, #0d3b66);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .title { margin: 0; font-size: 16px; font-weight: 600; color: white; }
+    .muted { opacity: .9; }
+    .panel-actions .btn { background: #ffffff10; border-color: #ffffff55; color: #fff; }
+  }
+
+  .panel-search { padding: 10px 12px; border-bottom: 1px solid #eef2f7; }
+
+  .list {
+    padding: 8px 0;
+    overflow: auto;
+    flex: 1;
+  }
+
+  .row-item {
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px dashed #eef2f7;
+
+    &:hover { background: #f8fafc; }
+    &.clickable { cursor: pointer; }
+  }
+
+  .vh-title { font-weight: 600; }
+  .vh-sub { font-size: 12px; color: #64748b; }
+
+  .chip {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    margin-left: 8px;
+    &-saved { background: #e7f7ef; color: #1b9e5a; border: 1px solid #c9efd9; }
+  }
+
+  .icon-btn {
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    line-height: 1;
+    color: #ef4444;
+  }
+
+  .btn-xs { padding: 2px 6px; font-size: 12px; }
+  .add-btn { color: #1565c0; }
+
+  .empty { padding: 28px; text-align: center; color: #64748b; }
+}
+
+@media (max-width: 992px) {
+  .vendor-picker .picker-grid { grid-template-columns: 1fr; }
+}
+
+

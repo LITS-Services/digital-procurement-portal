@@ -1,0 +1,49 @@
+<div class="row no-gutters">
+    <!-- LEFT: vendors list -->
+    <div class="col-md-3 pr-md-3 mb-3 mb-md-0">
+        <div *ngIf="vendorsData.length > 0" class="d-flex justify-content-between align-items-baseline mb-2">
+            <div class="small ml-1 vendor-owner mb-2">
+                total: {{ vendorsData?.length }}
+            </div>
+        </div>
+
+        <div *ngIf="!selectedVendor && !vendorsData?.length" class="py-4 px-2">
+         No Comments found for this RFQ.
+      </div>
+
+
+
+
+        <div class="vendor-list rounded">
+            <!-- simple list, no search -->
+            <button type="button" class="vendor-item" *ngFor="let v of vendorsData"
+                   [class.active]="selectedVendor?.vendorId === v.vendorId && selectedVendor?.vendorCompanyId=== v.vendorCompanyId" (click)="selectVendor(v)">
+                <div class="d-flex justify-content-between w-100">
+                    <div class="text-left">
+                        <div class="vendor-title">{{ v.vendorName }}</div>
+                        <div class="small vendor-owner">{{ v.companyName }}</div>
+                    </div>
+                </div>
+            </button>
+        </div>
+
+
+    </div>
+    <div class="col-md-9">
+        <div *ngIf="!selectedVendor && vendorsData?.length > 0" class="py-4 text-center">
+            Select a vendor from the left to view comments.
+        </div>
+        <div *ngIf="selectedVendor">
+            <div class="card">
+                <div class="card-body">
+                    <app-selected-vendors-modal [vendorId]="selectedVendor.vendorId"
+                        [vendorCompanyId]="selectedVendor.vendorCompanyId" [vendorName]="selectedVendor.vendorName"
+                        [quotationId]="data.quotationId"
+                         [isChatBox]="true"
+                        ></app-selected-vendors-modal>
+                </div>
+
+            </div>
+        </div>
+
+    </div>

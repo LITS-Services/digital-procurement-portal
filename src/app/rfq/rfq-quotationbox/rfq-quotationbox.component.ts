@@ -10,7 +10,8 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-rfq-quotationbox',
   templateUrl: './rfq-quotationbox.component.html',
-  styleUrls: ['./rfq-quotationbox.component.scss']
+  styleUrls: ['./rfq-quotationbox.component.scss'],
+  
 })
 export class RfqQuotationboxComponent implements OnInit {
   @Input() data: any;
@@ -22,6 +23,9 @@ export class RfqQuotationboxComponent implements OnInit {
     vendorName: string;
     amount: number;
     owner: string;
+    companyId: number;
+    companyName: string;
+    hasOffers: boolean;
   }> = [];
 
   selectedVendor: {
@@ -29,6 +33,8 @@ export class RfqQuotationboxComponent implements OnInit {
     vendorName: string;
     amount: number;
     owner: string;
+    companyId: number;
+    companyName: string;
   } | null = null;
 
   itemsData: any[] = [];
@@ -38,6 +44,9 @@ export class RfqQuotationboxComponent implements OnInit {
   columns = [];
   newQuotationBoxForm: FormGroup;
 
+  selectedOfferFilterLabel = 'All';
+  offerFilterKey = 'all';
+  private allVendors: any[] = [];
   constructor(
     private router: Router,
     private fb: FormBuilder,
@@ -68,7 +77,6 @@ export class RfqQuotationboxComponent implements OnInit {
       next: (res: any) => {
         const vendors = res?.vendors || [];
 
-        // Patch RFQ-level form fields once
         this.newQuotationBoxForm.patchValue({
           rfqNo: res?.rfqNo,
           purchaseRequestNo: res?.purchaseRequestNo,
@@ -79,21 +87,25 @@ export class RfqQuotationboxComponent implements OnInit {
           comment: res?.comment
         });
 
-        // Build left list
-        this.rfqData = vendors.map((vendor: any) => ({
+        this.vendorItemMap = {};
+          vendors.forEach((vendor: any) => {
+          const key = `${vendor.vendorUserId}|${vendor.companyId}`;
+          this.vendorItemMap[key] = { items: vendor?.bids || [] };
+        });
+
+        this.allVendors = vendors.map((vendor: any) => ({
           vendorUserId: vendor.vendorUserId,
           vendorName: vendor.vendorName,
           amount: vendor.amount,
-          owner: res?.owner
+          owner: res?.owner,
+          companyId: vendor?.companyId,
+          companyName: vendor?.companyName,
+          hasOffers: (vendor?.bids?.length || 0) > 0
         }));
 
-        // Build vendor → items map
-        this.vendorItemMap = {};
-        vendors.forEach((vendor: any) => {
-          this.vendorItemMap[vendor.vendorUserId] = {
-            items: vendor?.bids || []
-          };
-        });
+        this.offerFilterKey = 'all';
+        this.selectedOfferFilterLabel = 'All';
+        this.applyOfferFilterAndSort();
 
         // reset selection
         this.selectedVendor = null;
@@ -109,11 +121,42 @@ export class RfqQuotationboxComponent implements OnInit {
     });
   }
 
-  selectVendor(vendor: { vendorUserId: number; vendorName: string; amount: number; owner: string; }) {
-    this.selectedVendor = vendor;
-    this.itemsData = this.vendorItemMap[vendor.vendorUserId]?.items ?? [];
+selectVendor(vendor: any) {
+  this.selectedVendor = vendor;
+  const key = `${vendor.vendorUserId}|${vendor.companyId}`;
+  this.itemsData = this.vendorItemMap[key]?.items ?? [];
+}
+
+ onOfferFilterChange(key: 'all' | 'offers' | 'nooffers') {
+    this.offerFilterKey = key;
+    this.selectedOfferFilterLabel =
+      key === 'offers' ? 'Offers' : key === 'nooffers' ? 'No offers' : 'All';
+    this.applyOfferFilterAndSort();
   }
 
+private applyOfferFilterAndSort() {
+  let list = this.allVendors;  
+
+  if (this.offerFilterKey === 'offers') {
+    list = list.filter(v => v.hasOffers);
+  } else if (this.offerFilterKey === 'nooffers') {
+    list = list.filter(v => !v.hasOffers);
+  }
+
+
+  this.rfqData = [...list].sort((a, b) => Number(b.hasOffers) - Number(a.hasOffers));
+
+  if (
+    this.selectedVendor &&
+    !this.rfqData.some(v =>
+      v.vendorUserId === this.selectedVendor!.vendorUserId &&
+      v.companyId === this.selectedVendor!.companyId
+    )
+  ) {
+    this.selectedVendor = null;
+    this.itemsData = [];
+  }
+}
 
   /** utilities */
   private toDateInputValue(date: any): string | null {

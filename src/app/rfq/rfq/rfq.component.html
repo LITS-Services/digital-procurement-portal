@@ -135,14 +135,14 @@
                 <ngx-datatable-column name="Total Amount" prop="amount" [sortable]="false">
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Action" [width]="100" prop="action" [sortable]="false">
+                <!-- <ngx-datatable-column name="Action" [width]="100" prop="action" [sortable]="false">
                     <ng-template let-row="row" ngx-datatable-cell-template>
-                        <button type="button" class="btn btn-sm btn-primary" [ngbPopover]="actionToolbar"
-                            popoverClass="action-popover" placement="bottom" container="body">
+                        <button type="button" class="btn btn-sm btn-primary" [ngbPopover]="actionToolbar" popoverClass="action-popover"
+                            placement="bottom" container="body">
                             <i class="ft-settings"></i>
                         </button>
-
-                        <!-- Popover Template -->
+                
+                
                         <ng-template #actionToolbar>
                             <div class="d-flex justify-content-around flex-column">
                                 <button class="btn popover-btn btn-sm m-1" ngbTooltip="Quotation Box"
@@ -150,43 +150,33 @@
                                     <span class="popover-icon"><i class="ft-mail"></i></span>
                                     Quotation Box
                                 </button>
-
+                
                                 <button class="btn popover-btn btn-sm m-1" ngbTooltip="Vendor Comparison"
                                     (click)="openVendorComparisonModal(row)">
                                     <span class="popover-icon"><i class="ft-bar-chart-2"></i></span>
                                     Vendor Comparison
                                 </button>
-
-                                <button class="btn popover-btn btn-sm m-1" ngbTooltip="Vendors"
-                                    (click)="openVendorsModal(row)">
+                
+                                <button class="btn popover-btn btn-sm m-1" ngbTooltip="Vendors" (click)="openVendorsModal(row)">
                                     <span class="popover-icon"><i class="ft-user-check"></i></span>
                                     Vendors
                                 </button>
-
+                
                                 <button class="btn popover-btn btn-sm m-1" ngbTooltip="Approval History"
                                     (click)="openApprovalHistoryModal(row)">
                                     <span class="popover-icon"><i class="ft-list"></i></span>
                                     Approval History
                                 </button>
-
+                
                                 <button *ngIf="row.requestStatus === 'Completed'; else poWaitingTemplate"
-                                    class="btn popover-btn btn-sm m-1" ngbTooltip="Create Purchase Order"
-                                    (click)="createPO(row)">
+                                    class="btn popover-btn btn-sm m-1" ngbTooltip="Create Purchase Order" (click)="createPO(row)">
                                     <span class="popover-icon"> <i class="ft-shopping-cart"></i> </span>
                                     Create Purchase Order
                                 </button>
-                                <ng-template #poWaitingTemplate>
-                                    <button class="btn popover-btn btn-sm m-1" disabled
-                                        ngbTooltip="PO can only be created when RFQ is Completed.">
-                                        <span class="popover-icon"><i class="ft-shopping-cart"
-                                                style="opacity: 0.5;"></i> </span>
-                                        Create Purchase Order
-                                    </button>
-                                </ng-template>
                             </div>
                         </ng-template>
                     </ng-template>
-                </ngx-datatable-column>
+                </ngx-datatable-column> -->
 
             </ngx-datatable>
         </div>

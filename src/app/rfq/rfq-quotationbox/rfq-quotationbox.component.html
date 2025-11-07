@@ -4,25 +4,46 @@
   <div class="row no-gutters">
     <!-- LEFT: vendors list -->
     <div class="col-md-3 pr-md-3 mb-3 mb-md-0">
-       <div class="small ml-1 vendor-owner mb-2">
-         total: {{ rfqData.length }}
+      <div *ngIf="rfqData?.length" class="d-flex justify-content-between align-items-baseline mb-2">
+        <div  class="small ml-1 vendor-owner mb-2">
+          total: {{ rfqData.length }}
+        </div>
+      
+        <div class="dropdown filter-dropdown" ngbDropdown>
+          <button class="btn btn-sm filter-btn dropdown-toggle" ngbDropdownToggle>
+            <span class="filter-label">
+              {{ selectedOfferFilterLabel }}
+            </span>
+            <i class="ft-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu" ngbDropdownMenu>
+            <button class="dropdown-item" (click)="onOfferFilterChange('all')">All</button>
+            <button class="dropdown-item" (click)="onOfferFilterChange('offers')">Offers</button>
+            <button class="dropdown-item" (click)="onOfferFilterChange('nooffers')">No offers</button>
+          </div>
+        </div>
+      </div>
+      
+           <div *ngIf="!selectedVendor && !rfqData?.length" class="py-4 px-2">
+         No bids found for this RFQ.
       </div>
 
-      <div class="vendor-list border rounded">
+
+      <div class="vendor-list rounded">
         <!-- simple list, no search -->
         <button
           type="button"
           class="vendor-item"
           *ngFor="let v of rfqData; trackBy: trackVendor"
-          [class.active]="selectedVendor?.vendorUserId === v.vendorUserId"
+          [class.active]="selectedVendor?.vendorUserId === v.vendorUserId && selectedVendor?.companyId=== v.companyId"
           (click)="selectVendor(v)"
         >
           <div class="d-flex justify-content-between w-100">
             <div class="text-left">
               <div class="vendor-title">{{ v.vendorName }}</div>
-              <div class="small vendor-owner">{{ v.owner }}</div>
+              <div class="small vendor-owner">{{ v.companyName }}</div>
             </div>
-            <div class="text-right amount-text">
+            <div *ngIf="v.amount && v.amount > 0" class="text-right amount-text">
               {{ v.amount | number:'1.2-2' }}
             </div>
           </div>
@@ -34,12 +55,14 @@
 
     <!-- RIGHT: details (form + items grid) -->
     <div class="col-md-9">
-      <div *ngIf="!selectedVendor" class="py-4 text-center">
+      <div *ngIf="!selectedVendor && rfqData?.length > 0" class="py-4 text-center">
         Select a vendor from the left to view their quotation.
       </div>
 
-      <div *ngIf="selectedVendor" class="create-form-view card cstm-ui-card animate-slide-in">
-        <form [formGroup]="newQuotationBoxForm" class="card-body">
+ 
+
+      <div *ngIf="selectedVendor" class="create-form-view card cstm-ui-card vendor-comp-card animate-slide-in">
+        <!-- <form [formGroup]="newQuotationBoxForm" class="card-body">
           <div class="row">
             <div class="col-md-6 form-group">
               <label>RFQ No.</label>
@@ -75,7 +98,7 @@
               <textarea formControlName="comment" class="form-control custom-input"></textarea>
             </div>
           </div>
-        </form>
+        </form> -->
 
         <!-- items grid: unchanged -->
         <ngx-datatable
@@ -100,16 +123,30 @@
           <ngx-datatable-column name="Bid Price" prop="biddingAmount"></ngx-datatable-column>
           <ngx-datatable-column name="Comment" prop="comment"></ngx-datatable-column>
         </ngx-datatable>
-      </div>
 
-        <div>
-            <button class="btn btn-secondary">Back</button>
-            <span class="spacer"></span>
+        <div *ngIf="itemsData.length > 0" class="d-flex mt-2 gap-footer">
             <button class="btn btn-danger" (click)="rejectVendor()">Reject</button>
             <button class="btn btn-primary" (click)="reviseVendor()">Revise</button>
             <span class="spacer"></span>
             <button class="btn btn-primary">Submit</button>
         </div>
+
+    
+      </div>
+
+    <div *ngIf="selectedVendor">
+        <div class="card">
+            <div class="card-body">
+                 <app-selected-vendors-modal [vendorId]="selectedVendor.vendorUserId"
+                [vendorCompanyId]="selectedVendor.companyId" [vendorName]="selectedVendor.vendorName"
+                [quotationId]="data.quotationId"></app-selected-vendors-modal>
+            </div>
+           
+        </div>
+    
+    </div>
+
+        
 
     </div>
   </div>

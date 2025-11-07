@@ -26,6 +26,8 @@ import { RfqApprovalHistoryComponent } from './rfq-approval-history/rfq-approval
 import { AgmCoreModule } from "@agm/core";
 import { SelectedVendorsModalComponent } from './new-rfq/selected-vendors-modal/selected-vendors-modal.component';
 import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
+import { RfqCommentsComponent } from './rfq-comments/rfq-comments.component';
+import { RfqFinalVendorsComponent } from './rfq-final-vendors/rfq-final-vendors.component';
 
 
 @NgModule({
@@ -38,7 +40,9 @@ import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-r
     RfqAttachmentComponent,
     RfqRemarksComponent,
     RfqApprovalHistoryComponent,
-    SelectedVendorsModalComponent
+    SelectedVendorsModalComponent,
+    RfqCommentsComponent,
+    RfqFinalVendorsComponent
   ],
   imports: [
     CommonModule,

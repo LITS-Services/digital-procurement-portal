@@ -1,0 +1,25 @@
+.vendor-list
+ {
+    max-height: 420px;
+    overflow: auto;
+    border-radius: 10px !important;
+    margin-bottom: 8px !important;
+ }
+.vendor-item {
+  display: block; width: 100%; text-align: left; background: #fff; border: 0;
+  border-bottom: 1px solid #f1f3f5; padding: .65rem .75rem; cursor: pointer;
+  margin-bottom: 8px;
+}
+.vendor-item:hover { background: #f6f9ff; }
+.vendor-item.active { background: #e6f0ff; box-shadow: inset 3px 0 0 #3b82f6; }
+
+.vendor-title{
+    font-weight: 500 !important;
+}
+.amount-text{
+    font-weight: 500 !important;
+}
+
+.vendor-owner{
+    color: #8b8b8b !important;
+}

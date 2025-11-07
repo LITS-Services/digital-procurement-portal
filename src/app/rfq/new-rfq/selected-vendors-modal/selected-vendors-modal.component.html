@@ -1,67 +1,60 @@
-<div class="modal-header">
+<!-- <div class="modal-header">
    Vendor : {{vendorName}}
   <button type="button" class="close btn-sm text-white" aria-label="Close" (click)="closeDialog()">
     <i class="ft-x"></i>
   </button>
-</div>
-
-
-  <form [formGroup]="form" (ngSubmit)="insert()" class="p-2">
-     <div class="form-group">
-      <textarea
-        id="vendorComment"
-        class="form-control"
-        rows="3"
-        placeholder="Write a comment for this vendor..."
-        formControlName="comment"
-        [readonly]="viewMode"
-      ></textarea>
-      <div class="text-danger mt-1" *ngIf="form.controls.comment.touched && form.controls.comment.invalid">
-        Comment is required.
-      </div>
-    </div>
-
-        <div class="d-flex justify-content-end">
-      <button
-        type="submit"
-        class="btn btn-primary"
-        [disabled]="form.invalid"
-      >
-      <i class="ft-pocket mr-1"></i>
-        Insert
-      </button>
-    </div>
-      </form>
-
-        <div class="col-12 form-group mt-2 px-2 datatable-wrapper" [class.loading]="loading">
-        <ngx-datatable class="bootstrap core-bootstrap"   [rows]="dataComments" [columnMode]="'force'"
-          [headerHeight]="50"  [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
-
-            <ngx-datatable-column [width]="250" name="Comments" prop="comments">
-          </ngx-datatable-column>
-     
-               <ngx-datatable-column [width]="180" name="User" prop="createdBy">
-          </ngx-datatable-column>
-               <ngx-datatable-column  [width]="120" name="By">
-            <ng-template let-row="row" ngx-datatable-cell-template>
-               <span class="label-chip" [ngClass]="row.createdByType === CreatedByType.Procurement ? 'proc' : 'vendor'">{{ row.createdByLabel }} </span> 
-            </ng-template>
-          </ngx-datatable-column>
-
-           <ngx-datatable-column name="Date">
-            <ng-template let-row="row" ngx-datatable-cell-template>
-              {{ row.createdOn | date:'short' }}
-            </ng-template>
-          </ngx-datatable-column>
-
-          
+</div> -->
 
 
 
-        </ngx-datatable>
-          <div *ngIf="loading" class="datatable-spinner">
-                <div class="spinner-border"></div>
+
+<div class="comments-thread datatable-wrapper" [class.loading]="loading">
+  <div 
+  [ngClass]="isChatBox ? 'chatbox-scroll' : 'thread-scroll'"
+  id="threadScroll">
+    <ng-container *ngIf="dataComments && dataComments.length > 0; else noComments">
+      <ng-container *ngFor="let msg of dataComments">
+        <div class="msg" [ngClass]="msg.createdByType === CreatedByType.Procurement ? 'out' : 'in'">
+          <div class="bubble">
+            <div class="meta">
+              <span class="name">{{ msg.createdBy }}</span>
+              <!-- <span class="label-chip" 
+                  [ngClass]="msg.createdByType === CreatedByType.Procurement ? 'proc' : 'vendor'">
+              {{ msg.createdByLabel }}
+            </span> -->
+              <span class="time">{{ msg.createdOn | date:'short' }}</span>
             </div>
+            <div class="text">{{ msg.comments }}</div>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+
+    <!-- Template for no comments -->
+    <ng-template #noComments>
+      <div class="no-comments">
+        <p class="text-muted text-center">No comments from vendors or procurement at the moment. </p>
       </div>
+    </ng-template>
+  </div>
 
+  <div *ngIf="loading" class="datatable-spinner">
+    <div class="spinner-border"></div>
+  </div>
+</div>
+<form [formGroup]="form" (ngSubmit)="insert()" class="mt-2 d-flex align-items-center">
+  <div class="col-md-10">
+    <textarea id="vendorComment" class="form-control" rows="1" placeholder="Write a comment for this vendor..."
+      formControlName="comment" [readonly]="viewMode"></textarea>
+    <!-- <div class="text-danger mt-1" *ngIf="form.controls.comment.touched && form.controls.comment.invalid">
+      Comment is required.
+    </div> -->
+  </div>
 
+  <div>
+    <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+      <i class="ft-pocket mr-1"></i>
+      Insert
+    </button>
+  </div>
+</form>

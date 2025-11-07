@@ -60,6 +60,20 @@ export class RfqService {
   );
 }
 
+  getItemsQuotationById(id: number): Observable<any> {
+  const params = new HttpParams()
+    .set('quotationRequestId', id)
+
+  return this.http.get<any>(
+    `${this.baseUrl}/get-items-by-quotation-id`,
+    { params }
+  );
+}
+
+  postFinalVendors(data: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/select-final-vendor`, data);
+  }
+
 
   createQuotation(data: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/create-Quotation`, data);

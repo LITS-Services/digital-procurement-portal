@@ -1,5 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { Component, Input, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, Input, OnInit, SimpleChanges } from "@angular/core";
 import { FormBuilder, Validators } from "@angular/forms";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 import { RfqService } from "app/rfq/rfq.service";
@@ -21,6 +21,7 @@ export class SelectedVendorsModalComponent implements OnInit {
   @Input() vendorName!: string;
   @Input() quotationId!: number;
   @Input() vendorCompanyId: string;
+  @Input() isChatBox:boolean = false
   dataComments: any[] = [];
   loading = false;
   CreatedByType = CreatedByType;
@@ -30,28 +31,47 @@ export class SelectedVendorsModalComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private fb: FormBuilder,
-    public activeModal: NgbActiveModal,
-    public rfqService: RfqService
+   // public activeModal: NgbActiveModal,
+    public rfqService: RfqService,
+    public cdr:ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.loadRfqComments();
   }
 
-  closeDialog() {
-    this.activeModal.close(false);
+    ngOnChanges(changes: SimpleChanges) {
+    if (changes['vendorId'] || changes['vendorCompanyId'] || changes['quotationId']) {
+      this.loadRfqComments();
+   
+    }
   }
+
+  private scrollToBottom() {
+  setTimeout(() => {
+    const el = document.getElementById('threadScroll');
+    if (el) el.scrollTop = el.scrollHeight;
+  }, 0);
+}
+  // closeDialog() {
+  //   this.activeModal.close(false);
+  // }
 
   loadRfqComments() {
     this.loading = true;
 
     this.rfqService
       .getRFQComments(this.vendorId, this.quotationId, this.vendorCompanyId)
-      .pipe(finalize(() => (this.loading = false)))
+      .pipe(finalize(() => {
+        setTimeout(() => {
+            this.loading = false
+          this.cdr.detectChanges()  
+        }, 1250);
+      }))
       .subscribe({
         next: (res: any) => {
           const list: any[] = Array.isArray(res) ? res : [];
-          this.dataComments = list.map((c: any) => ({
+          this.dataComments = list.reverse().map((c: any) => ({
             vendor: this.vendorName,
             comments: c?.commentText ?? "",
             createdByType: c?.createdByType as number,
@@ -62,9 +82,13 @@ export class SelectedVendorsModalComponent implements OnInit {
             createdOn: c?.createdOn,
             createdBy: c?.createdBy,
           }));
+        this.cdr.detectChanges();
+          this.scrollToBottom();
         },
         error: (err: any) => {
           console.error("Error loading RFQ comments", err);
+          this.dataComments = [];
+          this.cdr.detectChanges();
         },
       });
   }
@@ -88,15 +112,15 @@ export class SelectedVendorsModalComponent implements OnInit {
       .addRfqComment(payload)
       .pipe(
         finalize(() => {
-          setTimeout(() => {
             this.loading = false;
-          }, 1250);
+            this.cdr.detectChanges();
         })
       )
       .subscribe({
         next: (saved: any) => {
           this.form.reset();
           this.loadRfqComments();
+          
         },
         error: (err: any) => {
           console.error("Error posting RFQ comment", err);

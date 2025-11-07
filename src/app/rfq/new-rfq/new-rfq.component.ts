@@ -69,10 +69,17 @@ export class NewRfqComponent implements OnInit {
   public ColumnMode = ColumnMode;
   newPurchaseRequestForm: FormGroup;
 
+  selectedTab: 'rfq-input' | 'history' | 'bids-detail' | 'comments' = 'rfq-input'; // default
+  bidsTab: 'quotation-box' | 'vendor-comparison' | 'finalVendor' | 'submitForApprove' = 'quotation-box';
+  rfqTabs: 'details' | 'items' | 'vendors' = 'details';
+
   @ViewChild('accordion') accordion: NgbAccordion;
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
   @ViewChild('tableResponsive') tableResponsive: any;
+  isLoading = false; 
+
+
 
   compareIds = (a: string | null, b: string | null) => (a ?? '').toLowerCase() === (b ?? '').toLowerCase();
   constructor(
@@ -92,6 +99,7 @@ export class NewRfqComponent implements OnInit {
   ngOnInit(): void {
     this.loadVendorUsers();
     // this.getWorkflowTypes();
+
     this.loadUnitsOfMeasurements();
     this.loadAccounts();
     this.loadItems();
@@ -198,9 +206,17 @@ export class NewRfqComponent implements OnInit {
     }
   }
 
-  selectedTab: 'rfq-input' | 'quotation-box' | 'vendors' = 'rfq-input'; // default
 
-selectTab(tab: 'rfq-input' | 'quotation-box' | 'vendors') {
+
+selectBidsTab(tab: 'quotation-box' | 'vendor-comparison' | 'finalVendor' | 'submitForApprove') {
+  this.bidsTab = tab;
+}
+
+selectRfqTab(tab: 'details' | 'items' | 'vendors') {
+  this.rfqTabs = tab;
+}
+
+selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
   this.selectedTab = tab;
 }
   loadVendorUsers() {
@@ -518,7 +534,21 @@ selectTab(tab: 'rfq-input' | 'quotation-box' | 'vendors') {
 
   }
 
-  submitForm() {
+    goNext() {
+    // If you want extra validation, keep it minimal:
+    if (this.newRfqForm.invalid) return; // simple guard
+    this.rfqTabs = 'items'; // move to Items
+  }
+
+  // ✅ NEW: Back from Items -> Details (Create mode wizard)
+  goBack() {
+    this.rfqTabs = 'details';
+  }
+
+
+  submitForm(continueToVendors: boolean = false) {
+    if (this.isLoading) return;
+    this.isLoading = true;
     const f = this.newRfqForm.value;
     const dateISO = f.date ? new Date(f.date).toISOString() : new Date().toISOString();
 
@@ -528,12 +558,14 @@ selectTab(tab: 'rfq-input' | 'quotation-box' | 'vendors') {
     if (this.purchaseRequestId) {
       if (this.allItemsUsedForRFQ()) {
         this.toastr.info('All items from this Purchase Request have already been used in RFQs. Cannot generate a new RFQ.');
+        this.isLoading = false;
         return; // Stop execution
       }
 
       const selectedItems = (this.newQuotationItemData || []).filter(i => i.selected);
       if (selectedItems.length === 0) {
         this.toastr.info('Please select at least one item to generate RFQ.');
+        this.isLoading = false;
         return;
       }
 
@@ -622,7 +654,6 @@ selectTab(tab: 'rfq-input' | 'quotation-box' | 'vendors') {
     if (this.currentQuotationId) {
       this.rfqService.updateQuotation(this.currentQuotationId, { quotationRequest: payload }).subscribe({
         next: res => {
-          console.log('Updated Quotation!', res);
           this.loading = false;
           this.router.navigate(['/rfq']);
           // this.toastr.success('Quotation is updated!', '');
@@ -638,10 +669,25 @@ selectTab(tab: 'rfq-input' | 'quotation-box' | 'vendors') {
     else {
       this.rfqService.createQuotation({ quotationRequest: payload, isDraft: false }).subscribe({
         next: res => {
-          console.log('Created Quotation!', res);
-          this.loading = false;
+      const newId = res ?? null;
+
+        if (!newId) {
+          this.toastr.warning('Quotation created but ID not returned. Please refresh.');
+          this.isLoading = false; // // CHANGED
+          return;
+        }
+
+        if (continueToVendors) {
+          this.currentQuotationId = newId
+          this.isNewForm = false;
+          this.loadVendorsAndCompanies(this.currentQuotationId);
+          this.loadExistingQuotation(this.currentQuotationId);
+          this.rfqTabs = 'vendors';
+          this.isLoading = false;
+        } else {
+          this.isLoading = false;
           this.router.navigate(['/rfq']);
-          // this.toastr.success('Quotation is created!', '');
+        }
         },
         error: err => {
           console.error('Error creating Quotation:', err);
@@ -656,6 +702,9 @@ selectTab(tab: 'rfq-input' | 'quotation-box' | 'vendors') {
     // if (this.newRfqForm.invalid) {
     //   return;
     // }
+
+     if (this.isLoading) return;
+    this.isLoading = true;
 
     const f = this.newRfqForm.value;
     const dateISO = f.date ? new Date(f.date).toISOString() : new Date().toISOString();
@@ -861,7 +910,6 @@ selectTab(tab: 'rfq-input' | 'quotation-box' | 'vendors') {
 
   private handleDraftSuccess() {
     this.loading = false;
-    this.toastr.success('Draft saved successfully');
     this.router.navigate(['/rfq']);
   }
 

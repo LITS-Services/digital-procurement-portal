@@ -6,583 +6,580 @@
       <div class="row">
         <div class="col-md-12" style=" margin-top: -0.25rem;">
           <h4 class="heading">
-            <ng-container *ngIf="viewMode === false">
+                   <button class="btn btn-lg" type="button" (click)="homePage()"><i class="ft-arrow-left"></i></button>
+            <ng-container *ngIf="viewMode === false; else viewModeTitle">
               {{ isNewForm ? 'Create Quotation Request' : 'Update Quotation Request' }}
             </ng-container>
+            <ng-template #viewModeTitle>
+              View Quotation Request
+            </ng-template>
           </h4>
         </div>
       </div>
 
-  <ul class="nav nav-tabs tabs-pill" role="tablist">
-    <li class="nav-item" role="presentation">
-      <a class="nav-link" [class.active]="selectedTab === 'rfq-input'" (click)="selectTab('rfq-input')"
+      
+    <ul class="nav nav-tabs tabs-pill mt-2" role="tablist">
+    <li class="nav-item nav-cstm-link" (click)="selectTab('rfq-input')" [class.active]="selectedTab === 'rfq-input'" role="presentation">
+      <a class="nav-link nav-cstm-a" 
         href="javascript:void(0)" role="tab">
         RFQ Input
       </a>
     </li>
   
-    <li class="nav-item" role="presentation">
-      <a class="nav-link" [class.active]="selectedTab === 'quotation-box'" (click)="selectTab('quotation-box')"
+
+    <li class="nav-item nav-cstm-link" (click)="currentQuotationId && selectTab('bids-detail')" [class.active]="selectedTab === 'bids-detail'" role="presentation">
+      <a class="nav-link nav-cstm-a" 
         href="javascript:void(0)" role="tab" [class.disabled]="!currentQuotationId"
        >
-        Quotation Box
+        Bids Detail
       </a>
     </li>
-  
-    <li class="nav-item" role="presentation">
-      <a class="nav-link" [class.active]="selectedTab === 'vendors'" (click)="selectTab('vendors')"
+
+      <li class="nav-item nav-cstm-link" (click)="currentQuotationId && selectTab('comments')" [class.active]="selectedTab === 'comments'" role="presentation">
+      <a class="nav-link nav-cstm-a" 
         href="javascript:void(0)" role="tab" [class.disabled]="!currentQuotationId"
        >
-        Vendors
+        Comments
+      </a>
+    </li>
+
+        <li class="nav-item nav-cstm-link" (click)="currentQuotationId && selectTab('history')" [class.active]="selectedTab === 'history'" role="presentation">
+      <a class="nav-link nav-cstm-a"
+        href="javascript:void(0)" role="tab" [class.disabled]="!currentQuotationId"
+       >
+        Approval History
       </a>
     </li>
   </ul>
 
 
-  <div class="tab-pane mt-3" role="tabpanel" *ngIf="selectedTab === 'rfq-input'">
-    <div class="card cstm-ui-card">
-      <div class="row">
-        <div class="col-md-6">
-          <button class="btn btn-lg mr-1" type="button" (click)="homePage()"><i class="ft-arrow-left"></i></button>
-          <span class="vl"></span>
+  <div class="tab-pane mt-1" role="tabpanel" *ngIf="selectedTab === 'rfq-input'">
+    <div class="d-flex justify-content-between align-items-baseline">
+      <div>
+        <ul class="nav nav-tabs bids-tab mt-2" role="tablist">
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" [class.active]="rfqTabs === 'details'" (click)="selectRfqTab('details')"
+              href="javascript:void(0)" role="tab">
+              RFQ Details
+            </a>
+          </li>
   
-          <!-- Create Mode: Save + Save as Draft -->
-          <ng-container *ngIf="isNewForm && !viewMode">
-            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="newRfqForm.invalid" (click)="submitForm()">
-              <i class="ft-plus"></i><label class="ml-1 mt-1">Save</label>
-            </button>
-            <button class="btn btn-sm cstm-ui-table-btn" (click)="saveAsDraftAndGoBack()">
-              <i class="ft-save"></i><label class="ml-1 mt-1">Save as Draft</label>
-            </button>
-          </ng-container>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" [class.active]="rfqTabs === 'items'" (click)="selectRfqTab('items')"
+              href="javascript:void(0)" role="tab">
+              Quotation Items
+            </a>
+          </li>
   
-          <!-- Update Mode: Update -->
-          <ng-container *ngIf="!isNewForm && !viewMode">
-            <button class="btn btn-sm cstm-ui-table-btn"
-              [disabled]="newRfqForm.invalid || isStatusCompleted || !isSubmitter" (click)="submitForm()">
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" [class.disabled]="!currentQuotationId"  [class.active]="rfqTabs === 'vendors'" (click)="currentQuotationId && selectRfqTab('vendors')"
+              href="javascript:void(0)" role="tab">
+              Select Vendors
+            </a>
+          </li>
+  
+  
+        </ul>
+  
+      </div>
+  
+    </div>
+
+      <div class="card cstm-ui-card" *ngIf="rfqTabs !== 'vendors' && !viewMode">
+        <div class="d-flex justify-content-between px-2">
+
+          <div>
+          
+            <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" (click)="goBack()"
+              title="Back to RFQ Details">
+              <i class="ft-arrow-left"></i><label class="ml-1 mt-1">Back</label>
+            </button>
+          
+          </div>
+      
+      
+          <div>
+          
+            <button *ngIf="isNewForm && rfqTabs === 'details'" class="btn btn-sm cstm-ui-table-btn"
+              [disabled]="newRfqForm.invalid" (click)="goNext()">
+              <i class="ft-arrow-right"></i><label class="ml-1 mt-1">Next</label>
+            </button>
+          
+                <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" [disabled]="isLoading"
+              (click)="saveAsDraftAndGoBack()">
+              <i class="ft-save"></i><label class="ml-1 mt-1">Save As Draft</label>
+            </button>
+          
+            <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" [disabled]="isLoading"
+              (click)="submitForm(true)">
+              <i class="ft-check"></i><label class="ml-1 mt-1">Save & Continue</label>
+            </button>
+
+         
+          
+            <button *ngIf="!isNewForm && (rfqTabs === 'details' || rfqTabs === 'items') && !viewMode"
+              class="btn btn-sm cstm-ui-table-btn" [disabled]="newRfqForm.invalid || isStatusCompleted || !isSubmitter"
+              (click)="submitForm()">
               <i class="ft-edit-2"></i><label class="ml-1 mt-1">Update</label>
             </button>
-          </ng-container>
-  
-          <ng-container *ngIf="viewMode && isSubmitter">
-            <button class="btn btn-sm cstm-ui-table-btn"
-              [disabled]="newRfqForm.invalid || isStatusCompleted || isStatusInProcess" (click)="onSubmitForApproval()">
-              <i class="ft-edit-2"></i><label class="ml-1 mt-1">Submit For Approval</label>
-            </button>
-          </ng-container>
-  
-          <ng-container *ngIf="viewMode && !isSubmitter">
-            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter"
-              (click)="onAddRemarks('Approve')">
-              <i class="ft-check"></i><label class="ml-1 mt-1">Approve</label>
-            </button>
-  
-            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter"
-              (click)="onAddRemarks('Reject')">
-              <i class="ft-x"></i><label class="ml-1 mt-1">Reject</label>
-            </button>
-  
-            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter"
-              (click)="onAddRemarks('SendBack')">
-              <i class="ft-arrow-left"></i><label class="ml-1 mt-1">Send Back</label>
-            </button>
-  
-            <!-- <button class="btn btn-sm" [disabled]="newRfqForm.invalid" (click)="onAddRemarks('Submit')">
-                  <i class="ft-check"></i><label class="ml-1 mt-1">Submit</label>
-                </button> -->
-          </ng-container>
-  
+          
+          
+          
+          
+          </div>
         </div>
+      </div>
   
-        <div class="col-md-6 text-right" style="margin-top: 0.3rem;">
-          <button type="reset" class="btn btn-sm mr-2">
-            <i class="ft-printer"></i><label class="ml-1 mt-1" for="">Print</label>
-          </button>
+    <div class="tab-pane mt-1" role="tabpanel" *ngIf="rfqTabs === 'details'">
+
+      <div class="card">
+        <div class="card-body">
   
-          <!-- <button type="reset" class="btn btn-sm" (click)="openNewEntityModal()">
-                <i class="ft-paperclip"></i><label class="ml-1 mt-1" for="">Attachment</label>
-                <span class="badge badge-primary ml-1">{{ numberOfAttachments }}</span>
-              </button> -->
-          <!-- <button type="reset" class="btn btn-sm">
-                  <i class="ft-settings"></i><label class="ml-1 mt-1" for="">Account Budget Lookup</label>
-                </button>
-                <button type="reset" class="btn btn-sm">
-                  <i class="ft-alert-circle"></i><label class="ml-1 mt-1" for="">Exception Policy</label>
-                </button> -->
+          <form [formGroup]="newRfqForm" (ngSubmit)="submitForm()">
+            <div class="form-row">
+  
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>RFQ No.</label>
+                  <input type="text" formControlName="rfqNo" class="form-control custom-input" disabled />
+                </div>
+              </div>
+  
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>PR No.</label>
+                  <input type="text" formControlName="purchaseRequestNo" placeholder="Enter PR No."
+                    class="form-control custom-input" />
+                </div>
+              </div>
+  
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>Status</label>
+                  <input type="text" formControlName="status" class="form-control custom-input" disabled />
+                </div>
+              </div>
+  
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>Owner</label>
+                  <input type="text" formControlName="owner" placeholder="Enter Owner"
+                    class="form-control custom-input" />
+                </div>
+              </div>
+  
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>Date</label>
+                  <input type="date" class="form-control custom-input" formControlName="date" />
+                </div>
+              </div>
+  
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>Contact</label>
+                  <input type="text" formControlName="contact" placeholder="Enter Contact No."
+                    class="form-control  custom-input" />
+                </div>
+              </div>
+  
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>Delivery Location</label>
+                  <input type="text" formControlName="deliveryLocation" placeholder="Enter Delivery Location"
+                    class="form-control  custom-input" />
+                </div>
+              </div>
+  
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>Start Date</label>
+                  <input type="date" class="form-control  custom-input" formControlName="startDate" />
+                </div>
+              </div>
+  
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>End Date</label>
+                  <input type="date" class="form-control  custom-input" formControlName="endDate" />
+                </div>
+              </div>
+  
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>Title</label>
+                  <input type="text" placeholder="Enter Title" class="form-control custom-input"
+                    formControlName="title" />
+                </div>
+              </div>
+  
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>Comment</label>
+                  <textarea name="" type="text" formControlName="comment" placeholder="Enter Comments"
+                    class="form-control custom-input"></textarea>
+                </div>
+              </div>
+  
+            </div>
+            <br>
+  
+          </form>
+  
+
+  
+     
   
         </div>
       </div>
     </div>
-  
-    <div class="card">
-      <div class="card-body">
-  
-        <form [formGroup]="newRfqForm" (ngSubmit)="submitForm()">
-          <div class="form-row">
-  
-            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-              <div class="form-group mb-2">
-                <label>RFQ No.</label>
-                <input type="text" formControlName="rfqNo" class="form-control custom-input" disabled />
-              </div>
-            </div>
-  
-            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-              <div class="form-group mb-2">
-                <label>PR No.</label>
-                <input type="text" formControlName="purchaseRequestNo" placeholder="Enter PR No."
-                  class="form-control custom-input" />
-              </div>
-            </div>
-  
-            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-              <div class="form-group mb-2">
-                <label>Status</label>
-                <input type="text" formControlName="status" class="form-control custom-input" disabled />
-              </div>
-            </div>
-  
-            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-              <div class="form-group mb-2">
-                <label>Owner</label>
-                <input type="text" formControlName="owner" placeholder="Enter Owner" class="form-control custom-input" />
-              </div>
-            </div>
-  
-            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-              <div class="form-group mb-2">
-                <label>Date</label>
-                <input type="date" class="form-control custom-input" formControlName="date" />
-              </div>
-            </div>
-  
-            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-              <div class="form-group mb-2">
-                <label>Contact</label>
-                <input type="text" formControlName="contact" placeholder="Enter Contact No."
-                  class="form-control  custom-input" />
-              </div>
-            </div>
-  
-            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-              <div class="form-group mb-2">
-                <label>Delivery Location</label>
-                <input type="text" formControlName="deliveryLocation" placeholder="Enter Delivery Location"
-                  class="form-control  custom-input" />
-              </div>
-            </div>
-  
-            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-              <div class="form-group mb-2">
-                <label>Start Date</label>
-                <input type="date" class="form-control  custom-input" formControlName="startDate" />
-              </div>
-            </div>
-  
-            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-              <div class="form-group mb-2">
-                <label>End Date</label>
-                <input type="date" class="form-control  custom-input" formControlName="endDate" />
-              </div>
-            </div>
-  
-            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-              <div class="form-group mb-2">
-                <label>Title</label>
-                <input type="text" placeholder="Enter Title" class="form-control custom-input" formControlName="title" />
-              </div>
-            </div>
-  
-            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-              <div class="form-group mb-2">
-                <label>Comment</label>
-                <textarea name="" type="text" formControlName="comment" placeholder="Enter Comments"
-                  class="form-control custom-input"></textarea>
-              </div>
-            </div>
-  
-            <div class="col-12">
-              <hr>
-            </div>
-  
+
+    <div class="tab-pane mt-1" role="tabpanel" *ngIf="rfqTabs === 'items'">
+     <!-- Quotation Items (no accordion) -->
+  <!-- Header -->
+
+
+  <!-- Content -->
+  <div *ngIf="hasUnusedItems">
+    <!-- Top form (Insert + fields) -->
+    <div *ngIf="!viewMode" class="card-accordion mt-2">
+      <div class="form-row position-relative" [formGroup]="itemForm">
+
+        <button
+          [disabled]="viewMode"
+          (click)="insertItem()"
+          class="btn btn-primary position-absolute"
+          style="top: 0; right: 0; z-index: 10;"
+        >
+          <i class="ft-pocket mr-1"></i>
+          Insert
+        </button>
+
+        <div class="col-12 mb-1">
+          <h5>Item Type</h5>
+        </div>
+
+        <div class="col-6">
+          <div class="form-check-inline">
+            <label class="form-check-label">
+              <input
+                type="radio"
+                class="form-check-input"
+                name="itemType"
+                value="Inventory"
+                formControlName="itemType"
+              />Inventory
+            </label>
           </div>
-          <br>
-  
-        </form>
-  
-        <ngb-accordion #accordion="ngbAccordion" class="mb-2 items-acc" activeIds="ngb-panel-0">
-          <ngb-panel id="ngb-panel-0">
-            <ng-template ngbPanelTitle>
+        </div>
+
+        <div class="col-6">
+          <div class="form-check-inline">
+            <label class="form-check-label">
+              <input
+                type="radio"
+                class="form-check-input"
+                name="itemType"
+                value="Non-Inventory"
+                formControlName="itemType"
+              />Non-Inventory
+            </label>
+          </div>
+        </div>
+
+        <div class="col-12"><hr /></div>
+
+        <div class="col-12">
+          <div class="row">
+            <!-- Left: Item Details -->
+            <div class="col-6">
+              <h5>Item Details</h5>
               <div class="row">
-                <div class="col-md-6"> <span class="panel-icon">
-                    <label class="text-white">Quotation Items</label> <!-- Bootstrap icon example -->
-                  </span></div>
-              </div>
-            </ng-template>
-            <ng-template *ngIf="hasUnusedItems" ngbPanelContent>
-              <div *ngIf="!viewMode" class="card-accordion">
-                <div class="form-row position-relative" [formGroup]="itemForm">
-  
-                  <button [disabled]="viewMode" (click)="insertItem()" class="btn btn-primary position-absolute"
-                    style="top: 0; right: 0; z-index: 10;">
-                    <i class="ft-pocket mr-1"></i>
-                    Insert
-                  </button>
-  
-                  <div class="col-12 mb-1">
-                    <h5>Item Type</h5>
+                <div class="col-md-6">
+                  <div class="form-group mb-2">
+                    <label>Item</label>
+                    <select class="form-control" formControlName="itemId">
+                      <option value="" disabled selected>Select Item</option>
+                      <option *ngFor="let item of itemList" [value]="item.id">
+                        {{ item.description }}
+                      </option>
+                    </select>
                   </div>
-  
-                  <div class="col-6">
-                    <div class="form-check-inline">
-                      <label class="form-check-label">
-                        <input type="radio" class="form-check-input" name="itemType" value="Inventory"
-                          formControlName="itemType">Inventory
-                      </label>
-                    </div>
-                  </div>
-  
-                  <div class="col-6">
-                    <div class="form-check-inline">
-                      <label class="form-check-label">
-                        <input type="radio" class="form-check-input" name="itemType" value="Non-Inventory"
-                          formControlName="itemType">Non-Inventory
-                      </label>
-                    </div>
-                  </div>
-  
-                  <div class="col-12">
-                    <hr>
-                  </div>
-                  <!-- <ng-container *ngIf="itemForm.get('itemType')?.value === 'Inventory'"> -->
-  
-                  <div class="col-12">
-                    <div class="row">
-                      <div class="col-6">
-                        <h5>Item Details</h5>
-                        <div class="row">
-  
-                          <div class="col-md-6">
-                            <div class="form-group mb-2">
-                              <label>Item</label>
-                              <select class="form-control" formControlName="itemId">
-                                <option value="" disabled selected>Select Item</option>
-                                <option *ngFor="let item of itemList" [value]="item.id">
-                                  {{ item.description }}
-                                </option>
-                              </select>
-                            </div>
-                          </div>
-  
-                          <!-- <div class="col-md-6" *ngIf="itemType === 'Non-Inventory'">
-                                <div class="form-group mb-2">
-                                  <label>Non-Inventory Item</label>
-                                  <input type="text" class="form-control" formControlName="itemType" placeholder="Enter Non-Inventory Item">
-                                </div>
-                              </div> -->
-  
-                          <div class="col-md-6">
-                            <div class="form-group mb-2">
-                              <label>U of M</label>
-                              <select class="form-control custom-input" formControlName="unitOfMeasurementId">
-                                <option value="" disabled selected>Select UOM</option>
-                                <option *ngFor="let uom of unitsOfMeasurementList" [ngValue]="uom.id">
-                                  {{ uom.description }}
-                                </option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-  
-                        <div class="row">
-                          <div class="col-md-6">
-                            <div class="form-group mb-2">
-                              <label>Amount</label>
-                              <input type="number" placeholder="Enter Amount" class="form-control custom-input"
-                                formControlName="amount" />
-                            </div>
-                          </div>
-  
-                          <div class="col-md-6">
-                            <div class="form-group mb-2">
-                              <label>Unit Cost</label>
-                              <input type="number" placeholder="Enter Unit Cost" class="form-control custom-input"
-                                formControlName="unitCost" />
-                            </div>
-                          </div>
-                        </div>
-  
-                        <div class="row">
-                          <div class="col-md-6">
-                            <div class="form-group mb-2">
-                              <label>Order Quantity</label>
-                              <input type="number" placeholder="Enter Order Quantity" class="form-control custom-input"
-                                formControlName="orderQuantity" />
-                            </div>
-                          </div>
-  
-                          <div class="col-md-6">
-                            <div class="form-group mb-2">
-                              <label>Req. by Date</label>
-                              <input type="date" class="form-control custom-input" formControlName="reqByDate" />
-                            </div>
-                          </div>
-                        </div>
-  
-                        <div class="form-group mb-2">
-                          <label>Item Description</label>
-                          <textarea name="" id="" rows="2" type="text" placeholder="Enter Item Description"
-                            class="form-control custom-input" formControlName="itemDescription"></textarea>
-                        </div>
-                      </div>
-  
-                      <div class="col-6">
-                        <h5>Other Details</h5>
-                        <div *ngIf="!isNewForm" class="form-group mb-2 ">
-                          <label>Final Vendor</label>
-                          <select class="form-control custom-input" formControlName="vendorUserId"
-                            (change)="onVendorChange($event.target.value)">
-                            <option [ngValue]="null" disabled>Select Vendor</option>
-                            <option *ngFor="let v of uniqueVendors" [value]="v.vendorId">
-                              {{ v.vendorName }}
-                            </option>
-                          </select>
-                        </div>
-                        <div *ngIf="!isNewForm" class="form-group mb-2">
-                          <label>Company</label>
-                          <select class="form-control custom-input" formControlName="vendorCompanyId"
-                            [compareWith]="compareIds">
-                            <option [ngValue]="null" disabled>Select Company</option>
-                            <option *ngFor="let c of filteredCompanies" [ngValue]="c.companyId">
-                              {{ c.name }}
-                            </option>
-                          </select>
-                        </div>
-  
-                        <div class="form-group mb-2">
-                          <label>Account</label>
-                          <select class="form-control custom-input" formControlName="accountId">
-                            <option value="" disabled selected>Select Account</option>
-                            <option *ngFor="let acc of accountList" [value]="acc.id">
-                              {{ acc.description }}
-                            </option>
-                          </select>
-                        </div>
-  
-                        <div class="form-group mb-2">
-                          <label>Remarks</label>
-                          <textarea name="" placeholder="Enter Remarks" id="" rows="5" type="text"
-                            class="form-control custom-input" formControlName="remarks"></textarea>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-  
-  
-  
-                  <!-- </ng-container> -->
-  
-                  <!-- <ng-container *ngIf="itemForm.get('itemType')?.value === 'Non-Inventory'">
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                          <div class="form-group mb-2">
-                            <label>Item Description</label>
-                            <textarea rows="5" placeholder="Enter Item Description" class="form-control"
-                              formControlName="itemDescription"></textarea>
-                          </div>
-                        </div>
-  
-                        <div *ngIf="!isNewForm" class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                          <label>Final Vendor</label> -->
-  
-                  <!-- this should not be uncommented-->
-                  <!-- <select class="form-control" formControlName="vendorUserId">
-                                <option value="" disabled>Select Vendor</option>
-                                <option *ngFor="let vendor of vendorUsers" [value]="vendor.id">
-                                  {{ vendor.name }}
-                                </option>
-                              </select> -->
-                  <!-- this should not be uncommented-->
-  
-                  <!-- <select class="form-control" formControlName="vendorUserId"
-                            (change)="onVendorChange($event.target.value)">
-                            <option value="" disabled>Select Vendor</option>
-                            <option *ngFor="let v of uniqueVendors" [value]="v.vendorId">
-                              {{ v.vendorName }}
-                            </option>
-                          </select>
-                        </div>
-                        <div *ngIf="!isNewForm" class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                          <label>Company</label>
-                          <select class="form-control" formControlName="vendorCompanyId">
-                            <option value="" disabled>Select Company</option>
-                            <option *ngFor="let c of filteredCompanies" [value]="c.companyId">
-                              {{ c.name }}
-                            </option>
-                          </select>
-                        </div>
-  
-                      </ng-container> -->
                 </div>
-                <br>
-  
-              </div>
-  
-              <div class="vendor-datatable-div">
-                <ngx-datatable class="bootstrap core-bootstrap" [rows]="newQuotationItemData" [columnMode]="'force'"
-                  [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
-  
-  
-  
-                  <ngx-datatable-column *ngIf="purchaseRequestId" name="Select" [width]="60" [sortable]="false">
-                    <ng-template ngx-datatable-cell-template let-row="row">
-                      <input type="checkbox" [(ngModel)]="row.selected" />
-                    </ng-template>
-                  </ngx-datatable-column>
-  
-                  <ngx-datatable-column name="Sr. No." [width]="50" [sortable]="false">
-                    <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
-                      <span>{{rowIndex + 1}}</span>
-                    </ng-template>
-                  </ngx-datatable-column>
-  
-                  <ngx-datatable-column [width]="100" name="Type" prop="itemType" [sortable]="false">
-                  </ngx-datatable-column>
-  
-                  <ngx-datatable-column name="Item">
-                    <ng-template let-row="row" ngx-datatable-cell-template>
-                      {{ getItemNameById(row.itemId) }}
-                    </ng-template>
-  
-                  </ngx-datatable-column>
-                  <ngx-datatable-column name="Description" [sortable]="false" prop="itemDescription">
-                  </ngx-datatable-column>
-  
-                  <ngx-datatable-column [width]="90" name="Amount" prop="amount" [sortable]="false">
-                  </ngx-datatable-column>
-  
-                  <ngx-datatable-column name="Vendor Name" [sortable]="false">
-                    <ng-template let-row="row" ngx-datatable-cell-template>
-                      {{ getVendorNameById(row.vendorUserId) }}
-                    </ng-template>
-                  </ngx-datatable-column>
-  
-                  <ngx-datatable-column name="Remarks" prop="remarks" [sortable]="false">
-                  </ngx-datatable-column>
-  
-                  <ngx-datatable-column [width]="100" name="Attachments" [sortable]="false">
-                    <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
-  
-                      <a matTooltip="Attachment" class="row-action-attachment" (click)="openNewEntityModal(rowIndex)"
-                        [ngClass]="{'disabled': actionType === 'View'}">
-                        <i style="font-size: 1.5rem;" class="ft-paperclip mr-1"></i>
-                      </a>
-  
-                    </ng-template>
-                  </ngx-datatable-column>
-  
-                  <ngx-datatable-column [width]="100" *ngIf="!viewMode" name="Actions" [sortable]="false">
-                    <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
-  
-  
-                      <a matTooltip="Edit Item" (click)="editRow(row, rowIndex)"
-                        [ngClass]="viewMode ? 'disabled' : 'row-action-edit'">
-                        <i style="font-size: 1.5rem;" class="ft-edit mr-1"></i>
-                      </a>
-  
-  
-                      <a matTooltip="Delete Item" style="cursor: pointer; color: #d1d4d7;" (click)="deleteRow(rowIndex)"
-                        [ngClass]="viewMode ? 'disabled' : 'row-action-delete'">
-                        <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
-                      </a>
-  
-                    </ng-template>
-                  </ngx-datatable-column>
-                </ngx-datatable>
-              </div>
-            </ng-template>
-            <!-- <ng-template ngbPanelTitle>
-                  <div class="row">
-                    <div class="col-md-6"> <span class="panel-icon">
-                        <label class="text-white">Remarks</label> 
-                      </span></div>
+
+                <div class="col-md-6">
+                  <div class="form-group mb-2">
+                    <label>U of M</label>
+                    <select class="form-control custom-input" formControlName="unitOfMeasurementId">
+                      <option value="" disabled selected>Select UOM</option>
+                      <option *ngFor="let uom of unitsOfMeasurementList" [ngValue]="uom.id">
+                        {{ uom.description }}
+                      </option>
+                    </select>
                   </div>
-                </ng-template> -->
-  
-  
-          </ngb-panel>
-  
-  
-        </ngb-accordion>
-  
-        <ngb-accordion *ngIf="!viewMode && !isNewForm" #accordion="ngbAccordion" class="vendor-acc"
-          activeIds="ngb-panel-1">
-          <ngb-panel id="ngb-panel-1">
-            <ng-template ngbPanelTitle>
+                </div>
+              </div>
+
               <div class="row">
-                <div class="col-md-6"> <span class="panel-icon">
-                    <label class="text-white">Selected Vendors</label> <!-- Bootstrap icon example -->
-                  </span></div>
-              </div>
-            </ng-template>
-            <ng-template ngbPanelContent>
-  
-              <div class="vendor-datatable-div">
-                <ngx-datatable class="bootstrap core-bootstrap" [rows]="selectedVendorsData" [columnMode]="'force'"
-                  [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
-  
-                  <ngx-datatable-column name="Sr. No." [width]="100" [minWidth]="100" [maxWidth]="100" [sortable]="false">
-                    <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
-                      <span>{{rowIndex + 1}}</span>
-                    </ng-template>
-                  </ngx-datatable-column>
-  
-                  <ngx-datatable-column name="Vendor" prop="vendorName" [sortable]="false">
-                  </ngx-datatable-column>
-  
-                  <ngx-datatable-column name="Company" prop="companyName" [sortable]="false">
-                  </ngx-datatable-column>
-  
-                  <ngx-datatable-column name="Created Date" [sortable]="false">
-                    <ng-template let-row="row" ngx-datatable-cell-template>
-                      {{ row.createdDate | date:'short'}}
-                    </ng-template>
-                  </ngx-datatable-column>
-  
-                  <ngx-datatable-column [width]="100" *ngIf="!viewMode" name="Actions" [sortable]="false">
-                    <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
-  
-  
-                      <a matTooltip="View Vendor" (click)="editVendorRow(row)"
-                        [ngClass]="viewMode ? 'disabled' : 'row-action-edit'">
-                        <i style="font-size: 1.5rem;" class="ft-message-circle mr-1"></i>
-                      </a>
-  
-                    </ng-template>
-                  </ngx-datatable-column>
-                </ngx-datatable>
-              </div>
-  
-            </ng-template>
-            <!-- <ng-template ngbPanelTitle>
-                  <div class="row">
-                    <div class="col-md-6"> <span class="panel-icon">
-                        <label class="text-white">Remarks</label> 
-                      </span></div>
+                 <div class="col-md-6">
+                  <div class="form-group mb-2">
+                    <label>Order Quantity</label>
+                    <input type="number" placeholder="Enter Order Quantity" class="form-control custom-input" formControlName="orderQuantity" />
                   </div>
-                </ng-template> -->
-  
-  
-          </ngb-panel>
-  
-  
-        </ngb-accordion>
-  
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group mb-2">
+                    <label>Unit Cost</label>
+                    <input type="number" placeholder="Enter Unit Cost" class="form-control custom-input" formControlName="unitCost" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                  <div class="col-md-6">
+                  <div class="form-group mb-2">
+                    <label>Amount</label>
+                    <input type="number" placeholder="Enter Amount" class="form-control custom-input" formControlName="amount" />
+                  </div>
+                </div>
+               
+
+                <div class="col-md-6">
+                  <div class="form-group mb-2">
+                    <label>Req. by Date</label>
+                    <input type="date" class="form-control custom-input" formControlName="reqByDate" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group mb-2">
+                <label>Item Description</label>
+                <textarea rows="2" placeholder="Enter Item Description" class="form-control custom-input" formControlName="itemDescription"></textarea>
+              </div>
+            </div>
+
+            <!-- Right: Other Details -->
+            <div class="col-6">
+              <h5>Other Details</h5>
+
+              <!-- <div *ngIf="!isNewForm" class="form-group mb-2">
+                <label>Final Vendor</label>
+                <select
+                  class="form-control custom-input"
+                  formControlName="vendorUserId"
+                  (change)="onVendorChange($event.target.value)"
+                >
+                  <option [ngValue]="null" disabled>Select Vendor</option>
+                  <option *ngFor="let v of uniqueVendors" [value]="v.vendorId">
+                    {{ v.vendorName }}
+                  </option>
+                </select>
+              </div>
+
+              <div *ngIf="!isNewForm" class="form-group mb-2">
+                <label>Company</label>
+                <select class="form-control custom-input" formControlName="vendorCompanyId" [compareWith]="compareIds">
+                  <option [ngValue]="null" disabled>Select Company</option>
+                  <option *ngFor="let c of filteredCompanies" [ngValue]="c.companyId">
+                    {{ c.name }}
+                  </option>
+                </select>
+              </div> -->
+
+              <div class="form-group mb-2">
+                <label>Account</label>
+                <select class="form-control custom-input" formControlName="accountId">
+                  <option value="" disabled selected>Select Account</option>
+                  <option *ngFor="let acc of accountList" [value]="acc.id">
+                    {{ acc.description }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-group mb-2">
+                <label>Remarks</label>
+                <textarea rows="5" placeholder="Enter Remarks" class="form-control custom-input" formControlName="remarks"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <br />
+
+    </div>
+
+    <!-- Datatable -->
+    <div class="vendor-datatable-div">
+      <ngx-datatable
+        class="bootstrap core-bootstrap"
+        [rows]="newQuotationItemData"
+        [columnMode]="'force'"
+        [headerHeight]="50"
+        [footerHeight]="50"
+        rowHeight="auto"
+        [limit]="5"
+        [scrollbarH]="true"
+      >
+        <ngx-datatable-column *ngIf="purchaseRequestId" name="Select" [width]="60" [sortable]="false">
+          <ng-template ngx-datatable-cell-template let-row="row">
+            <input type="checkbox" [(ngModel)]="row.selected" />
+          </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Sr. No." [width]="50" [sortable]="false">
+          <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
+            <span>{{ rowIndex + 1 }}</span>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column [width]="100" name="Type" prop="itemType" [sortable]="false"></ngx-datatable-column>
+
+        <ngx-datatable-column name="Item">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            {{ getItemNameById(row.itemId) }}
+          </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Description" [sortable]="false" prop="itemDescription"></ngx-datatable-column>
+
+        <ngx-datatable-column [width]="90" name="Amount" prop="amount" [sortable]="false"></ngx-datatable-column>
+
+        <ngx-datatable-column name="Vendor Name" [sortable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            {{ getVendorNameById(row.vendorUserId) }}
+          </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Remarks" prop="remarks" [sortable]="false"></ngx-datatable-column>
+
+        <ngx-datatable-column [width]="100" name="Attachments" [sortable]="false">
+          <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex">
+            <a
+              matTooltip="Attachment"
+              class="row-action-attachment"
+              (click)="openNewEntityModal(rowIndex)"
+              [ngClass]="{ disabled: actionType === 'View' }"
+            >
+              <i class="ft-paperclip mr-1" style="font-size: 1.5rem;"></i>
+            </a>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column [width]="100" *ngIf="!viewMode" name="Actions" [sortable]="false">
+          <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
+            <a
+              matTooltip="Edit Item"
+              (click)="editRow(row, rowIndex)"
+              [ngClass]="viewMode ? 'disabled' : 'row-action-edit'"
+            >
+              <i class="ft-edit mr-1" style="font-size: 1.5rem;"></i>
+            </a>
+
+            <a
+              matTooltip="Delete Item"
+              style="cursor: pointer; color: #d1d4d7;"
+              (click)="deleteRow(rowIndex)"
+              [ngClass]="viewMode ? 'disabled' : 'row-action-delete'"
+            >
+              <i class="ft-trash trash-icon" style="font-size: 1.5rem;"></i>
+            </a>
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
     </div>
   </div>
 
-  <div class="tab-pane mt-3" role="tabpanel" *ngIf="selectedTab === 'quotation-box'">
-  <app-rfq-quotationbox [data]="{ quotationId: currentQuotationId }"></app-rfq-quotationbox>
+
+    </div>
+  
+  
+    <div class="tab-pane mt-1" role="tabpanel" *ngIf="rfqTabs === 'vendors'">
+             
+                <div>
+                
+                
+                  <app-rfq-vendor-modal [data]="{quotationId: currentQuotationId}"></app-rfq-vendor-modal>
+                </div>
+  
+       
+    </div>
+  
+  
+  
+  
+  </div>
+
+   <div class="tab-pane mt-1" role="tabpanel" *ngIf="selectedTab === 'history'">
+    <app-rfq-approval-history-modal [data]="{ rfqNo: newRfqForm.get('rfqNo')?.value}"></app-rfq-approval-history-modal>
+  </div>
+
+  <div class="tab-pane mt-1" role="tabpanel" *ngIf="selectedTab === 'bids-detail'">
+  <!-- <app-rfq-quotationbox [data]="{ quotationId: currentQuotationId }"></app-rfq-quotationbox> -->
+
+    <div class="d-flex justify-content-between align-items-baseline">
+      <div>
+        <ul class="nav nav-tabs bids-tab mt-2" role="tablist">
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" [class.active]="bidsTab === 'quotation-box'" (click)="selectBidsTab('quotation-box')"
+            href="javascript:void(0)" role="tab">
+            Quotation Box
+          </a>
+        </li>
+    
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" [class.active]="bidsTab === 'vendor-comparison'" [class.disabled]="!currentQuotationId"
+            (click)="selectBidsTab('vendor-comparison')" href="javascript:void(0)" role="tab">
+            Vendor Comparison
+          </a>
+        </li>
+    
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" [class.active]="bidsTab === 'finalVendor'" [class.disabled]="!currentQuotationId"
+            (click)="selectBidsTab('finalVendor')" href="javascript:void(0)" role="tab">
+            Final Vendors
+          </a>
+        </li>
+    
+    
+      </ul>
+
+      </div>
+      
+      <div>
+             <button class="btn btn-sm submit-approval-btn shadow-sm">
+              <i class="ft-check" style="color: #1161cc;"></i><label class="ml-1">Submit for Approval</label>
+            </button>
+      </div>
+
+    </div>
+
+
+  <!-- Sub Tab Content -->
+  <div class="mt-3" [ngSwitch]="bidsTab">
+    <!-- Default sub-tab -->
+    <app-rfq-quotationbox
+      *ngSwitchCase="'quotation-box'"
+      [data]="{ quotationId: currentQuotationId }"
+    ></app-rfq-quotationbox>
+    
+     <app-vendor-comparision
+      *ngSwitchCase="'vendor-comparison'"
+      [data]="{ quotationId: currentQuotationId }"
+    ></app-vendor-comparision>
+
+      <app-rfq-final-vendors
+      *ngSwitchCase="'finalVendor'"
+      [data]="{ quotationId: currentQuotationId }"
+    ></app-rfq-final-vendors>
+
+
+  </div>
+  </div>
+
+     <div class="tab-pane mt-3" role="tabpanel" *ngIf="selectedTab === 'comments'">
+    <app-rfq-comments [vendorsData]="selectedVendorsData" [data]="{ quotationId: currentQuotationId }"></app-rfq-comments>
   </div>
       <!-- Action Pane -->
 

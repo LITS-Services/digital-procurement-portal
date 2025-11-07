@@ -1,63 +1,84 @@
-<div class="modal-header">
-  <h4 class="modal-title text-white">RFQ Vendors</h4>
-  <button type="button" class="close text-white" aria-label="Close" (click)="closeDialog()">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>
+<div class="modal-body vendor-picker">
+  <div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-sm submit-approval-btn shadow-sm" (click)="onSubmit()">
+     <i class="ft-check" style="color: #1161cc;"></i><label class="ml-1">Submit Vendors</label>
+    </button>
+  </div>
 
-<div class="modal-body">
-  <h4 class="mb-3">All Vendors</h4>
-  <ngx-datatable class="bootstrap core-bootstrap" [rows]="allVendorsandCompanies" [columnMode]="'force'"
-    [headerHeight]="50" [footerHeight]="40" [rowHeight]="50" [limit]="5" [scrollbarH]="true"
-    style="border: 1px solid #dee2e6; border-radius: 6px;">
+  <div class="picker-grid">
+    <!-- LEFT: ALL VENDORS -->
+    <section class="panel">
+      <header class="panel-header">
+        <div>
+          <h5 class="title">All Vendors</h5>
+          <small class="muted">{{ availableVendors.length }} total</small>
+        </div>
+        <div class="panel-actions">
+          <button class="btn btn-sm btn-outline-info" (click)="selectAll()">
+            <i class="ft ft-check"></i>
+            Select All</button>
+        </div>
+      </header>
 
-    <ngx-datatable-column [sortable]="false">
-      <ng-template ngx-datatable-cell-template let-row="row">
-        <!-- <button
-            class="btn btn-sm text-bold btn-info"
-            [disabled]="isVendorAdded(row.id)"
-            (click)="addVendor(row)">
-            <i class="ft-plus"></i>
-          </button> -->
-        <button class="btn btn-sm text-bold btn-info" [disabled]="isVendorAdded(row.vendorCompanyEntityId ?? row.id)"
-          (click)="addVendor(row)">
-          <i class="ft-plus"></i>
-        </button>
+      <div class="panel-search">
+        <input class="form-control" type="text" placeholder="Search vendor or company..."
+               [(ngModel)]="leftSearch" (input)="recomputeLists()" />
+      </div>
 
+      <div class="list" *ngIf="availableVendors.length; else emptyLeft">
+        <div class="row-item clickable"
+             *ngFor="let v of availableVendors"
+             (click)="addToRight(v)">
+          <div class="vh">
+            <div class="vh-title">{{ v.vendorName }}</div>
+            <div class="vh-sub">{{ v.companyName }}</div>
+          </div>
+          <button class="btn btn-xs btn-link add-btn" (click)="addToRight(v); $event.stopPropagation()">
+            Add<i class="ft-arrow-right ml-1"></i></button>
+        </div>
+      </div>
+      <ng-template #emptyLeft>
+        <div class="empty">All vendors are selected.</div>
       </ng-template>
-    </ngx-datatable-column>
+    </section>
 
-    <ngx-datatable-column name="Vendor" prop="vendorName"></ngx-datatable-column>
-    <ngx-datatable-column name="Company" prop="companyName"></ngx-datatable-column>
-  </ngx-datatable>
+    <!-- RIGHT: SELECTED -->
+    <section class="panel">
+      <header class="panel-header">
+        <div>
+          <h5 class="title">Selected Vendors</h5>
+          <small class="muted">{{ gridSelected.length }} selected</small>
+        </div>
+        <div class="panel-actions">
+          <button class="btn btn-sm btn-outline-danger" (click)="removeAll()">
+             <i class="ft ft-x"></i>
+            Remove All</button>
+        </div>
+      </header>
 
-  <hr class="my-4" />
+      <div class="panel-search">
+        <input class="form-control" type="text" placeholder="Search selected..."
+               [(ngModel)]="rightSearch" (input)="recomputeLists()" />
+      </div>
 
-  <h4 class="mb-3">RFQ Vendors</h4>
-  <ngx-datatable class="bootstrap core-bootstrap" [rows]="rfqVendors" [columnMode]="'force'" [headerHeight]="50"
-    [footerHeight]="40" [rowHeight]="60" [scrollbarH]="true" style="border: 1px solid #dee2e6; border-radius: 6px;">
-
-    <ngx-datatable-column [sortable]="false">
-      <ng-template ngx-datatable-cell-template let-row="row">
-        <button type="button" class="btn btn-sm btn-danger" (click)="removeVendor(row)">❌</button>
+      <div class="list" *ngIf="filteredSelected.length; else emptyRight">
+        <div class="row-item"
+             *ngFor="let v of filteredSelected">
+          <div class="vh">
+            <div class="vh-title">
+              {{ v.vendorName }}
+              <span *ngIf="persistedIds.has(getKey(v))" class="chip chip-saved">Saved</span>
+            </div>
+            <div class="vh-sub">{{ v.companyName }}</div>
+          </div>
+          <button class="icon-btn" (click)="removeFromRight(v)" aria-label="Remove">
+             <i class="ft ft-x"></i>
+          </button>
+        </div>
+      </div>
+      <ng-template #emptyRight>
+        <div class="empty">No vendors selected yet.</div>
       </ng-template>
-    </ngx-datatable-column>
-
-    <ngx-datatable-column name="Vendor" prop="vendorName"></ngx-datatable-column>
-    <ngx-datatable-column name="Company" prop="companyName"></ngx-datatable-column>
-
-    <ngx-datatable-column name="Action" [sortable]="false">
-      <ng-template ngx-datatable-cell-template let-row="row">
-        <!-- <div class="row d-flex"> -->
-        <button class="btn btn-sm mr-1" (click)="printVendor(row)"><i class="ft-printer"></i></button>
-        <!-- <button class="btn btn-sm " (click)="emailVendor(row)"><i class="ft-mail"></i></button> -->
-        <!-- </div> -->
-
-      </ng-template>
-    </ngx-datatable-column>
-  </ngx-datatable>
-</div>
-
-<div class="modal-footer">
-  <button class="btn btn-primary" (click)="onSubmit()">Submit</button>
+    </section>
+  </div>
 </div>

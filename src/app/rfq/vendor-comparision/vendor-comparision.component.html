@@ -1,102 +1,135 @@
-<div class="modal-header">
+<!-- <div class="modal-header">
   <h4 class="modal-title text-white">Vendor Comparison</h4>
   <button type="button" class="close text-white" aria-label="Close" (click)="closeDialog()">
     <span aria-hidden="true">&times;</span>
   </button>
-</div>
+</div> -->
 
 <div class="modal-body">
-  <h4 class="mb-3">Final Vendors</h4>
 
-  <div class="form-row">
-    <!-- Commented as requested -->
-    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-      <div class="form-group">
-        <label for="">Item</label>
-        <select class="form-control  custom-input" [(ngModel)]="selectedItem" (change)="applyVendorItemFilter()">
-          <option value="">All Items</option>
-          <option *ngFor="let item of vendorComparisonList" [value]="item.itemName">
-            {{ item.itemName }}
-          </option>
-        </select>
-      </div>
-    </div>
-    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-      <div class="form-group">
-        <label for="">Vendor</label>
-        <select class="form-control  custom-input" [(ngModel)]="selectedVendorId" (change)="applyVendorItemFilter()">
-          <option value="">All Vendors</option>
-          <option *ngFor="let v of vendors" [value]="v.vendorUserId">
-            {{ v.vendorName }}
-          </option>
-        </select>
-      </div>
-    </div>
-
-    <div class="col-12">
-      <div class="form-group">
-        <label for="">Description</label>
-        <textarea name="" id="" rows="2" placeholder="Enter Description" class="form-control  custom-input"></textarea>
+<div class="form filters-div">
+  <!-- Filter: Item -->
+  <div>
+    <div class="dropdown filter-dropdown" ngbDropdown>
+      <button
+        class="btn btn-sm  filter-btn dropdown-toggle  filter-btn-text"
+        ngbDropdownToggle
+      >
+        <span class="filter-label-text">{{ selectedItem ? selectedItem : 'All Items' }}</span>
+        <i class="ft-chevron-down"></i>
+      </button>
+      <div class="dropdown-menu w-100" ngbDropdownMenu>
+        <button class="dropdown-item" (click)="selectedItem=''; applyFiltersSort()">All Items</button>
+        <button
+          class="dropdown-item"
+          *ngFor="let it of items"
+          (click)="selectedItem = it; applyFiltersSort()"
+        >
+          {{ it }}
+        </button>
       </div>
     </div>
   </div>
 
-  <hr class="my-4" />
-  <h4 class="mb-3">Vendor Quotations</h4>
+  <!-- Filter: Vendor -->
+  <div>
+    <div class="dropdown filter-dropdown" ngbDropdown>
+      <button
+        class="btn btn-sm filter-btn dropdown-toggle"
+        ngbDropdownToggle
+      >
+        <span class="filter-label-text">{{ selectedVendorId ? getVendorNameById(selectedVendorId) : 'All Vendors' }}</span>
+        <i class="ft-chevron-down"></i>
+      </button>
+      <div class="dropdown-menu w-100" ngbDropdownMenu>
+        <button class="dropdown-item" (click)="selectedVendorId=''; applyFiltersSort()">All Vendors</button>
+        <button
+          class="dropdown-item"
+          *ngFor="let v of vendors"
+          (click)="selectedVendorId = v.vendorUserId; applyFiltersSort()"
+        >
+          {{ v.vendorName }}
+        </button>
+      </div>
+    </div>
+  </div>
 
-  <!--  Dynamic accordion loop -->
-  <div *ngIf="filteredVendorComparisonList.length > 0; else noBids"></div>
-  <ngb-accordion #accordion="ngbAccordion" *ngFor="let item of filteredVendorComparisonList; let i = index"
-    [activeIds]="'ngb-panel-' + i">
-    <ngb-panel [id]="'ngb-panel-' + i">
-      <ng-template ngbPanelTitle>
-        <div class="row">
-          <div class="col-md-6">
-            <span class="panel-icon">
-              <!-- Item Code from backend -->
-              <label class="text-white"> Item: {{ item.itemName }}</label>
-              <span class="spacer"></span>
-              <i class="ft-chevron-down"></i>
-            </span>
-          </div>
-        </div>
-      </ng-template>
+  <!-- Filter: Amount Sort -->
+  <div>
+    <div class="dropdown filter-dropdown" ngbDropdown>
+      <button
+        class="btn btn-sm filter-btn dropdown-toggle"
+        ngbDropdownToggle
+      >
+        <span class="filter-label-text">
+          {{
+            amountSort === 'asc'
+              ? 'Lowest'
+              : amountSort === 'desc'
+              ? 'Highest'
+              : 'None'
+          }}
+        </span>
+        <i class="ft-chevron-down"></i>
+      </button>
+      <div class="dropdown-menu" ngbDropdownMenu>
+        <button class="dropdown-item" (click)="amountSort='none'; applyFiltersSort()">None</button>
+        <button class="dropdown-item" (click)="amountSort='asc'; applyFiltersSort()">Lowest</button>
+        <button class="dropdown-item" (click)="amountSort='desc'; applyFiltersSort()">Highest</button>
+      </div>
+    </div>
+  </div>
 
-      <ng-template ngbPanelContent>
-        <ngx-datatable class="bootstrap core-bootstrap" [rows]="item.vendorComparisonBid" [columnMode]="'force'"
-          [headerHeight]="50" [footerHeight]="40" [rowHeight]="60"
-          style="border: 1px solid #dee2e6; border-radius: 6px;">
-          <!-- <ngx-datatable-column name="Vendor ID" prop="vendorUserId"></ngx-datatable-column> -->
-          <ngx-datatable-column  name="Vendor Name" prop="vendorName"></ngx-datatable-column>
-          <ngx-datatable-column  name="Amount" prop="biddingAmount"></ngx-datatable-column>
-          <ngx-datatable-column  name="Comment" prop="comment"></ngx-datatable-column>
-          <ngx-datatable-column  name="Attachments" [sortable]="false">
-            <ng-template ngx-datatable-cell-template let-row="row">
-              <!-- <button class="btn btn-sm btn-outline-secondary" (click)="openAttachmentsModal(row)">
-                <i class="fa fa-paperclip"></i>
-              </button> -->
-              <button class="btn btn-link p-0 text-secondary" (click)="openAttachmentsModal(row)" ngbTooltip="View">
-  <i class="fa fa-paperclip fs-5"></i>
-</button>
-
-            </ng-template>
-          </ngx-datatable-column>
-
-          <ngx-datatable-column  name="Action" [sortable]="false">
-            <ng-template ngx-datatable-cell-template let-row="row">
-              <button class="btn btn-sm mr-1" (click)="printVendor(row)">
-                <i class="ft-printer"></i>
-              </button>
-            </ng-template>
-          </ngx-datatable-column>
-        </ngx-datatable>
-      </ng-template>
-    </ngb-panel>
-  </ngb-accordion>
+  <!-- Reset Button -->
+  <div>
+    <button class="btn btn-sm clear-btn" (click)="clearFilters()">
+      <i class="ft-x"></i>
+      Clear</button>
+  </div>
 </div>
+
+
+<div *ngIf="flatRows.length > 0; else noBids">
+  <ngx-datatable
+    #table
+    class="bootstrap core-bootstrap"
+    [rows]="flatRows"
+    [columnMode]="'force'"
+    [headerHeight]="50"
+    [footerHeight]="40"
+    [rowHeight]="'auto'"
+    style="border: 1px solid #dee2e6; border-radius: 6px;"
+  >
+    <ngx-datatable-column name="Item" prop="itemName" [width]="220"></ngx-datatable-column>
+    <ngx-datatable-column name="Vendor" prop="vendorName" [width]="220"></ngx-datatable-column>
+    <ngx-datatable-column name="Amount" prop="biddingAmount" [width]="140">
+      <ng-template ngx-datatable-cell-template let-value="value">
+        {{ value | number:'1.0-2' }}
+      </ng-template>
+    </ngx-datatable-column>
+    <ngx-datatable-column name="Comment" prop="comment" [width]="400"></ngx-datatable-column>
+
+    <ngx-datatable-column name="Attachments" [sortable]="false" [width]="120">
+      <ng-template ngx-datatable-cell-template let-row="row">
+        <button class="btn btn-link p-0 text-secondary" (click)="openAttachmentsModal(row)" ngbTooltip="View">
+          <i class="fa fa-paperclip fs-5"></i>
+        </button>
+      </ng-template>
+    </ngx-datatable-column>
+
+    <ngx-datatable-column name="Action" [sortable]="false" [width]="120">
+      <ng-template ngx-datatable-cell-template let-row="row">
+        <button class="btn btn-sm mr-1" (click)="printVendor(row)">
+          <i class="ft-printer"></i>
+        </button>
+      </ng-template>
+    </ngx-datatable-column>
+  </ngx-datatable>
+</div>
+
 <ng-template #noBids>
   <div class="alert alert-warning text-center mt-3">
-    No bid found for the selected item and vendor.
+    No bid found for the selected filters.
   </div>
 </ng-template>
 
@@ -149,7 +182,7 @@
   </button>
   </div>
 
-  <div class="modal-body p-2">
+  <div class="modal-body-attachments p-2">
     <div *ngIf="selectedBid?.vendorAttachments?.length; else noAttachments">
       <ul
         class="list-group"
@@ -178,7 +211,7 @@
     </ng-template>
   </div>
 
-  <div class="modal-footer py-2">
+  <!-- <div class="modal-footer py-2">
     <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
-  </div>
+  </div> -->
 </ng-template>

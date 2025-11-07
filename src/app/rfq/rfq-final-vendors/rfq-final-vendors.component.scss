@@ -1,0 +1,27 @@
+.custom-finalVen-dropdown{
+    height: 36px !important;
+    width: 200px !important;
+    padding: 6px 8px !important;
+    font-size: 13px !important;
+}
+
+.card{
+    padding: 4px 0px !important;
+    margin: 0px !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+}
+
+.cstm-body{
+    padding: 0 !important;
+
+}
+.cstm-cell{
+    text-align: right !important;
+}
+
+::ng-deep .ngx-datatable.fixed-row .datatable-scroll .datatable-body-row .datatable-body-cell.cstm-cell {
+  display: flex !important;
+    align-items: center !important;
+}
+

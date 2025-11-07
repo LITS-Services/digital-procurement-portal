@@ -190,6 +190,7 @@ form label, .form-group label {
   }
 
   .ngx-datatable.bootstrap .datatable-footer {
+    height: auto !important;
     color: #747474 !important;
     background-color: transparent !important;
   }
@@ -211,6 +212,10 @@ form label, .form-group label {
     background-color: #e7f0fd !important;
     font-weight: bold;
     color: #000000 !important;
+  }
+
+  .ngx-datatable.bootstrap .datatable-footer .datatable-footer-inner {
+    height: auto !important;
   }
 
    .ngx-datatable.bootstrap .datatable-body .datatable-body-row.datatable-row-odd {
