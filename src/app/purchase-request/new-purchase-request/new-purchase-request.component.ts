@@ -15,7 +15,6 @@ import { LookupService } from 'app/shared/services/lookup.service';
 import { CompanyVM, VendorAndCompanyForFinalSelectionVM } from 'app/shared/interfaces/vendor-company-final-selection.model';
 import * as XLSX from 'xlsx';
 
-
 @Component({
   selector: 'app-new-purchase-request',
   templateUrl: './new-purchase-request.component.html',
@@ -77,7 +76,6 @@ export class NewPurchaseRequestComponent implements OnInit {
   // accountList: any[] = [];
   // itemList: any[] = [];
   uomList: any[] = [];
-
 
   procurementUserId = localStorage.getItem('userId');
   compareIds = (a: string | null, b: string | null) => (a ?? '').toLowerCase() === (b ?? '').toLowerCase();
@@ -188,7 +186,6 @@ export class NewPurchaseRequestComponent implements OnInit {
     //   attachments: this.fb.group({})
     // });
 
-
     this.itemForm.valueChanges.subscribe(values => {
       const total = (values.unitCost || 0) * (values.orderQuantity || 0);
       this.itemForm.patchValue({ amount: total }, { emitEvent: false });
@@ -290,7 +287,6 @@ export class NewPurchaseRequestComponent implements OnInit {
     return `${year}-${month}-${day}`; // correct format for input[type="date"]
   }
 
-
   getUomCodeById(id: number): string {
     const found = this.unitsOfMeasurementList.find(u => u.id === id);
     return found ? found.description : '';
@@ -364,6 +360,16 @@ export class NewPurchaseRequestComponent implements OnInit {
     const newItem = this.itemForm.value;
     const newItemId = Number(newItem.itemId);
 
+    // Duplicate check — works for add and edit both
+    const duplicate = this.newPurchaseItemData.some((item, index) =>
+      index !== this.editingRowIndex && Number(item.itemId) === newItemId
+    );
+
+    if (duplicate) {
+      this.toastr.warning('This item is already added. You can update it instead.');
+      return;
+    }
+
     if (this.editingRowIndex !== null) {
       //  Edit mode: update the selected row (manual or bulk)
       const existing = this.newPurchaseItemData[this.editingRowIndex];
@@ -378,7 +384,7 @@ export class NewPurchaseRequestComponent implements OnInit {
         idx === this.editingRowIndex ? merged : item
       );
 
-      this.toastr.success('Row updated successfully!');
+      this.toastr.success('Item updated successfully!');
       this.editingRowIndex = null;
     } else {
       //  Always append a new manual row (no duplicate restriction)
@@ -445,8 +451,8 @@ export class NewPurchaseRequestComponent implements OnInit {
       // reqByDate: row.reqByDate ? this.toDateInputValue(row.reqByDate) : '',
       reqByDate: row.reqByDate ? this.toDateInputValue(row.reqByDate) : '', // <-- fixed
       itemDescription: row.itemDescription || '',
-      vendorUserId: Number(row.vendorUserId) || null,
-      vendorCompanyId: Number(row.vendorCompanyId) || null,
+      vendorUserId: row.vendorUserId || null,
+      vendorCompanyId: row.vendorCompanyId || null,
       accountId: Number(row.accountId) || null,
       remarks: row.remarks || '',
       attachments: row.attachments || []
@@ -460,7 +466,7 @@ export class NewPurchaseRequestComponent implements OnInit {
     // ensure vendor company dropdown syncs after async data
     Promise.resolve().then(() => {
       this.itemForm.patchValue(
-        { vendorCompanyId: Number(row.vendorCompanyId) || null },
+        { vendorCompanyId: row.vendorCompanyId || null },
         { emitEvent: false }
       );
     });
@@ -486,6 +492,7 @@ export class NewPurchaseRequestComponent implements OnInit {
   }
 
   loadExistingRequest(id: number) {
+    this.loading = true;
     this.purchaseRequestService.getPurchaseRequestById(id).subscribe({
       next: async (data) => {
 
@@ -561,10 +568,14 @@ export class NewPurchaseRequestComponent implements OnInit {
             }))
           }));
         }
+        this.loading = false;
         this.cdr.detectChanges();
       },
 
-      error: (err) => console.error('Failed to load purchase request:', err)
+      error: (err) => {
+        this.loading = false;
+        console.error('Failed to load purchase request:', err)
+      }
     });
   }
 
@@ -596,6 +607,7 @@ export class NewPurchaseRequestComponent implements OnInit {
 
     const f = this.newPurchaseRequestForm.value;
     const submittedDateISO = f.date ? new Date(f.submittedDate).toISOString() : new Date().toISOString();
+    const entityId = Number(localStorage.getItem('selectedCompanyId'));
 
     const purchaseItems = this.newPurchaseItemData?.length
       ? this.newPurchaseItemData.map(item => ({
@@ -635,7 +647,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       deliveryLocation: f.deliveryLocation || '',
       receiverName: f.receiverName || '',
       receiverContact: f.receiverContact || '',
-      status: 'Draft',
+      // status: 'Draft',
       department: f.department || '',
       designation: f.designation || '',
       businessUnit: f.businessUnit || '',
@@ -644,6 +656,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       subject: f.subject || '',
       workflowMasterId: Number(f.workflowMasterId) || 0,
       createdBy: f.createdBy || '',
+      entityId: Number(entityId),
       purchaseItems
     };
 
@@ -675,7 +688,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       this.toastr.warning('Form is invalid');
       return;
     }
-
+    const entityId = localStorage.getItem('selectedCompanyId');
     const f = this.newPurchaseRequestForm.value;
     const submittedDateISO = f.submittedDate ? new Date(f.submittedDate).toISOString() : new Date().toISOString();
 
@@ -726,6 +739,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       subject: f.subject,
       // workflowMasterId: Number(f.workflowMasterId) || 0,
       // createdBy: f.createdBy || 'USER',
+      entityId: Number(entityId),
       purchaseItems
     };
 
@@ -1142,6 +1156,4 @@ export class NewPurchaseRequestComponent implements OnInit {
     const date_info = new Date(utc_value * 1000);
     return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate());
   }
-
-
 }  
