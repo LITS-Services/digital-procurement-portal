@@ -14,6 +14,7 @@ import { ToastrService } from 'ngx-toastr';
 import { tr } from 'date-fns/locale';
 import { catchError, debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { UserServiceService } from '../services/user-service.service';
+import { LookupService } from '../services/lookup.service';
 
 @Component({
   selector: "app-navbar",
@@ -39,6 +40,10 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   username: string;
   profilePicture: string = "assets/img/profile/user.png"; // default avatar
   private sub!: Subscription;
+
+  companies: any[] = [];
+  selectedCompanyId: string | number = '';
+  // userId: string | null = null;
 
   @ViewChild("search") searchElement: ElementRef;
   @ViewChildren("searchResults") searchResults: QueryList<any>;
@@ -79,7 +84,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private messagingService: FirebaseMessagingService,
     private toaster: ToastrService,
-    private userService: UserServiceService
+    private userService: UserServiceService,
+    private lookupService: LookupService
   ) {
     const browserLang: string = translate.getBrowserLang();
     translate.use(browserLang.match(/en|es|pt|de|ar/) ? browserLang : "en");
@@ -100,10 +106,16 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setupClickOutside();
     this.getNotification();
 
+    // this.userId = localStorage.getItem("userId");
+
     //Firebase Cloud Messaging Initialization
     const userId = localStorage.getItem("userId");
-    this.messagingService.requestPermission(userId);
 
+    this.messagingService.requestPermission(userId);
+    if (userId) {
+      // this.loadUserProfile(this.userId);
+      this.loadProcUserCompanies(userId);
+    }
     this.messagingService.currentMessage.subscribe((msg) => {
       if (msg) {
         this.toaster.success(
@@ -153,6 +165,62 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     if (this.layoutSub) this.layoutSub.unsubscribe();
     if (this.configSub) this.configSub.unsubscribe();
+  }
+
+  //   private loadUserProfile(userId: string): void {
+  //   this.companyService.getprocurementusersbyid(userId).subscribe({
+  //     next: (res: any) => {
+  //       if (res) {
+  //         this.username = res.fullName || this.authService.getUserName();
+  //         this.profilePicture = res.profilePicture || "assets/img/profile/user.png";
+  //       } else {
+  //         this.username = this.authService.getUserName();
+  //         this.profilePicture = "assets/img/profile/user.png";
+  //       }
+  //       this.cdr.detectChanges();
+  //     },
+  //     error: () => {
+  //       this.username = this.authService.getUserName();
+  //       this.profilePicture = "assets/img/profile/user.png";
+  //       this.cdr.detectChanges();
+  //     },
+  //   });
+  // }
+
+  private loadProcUserCompanies(userId: string): void {
+    this.lookupService.getProcCompaniesByProcUserId(userId).subscribe({
+      next: (res: any[]) => {
+        this.companies = res || [];
+
+        if (this.companies.length > 0) {
+          // Set first company as default
+          const entityId = Number(localStorage.getItem("selectedCompanyId"));
+          if (entityId) {
+            this.selectedCompanyId = entityId;
+          }
+          else {
+            this.selectedCompanyId = this.companies[0].id;
+            localStorage.setItem('selectedCompanyId', this.selectedCompanyId.toString());
+          }
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error fetching companies:', err)
+    });
+  }
+
+  //   get selectedCompanyName(): string {
+  //   const company = this.companies?.find(c => c.id == this.selectedCompanyId);
+  //   return company ? company.description : 'Select Company';
+  // }
+
+  onCompanyChange(event: any): void {
+    const selectedValue = event.target.value;
+    this.selectedCompanyId = selectedValue;
+    localStorage.setItem('selectedCompanyId', selectedValue);
+    console.log('Active Company changed:', selectedValue);
+
+    window.location.reload();
   }
 
   bindSearch(): void {
@@ -476,4 +544,3 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     return "1m ago";
   }
 }
-
