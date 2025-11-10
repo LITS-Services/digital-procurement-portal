@@ -1,0 +1,85 @@
+.custom-tabs nav {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Base tab styling */
+.custom-tabs .custom-style-tab {
+  flex: 1;
+  /* Equal width for all tabs */
+  position: relative;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #4188f2;
+  font-weight: 500;
+  font-size: 0.75em;
+  padding: 1em 3.5em 1em 1.8em;
+  border-radius: 10px 10px 0 0;
+  transition: color 0.2s ease;
+}
+
+/* Text layer */
+.custom-tabs .custom-style-tab span {
+  position: relative;
+  z-index: 2;
+}
+.custom-tabs .custom-style-tab::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  content: '';
+  border-radius: 10px 10px 0 0;
+  background: #fff;
+  outline: 1px solid transparent;
+  transform: perspective(5px) rotateX(0.93deg) translateZ(-1px);
+  transform-origin: 0 0;
+  backface-visibility: hidden;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.custom-tabs .custom-style-tab:hover,
+.custom-tabs .custom-style-tab:focus {
+  color: #fff;
+}
+
+.custom-tabs .custom-style-tab:hover::after,
+.custom-tabs .custom-style-tab:focus::after {
+  background: #4188f2;
+  box-shadow: none;
+}
+
+
+.custom-tabs .custom-style-tab.tab-current {
+  color: #fff;
+  font-weight: 600;
+}
+
+.custom-tabs .custom-style-tab.tab-current::after {
+  background: #4188f2;
+  box-shadow: none;
+}
+
+.custom-tabs .custom-style-tab,
+.custom-tabs .custom-style-tab::after {
+  transition: all 0.3s ease;
+}
+
+.custom-tabs .custom-style-tab:hover::after {
+  background: linear-gradient(to bottom, #4188f2 0%, #026dd1 100%);
+}
+
+.custom-tabs .custom-style-tab.disabled,
+.custom-tabs .custom-style-tab:disabled {
+  color: #999 !important;
+  cursor: not-allowed;
+}
+
+.custom-tabs .custom-style-tab.disabled::after,
+.custom-tabs .custom-style-tab:disabled::after {
+  background: #fafafa !important;
+  box-shadow: none;
+}

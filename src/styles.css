@@ -1,5 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 @import './app/shared/custom-style/filter-bar.css';
+@import './app/shared/custom-style/custom-tab.css';
 .rtl {
     direction: rtl !important;
     /* // color: red !important;
