@@ -35,9 +35,16 @@ export class LookupService {
     return this.http.get<any[]>(url, { params });
   }
 
-    getAllRequestStatus() {
+  getAllRequestStatus() {
     return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=status`);
   }
 
-
+  getProcCompaniesByProcUserId(userId: string) {
+    const url = `${this.baseUrl}/dropdowns`;
+    const params = {
+      name: 'proc-user-companies-by-user-id',
+      id: userId
+    };
+    return this.http.get<any[]>(url, { params });
+  }
 }
