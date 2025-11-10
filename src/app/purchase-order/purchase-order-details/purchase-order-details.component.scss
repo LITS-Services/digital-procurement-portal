@@ -1,77 +1,94 @@
-.vertical-divider {
-  width: 2px;
-  height: 28px; /* adjust size if needed */
-  background-color: #ccc; /* or your theme color */
+.submit-bid-page ::ng-deep .card {
+  margin: 0 !important;
 }
 
-.pro-table {
-    border: 1px solid #d2d6e1;
-    border-radius: 8px;
-    font-size: 13px;
-    overflow: hidden;
-    color: #2d2f33;
+/* =========================================
+   PURCHASE ORDER TAB STYLE
+========================================= */
+.custom-tabs nav {
+  display: flex;
+  justify-content: flex-start;
+  // gap: 0.5em;
 }
 
-.pro-table thead th {
-    background: #f4f6fb;
-    border-bottom: 2px solid #c7ccdb !important;
-    font-weight: 600;
-    padding: 10px 12px;
-    color: #3a3d42;
-    white-space: nowrap;
+/* Base tab styling */
+.custom-tabs .custom-style-tab {
+  flex: 1;
+  /* Equal width for all tabs */
+  position: relative;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #4188f2;
+  font-weight: 500;
+  font-size: 0.75em;
+  padding: 1em 3.5em 1em 1.8em;
+  border-radius: 10px 10px 0 0;
+  transition: color 0.2s ease;
+  // -webkit-backface-visibility: hidden;
+  // backface-visibility: hidden;
 }
 
-.pro-table tbody tr td {
-    padding: 9px 12px;
-    border-top: 1px solid #e4e6ee;
-    background: #ffffff;
+/* Text layer */
+.custom-tabs .custom-style-tab span {
+  position: relative;
+  z-index: 2;
 }
 
-.pro-table tbody tr:hover td {
-    background: #f8f9fc;
+/* Background pseudo-element (tzoid illusion) */
+.custom-tabs .custom-style-tab::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  content: '';
+  border-radius: 10px 10px 0 0;
+  background: #fff;
+  // box-shadow: inset 0 -3px 3px rgba(0, 0, 0, 0.05);
+  outline: 1px solid transparent;
+  transform: perspective(5px) rotateX(0.93deg) translateZ(-1px);
+  transform-origin: 0 0;
+  backface-visibility: hidden;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
-.pro-table tbody tr td:last-child,
-.pro-table thead th:last-child {
-    font-weight: 600;
+/* Hover & Focus states */
+.custom-tabs .custom-style-tab:hover,
+.custom-tabs .custom-style-tab:focus {
+  color: #fff;
 }
 
-.pro-table td, .pro-table th {
-    vertical-align: middle !important;
+.custom-tabs .custom-style-tab:hover::after,
+.custom-tabs .custom-style-tab:focus::after {
+  background: #4188f2;
+  /* Hover background color */
+  box-shadow: none;
 }
 
- .po-tabs {
-    display: flex;
-    border-bottom: 2px solid #e5e7eb;
-    gap: 0px;
-    margin-bottom: 1.5rem;
-  }
+/* Active Tab */
+.custom-tabs .custom-style-tab.tab-current {
+  color: #fff;
+  font-weight: 600;
+}
 
-  .po-tab {
-    background: transparent;
-    border: none;
-    padding: 10px 22px;
-    font-size: .85rem;
-    font-weight: 600;
-    color: #6b7280;
-    cursor: pointer;
-    position: relative;
-    transition: all .25s ease-in-out;
-    border-radius: 6px 6px 0 0;
-  }
+.custom-tabs .custom-style-tab.tab-current::after {
+  background: #4188f2;
+  /* Active background color */
+  box-shadow: none;
+}
 
-  .po-tab:hover {
-    background: #f3f4f6;
-    color: #111827;
-  }
+/* Transition for smooth tab switching */
+.custom-tabs .custom-style-tab,
+.custom-tabs .custom-style-tab::after {
+  transition: all 0.3s ease;
+}
 
-  .po-tab.active {
-    background: #ffffff;
-    color: #1543b7;
-    font-weight: 700;
-    border-bottom: 3px solid #2c189b;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-    outline: 2px solid #102da1;
-    outline-offset: -2px;
-    border-radius: 6px 6px 0 0;
-  }
+/* Optional: gradient hover (for nicer depth) */
+
+.custom-tabs .custom-style-tab:hover::after {
+  // background: linear-gradient(to bottom, #2CC185 0%, #28b67a 100%);
+  background: linear-gradient(to bottom, #4188f2 0%, #026dd1 100%);
+}
+
