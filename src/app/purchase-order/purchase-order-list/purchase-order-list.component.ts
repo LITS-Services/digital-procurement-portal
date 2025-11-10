@@ -45,8 +45,8 @@ export class PurchaseOrderListComponent implements OnInit {
 
   loadPurchaseOrders() {
     this.loading = true;
-
-    this.purchaseOrderService.getAllPurchaseOrders(this.currentPage, this.pageSize).subscribe({
+    const entityId = Number(localStorage.getItem('selectedCompanyId'));
+    this.purchaseOrderService.getAllPurchaseOrders(this.currentPage, this.pageSize, entityId).subscribe({
       next: (data: any) => {
 
         // Extract paginated data correctly

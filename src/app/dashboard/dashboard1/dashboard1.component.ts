@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import * as Chartist from 'chartist';
 import { ChartType, ChartEvent } from "ng-chartist";
 import ChartistTooltip from 'chartist-plugin-tooltips-updated';
@@ -51,7 +51,8 @@ export class Dashboard1Component implements OnInit{
   constructor(private http: HttpClient, public translate: TranslateService, 
     private dashboardService: DashboardService,
     private messagingService: FirebaseMessagingService,
-    private toaster: ToastrService
+    private toaster: ToastrService,
+    private cdr: ChangeDetectorRef
   ) {
     this.translate.onLangChange.subscribe(() => {
       // Check if the current language is Arabic
@@ -71,9 +72,12 @@ export class Dashboard1Component implements OnInit{
 
   }
 loadPurchaseRequestsCounts(): void {
-    this.dashboardService.getPurchaseRequestsCount().subscribe({
+  const userId = localStorage.getItem('userId');
+  const entityId = Number(localStorage.getItem('selectedCompanyId'));
+    this.dashboardService.getPurchaseRequestsCount(userId, entityId).subscribe({
       next: (data) => {
         this.prCounts = data;
+         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error fetching purchase requests count:', err);
@@ -82,9 +86,12 @@ loadPurchaseRequestsCounts(): void {
   }
 
   loadQuotationRequestsCounts(): void {
-    this.dashboardService.getQuotationRequestsCount().subscribe({
+    const userId = localStorage.getItem('userId');
+    const entityId = Number(localStorage.getItem('selectedCompanyId'));
+    this.dashboardService.getQuotationRequestsCount(userId, entityId).subscribe({
       next: (data) => {
         this.rfqCounts = data;
+         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error fetching quotation requests count:', err);

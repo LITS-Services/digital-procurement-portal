@@ -7,6 +7,7 @@ export interface RFQQuery {
   currentPage: number,
   pageSize: number,
   userId: string | null,
+  entityId: number | null,
   status: string | null,
   rfqNo: string | null
 }
@@ -24,6 +25,7 @@ export class RfqService {
     currentPage: number,
     pageSize: number,
     userId?: string | null,
+    entityId?: number | null,
     status?: string | null,
     rfqNo?: string | null
   }
@@ -37,7 +39,7 @@ export class RfqService {
     if (q.status) params = params.set('status', q.status);
     if (q.rfqNo) params = params.set('rfqNo', q.rfqNo);
     if (q.userId) params = params.set('userId', q.userId);
-
+    if (q.entityId) params = params.set('entityId', q.entityId);
 
     return this.http.get<any>(
       `${this.baseUrl}/get-all-quotations`, { params }

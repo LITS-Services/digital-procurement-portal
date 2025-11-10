@@ -39,12 +39,13 @@ export class PurchaseRequestComponent implements OnInit {
 
   totalPages = 0;
   totalItems = 0;
-
+  selectedCompanyId: string | number = '';
   query: PRQuery = {
     currentPage: 1,
     pageSize: 10,
     status: null,
     userId: null,
+    entityId: null,
     prNo: null
   };
 
@@ -77,7 +78,8 @@ export class PurchaseRequestComponent implements OnInit {
 
   loadPurchaseRequests() {
     this.loading = true;
-
+    const entityId = localStorage.getItem('selectedCompanyId');
+    this.query.entityId = entityId ? +entityId : null;
     this.purchaseRequestService.getAllPurchaseRequests(this.query).subscribe({
       next: (data: any) => {
         this.purchaseRequestData = (data?.result || []).map((pr: any) => ({
@@ -414,5 +416,4 @@ export class PurchaseRequestComponent implements OnInit {
       skipLocationChange: true
     });
   }
-
 }

@@ -44,8 +44,8 @@ export class EmployeeListComponent implements OnInit {
   // Fetch procurement users
   getProcurementUsers() {
     this.loading = true;
-
-    this.companyService.getprocurementusers().subscribe({
+    const entityId = Number(localStorage.getItem('selectedCompanyId'));
+    this.companyService.getprocurementusers(entityId).subscribe({
       next: (res: any[]) => {
         if (!res || res.length === 0) {
           this.tenderingData = [];

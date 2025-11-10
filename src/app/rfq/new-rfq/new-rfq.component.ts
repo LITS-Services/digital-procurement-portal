@@ -551,7 +551,7 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
     this.isLoading = true;
     const f = this.newRfqForm.value;
     const dateISO = f.date ? new Date(f.date).toISOString() : new Date().toISOString();
-
+    const entityId = Number(localStorage.getItem('selectedCompanyId'));
     let quotationItems = [];
 
     //  Only apply selection logic if this RFQ was opened from a Purchase Request
@@ -648,6 +648,7 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
       comment: f.comment,
       createdBy: f.createdBy,
       purchaseRequestId: f.purchaseRequestId || null,
+      entityId: Number(entityId),
       quotationItems
     };
 
@@ -708,7 +709,7 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
 
     const f = this.newRfqForm.value;
     const dateISO = f.date ? new Date(f.date).toISOString() : new Date().toISOString();
-
+    const entityId = Number(localStorage.getItem('selectedCompanyId'));
     const quotationItems = this.newQuotationItemData?.length
       ? this.newQuotationItemData.map(item => ({
         id: item.id || null,
@@ -755,6 +756,7 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
       comment: f.comment || '',
       createdBy: f.createdBy || '',
       purchaseRequestId: f.purchaseRequestId || null,
+      entityId: Number(entityId),
       quotationItems
     };
 

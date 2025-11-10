@@ -15,6 +15,7 @@ export interface PRQuery {
   currentPage: number,
   pageSize: number,
   userId: string | null,
+  entityId: number | null,
   status: string | null,
   prNo: string | null
 }
@@ -50,6 +51,7 @@ export class PurchaseRequestService {
     currentPage: number,
     pageSize: number,
     userId?: string | null,
+    entityId?: number | null,
     status?: string | null,
     prNo?: string | null
   }): Observable<any> {
@@ -62,7 +64,7 @@ export class PurchaseRequestService {
     if (q.status) params = params.set("status", q.status);
     if (q.prNo) params = params.set("prNo", q.prNo);
     if (q.userId) params = params.set("userId", q.userId);
-
+    if (q.entityId) params = params.set("entityId", q.entityId);
     return this.http.get<any>(
       `${this.baseUrl}/get-all-purchase-requests`, { params }
     );

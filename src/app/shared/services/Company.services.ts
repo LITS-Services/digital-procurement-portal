@@ -55,8 +55,8 @@ export class CompanyService {
   }
 
   //ProcurementUsers
-  getprocurementusers(): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/ProcurementUsers/GetAll`);
+  getprocurementusers(entityId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/ProcurementUsers/GetAll?entityId=${entityId}`);
   }
 
   deleteprocurementusers(id: string): Observable<any> {

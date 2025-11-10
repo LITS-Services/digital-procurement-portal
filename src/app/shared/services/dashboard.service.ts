@@ -12,11 +12,11 @@ export class DashboardService {
   private baseUrl = `${environment.apiUrl}/ProcurementDashboard`;
   constructor(private http: HttpClient) { }
 
-   getPurchaseRequestsCount(): Observable<PurchaseRequestsCountVM> {
-    return this.http.get<PurchaseRequestsCountVM>(`${this.baseUrl}/purchase-requests-count`);
+  getPurchaseRequestsCount(userId: string, entityId: number): Observable<PurchaseRequestsCountVM> {
+    return this.http.get<PurchaseRequestsCountVM>(`${this.baseUrl}/purchase-requests-count?userId=${userId}&entityId=${entityId}`);
   }
 
-     getQuotationRequestsCount(): Observable<QuotationRequestsCountVM> {
-    return this.http.get<QuotationRequestsCountVM>(`${this.baseUrl}/quotation-requests-count`);
+  getQuotationRequestsCount(userId: string, entityId: number): Observable<QuotationRequestsCountVM> {
+    return this.http.get<QuotationRequestsCountVM>(`${this.baseUrl}/quotation-requests-count?userId=${userId}&entityId=${entityId}`);
   }
 }

@@ -24,9 +24,9 @@ export class PurchaseOrderService {
   }
 
   // Fetch all Purchase Orders
-  getAllPurchaseOrders(currentPage: number, pageSize: number): Observable<any> {
+  getAllPurchaseOrders(currentPage: number, pageSize: number, entityId: number): Observable<any> {
     return this.http.get<any>(
-      `${this.baseUrl}/get-all-purchase-orders?currentPage=${currentPage}&pageSize=${pageSize}`
+      `${this.baseUrl}/get-all-purchase-orders?currentPage=${currentPage}&pageSize=${pageSize}&entityId=${entityId}`
     );
   }
 

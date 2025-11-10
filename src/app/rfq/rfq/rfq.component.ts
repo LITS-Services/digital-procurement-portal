@@ -62,6 +62,7 @@ export class RfqComponent implements OnInit {
     pageSize: 10,
     status: null,
     userId: null,
+    entityId: null,
     rfqNo: null
   };
 
@@ -107,7 +108,8 @@ export class RfqComponent implements OnInit {
 
   loadRfqs() {
     this.loading = true;
-
+    const entityId = localStorage.getItem('selectedCompanyId');
+    this.query.entityId = entityId ? +entityId : null;
     this.rfqService.getAllQuotations(this.query).subscribe({
       next: (data: any) => {
 
