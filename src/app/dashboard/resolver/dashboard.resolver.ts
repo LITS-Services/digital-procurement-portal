@@ -13,14 +13,12 @@ export class DashboardResolver implements Resolve<any> {
 
     const companies = await this.lookupService
       .getProcCompaniesByProcUserId(userId)
-      .toPromise();
-
-    if (companies && companies.length > 0) {
-      const storedCompanyId = Number(localStorage.getItem('selectedCompanyId'));
-      if (!storedCompanyId) {
-        localStorage.setItem('selectedCompanyId', companies[0].id.toString());
+      .toPromise(); 
+      
+      const raw = localStorage.getItem('selectedCompanyId');
+      if (raw === null) {
+        localStorage.setItem('selectedCompanyId', 'All'); // default to All
       }
-    }
 
     return companies;
   }

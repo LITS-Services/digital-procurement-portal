@@ -8,18 +8,37 @@
         <i class="ft-menu font-medium-3"></i>
       </div>
       <ul class="navbar-nav" (clickOutside)="toggleSearchOpenClass(false)">
-        <li class="nav-item mr-2 d-none d-lg-block">
+        <li class="nav-item mr-1 d-none d-lg-block">
           <a class="nav-link apptogglefullscreen" id="navbar-fullscreen" href="javascript:;" appToggleFullscreen
             (click)="ToggleClass()"><i class=" {{toggleClass}} font-medium-3"></i></a>
         </li>
-        <li>
+      <li class="nav-item entity-switcher" ngbDropdown #entityDd="ngbDropdown" (openChange)="entityOpen = $event">
+        <button class="entity-trigger" ngbDropdownToggle title="Switch entity/company">
+          <!-- label first -->
+          <span class="entity-label text-truncate">{{ selectedCompany?.description || 'Select entity' }}</span>
+      
+          <!-- sync icon after text -->
+          <span class="sync-icon" [class.rotate]="entityOpen">
+            <i class="ft-refresh-cw"></i>
+          </span>
+        </button>
+      
+        <div class="dropdown-menu dropdown-menu-right entity-menu" ngbDropdownMenu>
+          <button class="dropdown-item entity-item" *ngFor="let c of companies" [class.active]="c.id === selectedCompanyId"
+            (click)="selectCompany(c, entityDd)">
+            <span class="text-truncate">{{ c.description }}</span>
+            <i *ngIf="c.id === selectedCompanyId" class="ft-check ms-2 text-primary"></i>
+          </button>
+        </div>
+      </li>
+        <!-- <li>
           <select class="form-control custom-input" style="min-width: 220px; height: 40px; font-size: 14px;"
             [(ngModel)]="selectedCompanyId" (change)="onCompanyChange($event)">
             <option *ngFor="let company of companies" [value]="company.id">
               {{ company.description }}
             </option>
           </select>
-        </li>
+        </li> -->
 
       </ul>
       <div class="navbar-brand-center">
@@ -36,7 +55,7 @@
       <div class="collapse navbar-collapse d-block" id="navbarSupportedContent">
         <ul class="navbar-nav">
 
-          <div class="search-bar-container">
+          <div class="search-bar-container"  #searchRoot>
             <div class="search-input-wrapper">
               <i class="ft-search search-icon"></i>
               <input type="text" class="custom-input search-input" [formControl]="searchCtrl" (focus)="openPanel()"

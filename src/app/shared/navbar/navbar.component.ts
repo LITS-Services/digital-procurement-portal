@@ -72,6 +72,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   loading = false;
   activeIndex = -1;
 
+  selectedCompany?: { id: string | number; description: string };
+  entityOpen = false;
   private destroy$ = new Subject<void>();
   constructor(
     public translate: TranslateService,
@@ -103,7 +105,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.cdr.detectChanges();
     });
     this.bindSearch();
-    this.setupClickOutside();
+
     this.getNotification();
 
     // this.userId = localStorage.getItem("userId");
@@ -165,6 +167,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     if (this.layoutSub) this.layoutSub.unsubscribe();
     if (this.configSub) this.configSub.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   //   private loadUserProfile(userId: string): void {
@@ -192,36 +196,52 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (res: any[]) => {
         this.companies = res || [];
 
+      const allOption = { id: 'All', description: 'All Entities' };
+      this.companies = [allOption, ...this.companies];
+
         if (this.companies.length > 0) {
           // Set first company as default
-          const entityId = Number(localStorage.getItem("selectedCompanyId"));
-          if (entityId) {
-            this.selectedCompanyId = entityId;
+          const entityId = localStorage.getItem("selectedCompanyId");
+          if (entityId && entityId !== 'All') {
+            this.selectedCompanyId = Number(entityId);
           }
           else {
-            this.selectedCompanyId = this.companies[0].id;
-            localStorage.setItem('selectedCompanyId', this.selectedCompanyId.toString());
+             this.selectedCompanyId = 'All';
+             localStorage.setItem('selectedCompanyId', 'All');
           }
+               this.syncSelectedCompany();
         }
+        
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Error fetching companies:', err)
     });
   }
 
+  private syncSelectedCompany(): void {
+  this.selectedCompany = this.companies?.find(c => c.id == this.selectedCompanyId);
+}
+
   //   get selectedCompanyName(): string {
   //   const company = this.companies?.find(c => c.id == this.selectedCompanyId);
   //   return company ? company.description : 'Select Company';
   // }
 
-  onCompanyChange(event: any): void {
-    const selectedValue = event.target.value;
-    this.selectedCompanyId = selectedValue;
-    localStorage.setItem('selectedCompanyId', selectedValue);
-    console.log('Active Company changed:', selectedValue);
+onCompanyChange(eventOrId: any): void {
+  const id = (eventOrId && eventOrId.target) ? eventOrId.target.value : eventOrId;
 
-    window.location.reload();
+  if (id === 'All') {
+    this.selectedCompanyId = 'All';
+    localStorage.setItem('selectedCompanyId', 'All');
+  } else {
+    this.selectedCompanyId = +id;
+    localStorage.setItem('selectedCompanyId', String(this.selectedCompanyId));
   }
+
+  this.syncSelectedCompany();
+  console.log('Active Company changed:', this.selectedCompanyId);
+  window.location.reload();
+}
 
   bindSearch(): void {
     this.searchCtrl.valueChanges
@@ -252,20 +272,6 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         this.cdr.markForCheck();
       });
   }
-
-  setupClickOutside(): void {
-    fromEvent<MouseEvent>(document, "click")
-      .pipe(
-        filter(
-          (ev) =>
-            this.searchRoot &&
-            !this.searchRoot.nativeElement.contains(ev.target as Node)
-        ),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(() => this.closePanel());
-  }
-
   openPanel(): void {
     if ((this.searchCtrl.value || "").length) this.panelOpen = true;
   }
@@ -300,6 +306,12 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  selectCompany(c: { id: string|number; description: string }, dd: any): void {
+  this.selectedCompanyId = c.id;
+  this.selectedCompany = c;
+  this.onCompanyChange(c.id);
+  dd.close();
+}
   selectResult(item: any): void {
     this.redirection(item.referenceType, item.referenceId);
     this.closePanelsearch();
@@ -328,11 +340,24 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @HostListener("document:click", ["$event"])
   onDocClick(ev: MouseEvent): void {
-    if (!this.notifOpen) return;
-    const root = this.notifRoot?.nativeElement;
-    if (root && !root.contains(ev.target as Node)) {
-      this.closePanel();
+    const target = ev.target as Node;
+
+  // Notifications
+  if (this.notifOpen) {
+    const notifEl = this.notifRoot?.nativeElement;
+    if (!notifEl || !notifEl.contains(target)) {
+      this.closePanel(); 
     }
+  }
+
+  //  Search 
+  if (this.panelOpen) {
+    const sroot = this.searchRoot?.nativeElement;
+    if (!sroot || !sroot.contains(target)) {
+      this.closePanelsearch();   
+      this.cdr.detectChanges(); 
+    }
+  }
   }
 
   getNotification() {
