@@ -234,8 +234,8 @@ loadOnboardingSetupById(id: number) {
       id: this.mode === 'Edit' ? this.onboardingId : 0,
       setupName: formData.SetupName,
       entityId: formData.entities,
-      roles: selectedRole ? selectedRole.name : '', // Send role name as string
-      initiators: selectedInitiator ? selectedInitiator.userName : '', // Send initiator name as string
+      roles: selectedRole ? selectedRole.id : '', // Send role name as string
+      initiators: selectedInitiator ? selectedInitiator.id : '', // Send initiator name as string
       status: formData.status, // Keep as boolean
       description: formData.Description
     };
