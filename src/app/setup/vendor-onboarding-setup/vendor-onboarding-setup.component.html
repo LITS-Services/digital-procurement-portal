@@ -23,16 +23,18 @@
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()">
               <i class="ft-edit"></i><label class="ml-1 mt-1">Edit</label>
             </button> 
-            <!-- (click)="openDeleteModal(deleteModal)" -->
-            <button type="button" class="btn btn-sm cstm-ui-table-btn">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()">
               <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
+            </button>
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="refreshData()">
+              <i class="ft-refresh-cw"></i><label class="ml-1 mt-1">Refresh</label>
             </button>
           </div>
         </div>
       </div>
 
       <!-- Data Table -->
-      <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="vendorOnboardingList" [columnMode]="'force'"
+      <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="vendorOnboardingData" [columnMode]="'force'"
         [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [limit]="15"
         [selected]="chkBoxSelected" [selectionType]="SelectionType.checkbox"
         (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
@@ -41,14 +43,14 @@
         <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
           [resizeable]="false">
           <ng-template ngx-datatable-header-template>
-             <div class="custom-control cstm-checkbox-form">
-            <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
+            <div class="custom-control cstm-checkbox-form">
+              <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
             </div>
           </ng-template>
-          <ng-template ngx-datatable-cell-template let-isSelected="isSelected"
+          <ng-template ngx-datatable-cell-template let-row="row" let-isSelected="isSelected"
             let-onCheckboxChangeFn="onCheckboxChangeFn">
-            <div class="custom-control cstm-checkbox-form custom-checkbox ">
-            <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+            <div class="custom-control cstm-checkbox-form custom-checkbox">
+              <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
             </div>
           </ng-template>
         </ngx-datatable-column>
@@ -60,18 +62,52 @@
           </ng-template>
         </ngx-datatable-column>
 
-        <!-- Request Info -->
-        <ngx-datatable-column name="Name" prop="workflowName"></ngx-datatable-column>
-        <ngx-datatable-column name="Document" prop="workflowType"></ngx-datatable-column>
-        <ngx-datatable-column name="Status" prop="isActive">
+        <!-- Setup Name -->
+        <ngx-datatable-column name="Setup Name" prop="setupName">
+          <ng-template ngx-datatable-cell-template let-value="value">
+            <span>{{ value || 'N/A' }}</span>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Entity -->
+        <!-- <ngx-datatable-column name="Entity" prop="entityId">
+          <ng-template ngx-datatable-cell-template let-value="value">
+            <span>{{ value || 'N/A' }}</span>
+          </ng-template>
+        </ngx-datatable-column> -->
+
+        <!-- Role -->
+        <!-- <ngx-datatable-column name="Role" prop="roles">
+          <ng-template ngx-datatable-cell-template let-value="value">
+            <span>{{ value || 'N/A' }}</span>
+          </ng-template>
+        </ngx-datatable-column> -->
+
+        <!-- Initiator -->
+        <!-- <ngx-datatable-column name="Initiator" prop="initiators">
+          <ng-template ngx-datatable-cell-template let-value="value">
+            <span>{{ value || 'N/A' }}</span>
+          </ng-template>
+        </ngx-datatable-column> -->
+
+        <!-- Description -->
+        <ngx-datatable-column name="Description" prop="description">
+          <ng-template ngx-datatable-cell-template let-value="value">
+            <span>{{ value || 'N/A' }}</span>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Status -->
+        <ngx-datatable-column name="Status" prop="status" [width]="100">
           <ng-template ngx-datatable-cell-template let-row="row">
-            <span>
-              {{ row.isActive ? 'Active' : 'In Active' }}
+            <span [class]="row.status ? 'badge badge-success' : 'badge badge-danger'">
+              {{ row.status ? 'Active' : 'Inactive' }}
             </span>
           </ng-template>
         </ngx-datatable-column>
 
       </ngx-datatable>
+
     </div>
   </div>
 </section>
@@ -85,13 +121,15 @@
     </button>
   </div>
   <div class="modal-body">
-    <p>Are you sure you want to delete the selected records?</p>
-    <ul>
-      <li *ngFor="let id of idsToDelete">{{ id }}</li>
+    <p>Are you sure you want to delete the following vendor onboarding setup(s)?</p>
+    <ul class="list-group">
+      <li class="list-group-item" *ngFor="let name of getSelectedSetupNames()">
+        {{ name }}
+      </li>
     </ul>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-secondary" (click)="c('Cancel click')">Cancel</button>
-    <button type="button" class="btn btn-danger">Delete</button>
+    <button type="button" class="btn btn-danger" (click)="deleteSelectedSetups()">Delete</button>
   </div>
 </ng-template>

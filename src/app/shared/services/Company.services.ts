@@ -120,6 +120,33 @@ export class CompanyService {
 
 
 
+
+
+GetAllCompanyOnboardingSetup(): Observable<any[]> {
+  return this.http.get<any[]>(`${environment.apiUrl}/Workflow/get-all-company-onboarding-setup`);
+}
+
+GetCompanyOnboardingSetupById(id: number): Observable<any> {
+  return this.http.get<any>(`${environment.apiUrl}/Workflow/get-company-onboarding-setup-by-id?Id=${id}`);
+}
+
+CreateCompanyOnboardingSetup(data: any): Observable<any> {
+  return this.http.post<any>(`${environment.apiUrl}/Workflow/save-company-onboarding-setup`, data);
+}
+
+UpdateCompanyOnboardingSetup(data: any): Observable<any> {
+  return this.http.put<any>(`${environment.apiUrl}/Workflow/update-company-onboarding-setup`, data);
+}
+
+DeleteCompanyOnboardingSetupById(id: number): Observable<any> {
+  return this.http.delete<any>(`${environment.apiUrl}/Workflow/MarkDeleteWorkflow/${id}`);
+}
+
+
+
+
+
+
   // getVendorUsers(): Observable<VendorUserDropdown> {
   //   return this.http.get<VendorUserDropdown>(`${this.apiUrl}/get-all-vendor-users`);
   // }

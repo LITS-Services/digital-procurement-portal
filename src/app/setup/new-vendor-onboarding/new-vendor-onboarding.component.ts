@@ -31,22 +31,6 @@ export class NewVendorOnboardingComponent implements OnInit {
   roles: any[] = [];
   filteredApprovers: any[] = [];
 
-  // roles = [
-  //   {
-  //     id: '4526ebae-3482-45dd-a2ca-c8b8fc16c4b9',
-  //     name: 'User',
-  //     normalizedName: 'USER',
-  //     concurrencyStamp: null
-  //   },
-  //   {
-  //     id: 'b759267e-2607-4841-afd6-37af32033a56',
-  //     name: 'Admin',
-  //     normalizedName: 'ADMIN',
-  //     concurrencyStamp: null
-  //   }
-  // ];
-
-
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -56,9 +40,6 @@ export class NewVendorOnboardingComponent implements OnInit {
     public toastr: ToastrService,
     private route: ActivatedRoute,
     private WorkflowServiceService: WorkflowServiceService,
-
-
-
   ) {
 
     this.vendorOnboardingForm = this.fb.group({
@@ -69,7 +50,6 @@ export class NewVendorOnboardingComponent implements OnInit {
       Description: ['', Validators.required],
       status: [false],
       usersList: [[]],
-
     });
   }
 
@@ -77,38 +57,227 @@ export class NewVendorOnboardingComponent implements OnInit {
     this.getApproverList();
     this.loadRoles();
     this.loadEntities();
-    // this.route.queryParamMap.subscribe(params => {
-    //   const id = params.get('id');
-    //   this.mode = params.get('mode') || 'Create';
-    //   this.onboardingId = id ? Number(id) : 0;
-    //   if (this.mode === 'Edit') {
-    //     // this.loadexistingWorkflowById(this.onboardingId);
-    //   }
-    // });
+    
+    // Check for edit mode
+    this.route.queryParamMap.subscribe(params => {
+      const id = params.get('id');
+      this.mode = params.get('mode') || 'Create';
+      this.onboardingId = id ? Number(id) : null;
+      
+      if (this.mode === 'Edit' && this.onboardingId) {
+        this.loadOnboardingSetupById(this.onboardingId);
+      }
+    });
   }
 
+  // Load existing onboarding setup for editing
+ // Load existing onboarding setup for editing
+loadOnboardingSetupById(id: number) {
+  this.spinner.show();
+  
+  this.companyService.GetCompanyOnboardingSetupById(id)
+    .pipe(finalize(() => this.spinner.hide()))
+    .subscribe({
+      next: (response: any) => {
+        console.log('Full API Response:', response);
+        console.log('Response value:', response?.value);
+        console.log('Response status:', response?.status);
+        console.log('Response isSuccess:', response?.isSuccess);
+        
+        // Check different possible response structures
+        if (response && response.value) {
+          // If response has value property (your current structure)
+          this.populateForm(response.value);
+        } else if (response && response.setupName) {
+          // If response is the data object directly
+          this.populateForm(response);
+        } else if (response && response.result) {
+          // If response has result property
+          this.populateForm(response.result);
+        } else if (response && response.data) {
+          // If response has data property
+          this.populateForm(response.data);
+        } else {
+          console.warn('Unexpected API response structure:', response);
+          this.toastr.warning('No data found for the selected onboarding setup.');
+        }
+      },
+      error: (err) => {
+        console.error('Error loading onboarding setup:', err);
+        this.toastr.error('Failed to load onboarding setup data. Please try again.');
+      }
+    });
+}
+
+  // Populate form with existing data
+  populateForm(data: any) {
+    console.log('Populating form with data:', data);
+    
+    // First patch the basic fields
+    this.vendorOnboardingForm.patchValue({
+      SetupName: data.setupName || '',
+      entities: data.entityId || '',
+      Description: data.description || '',
+      status: data.status !== undefined ? data.status : false
+    });
+
+    // If entity is selected, load users for that entity first
+    if (data.entityId) {
+      this.onEntitySelected(data.entityId).then(() => {
+        // After users are loaded, set the role and initiator
+        this.setRoleAndInitiator(data.roles, data.initiators);
+      });
+    } else {
+      // If no entity, still try to set role and initiator
+      this.setRoleAndInitiator(data.roles, data.initiators);
+    }
+
+    console.log('Form values after patch:', this.vendorOnboardingForm.value);
+  }
+
+  // Set role and initiator after data is loaded
+  setRoleAndInitiator(roleName: string, initiatorName: string) {
+    // Find role by name and set it
+    if (roleName && this.roles.length > 0) {
+      const selectedRole = this.roles.find(role => role.name === roleName);
+      if (selectedRole) {
+        this.vendorOnboardingForm.patchValue({
+          Roles: selectedRole.id
+        });
+        
+        // Filter approvers based on selected role
+        this.onRoleSelected(selectedRole.id);
+      }
+    }
+
+    // Find initiator by name and set it after a short delay to ensure approverList is populated
+    setTimeout(() => {
+      if (initiatorName && this.approverList.length > 0) {
+        const selectedInitiator = this.approverList.find(user => 
+          user.userName === initiatorName || 
+          user.name === initiatorName ||
+          user.fullName === initiatorName
+        );
+        
+        if (selectedInitiator) {
+          this.vendorOnboardingForm.patchValue({
+            Initiatiors: selectedInitiator.id
+          });
+        } else {
+          console.warn('Initiator not found:', initiatorName);
+        }
+      }
+    }, 500);
+  }
+
+  // Update onEntitySelected to return a promise
+  onEntitySelected(entityId: number): Promise<void> {
+    return new Promise((resolve) => {
+      if (!entityId) {
+        resolve();
+        return;
+      }
+
+      this.selectedEntityIdForOnboarding = entityId;
+      this.spinner.show();
+
+      this.companyService.getUserByEntity(entityId)
+        .pipe(finalize(() => this.spinner.hide()))
+        .subscribe({
+          next: (res: any) => {
+            const users = res?.result || [];
+            if (this.isVendorOnboarding) {
+              this.approverList = users;
+              this.filteredApprovers = [...users];
+              this.vendorOnboardingForm.get('Initiatiors')?.reset();
+
+              // Re-filter if role already selected
+              const roleId = this.vendorOnboardingForm.get('Roles')?.value;
+              if (roleId) this.onRoleSelected(roleId);
+            }
+            resolve();
+          },
+          error: (err) => {
+            console.error('Error fetching entity users:', err);
+            resolve();
+          }
+        });
+    });
+  }
 
   updateForm() {
-
+    if (this.mode === 'Edit' && this.vendorOnboardingForm.valid) {
+      this.submitForm();
+    }
   }
 
   homePage() {
-    this.router.navigate(['/dashboard/dashboard1']);
+    this.router.navigate(['/setup/vendor-onboarding-setup']);
   }
-
 
   submitForm() {
     if (this.vendorOnboardingForm.invalid) {
       console.warn('Form is invalid');
       this.vendorOnboardingForm.markAllAsTouched();
+      this.toastr.warning('Please fill all required fields correctly.');
       return;
     }
 
-    console.log('✅ Form Submitted Successfully');
-    console.log('Form Values:', this.vendorOnboardingForm.value);
+    const formData = this.vendorOnboardingForm.value;
+    
+    // Get the selected role name and initiator name
+    const selectedRole = this.roles.find(role => role.id === formData.Roles);
+    const selectedInitiator = this.approverList.find(user => user.id === formData.Initiatiors);
+
+    // Prepare the data for API with correct format
+    const apiData = {
+      id: this.mode === 'Edit' ? this.onboardingId : 0,
+      setupName: formData.SetupName,
+      entityId: formData.entities,
+      roles: selectedRole ? selectedRole.name : '', // Send role name as string
+      initiators: selectedInitiator ? selectedInitiator.userName : '', // Send initiator name as string
+      status: formData.status, // Keep as boolean
+      description: formData.Description
+    };
+
+    console.log('Submitting data:', apiData);
+    this.spinner.show();
+
+    if (this.mode === 'Edit' && this.onboardingId) {
+      // Update existing record
+      this.companyService.UpdateCompanyOnboardingSetup(apiData)
+        .pipe(finalize(() => this.spinner.hide()))
+        .subscribe({
+          next: (response: any) => {
+            console.log('✅ Onboarding setup updated successfully:', response);
+            this.toastr.success('Vendor onboarding setup updated successfully!');
+            this.router.navigate(['/setup/vendor-onboarding-setup']);
+          },
+          error: (err) => {
+            console.error('❌ Error updating onboarding setup:', err);
+            this.toastr.error('Failed to update vendor onboarding setup. Please try again.');
+          }
+        });
+    } else {
+      // Create new record - set id to 0 for create
+      const createData = { ...apiData };
+      createData.id = 0;
+      
+      this.companyService.CreateCompanyOnboardingSetup(createData)
+        .pipe(finalize(() => this.spinner.hide()))
+        .subscribe({
+          next: (response: any) => {
+            console.log('✅ Onboarding setup created successfully:', response);
+            this.toastr.success('Vendor onboarding setup created successfully!');
+            this.router.navigate(['/setup/vendor-onboarding-setup']);
+          },
+          error: (err) => {
+            console.error('❌ Error creating onboarding setup:', err);
+            this.toastr.error('Failed to create vendor onboarding setup. Please try again.');
+          }
+        });
+    }
   }
-
-
 
   loadEntities() {
     this.spinner.show();
@@ -133,39 +302,6 @@ export class NewVendorOnboardingComponent implements OnInit {
       });
   }
 
-
-  onEntitySelected(entityId: number) {
-    if (!entityId) return;
-
-    this.selectedEntityIdForOnboarding = entityId;
-    this.spinner.show(); // show loader before API call
-
-    this.companyService.getUserByEntity(entityId)
-      .pipe(finalize(() => this.spinner.hide())) // always hide loader
-      .subscribe({
-        next: (res: any) => {
-          const users = res?.result || [];
-          // if (this.isVendorOnboarding) {
-          //   this.approverList = users;
-          //   this.vendorOnboardingForm.get('approverList')?.reset();
-          // }
-          if (this.isVendorOnboarding) {
-            this.approverList = users;
-            this.filteredApprovers = [...users]; // reset
-            this.vendorOnboardingForm.get('approverList')?.reset();
-
-            // re-filter if role already selected
-            const roleId = this.vendorOnboardingForm.get('Roles')?.value;
-            if (roleId) this.onRoleSelected(roleId);
-          }
-        },
-        error: (err) => {
-          console.error('Error fetching entity users:', err);
-        }
-      });
-  }
-
-
   onRoleSelected(roleId: number) {
     if (!roleId || !this.approverList?.length) return;
 
@@ -180,13 +316,11 @@ export class NewVendorOnboardingComponent implements OnInit {
     console.log('Filtered Approvers:', this.filteredApprovers);
   }
 
-
-  // Optional: fallback if you need all users
   getApproverList(): void {
-    this.spinner.show(); // show spinner before API call
+    this.spinner.show();
 
     this.WorkflowServiceService.getApproverList()
-      .pipe(finalize(() => this.spinner.hide())) // always hide spinner
+      .pipe(finalize(() => this.spinner.hide()))
       .subscribe({
         next: (data: any) => {
           console.log("Raw API Response:", data);
@@ -200,10 +334,6 @@ export class NewVendorOnboardingComponent implements OnInit {
         }
       });
   }
-
-
-
-
 
   loadRoles() {
     this.spinner.show();
@@ -227,5 +357,4 @@ export class NewVendorOnboardingComponent implements OnInit {
         }
       });
   }
-
 }
