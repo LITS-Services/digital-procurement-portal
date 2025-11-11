@@ -139,7 +139,7 @@ UpdateCompanyOnboardingSetup(data: any): Observable<any> {
 }
 
 DeleteCompanyOnboardingSetupById(id: number): Observable<any> {
-  return this.http.delete<any>(`${environment.apiUrl}/Workflow/MarkDeleteWorkflow/${id}`);
+  return this.http.delete<any>(`${environment.apiUrl}/Workflow/delete-company-onboarding-setup-by-id?Id=${id}`);
 }
 
 
