@@ -25,6 +25,9 @@ import { CreateInvitationComponent } from './create-invitation/create-invitation
 import { EmailTemplateListComponent } from './email-template-list/email-template-list.component';
 import { CreatEmailTemplateComponent } from './creat-email-template/creat-email-template.component';
 import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
+import { VendorOnboardingSetupComponent } from './vendor-onboarding-setup/vendor-onboarding-setup.component';
+import { NewVendorOnboardingComponent } from './new-vendor-onboarding/new-vendor-onboarding.component';
+// import { AclSetupComponent } from './acl-setup/acl-setup.component';
 
 
 @NgModule({
@@ -35,7 +38,10 @@ import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-r
     EmailSetupComponent,
     CreateInvitationComponent,
     EmailTemplateListComponent,
-    CreatEmailTemplateComponent
+    CreatEmailTemplateComponent,
+    VendorOnboardingSetupComponent,
+    NewVendorOnboardingComponent,
+    // AclSetupComponent
   ],
   imports: [
     CommonModule,

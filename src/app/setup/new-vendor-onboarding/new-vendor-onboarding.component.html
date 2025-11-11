@@ -1,0 +1,117 @@
+<section>
+    <div class="row">
+        <div class="col-12">
+
+            <!-- Header -->
+            <div class="row">
+                <div class="col-md-12" style="margin-top: -0.25rem;">
+                    <h4 class="heading">
+                        {{ mode === 'Edit' ? 'Edit Vendor Onboarding Setup' : 'Create Vendor Onboarding Setup' }}
+                    </h4>
+                </div>
+            </div>
+
+
+            <!-- Action Pane -->
+            <div class="card cstm-ui-card">
+                <div class="row">
+                    <div class="col-md-6">
+                        <button class="btn btn-lg cstm-ui-table-btn mr-1" type="button" (click)="homePage()"><i
+                                class="ft-arrow-left"></i></button>
+                        <span class="vl"></span>
+                        <button type="submit" class="btn btn-sm cstm-ui-table-btn"
+                            [disabled]="vendorOnboardingForm.invalid" *ngIf="mode !== 'Edit'" (click)="submitForm()">
+                            <i class="ft-plus"></i><label class="ml-1 mt-1">Save</label>
+                        </button>
+                        <button [disabled]="mode !== 'Edit'" type="reset" class="btn btn-sm cstm-ui-table-btn"
+                            (click)="updateForm()">
+                            <i class="ft-edit"></i><label class="ml-1 mt-1">{{ mode === 'Edit' ? 'Update' : 'Edit'
+                                }}</label>
+                        </button>
+                        <button [disabled]="mode !== 'Edit'" type="reset" class="btn btn-sm cstm-ui-table-btn">
+                            <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="card">
+                <div class="card-body">
+                    <form [formGroup]="vendorOnboardingForm" (ngSubmit)="submitForm()">
+                        <div class="form-row">
+
+                            <!-- Setup Name -->
+                            <div class="col-lg-4 mb-2">
+                                <label>Setup Name</label>
+                                <input type="text" class="form-control custom-input" formControlName="SetupName"
+                                    placeholder="Setup Name" required>
+                            </div>
+
+                            <!-- Select Entity -->
+                            <div class="col-lg-4 mb-2">
+                                <div class="form-group mb-2">
+                                    <label>Select Entity</label>
+                                    <ng-select class="custom-style" [items]="entitiesList" bindLabel="name"
+                                        bindValue="id" [searchable]="true" placeholder="Select Entity"
+                                        formControlName="entities" (change)="onEntitySelected($event?.id)">
+                                    </ng-select>
+                                </div>
+                            </div>
+
+                            <!-- Roles -->
+                            <!-- <div class="col-lg-4 mb-2">
+                                <label>Roles</label>
+                                <ng-select [items]="roles" bindLabel="name" bindValue="id" placeholder="Select Roles"
+                                    formControlName="Roles">
+                                </ng-select>
+                            </div> -->
+
+                            <!-- Roles -->
+                            <div class="col-lg-4 mb-2">
+                                <label>Roles</label>
+                                <ng-select [items]="roles" bindLabel="name" bindValue="id" placeholder="Select Roles"
+                                    formControlName="Roles" (change)="onRoleSelected($event)">
+                                </ng-select>
+                            </div>
+
+
+                            <!-- Workflow Initiator(s) -->
+                            <div class="col-lg-4 mb-2">
+                                <div class="form-group mb-2">
+                                    <label>Request Receiver(s)</label>
+                                    <ng-select class="custom-style" [items]="approverList" bindLabel="userName"
+                                        bindValue="id" [multiple]="false" [searchable]="true"
+                                        placeholder="Select Workflow Initiator" formControlName="Initiatiors">
+                                    </ng-select>
+                                </div>
+                            </div>
+
+                            <!-- Status Switch -->
+                            <div class="col-lg-4 my-auto">
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" id="status"
+                                        formControlName="status">
+                                    <label class="custom-control-label" for="status">Status</label>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="col-lg-8 mb-2">
+                                <label>Description</label>
+                                <textarea class="form-control custom-input" rows="3" placeholder="Enter description"
+                                    formControlName="Description"></textarea>
+                            </div>
+
+                        </div>
+                    </form>
+
+
+
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>

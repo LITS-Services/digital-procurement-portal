@@ -7,21 +7,22 @@ export const ROUTES: RouteInfo[] = [
   },
   { path: '/purchase-request', title: 'Purchase Request', icon: 'ft-file-plus', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
   { path: '/rfq', title: 'RFQ', icon: 'fa fa-envelope-o', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-    { path: '/purchase-order', title: 'Purchase Order', icon: 'fa fa-file-invoice', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+  { path: '/purchase-order', title: 'Purchase Order', icon: 'fa fa-file-invoice', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
 
   // { path: '/tendering', title: 'Tendering', icon: 'fa fa-handshake-o', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
   { path: '/company', title: 'Vendor Companies', icon: 'fa fa-briefcase', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
   { path: '/employee-list', title: 'Procurement Users', icon: 'fa fa-users', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [], roles: ['Admin'] },
   // Only Vendor role can see this
   { path: '/procurment-companies', title: 'Entities', icon: 'fa fa-building', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [], roles: ['Admin'] },
-  
-  { path: '', title: 'Configuration', icon: 'fa fa-sliders-h', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false, 
+
+  {
+    path: '', title: 'Configuration', icon: 'fa fa-sliders-h', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false,
     submenu: [
       { path: '/configuration/global', title: 'Global Configuration', icon: 'fa fa-cogs', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
       // { path: '/configuration/exception-logs', title: 'Exception Logs', icon: 'fa fa-bug', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
       // { path: '/configuration/http-logs', title: 'Http Logs', icon: 'fa fa-globe', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
       { path: '/configuration/logs', title: 'Logs', icon: 'fa fa-globe', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-    ], roles: ['Admin'] 
+    ], roles: ['Admin']
   },
 
   // {
@@ -34,13 +35,17 @@ export const ROUTES: RouteInfo[] = [
   //   ]
   // },
   {
-    path: '', title: 'Setup', icon: 'ft-settings', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false, 
+    path: '', title: 'Setup', icon: 'ft-settings', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false,
     submenu: [
+      // { path: '/setup/acl', title: 'ACL', icon: 'ft-arrow-right shield', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
       { path: '/setup/workflow', title: 'Workflow Setup', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+      { path: '/setup/vendor-onboarding-setup', title: 'Vendor Onboarding', icon: 'ft-mail submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
       { path: '/setup/email-setup', title: 'invitation', icon: 'ft-mail submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
       { path: '/setup/email-templatelist', title: 'Email Template List', icon: 'ft-mail submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+
     ],
-    roles: ['Admin'] },
+    roles: ['Admin']
+  },
 
 
 

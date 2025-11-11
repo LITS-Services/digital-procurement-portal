@@ -1,0 +1,97 @@
+<section>
+  <div class="row">
+    <div class="col-12">
+
+      <!-- Header -->
+      <div class="row">
+        <div class="col-md-12" style="margin-top: -0.25rem;">
+          <h4 class="heading">Vendor Onboarding Setup</h4>
+        </div>
+      </div>
+
+      <!-- Action Pane -->
+      <div class="card cstm-ui-card">
+        <div class="row">
+          <div class="col-md-6">
+            <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+              <i class="ft-arrow-left"></i>
+            </button>
+            <span class="vl"></span>
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new workflow" (click)="NewVendorOnboarding()">
+              <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
+            </button>
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()">
+              <i class="ft-edit"></i><label class="ml-1 mt-1">Edit</label>
+            </button> 
+            <!-- (click)="openDeleteModal(deleteModal)" -->
+            <button type="button" class="btn btn-sm cstm-ui-table-btn">
+              <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data Table -->
+      <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="vendorOnboardingList" [columnMode]="'force'"
+        [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [limit]="15"
+        [selected]="chkBoxSelected" [selectionType]="SelectionType.checkbox"
+        (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
+
+        <!-- Checkbox Column -->
+        <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+          [resizeable]="false">
+          <ng-template ngx-datatable-header-template>
+             <div class="custom-control cstm-checkbox-form">
+            <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
+            </div>
+          </ng-template>
+          <ng-template ngx-datatable-cell-template let-isSelected="isSelected"
+            let-onCheckboxChangeFn="onCheckboxChangeFn">
+            <div class="custom-control cstm-checkbox-form custom-checkbox ">
+            <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Sr. No -->
+        <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+          <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
+            <span>{{ rowIndex + 1 }}</span>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Request Info -->
+        <ngx-datatable-column name="Name" prop="workflowName"></ngx-datatable-column>
+        <ngx-datatable-column name="Document" prop="workflowType"></ngx-datatable-column>
+        <ngx-datatable-column name="Status" prop="isActive">
+          <ng-template ngx-datatable-cell-template let-row="row">
+            <span>
+              {{ row.isActive ? 'Active' : 'In Active' }}
+            </span>
+          </ng-template>
+        </ngx-datatable-column>
+
+      </ngx-datatable>
+    </div>
+  </div>
+</section>
+
+<!-- Delete Modal -->
+<ng-template #deleteModal let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Delete Confirmation</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>Are you sure you want to delete the selected records?</p>
+    <ul>
+      <li *ngFor="let id of idsToDelete">{{ id }}</li>
+    </ul>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="c('Cancel click')">Cancel</button>
+    <button type="button" class="btn btn-danger">Delete</button>
+  </div>
+</ng-template>

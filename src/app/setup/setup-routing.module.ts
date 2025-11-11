@@ -6,6 +6,9 @@ import { EmailSetupComponent } from './email-setup/email-setup.component';
 import { CreateInvitationComponent } from './create-invitation/create-invitation.component';
 import { EmailTemplateListComponent } from './email-template-list/email-template-list.component';
 import { CreatEmailTemplateComponent } from './creat-email-template/creat-email-template.component';
+import { VendorOnboardingSetupComponent } from './vendor-onboarding-setup/vendor-onboarding-setup.component';
+import { NewVendorOnboardingComponent } from './new-vendor-onboarding/new-vendor-onboarding.component';
+import { AclSetupComponent } from './acl-setup/acl-setup.component';
 
 const routes: Routes = [
 
@@ -56,7 +59,27 @@ const routes: Routes = [
           title: 'Create Email Template'
         }
       },
-
+      {
+        path: 'vendor-onboarding-setup',
+        component: VendorOnboardingSetupComponent,
+        data: {
+          title: 'Vendor Onboarding Setup'
+        }
+      },
+      {
+        path: 'create-vendor-onboarding',
+        component: NewVendorOnboardingComponent,
+        data: {
+          title: 'Create Vendor Onboarding'
+        }
+      },
+      // {
+      //   path: 'acl',
+      //   component: AclSetupComponent,
+      //   data: {
+      //     title: 'ACL'
+      //   }
+      // },
     ]
   }
 
