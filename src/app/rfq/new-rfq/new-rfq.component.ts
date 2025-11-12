@@ -237,7 +237,7 @@ export class NewRfqComponent implements OnInit {
 
       // disable field
       this.isEntityLocked = wantsLock;
-      this.entityHint = wantsLock ? 'Change entity from top bar' : '';
+      this.entityHint = wantsLock ? 'To change entity, select it from the top bar' : '';
       if (rfqEntityId) {
         this.isEntityLocked = true;
         ctrl.disable({ emitEvent: false });
@@ -245,7 +245,7 @@ export class NewRfqComponent implements OnInit {
         this.entityHint = lsEntity === 'All' ? 'Entity cannot be changed in update mode' : '';
       } else {
         this.isEntityLocked = wantsLock;
-        this.entityHint = wantsLock ? 'Change entity from top bar' : '';
+        this.entityHint = wantsLock ? 'To change entity, select it from the top bar' : '';
 
         if (wantsLock) ctrl.disable({ emitEvent: false });
         else ctrl.enable({ emitEvent: false });
