@@ -50,8 +50,7 @@
         [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
         [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
         (sort)="onSort($event)" (select)="customChkboxOnSelect($event)" [selectionType]="SelectionType.single"
-        (activate)="onActivate($event)" (rowClick)="onRowClick($event)"
-(clickType)="'single'">>
+        (activate)="onActivate($event)" (rowClick)="onRowClick($event)" (clickType)="'single'">>
         <!-- <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
                     [resizeable]="false">
                     <ng-template ngx-datatable-header-template>
@@ -86,14 +85,17 @@
 
         <ngx-datatable-column name="RFQ No." prop="rfqNo" [sortable]="false">
         </ngx-datatable-column>
+        <ngx-datatable-column name="Entity" prop="entityName" [sortable]="false">
+        </ngx-datatable-column>
         <ngx-datatable-column name="Vendor" prop="vendorName" [sortable]="false">
         </ngx-datatable-column>
         <ngx-datatable-column name="Status" prop="requestStatus" [sortable]="false">
         </ngx-datatable-column>
         <ngx-datatable-column name="Total Items" prop="itemsCount" [sortable]="false">
         </ngx-datatable-column>
-        <ngx-datatable-column name="Total Amount" prop="totalAmount" [sortable]="false">
-        </ngx-datatable-column>
+        <!-- <ngx-datatable-column name="Total Amount" prop="totalAmount" [sortable]="false">
+        </ngx-datatable-column> -->
+
         <ngx-datatable-column name="Date" prop="createdDate" [sortable]="false">
           <ng-template let-row="row" ngx-datatable-cell-template>
             {{ row.createdDate | date:'yyyy-MM-dd' }}
@@ -113,7 +115,6 @@
   </div>
 </section>
 <!-- Purchase Order Details Template -->
-
 
 <!-- Delete Modal -->
 <!-- <ng-template #deleteModal let-c="close" let-d="dismiss">
