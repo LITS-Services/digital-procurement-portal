@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'app/shared/auth/auth.service';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { WorkflowServiceService } from 'app/shared/services/WorkflowService/workflow-service.service';
-import { EmailTemplateService } from 'app/shared/services/EmailTemplateService'; 
+import { EmailTemplateService } from 'app/shared/services/EmailTemplateService';
 import { ToastrService } from 'ngx-toastr';
 
 declare var tinymce: any;
@@ -20,9 +20,18 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
   senderName: string = '';
   dropdownOpenCompanies = false;
   dropdownOpenActions = false;
+  dropdownOpenStatus = false;
 
   companies: any[] = [];
   workflowTypes: any[] = [];
+
+  // ✅ Status dropdown options (will be sent as "Action" in payload)
+  statusOptions = [
+    { name: 'Submit', selected: false },
+    { name: 'Approve', selected: false },
+    { name: 'Onhold', selected: false },
+    { name: 'Recall', selected: false }
+  ];
 
   isEditMode = false;
   templateId: number | null = null;
@@ -42,11 +51,13 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.senderName = localStorage.getItem('userName') || 'Procurement Team';
 
+    // ✅ Form with status field (will be sent as "Action" in payload)
     this.invitationForm = this.fb.group({
       subject: ['', Validators.required],
       body: ['', Validators.required],
       companies: [[], Validators.required],
-      actions: [[], Validators.required]
+      actions: [[], Validators.required],
+      status: [[], Validators.required]
     });
 
     this.route.queryParams.subscribe(params => {
@@ -62,38 +73,48 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-  tinymce.init({
-    selector: '#emailEditor',
-    height: 500,
-    menubar: true, // Show all menus
-    branding: false,
-    plugins: [
-      'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor',
-      'searchreplace', 'visualblocks', 'code', 'fullscreen', 'insertdatetime', 'media',
-      'table', 'emoticons', 'help', 'wordcount', 'autosave', 'directionality', 'visualchars',
-      'codesample', 'pagebreak', 'quickbars', 'nonbreaking', 'template'
-    ],
-    toolbar: [
-      'undo redo | blocks | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify',
-      'bullist numlist outdent indent | link image media table emoticons codesample | removeformat',
-      'ltr rtl | pagebreak | preview fullscreen | code help'
-    ].join(' | '),
-    toolbar_mode: 'sliding',
-    quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote',
-    contextmenu: 'link image table spellchecker',
-    autosave_ask_before_unload: true,
-    autosave_interval: '30s',
-    image_advtab: true,
-    content_style: `
-      body {
-        font-family:Helvetica,Arial,sans-serif;
-        font-size:14px;
-        padding:10px;
-      }
-    `
-  });
-}
-
+    // ✅ Wait for Angular change detection
+    setTimeout(() => {
+      tinymce.init({
+        selector: '#emailEditor',
+        height: 500,
+        menubar: true,
+        branding: false,
+        plugins: [
+          'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor',
+          'searchreplace', 'visualblocks', 'code', 'fullscreen', 'insertdatetime', 'media',
+          'table', 'emoticons', 'help', 'wordcount', 'autosave', 'directionality', 'visualchars',
+          'codesample', 'pagebreak', 'quickbars', 'nonbreaking', 'template'
+        ],
+        toolbar: [
+          'undo redo | blocks | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify',
+          'bullist numlist outdent indent | link image media table emoticons codesample | removeformat',
+          'ltr rtl | pagebreak | preview fullscreen | code help'
+        ].join(' | '),
+        toolbar_mode: 'sliding',
+        quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote',
+        contextmenu: 'link image table spellchecker',
+        autosave_ask_before_unload: true,
+        autosave_interval: '30s',
+        image_advtab: true,
+        content_style: `
+          body {
+            font-family:Helvetica,Arial,sans-serif;
+            font-size:14px;
+            padding:10px;
+          }
+        `,
+        // ✅ Add change event to update form
+        setup: (editor) => {
+          editor.on('change', () => {
+            const content = editor.getContent();
+            this.invitationForm.patchValue({ body: content });
+            this.invitationForm.get('body')?.markAsTouched();
+          });
+        }
+      });
+    }, 100);
+  }
 
   get f() { return this.invitationForm.controls; }
 
@@ -107,7 +128,6 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
           selected: false
         }));
 
-        // Map selected checkboxes if edit mode
         if (this.isEditMode && this.templateId) {
           this.mapSelectedValues();
         }
@@ -126,7 +146,6 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
           selected: false
         }));
 
-        // Map selected checkboxes if edit mode
         if (this.isEditMode && this.templateId) {
           this.mapSelectedValues();
         }
@@ -143,15 +162,18 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
           subject: res.subject,
           body: res.body,
           companies: res.entity?.split(', ') || [],
-          actions: res.type?.split(', ') || []
+          actions: res.type?.split(', ') || [],
+          status: res.action?.split(', ') || [] // ✅ Changed from res.status to res.action
         });
 
-        // Map checkboxes if data already loaded
         if (this.companies.length > 0 && this.workflowTypes.length > 0) {
           this.mapSelectedValues();
         }
 
-        // Set TinyMCE content
+        if (this.statusOptions.length > 0) {
+          this.mapSelectedValues();
+        }
+
         setTimeout(() => tinymce.get('emailEditor')?.setContent(res.body), 100);
       },
       error: err => {
@@ -161,29 +183,41 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // Map selected checkboxes
+  // ✅ Map selected checkboxes
   mapSelectedValues() {
     const selectedCompanies = this.invitationForm.value.companies || [];
     const selectedActions = this.invitationForm.value.actions || [];
+    const selectedStatus = this.invitationForm.value.status || [];
 
     this.companies.forEach(c => c.selected = selectedCompanies.includes(c.name));
     this.workflowTypes.forEach(w => w.selected = selectedActions.includes(w.name));
+    this.statusOptions.forEach(s => s.selected = selectedStatus.includes(s.name));
   }
 
   // Toggle dropdowns
   toggleCompanyDropdown() { this.dropdownOpenCompanies = !this.dropdownOpenCompanies; }
   toggleActionDropdown() { this.dropdownOpenActions = !this.dropdownOpenActions; }
+  toggleStatusDropdown() { this.dropdownOpenStatus = !this.dropdownOpenStatus; }
 
   selectCompany(company: any) {
     company.selected = !company.selected;
     const selectedNames = this.companies.filter(c => c.selected).map(c => c.name);
     this.invitationForm.patchValue({ companies: selectedNames });
+    this.invitationForm.get('companies')?.markAsTouched(); // ✅ Mark as touched
   }
 
   selectAction(type: any) {
     type.selected = !type.selected;
     const selectedNames = this.workflowTypes.filter(t => t.selected).map(t => t.name);
     this.invitationForm.patchValue({ actions: selectedNames });
+    this.invitationForm.get('actions')?.markAsTouched(); // ✅ Mark as touched
+  }
+
+  selectStatus(s: any) {
+    s.selected = !s.selected;
+    const selectedNames = this.statusOptions.filter(opt => opt.selected).map(opt => opt.name);
+    this.invitationForm.patchValue({ status: selectedNames });
+    this.invitationForm.get('status')?.markAsTouched(); // ✅ Mark as touched
   }
 
   // Close dropdowns when clicking outside
@@ -191,29 +225,73 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
   handleClickOutside(event: Event) {
     if (this.dropdownOpenCompanies && !this.eRef.nativeElement.contains(event.target)) this.dropdownOpenCompanies = false;
     if (this.dropdownOpenActions && !this.eRef.nativeElement.contains(event.target)) this.dropdownOpenActions = false;
+    if (this.dropdownOpenStatus && !this.eRef.nativeElement.contains(event.target)) this.dropdownOpenStatus = false;
   }
 
-  // Navigate back
   homePage() {
     this.router.navigate(['/setup/email-templatelist']);
   }
 
-  // Reset form
   resetForm() {
     this.invitationForm.reset();
     this.companies.forEach(c => c.selected = false);
     this.workflowTypes.forEach(t => t.selected = false);
+    this.statusOptions.forEach(s => s.selected = false);
     this.submitted = false;
     tinymce.get('emailEditor')?.setContent('');
+  }
+
+  // ✅ Add Helper Method to Mark All Fields as Touched
+  markFormGroupTouched() {
+    Object.keys(this.invitationForm.controls).forEach(key => {
+      const control = this.invitationForm.get(key);
+      control?.markAsTouched();
+    });
+  }
+
+  // ✅ Add Form Status Check Method for Debugging
+  checkFormStatus() {
+    console.log('=== FORM STATUS ===');
+    console.log('Valid:', this.invitationForm.valid);
+    console.log('Invalid:', this.invitationForm.invalid);
+    console.log('Values:', this.invitationForm.value);
+    
+    Object.keys(this.invitationForm.controls).forEach(key => {
+      const control = this.invitationForm.get(key);
+      console.log(`${key}:`, {
+        value: control?.value,
+        valid: control?.valid,
+        errors: control?.errors,
+        touched: control?.touched
+      });
+    });
   }
 
   // Save or Update template
   saveEmailTemplate() {
     this.submitted = true;
-    this.invitationForm.patchValue({ body: tinymce.get('emailEditor')?.getContent() || '' });
+    
+    // ✅ Get TinyMCE content FIRST
+    const tinyMceContent = tinymce.get('emailEditor')?.getContent() || '';
+    this.invitationForm.patchValue({ body: tinyMceContent });
+    
+    // ✅ Debug: Check form values and validity
+    console.log('Form Values:', this.invitationForm.value);
+    console.log('Form Valid:', this.invitationForm.valid);
+    console.log('Form Errors:', this.invitationForm.errors);
+    console.log('Control Errors:', {
+      subject: this.f['subject'].errors,
+      body: this.f['body'].errors,
+      companies: this.f['companies'].errors,
+      actions: this.f['actions'].errors,
+      status: this.f['status'].errors
+    });
 
     if (this.invitationForm.invalid) {
       this.toastr.warning('Please fill all required fields.', 'Warning');
+      
+      // ✅ Mark all fields as touched to show validation errors
+      this.markFormGroupTouched();
       return;
     }
 
@@ -221,7 +299,8 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
       subject: this.invitationForm.value.subject,
       body: this.invitationForm.value.body,
       type: this.invitationForm.value.actions.join(', '),
-      entity: this.invitationForm.value.companies.join(', ')
+      entity: this.invitationForm.value.companies.join(', '),
+      action: this.invitationForm.value.status.join(', ') // ✅ Changed from 'status' to 'action'
     };
 
     if (this.isEditMode && this.templateId) {
