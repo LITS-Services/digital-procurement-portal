@@ -30,6 +30,24 @@ export class NewVendorOnboardingComponent implements OnInit {
   selectedEntityIdForOnboarding: number | null = null;
   roles: any[] = [];
   filteredApprovers: any[] = [];
+  originalApproverList: any[] = []; // keep a copy of all users
+  allUsers: any[] = [];            // All users when no entity selected
+
+  // roles = [
+  //   {
+  //     id: '4526ebae-3482-45dd-a2ca-c8b8fc16c4b9',
+  //     name: 'User',
+  //     normalizedName: 'USER',
+  //     concurrencyStamp: null
+  //   },
+  //   {
+  //     id: 'b759267e-2607-4841-afd6-37af32033a56',
+  //     name: 'Admin',
+  //     normalizedName: 'ADMIN',
+  //     concurrencyStamp: null
+  //   }
+  // ];
+
 
   constructor(
     private fb: FormBuilder,
@@ -227,7 +245,8 @@ loadOnboardingSetupById(id: number) {
     
     // Get the selected role name and initiator name
     const selectedRole = this.roles.find(role => role.id === formData.Roles);
-    const selectedInitiator = this.approverList.find(user => user.id === formData.Initiatiors);
+    // const selectedInitiator = this.approverList.find(user => user.id === formData.Initiatiors);
+    const selectedInitiators = formData.Initiatiors?.join(',') || '';
 
     // Prepare the data for API with correct format
     const apiData = {
@@ -235,7 +254,8 @@ loadOnboardingSetupById(id: number) {
       setupName: formData.SetupName,
       entityId: formData.entities,
       roles: selectedRole ? selectedRole.id : '', // Send role name as string
-      initiators: selectedInitiator ? selectedInitiator.id : '', // Send initiator name as string
+      // initiators: selectedInitiator ? selectedInitiator.id : '', // Send initiator name as string
+      initiators: selectedInitiators, // <-- now a comma-separated string of IDs
       status: formData.status, // Keep as boolean
       description: formData.Description
     };
