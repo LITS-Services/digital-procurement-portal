@@ -427,6 +427,9 @@ export class NewRfqComponent implements OnInit {
           date: this.toDateInputValue(pr.submittedDate),
         });
 
+                const rfqEntityId = Number(pr.entityId) || null;
+        this.applyEntity(rfqEntityId);
+
         // Map PR items → RFQ items, only include items not already used
         const unusedItems = pr.purchaseItems?.filter((item: any) => !item.usedInRfq) || [];
 
@@ -471,6 +474,7 @@ export class NewRfqComponent implements OnInit {
             })) || [],
         }));
         //  Refresh datatable
+
         this.newQuotationItemData = [...this.newQuotationItemData];
       },
       error: (err) => {

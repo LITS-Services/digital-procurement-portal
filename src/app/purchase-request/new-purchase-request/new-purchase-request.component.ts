@@ -77,6 +77,10 @@ export class NewPurchaseRequestComponent implements OnInit {
   // itemList: any[] = [];
   uomList: any[] = [];
 
+    entities: Array<{ id: number; description: string }> = [];
+  isEntityLocked = false;
+  entityHint = '';
+
   procurementUserId = localStorage.getItem('userId');
   compareIds = (a: string | null, b: string | null) => (a ?? '').toLowerCase() === (b ?? '').toLowerCase();
 
@@ -137,6 +141,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       partialDeliveryAcceptable: [false],
       exceptionPolicy: [false],
       subject: [''],
+      entityId: [null],
     });
 
     this.newPurchaseRequestForm.valueChanges.subscribe(() => {
@@ -195,10 +200,70 @@ export class NewPurchaseRequestComponent implements OnInit {
       this.isFormDirty = true;
     });
 
+        this.checkEntitySelection();
     if (this.viewMode) {
       this.newPurchaseRequestForm.disable();
       this.itemForm.disable();
     }
+  }
+
+    private checkEntitySelection(): void {
+    if (!this.isNewForm) return;
+    this.applyEntity(null);
+  }
+
+   private applyEntity(prId: number | null): void {
+    const ctrl = this.newPurchaseRequestForm.get('entityId');
+    if (!ctrl) return;
+
+    const lsEntity = localStorage.getItem('selectedCompanyId');
+    const userId = localStorage.getItem('userId') || '';
+
+    const wantsLock = !!lsEntity && lsEntity !== 'All';
+    const desiredId: number | null = wantsLock ? Number(lsEntity) : prId ?? null;
+
+    const setUI = () => {
+      // set value if exist (update mode/already selected entity)
+      if (desiredId != null && this.entities?.some((e) => e.id === desiredId)) {
+        ctrl.setValue(desiredId, { emitEvent: false });
+      } else if (!wantsLock) {
+        // allow user to choose ('All entity case')
+        ctrl.setValue(null, { emitEvent: false });
+      }
+
+      // disable field
+      this.isEntityLocked = wantsLock;
+      this.entityHint = wantsLock ? 'To change entity, select it from the top bar' : '';
+      if (prId) {
+        this.isEntityLocked = true;
+        ctrl.disable({ emitEvent: false });
+
+        this.entityHint = lsEntity === 'All' ? 'Entity cannot be changed in update mode' : '';
+      } else {
+        this.isEntityLocked = wantsLock;
+        this.entityHint = wantsLock ? 'To change entity, select it from the top bar' : '';
+
+        if (wantsLock) ctrl.disable({ emitEvent: false });
+        else ctrl.enable({ emitEvent: false });
+      }
+      this.cdr.markForCheck();
+    };
+
+    if (!this.entities?.length && userId) {
+      this.loadEntitiesForUser(userId, () => setUI());
+    } else {
+      setUI();
+    }
+  }
+
+    private loadEntitiesForUser(userId: string, after?: () => void): void {
+    this.lookupService.getProcCompaniesByProcUserId(userId).subscribe({
+      next: (res: any[]) => {
+        this.entities = res || [];
+        after?.();
+      },
+      error: (err) => console.error('Error fetching entities:', err),
+    });
   }
 
   loadUnitsOfMeasurements() {
@@ -568,6 +633,8 @@ export class NewPurchaseRequestComponent implements OnInit {
             }))
           }));
         }
+        const prEntityId = Number(requestData.entityId) || null;
+        this.applyEntity(prEntityId);
         this.loading = false;
         this.cdr.detectChanges();
       },
@@ -605,9 +672,17 @@ export class NewPurchaseRequestComponent implements OnInit {
     //   return;
     // }
 
-    const f = this.newPurchaseRequestForm.value;
+    const f = this.newPurchaseRequestForm.getRawValue();
     const submittedDateISO = f.date ? new Date(f.submittedDate).toISOString() : new Date().toISOString();
     const entityId = Number(localStorage.getItem('selectedCompanyId'));
+
+        const lsEntity = localStorage.getItem('selectedCompanyId');
+    const finalEntityId = lsEntity === 'All' ? Number(f.entityId) : Number(lsEntity);
+
+    if (lsEntity === 'All' && !finalEntityId) {
+      this.toastr.info('Please select an Entity.');
+      return;
+    }
 
     const purchaseItems = this.newPurchaseItemData?.length
       ? this.newPurchaseItemData.map(item => ({
@@ -656,7 +731,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       subject: f.subject || '',
       workflowMasterId: Number(f.workflowMasterId) || 0,
       createdBy: f.createdBy || '',
-      entityId: Number(entityId),
+      entityId: finalEntityId,
       purchaseItems
     };
 
@@ -689,8 +764,16 @@ export class NewPurchaseRequestComponent implements OnInit {
       return;
     }
     const entityId = localStorage.getItem('selectedCompanyId');
-    const f = this.newPurchaseRequestForm.value;
+    const f = this.newPurchaseRequestForm.getRawValue();
     const submittedDateISO = f.submittedDate ? new Date(f.submittedDate).toISOString() : new Date().toISOString();
+
+       const lsEntity = localStorage.getItem('selectedCompanyId');
+    const finalEntityId = lsEntity === 'All' ? Number(f.entityId) : Number(lsEntity);
+
+    if (lsEntity === 'All' && !finalEntityId) {
+      this.toastr.info('Please select an Entity.');
+      return;
+    }
 
     const purchaseItems = this.newPurchaseItemData?.length
       ? this.newPurchaseItemData.map(item => ({
@@ -739,7 +822,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       subject: f.subject,
       // workflowMasterId: Number(f.workflowMasterId) || 0,
       // createdBy: f.createdBy || 'USER',
-      entityId: Number(entityId),
+      entityId: finalEntityId,
       purchaseItems
     };
 
