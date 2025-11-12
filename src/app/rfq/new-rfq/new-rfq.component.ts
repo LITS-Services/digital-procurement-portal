@@ -18,9 +18,8 @@ import { SelectedVendorsModalComponent } from './selected-vendors-modal/selected
 @Component({
   selector: 'app-new-rfq',
   templateUrl: './new-rfq.component.html',
-  styleUrls: ['./new-rfq.component.scss']
+  styleUrls: ['./new-rfq.component.scss'],
 })
-
 export class NewRfqComponent implements OnInit {
   currentRfqNo!: string;
   isNewForm = true; // true = create, false = edit
@@ -46,14 +45,14 @@ export class NewRfqComponent implements OnInit {
   public chkBoxSelected = [];
   loading = false;
 
-  workflowList: any[] = []
+  workflowList: any[] = [];
   workflowTypes: any[] = [];
 
   vendorUsers: any[] = [];
 
   // modifications
-  quotationVendorUsers: any[] = [];   // all vendors + companies
-  filteredCompanies: any[] = [];      // companies for selected vendor
+  quotationVendorUsers: any[] = []; // all vendors + companies
+  filteredCompanies: any[] = []; // companies for selected vendor
 
   public rows = DatatableData;
   columns = [];
@@ -70,18 +69,22 @@ export class NewRfqComponent implements OnInit {
   newPurchaseRequestForm: FormGroup;
 
   selectedTab: 'rfq-input' | 'history' | 'bids-detail' | 'comments' = 'rfq-input'; // default
-  bidsTab: 'quotation-box' | 'vendor-comparison' | 'finalVendor' | 'submitForApprove' = 'quotation-box';
+  bidsTab: 'quotation-box' | 'vendor-comparison' | 'finalVendor' | 'submitForApprove' =
+    'quotation-box';
   rfqTabs: 'details' | 'items' | 'vendors' = 'details';
 
   @ViewChild('accordion') accordion: NgbAccordion;
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
   @ViewChild('tableResponsive') tableResponsive: any;
-  isLoading = false; 
+  isLoading = false;
 
+  compareIds = (a: string | null, b: string | null) =>
+    (a ?? '').toLowerCase() === (b ?? '').toLowerCase();
 
-
-  compareIds = (a: string | null, b: string | null) => (a ?? '').toLowerCase() === (b ?? '').toLowerCase();
+  entities: Array<{ id: number; description: string }> = [];
+  isEntityLocked = false;
+  entityHint = '';
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -94,7 +97,7 @@ export class NewRfqComponent implements OnInit {
     private lookupService: LookupService,
     public cdr: ChangeDetectorRef,
     private purchaseRequestService: PurchaseRequestService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.loadVendorUsers();
@@ -103,7 +106,7 @@ export class NewRfqComponent implements OnInit {
     this.loadUnitsOfMeasurements();
     this.loadAccounts();
     this.loadItems();
-    this.route.queryParamMap.subscribe(params => {
+    this.route.queryParamMap.subscribe((params) => {
       const id = params.get('id');
       const mode = params.get('mode');
       const prId = params.get('prId');
@@ -114,8 +117,7 @@ export class NewRfqComponent implements OnInit {
       if (id) {
         this.currentQuotationId = +id;
         this.loadExistingQuotation(+id);
-      }
-      else if (prId) {
+      } else if (prId) {
         // new work
         this.purchaseRequestId = +prId;
         this.loadFromPurchaseRequest(+prId);
@@ -140,13 +142,14 @@ export class NewRfqComponent implements OnInit {
       purchaseRequestId: [0],
       workflowName: [''],
       workflowType: [''],
+      entityId: [null],
     });
 
     this.newRfqForm.valueChanges.subscribe(() => {
       this.isFormDirty = true;
     });
 
-    this.newRfqForm.get('workflowType')?.valueChanges.subscribe(selectedId => {
+    this.newRfqForm.get('workflowType')?.valueChanges.subscribe((selectedId) => {
       if (selectedId) {
         this.GetWorkflowMasterByTypeId(selectedId);
       }
@@ -170,15 +173,17 @@ export class NewRfqComponent implements OnInit {
       quotationRequestId: [0],
       vendorUserId: [null],
       vendorCompanyId: [null],
-      quotationItemAttachments: this.fb.array([])
-    })
-    this.itemForm.valueChanges.subscribe(values => {
+      quotationItemAttachments: this.fb.array([]),
+    });
+    this.itemForm.valueChanges.subscribe((values) => {
       const total = (values.unitCost || 0) * (values.orderQuantity || 0);
       this.itemForm.patchValue({ amount: total }, { emitEvent: false });
     });
     this.itemForm.valueChanges.subscribe(() => {
       this.isFormDirty = true;
     });
+
+    this.checkEntitySelection();
 
     if (this.viewMode) {
       this.newRfqForm.disable();
@@ -206,25 +211,72 @@ export class NewRfqComponent implements OnInit {
     }
   }
 
+  private checkEntitySelection(): void {
+    if (!this.isNewForm) return;
+    this.applyEntity(null);
+  }
 
+  private applyEntity(rfqEntityId: number | null): void {
+    const ctrl = this.newRfqForm.get('entityId');
+    if (!ctrl) return;
 
-selectBidsTab(tab: 'quotation-box' | 'vendor-comparison' | 'finalVendor' | 'submitForApprove') {
-  this.bidsTab = tab;
-}
+    const lsEntity = localStorage.getItem('selectedCompanyId');
+    const userId = localStorage.getItem('userId') || '';
 
-selectRfqTab(tab: 'details' | 'items' | 'vendors') {
-  this.rfqTabs = tab;
-}
+    const wantsLock = !!lsEntity && lsEntity !== 'All';
+    const desiredId: number | null = wantsLock ? Number(lsEntity) : rfqEntityId ?? null;
 
-selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
-  this.selectedTab = tab;
-}
+    const setUI = () => {
+      // set value if exist (update mode/already selected entity)
+      if (desiredId != null && this.entities?.some((e) => e.id === desiredId)) {
+        ctrl.setValue(desiredId, { emitEvent: false });
+      } else if (!wantsLock) {
+        // allow user to choose ('All entity case')
+        ctrl.setValue(null, { emitEvent: false });
+      }
+
+      // disable field
+      this.isEntityLocked = wantsLock;
+      this.entityHint = wantsLock ? 'Change entity from top bar' : '';
+      if (rfqEntityId) {
+        this.isEntityLocked = true;
+        ctrl.disable({ emitEvent: false });
+
+        this.entityHint = lsEntity === 'All' ? 'Entity cannot be changed in update mode' : '';
+      } else {
+        this.isEntityLocked = wantsLock;
+        this.entityHint = wantsLock ? 'Change entity from top bar' : '';
+
+        if (wantsLock) ctrl.disable({ emitEvent: false });
+        else ctrl.enable({ emitEvent: false });
+      }
+      this.cdr.markForCheck();
+    };
+
+    if (!this.entities?.length && userId) {
+      this.loadEntitiesForUser(userId, () => setUI());
+    } else {
+      setUI();
+    }
+  }
+
+  selectBidsTab(tab: 'quotation-box' | 'vendor-comparison' | 'finalVendor' | 'submitForApprove') {
+    this.bidsTab = tab;
+  }
+
+  selectRfqTab(tab: 'details' | 'items' | 'vendors') {
+    this.rfqTabs = tab;
+  }
+
+  selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
+    this.selectedTab = tab;
+  }
   loadVendorUsers() {
     this.companyService.getAllVendorUsers().subscribe({
       next: (res: any) => {
         this.vendorUsers = res?.value ?? [];
       },
-      error: (err) => console.error('Error fetching vendor users:', err)
+      error: (err) => console.error('Error fetching vendor users:', err),
     });
   }
 
@@ -243,9 +295,19 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
         }
       },
       error: (err) => {
-        console.error("Error fetching vendors & companies", err);
+        console.error('Error fetching vendors & companies', err);
         this.quotationVendorUsers = []; // ensure it's an array on error
-      }
+      },
+    });
+  }
+
+  private loadEntitiesForUser(userId: string, after?: () => void): void {
+    this.lookupService.getProcCompaniesByProcUserId(userId).subscribe({
+      next: (res: any[]) => {
+        this.entities = res || [];
+        after?.();
+      },
+      error: (err) => console.error('Error fetching entities:', err),
     });
   }
 
@@ -256,7 +318,7 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
       },
       error: (err) => {
         console.error('Failed to load UoM dropdown:', err);
-      }
+      },
     });
   }
 
@@ -267,7 +329,7 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
       },
       error: (err) => {
         console.error('Failed to load Account dropdown:', err);
-      }
+      },
     });
   }
 
@@ -278,14 +340,14 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
       },
       error: (err) => {
         console.error('Failed to load items dropdown:', err);
-      }
+      },
     });
   }
 
   onVendorChange(vendorId: string) {
     this.filteredCompanies = (this.quotationVendorUsers || [])
-      .filter(vc => vc.vendorId === vendorId)
-      .map(vc => ({ companyId: vc.vendorCompanyId, name: vc.companyName }));
+      .filter((vc) => vc.vendorId === vendorId)
+      .map((vc) => ({ companyId: vc.vendorCompanyId, name: vc.companyName }));
 
     // Only clear when ADDING (not editing)
     if (this.editingRowIndex === null) {
@@ -306,8 +368,8 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
         this.workflowList = data.$values ?? data;
       },
       error: (err) => {
-        console.error("Error fetching workflow master list:", err);
-      }
+        console.error('Error fetching workflow master list:', err);
+      },
     });
   }
 
@@ -318,13 +380,13 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
         this.workflowTypes = data.$values ?? data;
       },
       error: (err) => {
-        console.error("Error fetching workflow types:", err);
-      }
+        console.error('Error fetching workflow types:', err);
+      },
     });
   }
 
   getVendorNameById(vendorId: string): string {
-    const found = this.quotationVendorUsers.find(v => v.vendorId === vendorId);
+    const found = this.quotationVendorUsers.find((v) => v.vendorId === vendorId);
     return found ? found.vendorName : '';
   }
 
@@ -335,16 +397,16 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
   }
 
   getUomCodeById(id: number): string {
-    const found = this.unitsOfMeasurementList.find(u => u.id === id);
+    const found = this.unitsOfMeasurementList.find((u) => u.id === id);
     return found ? found.description : '';
   }
 
   getAccountNameById(id: number): string {
-    const found = this.accountList.find(a => a.id === id);
+    const found = this.accountList.find((a) => a.id === id);
     return found ? found.description : '';
   }
   getItemNameById(id: number): string {
-    const found = this.itemList.find(i => i.id === id);
+    const found = this.itemList.find((i) => i.id === id);
     return found ? found.description : '';
   }
 
@@ -394,26 +456,26 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
           vendorUserId: null,
           vendorCompanyId: null,
 
-          quotationItemAttachments: item.attachments?.map((a: any) => ({
-            content: a.content || '',
-            contentType: a.contentType || '',
-            fileName: a.fileName || '',
-            fromForm: a.fromForm || '',
-            visibleToVendor: a.visibleToVendor,
-            createdDate: a.createdDate,
-            modifiedDate: a.modifiedDate,
-            createdBy: a.createdBy || 'current-user',
-            isDeleted: a.isDeleted || false,
-            quotationItemId: a.quotationItemId || 0,
-          })) || []
+          quotationItemAttachments:
+            item.attachments?.map((a: any) => ({
+              content: a.content || '',
+              contentType: a.contentType || '',
+              fileName: a.fileName || '',
+              fromForm: a.fromForm || '',
+              visibleToVendor: a.visibleToVendor,
+              createdDate: a.createdDate,
+              modifiedDate: a.modifiedDate,
+              createdBy: a.createdBy || 'current-user',
+              isDeleted: a.isDeleted || false,
+              quotationItemId: a.quotationItemId || 0,
+            })) || [],
         }));
         //  Refresh datatable
         this.newQuotationItemData = [...this.newQuotationItemData];
-
       },
       error: (err) => {
         console.error('Error loading PR', err);
-      }
+      },
     });
   }
 
@@ -443,21 +505,19 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
         //  this.newQuotationItemData = requestData.quotationItems || [];
         if (requestData.requestStatus) {
           this.newRfqForm.patchValue({
-            status: requestData.requestStatus
+            status: requestData.requestStatus,
           });
           if (requestData.requestStatus === 'Completed') {
             this.isStatusCompleted = true;
             this.cdr.detectChanges();
-          }
-          else {
+          } else {
             this.isStatusCompleted = false;
             this.cdr.detectChanges();
           }
           if (requestData.requestStatus === 'InProcess') {
             this.isStatusInProcess = true;
             this.cdr.detectChanges();
-          }
-          else {
+          } else {
             this.isStatusInProcess = false;
             this.cdr.detectChanges();
           }
@@ -495,14 +555,17 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
               createdBy: a.createdBy,
               isDeleted: a.isDeleted,
               quotationItemId: a.quotationItemId || 0,
-              isNew: false
-            }))
+              isNew: false,
+            })),
           }));
         }
+
+        const rfqEntityId = Number(requestData.entityId) || null;
+        this.applyEntity(rfqEntityId);
         this.cdr.detectChanges();
       },
 
-      error: (err) => console.error('Failed to load purchase request:', err)
+      error: (err) => console.error('Failed to load purchase request:', err),
     });
   }
 
@@ -524,17 +587,16 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
 
       accountId: row.accountId,
       remarks: row.remarks,
-      quotationItemAttachments: row.quotationItemAttachments
+      quotationItemAttachments: row.quotationItemAttachments,
     });
     this.onVendorChange(row.vendorUserId);
 
     Promise.resolve().then(() => {
       this.itemForm.patchValue({ vendorCompanyId: row.vendorCompanyId }, { emitEvent: false });
     });
-
   }
 
-    goNext() {
+  goNext() {
     // If you want extra validation, keep it minimal:
     if (this.newRfqForm.invalid) return; // simple guard
     this.rfqTabs = 'items'; // move to Items
@@ -545,31 +607,40 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
     this.rfqTabs = 'details';
   }
 
-
   submitForm(continueToVendors: boolean = false) {
     if (this.isLoading) return;
     this.isLoading = true;
-    const f = this.newRfqForm.value;
+    const f = this.newRfqForm.getRawValue();
     const dateISO = f.date ? new Date(f.date).toISOString() : new Date().toISOString();
-    const entityId = Number(localStorage.getItem('selectedCompanyId'));
     let quotationItems = [];
+
+    const lsEntity = localStorage.getItem('selectedCompanyId');
+    const finalEntityId = lsEntity === 'All' ? Number(f.entityId) : Number(lsEntity);
+
+    if (lsEntity === 'All' && !finalEntityId) {
+      this.toastr.info('Please select an Entity.');
+      this.isLoading = false;
+      return;
+    }
 
     //  Only apply selection logic if this RFQ was opened from a Purchase Request
     if (this.purchaseRequestId) {
       if (this.allItemsUsedForRFQ()) {
-        this.toastr.info('All items from this Purchase Request have already been used in RFQs. Cannot generate a new RFQ.');
+        this.toastr.info(
+          'All items from this Purchase Request have already been used in RFQs. Cannot generate a new RFQ.'
+        );
         this.isLoading = false;
         return; // Stop execution
       }
 
-      const selectedItems = (this.newQuotationItemData || []).filter(i => i.selected);
+      const selectedItems = (this.newQuotationItemData || []).filter((i) => i.selected);
       if (selectedItems.length === 0) {
         this.toastr.info('Please select at least one item to generate RFQ.');
         this.isLoading = false;
         return;
       }
 
-      quotationItems = selectedItems.map(item => ({
+      quotationItems = selectedItems.map((item) => ({
         purchaseItemId: item.purchaseItemId || null,
         id: item.id || null,
         rfqNo: f.rfqNo || '',
@@ -587,7 +658,7 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
         quotationRequestId: item.quotationRequestId || 0,
         vendorUserId: item.vendorUserId || null,
         vendorCompanyId: item.vendorCompanyId || null,
-        quotationItemAttachments: item.quotationItemAttachments?.map(att => ({
+        quotationItemAttachments: item.quotationItemAttachments?.map((att) => ({
           id: att.id || null,
           content: att.content || '',
           contentType: att.contentType || '',
@@ -597,40 +668,40 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
           createdBy: att.createdBy || '',
           isDeleted: false,
           quotationItemId: att.quotationItemId || 0,
-        }))
+        })),
       }));
-    }
-    else {
+    } else {
       // Normal RFQ creation — use all items as before
-      quotationItems = this.newQuotationItemData?.map(item => ({
-        id: item.id || null,
-        rfqNo: f.rfqNo || '',
-        itemType: item.itemType || '',
-        itemId: Number(item.itemId) || 0,
-        unitOfMeasurementId: Number(item.unitOfMeasurementId) || 0,
-        amount: item.amount || 0,
-        unitCost: item.unitCost || 0,
-        orderQuantity: item.orderQuantity || 0,
-        reqByDate: item.reqByDate || new Date(),
-        itemDescription: item.itemDescription || '',
-        accountId: Number(item.accountId) || 0,
-        remarks: item.remarks || '',
-        createdBy: item.createdBy || '',
-        quotationRequestId: item.quotationRequestId || 0,
-        vendorUserId: item.vendorUserId || null,
-        vendorCompanyId: item.vendorCompanyId || null,
-        quotationItemAttachments: item.quotationItemAttachments?.map(att => ({
-          id: att.id || null,
-          content: att.content || '',
-          contentType: att.contentType || '',
-          fileName: att.fileName || '',
-          fromForm: att.fromForm || '',
-          visibleToVendor: att.visibleToVendor || false,
-          createdBy: att.createdBy || '',
-          isDeleted: false,
-          quotationItemId: att.quotationItemId || 0,
-        }))
-      })) || [];
+      quotationItems =
+        this.newQuotationItemData?.map((item) => ({
+          id: item.id || null,
+          rfqNo: f.rfqNo || '',
+          itemType: item.itemType || '',
+          itemId: Number(item.itemId) || 0,
+          unitOfMeasurementId: Number(item.unitOfMeasurementId) || 0,
+          amount: item.amount || 0,
+          unitCost: item.unitCost || 0,
+          orderQuantity: item.orderQuantity || 0,
+          reqByDate: item.reqByDate || new Date(),
+          itemDescription: item.itemDescription || '',
+          accountId: Number(item.accountId) || 0,
+          remarks: item.remarks || '',
+          createdBy: item.createdBy || '',
+          quotationRequestId: item.quotationRequestId || 0,
+          vendorUserId: item.vendorUserId || null,
+          vendorCompanyId: item.vendorCompanyId || null,
+          quotationItemAttachments: item.quotationItemAttachments?.map((att) => ({
+            id: att.id || null,
+            content: att.content || '',
+            contentType: att.contentType || '',
+            fileName: att.fileName || '',
+            fromForm: att.fromForm || '',
+            visibleToVendor: att.visibleToVendor || false,
+            createdBy: att.createdBy || '',
+            isDeleted: false,
+            quotationItemId: att.quotationItemId || 0,
+          })),
+        })) || [];
     }
 
     // Common payload & service calls remain unchanged
@@ -648,53 +719,53 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
       comment: f.comment,
       createdBy: f.createdBy,
       purchaseRequestId: f.purchaseRequestId || null,
-      entityId: Number(entityId),
-      quotationItems
+      entityId: finalEntityId,
+      quotationItems,
     };
 
     if (this.currentQuotationId) {
-      this.rfqService.updateQuotation(this.currentQuotationId, { quotationRequest: payload }).subscribe({
-        next: res => {
-          this.loading = false;
-          this.router.navigate(['/rfq']);
-          // this.toastr.success('Quotation is updated!', '');
-        },
-        error: err => {
-          console.error('Error updating Quotation:', err);
-          this.toastr.error('Something went Wrong', '');
-          this.loading = false;
-        }
-      });
-    }
-
-    else {
+      this.rfqService
+        .updateQuotation(this.currentQuotationId, { quotationRequest: payload })
+        .subscribe({
+          next: (res) => {
+            this.loading = false;
+            this.router.navigate(['/rfq']);
+            // this.toastr.success('Quotation is updated!', '');
+          },
+          error: (err) => {
+            console.error('Error updating Quotation:', err);
+            this.toastr.error('Something went Wrong', '');
+            this.loading = false;
+          },
+        });
+    } else {
       this.rfqService.createQuotation({ quotationRequest: payload, isDraft: false }).subscribe({
-        next: res => {
-      const newId = res ?? null;
+        next: (res) => {
+          const newId = res ?? null;
 
-        if (!newId) {
-          this.toastr.warning('Quotation created but ID not returned. Please refresh.');
-          this.isLoading = false; // // CHANGED
-          return;
-        }
+          if (!newId) {
+            this.toastr.warning('Quotation created but ID not returned. Please refresh.');
+            this.isLoading = false; // // CHANGED
+            return;
+          }
 
-        if (continueToVendors) {
-          this.currentQuotationId = newId
-          this.isNewForm = false;
-          this.loadVendorsAndCompanies(this.currentQuotationId);
-          this.loadExistingQuotation(this.currentQuotationId);
-          this.rfqTabs = 'vendors';
-          this.isLoading = false;
-        } else {
-          this.isLoading = false;
-          this.router.navigate(['/rfq']);
-        }
+          if (continueToVendors) {
+            this.currentQuotationId = newId;
+            this.isNewForm = false;
+            this.loadVendorsAndCompanies(this.currentQuotationId);
+            this.loadExistingQuotation(this.currentQuotationId);
+            this.rfqTabs = 'vendors';
+            this.isLoading = false;
+          } else {
+            this.isLoading = false;
+            this.router.navigate(['/rfq']);
+          }
         },
-        error: err => {
+        error: (err) => {
           console.error('Error creating Quotation:', err);
           this.toastr.error('Something went Wrong', '');
           this.loading = false;
-        }
+        },
       });
     }
   }
@@ -704,41 +775,50 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
     //   return;
     // }
 
-     if (this.isLoading) return;
+    if (this.isLoading) return;
     this.isLoading = true;
 
-    const f = this.newRfqForm.value;
+    const f = this.newRfqForm.getRawValue();
     const dateISO = f.date ? new Date(f.date).toISOString() : new Date().toISOString();
-    const entityId = Number(localStorage.getItem('selectedCompanyId'));
+
+    const lsEntity = localStorage.getItem('selectedCompanyId');
+    const finalEntityId = lsEntity === 'All' ? Number(f.entityId) : Number(lsEntity);
+
+    if (lsEntity === 'All' && !finalEntityId) {
+      this.toastr.info('Please select an Entity.');
+      this.isLoading = false;
+      return;
+    }
+
     const quotationItems = this.newQuotationItemData?.length
-      ? this.newQuotationItemData.map(item => ({
-        id: item.id || null,
-        rfqNo: f.rfqNo || '',
-        itemType: item.itemType || '',
-        itemId: Number(item.itemId) || 0,
-        unitOfMeasurementId: Number(item.unitOfMeasurementId) || 0,
-        amount: item.amount || 0,
-        unitCost: item.unitCost || 0,
-        orderQuantity: item.orderQuantity || 0,
-        reqByDate: item.reqByDate || new Date(),
-        itemDescription: item.itemDescription || '',
-        accountId: Number(item.accountId) || 0,
-        remarks: item.remarks || '',
-        createdBy: item.createdBy || '',
-        quotationRequestId: item.quotationRequestId || 0,
-        vendorUserId: item.vendorUserId || null,
-        vendorCompanyId: item.vendorCompanyId || null,
-        quotationItemAttachments: item.quotationItemAttachments?.map(att => ({
-          id: att.id || null,
-          content: att.content || '',
-          contentType: att.contentType || '',
-          fileName: att.fileName || '',
-          fromForm: att.fromForm || '',
-          createdBy: att.createdBy || '',
-          isDeleted: false,
-          quotationItemId: att.quotationItemId || 0,
+      ? this.newQuotationItemData.map((item) => ({
+          id: item.id || null,
+          rfqNo: f.rfqNo || '',
+          itemType: item.itemType || '',
+          itemId: Number(item.itemId) || 0,
+          unitOfMeasurementId: Number(item.unitOfMeasurementId) || 0,
+          amount: item.amount || 0,
+          unitCost: item.unitCost || 0,
+          orderQuantity: item.orderQuantity || 0,
+          reqByDate: item.reqByDate || new Date(),
+          itemDescription: item.itemDescription || '',
+          accountId: Number(item.accountId) || 0,
+          remarks: item.remarks || '',
+          createdBy: item.createdBy || '',
+          quotationRequestId: item.quotationRequestId || 0,
+          vendorUserId: item.vendorUserId || null,
+          vendorCompanyId: item.vendorCompanyId || null,
+          quotationItemAttachments: item.quotationItemAttachments?.map((att) => ({
+            id: att.id || null,
+            content: att.content || '',
+            contentType: att.contentType || '',
+            fileName: att.fileName || '',
+            fromForm: att.fromForm || '',
+            createdBy: att.createdBy || '',
+            isDeleted: false,
+            quotationItemId: att.quotationItemId || 0,
+          })),
         }))
-      }))
       : [];
 
     const payload = {
@@ -756,17 +836,20 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
       comment: f.comment || '',
       createdBy: f.createdBy || '',
       purchaseRequestId: f.purchaseRequestId || null,
-      entityId: Number(entityId),
-      quotationItems
+      entityId: finalEntityId,
+      quotationItems,
     };
 
     this.loading = true;
 
-    const request$ = this.rfqService.createQuotation({ quotationRequest: payload, isDraft: true })
+    const request$ = this.rfqService.createQuotation({
+      quotationRequest: payload,
+      isDraft: true,
+    });
 
     request$.subscribe({
       next: () => this.handleDraftSuccess(),
-      error: (err) => this.handleDraftError(err)
+      error: (err) => this.handleDraftError(err),
     });
   }
 
@@ -786,8 +869,8 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
     const newItemId = Number(newItem.itemId);
 
     // Duplicate check — works for add and edit both
-    const duplicate = this.newQuotationItemData.some((item, index) =>
-      index !== this.editingRowIndex && Number(item.itemId) === newItemId
+    const duplicate = this.newQuotationItemData.some(
+      (item, index) => index !== this.editingRowIndex && Number(item.itemId) === newItemId
     );
 
     if (duplicate) {
@@ -801,7 +884,7 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
         ...existing,
         ...newItem,
         itemId: newItemId,
-        attachments: existing?.attachments ?? []
+        attachments: existing?.attachments ?? [],
       };
 
       // Immutable update to trigger ngx-datatable refresh
@@ -811,13 +894,12 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
 
       this.toastr.success('Item updated successfully!');
       this.editingRowIndex = null;
-
     } else {
       // Add new
       const withEmptyAttachments = {
         ...newItem,
         itemId: newItemId,
-        attachments: newItem.attachments?.length ? newItem.attachments : []
+        attachments: newItem.attachments?.length ? newItem.attachments : [],
       };
       this.newQuotationItemData = [...this.newQuotationItemData, withEmptyAttachments];
       this.toastr.success('Item added successfully!');
@@ -826,7 +908,7 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
     this.itemForm.reset({
       amount: 0,
       unitCost: 0,
-      orderQuantity: 1
+      orderQuantity: 1,
     });
   }
 
@@ -850,9 +932,8 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
   }
 
   openNewEntityModal(rowIndex: number): void {
-    const sourceRow = rowIndex !== null
-      ? this.newQuotationItemData[rowIndex] : this.itemForm.value; // new item (not yet inserted)
-    console.log("Source Row:", sourceRow);
+    const sourceRow = rowIndex !== null ? this.newQuotationItemData[rowIndex] : this.itemForm.value; // new item (not yet inserted)
+    console.log('Source Row:', sourceRow);
     const modalRef = this.modalService.open(RfqAttachmentComponent, {
       backdrop: 'static',
       size: 'lg',
@@ -862,43 +943,44 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
     modalRef.componentInstance.viewMode = this.viewMode;
     modalRef.componentInstance.data = {
       quotationItemId: sourceRow?.id ?? 0,
-      existingAttachment: sourceRow?.quotationItemAttachments || []
+      existingAttachment: sourceRow?.quotationItemAttachments || [],
     };
 
-    modalRef.result.then((data: any[]) => {
-      if (data?.length) {
-        const merged = [
-          ...(sourceRow.quotationItemAttachments || []),
-          ...data.map(a => ({
-            fileName: a.fileName,
-            contentType: a.contentType,
-            content: a.content,
-            fromForm: a.fromForm,
-            visibleToVendor: a.visibleToVendor,
-            quotationItemId: sourceRow?.id ?? 0,
-            isNew: true
-          }))
-        ];
+    modalRef.result
+      .then((data: any[]) => {
+        if (data?.length) {
+          const merged = [
+            ...(sourceRow.quotationItemAttachments || []),
+            ...data.map((a) => ({
+              fileName: a.fileName,
+              contentType: a.contentType,
+              content: a.content,
+              fromForm: a.fromForm,
+              visibleToVendor: a.visibleToVendor,
+              quotationItemId: sourceRow?.id ?? 0,
+              isNew: true,
+            })),
+          ];
 
-        if (rowIndex !== null) {
-          // immutably update the edited row in the grid
-          this.newQuotationItemData = this.newQuotationItemData.map((r, i) =>
-            i === rowIndex ? { ...r, quotationItemAttachments: data } : r
-          );
-
-        } else {
-          // reflect on the form for a new (not yet inserted) item
-          this.itemForm.patchValue({ quotationItemAttachments: data });
+          if (rowIndex !== null) {
+            // immutably update the edited row in the grid
+            this.newQuotationItemData = this.newQuotationItemData.map((r, i) =>
+              i === rowIndex ? { ...r, quotationItemAttachments: data } : r
+            );
+          } else {
+            // reflect on the form for a new (not yet inserted) item
+            this.itemForm.patchValue({ quotationItemAttachments: data });
+          }
+          // this.numberOfAttachments = this.attachmentList.length;
         }
-        // this.numberOfAttachments = this.attachmentList.length;
-      }
-    }).catch(() => { });
+      })
+      .catch(() => {});
   }
 
   editVendorRow(row: any): void {
     const modalRef = this.modalService.open(SelectedVendorsModalComponent, {
-      backdrop: "static",
-      size: "lg",
+      backdrop: 'static',
+      size: 'lg',
       centered: true,
     });
 
@@ -971,13 +1053,12 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
       confirmButtonText: 'Yes, submit it',
       cancelButtonText: 'Cancel',
       confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33'
+      cancelButtonColor: '#d33',
     }).then((result) => {
       if (!result.isConfirmed) return;
 
       this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
         next: () => {
-
           // Navigate only on success
           this.router.navigate(['/rfq']);
         },
@@ -985,7 +1066,7 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
           // don't show Swal — interceptor already shows error toast
           // do nothing here
           this.router.navigate(['/rfq']);
-        }
+        },
       });
     });
   }
@@ -994,7 +1075,7 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
     const modalRef = this.modalService.open(RfqRemarksComponent, {
       size: 'lg',
       backdrop: 'static',
-      centered: true
+      centered: true,
     });
     modalRef.componentInstance.action = action;
     modalRef.componentInstance.rfqNo = this.currentRfqNo;
@@ -1007,25 +1088,24 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
             RfqNo: this.currentRfqNo,
             Remarks: result.remarks,
             ActionTaken: action,
-            ApproverId: localStorage.getItem('userId')
+            ApproverId: localStorage.getItem('userId'),
           };
 
           this.rfqService.addRemarksWithActionTaken(payload).subscribe({
-            next: res => {
+            next: (res) => {
               this.loading = false;
-              if (res.message == "Approved") {
+              if (res.message == 'Approved') {
                 this.cdr.detectChanges();
                 this.router.navigate(['/rfq']);
                 this.toastr.success(res.message);
-              }
-              else {
+              } else {
                 this.toastr.warning(res.message);
               }
             },
-            error: err => {
+            error: (err) => {
               this.toastr.warning('Something went Wrong', '');
               this.loading = false;
-            }
+            },
           });
         }
       },
@@ -1040,6 +1120,8 @@ selectTab(tab: 'rfq-input' | 'history' | 'bids-detail' | 'comments') {
     if (!this.newQuotationItemData || this.newQuotationItemData.length === 0) return true;
 
     // Check if all items already have a quotationRequestId (already part of RFQ)
-    return this.newQuotationItemData.every(item => item.quotationRequestId && item.quotationRequestId > 0);
+    return this.newQuotationItemData.every(
+      (item) => item.quotationRequestId && item.quotationRequestId > 0
+    );
   }
 }
