@@ -49,21 +49,23 @@
                             </div>
 
                             <!-- Select Entity -->
+                            <!-- (change)="onEntitySelected($event?.id)" -->
                             <div class="col-lg-4 mb-2">
                                 <div class="form-group mb-2">
                                     <label>Select Entity</label>
                                     <ng-select class="custom-style" [items]="entitiesList" bindLabel="name"
                                         bindValue="id" [searchable]="true" placeholder="Select Entity"
-                                        formControlName="entities" (change)="onEntitySelected($event?.id)">
+                                        formControlName="entities" (change)="onEntitySelected($event)">
                                     </ng-select>
                                 </div>
                             </div>
 
                             <!-- Roles -->
+                            <!-- (change)="onRoleSelected($event)" -->
                             <div class="col-lg-4 mb-2">
                                 <label>Roles</label>
                                 <ng-select [items]="roles" bindLabel="name" bindValue="id" placeholder="Select Roles"
-                                    formControlName="Roles" (change)="onRoleSelected($event)">
+                                    formControlName="Roles"  (change)="onRoleSelected($event)">
                                 </ng-select>
                             </div>
 
@@ -72,7 +74,7 @@
                             <div class="col-lg-4 mb-2">
                                 <div class="form-group mb-2">
                                     <label>Request Receiver(s)</label>
-                                    <ng-select class="custom-style" [items]="filteredApprovers" bindLabel="userName"
+                                    <ng-select class="custom-style" [items]="filteredReceivers" bindLabel="userName"
                                         bindValue="id" [multiple]="true" [searchable]="true"
                                         placeholder="Select Request Receiver(s)" formControlName="Receivers">
                                     </ng-select>
