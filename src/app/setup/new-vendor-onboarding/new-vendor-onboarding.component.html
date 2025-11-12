@@ -60,14 +60,6 @@
                             </div>
 
                             <!-- Roles -->
-                            <!-- <div class="col-lg-4 mb-2">
-                                <label>Roles</label>
-                                <ng-select [items]="roles" bindLabel="name" bindValue="id" placeholder="Select Roles"
-                                    formControlName="Roles">
-                                </ng-select>
-                            </div> -->
-
-                            <!-- Roles -->
                             <div class="col-lg-4 mb-2">
                                 <label>Roles</label>
                                 <ng-select [items]="roles" bindLabel="name" bindValue="id" placeholder="Select Roles"
@@ -80,9 +72,9 @@
                             <div class="col-lg-4 mb-2">
                                 <div class="form-group mb-2">
                                     <label>Request Receiver(s)</label>
-                                    <ng-select class="custom-style" [items]="approverList" bindLabel="userName"
-                                        bindValue="id" [multiple]="false" [searchable]="true"
-                                        placeholder="Select Workflow Initiator" formControlName="Initiatiors">
+                                    <ng-select class="custom-style" [items]="filteredApprovers" bindLabel="userName"
+                                        bindValue="id" [multiple]="true" [searchable]="true"
+                                        placeholder="Select Request Receiver(s)" formControlName="Initiatiors">
                                     </ng-select>
                                 </div>
                             </div>

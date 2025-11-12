@@ -153,8 +153,8 @@ loadOnboardingSetupById(id: number) {
     // Find initiator by name and set it after a short delay to ensure approverList is populated
     setTimeout(() => {
       if (initiatorName && this.approverList.length > 0) {
-        const selectedInitiator = this.approverList.find(user => 
-          user.userName === initiatorName || 
+        const selectedInitiator = this.approverList.find(user =>
+          user.userName === initiatorName ||
           user.name === initiatorName ||
           user.fullName === initiatorName
         );
