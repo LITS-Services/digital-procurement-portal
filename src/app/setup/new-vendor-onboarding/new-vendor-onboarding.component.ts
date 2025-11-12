@@ -64,7 +64,7 @@ export class NewVendorOnboardingComponent implements OnInit {
       SetupName: ['', Validators.required],
       entities: ['', Validators.required],
       Roles: ['', Validators.required],
-      Initiatiors: ['', Validators.required],
+      Receivers: ['', Validators.required],
       Description: ['', Validators.required],
       status: [false],
       usersList: [[]],
@@ -143,11 +143,11 @@ loadOnboardingSetupById(id: number) {
     if (data.entityId) {
       this.onEntitySelected(data.entityId).then(() => {
         // After users are loaded, set the role and initiator
-        this.setRoleAndInitiator(data.roles, data.initiators);
+        this.setRoleAndInitiator(data.roles, data.Receivers);
       });
     } else {
       // If no entity, still try to set role and initiator
-      this.setRoleAndInitiator(data.roles, data.initiators);
+      this.setRoleAndInitiator(data.roles, data.Receivers);
     }
 
     console.log('Form values after patch:', this.vendorOnboardingForm.value);
@@ -179,7 +179,7 @@ loadOnboardingSetupById(id: number) {
         
         if (selectedInitiator) {
           this.vendorOnboardingForm.patchValue({
-            Initiatiors: selectedInitiator.id
+            Receivers: selectedInitiator.id
           });
         } else {
           console.warn('Initiator not found:', initiatorName);
@@ -207,7 +207,7 @@ loadOnboardingSetupById(id: number) {
             if (this.isVendorOnboarding) {
               this.approverList = users;
               this.filteredApprovers = [...users];
-              this.vendorOnboardingForm.get('Initiatiors')?.reset();
+              this.vendorOnboardingForm.get('Receivers')?.reset();
 
               // Re-filter if role already selected
               const roleId = this.vendorOnboardingForm.get('Roles')?.value;
@@ -245,8 +245,8 @@ loadOnboardingSetupById(id: number) {
     
     // Get the selected role name and initiator name
     const selectedRole = this.roles.find(role => role.id === formData.Roles);
-    // const selectedInitiator = this.approverList.find(user => user.id === formData.Initiatiors);
-    const selectedInitiators = formData.Initiatiors?.join(',') || '';
+    // const selectedInitiator = this.approverList.find(user => user.id === formData.Receivers);
+    const selectedReceivers = formData.Receivers?.join(',') || '';
 
     // Prepare the data for API with correct format
     const apiData = {
@@ -254,8 +254,8 @@ loadOnboardingSetupById(id: number) {
       setupName: formData.SetupName,
       entityId: formData.entities,
       roles: selectedRole ? selectedRole.id : '', // Send role name as string
-      // initiators: selectedInitiator ? selectedInitiator.id : '', // Send initiator name as string
-      initiators: selectedInitiators, // <-- now a comma-separated string of IDs
+      // Receivers: selectedInitiator ? selectedInitiator.id : '', // Send initiator name as string
+      Receivers: selectedReceivers, // <-- now a comma-separated string of IDs
       status: formData.status, // Keep as boolean
       description: formData.Description
     };
@@ -331,7 +331,7 @@ loadOnboardingSetupById(id: number) {
     );
 
     // Reset initiator control to avoid stale data
-    this.vendorOnboardingForm.get('Initiatiors')?.reset();
+    this.vendorOnboardingForm.get('Receivers')?.reset();
 
     console.log('Filtered Approvers:', this.filteredApprovers);
   }
