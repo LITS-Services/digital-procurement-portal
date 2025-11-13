@@ -26,8 +26,8 @@ export class PurchaseOrderService {
   // Fetch all Purchase Orders
   getAllPurchaseOrders(currentPage: number, pageSize: number, entityId: number): Observable<any> {
     let params = new HttpParams()
-        if (currentPage) params = params.set("entityId", currentPage);
-        if (pageSize) params = params.set("entityId", pageSize);
+        if (currentPage) params = params.set("currentPage", currentPage);
+        if (pageSize) params = params.set("pageSize", pageSize);
         if (entityId) params = params.set("entityId", entityId);
     return this.http.get<any>(
       `${this.baseUrl}/get-all-purchase-orders`, { params } 
