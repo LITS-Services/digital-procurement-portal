@@ -7,6 +7,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { VendorOnboardingReceiversComponent } from '../vendor-onboarding-receivers/vendor-onboarding-receivers.component';
 
 @Component({
   selector: 'app-vendor-onboarding-setup',
@@ -50,13 +51,13 @@ export class VendorOnboardingSetupComponent implements OnInit {
 
   loadAllCompanyOnboardingSetups() {
     this.spinner.show();
-    
+
     this.companyService.GetAllCompanyOnboardingSetup()
       .pipe(finalize(() => this.spinner.hide()))
       .subscribe({
         next: (response: any) => {
           console.log('API Response:', response);
-          
+
           // Handle the specific response structure from your API
           if (response && response.value && Array.isArray(response.value)) {
             this.vendorOnboardingList = response.value;
@@ -70,7 +71,7 @@ export class VendorOnboardingSetupComponent implements OnInit {
             this.vendorOnboardingList = [];
             console.warn('Unexpected API response structure:', response);
           }
-          
+
           this.vendorOnboardingData = [...this.vendorOnboardingList];
           console.log('Vendor Onboarding List:', this.vendorOnboardingList);
         },
@@ -87,7 +88,7 @@ export class VendorOnboardingSetupComponent implements OnInit {
   toggleSelectAll(event: any) {
     const isChecked = event.target.checked;
     this.isAllSelected = isChecked;
-    
+
     if (isChecked) {
       this.chkBoxSelected = [...this.vendorOnboardingList];
     } else {
@@ -132,16 +133,16 @@ export class VendorOnboardingSetupComponent implements OnInit {
 
     const selectedSetup = this.chkBoxSelected[0];
     const onboardingId = selectedSetup.id;
-    
+
     if (!onboardingId) {
       this.toastr.error('Selected setup does not have a valid ID.');
       return;
     }
 
     console.log('Navigating to edit page with ID:', onboardingId);
-    
+
     this.router.navigate(['/setup/create-vendor-onboarding'], {
-      queryParams: { id: onboardingId, mode: 'Edit' }, 
+      queryParams: { id: onboardingId, mode: 'Edit' },
       skipLocationChange: true
     });
   }
@@ -170,7 +171,7 @@ export class VendorOnboardingSetupComponent implements OnInit {
   // Delete selected records
   deleteSelectedSetups() {
     this.modalService.dismissAll();
-    
+
     if (this.idsToDelete.length === 0) {
       this.toastr.warning('No valid IDs found for deletion.');
       return;
@@ -220,4 +221,20 @@ export class VendorOnboardingSetupComponent implements OnInit {
   getSelectedSetupNames(): string[] {
     return this.chkBoxSelected.map(item => item.setupName || 'Unnamed Setup');
   }
+
+  openReceiversModal(row: any): void {
+    const modalRef = this.modalService.open(VendorOnboardingReceiversComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      centered: true
+    });
+
+    // ✅ Pass the onboardingId instead of workflowMasterId
+    modalRef.componentInstance.onboardingId = row.id; // or row.onboardingId if your table uses that field
+    modalRef.componentInstance.onboardingRoleId = row.rolesId; // or row.onboardingId if your table uses that field
+    modalRef.componentInstance.onboardingentityId = row.entityId; // or row.onboardingId if your table uses that field
+
+    console.log('Opening Receivers modal for Onboarding ID:', row.id);
+  }
+
 }

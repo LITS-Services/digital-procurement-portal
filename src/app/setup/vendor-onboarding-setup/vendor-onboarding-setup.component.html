@@ -17,12 +17,13 @@
               <i class="ft-arrow-left"></i>
             </button>
             <span class="vl"></span>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new workflow" (click)="NewVendorOnboarding()">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new workflow"
+              (click)="NewVendorOnboarding()">
               <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
             </button>
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()">
               <i class="ft-edit"></i><label class="ml-1 mt-1">Edit</label>
-            </button> 
+            </button>
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()">
               <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
             </button>
@@ -36,8 +37,8 @@
       <!-- Data Table -->
       <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="vendorOnboardingData" [columnMode]="'force'"
         [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [limit]="15"
-        [selected]="chkBoxSelected" [selectionType]="SelectionType.checkbox"
-        (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
+        [selected]="chkBoxSelected" [selectionType]="SelectionType.checkbox" (sort)="onSort($event)"
+        (select)="customChkboxOnSelect($event)">
 
         <!-- Checkbox Column -->
         <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
@@ -105,6 +106,15 @@
             </span>
           </ng-template>
         </ngx-datatable-column>
+
+        <ngx-datatable-column name="Receivers" prop="Receivers">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <button class="btn btn-primary btn-sm position-relative" (click)="openReceiversModal(row)">
+              <i class="ft-users"></i>
+            </button>
+          </ng-template>
+        </ngx-datatable-column>
+
 
       </ngx-datatable>
 

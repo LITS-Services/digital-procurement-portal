@@ -99,7 +99,7 @@ export class NewVendorOnboardingComponent implements OnInit {
       .pipe(finalize(() => this.spinner.hide()))
       .subscribe({
         next: (response: any) => {
-          console.log('Full API Response:', response);
+          console.log('Get recerivers Full API Response:', response);
 
           let data = null;
 
@@ -188,7 +188,7 @@ export class NewVendorOnboardingComponent implements OnInit {
 
       if (selectedRole) {
         this.vendorOnboardingForm.patchValue({
-          Roles: selectedRole
+          Roles: selectedRole.id  // 
         });
         console.log('Role successfully set:', selectedRole);
       } else {
