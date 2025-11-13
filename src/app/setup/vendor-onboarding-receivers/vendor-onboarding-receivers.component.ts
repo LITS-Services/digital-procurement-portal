@@ -49,6 +49,10 @@ export class VendorOnboardingReceiversComponent implements OnInit {
   }
 
   loadFilteredReceivers(entityId: number, roleId: string): void {
+    console.log('%c[loadFilteredReceivers Triggered]', 'color: #1976d2; font-weight: bold;');
+    console.log('➡️ Entity ID:', entityId);
+    console.log('➡️ Role ID:', roleId);
+
     if (!entityId || !roleId) {
       console.warn('Missing entityId or roleId. Skipping API call.');
       return;
