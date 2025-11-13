@@ -15,7 +15,7 @@ import Swal from 'sweetalert2';
 })
 export class RfqQuotationboxComponent implements OnInit {
   @Input() data: any;
-
+  @Input() viewMode: boolean = false;
   loading = false;
 
   rfqData: Array<{

@@ -1,7 +1,7 @@
 <div class="modal-body card">
     <div class="card-body cstm-body">
         <div class="d-flex justify-content-end mb-2 mr-2 mt-2">
-            <button class="btn btn-primary" (click)="onSubmit()">Submit Final Vendors</button>
+            <button class="btn btn-primary" [disabled]="viewMode" (click)="onSubmit()">Submit Final Vendors</button>
         </div>
 
         <ngx-datatable class="bootstrap core-bootstrap" [rows]="itemsData" [columnMode]="'force'" [headerHeight]="50"
@@ -25,7 +25,7 @@
 
             <ngx-datatable-column name="Final Vendor" [sortable]="false" [cellClass]="'cstm-cell'" [headerClass]="'cstm-cell-header'">
                 <ng-template ngx-datatable-cell-template let-row="row" class="cstm-cell">
-                    <select class="form-control custom-finalVen-dropdown" [ngModel]="selected[row.id] || null"
+                    <select [disabled]="viewMode" class="form-control custom-finalVen-dropdown" [ngModel]="selected[row.id] || null"
                         (ngModelChange)="selected[row.id] = $event" [ngModelOptions]="{ standalone: true }">
                         <option [ngValue]="null" disabled>Select Company</option>
                         <option *ngFor="let v of vendorData" [ngValue]="v">

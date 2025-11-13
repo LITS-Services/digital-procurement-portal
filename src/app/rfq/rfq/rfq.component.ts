@@ -130,6 +130,23 @@ export class RfqComponent implements OnInit {
     });
   }
 
+  openRfq(row: any) {
+
+  const currentUserId = localStorage.getItem('userId') || '';
+  const isSubmitter = row.submitterId?.toString() === currentUserId;
+
+  // if submitter 
+  const viewMode = !isSubmitter;
+
+  this.router.navigate(['/rfq/new-rfq'], {
+    queryParams: {
+      id: row.quotationId,
+      ...(viewMode ? { mode: 'view' } : {})   // only pass view mode if NOT submitter
+    },
+    skipLocationChange: true
+  });
+}
+
   onStatusChange(status: any) {
     if (status === 'All') {
       this.selectedStatusLabel = "All"

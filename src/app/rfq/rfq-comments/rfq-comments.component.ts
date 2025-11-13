@@ -8,7 +8,8 @@ import { Component, Input, OnInit } from '@angular/core';
 export class RfqCommentsComponent implements OnInit {
 
   @Input() vendorsData: any
-  @Input() data: any
+  @Input() data: any;
+  @Input() viewMode: boolean = false;
   selectedVendor: any
   constructor() { }
 

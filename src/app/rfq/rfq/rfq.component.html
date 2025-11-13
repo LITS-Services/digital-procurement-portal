@@ -20,23 +20,23 @@
                                 <i class="ft-arrow-left"></i></button>
                             <span class="vl"></span>
 
-                            <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new RFQ"
+                            <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new RFQ"
                                 (click)="openEmpDetails()">
                                 <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
                             </button>
                             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()">
                                 <i class="ft-edit"></i><label class="ml-1 mt-1">Update</label>
-                            </button>
+                            </button> -->
 
                             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()"
                                 [disabled]="isDeleteButtonDisabled">
                                 <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
                             </button>
 
-                            <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
+                            <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
                                 (click)="onView()">
                                 <i class="ft-eye"></i><label class="ml-1 mt-1">View</label>
-                            </button>
+                            </button> -->
                         </div>
                         <div class="d-flex align-items-center">
                             <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
@@ -104,14 +104,19 @@
                 </ngx-datatable-column>
 
                 <!-- Sr. No -->
-                <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+                <ngx-datatable-column name="Sr. No." [width]="70" [canAutoResize]="false" [resizeable]="false">
                     <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
                         <span>{{ rowIndex + 1 }}</span>
                     </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="RFQ No." prop="rfqNo">
-                </ngx-datatable-column>
+            <ngx-datatable-column name="RFQ No." prop="rfqNo">
+                <ng-template ngx-datatable-cell-template let-row="row">
+                    <a href="javascript:void(0)" (click)="openRfq(row)">
+                        {{ row.rfqNo }}
+                    </a>
+                </ng-template>
+            </ngx-datatable-column>
 
                 <ngx-datatable-column name="Status" prop="requestStatus">
                 </ngx-datatable-column>

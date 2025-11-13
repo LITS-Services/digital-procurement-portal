@@ -15,6 +15,7 @@ import { finalize, switchMap } from 'rxjs/operators';
 export class RfqVendorModalComponent implements OnInit {
   //data!: any;
   @Input() data: any;
+  @Input() viewMode = false;
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
   @ViewChild('tableResponsive') tableResponsive: any;
@@ -127,6 +128,8 @@ export class RfqVendorModalComponent implements OnInit {
   }
 
     addToRight(vendor: any): void {
+      if(this.viewMode) return;
+      
     const id = this.getKey(vendor);
     if (this.gridSelected.some(x => this.getKey(x) === id)) return;
     this.gridSelected = [...this.gridSelected, vendor];
@@ -134,12 +137,15 @@ export class RfqVendorModalComponent implements OnInit {
   }
 
   removeFromRight(vendor: any): void {
+      if(this.viewMode) return;
+
     const id = this.getKey(vendor);
     this.gridSelected = this.gridSelected.filter(x => this.getKey(x) !== id);
     this.recomputeLists();
   }
 
   selectAll(): void {
+      if(this.viewMode) return;
     // move everything currently visible on the LEFT into selection
     const currentIds = new Set(this.gridSelected.map(x => this.getKey(x)));
     const toAdd = this.availableVendors.filter(v => !currentIds.has(this.getKey(v)));
@@ -148,6 +154,8 @@ export class RfqVendorModalComponent implements OnInit {
   }
 
   removeAll(): void {
+      if(this.viewMode) return;
+
     this.gridSelected = [];
     this.recomputeLists();
   }

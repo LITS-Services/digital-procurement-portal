@@ -10,6 +10,7 @@ import { ToastrService } from 'ngx-toastr';
 export class RfqFinalVendorsComponent implements OnInit {
 
   @Input() data:any;
+  @Input() viewMode:boolean = false;
 
   itemsData:any[] = [];
   vendorData:any[] = [];

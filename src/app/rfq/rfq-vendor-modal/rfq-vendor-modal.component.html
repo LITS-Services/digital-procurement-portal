@@ -1,6 +1,6 @@
 <div class="modal-body vendor-picker">
   <div class="d-flex justify-content-end mb-3">
-    <button class="btn btn-sm submit-approval-btn shadow-sm" (click)="onSubmit()">
+    <button class="btn btn-sm submit-approval-btn shadow-sm" [disabled]="viewMode" (click)="onSubmit()">
      <i class="ft-check" style="color: #1161cc;"></i><label class="ml-1">Submit Vendors</label>
     </button>
   </div>
@@ -33,7 +33,7 @@
             <div class="vh-title">{{ v.vendorName }}</div>
             <div class="vh-sub">{{ v.companyName }}</div>
           </div>
-          <button class="btn btn-xs btn-link add-btn" (click)="addToRight(v); $event.stopPropagation()">
+          <button class="btn btn-xs btn-link add-btn" [disabled]="viewMode" (click)="addToRight(v); $event.stopPropagation()">
             Add<i class="ft-arrow-right ml-1"></i></button>
         </div>
       </div>
@@ -50,7 +50,7 @@
           <small class="muted">{{ gridSelected.length }} selected</small>
         </div>
         <div class="panel-actions">
-          <button class="btn btn-sm btn-outline-danger" (click)="removeAll()">
+          <button [disabled]="viewMode" class="btn btn-sm btn-outline-danger" (click)="removeAll()">
              <i class="ft ft-x"></i>
             Remove All</button>
         </div>
@@ -71,7 +71,7 @@
             </div>
             <div class="vh-sub">{{ v.companyName }}</div>
           </div>
-          <button class="icon-btn" (click)="removeFromRight(v)" aria-label="Remove">
+          <button class="icon-btn" [disabled]="viewMode" (click)="removeFromRight(v)" aria-label="Remove">
              <i class="ft ft-x"></i>
           </button>
         </div>

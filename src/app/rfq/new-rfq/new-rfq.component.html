@@ -577,7 +577,7 @@
                 <div>
                 
                 
-                  <app-rfq-vendor-modal [data]="{quotationId: currentQuotationId}"></app-rfq-vendor-modal>
+                  <app-rfq-vendor-modal [viewMode]="viewMode" [data]="{quotationId: currentQuotationId}"></app-rfq-vendor-modal>
                 </div>
   
        
@@ -641,6 +641,7 @@
     <app-rfq-quotationbox
       *ngSwitchCase="'quotation-box'"
       [data]="{ quotationId: currentQuotationId }"
+      [viewMode]="viewMode"
     ></app-rfq-quotationbox>
     
      <app-vendor-comparision
@@ -650,6 +651,7 @@
 
       <app-rfq-final-vendors
       *ngSwitchCase="'finalVendor'"
+      [viewMode]="viewMode"
       [data]="{ quotationId: currentQuotationId }"
     ></app-rfq-final-vendors>
 
@@ -658,7 +660,7 @@
   </div>
 
      <div class="tab-pane mt-3" role="tabpanel" *ngIf="selectedTab === 'comments'">
-    <app-rfq-comments [vendorsData]="selectedVendorsData" [data]="{ quotationId: currentQuotationId }"></app-rfq-comments>
+    <app-rfq-comments [vendorsData]="selectedVendorsData" [viewMode]="viewMode" [data]="{ quotationId: currentQuotationId }"></app-rfq-comments>
   </div>
       <!-- Action Pane -->
 
