@@ -606,7 +606,7 @@ export class NewRfqComponent implements OnInit {
     this.rfqTabs = 'items'; // move to Items
   }
 
-  // ✅ NEW: Back from Items -> Details (Create mode wizard)
+  // NEW: Back from Items -> Details (Create mode wizard)
   goBack() {
     this.rfqTabs = 'details';
   }

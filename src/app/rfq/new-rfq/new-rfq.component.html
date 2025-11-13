@@ -128,7 +128,7 @@
   
     </div>
 
-      <div class="card cstm-ui-card" *ngIf="rfqTabs !== 'vendors' && !viewMode">
+      <div class="card cstm-ui-card" *ngIf="rfqTabs !== 'vendors'">
         <div class="d-flex justify-content-between px-2">
 
           <div>
@@ -142,6 +142,8 @@
       
       
           <div>
+
+
           
             <button *ngIf="isNewForm && rfqTabs === 'details'" class="btn btn-sm cstm-ui-table-btn"
               [disabled]="newRfqForm.invalid" (click)="goNext()">
@@ -160,12 +162,26 @@
 
          
           
-            <button *ngIf="!isNewForm && (rfqTabs === 'details' || rfqTabs === 'items') && !viewMode"
-              class="btn btn-sm cstm-ui-table-btn" [disabled]="newRfqForm.invalid || isStatusCompleted || !isSubmitter"
+            <button *ngIf="!isNewForm && (rfqTabs === 'details' || rfqTabs === 'items') && isSubmitter"
+              class="btn btn-sm cstm-ui-table-btn" [disabled]="newRfqForm.invalid || isStatusCompleted || !isSubmitter || viewMode"
               (click)="submitForm()">
               <i class="ft-edit-2"></i><label class="ml-1 mt-1">Update</label>
             </button>
-          
+
+            <ng-container *ngIf="viewMode && !isSubmitter">
+            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter"
+              (click)="onAddRemarks('Approve')">
+              <i class="ft-check"></i><label class="ml-1 mt-1">Approve</label>
+            </button>
+            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter"
+              (click)="onAddRemarks('Reject')">
+              <i class="ft-x"></i><label class="ml-1 mt-1">Reject</label>
+            </button>
+            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter"
+              (click)="onAddRemarks('SendBack')">
+              <i class="ft-arrow-left"></i><label class="ml-1 mt-1">Send Back</label>
+            </button>
+            </ng-container>          
           
           
           
@@ -609,9 +625,11 @@
       </div>
       
       <div>
-             <button class="btn btn-sm submit-approval-btn shadow-sm">
-              <i class="ft-check" style="color: #1161cc;"></i><label class="ml-1">Submit for Approval</label>
-            </button>
+        <ng-container *ngIf="isSubmitter">
+          <button class="btn btn-sm submit-approval-btn shadow-sm" [disabled]="newRfqForm.invalid || isStatusCompleted || isStatusInProcess" (click)="onSubmitForApproval()">
+            <i class="ft-check" style="color: #1161cc;"></i><label class="ml-1">Submit for Approval</label>
+          </button>
+        </ng-container>
       </div>
 
     </div>
