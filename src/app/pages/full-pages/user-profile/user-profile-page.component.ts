@@ -130,14 +130,14 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
 
   ngAfterViewInit() {
     let conf = this.config;
-    conf.layout.sidebar.collapsed = true;
+    // conf.layout.sidebar.collapsed = true;
     this.configService.applyTemplateConfigChange({ layout: conf.layout });
     this.cdr.detectChanges();
   }
 
   ngOnDestroy() {
     let conf = this.config;
-    conf.layout.sidebar.collapsed = false;
+    // conf.layout.sidebar.collapsed = false;
     this.configService.applyTemplateConfigChange({ layout: conf.layout });
     if (this.layoutSub) this.layoutSub.unsubscribe();
     this.cdr.detectChanges();
@@ -167,30 +167,37 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
 
   // Load User Data
   loadUserData(id: string) {
-    this.companyService.getprocurementusersbyid(id).subscribe({
-      next: (res: any) => {
-        // Patch data into form
-        this.userForm.patchValue({
-          userName: res.userName,
-          fullName: res.fullName,
-          email: res.email,
-          phoneNumber: res.phoneNumber || '',
-          roles: res.roles || [],
-          companies: res.companies || []
-        });
+    this.spinner.show(); 
 
-        if (res.profilePicture) {
-          this.profileImage = res.profilePicture;
+    this.companyService
+      .getprocurementusersbyid(id)
+      .pipe(finalize(() => {
+        this.spinner.hide(); 
+        this.cdr.detectChanges(); 
+      }))
+      .subscribe({
+        next: (res: any) => {
+          // Patch data into form
+          this.userForm.patchValue({
+            userName: res.userName,
+            fullName: res.fullName,
+            email: res.email,
+            phoneNumber: res.phoneNumber || '',
+            roles: res.roles || [],
+            companies: res.companies || []
+          });
+
+          if (res.profilePicture) {
+            this.profileImage = res.profilePicture;
+          }
+
+          console.log('User data loaded:', res);
+        },
+        error: (err) => {
+          console.error('Error loading user data', err);
+          this.toastr.error('Failed to load user data');
         }
-
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error loading user data', err);
-        this.toastr.error('Failed to load user data');
-        this.cdr.detectChanges();
-      }
-    });
+      });
   }
 
   // Open Reset Password Modal (same logic)
