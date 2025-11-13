@@ -40,7 +40,8 @@ export class VendorOnboardingReceiversComponent implements OnInit {
   ngOnInit(): void {
     this.loadRoles(() => {
       this.loadEntities();
-      this.loadFilteredReceivers(this.onboardingentityId, this.onboardingRoleId);
+      // this.loadFilteredReceivers(this.onboardingentityId, this.onboardingRoleId);
+      this.loadReceiversList();
     });
   }
 
@@ -130,6 +131,41 @@ export class VendorOnboardingReceiversComponent implements OnInit {
         error: (err) => {
           console.error('Error fetching companies:', err);
           this.toastr.error('Failed to load companies. Please try again.');
+        }
+      });
+  }
+
+
+  loadReceiversList(): void {
+    if (!this.onboardingId) {
+      console.warn('onboardingId is missing. Skipping loadReceiversList.');
+      this.receiversList = [];
+      return;
+    }
+
+    console.log('%c[loadReceiversList] Triggered for onboardingId:', 'color: #1976d2; font-weight: bold;', this.onboardingId);
+    this.spinner.show();
+
+    this.companyService
+      .getReceiversSetupid(this.onboardingId)
+      .pipe(finalize(() => {
+        this.spinner.hide();
+        this.cdr.detectChanges();
+      }))
+      .subscribe({
+        next: (res: any) => {
+          // Defensive check in case API wraps data
+          this.receiversList = Array.isArray(res) ? res : res?.$values || res?.data || [];
+          console.log('%c✅ Receivers loaded:', 'color: green; font-weight: bold;', this.receiversList);
+
+          if (this.receiversList.length === 0) {
+            this.toastr.info('No receivers found for this setup.');
+          }
+        },
+        error: (err) => {
+          console.error('%c❌ Error fetching receivers:', 'color: red; font-weight: bold;', err);
+          this.toastr.error('Failed to load receivers. Please try again.');
+          this.receiversList = [];
         }
       });
   }

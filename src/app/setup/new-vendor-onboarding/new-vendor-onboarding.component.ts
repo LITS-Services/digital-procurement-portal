@@ -280,7 +280,7 @@ export class NewVendorOnboardingComponent implements OnInit {
       id: this.mode === 'Edit' ? this.onboardingId : 0,
       setupName: formData.SetupName,
       entityId: formData.entities,
-      roles: selectedRole ? selectedRole.id : '', // Send role name as string
+      // roles: selectedRole ? selectedRole.id : '', // Send role name as string
       // Receivers: selectedInitiator ? selectedInitiator.id : '', // Send initiator name as string
       Receivers: selectedReceivers, // <-- now a comma-separated string of IDs
       status: formData.status, // Keep as boolean

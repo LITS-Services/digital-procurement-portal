@@ -188,4 +188,10 @@ export class CompanyService {
     return this.http.get<any[]>(url, { params });
   }
 
+  getReceiversSetupid(SetupId: number): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/Employee/get-by-setupid`, {
+      params: { setupId: SetupId.toString() }
+    });
+  }
+
 }
