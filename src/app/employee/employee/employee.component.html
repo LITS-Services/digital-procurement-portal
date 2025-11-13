@@ -4,7 +4,8 @@
 
       <div class="row">
         <div class="col-md-12" style="margin-top: -0.25rem;">
-          <h4 class="heading">Create User(s) </h4>
+          <!-- <h4 class="heading">Create User(s) </h4> -->
+          <h4 class="heading">{{ isEditMode ? 'Edit User(s)' : 'Create User(s)' }}</h4>
         </div>
       </div>
 
@@ -70,15 +71,23 @@
               <div class="col-lg-4 col-md-4 col-sm-6">
                 <div class="form-group mb-2">
                   <label>Password</label>
-                  <div class="input-group">
-                    <input [type]="passwordFieldType" formControlName="password" class="form-control"
+                  <div class="password-input-group">
+                    <input [type]="passwordFieldType" formControlName="password" class="form-control custom-input"
                       placeholder="********" [disabled]="isEditMode" />
-                    <div class="input-group-append" *ngIf="!isEditMode">
-                      <button type="button" class="btn btn-outline-secondary" (click)="togglePassword('password')">
-                        <i class="ft-eye"></i>
-                      </button>
-                    </div>
+                    <i *ngIf="!isEditMode" class="eye-icon ft"
+                      [ngClass]="passwordFieldType === 'password' ? 'ft-eye-off' : 'ft-eye'"
+                      (click)="togglePassword('password')" style="cursor: pointer;"></i>
                   </div>
+                  <div *ngIf="companyForm.get('password')?.invalid && companyFormSubmitted && !isEditMode"
+                    class="text-danger">
+                    <small *ngIf="companyForm.get('password')?.errors?.['required']">Password is required.</small>
+                    <small *ngIf="companyForm.get('password')?.errors?.['minlength']">Minimum 6 characters
+                      required.</small>
+                    <small *ngIf="companyForm.get('password')?.errors?.['pattern']">
+                      Must include at least one uppercase and one special character.
+                    </small>
+                  </div>
+
                   <small class="text-muted" *ngIf="isEditMode">
                     Password is hidden. Cannot be changed in edit mode.
                   </small>
@@ -89,15 +98,21 @@
               <div class="col-lg-4 col-md-4 col-sm-6">
                 <div class="form-group mb-2">
                   <label>Confirm Password</label>
-                  <div class="input-group">
-                    <input [type]="confirmPasswordFieldType" formControlName="confirmPassword" class="form-control"
-                      placeholder="********" [disabled]="isEditMode" />
-                    <div class="input-group-append" *ngIf="!isEditMode">
-                      <button type="button" class="btn btn-outline-secondary"
-                        (click)="togglePassword('confirmPassword')">
-                        <i class="ft-eye"></i>
-                      </button>
-                    </div>
+                  <div class="password-input-group">
+                    <input [type]="confirmPasswordFieldType" formControlName="confirmPassword"
+                      class="form-control custom-input" placeholder="********" [disabled]="isEditMode" />
+                    <i *ngIf="!isEditMode" class="eye-icon ft"
+                      [ngClass]="confirmPasswordFieldType === 'password' ? 'ft-eye-off' : 'ft-eye'"
+                      (click)="togglePassword('confirmPassword')" style="cursor: pointer;"></i>
+
+                  </div>
+                  <div *ngIf="companyFormSubmitted && !isEditMode" class="text-danger">
+                    <small *ngIf="companyForm.get('confirmPassword')?.errors?.['required']">
+                      Please confirm your password.
+                    </small>
+                    <small *ngIf="companyForm.errors?.['passwordMismatch']">
+                      Passwords do not match.
+                    </small>
                   </div>
                 </div>
               </div>
@@ -112,6 +127,22 @@
                       {{ role.name }}
                     </option>
                   </select>
+                </div>
+              </div>
+
+              <!-- Companies -->
+              <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="mb-2">
+                  <label>Select Companies</label>
+                  <ng-select class="custom-style" [items]="companies" bindLabel="name" bindValue="companyGUID"
+                    [multiple]="true" [searchable]="true" placeholder="Select Company(s)"
+                    formControlName="companyGUIDs">
+                  </ng-select>
+
+                  <div *ngIf="companyForm.get('companyGUIDs')?.invalid && companyFormSubmitted && !isEditMode"
+                    class="text-danger">
+                    Please select at least one company.
+                  </div>
                 </div>
               </div>
 
@@ -143,8 +174,9 @@
                   </div>
                 </div>
               </div>
+
               <!-- Companies -->
-              <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="companies.length">
+              <!-- <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="companies.length">
                 <div class="mb-2">
                   <label>Select Companies</label>
                   <div class="form-control" style="height:auto; max-height:200px; overflow-y:auto;">
@@ -160,7 +192,9 @@
                     Please select at least one company.
                   </div>
                 </div>
-              </div>
+              </div> -->
+
+
 
             </div>
           </form>

@@ -89,6 +89,23 @@
                 <label>Requisition No.</label>
                 <input type="text" class="form-control custom-input" formControlName="requisitionNo" disabled>
               </div>
+
+               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                <div class="form-group mb-2">
+                  <label class="d-flex align-items-center justify-content-between mr-2">
+                    <span>Entity</span>
+                    <small *ngIf="isEntityLocked && entityHint" class="text-hint"><i class="ft-info mr-1"></i>{{ entityHint }}</small>
+                  </label>
+              
+                <select class="form-control custom-input" formControlName="entityId" [disabled]="isEntityLocked || viewMode">
+                  <option [ngValue]="null">-- Select Entity --</option>
+                  <option *ngFor="let e of entities" [ngValue]="e.id">
+                    {{ e.description }}
+                  </option>
+                </select>
+                </div>
+              </div>
+              
               <div class="col-lg-4 mb-2">
                 <label>Submitted Date</label>
                 <input type="date" class="form-control custom-input" formControlName="submittedDate">

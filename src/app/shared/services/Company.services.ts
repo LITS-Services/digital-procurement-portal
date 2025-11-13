@@ -58,8 +58,8 @@ export class CompanyService {
   getprocurementusers(entityId: number): Observable<any[]> {
     let params = new HttpParams()
     if (entityId) params = params.set("entityId", entityId);
-    return this.http.get<any[]>(`${environment.apiUrl}/ProcurementUsers/GetAll`, { params }); 
- 
+    return this.http.get<any[]>(`${environment.apiUrl}/ProcurementUsers/GetAll`, { params });
+
   }
 
   deleteprocurementusers(id: string): Observable<any> {
@@ -125,25 +125,25 @@ export class CompanyService {
 
 
 
-GetAllCompanyOnboardingSetup(): Observable<any[]> {
-  return this.http.get<any[]>(`${environment.apiUrl}/Workflow/get-all-company-onboarding-setup`);
-}
+  GetAllCompanyOnboardingSetup(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/Workflow/get-all-company-onboarding-setup`);
+  }
 
-GetCompanyOnboardingSetupById(id: number): Observable<any> {
-  return this.http.get<any>(`${environment.apiUrl}/Workflow/get-company-onboarding-setup-by-id?Id=${id}`);
-}
+  GetCompanyOnboardingSetupById(id: number): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/Workflow/get-company-onboarding-setup-by-id?Id=${id}`);
+  }
 
-CreateCompanyOnboardingSetup(data: any): Observable<any> {
-  return this.http.post<any>(`${environment.apiUrl}/Workflow/save-company-onboarding-setup`, data);
-}
+  CreateCompanyOnboardingSetup(data: any): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/Workflow/save-company-onboarding-setup`, data);
+  }
 
-UpdateCompanyOnboardingSetup(data: any): Observable<any> {
-  return this.http.put<any>(`${environment.apiUrl}/Workflow/update-company-onboarding-setup`, data);
-}
+  UpdateCompanyOnboardingSetup(data: any): Observable<any> {
+    return this.http.put<any>(`${environment.apiUrl}/Workflow/update-company-onboarding-setup`, data);
+  }
 
-DeleteCompanyOnboardingSetupById(id: number): Observable<any> {
-  return this.http.delete<any>(`${environment.apiUrl}/Workflow/delete-company-onboarding-setup-by-id?Id=${id}`);
-}
+  DeleteCompanyOnboardingSetupById(id: number): Observable<any> {
+    return this.http.delete<any>(`${environment.apiUrl}/Workflow/delete-company-onboarding-setup-by-id?Id=${id}`);
+  }
 
 
 
@@ -176,5 +176,16 @@ DeleteCompanyOnboardingSetupById(id: number): Observable<any> {
   //   deleteCompany(id: number): Observable<any> {
   //     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   //   }
+
+
+  getFilteredReceivers(EntityId: number, RoleId: string): Observable<any[]> {
+    const url = `${environment.apiUrl}/Employee/get-receivers`;
+    const params = {
+      RoleId: RoleId,
+      EntityId: EntityId.toString()
+    };
+
+    return this.http.get<any[]>(url, { params });
+  }
 
 }
