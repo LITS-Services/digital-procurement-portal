@@ -13,9 +13,9 @@ export class CompanyApprovalHistoryComponent implements OnInit {
   @Input() vendorComapnyId!: number;
   approvalHistory: any[] = [];
   loading = true;
-  constructor(public activeModal: NgbActiveModal, private companyService: CompanyService,
-
-
+  constructor(
+    public activeModal: NgbActiveModal, 
+    private companyService: CompanyService,
   ) { }
 
   ngOnInit(): void {

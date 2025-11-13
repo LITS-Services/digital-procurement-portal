@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
@@ -23,6 +23,7 @@ export class VendorOnboardingSetupComponent implements OnInit {
   chkBoxSelected: any[] = [];
   idsToDelete: number[] = [];
   isAllSelected: boolean = false;
+  entitiesList: any[] = [];
 
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
@@ -33,7 +34,9 @@ export class VendorOnboardingSetupComponent implements OnInit {
     private companyService: CompanyService,
     private spinner: NgxSpinnerService,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private cdr: ChangeDetectorRef,
+
   ) {
     this.vendorOnboardingForm = this.fb.group({
       SetupName: ['', Validators.required],
@@ -46,7 +49,11 @@ export class VendorOnboardingSetupComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadAllCompanyOnboardingSetups();
+
+    this.loadEntities(() => {
+      this.loadAllCompanyOnboardingSetups();
+    });
+
   }
 
   loadAllCompanyOnboardingSetups() {
@@ -58,7 +65,6 @@ export class VendorOnboardingSetupComponent implements OnInit {
         next: (response: any) => {
           console.log('API Response:', response);
 
-          // Handle the specific response structure from your API
           if (response && response.value && Array.isArray(response.value)) {
             this.vendorOnboardingList = response.value;
           } else if (Array.isArray(response)) {
@@ -74,12 +80,14 @@ export class VendorOnboardingSetupComponent implements OnInit {
 
           this.vendorOnboardingData = [...this.vendorOnboardingList];
           console.log('Vendor Onboarding List:', this.vendorOnboardingList);
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error('Error loading company onboarding setups:', err);
           this.toastr.error('Failed to load vendor onboarding setups. Please try again.');
           this.vendorOnboardingList = [];
           this.vendorOnboardingData = [];
+          this.cdr.detectChanges(); 
         }
       });
   }
@@ -235,6 +243,39 @@ export class VendorOnboardingSetupComponent implements OnInit {
     modalRef.componentInstance.onboardingentityId = row.entityId; // or row.onboardingId if your table uses that field
 
     console.log('Opening Receivers modal for Onboarding ID:', row.id);
+  }
+
+  loadEntities(callback?: () => void) {
+    this.spinner.show();
+    this.companyService
+      .getProCompanies()
+      .pipe(finalize(() => {
+        this.spinner.hide();
+        this.cdr.detectChanges();
+        if (callback) callback();
+      }))
+      .subscribe({
+        next: (res: any) => {
+          const companies = res?.result || [];
+          this.entitiesList = companies.map((c: any) => ({
+            ...c,
+            status: c.isDeleted ? 'Inactive' : 'Active',
+            logo: c.logo || ''
+          }));
+          console.log('Entities loaded:', this.entitiesList);
+        },
+        error: (err) => {
+          console.error('Error fetching companies:', err);
+          this.toastr.error('Failed to load companies. Please try again.');
+        }
+      });
+  }
+
+
+  getEntityName(entityId: number): string {
+    if (!entityId || !this.entitiesList?.length) return '—';
+    const entity = this.entitiesList.find(e => e.id === entityId);
+    return entity ? entity.name : '—';
   }
 
 }

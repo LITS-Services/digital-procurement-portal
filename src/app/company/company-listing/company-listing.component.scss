@@ -178,3 +178,23 @@
     padding: 0.4rem 0rem;
     color: #342E49;
 }
+
+
+  .dropdown {
+      position: absolute; /* Set the container to relative position */
+           overflow: visible !important;
+  
+  }
+    
+    .dropdown-content {
+      position: absolute; /* Set the dropdown to absolute position */
+      // top: calc(100% + 10px); /* Position it below the container */
+      left: 0;
+      overflow: visible !important;
+      // z-index: 9999; /* Set a high z-index */
+      display: none; /* Hide the modal by default */
+      background-color: #fff; /* Set background color */
+      border: 1px solid #ccc; /* Add border */
+      padding: 10px; /* Add padding */
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add shadow */
+    }

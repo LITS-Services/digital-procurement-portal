@@ -5,6 +5,7 @@ import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { AuthService } from 'app/shared/auth/auth.service';
 import { CompanyApprovalHistoryComponent } from '../company-approval-history/company-approval-history.component';
+import { AssignMeComponent } from '../assign-me/assign-me.component';
 
 @Component({
   selector: 'app-company-listing',
@@ -12,6 +13,7 @@ import { CompanyApprovalHistoryComponent } from '../company-approval-history/com
   styleUrls: ['./company-listing.component.scss']
 })
 export class CompanyListingComponent implements OnInit {
+  filters: any = {}; // e.g. { entity: '', name: '', city: '', vendorType: '' }
 
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
@@ -93,6 +95,17 @@ export class CompanyListingComponent implements OnInit {
       }
     });
   }
+
+  applyFilters() {
+    this.rows = this.tenderingData.filter(row => {
+      return Object.keys(this.filters).every(key => {
+        const filterVal = this.filters[key]?.toString().toLowerCase().trim();
+        if (!filterVal) return true; // skip empty filters
+        return row[key]?.toString().toLowerCase().includes(filterVal);
+      });
+    });
+  }
+
 
   private mapCompany(c: any) {
     const primaryAddress = Array.isArray(c.addressesVM) && c.addressesVM.length ? c.addressesVM[0] : {};
@@ -176,6 +189,21 @@ export class CompanyListingComponent implements OnInit {
 
   openApprovalHistoryModal(selectedRow: any): void {
     const modalRef = this.modalService.open(CompanyApprovalHistoryComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      centered: true
+    });
+
+    modalRef.componentInstance.ProcurementCompanyId = selectedRow.procurementCompanyId;
+    modalRef.componentInstance.vendorComapnyId = selectedRow.id;
+    modalRef.componentInstance.entity = selectedRow.entity;
+    console.log('Selected Row:', selectedRow);
+    console.log(' sent to modal:', selectedRow.vendorComapnyId);
+  }
+
+
+  openAssignMeModal(selectedRow: any): void {
+    const modalRef = this.modalService.open(AssignMeComponent, {
       size: 'lg',
       backdrop: 'static',
       centered: true

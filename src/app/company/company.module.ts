@@ -20,6 +20,7 @@ import { PipeModule } from 'app/shared/pipes/pipe.module';
 import { CompanyActionsComponent } from './company-actions/company-actions.component';
 import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
 import { CompanyApprovalHistoryComponent } from './company-approval-history/company-approval-history.component';
+import { AssignMeComponent } from './assign-me/assign-me.component';
 
 
 @NgModule({
@@ -27,7 +28,8 @@ import { CompanyApprovalHistoryComponent } from './company-approval-history/comp
     CompanyListingComponent,
     CompanyEditComponent,
     CompanyActionsComponent,
-    CompanyApprovalHistoryComponent
+    CompanyApprovalHistoryComponent,
+    AssignMeComponent
   ],
   imports: [
     CommonModule,
