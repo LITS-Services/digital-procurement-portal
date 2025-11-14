@@ -13,9 +13,15 @@ import { NewPurchaseRequestComponent } from './purchase-request/new-purchase-req
 import { OtpComponent } from './pages/otp/otp.component';
 
 const appRoutes: Routes = [
-  {
+  // {
+  //   path: '',
+  //   redirectTo: 'pages/login',
+  //   pathMatch: 'full',
+  // },
+
+    {
     path: '',
-    redirectTo: 'pages/login',
+    redirectTo: 'dashboard/dashboard1',
     pathMatch: 'full',
   },
   {
