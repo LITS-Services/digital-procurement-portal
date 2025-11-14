@@ -168,6 +168,12 @@
               <i class="ft-edit-2"></i><label class="ml-1 mt-1">Update</label>
             </button>
 
+              <button *ngIf="isStatusCompleted && (rfqTabs === 'details' || rfqTabs === 'items') && isSubmitter"
+              class="btn btn-sm cstm-ui-table-btn"
+              (click)="createPO()">
+              <i class="ft-plus"></i><label class="ml-1 mt-1">Create PO</label>
+            </button>
+
             <ng-container *ngIf="viewMode && !isSubmitter">
             <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter"
               (click)="onAddRemarks('Approve')">

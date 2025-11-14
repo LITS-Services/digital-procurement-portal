@@ -14,6 +14,7 @@ import { RfqRemarksComponent } from '../rfq-remarks/rfq-remarks.component';
 import Swal from 'sweetalert2';
 import { LookupService } from 'app/shared/services/lookup.service';
 import { SelectedVendorsModalComponent } from './selected-vendors-modal/selected-vendors-modal.component';
+import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 
 @Component({
   selector: 'app-new-rfq',
@@ -96,7 +97,8 @@ export class NewRfqComponent implements OnInit {
     private WorkflowServiceService: WorkflowServiceService,
     private lookupService: LookupService,
     public cdr: ChangeDetectorRef,
-    private purchaseRequestService: PurchaseRequestService
+    private purchaseRequestService: PurchaseRequestService,
+    private purchaseOrderService: PurchaseOrderService
   ) {}
 
   ngOnInit(): void {
@@ -385,6 +387,36 @@ export class NewRfqComponent implements OnInit {
     });
   }
 
+
+    createPO(row: any) {
+  
+      Swal.fire({
+        title: 'Create Purchase Order?',
+        text: 'This will generate PO(s) automatically for all items based on vendor assignment.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Create PO',
+        cancelButtonText: 'Cancel',
+      }).then((result) => {
+        if (result.isConfirmed) {
+  
+          this.purchaseOrderService.createPurchaseOrderFromRFQ(this.currentQuotationId).subscribe({
+
+            next: (res:any) => {
+              console.log(res,"Successfully created PO");
+              if(res?.isSuccess){
+                     this.router.navigate(['/purchase-order']);
+              }
+          
+            },
+            error: () => {
+              this.toastr.error('Something went wrong while creating PO.');
+            }
+          });
+  
+        }
+      });
+    }
   getVendorNameById(vendorId: string): string {
     const found = this.quotationVendorUsers.find((v) => v.vendorId === vendorId);
     return found ? found.vendorName : '';
