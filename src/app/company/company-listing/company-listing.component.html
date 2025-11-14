@@ -87,32 +87,32 @@
           </ng-template>
         </ngx-datatable-column>
 
-        <!-- Entity Column -->
-        <ngx-datatable-column name="Entity" prop="entity" [width]="150">
-          <ng-template let-row="row" ngx-datatable-cell-template>
-            <span>{{ row.entity }}</span>
-          </ng-template>
-        </ngx-datatable-column>
-
+        
         <!-- Company Name Column -->
         <ngx-datatable-column name="Company" prop="name" [width]="150">
           <ng-template let-row="row" ngx-datatable-cell-template>
             <span>{{ row.name }}</span>
           </ng-template>
         </ngx-datatable-column>
-
+        
+        <!-- Entity Column -->
+        <ngx-datatable-column name="Entity" prop="entity" [width]="150">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <span>{{ row.entity }}</span>
+          </ng-template>
+        </ngx-datatable-column>
         <!-- Conditionally Display Status Column -->
         <ngx-datatable-column *ngIf="showStatusColumn" name="Status" prop="companyStatus" [width]="100">
         </ngx-datatable-column>
 
         <!-- City -->
-        <ngx-datatable-column name="City" prop="city" [width]="120"></ngx-datatable-column>
+        <!-- <ngx-datatable-column name="City" prop="city" [width]="120"></ngx-datatable-column> -->
 
         <!-- Vendor Type -->
-        <ngx-datatable-column name="Vendor Type" prop="vendorType" [width]="120"></ngx-datatable-column>
+        <!-- <ngx-datatable-column name="Vendor Type" prop="vendorType" [width]="120"></ngx-datatable-column> -->
 
         <!-- Currency -->
-        <ngx-datatable-column name="Currency" prop="primaryCurrency" [width]="100"></ngx-datatable-column>
+        <!-- <ngx-datatable-column name="Currency" prop="primaryCurrency" [width]="100"></ngx-datatable-column> -->
 
         <!-- Action Column -->
         <ngx-datatable-column name="Action" [width]="100" prop="action" [sortable]="false">

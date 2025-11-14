@@ -77,6 +77,8 @@ export class CompanyListingComponent implements OnInit {
       next: (res: any) => {
         const companies = res?.result || res || [];
 
+        console.log('📦 Raw API Response:', companies); // Debug log
+
         this.allCompanies = companies.map(c => this.mapCompany(c));
 
         this.tenderingData = this.allCompanies.filter(c =>
@@ -87,7 +89,7 @@ export class CompanyListingComponent implements OnInit {
         this.loading = false;
         this.cdr.detectChanges();
 
-        console.log('✅ Loaded companies:', this.rows);
+        console.log('✅ Mapped companies:', this.rows);
       },
       error: (err) => {
         console.error('Error fetching companies:', err);
@@ -106,30 +108,49 @@ export class CompanyListingComponent implements OnInit {
     });
   }
 
-
   private mapCompany(c: any) {
     const primaryAddress = Array.isArray(c.addressesVM) && c.addressesVM.length ? c.addressesVM[0] : {};
     const primaryContact = Array.isArray(c.contactsVM) && c.contactsVM.length ? c.contactsVM[0] : {};
     const demographics = c.purchasingDemographics || {};
 
-    const selectedEntity =
-      (c.vendorUseCompaniesVM?.find((v) => v.status?.toLowerCase() === 'inprocess')) ||
-      (c.vendorUseCompaniesVM?.[0] || null);
+    // Check if this is the direct API response structure (with procurementCompany field)
+    if (c.procurementCompany) {
+      // This is the direct API response structure from your example
+      return {
+        id: c.id,
+        name: c.name || '',
+        companyStatus: c.status || '',
+        street: primaryAddress.street || '',
+        city: primaryAddress.city || '',
+        contactNumber: primaryContact.contactNumber || '',
+        remarks: c.remarks || '',
+        vendorType: demographics.vendorType || '',
+        primaryCurrency: demographics.primaryCurrency || '',
+        entity: c.procurementCompany || '', // Use procurementCompany directly from API
+        procurementCompanyId: c.procurementCompanyId || null,
+        vendorCompanyId: c.vendorCompanyId || null // Fixed typo: vendorComapnyId -> vendorCompanyId
+      };
+    } else {
+      // Fallback to the original nested structure
+      const selectedEntity =
+        (c.vendorUseCompaniesVM?.find((v) => v.status?.toLowerCase() === 'inprocess')) ||
+        (c.vendorUseCompaniesVM?.[0] || null);
 
-    return {
-      id: c.id,
-      name: c.name || '',
-      companyStatus: c.status || '',
-      street: primaryAddress.street || '',
-      city: primaryAddress.city || '',
-      contactNumber: primaryContact.contactNumber || '',
-      remarks: c.remarks || '',
-      vendorType: demographics.vendorType || '',
-      primaryCurrency: demographics.primaryCurrency || '',
-      entity: selectedEntity?.procurementCompany || '',
-      procurementCompanyId: selectedEntity?.procurementCompanyId || null,
-      vendorComapnyId: selectedEntity?.vendorComapnyId || null
-    };
+      return {
+        id: c.id,
+        name: c.name || '',
+        companyStatus: c.status || '',
+        street: primaryAddress.street || '',
+        city: primaryAddress.city || '',
+        contactNumber: primaryContact.contactNumber || '',
+        remarks: c.remarks || '',
+        vendorType: demographics.vendorType || '',
+        primaryCurrency: demographics.primaryCurrency || '',
+        entity: selectedEntity?.procurementCompany || '',
+        procurementCompanyId: selectedEntity?.procurementCompanyId || null,
+        vendorCompanyId: selectedEntity?.vendorCompanyId || null // Fixed typo
+      };
+    }
   }
 
   /** FILTER BUTTONS LOGIC */
@@ -194,13 +215,16 @@ export class CompanyListingComponent implements OnInit {
       centered: true
     });
 
+    // Use the correct property names that match the mapped data
     modalRef.componentInstance.ProcurementCompanyId = selectedRow.procurementCompanyId;
-    modalRef.componentInstance.vendorComapnyId = selectedRow.id;
+    modalRef.componentInstance.vendorComapnyId = selectedRow.vendorCompanyId || selectedRow.id; // Fallback to id if vendorCompanyId is null
     modalRef.componentInstance.entity = selectedRow.entity;
-    console.log('Selected Row:', selectedRow);
-    console.log(' sent to modal:', selectedRow.vendorComapnyId);
+    
+    console.log('Selected Row for Approval History:', selectedRow);
+    console.log('ProcurementCompanyId sent to modal:', selectedRow.procurementCompanyId);
+    console.log('vendorCompanyId sent to modal:', selectedRow.vendorCompanyId);
+    console.log('Entity sent to modal:', selectedRow.entity);
   }
-
 
   openAssignMeModal(selectedRow: any): void {
     const modalRef = this.modalService.open(AssignMeComponent, {
@@ -209,11 +233,15 @@ export class CompanyListingComponent implements OnInit {
       centered: true
     });
 
+    // Use the correct property names that match the mapped data
     modalRef.componentInstance.ProcurementCompanyId = selectedRow.procurementCompanyId;
-    modalRef.componentInstance.vendorComapnyId = selectedRow.id;
+    modalRef.componentInstance.vendorComapnyId = selectedRow.vendorCompanyId || selectedRow.id; // Fallback to id if vendorCompanyId is null
     modalRef.componentInstance.entity = selectedRow.entity;
-    console.log('Selected Row:', selectedRow);
-    console.log(' sent to modal:', selectedRow.vendorComapnyId);
+    
+    console.log('Selected Row for Assign Me:', selectedRow);
+    console.log('ProcurementCompanyId sent to modal:', selectedRow.procurementCompanyId);
+    console.log('vendorCompanyId sent to modal:', selectedRow.vendorCompanyId);
+    console.log('Entity sent to modal:', selectedRow.entity);
   }
 
   customChkboxOnSelect({ selected }) {
@@ -221,6 +249,7 @@ export class CompanyListingComponent implements OnInit {
     this.announcementId = selected[0]?.id;
 
     console.log("Selected ProcurementCompanyId: ", selected[0]?.procurementCompanyId);
+    console.log("Selected VendorCompanyId: ", selected[0]?.vendorCompanyId);
     this.enableDisableButtons();
   }
 
@@ -268,14 +297,14 @@ export class CompanyListingComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-
   editSelectedRow() {
     if (this.chkBoxSelected.length === 1) {
       const row = this.chkBoxSelected[0];
       this.router.navigate(['/company/company-edit'], {
         queryParams: {
           id: row.id,
-          procurementCompanyId: row.procurementCompanyId
+          procurementCompanyId: row.procurementCompanyId,
+          vendorCompanyId: row.vendorCompanyId
         }
       });
     } else {
