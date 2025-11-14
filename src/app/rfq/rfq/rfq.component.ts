@@ -69,7 +69,7 @@ export class RfqComponent implements OnInit {
   status: any
   searchText = '';
   private searchChanged$ = new Subject<string>();
-
+  entity:any;
   constructor(private router: Router, private modalService: NgbModal,
     private route: ActivatedRoute, private rfqService: RfqService,
     private cdr: ChangeDetectorRef, public toastr: ToastrService,
@@ -109,6 +109,7 @@ export class RfqComponent implements OnInit {
   loadRfqs() {
     this.loading = true;
     const entityId = localStorage.getItem('selectedCompanyId');
+    this.entity = entityId;
     this.query.entityId = entityId ? +entityId : null;
     this.rfqService.getAllQuotations(this.query).subscribe({
       next: (data: any) => {

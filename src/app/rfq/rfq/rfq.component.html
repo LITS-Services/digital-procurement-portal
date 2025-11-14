@@ -133,7 +133,7 @@
                 <!-- <ngx-datatable-column name="Owner" prop="owner">
                 </ngx-datatable-column> -->
 
-                <ngx-datatable-column name="Entity" prop="entityName">
+                <ngx-datatable-column *ngIf="entity === 'All'" name="Entity" prop="entityName">
                 </ngx-datatable-column>
                 <ngx-datatable-column name="Comments" prop="comment">
                 </ngx-datatable-column>
