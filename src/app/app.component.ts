@@ -27,7 +27,7 @@ export class AppComponent implements OnInit, OnDestroy {
             this.spinner.show();
             setTimeout(() => {
               this.spinner.hide();
-            }, 5000);
+            }, 1000);
 
             
     }
