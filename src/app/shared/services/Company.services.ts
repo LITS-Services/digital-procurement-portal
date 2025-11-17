@@ -194,4 +194,16 @@ export class CompanyService {
     });
   }
 
+
+
+assignedMe(vendorEntityAssociationId: number, approverId: string, remarks: string): Observable<any> {
+  const params = new HttpParams()
+    .set('VendorEntityAssociationId', vendorEntityAssociationId)
+    .set('ApproverId', approverId)
+    .set('Remarks', remarks);
+
+  return this.http.get<any>(`${this.apiUrl}/assigned-me`, { params });
+}
+
+
 }

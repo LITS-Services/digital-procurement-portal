@@ -128,7 +128,8 @@ export class CompanyListingComponent implements OnInit {
         primaryCurrency: demographics.primaryCurrency || '',
         entity: c.procurementCompany || '', // Use procurementCompany directly from API
         procurementCompanyId: c.procurementCompanyId || null,
-        vendorCompanyId: c.vendorCompanyId || null // Fixed typo: vendorComapnyId -> vendorCompanyId
+        vendorCompanyId: c.vendorCompanyId || null,
+        vendorEntityAssociationId: c.vendorEntityAssociationId || null // Add this line
       };
     } else {
       // Fallback to the original nested structure
@@ -148,7 +149,8 @@ export class CompanyListingComponent implements OnInit {
         primaryCurrency: demographics.primaryCurrency || '',
         entity: selectedEntity?.procurementCompany || '',
         procurementCompanyId: selectedEntity?.procurementCompanyId || null,
-        vendorCompanyId: selectedEntity?.vendorCompanyId || null // Fixed typo
+        vendorCompanyId: selectedEntity?.vendorCompanyId || null,
+        vendorEntityAssociationId: selectedEntity?.vendorEntityAssociationId || null // Add this line
       };
     }
   }
@@ -233,15 +235,27 @@ export class CompanyListingComponent implements OnInit {
       centered: true
     });
 
-    // Use the correct property names that match the mapped data
+    // Pass all required data including vendorEntityAssociationId
     modalRef.componentInstance.ProcurementCompanyId = selectedRow.procurementCompanyId;
-    modalRef.componentInstance.vendorComapnyId = selectedRow.vendorCompanyId || selectedRow.id; // Fallback to id if vendorCompanyId is null
+    modalRef.componentInstance.vendorComapnyId = selectedRow.vendorCompanyId || selectedRow.id;
     modalRef.componentInstance.entity = selectedRow.entity;
+    modalRef.componentInstance.vendorEntityAssociationId = selectedRow.vendorEntityAssociationId;
     
     console.log('Selected Row for Assign Me:', selectedRow);
     console.log('ProcurementCompanyId sent to modal:', selectedRow.procurementCompanyId);
     console.log('vendorCompanyId sent to modal:', selectedRow.vendorCompanyId);
     console.log('Entity sent to modal:', selectedRow.entity);
+    console.log('vendorEntityAssociationId sent to modal:', selectedRow.vendorEntityAssociationId);
+
+    // Handle modal close and refresh data if needed
+    modalRef.result.then((result) => {
+      if (result === 'success') {
+        // Refresh the company data after successful assignment
+        this.getCompanyData();
+      }
+    }).catch((error) => {
+      console.log('Modal dismissed:', error);
+    });
   }
 
   customChkboxOnSelect({ selected }) {
