@@ -15,14 +15,15 @@ import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-dat
 })
 export class NewVendorOnboardingComponent implements OnInit {
   @ViewChild(DatatableComponent) table: DatatableComponent;
-  
+
   vendorOnboardingForm: FormGroup;
   entitiesList: any[] = [];
   roles: any[] = [];
   filteredReceivers: any[] = [];
+  UsersData: any[] = [];
   mode: string = 'Create';
   onboardingId: number | null = null;
-  
+
   // Table properties
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
@@ -77,6 +78,9 @@ export class NewVendorOnboardingComponent implements OnInit {
 
       if (this.mode === 'Edit' && this.onboardingId) {
         this.loadOnboardingSetupById(this.onboardingId);
+        // this.getProcurementUsers();
+        // // this.mapNamesToReceivers();
+
       }
     });
   }
@@ -84,7 +88,7 @@ export class NewVendorOnboardingComponent implements OnInit {
   // Add selected receivers to the main list
   addReceiversToTable() {
     const selectedReceiverIds = this.vendorOnboardingForm.get('Receivers')?.value || [];
-    
+
     if (selectedReceiverIds.length === 0) {
       this.toastr.warning('Please select at least one receiver to add.');
       return;
@@ -108,7 +112,7 @@ export class NewVendorOnboardingComponent implements OnInit {
     }
 
     // Get receiver details from filteredReceivers
-    const selectedReceivers = this.filteredReceivers.filter(receiver => 
+    const selectedReceivers = this.filteredReceivers.filter(receiver =>
       selectedReceiverIds.includes(receiver.userId) || selectedReceiverIds.includes(receiver.id)
     );
 
@@ -119,7 +123,7 @@ export class NewVendorOnboardingComponent implements OnInit {
 
     // Add each receiver to the main list with their individual roleId
     selectedReceivers.forEach(receiver => {
-      const existingReceiver = this.allSelectedReceivers.find(dr => 
+      const existingReceiver = this.allSelectedReceivers.find(dr =>
         dr.id === (receiver.userId || receiver.id)
       );
 
@@ -142,7 +146,7 @@ export class NewVendorOnboardingComponent implements OnInit {
 
     // Update table rows
     this.receiverRows = [...this.allSelectedReceivers];
-    
+
     // Clear current selection but keep entity and role
     this.vendorOnboardingForm.patchValue({
       Receivers: []
@@ -168,36 +172,68 @@ export class NewVendorOnboardingComponent implements OnInit {
       .pipe(finalize(() => this.spinner.hide()))
       .subscribe({
         next: (response: any) => {
-          console.log('Get receivers Full API Response:', response);
+          let data = response?.value || response?.result || response?.data || response;
 
-          let data = null;
-
-          // Extract data from response
-          if (response && response.value) {
-            data = response.value;
-          } else if (response && response.setupName) {
-            data = response;
-          } else if (response && response.result) {
-            data = response.result;
-          } else if (response && response.data) {
-            data = response.data;
-          } else {
-            console.warn('Unexpected API response structure:', response);
+          if (!data) {
             this.toastr.warning('No data found for the selected onboarding setup.');
             return;
           }
 
           console.log('Extracted data for form:', data);
 
-          // Check if roles are loaded, if not load them first
-          if (this.roles.length === 0) {
-            console.log('Roles not loaded yet, loading roles first...');
-            this.loadRoles(() => {
-              this.populateForm(data);
+          // Function to map receivers with roleName and entityName
+          const mapReceivers = () => {
+            const receiverRows = (data.detailedReceivers || []).map(r => {
+              const entity = this.entitiesList.find(e => e.id === r.entityId);
+              const role = this.roles.find(ro => ro.id === r.roleId);
+
+              return {
+                ...r,
+                entityName: entity?.name || 'N/A',
+                roleName: role?.name || 'N/A'
+              };
             });
-          } else {
+
+            this.receiverRows = [...receiverRows];
+            this.cdr.detectChanges();
+            console.log('Receiver rows for table:', this.receiverRows);
+
+            // Populate the rest of the form
             this.populateForm(data);
-          }
+          };
+
+          // Ensure roles are loaded
+          const loadRolesIfNeeded = (cb: () => void) => {
+            if (!this.roles.length) {
+              this.loadRoles(cb);
+            } else {
+              cb();
+            }
+          };
+
+          // Ensure entities are loaded
+          const loadEntitiesIfNeeded = (cb: () => void) => {
+            if (!this.entitiesList.length) {
+              this.loadEntities();
+              // Wait a tick for async load, then call mapping
+              const interval = setInterval(() => {
+                if (this.entitiesList.length) {
+                  clearInterval(interval);
+                  cb();
+                }
+              }, 50);
+            } else {
+              cb();
+            }
+          };
+
+          // Load roles first, then entities, then map receivers
+          loadRolesIfNeeded(() => {
+            loadEntitiesIfNeeded(() => {
+              mapReceivers();
+            });
+          });
+
         },
         error: (err) => {
           console.error('Error loading onboarding setup:', err);
@@ -205,6 +241,85 @@ export class NewVendorOnboardingComponent implements OnInit {
         }
       });
   }
+
+
+
+  // loadOnboardingSetupById(id: number) {
+  //   this.spinner.show();
+
+  //   this.companyService.GetCompanyOnboardingSetupById(id)
+  //     .pipe(finalize(() => this.spinner.hide()))
+  //     .subscribe({
+  //       // next: (response: any) => {
+  //       //   let data = response?.value || response?.result || response?.data || response;
+
+  //       //   if (!data) {
+  //       //     this.toastr.warning('No data found for the selected onboarding setup.');
+  //       //     return;
+  //       //   }
+
+  //       //   // Map detailed receivers to include entityName and roleName
+  //       //   const receiverRows = (data.detailedReceivers || []).map(r => {
+  //       //     const entity = this.entitiesList.find(e => e.id === r.entityId);
+  //       //     const role = this.roles.find(ro => ro.id === r.roleId);
+
+  //       //     return {
+  //       //       ...r,
+  //       //       entityName: entity ? entity.name : 'N/A',
+  //       //       roleName: role ? role.name : 'N/A'
+  //       //     };
+  //       //   });
+
+
+
+  //       //   this.receiverRows = receiverRows;
+  //       //   console.log('Receiver rows with entity/role names:', this.receiverRows);
+
+
+
+  //       //   // Populate other form fields if needed
+  //       //   if (this.roles.length === 0) {
+  //       //     this.loadRoles(() => this.populateForm(data));
+  //       //   } else {
+  //       //     this.populateForm(data);
+  //       //   }
+  //       // },
+
+  //       next: (response: any) => {
+  //         let data = response?.value || response?.result || response?.data || response;
+
+  //         if (!data) {
+  //           this.toastr.warning('No data found for the selected onboarding setup.');
+  //           return;
+  //         }
+
+  //         // Map roleName from roleId if roles are already loaded
+  //         const receiverRows = (data.detailedReceivers || []).map(r => ({
+  //           ...r,
+  //           roleName: this.roles.find(ro => ro.id === r.roleId)?.name || 'N/A'
+  //         }));
+
+  //         // Assign to table rows
+  //         this.receiverRows = receiverRows;
+  //         console.log('Receiver rows for table:', this.receiverRows);
+  //         this.cdr.detectChanges();             // force Angular to detect the change
+
+  //         // Populate the rest of the form
+  //         if (this.roles.length === 0) {
+  //           // If roles not loaded, load them first then populate form
+  //           this.loadRoles(() => this.populateForm(data));
+  //         } else {
+  //           this.populateForm(data);
+  //         }
+  //       },
+
+  //       error: (err) => {
+  //         console.error('Error loading onboarding setup:', err);
+  //         this.toastr.error('Failed to load onboarding setup data. Please try again.');
+  //       }
+  //     });
+  // }
+
 
   populateForm(data: any) {
     console.log('Populating form with data:', data);
@@ -464,7 +579,7 @@ export class NewVendorOnboardingComponent implements OnInit {
   onRoleSelected(role: any) {
     const roleId = role?.id || role;
     const entityId = this.vendorOnboardingForm.get('entities')?.value;
-    
+
     if (entityId && roleId) {
       console.log('Role selected - Loading receivers for Entity:', entityId, 'Role:', roleId);
       this.loadFilteredReceivers(entityId, roleId);
@@ -503,7 +618,7 @@ export class NewVendorOnboardingComponent implements OnInit {
     const entityId = this.vendorOnboardingForm.get('entities')?.value;
     const roleId = this.vendorOnboardingForm.get('Roles')?.value;
     const selectedReceivers = this.vendorOnboardingForm.get('Receivers')?.value || [];
-    
+
     return !!entityId && !!roleId && selectedReceivers.length > 0;
   }
 

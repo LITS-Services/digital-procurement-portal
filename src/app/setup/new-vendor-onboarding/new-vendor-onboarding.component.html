@@ -20,14 +20,15 @@
                         </button>
                         <span class="vl"></span>
                         <button type="submit" class="btn btn-sm cstm-ui-table-btn"
-                            [disabled]="vendorOnboardingForm.invalid || receiverRows.length === 0" 
+                            [disabled]="vendorOnboardingForm.invalid || receiverRows.length === 0"
                             *ngIf="mode !== 'Edit'" (click)="submitForm()">
                             <i class="ft-plus"></i><label class="ml-1 mt-1">Save</label>
                         </button>
-                        <button [disabled]="mode !== 'Edit' || vendorOnboardingForm.invalid || receiverRows.length === 0" 
-                                type="reset" class="btn btn-sm cstm-ui-table-btn"
-                            (click)="updateForm()">
-                            <i class="ft-edit"></i><label class="ml-1 mt-1">{{ mode === 'Edit' ? 'Update' : 'Edit' }}</label>
+                        <button
+                            [disabled]="mode !== 'Edit' || vendorOnboardingForm.invalid || receiverRows.length === 0"
+                            type="reset" class="btn btn-sm cstm-ui-table-btn" (click)="updateForm()">
+                            <i class="ft-edit"></i><label class="ml-1 mt-1">{{ mode === 'Edit' ? 'Update' : 'Edit'
+                                }}</label>
                         </button>
                         <button [disabled]="mode !== 'Edit'" type="reset" class="btn btn-sm cstm-ui-table-btn">
                             <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
@@ -53,8 +54,8 @@
                                 <label>Setup Name</label>
                                 <input type="text" class="form-control custom-input" formControlName="SetupName"
                                     placeholder="Setup Name" required>
-                                <div *ngIf="vendorOnboardingForm.get('SetupName')?.invalid && vendorOnboardingForm.get('SetupName')?.touched" 
-                                     class="text-danger small">
+                                <div *ngIf="vendorOnboardingForm.get('SetupName')?.invalid && vendorOnboardingForm.get('SetupName')?.touched"
+                                    class="text-danger small">
                                     Setup Name is required
                                 </div>
                             </div>
@@ -67,8 +68,8 @@
                                         bindValue="id" [searchable]="true" placeholder="Select Entity"
                                         formControlName="entities" (change)="onEntitySelected($event)">
                                     </ng-select>
-                                    <div *ngIf="vendorOnboardingForm.get('entities')?.invalid && vendorOnboardingForm.get('entities')?.touched" 
-                                         class="text-danger small">
+                                    <div *ngIf="vendorOnboardingForm.get('entities')?.invalid && vendorOnboardingForm.get('entities')?.touched"
+                                        class="text-danger small">
                                         Entity is required
                                     </div>
                                 </div>
@@ -80,8 +81,8 @@
                                 <ng-select [items]="roles" bindLabel="name" bindValue="id" placeholder="Select Roles"
                                     formControlName="Roles" (change)="onRoleSelected($event)">
                                 </ng-select>
-                                <div *ngIf="vendorOnboardingForm.get('Roles')?.invalid && vendorOnboardingForm.get('Roles')?.touched" 
-                                     class="text-danger small">
+                                <div *ngIf="vendorOnboardingForm.get('Roles')?.invalid && vendorOnboardingForm.get('Roles')?.touched"
+                                    class="text-danger small">
                                     Role is required
                                 </div>
                             </div>
@@ -112,11 +113,8 @@
                             <div class="col-lg-2 mb-2">
                                 <div class="form-group mb-2">
                                     <label>&nbsp;</label>
-                                    <button type="button" 
-                                            
-                                            class="btn btn-success btn-block mt-2"
-                                            [disabled]="!isAddButtonEnabled"
-                                            (click)="addReceiversToTable()">
+                                    <button type="button" class="btn btn-block user-add-btn"
+                                        [disabled]="!isAddButtonEnabled" (click)="addReceiversToTable()">
                                         <i class="ft-user-plus mr-1"></i>
                                         Add Users
                                     </button>
@@ -137,8 +135,8 @@
                                 <label>Description</label>
                                 <textarea class="form-control custom-input" rows="3" placeholder="Enter description"
                                     formControlName="Description"></textarea>
-                                <div *ngIf="vendorOnboardingForm.get('Description')?.invalid && vendorOnboardingForm.get('Description')?.touched" 
-                                     class="text-danger small">
+                                <div *ngIf="vendorOnboardingForm.get('Description')?.invalid && vendorOnboardingForm.get('Description')?.touched"
+                                    class="text-danger small">
                                     Description is required
                                 </div>
                             </div>
@@ -158,18 +156,10 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <ngx-datatable
-                            class="bootstrap table-striped"
-                            [rows]="receiverRows"
-                            [columns]="receiverColumns"
-                            [columnMode]="ColumnMode.force"
-                            [headerHeight]="50"
-                            [footerHeight]="50"
-                            [rowHeight]="'auto'"
-                            [limit]="10"
-                            [selectionType]="SelectionType.single"
-                            [scrollbarH]="false">
-                            
+                        <ngx-datatable class="bootstrap table-striped" [rows]="receiverRows" [columns]="receiverColumns"
+                            [columnMode]="ColumnMode.force" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'"
+                            [limit]="10" [selectionType]="SelectionType.single" [scrollbarH]="false">
+
                             <!-- User Name Column -->
                             <ngx-datatable-column name="User Name" prop="userName" [width]="200">
                                 <ng-template let-value="value" ngx-datatable-cell-template>
@@ -184,26 +174,15 @@
                                 </ng-template>
                             </ngx-datatable-column>
 
-                            <!-- Department Column -->
-                            <ngx-datatable-column name="Department" prop="department" [width]="150">
-                                <ng-template let-value="value" ngx-datatable-cell-template>
-                                    {{ value || 'N/A' }}
-                                </ng-template>
-                            </ngx-datatable-column>
-
-                            <!-- Position Column -->
-                            <ngx-datatable-column name="Position" prop="position" [width]="150">
-                                <ng-template let-value="value" ngx-datatable-cell-template>
-                                    {{ value || 'N/A' }}
-                                </ng-template>
-                            </ngx-datatable-column>
-
                             <!-- Entity Column -->
                             <ngx-datatable-column name="Entity" prop="entityName" [width]="150">
+                            </ngx-datatable-column>    
+
+                            <!-- <ngx-datatable-column name="Entity" prop="entityName" [width]="150">
                                 <ng-template let-value="value" ngx-datatable-cell-template>
-                                    <span class="badge badge-primary">{{ value || 'N/A' }}</span>
+                                    <span>{{ value || 'N/A' }}</span>
                                 </ng-template>
-                            </ngx-datatable-column>
+                            </ngx-datatable-column> -->
 
                             <!-- Role Column -->
                             <ngx-datatable-column name="Role" prop="roleName" [width]="150">
@@ -215,11 +194,8 @@
                             <!-- Actions Column -->
                             <ngx-datatable-column name="Actions" [width]="100" [sortable]="false">
                                 <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                                    <button
-                                        class="btn btn-sm btn-danger"
-                                        (click)="removeReceiver(row.id)"
-                                        title="Remove from List"
-                                        type="button">
+                                    <button class="btn btn-sm btn-danger" (click)="removeReceiver(row.id)"
+                                        title="Remove from List" type="button">
                                         <i class="ft-trash"></i>
                                     </button>
                                 </ng-template>
@@ -235,7 +211,7 @@
                 <div class="card-body text-center py-4">
                     <i class="ft-users text-muted" style="font-size: 48px;"></i>
                     <h5 class="text-muted mt-2">No Receivers Added Yet</h5>
-               
+
                 </div>
             </div>
 
