@@ -718,7 +718,7 @@ export class NewPurchaseRequestComponent implements OnInit {
 
     const payload = {
       requisitionNo: f.requisitionNo || '',
-      submittedDate: f.submittedDate,
+      submittedDate: f.submittedDate || null,
       deliveryLocation: f.deliveryLocation || '',
       receiverName: f.receiverName || '',
       receiverContact: f.receiverContact || '',
@@ -809,7 +809,7 @@ export class NewPurchaseRequestComponent implements OnInit {
 
     const payload = {
       requisitionNo: f.requisitionNo,
-      submittedDate: f.submittedDate,
+      submittedDate: f.submittedDate || null,
       deliveryLocation: f.deliveryLocation,
       receiverName: f.receiverName,
       receiverContact: f.receiverContact,
@@ -829,7 +829,6 @@ export class NewPurchaseRequestComponent implements OnInit {
     if (this.currentRequestId) {
       this.purchaseRequestService.updatePurchaseRequest(this.currentRequestId, { purchaseRequest: payload }).subscribe({
         next: res => {
-          console.log('Purchase Request Updated:', res);
           this.loading = false;
           this.router.navigate(['/purchase-request']);
         },
@@ -859,50 +858,93 @@ export class NewPurchaseRequestComponent implements OnInit {
     }
   }
 
-  openNewEntityModal(rowIndex: number): void {
-    const sourceRow = rowIndex !== null
-      ? this.newPurchaseItemData[rowIndex] : this.itemForm.value; // new item (not yet inserted)
-    console.log("Source Row:", sourceRow);
-    const modalRef = this.modalService.open(PurchaseRequestAttachmentModalComponent, {
+  // openNewEntityModal(rowIndex: number): void {
+  //   const sourceRow = rowIndex !== null
+  //     ? this.newPurchaseItemData[rowIndex] : this.itemForm.value; // new item (not yet inserted)
+  //   console.log("Source Row:", sourceRow);
+  //   const modalRef = this.modalService.open(PurchaseRequestAttachmentModalComponent, {
+  //     backdrop: 'static',
+  //     size: 'lg',
+  //     centered: true,
+  //   });
+
+  //   modalRef.componentInstance.viewMode = this.viewMode;
+  //   modalRef.componentInstance.data = {
+  //     purchaseItemId: sourceRow?.id ?? 0,
+  //     existingAttachment: sourceRow?.attachments || []
+  //   };
+
+  //   modalRef.result.then((data: any[]) => {
+  //     if (data?.length) {
+  //       const merged = [
+  //         ...(sourceRow.attachments || []),
+  //         ...data.map(a => ({
+  //           fileName: a.fileName,
+  //           contentType: a.contentType,
+  //           content: a.content,
+  //           fromForm: a.fromForm,
+  //           purchaseItemId: sourceRow?.id ?? 0,
+  //           isNew: true
+  //         }))
+  //       ];
+
+  //       if (rowIndex !== null) {
+  //         // immutably update the edited row in the grid
+  //         this.newPurchaseItemData = this.newPurchaseItemData.map((r, i) =>
+  //           i === rowIndex ? { ...r, attachments: merged } : r
+  //         );
+
+  //       } else {
+  //         // reflect on the form for a new (not yet inserted) item
+  //         this.itemForm.patchValue({ attachments: merged });
+  //       }
+  //       // this.numberOfAttachments = this.attachmentList.length;
+  //     }
+  //   }).catch(() => { });
+  // }
+  openNewEntityModal(rowIndex: number | null = null) {
+  const modalRef = this.modalService.open(PurchaseRequestAttachmentModalComponent, {
       backdrop: 'static',
       size: 'lg',
       centered: true,
     });
 
-    modalRef.componentInstance.viewMode = this.viewMode;
-    modalRef.componentInstance.data = {
-      purchaseItemId: sourceRow?.id ?? 0,
-      existingAttachment: sourceRow?.attachments || []
-    };
+  // Pass existing attachments to modal
+  modalRef.componentInstance.data = {
+    existingAttachment: rowIndex !== null
+      ? this.newPurchaseItemData[rowIndex].attachments || []
+      : this.itemForm.get('attachments')?.value || [],
+    purchaseItemId: rowIndex !== null ? this.newPurchaseItemData[rowIndex].id : 0
+  };
 
-    modalRef.result.then((data: any[]) => {
-      if (data?.length) {
-        const merged = [
-          ...(sourceRow.attachments || []),
-          ...data.map(a => ({
-            fileName: a.fileName,
-            contentType: a.contentType,
-            content: a.content,
-            fromForm: a.fromForm,
-            purchaseItemId: sourceRow?.id ?? 0,
-            isNew: true
-          }))
-        ];
+  // Listen to changes immediately
+  modalRef.componentInstance.attachmentsChange.subscribe((attachments: any[]) => {
+    if (rowIndex !== null) {
+      this.newPurchaseItemData = this.newPurchaseItemData.map((item, i) =>
+        i === rowIndex ? { ...item, attachments } : item
+      );
+    } else {
+      this.itemForm.patchValue({ attachments });
+    }
+  });
 
-        if (rowIndex !== null) {
-          // immutably update the edited row in the grid
-          this.newPurchaseItemData = this.newPurchaseItemData.map((r, i) =>
-            i === rowIndex ? { ...r, attachments: merged } : r
-          );
-
-        } else {
-          // reflect on the form for a new (not yet inserted) item
-          this.itemForm.patchValue({ attachments: merged });
-        }
-        // this.numberOfAttachments = this.attachmentList.length;
+  // Optional: final payload when modal closes
+  modalRef.result.then((data: any[]) => {
+    if (data) {
+      // merge with existing to avoid duplicates
+      if (rowIndex !== null) {
+        const existingAttachments = this.newPurchaseItemData[rowIndex].attachments || [];
+        const merged = [...existingAttachments, ...data.filter(d => !existingAttachments.some(e => e.fileName === d.fileName))];
+        this.newPurchaseItemData[rowIndex].attachments = merged;
+      } else {
+        const existingAttachments = this.itemForm.get('attachments')?.value || [];
+        const merged = [...existingAttachments, ...data.filter(d => !existingAttachments.some(e => e.fileName === d.fileName))];
+        this.itemForm.patchValue({ attachments: merged });
       }
-    }).catch(() => { });
-  }
+    }
+  }).catch(() => {});
+}
+
 
   hasUnsavedChanges(): boolean {
     return this.newPurchaseRequestForm.dirty || this.itemForm.dirty || this.newPurchaseItemData.length > 0;

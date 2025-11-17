@@ -28,18 +28,18 @@
         <ngx-datatable class="bootstrap core-bootstrap" [rows]="uploadedFiles" [columnMode]="'standard'"
           [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5">
 
-          <ngx-datatable-column name="Sr. No." [width]="100">
+          <ngx-datatable-column name="Sr. No.">
             <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
               <span>{{rowIndex + 1}}</span>
             </ng-template>
           </ngx-datatable-column>
-          <ngx-datatable-column name="Type" prop="contentType" [width]="300">
+          <ngx-datatable-column name="Type" prop="contentType"  [width]="420">
           </ngx-datatable-column>
-          <ngx-datatable-column name="File" prop="fileName" [width]="250">
+          <ngx-datatable-column name="File" prop="fileName">
           </ngx-datatable-column>
           <!-- <ngx-datatable-column name="Remarks" [width]="150" prop="remarks">
           </ngx-datatable-column> -->
-          <ngx-datatable-column name="Actions" [width]="100">
+          <ngx-datatable-column name="Actions">
             <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex">
 
               <a matTooltip="Download File" class="row-action-edit" style="margin-right: 10px;"

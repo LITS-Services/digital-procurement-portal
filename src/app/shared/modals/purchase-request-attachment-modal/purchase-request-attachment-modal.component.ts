@@ -33,14 +33,23 @@ export class PurchaseRequestAttachmentModalComponent implements OnInit {
     });
   }
 
+  // ngOnInit(): void {
+  //   // this.uploadedFiles = this.attachments ? [...this.attachments] : [];
+  //   this.uploadedFiles = this.data?.existingAttachment
+  //     ? this.data.existingAttachment.map((f: any) => ({ ...f, isNew: false })) // ⬅️ key line
+  //     : [];
+  //   // this.uploadedFiles = this.data?.existingAttachment ? [...this.data.existingAttachment] : [];
+  //   this.itemId = this.data?.purchaseItemId;
+  // }
   ngOnInit(): void {
-    // this.uploadedFiles = this.attachments ? [...this.attachments] : [];
-    this.uploadedFiles = this.data?.existingAttachment
-      ? this.data.existingAttachment.map((f: any) => ({ ...f, isNew: false })) // ⬅️ key line
-      : [];
-    // this.uploadedFiles = this.data?.existingAttachment ? [...this.data.existingAttachment] : [];
-    this.itemId = this.data?.purchaseItemId;
-  }
+  // Work on a copy to avoid overwriting parent data
+  this.uploadedFiles = this.data?.existingAttachment
+    ? this.data.existingAttachment.map(a => ({ ...a, isNew: false }))
+    : [];
+
+  this.itemId = this.data?.purchaseItemId;
+}
+
 
   async onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -89,6 +98,7 @@ export class PurchaseRequestAttachmentModalComponent implements OnInit {
 
       this.uploadedFiles.push(newAttachment);
       this.uploadedFiles = [...this.uploadedFiles]; // Trigger UI update
+      this.emitChanges();
 
     } catch (error) {
       console.error('Failed to convert file to base64:', error);
@@ -131,6 +141,7 @@ export class PurchaseRequestAttachmentModalComponent implements OnInit {
   deleteRow(rowIndex: number): void {
     this.uploadedFiles.splice(rowIndex, 1);
     this.uploadedFiles = [...this.uploadedFiles]; // refresh table
+      this.emitChanges(); // 🔹 emit change
     this.toastr.success('Attachment removed!', '');
   }
   private emitChanges() {
