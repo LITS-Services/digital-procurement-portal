@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from 'app/shared/auth/auth.service';
@@ -6,6 +6,7 @@ import { CompanyService } from 'app/shared/services/Company.services';
 import { WorkflowServiceService } from 'app/shared/services/WorkflowService/workflow-service.service';
 import { EmailTemplateService } from 'app/shared/services/EmailTemplateService';
 import { ToastrService } from 'ngx-toastr';
+import { LookupService } from 'app/shared/services/lookup.service';
 
 declare var tinymce: any;
 
@@ -36,6 +37,8 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
   isEditMode = false;
   templateId: number | null = null;
 
+  placeholders: any[] = [];
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -45,7 +48,9 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
     private companyService: CompanyService,
     private emailTemplateService: EmailTemplateService,
     private workflowService: WorkflowServiceService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private lookupService: LookupService,
+    public cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -73,6 +78,8 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    
+
     // ✅ Wait for Angular change detection
     setTimeout(() => {
       tinymce.init({
@@ -80,6 +87,7 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
         height: 500,
         menubar: true,
         branding: false,
+        
         plugins: [
           'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor',
           'searchreplace', 'visualblocks', 'code', 'fullscreen', 'insertdatetime', 'media',
@@ -154,6 +162,10 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
     });
   }
 
+  get selectedWorkflowTypesCount(): number {
+    return this.workflowTypes.filter(t => t.selected).length;
+  }
+
   // Load template for edit
   loadTemplate(id: number) {
     this.emailTemplateService.getEmailTemplateById(id).subscribe({
@@ -183,7 +195,29 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // ✅ Map selected checkboxes
+  loadPlaceholders(workflowTypeId: number) {
+    this.lookupService.getAllPlaceHoldersByWorkflowType(workflowTypeId).subscribe({
+      next: (res: any[]) => {
+        const mapped = res.map(p => ({
+          id: p.id,
+          workflowTypeId: workflowTypeId, 
+          description: p.description || p.placeHolder
+        }));
+        this.placeholders = [...this.placeholders, ...mapped]; 
+        this.cdr.detectChanges();
+      },
+      error: err => console.error('Failed to load placeholders', err)
+    });
+  }
+
+  insertPlaceholder(placeholder: string) {
+    const editor = tinymce.get('emailEditor');
+    if (editor) {
+      editor.execCommand('mceInsertContent', false, placeholder);
+    }
+  }
+
+  // Map selected checkboxes
   mapSelectedValues() {
     const selectedCompanies = this.invitationForm.value.companies || [];
     const selectedActions = this.invitationForm.value.actions || [];
@@ -211,15 +245,20 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
     const selectedNames = this.workflowTypes.filter(t => t.selected).map(t => t.name);
     this.invitationForm.patchValue({ actions: selectedNames });
     this.invitationForm.get('actions')?.markAsTouched(); // ✅ Mark as touched
+    // Load placeholders when selecting a workflow type
+    if (type.selected) {
+      this.loadPlaceholders(type.id);
+    } else {
+      // Remove placeholders of unselected type
+      this.placeholders = this.placeholders.filter(p => p.workflowTypeId !== type.id);
+    }
   }
-
-  selectStatus(s: any) {
+selectStatus(s: any) {
     s.selected = !s.selected;
     const selectedNames = this.statusOptions.filter(opt => opt.selected).map(opt => opt.name);
     this.invitationForm.patchValue({ status: selectedNames });
     this.invitationForm.get('status')?.markAsTouched(); // ✅ Mark as touched
   }
-
   // Close dropdowns when clicking outside
   @HostListener('document:click', ['$event'])
   handleClickOutside(event: Event) {

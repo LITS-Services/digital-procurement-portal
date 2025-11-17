@@ -49,8 +49,7 @@
 
           <div ngbDropdown class="w-100">
             <button ngbDropdownToggle type="button" class="form-control text-start"
-              [ngClass]="{ 'is-invalid': submitted && f['status'].errors }"
-              (click)="$event.stopPropagation()">
+              [ngClass]="{ 'is-invalid': submitted && f['status'].errors }" (click)="$event.stopPropagation()">
               {{ invitationForm.value.status?.length > 0
               ? invitationForm.value.status.join(', ')
               : 'Select Action' }}
@@ -77,8 +76,7 @@
 
           <div ngbDropdown class="w-100">
             <button ngbDropdownToggle type="button" class="form-control text-start"
-              [ngClass]="{ 'is-invalid': submitted && f['companies'].errors }"
-              (click)="$event.stopPropagation()">
+              [ngClass]="{ 'is-invalid': submitted && f['companies'].errors }" (click)="$event.stopPropagation()">
               {{ invitationForm.value.companies?.length > 0
               ? invitationForm.value.companies.join(', ')
               : 'Select Companies' }}
@@ -105,8 +103,7 @@
 
           <div ngbDropdown class="w-100">
             <button ngbDropdownToggle type="button" class="form-control text-start"
-              [ngClass]="{ 'is-invalid': submitted && f['actions'].errors }"
-              (click)="$event.stopPropagation()">
+              [ngClass]="{ 'is-invalid': submitted && f['actions'].errors }" (click)="$event.stopPropagation()">
               {{ invitationForm.value.actions?.length > 0
               ? invitationForm.value.actions.join(', ')
               : 'Select Type' }}
@@ -128,13 +125,77 @@
         </div>
 
         <!-- ✅ Email Body (TinyMCE) -->
-        <div class="col-md-12 mb-3">
+        <!-- <div class="col-md-12 mb-3">
           <label class="form-label">Body <span class="text-danger">*</span></label>
           <div style="filter: drop-shadow(0px 4px 18px rgba(0, 0, 0, 0.25));">
             <textarea id="emailEditor" name="content" rows="8" class="form-control"
               placeholder="Write your message..." formControlName="body"
               [ngClass]="{ 'is-invalid': submitted && f['body'].errors }"></textarea>
+                
+                            
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Placeholders</label>
+                            <div class="placeholder-panel p-2 border rounded" *ngIf="placeholders.length > 0">
+                                <span *ngFor="let ph of placeholders"
+                                    class="placeholder-item badge bg-info text-white me-2 mb-2"
+                                    (click)="insertPlaceholder(ph.description)" title="{{ ph.description }}">
+                                    {{ ph.description }}
+                                </span>
+                            </div>
+                            <div *ngIf="placeholders.length === 0" class="text-muted small">
+                                Select a Workflow Type to see available placeholders.
+                            </div>
+                        </div>
+
           </div>
+                    <div *ngIf="submitted && f['body'].errors" class="invalid-feedback mt-1">
+                        Body is required.
+                    </div>
+                </div> -->
+        <!-- Body with Placeholder Panel -->
+        <div class="col-md-12 mb-3">
+          <label class="form-label">Body <span class="text-danger">*</span></label>
+          <div class="body-placeholder-wrapper">
+
+            <!-- Email Body -->
+            <div class="email-body">
+              <textarea id="emailEditor" name="content" rows="8" class="form-control"
+                placeholder="Write your message..." formControlName="body"
+                [ngClass]="{ 'is-invalid': submitted && f['body'].errors }"></textarea>
+            </div>
+
+            <!-- Placeholder Panel -->
+            <div class="placeholder-panel-wrapper">
+              <label class="form-label">Placeholders</label>
+
+              <div *ngIf="placeholders.length > 0" class="placeholder-panel p-2 border rounded">
+                <!-- <span *ngFor="let ph of placeholders"
+                                    class="placeholder-item badge bg-info text-white me-2 mb-2"
+                                    (click)="insertPlaceholder(ph.description)" title="{{ ph.description }}">
+                                    {{ ph.description }}
+                                </span> -->
+                <span *ngFor="let ph of placeholders" class="placeholder-item badge bg-info text-white me-2 mb-2"
+                  (click)="insertPlaceholder(ph.description)" title="{{ ph.description }}">
+                  {{ ph.description }}
+                </span>
+
+              </div>
+
+              <!-- No placeholders for single type -->
+              <div *ngIf="placeholders.length === 0 && selectedWorkflowTypesCount === 1" class="text-muted small">
+                No available placeholders for this type.
+              </div>
+
+              <!-- Default message when no type selected -->
+              <div *ngIf="placeholders.length === 0 && selectedWorkflowTypesCount !== 1" class="text-muted small">
+                Select a Workflow Type to see available placeholders.
+              </div>
+
+
+            </div>
+
+          </div>
+
           <div *ngIf="submitted && f['body'].errors" class="invalid-feedback mt-1">
             Body is required.
           </div>

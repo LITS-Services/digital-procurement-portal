@@ -115,3 +115,41 @@
 .cstm-dropdown{
     padding: 9px 16px !important;
 }
+
+.body-placeholder-wrapper {
+  display: flex;
+  gap: 15px;
+}
+
+.email-body {
+  flex: 3; // Email body takes larger space
+}
+
+.placeholder-panel-wrapper {
+  flex: 1; // smaller width
+  max-width: 250px; // optional limit
+  position: sticky;
+  top: 20px; // sticks 20px from top
+  height: fit-content;
+  align-self: flex-start; // ensure sticky works with flex
+}
+
+.placeholder-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.placeholder-item {
+  cursor: pointer;               /* Makes cursor appear as pointer */
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.placeholder-item:hover {
+  background-color: #0dcaf0;     /* Slightly darker shade or highlight */
+  transform: scale(1.05);        /* Slight pop effect */
+}
+
+
