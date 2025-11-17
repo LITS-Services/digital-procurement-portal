@@ -25,7 +25,6 @@ export class LookupService {
     return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=global-config-type`);
   }
 
-
   getFinalVendorsForSelectionOnPr(userId: string) {
     const url = `${this.baseUrl}/dropdowns`;
     const params = {
@@ -44,6 +43,15 @@ export class LookupService {
     const params = {
       name: 'proc-user-companies-by-user-id',
       id: userId
+    };
+    return this.http.get<any[]>(url, { params });
+  }
+
+  getAllPlaceHoldersByWorkflowType(workflowTypeId: number) {
+    const url = `${this.baseUrl}/dropdowns`;
+    const params = {
+      name: 'email-temp-placeholders',
+      id: workflowTypeId
     };
     return this.http.get<any[]>(url, { params });
   }
