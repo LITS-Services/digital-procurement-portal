@@ -74,6 +74,8 @@ export class NewRfqComponent implements OnInit {
     'quotation-box';
   rfqTabs: 'details' | 'items' | 'vendors' = 'details';
 
+  passEntityId: number | null = null;
+
   @ViewChild('accordion') accordion: NgbAccordion;
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
@@ -516,6 +518,7 @@ export class NewRfqComponent implements OnInit {
   }
 
   loadExistingQuotation(id: number) {
+
     this.loadVendorsAndCompanies(id);
 
     this.rfqService.getQuotationById(id).subscribe({
@@ -597,6 +600,7 @@ export class NewRfqComponent implements OnInit {
         }
 
         const rfqEntityId = Number(requestData.entityId) || null;
+        this.passEntityId = rfqEntityId;
         this.applyEntity(rfqEntityId);
         this.cdr.detectChanges();
       },

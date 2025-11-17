@@ -15,6 +15,7 @@ import { finalize, switchMap } from 'rxjs/operators';
 export class RfqVendorModalComponent implements OnInit {
   //data!: any;
   @Input() data: any;
+  @Input() entityId: number | null;
   @Input() viewMode = false;
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
@@ -69,7 +70,9 @@ export class RfqVendorModalComponent implements OnInit {
   // }
   fetchVendorsAndCompaniesForRfq() {
     const procurementUserId = localStorage.getItem('userId');
-    this.rfqService.getVendorsAndCompaniesForRfq(procurementUserId)
+    //const entityId = Number(localStorage.getItem('selectedCompanyId'));
+    const entityId = this.entityId
+    this.rfqService.getVendorsAndCompaniesForRfq(procurementUserId, entityId)
       .subscribe({
         next: (res: any) => {
           this.allVendorsandCompanies = res ?? res?.$values ?? [];
