@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PurchaseRequestsCountVM, QuotationRequestsCountVM } from 'app/dashboard/dashboard1/dashboard1.component';
 import { environment } from 'environments/environment';
@@ -13,10 +13,20 @@ export class DashboardService {
   constructor(private http: HttpClient) { }
 
   getPurchaseRequestsCount(userId: string, entityId: number): Observable<PurchaseRequestsCountVM> {
-    return this.http.get<PurchaseRequestsCountVM>(`${this.baseUrl}/purchase-requests-count?userId=${userId}&entityId=${entityId}`);
+    let params = new HttpParams()
+    if (userId) params = params.set("userId", userId);
+    if (entityId) params = params.set("entityId", entityId);
+    return this.http.get<PurchaseRequestsCountVM>(
+      `${this.baseUrl}/purchase-requests-count`, { params }
+    );
   }
 
   getQuotationRequestsCount(userId: string, entityId: number): Observable<QuotationRequestsCountVM> {
-    return this.http.get<QuotationRequestsCountVM>(`${this.baseUrl}/quotation-requests-count?userId=${userId}&entityId=${entityId}`);
+    let params = new HttpParams()
+    if (userId) params = params.set("userId", userId);
+    if (entityId) params = params.set("entityId", entityId);
+    return this.http.get<QuotationRequestsCountVM>(
+      `${this.baseUrl}/quotation-requests-count`, { params }
+    );
   }
 }

@@ -129,9 +129,13 @@ export class RfqService {
   // getVendorsAndCompaniesForRfq(): Observable<any[]> {
   //   return this.http.get<any[]>(`${this.baseUrl}/get-all-vendors-companies-for-rfq`);
   // }
-  getVendorsAndCompaniesForRfq(procurementUserId: string): Observable<any[]> {
-    return this.http.get<any>(`${this.baseUrl}/get-all-vendors-companies-for-rfq`,
-      { params: { procurementUserId } });
+  getVendorsAndCompaniesForRfq(procurementUserId: string, entityId: number): Observable<any[]> {
+    let params = new HttpParams()
+    if (procurementUserId) params = params.set("procurementUserId", procurementUserId);
+    if (entityId) params = params.set("entityId", entityId);
+    return this.http.get<any>(
+      `${this.baseUrl}/get-all-vendors-companies-for-rfq`, { params }
+    );
   }
 
 
