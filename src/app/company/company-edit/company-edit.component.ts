@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { CompanyActionsComponent } from '../company-actions/company-actions.component';
+import { Action } from 'rxjs/internal/scheduler/Action';
 
 @Component({
   selector: 'app-company-edit',
@@ -29,10 +30,12 @@ export class CompanyEditComponent implements OnInit {
   bankDetailsList: any[] = [];
   isEditMode: boolean = false;
   isLoading: boolean = false;
+  isAssigned: boolean = false;
   error: string = '';
   remark: string = '';
   message: string = '';
   actionType!: string;
+  vendorEntityAssociationId: number | null = null;
   private modalRef!: NgbModalRef;
 
   constructor(
@@ -42,13 +45,14 @@ export class CompanyEditComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private modalService: NgbModal,
     private cdRef: ChangeDetectorRef
-  ) {  }
+  ) { }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       if (params['id']) {
-        this.companyId = +params['id'];
-        this.procurementCompanyId = params['procurementCompanyId'] ? +params['procurementCompanyId'] : null; // ✅ Capture ID
+        this.companyId = +params['id'];        this.vendorEntityAssociationId = +params['vendorEntityAssociationId'];
+
+        this.procurementCompanyId = params['procurementCompanyId'] ? +params['procurementCompanyId'] : null;  // ✅ Capture ID
         this.loadCompanyById(this.companyId);
       }
     });
@@ -125,12 +129,17 @@ export class CompanyEditComponent implements OnInit {
     this.companyService.getCompanyById(id).subscribe({
       next: (res: any) => {
         const company = res?.vendorCompany || res;
+
+        this.isAssigned = company.vendorUserCompanies?.[0]?.isAssigned ?? false;
+        console.log('Is Assigned:', this.isAssigned);
+
         if (company) {
           this.companyId = company.id || 0;
           this.companyGUID = company.companyGUID || null;
           this.vendorId = company.vendorId || '';
           this.companyName = company.name || '';
           this.aboutCompany = company.aboutCompany || '';
+
           // this.vendorCategory = company.purchasingDemographics?.vendorType || '';
           // this.primaryCurrency = company.purchasingDemographics?.primaryCurrency || '';
           // this.lineOfBusiness = company.purchasingDemographics?.lineOfBusiness || '';
@@ -265,53 +274,143 @@ export class CompanyEditComponent implements OnInit {
     });
   }
 
- onActions(action: string): void {
-  const modalRef = this.modalService.open(CompanyActionsComponent, {
-    size: 'lg',
-    backdrop: 'static',
-    centered: true
-  });
+  // onActions(action: string): void {
+  //   const modalRef = this.modalService.open(CompanyActionsComponent, {
+  //     size: 'lg',
+  //     backdrop: 'static',
+  //     centered: true
+  //   });
 
-  modalRef.componentInstance.action = action;
+  //   modalRef.componentInstance.action = action;
 
-  modalRef.result.then(
-    (result) => {
-      if (result) {
-        this.isLoading = true;
+  //   modalRef.result.then(
+  //     (result) => {
+  //       if (result) {
+  //         this.isLoading = true;
 
-        const payload = {
-          vendorCompanyId: this.companyId,
-          procurementCompanyId: this.procurementCompanyId || 0,
-          actionTaken: action,       // separate action
-          remarks: result.remarks,   // plain string from modal
-          approverId: localStorage.getItem('userId') || ''
-        };
+  //         const payload = {
+  //           vendorCompanyId: this.companyId,
+  //           procurementCompanyId: this.procurementCompanyId || 0,
+  //           actionTaken: action,       // separate action
+  //           remarks: result.remarks,   // plain string from modal
+  //           approverId: localStorage.getItem('userId') || ''
+  //         };
 
-        this.companyService.VendorCompanyAction(payload).subscribe({
-          next: (res) => {
-            this.isLoading = false;
-            this.message =
-              action === 'Approve'
-                ? 'Company Approved Successfully!'
-                : action === 'Reject'
-                ? 'Company Rejected Successfully!'
-                : 'Company Sent Back Successfully!';
-            this.cdr.detectChanges();
-            this.router.navigate(['/company']);
-          },
-          error: (err) => {
-            this.isLoading = false;
-            this.error = 'Failed to perform action!';
-            console.error(err);
-          }
-        });
-      }
-    },
-    (reason) => {
-      console.log(`Modal dismissed: ${reason}`);
+  //         this.companyService.VendorCompanyAction(payload).subscribe({
+  //           next: (res) => {
+  //             this.isLoading = false;
+  //                this.message =
+  //               action === 'Approve'
+  //                 ? 'Company Approved Successfully!'
+  //                 : action === 'Reject'
+  //                   ? 'Company Rejected Successfully!'
+  //                   : action === 'SubmitForApproval'
+  //                     ? 'Company Submitted for Approval Successfully!'
+  //                     : 'Company Sent Back Successfully!';
+  //             this.cdr.detectChanges();
+  //             this.router.navigate(['/company']);
+  //           },
+  //           error: (err) => {
+  //             this.isLoading = false;
+  //             this.error = 'Failed to perform action!';
+  //             console.error(err);
+  //           }
+  //         });
+  //       }
+  //     },
+  //     (reason) => {
+  //       console.log(`Modal dismissed: ${reason}`);
+  //     }
+  //   );
+  // }
+
+
+  onActions(action: string): void {
+    if (action === 'sendforapproval') {
+      // Directly call API with action
+      this.submitForApproval(action);
+      return;
     }
-  );
-}
+
+    // For other actions, open modal as before
+    const modalRef = this.modalService.open(CompanyActionsComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      centered: true
+    });
+
+    modalRef.componentInstance.action = action;
+
+    modalRef.result.then(
+      (result) => {
+        if (!result) return;
+        this.performCompanyAction(action, result.remarks);
+      },
+      (reason) => {
+        console.log(`Modal dismissed: ${reason}`);
+      }
+    );
+  }
+
+
+  private performCompanyAction(action: string, remarks: string) {
+    this.isLoading = true;
+
+    const payload = {
+      vendorCompanyId: this.companyId,
+      procurementCompanyId: this.procurementCompanyId || 0,
+      actionTaken: action,
+      remarks,
+      approverId: localStorage.getItem('userId') || ''
+    };
+
+    this.companyService.VendorCompanyAction(payload).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.message =
+          action === 'Approve'
+            ? 'Company Approved Successfully!'
+            : action === 'Reject'
+              ? 'Company Rejected Successfully!'
+              : 'Company Sent Back Successfully!';
+        this.cdr.detectChanges();
+        this.router.navigate(['/company']);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.error = 'Failed to perform action!';
+        console.error(err);
+      }
+    });
+  }
+
+  private submitForApproval(action: string): void {
+    this.isLoading = true;
+
+    const payload = {
+      vendorCompanyId: this.companyId,
+      approverId: localStorage.getItem('userId') || '',
+      procurementCompanyId: this.procurementCompanyId || 0,
+      Action: action,
+      vendorEntityAssociationId : this.vendorEntityAssociationId, // <-- send action in payload
+      // no remarks
+    };
+
+    this.companyService.takeAction(payload).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.message = 'Company Submitted for Approval Successfully!';
+        this.cdr.detectChanges();
+        this.router.navigate(['/company']);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.error = 'Failed to submit for approval!';
+        console.error(err);
+      }
+    });
+  }
+
 
 
 

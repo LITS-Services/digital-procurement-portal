@@ -26,20 +26,34 @@
               <i class="fa fa-rotate-left"></i> Recall
             </button> -->
 
-              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId"
+            <!-- <button class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId"
                 (click)="onActions('Approve')">
                 <i class="ft-check"></i><label class="ml-1 mt-1">Approve</label>
-              </button>
+              </button> -->
 
-              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId"
-                (click)="onActions('Reject')">
-                <i class="ft-x"></i><label class="ml-1 mt-1">Reject</label>
-              </button>
 
-              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId"
-                (click)="onActions('SendBack')">
-                <i class="ft-arrow-left"></i><label class="ml-1 mt-1">Send Back</label>
-              </button>
+            <!-- If isAssigned = true → show Submit for Approval -->
+            <button *ngIf="isAssigned" class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId"
+              (click)="onActions('sendforapproval')">
+              <i class="ft-check"></i>
+              <label class="ml-1 mt-1">Submit for Approval</label>
+            </button>
+
+            <!-- If isAssigned = false → normal behavior -->
+            <button *ngIf="!isAssigned" class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId"
+              (click)="onActions('Approve')">
+              <i class="ft-check"></i>
+              <label class="ml-1 mt-1">Approve</label>
+            </button>
+
+
+            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId" (click)="onActions('Reject')">
+              <i class="ft-x"></i><label class="ml-1 mt-1">Reject</label>
+            </button>
+
+            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId" (click)="onActions('SendBack')">
+              <i class="ft-arrow-left"></i><label class="ml-1 mt-1">Send Back</label>
+            </button>
 
           </div>
         </div>
@@ -59,7 +73,7 @@
                 <ng-template ngbPanelContent>
                   <div class="row">
                     <div class="col-md-12">
-                      
+
                       <p style="font-size: 18px;">
                         <span style="font-weight:bold ;margin-right:4px;"> Company Name:</span>
                         <span style="font-size: 16px;">{{ companyName }}</span>
@@ -171,7 +185,7 @@
               </ngb-panel>
 
               <!-- Attachments -->
-               
+
               <ngb-panel id="tab-6" title="Attachments">
                 <ng-template ngbPanelContent>
                   <ngx-datatable *ngIf="attachedFiles && attachedFiles.length > 0" class="bootstrap"

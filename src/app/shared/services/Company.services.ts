@@ -206,4 +206,9 @@ assignedMe(vendorEntityAssociationId: number, approverId: string, remarks: strin
 }
 
 
+takeAction(data: any): Observable<any> {
+  return this.http.post<any>(`${environment.apiUrl}/Workflow/take-action`, data);
+}
+
+
 }

@@ -318,7 +318,8 @@ export class CompanyListingComponent implements OnInit {
         queryParams: {
           id: row.id,
           procurementCompanyId: row.procurementCompanyId,
-          vendorCompanyId: row.vendorCompanyId
+          vendorCompanyId: row.vendorCompanyId,
+           vendorEntityAssociationId : row.vendorEntityAssociationId,
         }
       });
     } else {
