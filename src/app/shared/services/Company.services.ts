@@ -112,7 +112,9 @@ export class CompanyService {
   }
 
 
-
+  setupId(associationId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/Company/SetupHistory?vendorEntityAssociationId=${associationId}`);
+  }
 
   //
   CreatEmailTemplate(payload: any) {

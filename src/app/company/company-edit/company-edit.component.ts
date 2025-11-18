@@ -51,9 +51,14 @@ export class CompanyEditComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       if (params['id']) {
-        this.companyId = +params['id']; this.vendorEntityAssociationId = +params['vendorEntityAssociationId'];
+        this.companyId = +params['id']; 
+        this.vendorEntityAssociationId = +params['vendorEntityAssociationId'];
+        
+        // ✅ Get isAssigned from query parameters
+        this.isAssigned = params['isAssigned'] === 'true' || params['isAssigned'] === true;
+        console.log('Is Assigned from query params:', this.isAssigned);
 
-        this.procurementCompanyId = params['procurementCompanyId'] ? +params['procurementCompanyId'] : null;  // ✅ Capture ID
+        this.procurementCompanyId = params['procurementCompanyId'] ? +params['procurementCompanyId'] : null;
         this.loadCompanyById(this.companyId);
       }
     });
@@ -131,8 +136,9 @@ export class CompanyEditComponent implements OnInit {
       next: (res: any) => {
         const company = res?.vendorCompany || res;
 
-        this.isAssigned = company.vendorUserCompanies?.[0]?.isAssigned ?? false;
-        console.log('Is Assigned:', this.isAssigned);
+        // ✅ REMOVED: No longer setting isAssigned from API response
+        // this.isAssigned = company.vendorUserCompanies?.[0]?.isAssigned ?? false;
+        console.log('Is Assigned (from query params):', this.isAssigned);
 
         if (company) {
           this.companyId = company.id || 0;
@@ -334,7 +340,7 @@ export class CompanyEditComponent implements OnInit {
       return;
     }
 
-    // IF isAssigned AND Approve → Direct API
+    // ✅ IF isAssigned (from query params) AND Approve → Direct API
     if (this.isAssigned && action === 'Approve') {
       this.submitForApproval(action);
       return;

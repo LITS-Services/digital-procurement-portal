@@ -1,0 +1,55 @@
+<div class="modal-header">
+    <h4 class="modal-title text-white">Setup Approval History - {{ entity }}</h4>
+    <button type="button" class="close text-white" aria-label="Close" (click)="closeDialog()">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+    <!-- Show loading state -->
+    <div *ngIf="loading" class="text-center mt-3">
+        <span class="spinner-border spinner-border-sm"></span> Loading...
+    </div>
+
+    <!-- Show data when loaded -->
+    <div *ngIf="!loading">
+        <!-- Show message if no history found -->
+        <div *ngIf="approvalHistory.length === 0" class="text-center mt-3">
+            <p>No approval history found.</p>
+        </div>
+
+        <!-- Show table if history exists -->
+        <ngx-datatable 
+            *ngIf="approvalHistory.length > 0"
+            class="bootstrap core-bootstrap" 
+            [rows]="approvalHistory" 
+            [columnMode]="'force'" 
+            [headerHeight]="50"
+            [footerHeight]="40" 
+            [rowHeight]="50" 
+            [limit]="5">
+
+            <ngx-datatable-column name="Approver" prop="approverName">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    {{ row.approverName || 'N/A' }}
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Remarks" prop="remarks">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    {{ row.remarks || 'No remarks' }}
+                </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="Approval Date" prop="createdDate">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    {{ row.createdDate | date:'yyyy-MM-dd' }}
+                </ng-template>
+            </ngx-datatable-column>
+        </ngx-datatable>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-secondary" (click)="closeDialog()">Close</button>
+</div>

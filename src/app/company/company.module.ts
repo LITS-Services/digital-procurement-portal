@@ -21,6 +21,7 @@ import { CompanyActionsComponent } from './company-actions/company-actions.compo
 import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
 import { CompanyApprovalHistoryComponent } from './company-approval-history/company-approval-history.component';
 import { AssignMeComponent } from './assign-me/assign-me.component';
+import { CompanySetupHistoryComponent } from './company-setup-history/company-setup-history.component';
 
 
 @NgModule({
@@ -29,7 +30,8 @@ import { AssignMeComponent } from './assign-me/assign-me.component';
     CompanyEditComponent,
     CompanyActionsComponent,
     CompanyApprovalHistoryComponent,
-    AssignMeComponent
+    AssignMeComponent,
+    CompanySetupHistoryComponent
   ],
   imports: [
     CommonModule,

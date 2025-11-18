@@ -6,6 +6,7 @@ import { CompanyService } from 'app/shared/services/Company.services';
 import { AuthService } from 'app/shared/auth/auth.service';
 import { CompanyApprovalHistoryComponent } from '../company-approval-history/company-approval-history.component';
 import { AssignMeComponent } from '../assign-me/assign-me.component';
+import { CompanySetupHistoryComponent } from '../company-setup-history/company-setup-history.component';
 
 @Component({
   selector: 'app-company-listing',
@@ -217,6 +218,9 @@ export class CompanyListingComponent implements OnInit {
       centered: true
     });
 
+
+   
+
     // Use the correct property names that match the mapped data
     modalRef.componentInstance.ProcurementCompanyId = selectedRow.procurementCompanyId;
     modalRef.componentInstance.vendorComapnyId = selectedRow.vendorCompanyId || selectedRow.id; // Fallback to id if vendorCompanyId is null
@@ -227,6 +231,23 @@ export class CompanyListingComponent implements OnInit {
     console.log('vendorCompanyId sent to modal:', selectedRow.vendorCompanyId);
     console.log('Entity sent to modal:', selectedRow.entity);
   }
+
+
+AssigenedHistory(selectedRow: any): void {
+  const modalRef = this.modalService.open(CompanySetupHistoryComponent, {
+    size: 'lg',
+    backdrop: 'static',
+    centered: true
+  });
+  
+  modalRef.componentInstance.vendorEntityAssociationId = selectedRow.vendorEntityAssociationId;
+  modalRef.componentInstance.entity = selectedRow.entity;
+  console.log('Selected Row for Approval History:', selectedRow);
+  console.log('vendorEntityAssociationId sent to modal:', selectedRow.vendorEntityAssociationId);
+  console.log('Entity sent to modal:', selectedRow.entity);
+}
+
+
 
   openAssignMeModal(selectedRow: any): void {
     const modalRef = this.modalService.open(AssignMeComponent, {
@@ -320,6 +341,7 @@ export class CompanyListingComponent implements OnInit {
           procurementCompanyId: row.procurementCompanyId,
           vendorCompanyId: row.vendorCompanyId,
            vendorEntityAssociationId : row.vendorEntityAssociationId,
+           isAssigned : row.isAssigned,
         }
       });
     } else {
