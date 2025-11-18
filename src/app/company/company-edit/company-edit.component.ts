@@ -4,6 +4,9 @@ import { CompanyService } from 'app/shared/services/Company.services';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { CompanyActionsComponent } from '../company-actions/company-actions.component';
 import { Action } from 'rxjs/internal/scheduler/Action';
+import { finalize } from 'rxjs/operators';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-company-edit',
@@ -30,7 +33,7 @@ export class CompanyEditComponent implements OnInit {
   bankDetailsList: any[] = [];
   isEditMode: boolean = false;
   isLoading: boolean = false;
-  isAssigned: boolean = false;
+  isAssigned: boolean = null;
   error: string = '';
   remark: string = '';
   message: string = '';
@@ -45,24 +48,60 @@ export class CompanyEditComponent implements OnInit {
     private companyService: CompanyService,
     private cdr: ChangeDetectorRef,
     private modalService: NgbModal,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private spinner: NgxSpinnerService,
+    private toastr: ToastrService,
+
+
   ) { }
+
+  // ngOnInit(): void {
+  //   this.route.queryParams.subscribe(params => {
+  //     if (params['id']) {
+  //       this.companyId = +params['id'];
+  //       this.vendorEntityAssociationId = +params['vendorEntityAssociationId'];
+
+  //       // ✅ Get isAssigned from query parameters
+  //       this.isAssigned = params['isAssigned'] === 'true' || params['isAssigned'] === true;
+  //       console.log('Is Assigned from query params:', this.isAssigned);
+
+  //       this.procurementCompanyId = params['procurementCompanyId'] ? +params['procurementCompanyId'] : null;
+  //       this.loadCompanyById(this.companyId);
+  //     }
+  //   });
+  // }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      if (params['id']) {
-        this.companyId = +params['id']; 
-        this.vendorEntityAssociationId = +params['vendorEntityAssociationId'];
-        
-        // ✅ Get isAssigned from query parameters
-        this.isAssigned = params['isAssigned'] === 'true' || params['isAssigned'] === true;
-        console.log('Is Assigned from query params:', this.isAssigned);
+      console.log('=== QUERY PARAMS DEBUG ===');
+      console.log('All params:', params);
+      console.log('isAssigned value:', params['isAssigned']);
+      console.log('isAssigned type:', typeof params['isAssigned']);
+      console.log('isAssigned === "true":', params['isAssigned'] === 'true');
+      console.log('isAssigned === true:', params['isAssigned'] === true);
+      console.log('=== END DEBUG ===');
 
+      // Parse company ID and vendor association ID
+      if (params['id']) {
+        this.companyId = +params['id'];
+        this.vendorEntityAssociationId = params['vendorEntityAssociationId'] ? +params['vendorEntityAssociationId'] : null;
+
+        // Parse isAssigned safely
+        // Query params are always strings, so compare with "true"
+        this.isAssigned = params['isAssigned'] === 'true';
+        console.log('Final isAssigned value:', this.isAssigned);
+
+        // Parse procurementCompanyId if present
         this.procurementCompanyId = params['procurementCompanyId'] ? +params['procurementCompanyId'] : null;
+
+        // Now load company data
         this.loadCompanyById(this.companyId);
       }
     });
   }
+
+
+
 
   // loadCompanyById(id: number) {
   //   this.isLoading = true;
@@ -131,154 +170,162 @@ export class CompanyEditComponent implements OnInit {
     this.isLoading = true;
     this.error = '';
     this.message = '';
-
-    this.companyService.getCompanyById(id).subscribe({
-      next: (res: any) => {
-        const company = res?.vendorCompany || res;
-
-        // ✅ REMOVED: No longer setting isAssigned from API response
-        // this.isAssigned = company.vendorUserCompanies?.[0]?.isAssigned ?? false;
-        console.log('Is Assigned (from query params):', this.isAssigned);
-
-        if (company) {
-          this.companyId = company.id || 0;
-          this.companyGUID = company.companyGUID || null;
-          this.vendorId = company.vendorId || '';
-          this.companyName = company.name || '';
-          this.aboutCompany = company.aboutCompany || '';
-
-          // this.vendorCategory = company.purchasingDemographics?.vendorType || '';
-          // this.primaryCurrency = company.purchasingDemographics?.primaryCurrency || '';
-          // this.lineOfBusiness = company.purchasingDemographics?.lineOfBusiness || '';
-          // this.employeeResponsible = company.purchasingDemographics?.employeeResponsible || '';
-          // this.note = company.purchasingDemographics?.note || '';
-
-          const demographics = company.purchasingDemographics || null;
-          this.purchasingDemographicsList = demographics
-            ? [ // convert object → single-element array
-              {
-                vendorType: demographics.vendorType,
-                primaryCurrency: demographics.primaryCurrency,
-                lineOfBusiness: demographics.lineOfBusiness,
-                employeeResponsible: demographics.employeeResponsible,
-                note: demographics.note
-              }
-            ]
-            : [];
-
-          console.log('Purchasing Demographics List:', this.purchasingDemographicsList);
+    this.spinner.show();
 
 
-          const rawBankDetails = company.bankDetails?.$values || company.bankDetails || [];
+    this.companyService.getCompanyById(id)
+      .pipe(finalize(() => {
+        this.spinner.hide();
+        this.cdr.detectChanges();
+      }))
 
-          this.bankDetailsList = rawBankDetails.map((b: any) => ({
-            id: b.id,
-            bankName: b.bankName,
-            branchName: b.branchName,
-            branchAddress: b.branchAddress,
-            accountHolderName: b.accountHolderName,
-            accountNumber: b.accountNumber,
-            iban: b.iban,
-            swifT_BIC_Code: b.swifT_BIC_Code,
-            country: b.country,
-            currency: b.currency,
-          }));
+      .subscribe({
+        next: (res: any) => {
+          const company = res?.vendorCompany || res;
 
-          console.log('Bank Details List:', this.bankDetailsList);
+          // ✅ REMOVED: No longer setting isAssigned from API response
+          // this.isAssigned = company.vendorUserCompanies?.[0]?.isAssigned ?? false;
+          console.log('Is Assigned (from query params):', this.isAssigned);
+
+          if (company) {
+            this.companyId = company.id || 0;
+            this.companyGUID = company.companyGUID || null;
+            this.vendorId = company.vendorId || '';
+            this.companyName = company.name || '';
+            this.aboutCompany = company.aboutCompany || '';
+
+            // this.vendorCategory = company.purchasingDemographics?.vendorType || '';
+            // this.primaryCurrency = company.purchasingDemographics?.primaryCurrency || '';
+            // this.lineOfBusiness = company.purchasingDemographics?.lineOfBusiness || '';
+            // this.employeeResponsible = company.purchasingDemographics?.employeeResponsible || '';
+            // this.note = company.purchasingDemographics?.note || '';
+
+            const demographics = company.purchasingDemographics || null;
+            this.purchasingDemographicsList = demographics
+              ? [ // convert object → single-element array
+                {
+                  vendorType: demographics.vendorType,
+                  primaryCurrency: demographics.primaryCurrency,
+                  lineOfBusiness: demographics.lineOfBusiness,
+                  employeeResponsible: demographics.employeeResponsible,
+                  note: demographics.note
+                }
+              ]
+              : [];
+
+            console.log('Purchasing Demographics List:', this.purchasingDemographicsList);
 
 
+            const rawBankDetails = company.bankDetails?.$values || company.bankDetails || [];
 
+            this.bankDetailsList = rawBankDetails.map((b: any) => ({
+              id: b.id,
+              bankName: b.bankName,
+              branchName: b.branchName,
+              branchAddress: b.branchAddress,
+              accountHolderName: b.accountHolderName,
+              accountNumber: b.accountNumber,
+              iban: b.iban,
+              swifT_BIC_Code: b.swifT_BIC_Code,
+              country: b.country,
+              currency: b.currency,
+            }));
 
-          // this.addressList = (company.addresses?.$values || []).map((a: any) => ({
-          //   id: a.id,
-          //   street: a.street,
-          //   city: a.city,
-          //   state: a.state,
-          //   zip: a.zip,
-          //   country: a.country,
-          //   isPrimary: a.isPrimary
-          // }));
+            console.log('Bank Details List:', this.bankDetailsList);
 
 
 
 
-          const rawAddresses = company.addresses?.$values || company.addresses || [];
-
-          this.addressList = rawAddresses.map((a: any) => ({
-            id: a.id,
-            street: a.street,
-            city: a.city,
-            state: a.state,
-            zip: a.zip,
-            country: a.country,
-            isPrimary: a.isPrimary
-          }));
-
-          // this.contactList = (company.contacts?.$values || []).map((c: any) => ({
-          //   id: c.id,
-          //   description: c.description,
-          //   type: c.type,
-          //   contactNumber: c.contactNumber,
-          //   extension: c.extension,
-          //   isPrimary: c.isPrimary
-          // }));
-
-
-          const rawContacts = company.contacts?.$values || company.contacts || [];
-          this.contactList = rawContacts.map((c: any) => ({
-            id: c.id,
-            description: c.description,
-            type: c.type,
-            contactNumber: c.contactNumber,
-            extension: c.extension,
-            isPrimary: c.isPrimary
-          }));
-
-          // this.attachedFiles = (company.attachments?.$values || []).map((f: any) => ({
-          //   id: f.id,
-          //   fileName: f.fileName,
-          //   format: f.fileFormat,
-          //   fileContent: f.fileContent,
-          //   attachedBy: f.attachedBy,
-          //   remarks: f.remarks,
-          //   attachedAt: f.attachedAt
-          // }));
-
-          // this.attachedFiles = (company.attachments?.$values || []).map((f: any) => ({
-          //   id: f.id,
-          //   fileName: f.fileName,
-          //   format: f.fileFormat,
-          //   fileContent: f.fileContent,
-          //   attachedBy: f.attachedBy,
-          //   remarks: f.remarks,
-          //   attachedAt: f.attachedAt
-          // }));
-          // console.log('Attachments:', this.attachedFiles);
-
-
-          this.attachedFiles = (company.attachments || []).map((f: any) => ({
-            id: f.id,
-            fileName: f.fileName,
-            format: f.fileFormat,
-            fileContent: f.fileContent,
-            attachedBy: f.attachedBy,
-            remarks: f.remarks,
-            attachedAt: f.attachedAt
-          }));
+            // this.addressList = (company.addresses?.$values || []).map((a: any) => ({
+            //   id: a.id,
+            //   street: a.street,
+            //   city: a.city,
+            //   state: a.state,
+            //   zip: a.zip,
+            //   country: a.country,
+            //   isPrimary: a.isPrimary
+            // }));
 
 
 
-          this.isEditMode = true;
+
+            const rawAddresses = company.addresses?.$values || company.addresses || [];
+
+            this.addressList = rawAddresses.map((a: any) => ({
+              id: a.id,
+              street: a.street,
+              city: a.city,
+              state: a.state,
+              zip: a.zip,
+              country: a.country,
+              isPrimary: a.isPrimary
+            }));
+
+            // this.contactList = (company.contacts?.$values || []).map((c: any) => ({
+            //   id: c.id,
+            //   description: c.description,
+            //   type: c.type,
+            //   contactNumber: c.contactNumber,
+            //   extension: c.extension,
+            //   isPrimary: c.isPrimary
+            // }));
+
+
+            const rawContacts = company.contacts?.$values || company.contacts || [];
+            this.contactList = rawContacts.map((c: any) => ({
+              id: c.id,
+              description: c.description,
+              type: c.type,
+              contactNumber: c.contactNumber,
+              extension: c.extension,
+              isPrimary: c.isPrimary
+            }));
+
+            // this.attachedFiles = (company.attachments?.$values || []).map((f: any) => ({
+            //   id: f.id,
+            //   fileName: f.fileName,
+            //   format: f.fileFormat,
+            //   fileContent: f.fileContent,
+            //   attachedBy: f.attachedBy,
+            //   remarks: f.remarks,
+            //   attachedAt: f.attachedAt
+            // }));
+
+            // this.attachedFiles = (company.attachments?.$values || []).map((f: any) => ({
+            //   id: f.id,
+            //   fileName: f.fileName,
+            //   format: f.fileFormat,
+            //   fileContent: f.fileContent,
+            //   attachedBy: f.attachedBy,
+            //   remarks: f.remarks,
+            //   attachedAt: f.attachedAt
+            // }));
+            // console.log('Attachments:', this.attachedFiles);
+
+
+            this.attachedFiles = (company.attachments || []).map((f: any) => ({
+              id: f.id,
+              fileName: f.fileName,
+              format: f.fileFormat,
+              fileContent: f.fileContent,
+              attachedBy: f.attachedBy,
+              remarks: f.remarks,
+              attachedAt: f.attachedAt
+            }));
+
+
+
+            this.isEditMode = true;
+          }
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.error('Error loading company:', err);
+          this.error = 'Failed to load company.';
+          this.isLoading = false;
         }
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      },
-      error: (err) => {
-        console.error('Error loading company:', err);
-        this.error = 'Failed to load company.';
-        this.isLoading = false;
-      }
-    });
+      });
   }
 
   // onActions(action: string): void {
@@ -337,12 +384,14 @@ export class CompanyEditComponent implements OnInit {
     // Always direct for sendforapproval
     if (action === 'sendforapproval') {
       this.submitForApproval(action);
+      this.router.navigate(['/company']);
       return;
     }
 
     // ✅ IF isAssigned (from query params) AND Approve → Direct API
     if (this.isAssigned && action === 'Approve') {
       this.submitForApproval(action);
+      this.router.navigate(['/company']);
       return;
     }
 
@@ -418,19 +467,21 @@ export class CompanyEditComponent implements OnInit {
       Action: action,
       RequesterId: this.submitterId,
       vendorEntityAssociationId: this.vendorEntityAssociationId,
-      remarks: remarks 
+      remarks: remarks
     };
 
     this.companyService.takeAction(payload).subscribe({
       next: (res) => {
         this.isLoading = false;
         this.message = `Company ${action} Successfully!`;
+        this.toastr.success(this.message);
         this.cdr.detectChanges();
         this.router.navigate(['/company']);
       },
       error: (err) => {
         this.isLoading = false;
         console.error(err);
+        this.toastr.error(err);
         this.error = 'Failed to perform action!';
       }
     });
