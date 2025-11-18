@@ -13,7 +13,7 @@ import { Action } from 'rxjs/internal/scheduler/Action';
 export class CompanyEditComponent implements OnInit {
 
   companyId: number | null = null;
-  procurementCompanyId: number | null = null; // ✅ Added this
+  procurementCompanyId: number | null = null;
   companyGUID: string | null = null;
   vendorId: string = '';
   companyName: string = '';
@@ -36,6 +36,7 @@ export class CompanyEditComponent implements OnInit {
   message: string = '';
   actionType!: string;
   vendorEntityAssociationId: number | null = null;
+  submitterId: string = '';
   private modalRef!: NgbModalRef;
 
   constructor(
@@ -50,7 +51,7 @@ export class CompanyEditComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       if (params['id']) {
-        this.companyId = +params['id'];        this.vendorEntityAssociationId = +params['vendorEntityAssociationId'];
+        this.companyId = +params['id']; this.vendorEntityAssociationId = +params['vendorEntityAssociationId'];
 
         this.procurementCompanyId = params['procurementCompanyId'] ? +params['procurementCompanyId'] : null;  // ✅ Capture ID
         this.loadCompanyById(this.companyId);
@@ -326,13 +327,20 @@ export class CompanyEditComponent implements OnInit {
 
 
   onActions(action: string): void {
+
+    // Always direct for sendforapproval
     if (action === 'sendforapproval') {
-      // Directly call API with action
       this.submitForApproval(action);
       return;
     }
 
-    // For other actions, open modal as before
+    // IF isAssigned AND Approve → Direct API
+    if (this.isAssigned && action === 'Approve') {
+      this.submitForApproval(action);
+      return;
+    }
+
+    // For Reject / SendBack when isAssigned → open modal and send remarks to takeAction()
     const modalRef = this.modalService.open(CompanyActionsComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -343,8 +351,15 @@ export class CompanyEditComponent implements OnInit {
 
     modalRef.result.then(
       (result) => {
-        if (!result) return;
-        this.performCompanyAction(action, result.remarks);
+        if (!result && action !== 'Approve') return;
+
+        if (this.isAssigned) {
+          // Assigned: Reject or SendBack with remarks
+          this.submitForApproval(action, result?.remarks || '');
+        } else {
+          // Normal flow
+          this.performCompanyAction(action, result.remarks);
+        }
       },
       (reason) => {
         console.log(`Modal dismissed: ${reason}`);
@@ -353,11 +368,14 @@ export class CompanyEditComponent implements OnInit {
   }
 
 
+
+
   private performCompanyAction(action: string, remarks: string) {
     this.isLoading = true;
 
     const payload = {
       vendorCompanyId: this.companyId,
+      RequesterId: this.submitterId,
       procurementCompanyId: this.procurementCompanyId || 0,
       actionTaken: action,
       remarks,
@@ -370,7 +388,7 @@ export class CompanyEditComponent implements OnInit {
         this.message =
           action === 'Approve'
             ? 'Company Approved Successfully!'
-            : action === 'Reject'
+            : action === 'Rejected'
               ? 'Company Rejected Successfully!'
               : 'Company Sent Back Successfully!';
         this.cdr.detectChanges();
@@ -384,7 +402,7 @@ export class CompanyEditComponent implements OnInit {
     });
   }
 
-  private submitForApproval(action: string): void {
+  private submitForApproval(action: string, remarks: string = ''): void {
     this.isLoading = true;
 
     const payload = {
@@ -392,24 +410,27 @@ export class CompanyEditComponent implements OnInit {
       approverId: localStorage.getItem('userId') || '',
       procurementCompanyId: this.procurementCompanyId || 0,
       Action: action,
-      vendorEntityAssociationId : this.vendorEntityAssociationId, // <-- send action in payload
-      // no remarks
+      RequesterId: this.submitterId,
+      vendorEntityAssociationId: this.vendorEntityAssociationId,
+      remarks: remarks 
     };
 
     this.companyService.takeAction(payload).subscribe({
       next: (res) => {
         this.isLoading = false;
-        this.message = 'Company Submitted for Approval Successfully!';
+        this.message = `Company ${action} Successfully!`;
         this.cdr.detectChanges();
         this.router.navigate(['/company']);
       },
       error: (err) => {
         this.isLoading = false;
-        this.error = 'Failed to submit for approval!';
         console.error(err);
+        this.error = 'Failed to perform action!';
       }
     });
   }
+
+
 
 
 
