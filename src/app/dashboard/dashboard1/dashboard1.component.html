@@ -1,4 +1,4 @@
-<!--Statistics cards Starts-->
+<!-- 
 <div class="row mt-2 cstm-row" (resized)="onResized($event)">
   <div class="col-xl-3 col-lg-6 col-md-6 col-12">
     <div class="stat-card">
@@ -42,45 +42,8 @@
     </div>
   </div>
 
-  <!-- <div class="col-xl-3 col-lg-6 col-md-6 col-12">
-    <div class="card1">
-      <div class="card-content">
-        <div class="card-body py-0">
-          <div class="media">
-            <div class="media-body  text-left">
-              <h4 class="font-large-1 mt-1">Outbox</h4>
-            
-            </div>
-            <div class="media-right text-right">
-              <div class="card-request-icon">
-                <img src="/assets/img/icons/Outbox-icon.png" alt="">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> -->
   <div class="col-xl-3 col-lg-6 col-md-6 col-12">
-    <!-- <div class="card1">
-      <div class="card-content">
-        <div class="card-body py-0">
-          <div class="media">
-            <div class="media-body  text-left">
-              <h4 class="font-large-1 mt-1">Completed</h4>
-              <h3 class="font-large-1 mt-1">{{ prCounts?.completedRequests }}</h3>
 
-            </div>
-            <div class="media-right text-right">
-              <div class="card-request-icon">
-                <img src="/assets/img/icons/completed-item.png" alt="">
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div> -->
 
      <div class="stat-card">
       <div class="stat-card__body">
@@ -110,20 +73,6 @@
     </div>
   </div>
 
-    <!-- <div class="col-xl-3 col-lg-6 col-md-6 col-12">
-
-     <div class="stat-card">
-      <div class="stat-card__body">
-        <div class="stat-card__text">
-          <div class="stat-card__title">New</div>
-          <div class="stat-card__value">{{ rfqCounts?.newQuotations }}</div>
-        </div>
-        <div class="stat-card__icon">
-          <img src="/assets/img/icons/Inbox-icon.png" alt="">
-        </div>
-      </div>
-    </div>
-  </div> -->
   <div class="col-xl-3 col-lg-6 col-md-6 col-12">
 
      <div class="stat-card">
@@ -138,25 +87,7 @@
       </div>
     </div>
   </div>
-  <!-- <div class="col-xl-3 col-lg-6 col-md-6 col-12">
-    <div class="card1">
-      <div class="card-content">
-        <div class="card-body py-0">
-          <div class="media">
-            <div class="media-body  text-left">
-              <h4 class="font-large-1 mt-1">Outbox</h4>
-            
-            </div>
-            <div class="media-right text-right">
-              <div class="card-request-icon">
-                <img src="/assets/img/icons/Outbox-icon.png" alt="">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> -->
+
   <div class="col-xl-3 col-lg-6 col-md-6 col-12">
 
      <div class="stat-card">
@@ -208,11 +139,6 @@
     </div>
   </div>
 </div>
-<!--Statistics cards Ends-->
-
-<!--Line with Area Chart 1 Starts-->
-
-<!--Line with Area Chart 1 Ends-->
 
 <div hidden class="row match-height">
   <div class="col-xl-4 col-lg-12 col-12">
@@ -547,5 +473,380 @@
         </div>
       </div>
     </div>
+  </div>
+</div> -->
+
+
+<div class="dashboard-wrapper">
+
+  <!-- Top header -->
+  <div class="dashboard-header">
+    <div>
+      <h2 class="dashboard-title">Dashboard</h2>
+    </div>
+
+    <div class="dashboard-period-switch">
+      <button class="period-btn period-btn--active">Month</button>
+      <button class="period-btn">Quarter</button>
+      <button class="period-btn">Year</button>
+    </div>
+  </div>
+
+  <!-- Main 2-column grid -->
+  <div class="dashboard-grid">
+    <!-- LEFT COLUMN -->
+    <div class="dashboard-main">
+
+      <!-- Top metrics: PR / RFQ / PO -->
+      <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-1 top-metrics-row">
+        <div class="col count-card">
+          <div class="stat-card stat-card--primary">
+            <div class="stat-card__body">
+              <div class="stat-card__text">
+                <div class="stat-card__label">Purchase Requests</div>
+                <div class="stat-card__value">
+                  {{ prCounts?.totalRequests || 0 }}
+                </div>
+
+               
+              </div>
+
+              <div class="stat-card__icon">
+                <img src="/assets/img/icons/pr-icon.svg" alt="PR" />
+              </div>
+            </div>
+             <div class="stat-card__chips">
+                  <span class="metric-chip">
+                    New: <strong class="ml-1">{{ prCounts?.newRequests || 0 }}</strong>
+                  </span>
+                  <span class="metric-chip metric-chip--muted">
+                    In Process: <strong class="ml-1">{{ prCounts?.inProcessRequests || 0 }}</strong>
+                  </span>
+                </div>
+          </div>
+          
+          
+        </div>
+
+        <div class="col count-card">
+          <div class="stat-card stat-card--indigo">
+            <div class="stat-card__body">
+              <div class="stat-card__text">
+                <div class="stat-card__label">RFQs</div>
+                <div class="stat-card__value">
+                  {{ rfqCounts?.totalQuotations || 0 }}
+                </div>
+
+             
+              </div>
+
+              <div class="stat-card__icon">
+                <img src="/assets/img/icons/rfq-icon.svg" alt="RFQ" />
+              </div>
+            </div>
+               <div class="stat-card__chips">
+                  <span class="metric-chip">
+                    In Process: <strong class="ml-1">{{ rfqCounts?.inProcessQuotations || 0 }}</strong>
+                  </span>
+                  <span class="metric-chip metric-chip--danger">
+                    Rejected: <strong class="ml-1">{{ rfqCounts?.rejectedQuotations || 0 }}</strong>
+                  </span>
+                </div>
+          </div>
+        </div>
+
+        <div class="col count-card">
+          <div class="stat-card stat-card--emerald">
+            <div class="stat-card__body">
+              <div class="stat-card__text">
+                <div class="stat-card__label">Purchase Orders</div>
+                <div class="stat-card__value">
+                  {{ poCounts?.totalOrders || 0 }}
+                </div>
+
+            
+              </div>
+
+              <div class="stat-card__icon">
+                <img src="/assets/img/icons/po-icon.svg" alt="PO" />
+              </div>
+            </div>
+                <div class="stat-card__chips">
+                  <span class="metric-chip">
+                    Open: <strong class="ml-1">{{ poCounts?.openOrders || 0 }}</strong>
+                  </span>
+                  <span class="metric-chip metric-chip--success">
+                    Completed: <strong class="ml-1">{{ poCounts?.completedOrders || 0 }}</strong>
+                  </span>
+                </div>
+          </div>
+        </div>
+        <div class="col count-card">
+          <div class="stat-card stat-card--emerald">
+            <div class="stat-card__body">
+              <div class="stat-card__text">
+                <div class="stat-card__label">Companies</div>
+                <div class="stat-card__value">
+                  21
+                </div>
+
+               
+              </div>
+
+              <div class="stat-card__icon">
+                <img src="/assets/img/icons/company-icon.svg" alt="PO" />
+              </div>
+            </div>
+             <div class="stat-card__chips">
+                  <span class="metric-chip">
+                    Onboarded: <strong class="ml-1">8</strong>
+                  </span>
+                  
+                </div>
+          </div>
+        </div>
+
+            <div class="col count-card">
+          <div class="stat-card stat-card--emerald">
+            <div class="stat-card__body">
+              <div class="stat-card__text">
+                <div class="stat-card__label">Entities</div>
+                <div class="stat-card__value">
+                  11
+                </div>
+                
+                
+              </div>
+
+              <div class="stat-card__icon">
+                <img src="/assets/img/icons/entity-icon.svg" alt="PO" />
+              </div>
+            </div>
+                <div class="stat-card__chips">
+                  <span class="metric-chip">
+                    Active: <strong class="ml-1">8</strong>
+                  </span>
+                
+                </div>
+          </div>
+        </div>
+
+
+        
+      </div>
+
+      <!-- Bidding chart + recent vendors -->
+      <div class="row g-3 align-items-stretch mt-2">
+        <div class="col-lg-8 col-12">
+          <div class="panel-card h-100">
+            <div class="panel-card__header">
+              <div>
+                <h3 class="panel-card__title">Bidding Performance</h3>
+                <p class="panel-card__subtitle">Spend by supplier over time</p>
+              </div>
+              <div class="segmented-toggle">
+                <button class="segmented-toggle__btn segmented-toggle__btn--active">
+                  Month
+                </button>
+                <button class="segmented-toggle__btn">
+                  Quarter
+                </button>
+                <button class="segmented-toggle__btn">
+                  Year
+                </button>
+              </div>
+            </div>
+
+            <div class="panel-card__body">
+            <div id="line-area" class="lineArea">
+              <apx-chart class="apx-chart" [series]="spendChartOptions.series" [chart]="spendChartOptions.chart"
+                [xaxis]="spendChartOptions.xaxis" [yaxis]="spendChartOptions.yaxis" [stroke]="spendChartOptions.stroke"
+                [dataLabels]="spendChartOptions.dataLabels" [fill]="spendChartOptions.fill" [grid]="spendChartOptions.grid"
+                [tooltip]="spendChartOptions.tooltip" [theme]="spendChartOptions.theme">
+              </apx-chart>
+            </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-12">
+          <div class="panel-card h-100">
+            <div class="panel-card__header panel-card__header--tight">
+              <h3 class="panel-card__title">Recent Top Vendors</h3>
+            </div>
+
+            <div class="panel-card__body panel-card__body--flush">
+              <div class="vendors-list mt-1">
+                <div class="vendor-row" *ngFor="let v of recentVendors">
+                  <div class="vendor-row__initial">
+                    {{ v.name | slice:0:1 }}
+                  </div>
+                  <div class="vendor-row__meta">
+                    <div class="vendor-row__name">{{ v.name }}</div>
+                    <div class="vendor-row__sub">
+                      <i class="ft ft-map-pin me-2"></i> {{ v.location }} &bull; {{ v.timesBought }} buys
+                    </div>
+                  </div>
+                  <div class="vendor-row__badge">
+                    {{ v.successRate }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming auctions + monthly expenses -->
+      <div class="row g-3 mt-2">
+        <div class="col-lg-4 col-12">
+          <div class="panel-card cardHeight h-100">
+            <div class="panel-card__header">
+              <h3 class="panel-card__title">Upcoming Auctions</h3>
+              <a class="panel-card__link" routerLink="/procurement/auctions">
+                View all
+              </a>
+            </div>
+
+            <div class="panel-card__body panel-card__body--flush panel-card__body--scroll">
+              <table class="table upcoming-table mb-0">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>Date</th>
+                    <th>Budget</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let a of upcomingAuctions">
+                    <td>{{ a.product }}</td>
+                    <td>{{ a.quantity }}</td>
+                    <td>{{ a.date }}</td>
+                    <td>{{ a.budget }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-12">
+          <div class="panel-card cardHeight h-100 monthly-expenses-card">
+            <div class="panel-card__header">
+              <div>
+                <h3 class="panel-card__title">Monthly Spend</h3>
+                <p class="panel-card__subtitle">
+                  {{ monthlySpendLabel }}
+                </p>
+              </div>
+            </div>
+
+            <div class="panel-card__body monthly-expenses-body">
+              <div class="monthly-expenses-chart">
+            <apx-chart class="apx-chart" [series]="spendDonutOptions.series" [chart]="spendDonutOptions.chart"
+              [labels]="spendDonutOptions.labels" [legend]="spendDonutOptions.legend" [dataLabels]="spendDonutOptions.dataLabels"
+              [responsive]="spendDonutOptions.responsive" [colors]="spendDonutOptions.colors" [tooltip]="spendDonutOptions.tooltip" [theme]="spendDonutOptions.theme">
+            </apx-chart>
+
+                <div class="monthly-expenses-center">
+                  <div class="monthly-expenses-amount">
+                    {{ monthlySpendAmount }}
+                  </div>
+                  <div class="monthly-expenses-caption">
+                    Total this month
+                  </div>
+                </div>
+              </div>
+
+              <ul class="monthly-expenses-legend">
+                <li *ngFor="let e of monthlyExpenses">
+                  <span class="legend-dot" [ngStyle]="{ 'background-color': e.color }"></span>
+                  <span class="legend-label">{{ e.label }}</span>
+                  <span class="legend-value">{{ e.value }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div  class="col-lg-4 col-12">
+          <div class="panel-card cardHeight h-100">
+  <div class="panel-card__header">
+    <div>
+      <h3 class="panel-card__title">Delivery Performance</h3>
+    </div>
+  </div>
+
+  <div class="panel-card__body">
+    <apx-chart class="apx-chart" [series]="vendorDeliveryOptions.series" [chart]="vendorDeliveryOptions.chart"
+      [plotOptions]="vendorDeliveryOptions.plotOptions" [xaxis]="vendorDeliveryOptions.xaxis"
+      [yaxis]="vendorDeliveryOptions.yaxis" [dataLabels]="vendorDeliveryOptions.dataLabels"
+      [stroke]="vendorDeliveryOptions.stroke" [fill]="vendorDeliveryOptions.fill" [tooltip]="vendorDeliveryOptions.tooltip"
+      [legend]="vendorDeliveryOptions.legend" [grid]="vendorDeliveryOptions.grid" [colors]="vendorDeliveryOptions.colors"
+      [theme]="vendorDeliveryOptions.theme">
+    </apx-chart>
+    </div>
+    </div>
+
+
+           <!-- <div class="panel-card progress-card">
+          <div class="panel-card__header panel-card__header--tight">
+            <h3 class="panel-card__title">Progress</h3>
+          </div>
+        
+          <div class="panel-card__body progress-card__body">
+            <div class="progress-row" *ngFor="let p of progressReport">
+              <div class="progress-row__month">{{ p.month }}</div>
+              <div class="progress-row__bar">
+                <div class="progress-row__fill" [style.width.%]="p.value"></div>
+              </div>
+              <div class="progress-row__value">{{ p.value }}%</div>
+            </div>
+          </div>
+        </div> -->
+        </div>
+       
+
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <!-- <aside class="dashboard-side">
+
+      <div class="mini-stat mini-stat--blue">
+        <div class="mini-stat__label">Received Quotations</div>
+        <div class="mini-stat__value">{{ rfqCounts?.totalQuotations || 0 }}</div>
+        <div class="mini-stat__sub">
+          Top vendor: <span>ABC Pvt Ltd</span>
+        </div>
+      </div>
+
+      <div class="mini-stat mini-stat--amber">
+        <div class="mini-stat__label">Viewed Enquiries</div>
+        <div class="mini-stat__value">
+          {{ rfqCounts?.inProcessQuotations || 0 }}
+        </div>
+        <div class="mini-stat__sub">
+          RFQs currently in progress
+        </div>
+      </div>
+
+      <div class="mini-stat mini-stat--emerald">
+        <div class="mini-stat__label">Quoted by You</div>
+        <div class="mini-stat__value">
+          {{ rfqCounts?.completedQuotations || 0 }}
+        </div>
+        <div class="mini-stat__sub">
+          Successfully submitted this month
+        </div>
+      </div>
+
+ 
+
+     
+
+    </aside> -->
   </div>
 </div>

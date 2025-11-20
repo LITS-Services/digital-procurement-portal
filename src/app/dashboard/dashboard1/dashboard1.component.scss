@@ -305,13 +305,14 @@
   height: 160px !important;
   background: #fff;
   border-radius: 16px;
-  padding: 18px 20px;
+  padding: 18px 16px;
   margin-bottom: 16px;
   transition: transform .15s ease, box-shadow .15s ease;
   cursor: default;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-direction: column;
 
   &:hover {
     transform: translateY(-2px);
@@ -321,7 +322,7 @@
 
 .stat-card__body {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
   width: 100%;
 }
@@ -351,22 +352,21 @@
 
 /* Blue icon tile (gradient) */
 .stat-card__icon {
-    width: 58px;
-    height: 58px;
+    width: 42px;
+    height: 42px;
   border-radius: 10px;
   display: grid;
   place-items: center;
 
   /* your requested gradient */
-  background: #116AEF;
+  background: #116AEF1F;
   /* if you prefer solid: background:#0b60ff; */
 }
 
 .stat-card__icon img {
-  width: 32px;
-  height: 32px;
-  /* make the PNG appear white if it’s dark/blue */
-  filter: brightness(0) invert(1);
+  width: 22px;
+  height: 22px;
+  /* make the PNG appear white if it’s dark/blue */;
 }
 
 .cstm-row{
@@ -389,4 +389,579 @@ margin: 8px 0px;
 .col-lg-6, .col-md-6, .col-12
 {
   padding: 0px 8px;
+}
+
+
+/* Page background */
+.dashboard-wrapper {
+  padding: 12px 4px 24px;
+}
+
+/* Header */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 16px;
+}
+
+.dashboard-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 4px;
+}
+
+.dashboard-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* Period switch */
+.dashboard-period-switch {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: #e5edff;
+  gap: 4px;
+}
+
+.period-btn {
+  border: none;
+  background: transparent;
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #1f2933;
+}
+
+.period-btn--active {
+  background: #116aef;
+  color: #fff;
+}
+
+/* 2-column layout */
+.dashboard-grid {
+  display: grid;
+  //grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.1fr);
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.dashboard-main {
+  min-width: 0;
+}
+
+.dashboard-side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Panels (white cards) */
+.panel-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px 18px 14px;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.panel-card__header--tight {
+  margin-bottom: 4px;
+}
+
+.panel-card__body--scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1 1 auto; 
+  min-height: 0;
+}
+
+.panel-card__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.panel-card__subtitle {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.panel-card__body {
+  margin-top: 4px;
+}
+
+.panel-card__body--flush {
+  margin: 0;
+  padding-top: 4px;
+}
+
+.panel-card__link {
+  font-size: 12px;
+  color: #116aef;
+  text-decoration: none;
+}
+
+/* segmented toggle inside card */
+.segmented-toggle {
+  display: inline-flex;
+  border-radius: 999px;
+  background: #f3f4ff;
+  padding: 2px;
+  gap: 2px;
+}
+
+.segmented-toggle__btn {
+  border: none;
+  background: transparent;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  cursor: pointer;
+  color: #4b5563;
+}
+
+.segmented-toggle__btn--active {
+  background: #116aef;
+  color: #fff;
+}
+
+/* Re-use your stat-card but add themes */
+.stat-card {
+  /* keep your base styles, just refine spacing a bit */
+  height: 100% !important;
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.stat-card__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.stat-card__value {
+  font-size: 26px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.stat-card__chips {
+  margin-top: 6px;
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+
+/* Each chip becomes a clean full-width pill row */
+.metric-chip {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #e5edff;
+  color: #1f2933;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  strong {
+    font-weight: 600;
+  }
+
+  &--muted {
+    background: #e5e7eb;
+    color: #4b5563;
+  }
+
+  &--danger {
+    background: #fee2e2;
+    color: #b91c1c;
+  }
+
+  &--success {
+    background: #ecfdf3;
+    color: #147437;
+  }
+}
+
+.cardHeight{
+  height: 265px !important;
+}
+
+/* stat-card variants */
+.stat-card--primary {
+ // background: linear-gradient(135deg, #e0f2ff, #eef5ff);
+}
+
+.stat-card--indigo {
+ // background: linear-gradient(135deg, #e0e7ff, #eef2ff);
+}
+
+.stat-card--emerald {
+ // background: linear-gradient(135deg, #dcfce7, #ecfdf3);
+}
+
+/* Vendors list */
+.vendors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vendor-row {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f3f4f6;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.vendor-row__initial {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.vendor-row__meta {
+  flex: 1;
+}
+
+.vendor-row__name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.vendor-row__sub {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.vendor-row__badge {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #ecfdf3;
+  color: #15803d;
+}
+
+/* Upcoming auctions table */
+.upcoming-table thead th {
+  border-bottom: none;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  padding: 8px 0px;
+}
+
+.upcoming-table tbody td {
+  border-top: 1px solid #f3f4f6;
+  padding: 7px 0;
+  font-size: 12px;
+}
+
+/* Monthly expenses card */
+.monthly-expenses-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.monthly-expenses-body {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.monthly-expenses-chart {
+  position: relative;
+  width: 160px;
+  height: 160px;
+}
+
+.monthly-expenses-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.monthly-expenses-amount {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.monthly-expenses-caption {
+  margin-top: 2px;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.monthly-expenses-legend {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.monthly-expenses-legend li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  margin-right: 6px;
+}
+
+.legend-label {
+  flex: 1;
+  color: #4b5563;
+}
+
+.legend-value {
+  font-weight: 500;
+  color: #111827;
+}
+
+/* Right side mini stats */
+.mini-stat {
+  border-radius: 16px;
+  padding: 10px 14px;
+  color: #111827;
+  background: #ffffff;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+}
+
+.mini-stat--blue {
+  border-left: 4px solid #116aef;
+}
+
+.mini-stat--amber {
+  border-left: 4px solid #f97316;
+}
+
+.mini-stat--emerald {
+  border-left: 4px solid #22c55e;
+}
+
+.mini-stat__label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.mini-stat__value {
+  font-size: 22px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.mini-stat__sub {
+  margin-top: 2px;
+  font-size: 11px;
+  color: #6b7280;
+
+  span {
+    font-weight: 500;
+  }
+}
+
+/* Rating card */
+.rating-card__body {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.rating-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  border: 3px solid #22c55e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ecfdf3;
+}
+
+.rating-badge__grade {
+  font-size: 20px;
+  font-weight: 700;
+  color: #15803d;
+}
+
+.rating-meta {
+  flex: 1;
+  font-size: 11px;
+}
+
+.rating-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2px;
+
+  span {
+    color: #6b7280;
+  }
+
+  strong {
+    color: #111827;
+  }
+}
+
+.btn-subtle {
+  border-radius: 999px;
+  border: none;
+  padding: 4px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+/* Progress card */
+.progress-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.progress-row {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.progress-row__month {
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.progress-row__bar {
+  height: 6px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+
+.progress-row__fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #116aef, #22c55e);
+}
+
+.progress-row__value {
+  font-weight: 500;
+  color: #111827;
+}
+
+/* Chartist minimal tweaks for this dashboard */
+:host ::ng-deep .ct-chart-dashboard .ct-grid.ct-horizontal {
+  stroke: rgba(15, 23, 42, 0.06);
+  stroke-dasharray: 4 6;
+}
+
+:host ::ng-deep .ct-chart-dashboard .ct-grid.ct-vertical {
+  stroke: transparent;
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+  .dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dashboard-period-switch {
+    align-self: stretch;
+    justify-content: flex-start;
+  }
+}
+
+:host ::ng-deep .apx-chart {
+  width: 100%;
+}
+
+:host ::ng-deep .apexcharts-tooltip {
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+  border: none;
+  font-size: 12px;
+}
+
+:host ::ng-deep .apexcharts-xaxis-label,
+:host ::ng-deep .apexcharts-yaxis-label {
+  font-size: 11px;
+  fill: #6b7280;
+}
+
+:host ::ng-deep .apx-chart {
+  width: 100%;
+}
+
+:host ::ng-deep .apexcharts-legend-text {
+  font-size: 12px;
+}
+
+:host ::ng-deep .apexcharts-xaxis-label,
+:host ::ng-deep .apexcharts-yaxis-label {
+  font-size: 11px;
+  fill: #4b5563;
+}
+
+.count-card{
+  padding: 0px 6px !important;
 }
