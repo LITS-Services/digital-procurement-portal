@@ -7,13 +7,15 @@ import { PurchaseRequestExceptionPolicyComponent } from 'app/shared/modals/purch
 import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
 import { WorkflowServiceService } from 'app/shared/services/WorkflowService/workflow-service.service';
 import { WorkflowApproverSetupComponent } from '../workflow-approver-setup/workflow-approver-setup.component';
+import { FORM_IDS } from 'app/shared/permissions/form-ids';
+import { PermissionService } from 'app/shared/permissions/permission.service';
 @Component({
   selector: 'app-workflow-master-setup',
   templateUrl: './workflow-master-setup.component.html',
   styleUrls: ['./workflow-master-setup.component.scss']
 })
 export class WorkflowMasterSetupComponent implements OnInit {
-
+  FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
@@ -34,7 +36,8 @@ export class WorkflowMasterSetupComponent implements OnInit {
     private modalService: NgbModal,
     private purchaseRequestService: PurchaseRequestService,
     private WorkflowServiceService: WorkflowServiceService,
-    private cdr: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef, 
+    private permissionService: PermissionService
   ) { }
 
   ngOnInit(): void {
@@ -129,6 +132,8 @@ export class WorkflowMasterSetupComponent implements OnInit {
    * Open Delete Modal
    */
   openDeleteModal(deleteModal) {
+    if(!this.permissionService.can(FORM_IDS.WORKFLOW_SETUP, 'delete')) 
+      return;
     if (this.idsToDelete.length > 0) {
       this.modalService.open(deleteModal, { backdrop: 'static', centered: true });
     } else {

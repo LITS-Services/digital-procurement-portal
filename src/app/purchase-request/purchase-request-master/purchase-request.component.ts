@@ -12,6 +12,8 @@ import { CreatePurchaseOrderComponent } from 'app/purchase-order/create-purchase
 import { LookupService } from 'app/shared/services/lookup.service';
 import { Subject } from 'rxjs';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
+import { PermissionService } from 'app/shared/permissions/permission.service';
+import { FORM_IDS } from 'app/shared/permissions/form-ids';
 
 @Component({
   selector: 'app-purchase-request',
@@ -20,6 +22,7 @@ import { PurchaseOrderService } from 'app/shared/services/purchase-order.service
 })
 
 export class PurchaseRequestComponent implements OnInit {
+  FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
@@ -66,7 +69,8 @@ export class PurchaseRequestComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private toastr: ToastrService,
     public lookupService: LookupService,
-    private purchaseOrderService: PurchaseOrderService
+    private purchaseOrderService: PurchaseOrderService,
+    private permissionService: PermissionService
 
   ) { }
 
@@ -186,6 +190,8 @@ export class PurchaseRequestComponent implements OnInit {
    * Navigate to create new purchase request
    */
   openEmpDetails() {
+    if(!this.permissionService.can(FORM_IDS.PURCHASE_REQUEST, 'write')) 
+      return;
     this.router.navigate(['/purchase-request/new-purchase-request']);
   }
 
@@ -255,6 +261,8 @@ export class PurchaseRequestComponent implements OnInit {
 
   // OPEN DELETE MODAL
   openDeleteModal(): void {
+    if(!this.permissionService.can(FORM_IDS.PURCHASE_REQUEST, 'delete')) 
+      return;
     if (this.idsToDelete.length === 0) {
       this.toastr.info('Please select at least one record to delete.');
       return;
@@ -302,6 +310,8 @@ export class PurchaseRequestComponent implements OnInit {
    * Navigate to update form
    */
   onUpdate() {
+    if(!this.permissionService.can(FORM_IDS.PURCHASE_REQUEST, 'write')) 
+      return;
     if (this.chkBoxSelected.length === 0) {
       this.toastr.info('Please select a record to update.',);
       return;
