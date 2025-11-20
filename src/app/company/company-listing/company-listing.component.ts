@@ -400,4 +400,53 @@ export class CompanyListingComponent implements OnInit {
     return row.companyStatus?.toLowerCase() === 'new';
   }
 
+  applySearchFilter() {
+    const term = this.searchTerm.trim().toLowerCase();
+
+    // Start with all companies
+    let filteredRows = [...this.allCompanies];
+
+    // Apply status filter
+    switch (this.activeFilter) {
+      case 'All':
+        filteredRows = filteredRows.filter(c =>
+          !c.companyStatus || ['inprocess', 'approve', 'sendback', 'new', 'completed'].includes(c.companyStatus.toLowerCase())
+        );
+        break;
+      case 'InProcess':
+        filteredRows = filteredRows.filter(c =>
+          c.companyStatus?.toLowerCase() === 'inprocess'
+        );
+        break;
+      case 'Recall':
+        filteredRows = filteredRows.filter(c =>
+          c.companyStatus?.toLowerCase() === 'sendback'
+        );
+        break;
+      case 'new':
+        filteredRows = filteredRows.filter(c =>
+          c.companyStatus?.toLowerCase() === 'new'
+        );
+        break;
+      case 'completed':
+        filteredRows = filteredRows.filter(c =>
+          c.companyStatus?.toLowerCase() === 'completed'
+        );
+        break;
+      default:
+        filteredRows = [...this.allCompanies];
+        break;
+    }
+
+    // Apply search term filter
+    if (term) {
+      filteredRows = filteredRows.filter(c =>
+        c.entity?.toLowerCase().includes(term) || c.name?.toLowerCase().includes(term)
+      );
+    }
+
+    this.rows = filteredRows;
+    this.cdr.detectChanges();
+  }
+
 }
