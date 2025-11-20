@@ -253,6 +253,7 @@ export class CompanyListingComponent implements OnInit {
     });
 
     // Pass all required data including vendorEntityAssociationId
+    modalRef.componentInstance.isAssigned = selectedRow.isAssigned;
     modalRef.componentInstance.ProcurementCompanyId = selectedRow.procurementCompanyId;
     modalRef.componentInstance.vendorComapnyId = selectedRow.vendorCompanyId || selectedRow.id;
     modalRef.componentInstance.entity = selectedRow.entity;

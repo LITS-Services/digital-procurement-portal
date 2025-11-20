@@ -6,46 +6,58 @@
 </div>
 
 <div class="modal-body">
+
+    <!-- Already Assigned Message -->
+    <div *ngIf="isAssigned && !showRemarks" class="alert">
+        <strong>Already Assigned!</strong><br>
+        This company is already assigned to:
+        <b>{{ assignedUserName }}</b>
+        <br><br>
+        Do you still want to assign it to yourself?
+
+        <div class="mt-2">
+            <button class="btn btn-sm btn-danger mr-2" (click)="yesProceed()">Yes</button>
+            <button class="btn btn-sm btn-secondary" (click)="closeDialog()">No</button>
+        </div>
+    </div>
+
     <form [formGroup]="assignMeForm" (ngSubmit)="submitForm()">
-        <div class="form-row">
-            <!-- Remarks -->
+
+        <!-- Remarks Section -->
+        <div *ngIf="showRemarks">
             <div class="col-lg-12 mb-2">
                 <label>Remarks <span class="text-danger">*</span></label>
                 <textarea 
-                    class="form-control custom-input" 
-                    formControlName="remarks" 
-                    placeholder="Enter remarks..." 
+                    class="form-control custom-input"
+                    formControlName="remarks"
+                    placeholder="Enter remarks..."
                     rows="4"
                     required>
                 </textarea>
-                <div *ngIf="assignMeForm.get('remarks')?.invalid && assignMeForm.get('remarks')?.touched" 
+
+                <div *ngIf="assignMeForm.get('remarks')?.invalid && assignMeForm.get('remarks')?.touched"
                      class="text-danger small mt-1">
                     Remarks are required
                 </div>
             </div>
 
-            <!-- Error Message -->
-            <div *ngIf="errorMessage" class="col-lg-12">
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ errorMessage }}
-                    <button type="button" class="close" (click)="errorMessage = ''">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
+            <!-- Error -->
+            <div *ngIf="errorMessage" class="alert alert-danger">
+                {{ errorMessage }}
             </div>
 
-            <!-- Assign to Me Button -->
+            <!-- Assign Button -->
             <div class="col-lg-12 mt-2">
                 <button 
-                    type="submit" 
+                    type="submit"
                     class="btn btn-primary"
                     [disabled]="assignMeForm.invalid || loading">
-                    <i class="fas fa-user-check mr-2"></i> 
                     {{ loading ? 'Assigning...' : 'Assign to Me' }}
                     <span *ngIf="loading" class="spinner-border spinner-border-sm ml-2"></span>
                 </button>
             </div>
         </div>
+
     </form>
 </div>
 
