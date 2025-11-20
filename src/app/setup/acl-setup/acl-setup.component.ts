@@ -2,10 +2,13 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { AclService } from 'app/shared/services/acl.service';
 import { CompanyService } from 'app/shared/services/Company.services';
+import { LookupService } from 'app/shared/services/lookup.service';
 import { WorkflowServiceService } from 'app/shared/services/WorkflowService/workflow-service.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { forkJoin } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
 @Component({
@@ -22,6 +25,8 @@ export class AclSetupComponent implements OnInit {
   roles: any[] = [];
   allUsers: any[] = [];            // All users when no entity selected
   entitiesList: any[] = [];
+  selectedRoleId: string | null = null;
+  permissions: any[] = []; 
 
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
@@ -33,19 +38,13 @@ export class AclSetupComponent implements OnInit {
     public toastr: ToastrService,
     private cdr: ChangeDetectorRef,
     private WorkflowServiceService: WorkflowServiceService,
-
-
-  ) { 
-
-
-
-  }
+    private lookupService: LookupService,
+    private aclService: AclService
+  ) {}
 
   ngOnInit(): void {
-    this.loadRoles(); // load roles from API first
-
+    this.fetchRoles();
   }
-
 
   homePage() {
     this.router.navigate(['/dashboard/dashboard1']);
@@ -66,150 +65,132 @@ export class AclSetupComponent implements OnInit {
     }, 200);
   }
 
-
-
-  loadRoles() {
-    this.spinner.show();
-
-    this.companyService
-      .getRoles()
-      .pipe(
-        finalize(() => {
-          this.spinner.hide();
-          this.cdr.detectChanges();
-        })
-      )
-      .subscribe({
-        next: (res: any) => {
-          // handle $values or normal array
-          this.roles = res?.$values || res || [];
-          console.log('Roles loaded:', this.roles);
-
-          // initialize ACL data and columns
-          this.initAclTable();
-        },
-        error: (err) => {
-          console.error('Error loading roles:', err);
-          this.toastr.error('Failed to load roles. Please try again.');
-        },
-      });
-  }
-
-  // initAclTable() {
-  //   // Example static data (you will replace with API later)
-  //   this.aclList = [
-  //     { module: 'Vendors', permissions: {} },
-  //     { module: 'Orders', permissions: {} },
-  //   ];
-
-  //   // Initialize default permissions based on roles
-  //   this.roles.forEach((role: any) => {
-  //     const roleName = role.name || role.roleName || role; // depends on API response
-  //     this.aclList.forEach(row => {
-  //       row.permissions[roleName] = false;
-  //     });
-  //   });
-
-  //   // Build dynamic columns
-  //   this.columns = [
-  //     { name: 'Module', prop: 'module', type: 'text' },
-  //     ...this.roles.map((role: any) => ({
-  //       name: role.name || role.roleName || role,
-  //       prop: `permissions.${role.name || role.roleName || role}`,
-  //       type: 'checkbox'
-  //     })),
-  //   ];
-  // }
-
-
-  initAclTable() {
-    this.WorkflowServiceService.getApproverList()
-      .pipe(finalize(() => this.cdr.detectChanges()))
-      .subscribe({
-        next: (users: any) => {
-          this.allUsers = users?.$values || users || [];
-
-          // Each user becomes a row
-          this.aclList = this.allUsers.map(user => ({
-            userName: user.fullName,
-            permissions: {}
-          }));
-
-          // Initialize permissions for each role
-          this.aclList.forEach(row => {
-            this.roles.forEach(role => {
-              const roleName = role.name || role.roleName || role;
-              row.permissions[roleName] = false;
-            });
-          });
-
-          // Build dynamic columns
-          this.columns = [
-            { name: 'Form Name', prop: 'userName', type: 'text' },
-            ...this.roles.map(role => {
-              const roleName = role.name || role.roleName || role;
-              return {
-                name: roleName,
-                prop: `permissions.${roleName}`,
-                type: 'checkbox'
-              };
-            })
-          ];
-
-          console.log('ACL List loaded:', this.aclList);
-          console.log('Columns:', this.columns);
-        },
-        error: err => {
-          console.error('Error loading users:', err);
-          this.toastr.error('Failed to load users.');
+  fetchRoles() {
+    this.lookupService.getProcurementRoles().subscribe({
+      next: roles => {
+        this.roles = roles || [];
+        if (!this.selectedRoleId && this.roles.length) {
+          this.selectedRoleId = this.roles[0].stringId;
+          this.setupTableColumns();
+          this.fetchData();
         }
-      });
+      }
+    });
   }
 
-  getApproverList(): void {
+  onSelectRole(roleStringId: string) {
+    this.selectedRoleId = roleStringId;
+    this.fetchData();
+  }
+
+  setupTableColumns() {
+    this.columns = [
+      { name: 'Form', prop: 'formName', type: 'text' },
+      { name: 'Read', prop: 'read', type: 'checkbox' },
+      { name: 'Write', prop: 'write', type: 'checkbox' },
+      { name: 'Delete', prop: 'delete', type: 'checkbox' }
+    ];
+  }
+
+  fetchData(): void {
+    if (!this.selectedRoleId) return;
+
     this.spinner.show();
 
-    this.WorkflowServiceService.getApproverList()
+    forkJoin([
+      this.aclService.getAllPermissions(1, 10000),
+      this.aclService.getAllForms(1, 10000)
+    ])
       .pipe(finalize(() => this.spinner.hide()))
       .subscribe({
-        next: (data: any) => {
-          this.allUsers = data ?? [];
-          // Initialize filtered list
-        },
-        error: (err) => {
-          console.error("Error fetching approver list:", err);
-          this.toastr.error("Failed to load approvers. Please try again.");
+        next: ([permsRes, formsRes]) => {
+          const permissions = permsRes?.result || [];
+          const forms = formsRes?.result || [];
+
+          const rows = forms.map((f: any) => {
+            const acl = permissions.find(p =>
+              String(p.roleId) === String(this.selectedRoleId) &&
+              String(p.formTypeId) === String(f.id)
+            );
+
+            return {
+              id: f.id,
+              formName: f.name,
+              route: f.route,
+              read: acl?.read ?? false,
+              write: acl?.write ?? false,
+              delete: acl?.delete ?? false
+            };
+          });
+
+          this.aclList = [...rows];
+          this.cdr.detectChanges();
         }
       });
   }
 
-  
-  loadEntities() {
-    this.spinner.show();
-    this.companyService
-      .getProCompanies()
-      .pipe(finalize(() => { this.spinner.hide(); this.cdr.detectChanges(); }))
-      .subscribe({
-        next: (res: any) => {
-          const companies = res?.result || [];
-          this.entitiesList = companies.map((c: any) => ({
-            ...c,
-            status: c.isDeleted ? 'Inactive' : 'Active',
-            logo: c.logo || ''
-          }));
-          console.log('Entities loaded:', this.entitiesList);
-        },
-        error: (err) => {
-          console.error('Error fetching companies:', err);
-          this.toastr.error('Failed to load companies. Please try again.');
-        }
-      });
+  togglePermission(row: any, prop: string) {
+    if (prop === 'read') {
+      row.read = !row.read;
+      if (!row.read) {
+        row.write = false;
+        row.delete = false;
+      }
+      console.log('Toggled', prop, 'for', row.formName, row);
+
+    }
+    else if (prop === 'write') {
+      row.write = !row.write;
+      if (row.write) row.read = true;
+    }
+    else if (prop === 'delete') {
+      row.delete = !row.delete;
+      if (row.delete) {
+        row.read = true;
+        row.write = true;
+      }
+    }
+
+    this.aclList = [...this.aclList];
+
+    // Submit the updated permission
+    this.submitPermission(row);
   }
 
-  togglePermission(row: any, role: string) {
-  row.permissions[role] = !row.permissions[role];
-  console.log(`${role} permission for ${row.userName}:`, row.permissions[role]);
-}
+  // onReadChange(row: any, e: any) {
+  //   row.read = e.target.checked;
+  //   if (!row.read) {
+  //     row.write = false;
+  //     row.delete = false;
+  //   }
+  //   this.submitPermission(row);
+  // }
 
+  // onWriteChange(row: any, e: any) {
+  //   row.write = e.target.checked;
+  //   if (row.write) row.read = true;
+  //   this.submitPermission(row);
+  // }
 
+  // onDeleteChange(row: any, e: any) {
+  //   row.delete = e.target.checked;
+  //   if (row.delete) {
+  //     row.read = true;
+  //     row.write = true;
+  //   }
+  //   this.submitPermission(row);
+  // }
+
+  submitPermission(row: any) {
+    const payload = {
+      createPermission: {
+        roleId: this.selectedRoleId,
+        formTypeId: row.id,
+        read: row.read,
+        write: row.write,
+        delete: row.delete,
+      }
+    };
+    this.aclService.submitPermissions(payload).subscribe();
+  }
 }

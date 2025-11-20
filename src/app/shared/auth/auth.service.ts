@@ -7,6 +7,7 @@ import { environment } from 'environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { AuthUtils } from './auth.util';
 import { catchError, finalize, map, tap } from 'rxjs/operators';
+import { PermissionService } from '../permissions/permission.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -20,7 +21,8 @@ export class AuthService {
   constructor(
     public _firebaseAuth: AngularFireAuth,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private permissionService: PermissionService
   ) {
     this.user = _firebaseAuth.authState;
     this.user.subscribe(user => this.userDetails = user || null);
@@ -228,6 +230,15 @@ export class AuthService {
 
     const companyIds = Array.isArray(res.companyIds) ? res.companyIds : [];
     localStorage.setItem('companyIds', JSON.stringify(companyIds));
+
+      // Store permissions
+    if (res.rolePermissions) {
+      this.permissionService.setPermissions(res.rolePermissions);
+      const auth = JSON.parse(localStorage.getItem('auth') || '{}');
+      localStorage.setItem('auth', JSON.stringify({ ...auth, rolePermissions: res.rolePermissions }));
+    }
+
+    localStorage.setItem('isAuthenticated', 'true');
   }
 
   private _applySessionFromRefresh(res: any): void {
@@ -253,6 +264,12 @@ export class AuthService {
       const companyIds = res?.companyIds?.$values || res.companyIds || [];
       localStorage.setItem('companyIds', JSON.stringify(companyIds));
     }
-  }
 
+    // Update ACL permissions
+    if (res?.rolePermissions) {
+        this.permissionService.setPermissions(res.rolePermissions);
+        const auth = JSON.parse(localStorage.getItem('auth') || '{}');
+        localStorage.setItem('auth', JSON.stringify({ ...auth, rolePermissions: res.rolePermissions }));
+    }
+  }
 }

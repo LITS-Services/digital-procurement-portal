@@ -22,15 +22,21 @@
               <span class="vl"></span>
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new Purchase Request"
+              appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                [appPermDisable]="'write'"
                 (click)="openEmpDetails()">
                 <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
               </button>
-              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()">
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()"
+              appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                [appPermDisable]="'write'">
                 <i class="ft-edit"></i><label class="ml-1 mt-1">Update</label>
               </button>
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()"
-                [disabled]="isDeleteButtonDisabled">
+                [disabled]="isDeleteButtonDisabled"
+                appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                [appPermDisable]="'delete'">
                 <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
               </button>
 

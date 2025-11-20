@@ -13,6 +13,8 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { LookupService } from 'app/shared/services/lookup.service';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
+import { FORM_IDS } from 'app/shared/permissions/form-ids';
+import { PermissionService } from 'app/shared/permissions/permission.service';
 
 @Component({
   selector: 'app-rfq',
@@ -21,7 +23,7 @@ import { PurchaseOrderService } from 'app/shared/services/purchase-order.service
 })
 
 export class RfqComponent implements OnInit {
-
+  FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
@@ -73,7 +75,8 @@ export class RfqComponent implements OnInit {
   constructor(private router: Router, private modalService: NgbModal,
     private route: ActivatedRoute, private rfqService: RfqService,
     private cdr: ChangeDetectorRef, public toastr: ToastrService,
-    public lookupService: LookupService, private purchaseOrderService: PurchaseOrderService
+    public lookupService: LookupService, private purchaseOrderService: PurchaseOrderService,
+    private permissionService: PermissionService
   ) { }
 
   ngOnInit(): void {
@@ -249,6 +252,8 @@ export class RfqComponent implements OnInit {
 
   // OPEN DELETE MODAL
   openDeleteModal(): void {
+    if(!this.permissionService.can(FORM_IDS.REQUEST_FOR_QUOTATION, 'delete')) 
+      return;
     if (this.idsToDelete.length === 0) {
       this.toastr.info('Please select at least one record to delete.');
       return;

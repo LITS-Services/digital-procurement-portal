@@ -29,6 +29,8 @@
                             </button> -->
 
                             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()"
+                            appPermission [appPermFormId]="FORM_IDS.REQUEST_FOR_QUOTATION"
+                            [appPermDisable]="'delete'"
                                 [disabled]="isDeleteButtonDisabled">
                                 <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
                             </button>
