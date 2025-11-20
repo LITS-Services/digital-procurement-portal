@@ -7,6 +7,8 @@ import { AuthService } from 'app/shared/auth/auth.service';
 import { CompanyApprovalHistoryComponent } from '../company-approval-history/company-approval-history.component';
 import { AssignMeComponent } from '../assign-me/assign-me.component';
 import { CompanySetupHistoryComponent } from '../company-setup-history/company-setup-history.component';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-company-listing',
@@ -38,13 +40,16 @@ export class CompanyListingComponent implements OnInit {
   activeFilter: string = 'All';
   selectedStatusLabel: string = 'All';
   statusTouched: boolean = false;
+  showFilterBar = false;
 
   constructor(
     private router: Router,
     private modalService: NgbModal,
     private companyService: CompanyService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private spinner: NgxSpinnerService,
+
   ) { }
 
   ngOnInit(): void {
@@ -74,29 +79,39 @@ export class CompanyListingComponent implements OnInit {
       return;
     }
 
-    this.companyService.getCompaniesByUserEntity(userId).subscribe({
-      next: (res: any) => {
-        const companies = res?.result || res || [];
-
-        console.log('📦 Raw API Response:', companies); // Debug log
-
-        this.allCompanies = companies.map(c => this.mapCompany(c));
-
-        this.tenderingData = this.allCompanies.filter(c =>
-          !c.companyStatus || ['inprocess', 'approve'].includes(c.companyStatus.toLowerCase())
-        );
-
-        this.rows = [...this.tenderingData];
-        this.loading = false;
+    this.spinner.show();
+    this.companyService.getCompaniesByUserEntity(userId)
+      .pipe(finalize(() => {
+        this.spinner.hide();
         this.cdr.detectChanges();
+      }))
+      .subscribe({
+        next: (res: any) => {
+          const companies = res?.result || res || [];
+          console.log('Raw API Response:', companies); // Debug log
+          this.allCompanies = companies.map(c => this.mapCompany(c));
+          // this.tenderingData = this.allCompanies.filter(c =>
+          //   !c.companyStatus || ['inprocess', 'approve'].includes(c.companyStatus.toLowerCase())
+          // );
+          // this.rows = [...this.tenderingData];
 
-        console.log('✅ Mapped companies:', this.rows);
-      },
-      error: (err) => {
-        console.error('Error fetching companies:', err);
-        this.loading = false;
-      }
-    });
+
+          // Show ALL companies by default
+          this.rows = [...this.allCompanies];
+          this.activeFilter = 'All';
+          this.selectedStatusLabel = 'All';
+          this.showStatusColumn = true;
+
+          this.loading = false;
+          this.cdr.detectChanges();
+
+          console.log('Mapped companies:', this.rows);
+        },
+        error: (err) => {
+          console.error('Error fetching companies:', err);
+          this.loading = false;
+        }
+      });
   }
 
   applyFilters() {
@@ -159,38 +174,88 @@ export class CompanyListingComponent implements OnInit {
   }
 
   /** FILTER BUTTONS LOGIC */
-  showAll() {
-    this.rows = this.allCompanies.filter(c =>
-      !c.companyStatus || ['inprocess', 'approve'].includes(c.companyStatus.toLowerCase())
-    );
-    this.activeFilter = 'All';
-    this.selectedStatusLabel = 'All';
+  // showAll() {
+  //   this.rows = this.allCompanies.filter(c =>
+  //     !c.companyStatus || ['inprocess', 'approve'].includes(c.companyStatus.toLowerCase())
+  //   );
+  //   this.activeFilter = 'All';
+  //   this.selectedStatusLabel = 'All';
+  //   this.statusTouched = true;
+  //   this.showStatusColumn = true;
+  //   this.cdr.detectChanges();
+  // }
+
+  // showInProcess() {
+  //   this.rows = this.allCompanies.filter(c =>
+  //     c.companyStatus.toLowerCase() === 'inprocess'
+  //   );
+  //   this.activeFilter = 'InProcess';
+  //   this.selectedStatusLabel = 'InProcess';
+  //   this.statusTouched = true;
+  //   this.showStatusColumn = true;
+  //   this.cdr.detectChanges();
+  // }
+
+  // showRecall() {
+  //   this.rows = this.allCompanies.filter(c =>
+  //     c.companyStatus.toLowerCase() === 'sendback'
+  //   );
+  //   this.activeFilter = 'Recall';
+  //   this.selectedStatusLabel = 'Recall';
+  //   this.statusTouched = true;
+  //   this.showStatusColumn = false;
+  //   this.cdr.detectChanges();
+  // }
+
+  filterByStatus(status: string) {
+    switch (status) {
+      case 'All':
+        this.rows = this.allCompanies.filter(c =>
+          !c.companyStatus || ['inprocess', 'approve', 'sendback', 'new', 'completed'].includes(c.companyStatus.toLowerCase())
+        );
+        this.showStatusColumn = true;
+        break;
+
+      case 'InProcess':
+        this.rows = this.allCompanies.filter(c =>
+          c.companyStatus.toLowerCase() === 'inprocess'
+        );
+        this.showStatusColumn = true;
+        break;
+
+      case 'Recall':
+        this.rows = this.allCompanies.filter(c =>
+          c.companyStatus.toLowerCase() === 'sendback'
+        );
+        this.showStatusColumn = false;
+        break;
+
+      case 'new':
+        this.rows = this.allCompanies.filter(c =>
+          c.companyStatus.toLowerCase() === 'new'
+        );
+        this.showStatusColumn = true;
+        break;
+
+      case 'completed':
+        this.rows = this.allCompanies.filter(c =>
+          c.companyStatus.toLowerCase() === 'completed'
+        );
+        this.showStatusColumn = true;
+        break;
+
+      default:
+        this.rows = [...this.allCompanies];
+        this.showStatusColumn = true;
+        break;
+    }
+
+    this.activeFilter = status;
+    this.selectedStatusLabel = status;
     this.statusTouched = true;
-    this.showStatusColumn = true;
     this.cdr.detectChanges();
   }
 
-  showInProcess() {
-    this.rows = this.allCompanies.filter(c =>
-      c.companyStatus.toLowerCase() === 'inprocess'
-    );
-    this.activeFilter = 'InProcess';
-    this.selectedStatusLabel = 'InProcess';
-    this.statusTouched = true;
-    this.showStatusColumn = true;
-    this.cdr.detectChanges();
-  }
-
-  showRecall() {
-    this.rows = this.allCompanies.filter(c =>
-      c.companyStatus.toLowerCase() === 'sendback'
-    );
-    this.activeFilter = 'Recall';
-    this.selectedStatusLabel = 'Recall';
-    this.statusTouched = true;
-    this.showStatusColumn = false;
-    this.cdr.detectChanges();
-  }
 
   homePage() {
     this.router.navigate(['/dashboard/dashboard1']);
@@ -305,29 +370,6 @@ export class CompanyListingComponent implements OnInit {
     this.isAllSelected = this.rows.length === selectedRowCount;
   }
 
-  applySearchFilter() {
-    const term = this.searchTerm.trim().toLowerCase();
-
-    if (!term) {
-      // Reset filter to current selected filter
-      if (this.activeFilter === 'All') this.showAll();
-      else if (this.activeFilter === 'InProcess') this.showInProcess();
-      else if (this.activeFilter === 'Recall') this.showRecall();
-      return;
-    }
-    this.rows = this.allCompanies.filter(c =>
-      (c.entity?.toLowerCase().includes(term) || c.name?.toLowerCase().includes(term)) &&
-      (
-        this.activeFilter === 'All'
-          ? (!c.companyStatus || ['inprocess', 'approve'].includes(c.companyStatus.toLowerCase()))
-          : this.activeFilter === 'InProcess'
-            ? c.companyStatus?.toLowerCase() === 'inprocess'
-            : c.companyStatus?.toLowerCase() === 'sendback'
-      )
-    );
-
-    this.cdr.detectChanges();
-  }
 
   editSelectedRow() {
     if (this.chkBoxSelected.length === 1) {
@@ -345,4 +387,17 @@ export class CompanyListingComponent implements OnInit {
       alert('Please select a single company to update.');
     }
   }
+
+  toggleFilterBar() {
+    this.showFilterBar = !this.showFilterBar;
+  }
+
+  isSelectedRowNew(): boolean {
+    // If no row or multiple rows selected, don't disable
+    if (this.chkBoxSelected.length !== 1) return false;
+
+    const row = this.chkBoxSelected[0];
+    return row.companyStatus?.toLowerCase() === 'new';
+  }
+
 }

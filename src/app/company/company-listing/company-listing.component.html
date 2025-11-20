@@ -11,48 +11,58 @@
 
       <!-- Action Pane -->
       <div class="card cstm-ui-card">
-        <div class="row align-items-center p-2">
-          <div class="col-md-7">
+        <div>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="position-relative">
 
-            <!-- Back Button -->
-            <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
-              <i class="ft-arrow-left"></i>
-            </button>
-            <span class="vl"></span>
+              <button class="btn btn-lg mr-1 " type="button" (click)="homePage()">
+                <i class="ft-arrow-left"></i></button>
+              <span class="vl"></span>
 
-            <!-- Company Review Button -->
-            <button type="button" class="btn btn-sm cstm-ui-table-btn ml-2" [disabled]="isEditButtonDisabled"
-              (click)="editSelectedRow()">
-              <i class="ft-edit"></i>
-              <label class="ml-1 mt-1">Company Review</label>
-            </button>
-
-            <!-- Filter Dropdown -->
-            <div ngbDropdown class="d-inline-block ml-2">
-              <button class="btn btn-sm cstm-ui-table-btn" ngbDropdownToggle>
-                <i class="ft-filter"></i>
-                <label class="ml-1 mt-1">{{ selectedStatusLabel }}</label>
-                <i class="ft-chevron-down ml-1"></i>
+              <!-- Company Review Button -->
+              <button type="button" class="btn btn-sm cstm-ui-table-btn ml-2"  [disabled]="isEditButtonDisabled || isSelectedRowNew()"
+                (click)="editSelectedRow()">
+                <i class="ft-edit"></i>
+                <label class="ml-1 mt-1">Company Review</label>
               </button>
-              <div ngbDropdownMenu>
-                <button class="dropdown-item" (click)="showAll()">All</button>
-                <button class="dropdown-item" (click)="showInProcess()">InProcess</button>
-                <button class="dropdown-item" (click)="showRecall()">Recall</button>
-              </div>
+
+            </div>
+            <div class="d-flex align-items-center">
+              <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
+                <i class="ft-sliders"></i><label class="ml-1 mt-1">Filter</label>
+              </button>
             </div>
           </div>
+        </div>
+      </div>
 
-          <!-- Search Bar -->
-          <div class="col-md-5 mt-2 mt-md-0">
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text bg-transparent border-right-0">
-                  <i class="ft-search"></i>
-                </span>
+      <div *ngIf="showFilterBar" class="filter-bar">
+        <div class="d-flex align-items-center justify-content-between pl-3 pr-1 py-2 filter-wrapper">
+          <div class="filter-search">
+            <i class="ft-filter search-icon"></i>
+
+            <input style="padding-left: 3.4em;" type="text" class="form-control border-left-0 cstm-ui-input"
+              placeholder="Search by Entity or Company..." [(ngModel)]="searchTerm"
+              (ngModelChange)="applySearchFilter()" />
+
+          </div>
+
+          <div class="d-flex filter-btns-div">
+            <div class="dropdown filter-dropdown" ngbDropdown [ngbTooltip]="statusTouched ? 'Status' : null">
+              <button class="btn btn-sm filter-btn dropdown-toggle" ngbDropdownToggle>
+                <span class="filter-label">{{ !statusTouched ? "Status" : selectedStatusLabel }} </span>
+                <i class="ft-chevron-down"></i>
+              </button>
+              <div class="dropdown-menu" ngbDropdownMenu>
+                <button class="dropdown-item" (click)="filterByStatus('All')">All</button>
+                <button class="dropdown-item" (click)="filterByStatus('InProcess')">InProcess</button>
+                <button class="dropdown-item" (click)="filterByStatus('Recall')">Recall</button>
+                <button class="dropdown-item" (click)="filterByStatus('new')">new</button>
+                <button class="dropdown-item" (click)="filterByStatus('completed')">completed</button>
               </div>
-              <input type="text" class="form-control border-left-0 cstm-ui-input"
-                placeholder="Search by Entity or Company..." [(ngModel)]="searchTerm" (input)="applySearchFilter()" />
             </div>
+
+            <button class="btn px-1 btn-sm" (click)="showFilterBar = false">✕</button>
           </div>
         </div>
       </div>
@@ -61,8 +71,7 @@
       <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="rows" [columnMode]="'force'"
         [headerHeight]="50" [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'" [limit]="15"
         [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
-        [selectionType]="SelectionType.checkbox" (sort)="onSort($event)"
-        (select)="customChkboxOnSelect($event)">
+        [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 
         <!-- Checkbox Column -->
         <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
@@ -87,14 +96,14 @@
           </ng-template>
         </ngx-datatable-column>
 
-        
+
         <!-- Company Name Column -->
         <ngx-datatable-column name="Company" prop="name" [width]="150">
           <ng-template let-row="row" ngx-datatable-cell-template>
             <span>{{ row.name }}</span>
           </ng-template>
         </ngx-datatable-column>
-        
+
         <!-- Entity Column -->
         <ngx-datatable-column name="Entity" prop="entity" [width]="150">
           <ng-template let-row="row" ngx-datatable-cell-template>
@@ -130,13 +139,12 @@
                   <span class="popover-icon"><i class="ft-list"></i></span>
                   Approval History
                 </button>
-                 <button class="btn popover-btn btn-sm m-1" ngbTooltip="Approval History"
+                <button class="btn popover-btn btn-sm m-1" ngbTooltip="Approval History"
                   (click)="AssigenedHistory(row)">
                   <span class="popover-icon"><i class="ft-list"></i></span>
                   Setup History
                 </button>
-                <button class="btn popover-btn btn-sm m-1" ngbTooltip="Assign to me "
-                  (click)="openAssignMeModal(row)">
+                <button class="btn popover-btn btn-sm m-1" ngbTooltip="Assign to me " (click)="openAssignMeModal(row)">
                   <span class="popover-icon"><i class="ft-user-plus"></i></span>
                   Assign to me
                 </button>

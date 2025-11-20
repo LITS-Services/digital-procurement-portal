@@ -1,120 +1,131 @@
-::ng-deep .ngx-datatable{
-    .sortable .sort-btn:before {
-        // font-family: data-table;
-        // content: "c";
-        display: none !important;
-    }
-    .sortable .sort-btn.datatable-icon-down:before {
-        // content: "f";
-        display: none !important;
-  
-    }
-    .sortable .sort-btn.datatable-icon-up:before {
-        // content: "e";
-        display: none !important;
-    }
-  }
-  .vl {
-      border-left: 1.4px solid #cccccc;
-      height: 100%;
-      position: absolute;
-      margin-left: -3px;
-    }
-    .heading{
-      color: #1E89B8;
-      margin-top: 1rem;
-      margin-bottom: -0.5rem;
-      font-weight: 700;
-    }
-  
-    
-  .ngx-datatable ::ng-deep .datatable-header-inner{
-     background-color: #4188F2 !important;
-  // border-radius: 10px;
-  }
-  .ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
-  .ngx-datatable ::ng-deep .datatable-header-inner .sort-btn{
-    color: white !important;
-  
+::ng-deep .ngx-datatable {
+  .sortable .sort-btn:before {
+    // font-family: data-table;
+    // content: "c";
+    display: none !important;
   }
 
-  .ngx-datatable.bootstrap .datatable-footer {
-    background: #424242 !important;
-    color: #1E89B8;
-    margin-top: -1px;
+  .sortable .sort-btn.datatable-icon-down:before {
+    // content: "f";
+    display: none !important;
+
+  }
+
+  .sortable .sort-btn.datatable-icon-up:before {
+    // content: "e";
+    display: none !important;
+  }
 }
-  
-  .ngx-datatable ::ng-deep .datatable-body .datatable-body-row.datatable-row-even {
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-  
-  // .ngx-datatable.bootstrap .datatable-body .datatable-body-row {
-  //   padding: 0.75rem;
-  //   vertical-align: middle;
-  //   border-top: 1px solid #1E89B8;
-  // }
-  
-  .ngx-datatable ::ng-deep .datatable-body .datatable-body-row .datatable-body-cell {
-    text-align: left;
-    padding: 0.75rem;
-    vertical-align:baseline;
-    
-  }
-  ::ng-deep .ngx-datatable{
-    .sortable .sort-btn:before {
-        // font-family: data-table;
-        // content: "c";
-        display: none !important;
-    }
-    .sortable .sort-btn.datatable-icon-down:before {
-        // content: "f";
-        display: none !important;
-  
-    }
-    .sortable .sort-btn.datatable-icon-up:before {
-        // content: "e";
-        display: none !important;
-    }
-  }
-  // .vl {
-  //     border-left: 1.4px solid #cccccc;
-  //     height: 100%;
-  //     position: absolute;
-  //     margin-left: -3px;
 
-  //   }
-    .heading{
-      color: #1E89B8;
-      margin-top: 1rem;
-      margin-bottom: -0.5rem;
-      font-weight: 700;
-    }
-  
-    
-  .ngx-datatable ::ng-deep .datatable-header-inner{
-    background-color: #4188F2 !important;
-    // padding: 0.5rem;
+.vl {
+  border-left: 1.4px solid #cccccc;
+  height: 100%;
+  position: absolute;
+  margin-left: -3px;
+}
+
+.heading {
+  color: #1E89B8;
+  margin-top: 1rem;
+  margin-bottom: -0.5rem;
+  font-weight: 700;
+}
+
+
+.ngx-datatable ::ng-deep .datatable-header-inner {
+  background-color: #4188F2 !important;
   // border-radius: 10px;
-  }
-  .ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
-  .ngx-datatable ::ng-deep .datatable-header-inner .sort-btn{
-    color: white !important;
-  
-  }
-  
+}
 
-  
-  // .ngx-datatable.bootstrap .datatable-body .datatable-body-row {
-  //   padding: 0.75rem;
-  //   vertical-align: middle;
-  //   border-top: 1px solid #1E89B8;
-  // }
-  
-  .ngx-datatable ::ng-deep .datatable-body .datatable-body-row .datatable-body-cell {
-    text-align: left;
-    vertical-align:baseline;
-    
+.ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
+.ngx-datatable ::ng-deep .datatable-header-inner .sort-btn {
+  color: white !important;
+
+}
+
+.ngx-datatable.bootstrap .datatable-footer {
+  background: #424242 !important;
+  color: #1E89B8;
+  margin-top: -1px;
+}
+
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-row.datatable-row-even {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+// .ngx-datatable.bootstrap .datatable-body .datatable-body-row {
+//   padding: 0.75rem;
+//   vertical-align: middle;
+//   border-top: 1px solid #1E89B8;
+// }
+
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-row .datatable-body-cell {
+  text-align: left;
+  padding: 0.75rem;
+  vertical-align: baseline;
+
+}
+
+::ng-deep .ngx-datatable {
+  .sortable .sort-btn:before {
+    // font-family: data-table;
+    // content: "c";
+    display: none !important;
   }
+
+  .sortable .sort-btn.datatable-icon-down:before {
+    // content: "f";
+    display: none !important;
+
+  }
+
+  .sortable .sort-btn.datatable-icon-up:before {
+    // content: "e";
+    display: none !important;
+  }
+}
+
+// .vl {
+//     border-left: 1.4px solid #cccccc;
+//     height: 100%;
+//     position: absolute;
+//     margin-left: -3px;
+
+//   }
+.heading {
+  color: #1E89B8;
+  margin-top: 1rem;
+  margin-bottom: -0.5rem;
+  font-weight: 700;
+}
+
+
+.ngx-datatable ::ng-deep .datatable-header-inner {
+  background-color: #4188F2 !important;
+  // padding: 0.5rem;
+  // border-radius: 10px;
+}
+
+.ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
+.ngx-datatable ::ng-deep .datatable-header-inner .sort-btn {
+  color: white !important;
+
+}
+
+
+
+// .ngx-datatable.bootstrap .datatable-body .datatable-body-row {
+//   padding: 0.75rem;
+//   vertical-align: middle;
+//   border-top: 1px solid #1E89B8;
+// }
+
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-row .datatable-body-cell {
+  text-align: left;
+  vertical-align: baseline;
+
+}
+
 //   .ngx-datatable ::ng-deep .datatable-footer .selected-count .page-count {
 //     flex: 1 1 40%;
 //     background: #eaeaeb !important;
@@ -125,10 +136,11 @@
 //     color: #1E89B8;
 //     margin-top: -1px;
 // }
-.counter{
+.counter {
   top: -10px;
   right: -16px;
 }
+
 .badge {
   display: inline-block;
   padding: 0.4rem 0.5rem !important;
@@ -141,9 +153,12 @@
   border-radius: 0.35rem;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
+
 .custom-height-modal .modal-body {
-  height: 400px !important; /* or any height you want */
-  overflow-y: auto !important; /* optional: to make it scroll if content overflows */
+  height: 400px !important;
+  /* or any height you want */
+  overflow-y: auto !important;
+  /* optional: to make it scroll if content overflows */
 }
 
 ::ng-deep .action-popover {
@@ -159,42 +174,48 @@
   height: 100%;
 }
 
-.popover-btn{
+.popover-btn {
   display: flex;
   align-items: center;
   justify-content: start;
   gap: 8px;
 }
 
-.popover-icon{
-    background: #efefef;
-    padding: 0px 8px;
-    border-radius: 6px;
-    color: black;
-    font-weight: 600;
+.popover-icon {
+  background: #efefef;
+  padding: 0px 8px;
+  border-radius: 6px;
+  color: black;
+  font-weight: 600;
 }
 
-::ng-deep .action-popover .popover-body{
-    padding: 0.4rem 0rem;
-    color: #342E49;
+::ng-deep .action-popover .popover-body {
+  padding: 0.4rem 0rem;
+  color: #342E49;
 }
 
 
-  .dropdown {
-      position: absolute; /* Set the container to relative position */
-           overflow: visible !important;
-  
-  }
-    
-    .dropdown-content {
-      position: absolute; /* Set the dropdown to absolute position */
-      // top: calc(100% + 10px); /* Position it below the container */
-      left: 0;
-      overflow: visible !important;
-      // z-index: 9999; /* Set a high z-index */
-      display: none; /* Hide the modal by default */
-      background-color: #fff; /* Set background color */
-      border: 1px solid #ccc; /* Add border */
-      padding: 10px; /* Add padding */
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add shadow */
-    }
+// .dropdown {
+//     position: absolute; /* Set the container to relative position */
+//          overflow: visible !important;
+
+// }
+
+.dropdown-content {
+  position: absolute;
+  /* Set the dropdown to absolute position */
+  // top: calc(100% + 10px); /* Position it below the container */
+  left: 0;
+  overflow: visible !important;
+  // z-index: 9999; /* Set a high z-index */
+  display: none;
+  /* Hide the modal by default */
+  background-color: #fff;
+  /* Set background color */
+  border: 1px solid #ccc;
+  /* Add border */
+  padding: 10px;
+  /* Add padding */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  /* Add shadow */
+}
