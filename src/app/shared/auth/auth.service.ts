@@ -122,7 +122,7 @@ export class AuthService {
 
   performLogout(): void {
     localStorage.clear();
-    this.router.navigate(['/pages/login']);
+    window.location.href = 'pages/login';
   }
 
   // ===== Authentication Check =====

@@ -25,10 +25,14 @@ export class AuthGuard implements CanActivate {
             : this.router.createUrlTree(['/unauthorized']);
         }
 
-        // No token even after refresh attempt
-        return this.router.createUrlTree(['/pages/login']);
-      }),
-      catchError(() => of(this.router.createUrlTree(['/pages/login'])))
+        window.location.href = '/pages/login';
+        return false; 
+
+        }),
+         catchError(() => {
+        window.location.href = '/pages/login';
+        return of(false);
+      })
     );
   }
 }
