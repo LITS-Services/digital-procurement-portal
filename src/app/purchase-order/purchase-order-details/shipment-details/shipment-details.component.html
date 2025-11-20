@@ -29,10 +29,15 @@
                             [value]="shipmentDetails?.shipmentDate | date:'yyyy-MM-dd'" disabled>
                     </div>
 
-                    <div class="col-lg-4 col-md-6 mb-3">
+                    <!-- <div class="col-lg-4 col-md-6 mb-3">
                         <label>Delivery Date</label>
                         <input class="form-control custom-input"
                             [value]="shipmentDetails?.deliveryDate | date:'yyyy-MM-dd'" disabled>
+                    </div> -->
+
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <label>Ship To Name</label>
+                        <input class="form-control custom-input" [value]="shipmentDetails?.shipToName || '-'" disabled>
                     </div>
 
                     <div class="col-lg-4 col-md-6 mb-3">
@@ -45,10 +50,26 @@
                         <input class="form-control custom-input" [value]="shipmentDetails?.city || '-'" disabled>
                     </div>
 
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <label>Region</label>
+                        <input class="form-control custom-input" [value]="shipmentDetails?.region || '-'" disabled>
+                    </div>
+
                     <div class="col-12 mb-3">
-                        <label>Shipping Address</label>
+                        <label>Ship To Address</label>
                         <textarea rows="2" class="form-control custom-input"
-                            [value]="shipmentDetails?.shippingAddress || '-'" disabled></textarea>
+                            [value]="shipmentDetails?.shipToAddress || '-'" disabled></textarea>
+                    </div>
+
+                    <div class="col-12 mb-3">
+                        <label>Ship To Address 2</label>
+                        <textarea rows="2" class="form-control custom-input"
+                            [value]="shipmentDetails?.shipToAddress2 || '-'" disabled></textarea>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <label>Post Code</label>
+                        <input class="form-control custom-input" [value]="shipmentDetails?.postCode || '-'" disabled>
                     </div>
 
                     <div class="col-12">
