@@ -15,6 +15,8 @@ export class AssignMeComponent implements OnInit {
   @Input() vendorEntityAssociationId!: number;
   @Input() isAssigned!: boolean;
   @Input() assignedUserName!: string;
+  @Input() setUpId!: number;
+
 
   assignMeForm: FormGroup;
   loading: boolean = false;
@@ -33,6 +35,9 @@ export class AssignMeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    console.log("Setup ID received in modal:", this.setUpId);
+
     // Hide remarks initially when already assigned
     if (this.isAssigned) {
       this.assignMeForm.disable();
@@ -76,7 +81,9 @@ export class AssignMeComponent implements OnInit {
     this.companyService.assignedMe(
       this.vendorEntityAssociationId,
       userId,
-      remarks
+      remarks,
+      this.setUpId
+
     )
       .subscribe({
         next: (response) => {

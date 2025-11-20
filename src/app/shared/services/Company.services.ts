@@ -198,19 +198,19 @@ export class CompanyService {
 
 
 
-assignedMe(vendorEntityAssociationId: number, approverId: string, remarks: string): Observable<any> {
-  const params = new HttpParams()
-    .set('VendorEntityAssociationId', vendorEntityAssociationId)
-    .set('ApproverId', approverId)
-    .set('Remarks', remarks);
+  assignedMe(vendorEntityAssociationId: number, approverId: string, remarks: string, setUpId: number): Observable<any> {
+    const params = new HttpParams()
+      .set('VendorEntityAssociationId', vendorEntityAssociationId)
+      .set('ApproverId', approverId)
+      .set('Remarks', remarks)
+      .set('SetUpId', setUpId)
+    return this.http.get<any>(`${this.apiUrl}/assigned-me`, { params });
+  }
 
-  return this.http.get<any>(`${this.apiUrl}/assigned-me`, { params });
-}
 
-
-takeAction(data: any): Observable<any> {
-  return this.http.post<any>(`${environment.apiUrl}/Workflow/take-action`, data);
-}
+  takeAction(data: any): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/Workflow/take-action`, data);
+  }
 
 
 }

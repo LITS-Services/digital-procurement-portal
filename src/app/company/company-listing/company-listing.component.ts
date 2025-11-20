@@ -146,7 +146,9 @@ export class CompanyListingComponent implements OnInit {
         procurementCompanyId: c.procurementCompanyId || null,
         vendorCompanyId: c.vendorCompanyId || null,
         vendorEntityAssociationId: c.vendorEntityAssociationId || null, // Add this line
-        isAssigned: c.isAssigned || false // Add this line to include isAssigned from API response
+        isAssigned: c.isAssigned || false, // Add this line to include isAssigned from API response
+        setUpId: c.setUpId || null,
+
       };
     } else {
       // Fallback to the original nested structure
@@ -168,7 +170,9 @@ export class CompanyListingComponent implements OnInit {
         procurementCompanyId: selectedEntity?.procurementCompanyId || null,
         vendorCompanyId: selectedEntity?.vendorCompanyId || null,
         vendorEntityAssociationId: selectedEntity?.vendorEntityAssociationId || null, // Add this line
-        isAssigned: selectedEntity?.isAssigned || false // Add this line for fallback structure if applicable
+        isAssigned: selectedEntity?.isAssigned || false, // Add this line for fallback structure if applicable
+        setUpId: selectedEntity?.setUpId || null 
+
       };
     }
   }
@@ -319,6 +323,7 @@ export class CompanyListingComponent implements OnInit {
 
     // Pass all required data including vendorEntityAssociationId
     modalRef.componentInstance.isAssigned = selectedRow.isAssigned;
+    modalRef.componentInstance.setUpId = selectedRow.setUpId;
     modalRef.componentInstance.ProcurementCompanyId = selectedRow.procurementCompanyId;
     modalRef.componentInstance.vendorComapnyId = selectedRow.vendorCompanyId || selectedRow.id;
     modalRef.componentInstance.entity = selectedRow.entity;
