@@ -15,6 +15,8 @@ import { tr } from 'date-fns/locale';
 import { catchError, debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { UserServiceService } from '../services/user-service.service';
 import { LookupService } from '../services/lookup.service';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: "app-navbar",
@@ -87,7 +89,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     private messagingService: FirebaseMessagingService,
     private toaster: ToastrService,
     private userService: UserServiceService,
-    private lookupService: LookupService
+    private lookupService: LookupService,
+    private sanitizer: DomSanitizer  
   ) {
     const browserLang: string = translate.getBrowserLang();
     translate.use(browserLang.match(/en|es|pt|de|ar/) ? browserLang : "en");
@@ -272,9 +275,49 @@ onCompanyChange(eventOrId: any): void {
         this.cdr.markForCheck();
       });
   }
+
+private escapeRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+highlightText(message: string | undefined | null, term: string | undefined | null): string {
+  if (!message) return '';
+  if (!term) return message;
+
+  const safeTerm = this.escapeRegExp(term.trim());
+  if (!safeTerm) return message;
+
+  const regex = new RegExp(`(${safeTerm})`, 'gi');
+  return message.replace(regex, '<span class="search-highlight">$1</span>');
+}
   openPanel(): void {
     if ((this.searchCtrl.value || "").length) this.panelOpen = true;
   }
+
+  getBadgeLabel(message: string | undefined | null): string {
+  if (!message) {
+    return '--';
+  }
+  const upper = message.toUpperCase();
+
+  if (upper.includes('RFQ')) {
+    return 'RFQ';
+  }
+  if (upper.includes(' PO')) {
+    return 'PO';
+  }
+  if (upper.includes(' PR')) {
+    return 'PR';
+  }
+  const words = message.trim().split(/\s+/);
+  if (words.length === 1) {
+    return words[0].substring(0, 2).toUpperCase();
+  }
+  const first = words[0]?.charAt(0) ?? '';
+  const second = words[1]?.charAt(0) ?? '';
+  const label = (first + second).toUpperCase();
+  return label || '--';
+}
 
   closePanelsearch(): void {
     this.panelOpen = false;
@@ -379,18 +422,23 @@ onCompanyChange(eventOrId: any): void {
     });
   }
 
-  redirection(referenceType: any, referenceId: any) {
+  redirection(referenceType: any, referenceId: any, title?:string) {
+
+    
+      const isCommentNotif =
+    !!title && title.toLowerCase().includes('comment');
+
     switch (referenceType) {
       case ReferenceType.RFQ:
         this.router.navigate(["/rfq/new-rfq"], {
-          queryParams: { id: referenceId, mode: "view" },
+          queryParams: { id: referenceId,  focus: isCommentNotif ? 'comments' : undefined },
           skipLocationChange: true,
         });
         break;
 
       case ReferenceType.PR:
         this.router.navigate(["/purchase-request/new-purchase-request"], {
-          queryParams: { id: referenceId, mode: "view" },
+          queryParams: { id: referenceId },
           skipLocationChange: true,
         });
         break;
@@ -419,7 +467,7 @@ onCompanyChange(eventOrId: any): void {
 
     this.notificationService.markAsRead(n.id).subscribe({
       next: () => {
-        var a = this.redirection(n.referenceType, n.referenceId);
+        var a = this.redirection(n.referenceType, n.referenceId, n.title);
         if (a == ReferenceType.Default) {
           this.notifications.filter((m: any) => m.id === n.id)[0].status = 1;
         }
@@ -433,6 +481,52 @@ onCompanyChange(eventOrId: any): void {
         }
       },
     });
+  }
+
+  clearAllNotification() {
+       Swal.fire({
+          title: 'Clear all notifications?',
+          text: 'This will delete all the notifications',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, Delete',
+          cancelButtonText: 'Cancel',
+          confirmButtonColor: '#dc3741',
+        }).then((result) => {
+          if (result.isConfirmed) {  
+             this.notificationService.clearAllNotification().subscribe({
+              next: () => {
+                this.getNotification();
+              },
+              error: () => {
+                this.toaster.error('Something went wrong while creating PO.');
+              }
+            });
+          }
+        });
+  }
+
+
+  markAllAsRead() {
+      Swal.fire({
+          title: 'Mark all as read?',
+          text: 'This will mark all notifications as read',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, Mark all as read',
+          cancelButtonText: 'Cancel',
+        }).then((result) => {
+          if (result.isConfirmed) {
+             this.notificationService.markAllAsRead().subscribe({
+              next: () => {
+                this.getNotification();
+              },
+              error: () => {
+                this.toaster.error('Something went wrong while creating PO.');
+              }
+            });
+          }
+        });
   }
 
   @HostListener("window:resize", ["$event"])

@@ -62,29 +62,52 @@
                 (keydown)="onKeyDown($event)" placeholder="Search" />
             </div>
 
-            <div class="search-panel" *ngIf="panelOpen" (click)="$event.stopPropagation()">
-              <div class="panel-body">
-                <div *ngIf="loading" class="loading">Searching…</div>
-
-                <ng-container *ngIf="!loading">
-                  <div *ngIf="results?.length; else emptyState">
-                    <div class="result-item" *ngFor="let r of results; let i = index; trackBy: trackById"
-                      [class.active]="i === activeIndex" (mouseenter)="activeIndex = i" (click)="selectResult(r)">
-                      <div class="title text-ellipsis">
-                        {{ r.message }}
-                      </div>
-                      <!-- <div class="subtitle text-ellipsis" *ngIf="r.subtitle || r.description">
-                      {{ r.subtitle || r.description }}
-                    </div> -->
-                    </div>
-                  </div>
-
-                  <ng-template #emptyState>
-                    <div class="empty">No results</div>
-                  </ng-template>
-                </ng-container>
+          <div class="search-panel" *ngIf="panelOpen" (click)="$event.stopPropagation()">
+            <div class="search-panel__header">
+              <div class="search-panel__title">GLOBAL SEARCH</div>
+          
+              <div class="search-panel__shortcuts">
+                <span class="kbd">↑↓</span>
+                <span class="txt">to navigate</span>
+                <span class="kbd">Enter</span>
+                <span class="txt">to open</span>
               </div>
             </div>
+          
+            <div class="panel-body">
+              <div *ngIf="loading" class="loading">Searching…</div>
+          
+              <ng-container *ngIf="!loading">
+                <div *ngIf="results?.length; else emptyState">
+                  <div class="result-item" *ngFor="let r of results; let i = index; trackBy: trackById"
+                    [class.active]="i === activeIndex" (mouseenter)="activeIndex = i" (click)="selectResult(r)">
+             
+                    <div class="result-main">
+                      <div class="result-badge">
+                        {{ getBadgeLabel(r?.message) }}
+                      </div>
+          
+                      <div class="result-text">
+                      <div class="title text-ellipsis" [innerHTML]="highlightText(r?.message, searchCtrl.value || '')">
+                      </div>
+                        <div class="subtitle text-ellipsis">
+                          Click to open details
+                        </div>
+                      </div>
+                    </div>
+          
+                    <div class="result-arrow">
+                      <i class="ft-chevron-right"></i>
+                    </div>
+                  </div>
+                </div>
+          
+                <ng-template #emptyState>
+                  <div class="empty">No results</div>
+                </ng-template>
+              </ng-container>
+            </div>
+          </div>
             
             <div class="icon-buttons">
               <!-- <button class="icon-btn">
@@ -96,8 +119,7 @@
                   <i class="ft-bell"></i>
                   <span class="dot" *ngIf="unreadCount > 0">{{unreadCount}}</span>
                 </button>
-
-                <!-- Floating Panel -->
+                
                 <div class="notif-panel" *ngIf="notifOpen" [class.show]="notifOpen" (click)="$event.stopPropagation()">
                   <div class="panel-header">
                     <div class="panel-row">
@@ -129,9 +151,10 @@
                     </ng-template>
                   </div>
 
-                  <!-- <div class="panel-footer">
-                              <a class="view-all" [routerLink]="['/notifications']">View all</a>
-                            </div> -->
+                  <div class="panel-footer">
+                              <button class="btn btn-markasread" (click)="markAllAsRead()"><i class="ft ft-check ml-2"></i>Mark all as read</button>
+                              <button class="btn btn-clearall" (click)="clearAllNotification()"><i class="ft ft-trash-2 ml-2"></i>Clear All</button>
+                  </div>
                 </div>
               </div>
             </div>

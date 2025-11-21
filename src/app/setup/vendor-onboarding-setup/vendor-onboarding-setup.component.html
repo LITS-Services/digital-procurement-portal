@@ -102,7 +102,7 @@
         <!-- Description -->
         <ngx-datatable-column name="Description" prop="description">
           <ng-template ngx-datatable-cell-template let-value="value">
-            <span>{{ value || 'N/A' }}</span>
+            <span [ngbTooltip]="value">{{ value.length > 15 ? value.slice(0, 15) + '...' : value }}</span>
           </ng-template>
         </ngx-datatable-column>
 

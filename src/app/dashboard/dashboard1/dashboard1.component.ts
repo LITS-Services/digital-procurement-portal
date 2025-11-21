@@ -24,6 +24,7 @@ import {
   ApexTheme,
   ApexPlotOptions
 } from 'ng-apexcharts';
+import { Router } from '@angular/router';
 
 declare var require: any;
 
@@ -68,6 +69,7 @@ export type SpendChartOptions = {
   tooltip: ApexTooltip;
   grid: ApexGrid;
   theme: ApexTheme;
+  legend:ApexLegend;
 };
 
 export type SpendDonutOptions = {
@@ -149,6 +151,8 @@ export class Dashboard1Component implements OnInit {
     { month: 'Apr', value: 76 },
   ];
 
+  activeRange: 'month' | 'quarter' | 'year' = 'month';
+
   public spendChartOptions!: Partial<SpendChartOptions>;
   public spendDonutOptions!: Partial<SpendDonutOptions>;
   public vendorDeliveryOptions!: Partial<VendorDeliveryChartOptions>;
@@ -159,7 +163,8 @@ export class Dashboard1Component implements OnInit {
     private dashboardService: DashboardService,
     private messagingService: FirebaseMessagingService,
     private toaster: ToastrService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {
     this.translate.onLangChange.subscribe(() => {
       // Check if the current language is Arabic
@@ -209,58 +214,59 @@ export class Dashboard1Component implements OnInit {
 
   productSale: string = 'PRODUCTSALES';
 
+  goToPurchaseRequest() {
+    this.router.navigateByUrl('/purchase-request');
+  }
+
+  goToRfq() {
+    this.router.navigateByUrl('/rfq');
+  }
+
+  goToPurchaseOrder() {
+    this.router.navigateByUrl('/purchase-order');
+  }
+
+  goToCompany() {
+    this.router.navigateByUrl('/company');
+  }
+
+  goToEntity() {
+    this.router.navigateByUrl('/procurment-companies');
+  }
+
   private initSpendChart(): void {
     this.spendChartOptions = {
-      series: [
-        {
-          name: 'Spend',
-          data: [10, 15, 12, 18, 25, 30, 28, 35], // replace with API data later
-        },
-      ],
+      series: [], // will be set by setChartRange(...)
       chart: {
         type: 'area',
         height: 280,
-        toolbar: {
-          show: false,
-        },
-        zoom: {
-          enabled: false,
-        },
+        toolbar: { show: false },
+        zoom: { enabled: false },
       },
       xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+        categories: [],
         labels: {
-          style: {
-            fontSize: '11px',
-          },
+          style: { fontSize: '11px' },
         },
-        axisBorder: {
-          show: false,
-        },
-        axisTicks: {
-          show: false,
-        },
+        axisBorder: { show: false },
+        axisTicks: { show: false },
       },
       yaxis: {
         labels: {
-          formatter: (val: number) => (val >= 1000 ? `${Math.round(val / 1000)}k` : val.toString()),
-          style: {
-            fontSize: '11px',
-          },
+          formatter: (val: number) => val.toString(),
+          style: { fontSize: '11px' },
         },
       },
       stroke: {
         curve: 'smooth',
         width: 3,
       },
-      dataLabels: {
-        enabled: false,
-      },
+      dataLabels: { enabled: false },
       fill: {
         type: 'gradient',
         gradient: {
           shadeIntensity: 0.8,
-          opacityFrom: 0.3,
+          opacityFrom: 0.25,
           opacityTo: 0.05,
           stops: [0, 90, 100],
         },
@@ -268,19 +274,126 @@ export class Dashboard1Component implements OnInit {
       grid: {
         borderColor: 'rgba(148, 163, 184, 0.3)',
         strokeDashArray: 4,
-        padding: {
-          left: 8,
-          right: 12,
-        },
+        padding: { left: 8, right: 12 },
       },
       tooltip: {
         y: {
-          formatter: (val: number) => `Rs ${val.toLocaleString()}`,
+          formatter: (val: number) => `${val.toLocaleString()} RFQs`,
         },
+      },
+        legend: {
+        horizontalAlign: "left",
       },
       theme: {
         mode: 'light',
         palette: 'palette2',
+      },
+    };
+
+    // default view
+    this.setChartRange('month');
+  }
+
+  changeRange(range: 'month' | 'quarter' | 'year'): void {
+    if (this.activeRange === range) return;
+    this.setChartRange(range);
+  }
+
+  private setChartRange(range: 'month' | 'quarter' | 'year'): void {
+    this.activeRange = range;
+
+    let categories: string[] = [];
+    let series: any[] = [];
+
+    switch (range) {
+      case 'month':
+        categories = Array.from({ length: 30 }, (_, i) => `Day ${i + 1}`);
+
+        series = [
+          {
+            name: 'Total RFQs',
+            data: [
+              5, 8, 6, 10, 7, 9, 11, 12, 10, 9, 8, 7, 6, 9, 11, 13, 12, 10, 9, 8, 7, 9, 10, 12, 11,
+              13, 14, 12, 10, 9,
+            ],
+          },
+          {
+            name: 'RFQs with Quotation',
+            data: [
+              3, 5, 4, 7, 5, 6, 8, 9, 7, 6, 6, 5, 4, 6, 7, 9, 8, 7, 6, 6, 5, 6, 7, 8, 7, 9, 9, 8, 7,
+              6,
+            ],
+          },
+          {
+            name: 'Selected RFQs',
+            data: [
+              1, 2, 1, 3, 2, 2, 3, 4, 3, 3, 2, 2, 1, 2, 3, 4, 3, 3, 2, 2, 2, 2, 3, 3, 3, 4, 4, 3, 3,
+              2,
+            ],
+          },
+        ];
+        break;
+
+      case 'quarter':
+        // 12 weeks
+        categories = Array.from({ length: 12 }, (_, i) => `W${i + 1}`);
+
+        series = [
+          {
+            name: 'Total RFQs',
+            data: [20, 24, 26, 30, 28, 32, 34, 36, 38, 40, 42, 45],
+          },
+          {
+            name: 'RFQs with Quotation',
+            data: [14, 16, 18, 20, 19, 22, 24, 25, 26, 28, 29, 31],
+          },
+          {
+            name: 'Selected RFQs',
+            data: [6, 7, 8, 9, 8, 10, 11, 12, 13, 14, 15, 16],
+          },
+        ];
+        break;
+
+      case 'year':
+        // 12 months
+        categories = [
+          'Jan',
+          'Feb',
+          'Mar',
+          'Apr',
+          'May',
+          'Jun',
+          'Jul',
+          'Aug',
+          'Sep',
+          'Oct',
+          'Nov',
+          'Dec',
+        ];
+
+        series = [
+          {
+            name: 'Total RFQs',
+            data: [40, 52, 48, 60, 70, 65, 80, 78, 72, 68, 74, 82],
+          },
+          {
+            name: 'RFQs with Quotation',
+            data: [28, 32, 30, 38, 45, 42, 50, 49, 46, 44, 47, 52],
+          },
+          {
+            name: 'Selected RFQs',
+            data: [12, 15, 14, 18, 22, 21, 26, 25, 23, 22, 24, 28],
+          },
+        ];
+        break;
+    }
+
+    this.spendChartOptions = {
+      ...this.spendChartOptions,
+      series,
+      xaxis: {
+        ...this.spendChartOptions.xaxis,
+        categories,
       },
     };
   }
@@ -293,7 +406,7 @@ export class Dashboard1Component implements OnInit {
         height: 200,
       },
       labels: this.monthlyExpenses.map((e) => e.label),
-       colors: this.monthlyExpenses.map((e) => e.color),
+      colors: this.monthlyExpenses.map((e) => e.color),
       legend: {
         show: false,
       },

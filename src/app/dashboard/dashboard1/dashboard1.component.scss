@@ -325,6 +325,7 @@
   align-items: flex-end;
   justify-content: space-between;
   width: 100%;
+  margin-top: 8px;
 }
 
 .stat-card__text {
@@ -549,12 +550,33 @@ margin: 8px 0px;
   height: 100% !important;
   border-radius: 18px;
   border: 1px solid rgba(148, 163, 184, 0.2);
+   cursor: pointer;
 }
 
 .stat-card__label {
   font-size: 13px;
   font-weight: 500;
   color: #6b7280;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+ 
+
+  i{
+    font-size: 16px !important;
+    color: black;
+  }
+
+  .arrow-div{
+    width: 24px;
+    height: 24px;
+    border: 1px solid #c4c4c4;
+    border-radius: 999px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 .stat-card__value {

@@ -43,7 +43,7 @@
 
 .custom-tabs .custom-style-tab:hover,
 .custom-tabs .custom-style-tab:focus {
-  color: #fff;
+  color: #4188f2;
 }
 
 .custom-tabs .custom-style-tab:hover::after,
@@ -69,7 +69,7 @@
 }
 
 .custom-tabs .custom-style-tab:hover::after {
-  background: linear-gradient(to bottom, #4188f2 0%, #026dd1 100%);
+    background: #cfe2ff;
 }
 
 .custom-tabs .custom-style-tab.disabled,
@@ -82,4 +82,15 @@
 .custom-tabs .custom-style-tab:disabled::after {
   background: #fafafa !important;
   box-shadow: none;
+}
+
+.custom-tabs .custom-style-tab.tab-current:hover,
+.custom-tabs .custom-style-tab.tab-current:focus {
+  color: #fff !important;   /* keep white text */
+}
+
+.custom-tabs .custom-style-tab.tab-current:hover::after,
+.custom-tabs .custom-style-tab.tab-current:focus::after {
+  background: #4188f2 !important; /* keep blue background */
+  box-shadow: none !important;
 }

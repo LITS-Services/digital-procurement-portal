@@ -114,9 +114,14 @@ export class NewRfqComponent implements OnInit {
       const id = params.get('id');
       const mode = params.get('mode');
       const prId = params.get('prId');
+       const focus = params.get('focus');
 
       this.viewMode = mode === 'view';
       this.isNewForm = !id;
+
+        if (focus === 'comments') {
+        this.selectedTab = 'comments';
+      }
 
       if (id) {
         this.currentQuotationId = +id;
