@@ -1,4 +1,4 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from "@angular/core";
+import { APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, NgModule } from "@angular/core";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { AngularFireModule } from "@angular/fire";
 import { AngularFireAuthModule } from "@angular/fire/auth";
@@ -39,6 +39,8 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { responseHandlerInterceptor } from "./shared/interceptor/response-handler.interceptor";
 import { environment } from '../environments/environment';
 import { AngularFireMessagingModule } from '@angular/fire/messaging';
+import { permissionInitializer } from "./shared/permissions/permission.init";
+import { PermissionService } from "./shared/permissions/permission.service";
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
@@ -96,6 +98,12 @@ export function createTranslateLoader(http: HttpClient) {
     {
       provide: PERFECT_SCROLLBAR_CONFIG,
       useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: permissionInitializer,
+      deps: [PermissionService],
+      multi: true
     },
     WINDOW_PROVIDERS
   ],

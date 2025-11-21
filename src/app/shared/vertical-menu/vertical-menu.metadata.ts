@@ -7,6 +7,7 @@ export interface RouteInfo {
     badge?: string;
     badgeClass?: string;
     isExternalLink: boolean;
+    formTypeId?: number | string;
     submenu : RouteInfo[];
       roles?: string[]; // ✅ add this line
 

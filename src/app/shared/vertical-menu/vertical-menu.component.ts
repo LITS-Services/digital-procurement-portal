@@ -12,6 +12,8 @@ import { ConfigService } from '../services/config.service';
 import { Subscription } from 'rxjs';
 import { LayoutService } from '../services/layout.service';
 import { AuthService } from 'app/shared/auth/auth.service';
+import { PermissionService } from "../permissions/permission.service";
+import { filterNavByPerm } from "../permissions/nav-perm";
 
 @Component({
   selector: "app-sidebar",
@@ -41,16 +43,26 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     private configService: ConfigService,
     private cdr: ChangeDetectorRef,
     private deviceService: DeviceDetectorService,
-    private authService: AuthService // ✅ Inject AuthService
+    private authService: AuthService, // ✅ Inject AuthService
+    private permissionService: PermissionService
   ) {
     this.config = this.configService.templateConf;
     this.innerWidth = window.innerWidth;
     this.isTouchDevice();
   }
 
+  // ngOnInit() {
+  //   this.loadMenuItems();
+  // }
   ngOnInit() {
+    this.permissionService.permsSubject.subscribe(() => {
+        this.loadMenuItems();
+    });
+
+    // Initial load
     this.loadMenuItems();
-  }
+}
+
 
   ngAfterViewInit() {
     this.configSub = this.configService.templateConf$.subscribe((templateConf) => {
@@ -139,15 +151,26 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // ===== Role-based Menu Filtering =====
-  private loadMenuItems() {
-    const userRoles = this.authService.getUserRoles(); // Get roles from localStorage
-    this.menuItems = ROUTES.filter(menu => {
-      if (menu.roles && menu.roles.length > 0) {
-        // Show menu only if user has at least one matching role
-        return menu.roles.some(role => userRoles.includes(role));
-      }
-      return true; // menu visible for all if no roles defined
-    });
-  }
+  // private loadMenuItems() {
+  //   //const userRoles = this.authService.getUserRoles(); // Get roles from localStorage
+  // //   this.menuItems = ROUTES.filter(menu => {
+  // //     if (menu.roles && menu.roles.length > 0) {
+  // //       // Show menu only if user has at least one matching role
+  // //       return menu.roles.some(role => userRoles.includes(role));
+  // //     }
+  // //     return true; // menu visible for all if no roles defined
+  // //   });
+  // // }
+  //   this.menuItems = ROUTES.filter(item => this.permissionService.canRead(item.formTypeId));
+  //   console.log('READ ACL: ',this.menuItems);
+  // }
+private loadMenuItems() {
+    this.menuItems = filterNavByPerm(
+        ROUTES,
+        this.permissionService.canRead.bind(this.permissionService)
+    );
+    console.log('Filtered Menu Items:', this.menuItems);
+}
+
 
 }

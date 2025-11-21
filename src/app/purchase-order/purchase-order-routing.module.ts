@@ -2,16 +2,28 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PurchaseOrderListComponent } from './purchase-order-list/purchase-order-list.component';
 import { PurchaseOrderDetailsComponent } from './purchase-order-details/purchase-order-details.component';
+import { AclGuard } from 'app/shared/permissions/acl.guard';
+import { FORM_IDS } from 'app/shared/permissions/form-ids';
 
 const routes: Routes = [
   {
     path: '',
     component: PurchaseOrderListComponent,
+    canActivate: [AclGuard],
+    data: {
+      formTypeId: FORM_IDS.PURCHASE_ORDER,
+      action: 'read',
+    },
   },
   {
-  path: ':id',
-  component: PurchaseOrderDetailsComponent
-}
+    path: ':id',
+    component: PurchaseOrderDetailsComponent,
+    canActivate: [AclGuard],
+    data: {
+      formTypeId: FORM_IDS.PURCHASE_ORDER,
+      action: 'read',
+    },
+  }
 
 ];
 

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
 type Action = 'read' | 'write' | 'delete';
@@ -14,8 +14,8 @@ export class PermissionService {
 
     constructor(private _httpClient: HttpClient) {
     }
-    getPermissionsByUserEmail(email: string) {
-        return this._httpClient.get<any>(`${environment.apiUrl}/Acl/get-permissions-by-email?email=${email}`);
+    getPermissionsByUserId(id: string) {
+        return this._httpClient.get<any>(`${environment.apiUrl}/Acl/get-permissions-by-user-id?id=${id}`);
     }
 
     private permsByForm = new Map<string, any>();
@@ -26,23 +26,57 @@ export class PermissionService {
         });
     }
 
+    public permsSubject = new BehaviorSubject<void>(undefined);
+
+    // refreshForCurrentUser$() {
+    //     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+    //     const email = JSON.parse(localStorage.getItem('currentUser') || '{}')?.email as string | undefined;
+
+    //     //if (!isAuthenticated || !email) return of(void 0);
+    //     if (!isAuthenticated || !email) return this.permsSubject.asObservable();
+
+    //     return this._httpClient
+    //         .get<any[]>(`${environment.apiUrl}/Acl/get-permissions-by-email`, { params: { email } })
+    //         .pipe(
+    //             tap(perms => this.setPermissions(perms)),
+    //             tap(() => this.permsSubject.next()),
+    //             tap(perms => {
+    //                 const auth = JSON.parse(localStorage.getItem('auth') || '{}');
+    //                 localStorage.setItem('auth', JSON.stringify({ ...auth, rolePermissions: perms }));
+    //                 console.log("for refresh", perms);
+    //             }),
+    //             map(() => void 0),
+    //             // catchError(() => of(void 0))
+    //             catchError(err => {
+    //                 console.warn("Permissions load failed", err);
+    //                 return of(null); // still completes, but after a tick
+    //             })
+    //         );
+    // }
+
     refreshForCurrentUser$() {
         const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-        const email = JSON.parse(localStorage.getItem('currentUser') || '{}')?.email as string | undefined;
+        const id = localStorage.getItem('userId');
 
-        if (!isAuthenticated || !email) return of(void 0);
+        if (!isAuthenticated || !id) {
+            return of(void 0); // completes immediately
+        }
 
         return this._httpClient
-            .get<any[]>(`${environment.apiUrl}/Acl/get-permissions-by-email`, { params: { email } })
+            .get<any[]>(`${environment.apiUrl}/Acl/get-permissions-by-user-id`, { params: { id } })
             .pipe(
                 tap(perms => this.setPermissions(perms)),
+                tap(() => this.permsSubject.next()),
                 tap(perms => {
                     const auth = JSON.parse(localStorage.getItem('auth') || '{}');
                     localStorage.setItem('auth', JSON.stringify({ ...auth, rolePermissions: perms }));
-                    console.log("for refresh", perms);
+                    console.log("Permissions fetched", perms);
                 }),
                 map(() => void 0),
-                catchError(() => of(void 0))
+                catchError(err => {
+                    console.warn("Permissions load failed", err);
+                    return of(null);
+                })
             );
     }
 
@@ -50,7 +84,7 @@ export class PermissionService {
         const rp = this.permsByForm.get(String(formId));
 
         if (!rp) {
-            return true;
+            return false;
         }
         switch (action) {
             case 'read': return !!rp.read;

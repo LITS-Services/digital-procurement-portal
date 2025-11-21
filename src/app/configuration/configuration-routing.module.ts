@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { GlobalConfigurationComponent } from './global-configuration/global-configuration.component';
 import { NewGlobalConfigurationComponent } from './new-global-configuration/new-global-configuration.component';
 import { LogsComponent } from './logs/logs.component';
+import { AclGuard } from 'app/shared/permissions/acl.guard';
+import { FORM_IDS } from 'app/shared/permissions/form-ids';
 
 const routes: Routes = [
 
@@ -12,30 +14,32 @@ const routes: Routes = [
       {
         path: 'global',
         component: GlobalConfigurationComponent,
-
+        canActivate: [AclGuard],
+        data: {
+          formTypeId: FORM_IDS.GLOBAL_CONFIGURATION,
+          action: 'read',
+        },
       },
       {
-        path: 'global/new-global-config', 
+        path: 'global/new-global-config',
         component: NewGlobalConfigurationComponent,
+        canActivate: [AclGuard],
+        data: {
+          formTypeId: FORM_IDS.GLOBAL_CONFIGURATION,
+          action: 'read',
+        },
       },
-      // {
-      //   path: 'exception-logs',
-      //   component: ExceptionLogsComponent,
-
-      // },
-      // {
-      //   path: 'http-logs',
-      //   component: HttpLogsComponent,
-
-      // },
       {
         path: 'logs',
         component: LogsComponent,
-
+        canActivate: [AclGuard],
+        data: {
+          formTypeId: FORM_IDS.LOGS,
+          action: 'read',
+        },
       },
     ]
   }
-
 ];
 
 @NgModule({
