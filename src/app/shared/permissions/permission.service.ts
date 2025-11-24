@@ -59,6 +59,7 @@ export class PermissionService {
         const id = localStorage.getItem('userId');
 
         if (!isAuthenticated || !id) {
+            this.permsSubject.next();
             return of(void 0); // completes immediately
         }
 
