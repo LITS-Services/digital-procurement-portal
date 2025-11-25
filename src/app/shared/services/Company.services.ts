@@ -40,13 +40,15 @@ export class CompanyService {
     return this.http.get<any[]>(`${this.apiUrl}/get-all-procurement-companies`);
   }
 
-  deleteProCompanies(id: number[]): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/delete-procurement-company/${id}`);
+  deleteProcurementCompanies(ids: number[]): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/delete-procurement-companies`, { ids });
   }
 
   // Update multiple procurement companies (example)
-  getproByid(id): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/get-procurement-company/${id}`);
+  getProcurementCompanyById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/get-procurement-company-by-id`, {
+      params: { id: id.toString() }
+    });
   }
 
   // Update single procurement company by ID

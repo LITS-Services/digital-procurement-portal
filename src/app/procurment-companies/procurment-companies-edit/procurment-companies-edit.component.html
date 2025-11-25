@@ -75,6 +75,39 @@
                   </select>
                 </div>
               </div>
+<div class="col-12 mt-3">
+  <button class="btn btn-primary" type="button" (click)="openAddAddressModal()">
+    <i class="ft-plus"></i> Add Address
+  </button>
+</div>
+
+<div class="col-12 mt-2" *ngIf="addresses.length > 0">
+  <table class="table table-bordered table-sm">
+    <thead>
+      <tr>
+        <th>Country</th>
+        <th>City</th>
+        <th>Address</th>
+        <th style="width:100px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let addr of addresses; let i = index">
+        <td>{{ addr.country }}</td>
+        <td>{{ addr.city }}</td>
+        <td>{{ addr.address }}</td>
+        <td>
+          <button class="btn btn-sm btn-info mr-1" (click)="editAddress(i)">
+            <i class="ft-edit"></i>
+          </button>
+          <button class="btn btn-sm btn-danger" (click)="deleteAddress(i)">
+            <i class="ft-trash"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
             </div>
           </form>
@@ -84,3 +117,36 @@
     </div>
   </div>
 </section>
+
+<ng-template #addressModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">
+      {{ selectedAddressIndex !== null ? 'Edit Address' : 'Add Address' }}
+    </h5>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <form [formGroup]="addressForm">
+      <div class="form-group">
+        <label>Country</label>
+        <input formControlName="country" class="form-control" />
+      </div>
+      <div class="form-group">
+        <label>City</label>
+        <input formControlName="city" class="form-control" />
+      </div>
+      <div class="form-group">
+        <label>Address</label>
+        <textarea formControlName="address" class="form-control"></textarea>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Close</button>
+    <button type="button" class="btn btn-primary" (click)="saveAddress(modal)">Save</button>
+  </div>
+</ng-template>

@@ -4,6 +4,9 @@ import { CompanyService } from 'app/shared/services/Company.services';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
 import { AuthService } from 'app/shared/auth/auth.service';
 import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
+import { PermissionService } from 'app/shared/permissions/permission.service';
+import { FORM_IDS } from 'app/shared/permissions/form-ids';
 
 @Component({
   selector: 'app-procurment-companies',
@@ -11,6 +14,7 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./procurment-companies.component.scss']
 })
 export class ProcurmentCompaniesComponent implements OnInit {
+  FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
@@ -20,7 +24,9 @@ export class ProcurmentCompaniesComponent implements OnInit {
   isAllSelected = false;
 
   isEditButtonDisabled = true;
+  isOpenButtonDisabled = true;
   isDeleteButtonDisabled = true;
+  idsToDelete: number[] = [];
 
   columns = [
     { prop: 'id', name: 'ID', width: 80 },
@@ -35,7 +41,8 @@ export class ProcurmentCompaniesComponent implements OnInit {
     private companyService: CompanyService,
     private authService: AuthService,
     private toastr: ToastrService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private permissionService: PermissionService
   ) { }
 
   ngOnInit(): void {
@@ -77,15 +84,48 @@ export class ProcurmentCompaniesComponent implements OnInit {
     this.router.navigate(['/dashboard/dashboard1']);
   }
 
+  // toggleSelectAll(event: any) {
+  //   this.isAllSelected = event.target.checked;
+  //   this.chkBoxSelected = this.isAllSelected ? [...this.tenderingData] : [];
+  //   this.updateActionButtons();
+  // }
+  
   toggleSelectAll(event: any) {
+    if (event.target.checked) {
+      this.chkBoxSelected = [...this.tenderingData];
+    } else {
+      this.chkBoxSelected = [];
+    }
+    this.idsToDelete = this.chkBoxSelected.map(item => item.quotationId);
     this.isAllSelected = event.target.checked;
-    this.chkBoxSelected = this.isAllSelected ? [...this.tenderingData] : [];
-    this.updateActionButtons();
+    this.enableDisableButtons();
   }
 
-  customChkboxOnSelect({ selected }: any) {
+  enableDisableButtons() {
+    const selectedCount = this.chkBoxSelected.length;
+
+    // Disable delete if no rows selected
+    this.isDeleteButtonDisabled = selectedCount === 0;
+
+    // Disable edit unless exactly one record is selected
+    this.isEditButtonDisabled = selectedCount !== 1;
+
+    // Disable open button if no rows selected
+    this.isOpenButtonDisabled = selectedCount === 0;
+
+    // Check "Select All" toggle
+    this.isAllSelected = this.tenderingData.length === this.chkBoxSelected.length;
+  }
+
+  // customChkboxOnSelect({ selected }: any) {
+  //   this.chkBoxSelected = [...selected];
+  //   this.updateActionButtons();
+  // }
+
+  customChkboxOnSelect({ selected }) {
     this.chkBoxSelected = [...selected];
-    this.updateActionButtons();
+    this.idsToDelete = this.chkBoxSelected.map(c => c.id);
+    this.enableDisableButtons();
   }
 
   openEmpDetails() {
@@ -109,27 +149,70 @@ export class ProcurmentCompaniesComponent implements OnInit {
     }
   }
 
-  deleteSelectedRows() {
-    if (this.chkBoxSelected.length === 0) {
-      alert('Please select at least one company to delete.');
+  // deleteSelectedRows() {
+  //   if (this.chkBoxSelected.length === 0) {
+  //     alert('Please select at least one company to delete.');
+  //     return;
+  //   }
+
+  //   const confirmDelete = confirm(`Are you sure you want to delete ${this.chkBoxSelected.length} company(s)?`);
+  //   if (!confirmDelete) return;
+
+  //   const idsToDelete = this.chkBoxSelected.map(c => c.id);
+
+  //   this.companyService.deleteProCompanies(idsToDelete).subscribe({
+  //     next: () => {
+  //       alert('Selected company(s) deleted successfully!');
+  //       this.loadCompanyData();
+  //       this.chkBoxSelected = [];
+  //       this.updateActionButtons();
+  //       this.cdr.detectChanges();
+  //     },
+  //     error: (err) => {
+  //       console.error('Error deleting companies:', err);
+  //     }
+  //   });
+  // }
+
+  // OPEN DELETE MODAL
+  openDeleteModal(): void {
+    if (!this.permissionService.can(FORM_IDS.ENTITIES, 'delete'))
+      return;
+    if (this.idsToDelete.length === 0) {
+      this.toastr.info('Please select at least one record to delete.');
       return;
     }
 
-    const confirmDelete = confirm(`Are you sure you want to delete ${this.chkBoxSelected.length} company(s)?`);
-    if (!confirmDelete) return;
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `You are about to delete ${this.idsToDelete.length} record(s). This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.confirmDelete();
+      }
+    });
+  }
 
-    const idsToDelete = this.chkBoxSelected.map(c => c.id);
+  //  CONFIRM DELETION OF PROCUREMENT COMPANY
+  confirmDelete(): void {
+    if (this.idsToDelete.length === 0) return;
 
-    this.companyService.deleteProCompanies(idsToDelete).subscribe({
+    this.companyService.deleteProcurementCompanies(this.idsToDelete).subscribe({
       next: () => {
-        alert('Selected company(s) deleted successfully!');
+        Swal.fire('Deleted!', 'Selected record(s) have been deleted successfully.', 'success');
         this.loadCompanyData();
         this.chkBoxSelected = [];
-        this.updateActionButtons();
-        this.cdr.detectChanges();
+        this.idsToDelete = [];
       },
       error: (err) => {
-        console.error('Error deleting companies:', err);
+        console.error('Delete failed:', err);
+        Swal.fire('Error', 'An error occurred while deleting records.', 'error');
       }
     });
   }

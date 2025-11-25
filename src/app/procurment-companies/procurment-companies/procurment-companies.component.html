@@ -33,7 +33,8 @@
             </button>
 
             <!-- Delete -->
-            <button type="button" class="btn btn-sm  cstm-ui-table-btn" [disabled]="isDeleteButtonDisabled" (click)="deleteSelectedRows()">
+            <button type="button" class="btn btn-sm  cstm-ui-table-btn" [disabled]="isDeleteButtonDisabled"
+              (click)="openDeleteModal()" appPermission [appPermFormId]="FORM_IDS.ENTITIES" [appPermDisable]="'delete'">
               <i class="ft-trash"></i>
               <label class="ml-1 mt-1">Delete</label>
             </button>
