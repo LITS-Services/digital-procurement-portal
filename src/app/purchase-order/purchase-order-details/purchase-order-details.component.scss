@@ -5,90 +5,90 @@
 /* =========================================
    PURCHASE ORDER TAB STYLE
 ========================================= */
-.custom-tabs nav {
-  display: flex;
-  justify-content: flex-start;
-  // gap: 0.5em;
-}
+// .custom-tabs nav {
+//   display: flex;
+//   justify-content: flex-start;
+//   // gap: 0.5em;
+// }
 
-/* Base tab styling */
-.custom-tabs .custom-style-tab {
-  flex: 1;
-  /* Equal width for all tabs */
-  position: relative;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  color: #4188f2;
-  font-weight: 500;
-  font-size: 0.75em;
-  padding: 1em 3.5em 1em 1.8em;
-  border-radius: 10px 10px 0 0;
-  transition: color 0.2s ease;
-  // -webkit-backface-visibility: hidden;
-  // backface-visibility: hidden;
-}
+// /* Base tab styling */
+// .custom-tabs .custom-style-tab {
+//   flex: 1;
+//   /* Equal width for all tabs */
+//   position: relative;
+//   border: none;
+//   background: transparent;
+//   cursor: pointer;
+//   color: #4188f2;
+//   font-weight: 500;
+//   font-size: 0.75em;
+//   padding: 1em 3.5em 1em 1.8em;
+//   border-radius: 10px 10px 0 0;
+//   transition: color 0.2s ease;
+//   // -webkit-backface-visibility: hidden;
+//   // backface-visibility: hidden;
+// }
 
-/* Text layer */
-.custom-tabs .custom-style-tab span {
-  position: relative;
-  z-index: 2;
-}
+// /* Text layer */
+// .custom-tabs .custom-style-tab span {
+//   position: relative;
+//   z-index: 2;
+// }
 
-/* Background pseudo-element (tzoid illusion) */
-.custom-tabs .custom-style-tab::after {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: -1;
-  content: '';
-  border-radius: 10px 10px 0 0;
-  background: #fff;
-  // box-shadow: inset 0 -3px 3px rgba(0, 0, 0, 0.05);
-  outline: 1px solid transparent;
-  transform: perspective(5px) rotateX(0.93deg) translateZ(-1px);
-  transform-origin: 0 0;
-  backface-visibility: hidden;
-  transition: background 0.3s ease, box-shadow 0.3s ease;
-}
+// /* Background pseudo-element (tzoid illusion) */
+// .custom-tabs .custom-style-tab::after {
+//   position: absolute;
+//   top: 0;
+//   right: 0;
+//   bottom: 0;
+//   left: 0;
+//   z-index: -1;
+//   content: '';
+//   border-radius: 10px 10px 0 0;
+//   background: #fff;
+//   // box-shadow: inset 0 -3px 3px rgba(0, 0, 0, 0.05);
+//   outline: 1px solid transparent;
+//   transform: perspective(5px) rotateX(0.93deg) translateZ(-1px);
+//   transform-origin: 0 0;
+//   backface-visibility: hidden;
+//   transition: background 0.3s ease, box-shadow 0.3s ease;
+// }
 
-/* Hover & Focus states */
-.custom-tabs .custom-style-tab:hover,
-.custom-tabs .custom-style-tab:focus {
-  color: #fff;
-}
+// /* Hover & Focus states */
+// .custom-tabs .custom-style-tab:hover,
+// .custom-tabs .custom-style-tab:focus {
+//   color: #fff;
+// }
 
-.custom-tabs .custom-style-tab:hover::after,
-.custom-tabs .custom-style-tab:focus::after {
-  background: #4188f2;
-  /* Hover background color */
-  box-shadow: none;
-}
+// .custom-tabs .custom-style-tab:hover::after,
+// .custom-tabs .custom-style-tab:focus::after {
+//   background: #4188f2;
+//   /* Hover background color */
+//   box-shadow: none;
+// }
 
-/* Active Tab */
-.custom-tabs .custom-style-tab.tab-current {
-  color: #fff;
-  font-weight: 600;
-}
+// /* Active Tab */
+// .custom-tabs .custom-style-tab.tab-current {
+//   color: #fff;
+//   font-weight: 600;
+// }
 
-.custom-tabs .custom-style-tab.tab-current::after {
-  background: #4188f2;
-  /* Active background color */
-  box-shadow: none;
-}
+// .custom-tabs .custom-style-tab.tab-current::after {
+//   background: #4188f2;
+//   /* Active background color */
+//   box-shadow: none;
+// }
 
-/* Transition for smooth tab switching */
-.custom-tabs .custom-style-tab,
-.custom-tabs .custom-style-tab::after {
-  transition: all 0.3s ease;
-}
+// /* Transition for smooth tab switching */
+// .custom-tabs .custom-style-tab,
+// .custom-tabs .custom-style-tab::after {
+//   transition: all 0.3s ease;
+// }
 
-/* Optional: gradient hover (for nicer depth) */
+// /* Optional: gradient hover (for nicer depth) */
 
-.custom-tabs .custom-style-tab:hover::after {
-  // background: linear-gradient(to bottom, #2CC185 0%, #28b67a 100%);
-  background: linear-gradient(to bottom, #4188f2 0%, #026dd1 100%);
-}
+// .custom-tabs .custom-style-tab:hover::after {
+//   // background: linear-gradient(to bottom, #2CC185 0%, #28b67a 100%);
+//   background: linear-gradient(to bottom, #4188f2 0%, #026dd1 100%);
+// }
 

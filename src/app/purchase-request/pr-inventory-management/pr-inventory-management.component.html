@@ -1,0 +1,141 @@
+<div class="modal-header">
+  <h4 class="modal-title text-white">
+    Approval History - {{ requisitionNo }}
+  </h4>
+  <button type="button" class="close text-white" aria-label="Close" (click)="closeDialog()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<!-- BODY: this will scroll vertically when content is tall or zoomed -->
+<div class="modal-body" [formGroup]="headerForm">
+
+  <!-- Header card -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-lg-4 col-md-4 col-sm-6">
+          <div class="form-group mb-2">
+            <label>PR Number</label>
+            <input
+              type="text"
+              readonly
+              class="form-control custom-input"
+              formControlName="prNumber" />
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-4 col-sm-6">
+          <div class="form-group mb-2">
+            <label>Requisition No</label>
+            <input
+              type="text"
+              readonly
+              class="form-control custom-input"
+              formControlName="requisitionNumber" />
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-4 col-sm-6">
+          <div class="form-group mb-2">
+            <label>Status</label>
+            <input
+              type="text"
+              readonly
+              class="form-control custom-input"
+              formControlName="status" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Items grid -->
+  <div class="card item-card">
+    <div class="card-header py-1 d-flex justify-content-between align-items-center">
+      <div>
+        <h5 class="mb-0">Line Items</h5>
+      </div>
+      <div>
+        <button class="btn btn-outline-secondary btn-sm mr-1" type="button">
+          Add
+        </button>
+      </div>
+    </div>
+
+    <div class="card-body p-0">
+      <div class="items-table-wrapper">
+        <ngx-datatable
+          class="bootstrap core-bootstrap"
+          [rows]="items"
+          [columnMode]="'force'"
+          [headerHeight]="45"
+          [footerHeight]="0"
+          [rowHeight]="'auto'"
+          [limit]="5">
+
+          <!-- Sr No -->
+          <ngx-datatable-column name="Sr. No." prop="srNo" [width]="70">
+          </ngx-datatable-column>
+
+          <!-- Type -->
+          <ngx-datatable-column name="Type" prop="type">
+          </ngx-datatable-column>
+
+          <!-- Item -->
+          <ngx-datatable-column name="Item" prop="item">
+          </ngx-datatable-column>
+
+          <!-- Description -->
+          <ngx-datatable-column name="Description" prop="description">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+              {{ row.description }}
+            </ng-template>
+          </ngx-datatable-column>
+
+          <!-- Amount -->
+          <ngx-datatable-column name="Amount" prop="amount">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.amount | number }}
+            </ng-template>
+          </ngx-datatable-column>
+
+          <!-- Remarks -->
+          <ngx-datatable-column name="Remarks" prop="remarks">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+              {{ row.remarks }}
+            </ng-template>
+          </ngx-datatable-column>
+
+          <ngx-datatable-column name="Attachments">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <a
+                matTooltip="Attachment"
+                class="row-action-attachment"
+                (click)="openNewEntityModal(row)"
+                [ngClass]="{'disabled': !row.hasAttachment}">
+                <i style="font-size: 1.5rem;" class="ft-paperclip mr-1"></i>
+                </a>
+            </ng-template>
+            </ngx-datatable-column>
+
+        </ngx-datatable>
+
+        <div *ngIf="loading" class="text-center mt-3 mb-2">
+          <span class="spinner-border spinner-border-sm"></span> Loading...
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER: absolute at bottom, always visible -->
+<div class="modal-footer cstm-footer">
+  <button class="btn btn-secondary" (click)="closeDialog()">
+    Close
+  </button>
+  <button class="btn btn-primary" (click)="onSubmit()">
+    Submit Requisition
+  </button>
+</div>

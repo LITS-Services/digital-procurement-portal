@@ -15,6 +15,12 @@
       display: none !important;
   }
 }
+
+
+  ::ng-deep .pr-inv-modal .modal-dialog { 
+     max-width: 80%;
+     width: 80%;
+}
 // .vl {
 //     border-left: 1.4px solid #cccccc;
 //     height: 100% !important;

@@ -14,6 +14,7 @@ import { Subject } from 'rxjs';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { PermissionService } from 'app/shared/permissions/permission.service';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
+import { PrInventoryManagementComponent } from '../pr-inventory-management/pr-inventory-management.component';
 
 @Component({
   selector: 'app-purchase-request',
@@ -355,6 +356,11 @@ export class PurchaseRequestComponent implements OnInit {
   openApprovalHistoryModal(row: any): void {
     const modalRef = this.modalService.open(PrApprovalHistoryComponent, { size: 'lg', backdrop: 'static', centered: true });
     modalRef.componentInstance.requisitionNo = row.requisitionNo; // pass RfqNo
+  }
+
+  openPRInventoryManagement(row:any): void {
+    const modalRef = this.modalService.open(PrInventoryManagementComponent, { size: 'lg', backdrop: 'static', centered: true, windowClass:'pr-inv-modal' });
+    modalRef.componentInstance.requestId = row.requestId;
   }
 
   generateRfq(row: any) {

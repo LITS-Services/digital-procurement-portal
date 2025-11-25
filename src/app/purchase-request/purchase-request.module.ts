@@ -24,6 +24,7 @@ import { PrApprovalHistoryComponent } from './pr-approval-history/pr-approval-hi
 import { SharedModule } from 'app/shared/shared.module';
 import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
+import { PrInventoryManagementComponent } from './pr-inventory-management/pr-inventory-management.component';
 
 
 @NgModule({
@@ -57,7 +58,8 @@ import { PermissionDirective } from 'app/shared/permissions/permission.directive
     NewPurchaseRequestComponent,
     PurchaseRequestApprovalComponent,
     PurchaseRequestRemarksComponent,
-    PrApprovalHistoryComponent
+    PrApprovalHistoryComponent,
+    PrInventoryManagementComponent
   ],
 })
 export class PurchaseRequestModule { }
