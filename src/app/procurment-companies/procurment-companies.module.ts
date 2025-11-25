@@ -19,6 +19,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { ProcurmentCompaniesEditComponent } from './procurment-companies-edit/procurment-companies-edit.component';
 import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
+import { PermissionDirective } from 'app/shared/permissions/permission.directive';
 
 
 @NgModule({
@@ -47,7 +48,8 @@ import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-r
         NgbDatepickerModule,
         ToastrModule.forRoot(),
         NgxSpinnerModule,
-        AutoResizeDatatableDirective
+        AutoResizeDatatableDirective,
+        PermissionDirective
   ]
 })
 export class ProcurmentCompaniesModule { }

@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { CompanyService } from 'app/shared/services/Company.services';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { id } from '@swimlane/ngx-datatable';
 
 @Component({
   selector: 'app-procurment-companies-edit',
@@ -9,6 +11,8 @@ import { CompanyService } from 'app/shared/services/Company.services';
   styleUrls: ['./procurment-companies-edit.component.scss']
 })
 export class ProcurmentCompaniesEditComponent implements OnInit {
+  @ViewChild('addressModal') addressModalTemplate: any;
+
   companyForm: UntypedFormGroup;
   previewUrl: string | ArrayBuffer | null = null;
   selectedFile: File | null = null;
@@ -16,12 +20,18 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
   isEditMode: boolean = false;
   existingLogo: string | null = null; // keep existing logo
 
+  addresses: any[] = [];
+  selectedAddressIndex: number | null = null;
+  addressForm: UntypedFormGroup;
+
   constructor(
     private fb: UntypedFormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private companyService: CompanyService
-  ) {}
+    private companyService: CompanyService,
+    private modalService: NgbModal,
+    private cdr: ChangeDetectorRef
+  ) { }
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.queryParamMap.get('id');
@@ -37,14 +47,70 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
       isDeleted: [false] // default Active
     });
 
+    this.addressForm = this.fb.group({
+      // id: [null],
+      country: [''],
+      city: [''],
+      address: ['']
+    });
+
     if (this.isEditMode) {
       this.loadCompany();
     }
   }
 
+  // loadCompany() {
+  //   this.companyService.getproByid(this.companyId).subscribe({
+  //     next: (company: any) => {
+  //       this.companyForm.patchValue({
+  //         id: company.id,
+  //         companyGUID: company.companyGUID,
+  //         name: company.name,
+  //         isDeleted: company.isDeleted
+  //       });
+
+  //       if (company.logo && company.logo !== 'string') {
+  //         this.previewUrl = company.logo;
+  //         this.existingLogo = company.logo;
+  //       } else {
+  //         this.previewUrl = null;
+  //       }
+  //     },
+  //     error: (err) => console.error('Error loading company:', err)
+  //   });
+  // }
   loadCompany() {
-    this.companyService.getproByid(this.companyId).subscribe({
-      next: (company: any) => {
+    // this.companyService.getProcurementCompanyById(this.companyId).subscribe({
+    //   next: (company: any) => {
+    //     // Patch main company form
+    //     this.companyForm.patchValue({
+    //       id: company.id,
+    //       companyGUID: company.companyGUID,
+    //       name: company.name,
+    //       isDeleted: company.isDeleted
+    //     });
+
+    //     // Set logo preview
+    //     if (company.logo && company.logo !== 'string') {
+    //       this.previewUrl = company.logo;
+    //       this.existingLogo = company.logo;
+    //     } else {
+    //       this.previewUrl = null;
+    //     }
+
+    //     // Populate addresses array for modal table
+    //     this.addresses = company.addressDetails || [];
+
+    //   this.cdr.detectChanges();
+    //   },
+    //   error: (err) => console.error('Error loading company:', err)
+    // });
+
+    this.companyService.getProcurementCompanyById(this.companyId).subscribe({
+      next: (res: any) => {
+        const company = res; // <-- important
+        if (!company) return;
+
         this.companyForm.patchValue({
           id: company.id,
           companyGUID: company.companyGUID,
@@ -58,6 +124,9 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
         } else {
           this.previewUrl = null;
         }
+
+        this.addresses = company.addressDetails || [];
+        this.cdr.detectChanges();
       },
       error: (err) => console.error('Error loading company:', err)
     });
@@ -76,35 +145,86 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
     }
   }
 
+  //   onSubmit() {
+  //     if (this.companyForm.invalid) return;
+
+  //     //const userName = localStorage.getItem('userName') || 'Unknown';
+
+  // const companyVM = {
+  //   companyGUID: this.companyForm.value.companyGUID || this.generateGUID(),
+  //   name: this.companyForm.value.name,
+  //   logo: this.existingLogo || 'string',
+  //   isDeleted: !!this.companyForm.value.isDeleted,
+  //   addressDetails: this.addresses
+  // };
+
+  // const payload = {
+  //   procurementCompanyVM: companyVM
+  // };
+
+  //     // if (this.isEditMode) {
+  //     //   payload.modifiedBy = userName;
+  //     //   payload.modifiedDate = new Date().toISOString();
+  //     // } else {
+  //     //   payload.createdBy = userName;
+  //     // }
+
+  //     if (this.selectedFile) {
+  //       const reader = new FileReader();
+  //       reader.onload = () => {
+  //         payload.procurementCompanyVM['logo'] = reader.result as string;
+  //         this.sendPayload(payload);
+  //       };
+  //       reader.readAsDataURL(this.selectedFile);
+  //     } else {
+  //       this.sendPayload(payload);
+  //     }
+  //   }
+
   onSubmit() {
     if (this.companyForm.invalid) return;
 
-    const userName = localStorage.getItem('userName') || 'Unknown';
-
-    const payload: any = {
-      id: this.isEditMode ? this.companyForm.getRawValue().id : 0,
+    const companyData: any = {
       companyGUID: this.companyForm.value.companyGUID || this.generateGUID(),
-      name: this.companyForm.value.name, 
+      name: this.companyForm.value.name,
       logo: this.existingLogo || 'string',
-      isDeleted: !!this.companyForm.value.isDeleted
+      isDeleted: !!this.companyForm.value.isDeleted,
+      addressDetails: this.addresses
     };
 
-    if (this.isEditMode) {
-      payload.modifiedBy = userName;
-      payload.modifiedDate = new Date().toISOString();
-    } else {
-      payload.createdBy = userName;
-    }
+    const sendRequest = () => {
+      if (this.isEditMode) {
+        // Update
+        const payload = {
+          id: this.companyId,
+          procurementCompany: companyData
+        };
+        this.companyService.updateProCompaniesById(this.companyId, payload).subscribe({
+          next: (res) => this.router.navigate(['/procurment-companies']),
+          error: (err) => console.error('Update failed:', err)
+        });
+      } else {
+        // Create
+        const payload = {
+          procurementCompanyVM: companyData
+        };
+        this.companyService.createProCompany(payload).subscribe({
+          next: (res) => this.router.navigate(['/procurment-companies']),
+          error: (err) => console.error('Creation failed:', err)
+        });
+      }
+    };
 
+    // Handle file upload if present
     if (this.selectedFile) {
       const reader = new FileReader();
       reader.onload = () => {
-        payload.logo = reader.result as string;
-        this.sendPayload(payload);
+        companyData.logo = reader.result as string;
+        sendRequest();
       };
       reader.readAsDataURL(this.selectedFile);
     } else {
-      this.sendPayload(payload);
+      sendRequest();
     }
   }
 
@@ -112,7 +232,6 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
     if (this.isEditMode) {
       this.companyService.updateProCompaniesById(this.companyId, payload).subscribe({
         next: (res) => {
-          console.log('Company updated:', res);
           this.router.navigate(['/procurment-companies']);
         },
         error: (err) => console.error('Update failed:', err)
@@ -120,7 +239,6 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
     } else {
       this.companyService.createProCompany(payload).subscribe({
         next: (res) => {
-          console.log('Company created:', res);
           this.router.navigate(['/procurment-companies']);
         },
         error: (err) => console.error('Creation failed:', err)
@@ -129,9 +247,9 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
   }
 
   private generateGUID(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
       const r = Math.random() * 16 | 0,
-            v = c === 'x' ? r : (r & 0x3 | 0x8);
+        v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
   }
@@ -153,4 +271,41 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
   goBack() {
     this.router.navigate(['/procurment-companies']);
   }
+
+  openAddAddressModal() {
+    this.selectedAddressIndex = null;
+    this.addressForm.reset();
+    this.modalService.open(this.addressModalTemplate, { size: 'lg' });
+  }
+
+  editAddress(index: number) {
+    this.selectedAddressIndex = index;
+
+    this.addressForm.patchValue({
+      //id: this.addresses[index].id,
+      country: this.addresses[index].country,
+      city: this.addresses[index].city,
+      address: this.addresses[index].address
+    });
+
+    this.modalService.open(this.addressModalTemplate, { size: 'lg' });
+  }
+
+  saveAddress(modal: any) {
+    if (this.addressForm.invalid) return;
+
+    const address = this.addressForm.value;
+
+    if (this.selectedAddressIndex !== null) {
+      this.addresses[this.selectedAddressIndex] = address;
+    } else {
+      this.addresses.push(address);
+    }
+    modal.close();
+  }
+
+  deleteAddress(index: number) {
+    this.addresses.splice(index, 1);
+  }
+
 }
