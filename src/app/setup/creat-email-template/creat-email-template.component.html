@@ -47,7 +47,7 @@
         <div class="col-md-3 mb-3 position-relative">
           <label class="form-label">Action <span class="text-danger">*</span></label>
 
-          <div ngbDropdown class="w-100">
+          <!-- <div ngbDropdown class="w-100">
             <button ngbDropdownToggle type="button" class="form-control text-start"
               [ngClass]="{ 'is-invalid': submitted && f['status'].errors }" (click)="$event.stopPropagation()">
               {{ invitationForm.value.status?.length > 0
@@ -63,7 +63,25 @@
                 <span>{{ s.name }}</span>
               </div>
             </div>
-          </div>
+          </div> -->
+
+          <div ngbDropdown class="w-100">
+  <button ngbDropdownToggle type="button" class="form-control text-start"
+          [ngClass]="{ 'is-invalid': submitted && invitationForm.get('actions')?.errors }"
+          (click)="$event.stopPropagation()">
+    {{ getSelectedNames() || 'Select Action' }}
+  </button>
+
+  <div ngbDropdownMenu class="w-100" style="max-height: 220px; overflow-y: auto;"
+       (click)="$event.stopPropagation()">
+    <div *ngFor="let s of actionOptions" class="dropdown-item d-flex align-items-center">
+      <input type="checkbox" class="form-check-input me-2" [checked]="s.selected"
+             (change)="selectAction(s); $event.stopPropagation()">
+      <span>{{ s.description }}</span>
+    </div>
+  </div>
+</div>
+
 
           <div *ngIf="submitted && f['status'].errors" class="text-danger mt-1">
             Please select at least one action.
@@ -103,9 +121,9 @@
 
           <div ngbDropdown class="w-100">
             <button ngbDropdownToggle type="button" class="form-control text-start"
-              [ngClass]="{ 'is-invalid': submitted && f['actions'].errors }" (click)="$event.stopPropagation()">
-              {{ invitationForm.value.actions?.length > 0
-              ? invitationForm.value.actions.join(', ')
+              [ngClass]="{ 'is-invalid': submitted && f['types'].errors }" (click)="$event.stopPropagation()">
+              {{ invitationForm.value.types?.length > 0
+              ? invitationForm.value.types.join(', ')
               : 'Select Type' }}
             </button>
 
@@ -113,7 +131,7 @@
               (click)="$event.stopPropagation()">
               <div *ngFor="let type of workflowTypes" class="dropdown-item d-flex align-items-center">
                 <input type="checkbox" class="form-check-input me-2" [checked]="type.selected"
-                  (change)="selectAction(type); $event.stopPropagation()">
+                  (change)="selectType(type); $event.stopPropagation()">
                 <span>{{ type.name }}</span>
               </div>
             </div>

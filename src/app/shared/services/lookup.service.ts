@@ -68,4 +68,8 @@ export class LookupService {
   getProcurementRoles() {
     return this.http.get<any>(`${this.baseUrl}/dropdowns?name=proc-roles`);
   }
+
+  getAllEmailActions() {
+    return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=email-actions`);
+  }
 }
