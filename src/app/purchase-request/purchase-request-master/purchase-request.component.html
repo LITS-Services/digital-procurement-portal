@@ -177,25 +177,24 @@
                 </button>
 
                 <!-- If PR is completed, show active button -->
-                <button *ngIf="row.requestStatus === 'Completed'; else waitingTemplate"
+                <button *ngIf="row.requestStatus === 'Completed' && row.isInventoryTransfer !== true; else rfqDisabled"
                   class="btn popover-btn btn-sm m-1" ngbTooltip="Generate RFQ" (click)="generateRfq(row)">
-                  <span class="popover-icon"> <i class="ft-file-text"></i></span>
-
+                  <span class="popover-icon"><i class="ft-file-text"></i></span>
                   Generate RFQ
                 </button>
 
-                <!-- Template for PRs not completed -->
-                <ng-template #waitingTemplate>
-                  <button class="btn popover-btn btn-sm m-1" disabled
-                    ngbTooltip="RFQ can only be generated when PR is Completed.">
-                    <span class="popover-icon"> <i class="ft-file-text" style="opacity: 0.5;"></i> </span>
+                <ng-template #rfqDisabled>
+                  <button class="btn popover-btn btn-sm m-1" disabled [ngbTooltip]="row.requestStatus !== 'Completed' ? 
+                                        'RFQ can only be generated when PR is Completed.' : 
+                                        'RFQ cannot be generated since Inventory Transfer is created.'">
+                    <span class="popover-icon"><i class="ft-file-text" style="opacity: 0.5;"></i></span>
                     Generate RFQ
                   </button>
-
                 </ng-template>
 
+
                 <!-- Select Final Vendor Button -->
-                <button *ngIf="row.requestStatus === 'Completed'; else selectVendorDisabled"
+                <!-- <button *ngIf="row.requestStatus === 'Completed'; else selectVendorDisabled"
                   class="btn popover-btn btn-sm m-1" ngbTooltip="Select Final Vendor" (click)="selectFinalVendor(row)">
                   <span class="popover-icon"><i class="ft-user-check"></i> </span>
                   Select Final Vendor
@@ -207,9 +206,24 @@
                     <span class="popover-icon"><i class="ft-user-check" style="opacity: 0.5;"></i></span>
                     Select Final Vendor
                   </button>
+                </ng-template> -->
+
+                <button *ngIf="row.requestStatus === 'Completed' && row.isInventoryTransfer !== true; else selectVendorDisabled"
+                  class="btn popover-btn btn-sm m-1" ngbTooltip="Select Final Vendor" (click)="selectFinalVendor(row)">
+                  <span class="popover-icon"><i class="ft-user-check"></i></span>
+                  Select Final Vendor
+                </button>
+                
+                <ng-template #selectVendorDisabled>
+                  <button class="btn popover-btn btn-sm m-1" disabled [ngbTooltip]="row.requestStatus !== 'Completed' ? 
+                                        'Final Vendor can only be selected when PR is Completed.' : 
+                                        'Final Vendor cannot be selected since Inventory Transfer is created.'">
+                    <span class="popover-icon"><i class="ft-user-check" style="opacity: 0.5;"></i></span>
+                    Select Final Vendor
+                  </button>
                 </ng-template>
 
-                <button *ngIf="row.requestStatus === 'Completed'; else poWaitingTemplate"
+                <!-- <button *ngIf="row.requestStatus === 'Completed' && row.isInventoryTransfer !== true; else poWaitingTemplate"
                   class="btn popover-btn btn-sm m-1" ngbTooltip="Create Purchase Order" (click)="createPO(row)">
                   <span class="popover-icon"> <i class="ft-shopping-cart"></i> </span>
                   Create Purchase Order
@@ -221,14 +235,36 @@
                     <span class="popover-icon"><i class="ft-shopping-cart" style="opacity: 0.5;"></i> </span>
                     Create Purchase Order
                   </button>
+                </ng-template> -->
+                <button *ngIf="row.requestStatus === 'Completed' && row.isInventoryTransfer !== true; else showDisabled"
+                  class="btn popover-btn btn-sm m-1" ngbTooltip="Create Purchase Order" (click)="createPO(row)">
+                  <span class="popover-icon"><i class="ft-shopping-cart"></i></span>
+                  Create Purchase Order
+                </button>
+                
+                <ng-template #showDisabled>
+                  <button class="btn popover-btn btn-sm m-1" disabled
+                    [ngbTooltip]="row.requestStatus !== 'Completed' ? 'PO can only be created when PR is Completed.' : 'PO cannot be created since Inventory Transfer is created.'">
+                    <span class="popover-icon"><i class="ft-shopping-cart" style="opacity: 0.5;"></i></span>
+                    Create Purchase Order
+                  </button>
                 </ng-template>
 
                 
-                <button class="btn popover-btn btn-sm m-1" ngbTooltip="Purchase Items"
+                <button *ngIf="row.requestStatus === 'Completed'; else inventoryTransferWaitingTemplate" 
+                class="btn popover-btn btn-sm m-1" ngbTooltip="Create Inventory Transfer"
                   (click)="openPRInventoryManagement(row)">
-                  <span class="popover-icon"> <i class="ft-list"></i> </span>
-                  Purchase Items
+                  <span class="popover-icon"> <i class="ft-repeat"></i> </span>
+                  Inventory Transfer
                 </button>
+
+                <ng-template #inventoryTransferWaitingTemplate>
+                  <button class="btn popover-btn btn-sm m-1" disabled
+                    ngbTooltip="Inventory Transfer can only be created when PR is Completed.">
+                    <span class="popover-icon"><i class="ft-shopping-cart" style="opacity: 0.5;"></i> </span>
+                    Inventory Transfer
+                  </button>
+                </ng-template>
               </div>
             </ng-template>
           </ng-template>

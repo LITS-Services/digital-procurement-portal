@@ -47,6 +47,15 @@ export class LookupService {
     return this.http.get<any[]>(url, { params });
   }
 
+  getAddressByProcCompany(procCompanyId: number) {
+    const url = `${this.baseUrl}/dropdowns`;
+    const params = {
+      name: 'address-by-proc-company',
+      id: procCompanyId.toString()
+    };
+    return this.http.get<any[]>(url, { params });
+  }
+
   getAllPlaceHoldersByWorkflowType(workflowTypeId: number) {
     const url = `${this.baseUrl}/dropdowns`;
     const params = {
