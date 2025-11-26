@@ -29,7 +29,7 @@
                         (ngModelChange)="selected[row.id] = $event" [ngModelOptions]="{ standalone: true }">
                         <option [ngValue]="null" disabled>Select Company</option>
                         <option *ngFor="let v of vendorData" [ngValue]="v">
-                            {{ v.vendorName }}
+                            {{ v.companyName }}
                         </option>
                     </select>
                 </ng-template>

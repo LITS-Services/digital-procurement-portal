@@ -39,6 +39,7 @@ export class RfqQuotationboxComponent implements OnInit {
 
   itemsData: any[] = [];
   vendorItemMap: Record<number, { items: any[] }> = {};
+  vendorsWithOffers: any[] = [];
 
   public ColumnMode = ColumnMode; // for items grid
   columns = [];
