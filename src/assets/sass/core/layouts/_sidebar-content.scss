@@ -653,11 +653,13 @@ body {
   }
 }
 
-@include media-breakpoint-up(xs) {
+@media (max-width: 576px) {
     .main-panel {
       margin-top: 54px !important;
     }
 }
+
+
 
 @include media-breakpoint-up(xl) {
   .drag-target {

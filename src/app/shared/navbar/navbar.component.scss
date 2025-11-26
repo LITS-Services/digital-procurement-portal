@@ -301,7 +301,13 @@
 /* Responsive: narrow width on small screens */
 @media (max-width: 480px) {
   .notif-panel {
-    width: calc(100vw - 80%) !important;
+   position: fixed;               /* detach from bell, attach to viewport */
+    top: 64px;                     /* adjust to sit below navbar */
+    left: 12px;
+    right: 12px;                   /* small gap on both sides */
+    width: auto;
+    max-height: calc(100vh - 90px);
+    border-radius: 16px;
   }
 }
 
