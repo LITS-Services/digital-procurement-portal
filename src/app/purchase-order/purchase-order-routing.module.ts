@@ -16,10 +16,11 @@ const routes: Routes = [
     },
   },
   {
-    path: ':id',
+    path: 'details',
     component: PurchaseOrderDetailsComponent,
     canActivate: [AclGuard],
     data: {
+      title: 'Purchase Order Details',
       formTypeId: FORM_IDS.PURCHASE_ORDER,
       action: 'read',
     },

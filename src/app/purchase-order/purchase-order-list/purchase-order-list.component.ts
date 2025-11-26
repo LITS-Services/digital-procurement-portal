@@ -127,14 +127,15 @@ export class PurchaseOrderListComponent implements OnInit {
   onActivate(event: any) {
     if (event.type === 'click') {
       const poId = event.row.id;
-      this.router.navigate([poId], { relativeTo: this.route });
+      this.router.navigate(['/purchase-order/details'], { queryParams: { id: poId }, skipLocationChange: true });
 
     }
   }
+
   onRowClick(event: any) {
     const id = event?.row?.id;
     if (id) {
-      this.router.navigate([id], { relativeTo: this.route });
+      this.router.navigate(['/purchase-order/details'], { queryParams: { id: id }, skipLocationChange: true });
 
     }
   }

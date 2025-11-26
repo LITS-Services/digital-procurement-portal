@@ -444,7 +444,10 @@ highlightText(message: string | undefined | null, term: string | undefined | nul
         break;
 
       case ReferenceType.PO:
-
+        this.router.navigate(["/purchase-order/details"], {
+          queryParams: { id: referenceId },
+          skipLocationChange: true,
+        });
       // this.selectedPO = { id: n.referenceId };
       // this.modalService.open(this.purchaseOrderDetail, { size: 'lg', centered: true });
       // break;

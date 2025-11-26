@@ -2,6 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
+import id from 'date-fns/esm/locale/id/index';
 
 @Component({
   selector: 'app-purchase-order-details',
@@ -32,12 +33,18 @@ export class PurchaseOrderDetailsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.poId = Number(this.route.snapshot.paramMap.get('id'));
-    this.getPurchaseOrderDetails();
+    this.route.queryParamMap.subscribe(params => {
+    const id = params.get('id');
+    if (id) {
+      this.poId = +id; 
+      this.getPurchaseOrderDetails(this.poId);
+    }
+  });
+    
   }
 
-  getPurchaseOrderDetails() {
-    this.purchaseOrderService.getPurchaseOrderById(this.poId).subscribe(res => {
+  getPurchaseOrderDetails(id: number) {
+    this.purchaseOrderService.getPurchaseOrderById(id).subscribe(res => {
       this.poDetails = res;
       this.loading = false;
       this.cdr.detectChanges();

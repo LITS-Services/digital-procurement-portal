@@ -59,12 +59,12 @@
             <div class="search-input-wrapper">
               <i class="ft-search search-icon"></i>
               <input type="text" class="custom-input search-input" [formControl]="searchCtrl" (focus)="openPanel()"
-                (keydown)="onKeyDown($event)" placeholder="Search" />
+                (keydown)="onKeyDown($event)" placeholder="PR, RFQ or PO" />
             </div>
 
           <div class="search-panel" *ngIf="panelOpen" (click)="$event.stopPropagation()">
             <div class="search-panel__header">
-              <div class="search-panel__title">GLOBAL SEARCH</div>
+              <div class="search-panel__title">SEARCH</div>
           
               <div class="search-panel__shortcuts">
                 <span class="kbd">↑↓</span>
