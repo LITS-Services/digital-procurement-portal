@@ -77,6 +77,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   selectedCompany?: { id: string | number; description: string };
   entityOpen = false;
   private destroy$ = new Subject<void>();
+
+    isScrolled = false;
   constructor(
     public translate: TranslateService,
     private layoutService: LayoutService,
@@ -402,6 +404,14 @@ highlightText(message: string | undefined | null, term: string | undefined | nul
     }
   }
   }
+
+
+
+
+@HostListener('window:scroll', [])
+onWindowScroll() {
+  this.isScrolled = window.scrollY > 10;   // threshold
+}
 
   getNotification() {
     this.notificationService.getNotification().subscribe((res: any) => {

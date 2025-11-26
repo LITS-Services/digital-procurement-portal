@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light header-navbar {{transparentBGClass}}" [ngClass]="{'navbar-brand-center': menuPosition === 'Top', 'navbar-static': menuPosition === 'Side' &&
+<nav class="navbar navbar-expand-lg navbar-light header-navbar {{transparentBGClass}}"  [class.nav-scrolled]="isScrolled" [ngClass]="{'navbar-brand-center': menuPosition === 'Top', 'navbar-static': menuPosition === 'Side' &&
   config?.layout.navbar.type === 'Static' , 'navbar-sticky': menuPosition === 'Side' &&
   config?.layout.navbar.type === 'Fixed', 'fixed-top': isSmallScreen && menuPosition === 'Top'}">
   <div class="container-fluid navbar-wrapper">

@@ -305,6 +305,121 @@
   }
 }
 
+@media (max-width: 576px) {
+
+  .header-navbar .navbar-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+  }
+
+  .header-navbar .navbar-header {
+    display: flex;
+    align-items: center;
+    flex: 0 1 auto;
+  }
+
+  .header-navbar .navbar-toggle {
+    margin-right: 8px;
+  }
+
+  .header-navbar .navbar-container {
+    flex: 0 0 auto;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+  }
+
+  .header-navbar #navbarSupportedContent {
+    display: flex !important;
+    align-items: center;
+  }
+
+  .header-navbar #navbarSupportedContent > .navbar-nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .header-navbar .search-bar-container {
+    background: transparent;
+    padding: 0;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .header-navbar .search-input-wrapper {
+    display: none;
+  }
+
+  .header-navbar .icon-buttons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .header-navbar .icon-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+
+  .header-navbar .icon-btn i {
+    font-size: 18px;
+  }
+
+  .header-navbar .notification-bell .dot {
+    width: 12px;
+    height: 12px;
+    font-size: 8px;
+    top: 4px;
+    right: 4px;
+  }
+
+  .header-navbar .user-dropdown .user {
+    display: none !important;
+  }
+
+  .header-navbar .user-dropdown .nav-link {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .header-navbar .avatar {
+    display: block;
+  }
+
+  .header-navbar .entity-switcher {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .header-navbar .entity-trigger {
+    height: 36px;
+    padding: 0 10px;
+    max-width: 180px;
+  }
+
+  .header-navbar .entity-label {
+    max-width: 110px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 13px;
+  }
+
+  .header-navbar .sync-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .header-navbar .sync-icon i {
+    font-size: 14px;
+  }
+}
+
 .search-panel {
   position: absolute;
   top: calc(100% + 2px);
