@@ -80,7 +80,41 @@
                 </div>
             </div>
         </div>
+            <!-- Items Section -->
+            <h5 class="heading mb-3 fw-bold" (click)="toggleItems()" style="cursor: pointer;">
+                Items
+                <i class="fa" [ngClass]="itemsExpanded ? 'fa-chevron-down' : 'fa-chevron-up'"
+                    style="font-size: 12px;"></i>
+            </h5>
 
+            <div [@expandCollapse]="itemsExpanded ? 'expanded' : 'collapsed'" style="overflow: hidden;">
+                <div class="card cstm-ui-card border-0 shadow-sm">
+                    <div class="card-body p-0">
+
+                        <div class="table-responsive">
+                            <table class="table table-sm pro-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Description</th>
+                                        <th class="text-end">Quantity</th>
+                                        <th>Delivery Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of poDetails?.items">
+                                        <td>{{ item.itemName }}</td>
+                                        <td>{{ item.itemDescription }}</td>
+                                        <td class="text-end">{{ item.quantity }}</td>
+                                        <td>{{ item.deliveryDate | date:'yyyy-MM-dd' }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
 
 
 <ng-template #loader>
