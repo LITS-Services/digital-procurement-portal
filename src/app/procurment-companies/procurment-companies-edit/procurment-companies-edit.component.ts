@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { id } from '@swimlane/ngx-datatable';
 
 @Component({
   selector: 'app-procurment-companies-edit',
@@ -59,53 +58,7 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
     }
   }
 
-  // loadCompany() {
-  //   this.companyService.getproByid(this.companyId).subscribe({
-  //     next: (company: any) => {
-  //       this.companyForm.patchValue({
-  //         id: company.id,
-  //         companyGUID: company.companyGUID,
-  //         name: company.name,
-  //         isDeleted: company.isDeleted
-  //       });
-
-  //       if (company.logo && company.logo !== 'string') {
-  //         this.previewUrl = company.logo;
-  //         this.existingLogo = company.logo;
-  //       } else {
-  //         this.previewUrl = null;
-  //       }
-  //     },
-  //     error: (err) => console.error('Error loading company:', err)
-  //   });
-  // }
   loadCompany() {
-    // this.companyService.getProcurementCompanyById(this.companyId).subscribe({
-    //   next: (company: any) => {
-    //     // Patch main company form
-    //     this.companyForm.patchValue({
-    //       id: company.id,
-    //       companyGUID: company.companyGUID,
-    //       name: company.name,
-    //       isDeleted: company.isDeleted
-    //     });
-
-    //     // Set logo preview
-    //     if (company.logo && company.logo !== 'string') {
-    //       this.previewUrl = company.logo;
-    //       this.existingLogo = company.logo;
-    //     } else {
-    //       this.previewUrl = null;
-    //     }
-
-    //     // Populate addresses array for modal table
-    //     this.addresses = company.addressDetails || [];
-
-    //   this.cdr.detectChanges();
-    //   },
-    //   error: (err) => console.error('Error loading company:', err)
-    // });
-
     this.companyService.getProcurementCompanyById(this.companyId).subscribe({
       next: (res: any) => {
         const company = res; // <-- important
@@ -275,7 +228,12 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
   openAddAddressModal() {
     this.selectedAddressIndex = null;
     this.addressForm.reset();
-    this.modalService.open(this.addressModalTemplate, { size: 'lg' });
+    this.modalService.open(this.addressModalTemplate, {
+      backdrop: 'static',
+      size: 'lg',
+      centered: true,         // Centers the modal vertically
+      windowClass: 'compact-modal' // Custom class
+    });
   }
 
   editAddress(index: number) {
@@ -288,7 +246,12 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
       address: this.addresses[index].address
     });
 
-    this.modalService.open(this.addressModalTemplate, { size: 'lg' });
+    this.modalService.open(this.addressModalTemplate, {
+      backdrop: 'static',
+      size: 'lg',
+      centered: true,         // Centers the modal vertically
+      windowClass: 'compact-modal' // Custom class
+    });
   }
 
   saveAddress(modal: any) {
