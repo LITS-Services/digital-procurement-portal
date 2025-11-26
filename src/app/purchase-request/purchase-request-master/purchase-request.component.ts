@@ -366,6 +366,11 @@ export class PurchaseRequestComponent implements OnInit {
   generateRfq(row: any) {
     console.log('Row data:', row);
     if (row.requestStatus !== 'Completed') {
+      if (row.isInventoryTransfer == true)
+      {
+        this.toastr.info('RFQ cannot be generated since the Inventory Transfer is created.');
+        return;
+      }
       this.toastr.info('RFQ can only be generated if PR is Completed.');
       return;
     }
