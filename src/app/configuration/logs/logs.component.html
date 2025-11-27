@@ -24,7 +24,9 @@
       [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
       [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected"
       [selectionType]="SelectionType.single" (rowClick)="onRowClick($event)" (activate)="onActivate($event)"
-      (clickType)="'single'">
+      (clickType)="'single'"
+      appPermission [appPermFormId]="FORM_IDS.LOGS"
+      [appPermDisable]="'write'">
 
       <!-- Sr. No -->
       <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
@@ -55,7 +57,9 @@
       [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
       [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected"
       [selectionType]="SelectionType.single" (rowClick)="onRowClick($event)" (activate)="onActivate($event)"
-      (clickType)="'single'">
+      (clickType)="'single'"
+      appPermission [appPermFormId]="FORM_IDS.LOGS"
+      [appPermDisable]="'write'">
 
       <!-- Sr. No -->
       <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">

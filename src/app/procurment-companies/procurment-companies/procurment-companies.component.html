@@ -21,13 +21,17 @@
 
             <!-- Create -->
             <button type="button" ngbTooltip="Create new Procurement Company" class="btn btn-sm  cstm-ui-table-btn"
-              (click)="openEmpDetails()">
+              (click)="openEmpDetails()"
+              appPermission [appPermFormId]="FORM_IDS.ENTITIES"
+                [appPermDisable]="'write'">
               <i class="ft-plus"></i>
               <label class="ml-1 mt-1">Create</label>
             </button>
 
             <!-- Update -->
-            <button type="button" class="btn btn-sm  cstm-ui-table-btn" [disabled]="isEditButtonDisabled" (click)="editSelectedRow()">
+            <button type="button" class="btn btn-sm  cstm-ui-table-btn" [disabled]="isEditButtonDisabled" (click)="editSelectedRow()"
+            appPermission [appPermFormId]="FORM_IDS.ENTITIES"
+                [appPermDisable]="'write'">
               <i class="ft-edit"></i>
               <label class="ml-1 mt-1">Edit</label>
             </button>

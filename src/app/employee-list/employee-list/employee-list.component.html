@@ -21,11 +21,15 @@
 
             <!-- Edit Button (Top) -->
             <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
-              (click)="editSelectedRow()">
+              (click)="editSelectedRow()"
+              appPermission [appPermFormId]="FORM_IDS.PROCUREMENT_USERS"
+                [appPermDisable]="'write'">
               <i class="ft-edit"></i>
               <label class="ml-1 mt-1">Edit User</label>
             </button>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="registerUser()">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="registerUser()"
+            appPermission [appPermFormId]="FORM_IDS.PROCUREMENT_USERS"
+                [appPermDisable]="'write'">
               <i class="ft-user-plus"></i>
               <label class="ml-1 mt-1">Register User</label>
             </button>

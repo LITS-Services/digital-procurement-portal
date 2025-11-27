@@ -5,6 +5,8 @@ import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'app/shared/auth/auth.service';
 import { EmailTemplateService } from 'app/shared/services/EmailTemplateService'; 
+import { FORM_IDS } from 'app/shared/permissions/form-ids';
+import { PermissionService } from 'app/shared/permissions/permission.service';
 
 @Component({
   selector: 'app-email-template-list',
@@ -12,6 +14,7 @@ import { EmailTemplateService } from 'app/shared/services/EmailTemplateService';
   styleUrls: ['./email-template-list.component.scss']
 })
 export class EmailTemplateListComponent implements OnInit {
+  FORM_IDS = FORM_IDS;
   @ViewChild('confirmDeleteModal') confirmDeleteModal: TemplateRef<any>;
 
   public SelectionType = SelectionType;
@@ -34,7 +37,8 @@ export class EmailTemplateListComponent implements OnInit {
     private authService: AuthService,
     private emailTemplateService: EmailTemplateService,
     private toastr: ToastrService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private permissionService: PermissionService
   ) { }
 
   ngOnInit(): void {
@@ -78,6 +82,8 @@ export class EmailTemplateListComponent implements OnInit {
 
   // Open confirmation modal for delete
   confirmDelete() {
+    if(!this.permissionService.can(FORM_IDS.EMAIL_TEMPLATE_LIST, 'delete'))
+      return;
     if (!this.templateId) return;
     this.modalService.open(this.confirmDeleteModal, { centered: true });
   }
@@ -110,6 +116,8 @@ export class EmailTemplateListComponent implements OnInit {
 
   // Navigate to edit page
   editTemplate() {
+    if(!this.permissionService.can(FORM_IDS.EMAIL_TEMPLATE_LIST, 'write'))
+      return;
     if (!this.templateId) return;
     this.router.navigate(['/setup/create-email-template'], { queryParams: { id: this.templateId } });
   }
@@ -167,6 +175,8 @@ export class EmailTemplateListComponent implements OnInit {
   }
 
   createTemplate() {
+    if(!this.permissionService.can(FORM_IDS.EMAIL_TEMPLATE_LIST, 'write'))
+      return;
     this.router.navigate(['/setup/create-email-template']);
   }
 }

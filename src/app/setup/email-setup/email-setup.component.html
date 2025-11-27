@@ -18,7 +18,10 @@
             </button>
             <span class="vl"></span>
 
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="CreatInvitations()">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" 
+            appPermission [appPermFormId]="FORM_IDS.INVITATION"
+                [appPermDisable]="'write'"
+            (click)="CreatInvitations()">
               <i class="ft-mail"></i>
               <label class="ml-1 mt-1">Create Invitation</label>
             </button>

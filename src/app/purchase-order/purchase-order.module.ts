@@ -10,6 +10,7 @@ import { PurchaseOrderDetailsComponent } from './purchase-order-details/purchase
 import { ShipmentDetailsComponent } from './purchase-order-details/shipment-details/shipment-details.component';
 import { GrnDetailsComponent } from './purchase-order-details/grn-details/grn-details.component';
 import { InvoiceComponent } from './purchase-order-details/invoice/invoice.component';
+import { PermissionDirective } from 'app/shared/permissions/permission.directive';
 
 
 @NgModule({
@@ -25,7 +26,8 @@ import { InvoiceComponent } from './purchase-order-details/invoice/invoice.compo
     CommonModule,
     PurchaseOrderRoutingModule,
     NgxDatatableModule,
-    AutoResizeDatatableDirective
+    AutoResizeDatatableDirective,
+    PermissionDirective
 ]
 })
 export class PurchaseOrderModule { }

@@ -7,6 +7,7 @@ import { NewGlobalConfigurationComponent } from './new-global-configuration/new-
 import { ReactiveFormsModule } from '@angular/forms';
 import { LogsComponent } from './logs/logs.component';
 import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
+import { PermissionDirective } from 'app/shared/permissions/permission.directive';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-r
     ConfigurationRoutingModule,
     NgxDatatableModule,
     ReactiveFormsModule,
-    AutoResizeDatatableDirective
+    AutoResizeDatatableDirective,
+    PermissionDirective
 ]
 })
 export class ConfigurationModule { }

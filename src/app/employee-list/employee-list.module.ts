@@ -19,6 +19,7 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
+import { PermissionDirective } from 'app/shared/permissions/permission.directive';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-r
             NgbDatepickerModule,
             ToastrModule.forRoot(),
             NgxSpinnerModule,
-            AutoResizeDatatableDirective
+            AutoResizeDatatableDirective,
+            PermissionDirective
   ]
 })
 export class EmployeeListModule { }

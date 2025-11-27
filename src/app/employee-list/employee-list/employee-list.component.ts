@@ -2,6 +2,8 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
 import { AuthService } from 'app/shared/auth/auth.service';
+import { FORM_IDS } from 'app/shared/permissions/form-ids';
+import { PermissionService } from 'app/shared/permissions/permission.service';
 import { CompanyService } from 'app/shared/services/Company.services';
 
 @Component({
@@ -10,7 +12,7 @@ import { CompanyService } from 'app/shared/services/Company.services';
   styleUrls: ['./employee-list.component.scss']
 })
 export class EmployeeListComponent implements OnInit {
-
+  FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
@@ -25,7 +27,8 @@ export class EmployeeListComponent implements OnInit {
     private router: Router,
     private companyService: CompanyService,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private permissionService: PermissionService
   ) { }
 
   ngOnInit(): void {
@@ -114,12 +117,16 @@ export class EmployeeListComponent implements OnInit {
 
   // Navigate to register user page
   registerUser() {
+    if(!this.permissionService.can(FORM_IDS.PROCUREMENT_USERS, 'write'))
+      return;
     this.router.navigate(['/employee']);
     this.cdr.detectChanges();
   }
 
   // Edit button (top)
   editSelectedRow() {
+    if(!this.permissionService.can(FORM_IDS.PROCUREMENT_USERS, 'write'))
+      return;
     if (this.chkBoxSelected.length === 1) {
       const selectedUser = this.chkBoxSelected[0];
       this.router.navigate(['/employee'], { queryParams: { id: selectedUser.id } });

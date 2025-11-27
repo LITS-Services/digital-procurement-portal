@@ -1,6 +1,8 @@
 import { ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { FORM_IDS } from 'app/shared/permissions/form-ids';
+import { PermissionService } from 'app/shared/permissions/permission.service';
 import { SystemService } from 'app/shared/services/system.service';
 
 type LogType = 'exception' | 'audit-trails';
@@ -11,7 +13,7 @@ type LogType = 'exception' | 'audit-trails';
   styleUrls: ['./logs.component.scss']
 })
 export class LogsComponent implements OnInit {
-
+  FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
@@ -30,7 +32,8 @@ export class LogsComponent implements OnInit {
   @ViewChild('logDetailModal') logDetailModal!: TemplateRef<any>;
   constructor(private systemService: SystemService,
     private cdr: ChangeDetectorRef,
-    private modalService: NgbModal) { }
+    private modalService: NgbModal,
+    private permissionService: PermissionService) { }
 
   ngOnInit(): void {
     this.loadLogs();
@@ -82,6 +85,8 @@ export class LogsComponent implements OnInit {
   }
 
   onRowClick(event: any) {
+    if(!this.permissionService.can(FORM_IDS.LOGS, 'write'))
+      return;
     console.log('Row clicked:', event);
 
     this.selectedLog = event.row;
@@ -89,6 +94,8 @@ export class LogsComponent implements OnInit {
   }
 
   onActivate(event: any) {
+    if(!this.permissionService.can(FORM_IDS.LOGS, 'write'))
+      return;
     // We only want clicks, not mouseenter or keydown etc.
     if (event.type === 'click' && event.row) {
       this.selectedLog = event.row;

@@ -18,13 +18,21 @@
             </button>
             <span class="vl"></span>
             <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new workflow"
+            appPermission [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING"
+                [appPermDisable]="'write'"
               (click)="NewVendorOnboarding()">
               <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
             </button>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" 
+            appPermission [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING"
+                [appPermDisable]="'write'"
+            (click)="onUpdate()">
               <i class="ft-edit"></i><label class="ml-1 mt-1">Edit</label>
             </button>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" 
+            appPermission [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING"
+                [appPermDisable]="'delete'"
+            (click)="openDeleteModal()">
               <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
             </button>
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="refreshData()">

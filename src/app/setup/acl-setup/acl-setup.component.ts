@@ -2,6 +2,8 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { FORM_IDS } from 'app/shared/permissions/form-ids';
+import { PermissionService } from 'app/shared/permissions/permission.service';
 import { AclService } from 'app/shared/services/acl.service';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { LookupService } from 'app/shared/services/lookup.service';
@@ -17,6 +19,7 @@ import { finalize } from 'rxjs/operators';
   styleUrls: ['./acl-setup.component.scss']
 })
 export class AclSetupComponent implements OnInit {
+  FORM_IDS = FORM_IDS;
   chkBoxSelected: any[] = [];
   idsToDelete: number[] = [];
   aclList: any[] = [];
@@ -39,7 +42,8 @@ export class AclSetupComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private WorkflowServiceService: WorkflowServiceService,
     private lookupService: LookupService,
-    private aclService: AclService
+    private aclService: AclService,
+    private permissionService: PermissionService
   ) {}
 
   ngOnInit(): void {
@@ -130,6 +134,8 @@ export class AclSetupComponent implements OnInit {
   }
 
   togglePermission(row: any, prop: string) {
+    if(!this.permissionService.can(FORM_IDS.ACL, 'write'))
+      return;
     if (prop === 'read') {
       row.read = !row.read;
       if (!row.read) {
@@ -182,6 +188,8 @@ export class AclSetupComponent implements OnInit {
   // }
 
   submitPermission(row: any) {
+    if(!this.permissionService.can(FORM_IDS.ACL, 'write'))
+      return;
     const payload = {
       createPermission: {
         roleId: this.selectedRoleId,

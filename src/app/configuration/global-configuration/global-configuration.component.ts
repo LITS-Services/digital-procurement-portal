@@ -1,6 +1,8 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { FORM_IDS } from 'app/shared/permissions/form-ids';
+import { PermissionService } from 'app/shared/permissions/permission.service';
 import { SystemService } from 'app/shared/services/system.service';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
@@ -11,7 +13,7 @@ import Swal from 'sweetalert2';
   styleUrls: ['./global-configuration.component.scss']
 })
 export class GlobalConfigurationComponent implements OnInit {
-
+  FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
@@ -35,7 +37,8 @@ export class GlobalConfigurationComponent implements OnInit {
   constructor(private systemService: SystemService,
     private cdr: ChangeDetectorRef,
     public toastr: ToastrService,
-    private router: Router
+    private router: Router,
+    private permissionService: PermissionService
   ) { }
 
   ngOnInit(): void {
@@ -71,6 +74,8 @@ export class GlobalConfigurationComponent implements OnInit {
   }
 
   openEmpDetails() {
+    if(!this.permissionService.can(FORM_IDS.GLOBAL_CONFIGURATION, 'write'))
+      return;
     this.router.navigate(['/configuration/global/new-global-config']);
   }
 
@@ -162,6 +167,8 @@ export class GlobalConfigurationComponent implements OnInit {
   // }
 
   onUpdate() {
+    if(!this.permissionService.can(FORM_IDS.GLOBAL_CONFIGURATION, 'write'))
+      return;
     if (this.chkBoxSelected.length === 0) {
       this.toastr.info('Please select a record to update.');
       return;

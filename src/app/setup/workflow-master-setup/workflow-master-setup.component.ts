@@ -81,6 +81,8 @@ export class WorkflowMasterSetupComponent implements OnInit {
   }
 
   setupnewWorkflow() {
+    if(!this.permissionService.can(FORM_IDS.WORKFLOW_SETUP, 'write'))
+      return;
     this.router.navigate(['/setup/create-workflow']);
   }
 
@@ -166,6 +168,8 @@ export class WorkflowMasterSetupComponent implements OnInit {
    * Navigate to update form
    */
   onUpdate() {
+    if(!this.permissionService.can(FORM_IDS.WORKFLOW_SETUP, 'write'))
+      return;
     if (this.chkBoxSelected.length === 0) {
       alert('Please select a record to update.');
       return;

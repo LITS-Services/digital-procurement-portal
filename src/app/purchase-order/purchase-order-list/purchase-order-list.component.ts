@@ -2,6 +2,8 @@ import { ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@a
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, SelectionType, NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { FORM_IDS } from 'app/shared/permissions/form-ids';
+import { PermissionService } from 'app/shared/permissions/permission.service';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 
 @Component({
@@ -10,6 +12,7 @@ import { PurchaseOrderService } from 'app/shared/services/purchase-order.service
   styleUrls: ['./purchase-order-list.component.scss'],
 })
 export class PurchaseOrderListComponent implements OnInit {
+  FORM_IDS = FORM_IDS;
   @ViewChild('purchaseOrderDetail') purchaseOrderDetail: TemplateRef<any>;
   selectedPO: any;
   public SelectionType = SelectionType;
@@ -35,7 +38,8 @@ export class PurchaseOrderListComponent implements OnInit {
     public cdr: ChangeDetectorRef,
     private router: Router,
     private modalService: NgbModal,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private permissionService: PermissionService
 
   ) { }
 
@@ -126,6 +130,8 @@ export class PurchaseOrderListComponent implements OnInit {
 
   onActivate(event: any) {
     if (event.type === 'click') {
+      if(!this.permissionService.can(FORM_IDS.REQUEST_FOR_QUOTATION, 'write'))
+      return;
       const poId = event.row.id;
       this.router.navigate(['/purchase-order/details'], { queryParams: { id: poId }, skipLocationChange: true });
 
@@ -133,6 +139,8 @@ export class PurchaseOrderListComponent implements OnInit {
   }
 
   onRowClick(event: any) {
+    if(!this.permissionService.can(FORM_IDS.REQUEST_FOR_QUOTATION, 'write'))
+      return;
     const id = event?.row?.id;
     if (id) {
       this.router.navigate(['/purchase-order/details'], { queryParams: { id: id }, skipLocationChange: true });

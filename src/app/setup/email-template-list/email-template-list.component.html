@@ -19,21 +19,22 @@
             <span class="vl"></span>
 
             <!-- Create Template Button -->
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="createTemplate()">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" appPermission [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST"
+              [appPermDisable]="'write'" (click)="createTemplate()">
               <i class="ft-edit"></i>
               <label class="ml-1 mt-1">Create Email Template</label>
             </button>
 
             <!-- Delete Template Button -->
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" 
-                    (click)="confirmDelete()" [disabled]="isDeleteButtonDisabled">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="confirmDelete()" appPermission
+              [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST" [appPermDisable]="'delete'" [disabled]="isDeleteButtonDisabled">
               <i class="ft-trash-2"></i>
               <label class="ml-1 mt-1">Delete</label>
             </button>
 
             <!-- Edit Template Button -->
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" 
-                    (click)="editTemplate()" [disabled]="isEditButtonDisabled">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="editTemplate()" appPermission
+              [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST" [appPermDisable]="'write'" [disabled]="isEditButtonDisabled">
               <i class="ft-edit"></i>
               <label class="ml-1 mt-1">Edit</label>
             </button>

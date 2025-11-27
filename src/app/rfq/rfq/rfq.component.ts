@@ -135,7 +135,8 @@ export class RfqComponent implements OnInit {
   }
 
   openRfq(row: any) {
-
+    if(!this.permissionService.can(FORM_IDS.REQUEST_FOR_QUOTATION, 'write')) 
+      return;
   const currentUserId = localStorage.getItem('userId') || '';
   const isSubmitter = row.submitterId?.toString() === currentUserId;
 

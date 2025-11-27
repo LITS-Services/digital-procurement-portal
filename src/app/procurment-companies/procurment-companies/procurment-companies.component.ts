@@ -129,6 +129,8 @@ export class ProcurmentCompaniesComponent implements OnInit {
   }
 
   openEmpDetails() {
+    if(!this.permissionService.can(FORM_IDS.ENTITIES, 'write'))
+      return;
     this.router.navigate(['/procurment-companies/procurment-companies-edit']);
   }
 
@@ -139,6 +141,8 @@ export class ProcurmentCompaniesComponent implements OnInit {
   }
 
   editSelectedRow() {
+    if(!this.permissionService.can(FORM_IDS.ENTITIES, 'write'))
+      return;
     if (this.chkBoxSelected.length === 1) {
       const selectedCompany = this.chkBoxSelected[0];
       this.router.navigate(['/procurment-companies/procurment-companies-edit'], {

@@ -114,7 +114,9 @@
 
             <ngx-datatable-column name="RFQ No." prop="rfqNo">
                 <ng-template ngx-datatable-cell-template let-row="row">
-                    <a href="javascript:void(0)" (click)="openRfq(row)">
+                    <a href="javascript:void(0)" (click)="openRfq(row)"
+                    appPermission [appPermFormId]="FORM_IDS.REQUEST_FOR_QUOTATION"
+                    [appPermDisable]="'write'">
                         {{ row.rfqNo }}
                     </a>
                 </ng-template>

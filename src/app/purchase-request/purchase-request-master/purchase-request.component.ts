@@ -168,6 +168,8 @@ export class PurchaseRequestComponent implements OnInit {
   // }
 
   onView() {
+    if(!this.permissionService.can(FORM_IDS.PURCHASE_REQUEST, 'read')) 
+      return;
     if (this.chkBoxSelected.length !== 1) {
       this.toastr.info('Please select exactly one record to view.');
       return;

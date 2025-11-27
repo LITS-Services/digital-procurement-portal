@@ -2,6 +2,8 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { FORM_IDS } from 'app/shared/permissions/form-ids';
+import { PermissionService } from 'app/shared/permissions/permission.service';
 import { EmailTemplateService } from 'app/shared/services/EmailTemplateService';
 
 @Component({
@@ -10,7 +12,7 @@ import { EmailTemplateService } from 'app/shared/services/EmailTemplateService';
   styleUrls: ['./email-setup.component.scss']
 })
 export class EmailSetupComponent implements OnInit {
-
+  FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
@@ -30,7 +32,8 @@ export class EmailSetupComponent implements OnInit {
     private router: Router,
     private modalService: NgbModal,
     private EmailTemplateService: EmailTemplateService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private permissionService: PermissionService
   ) { }
 
   ngOnInit(): void {
@@ -122,6 +125,8 @@ export class EmailSetupComponent implements OnInit {
   }
 
   CreatInvitations() {
+    if(!this.permissionService.can(FORM_IDS.INVITATION, 'write'))
+      return;
     this.router.navigate(['/setup/create-invitation']);
   }
 

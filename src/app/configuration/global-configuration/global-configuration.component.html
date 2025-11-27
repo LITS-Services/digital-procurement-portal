@@ -19,10 +19,14 @@
                                 <i class="ft-arrow-left"></i></button>
                             <span class="vl"></span>
                             <button type="button" class="btn btn-sm cstm-ui-table-btn"
-                                ngbTooltip="Create new Global Configuration" (click)="openEmpDetails()">
+                                ngbTooltip="Create new Global Configuration" (click)="openEmpDetails()"
+                                appPermission [appPermFormId]="FORM_IDS.GLOBAL_CONFIGURATION"
+                                [appPermDisable]="'write'">
                                 <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
                             </button>
-                            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()">
+                            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()"
+                            appPermission [appPermFormId]="FORM_IDS.GLOBAL_CONFIGURATION"
+                            [appPermDisable]="'write'">
                                 <i class="ft-edit"></i><label class="ml-1 mt-1">Update</label>
                             </button>
 

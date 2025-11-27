@@ -41,6 +41,8 @@
               </button>
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
+              appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                [appPermDisable]="'read'"
                 (click)="onView()">
                 <i class="ft-eye"></i><label class="ml-1 mt-1">View</label>
               </button>
@@ -171,6 +173,8 @@
               <div class="d-flex justify-content-around flex-column">
 
                 <button class="btn popover-btn btn-sm m-1" ngbTooltip="Approval History"
+                appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                [appPermDisable]="'read'"
                   (click)="openApprovalHistoryModal(row)">
                   <span class="popover-icon"> <i class="ft-list"></i> </span>
                   Approval History
@@ -178,7 +182,9 @@
 
                 <!-- If PR is completed, show active button -->
                 <button *ngIf="row.requestStatus === 'Completed' && row.isInventoryTransfer !== true; else rfqDisabled"
-                  class="btn popover-btn btn-sm m-1" ngbTooltip="Generate RFQ" (click)="generateRfq(row)">
+                  class="btn popover-btn btn-sm m-1" ngbTooltip="Generate RFQ" (click)="generateRfq(row)"
+                  appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                  [appPermDisable]="'write'">
                   <span class="popover-icon"><i class="ft-file-text"></i></span>
                   Generate RFQ
                 </button>
@@ -209,7 +215,9 @@
                 </ng-template> -->
 
                 <button *ngIf="row.requestStatus === 'Completed' && row.isInventoryTransfer !== true; else selectVendorDisabled"
-                  class="btn popover-btn btn-sm m-1" ngbTooltip="Select Final Vendor" (click)="selectFinalVendor(row)">
+                  class="btn popover-btn btn-sm m-1" ngbTooltip="Select Final Vendor" (click)="selectFinalVendor(row)"
+                  appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                  [appPermDisable]="'write'">
                   <span class="popover-icon"><i class="ft-user-check"></i></span>
                   Select Final Vendor
                 </button>
@@ -237,7 +245,9 @@
                   </button>
                 </ng-template> -->
                 <button *ngIf="row.requestStatus === 'Completed' && row.isInventoryTransfer !== true; else showDisabled"
-                  class="btn popover-btn btn-sm m-1" ngbTooltip="Create Purchase Order" (click)="createPO(row)">
+                  class="btn popover-btn btn-sm m-1" ngbTooltip="Create Purchase Order" (click)="createPO(row)"
+                  appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                  [appPermDisable]="'write'">
                   <span class="popover-icon"><i class="ft-shopping-cart"></i></span>
                   Create Purchase Order
                 </button>
@@ -253,7 +263,9 @@
                 
                 <button *ngIf="row.requestStatus === 'Completed'; else inventoryTransferWaitingTemplate" 
                 class="btn popover-btn btn-sm m-1" ngbTooltip="Create Inventory Transfer"
-                  (click)="openPRInventoryManagement(row)">
+                  (click)="openPRInventoryManagement(row)"
+                  appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                  [appPermDisable]="'write'">
                   <span class="popover-icon"> <i class="ft-repeat"></i> </span>
                   Inventory Transfer
                 </button>
