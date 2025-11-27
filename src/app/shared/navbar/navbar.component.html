@@ -8,10 +8,10 @@
         <i class="ft-menu font-medium-3"></i>
       </div>
       <ul class="navbar-nav" (clickOutside)="toggleSearchOpenClass(false)">
-        <li class="nav-item mr-1 d-none d-lg-block">
+        <!-- <li class="nav-item mr-1 d-none d-lg-block">
           <a class="nav-link apptogglefullscreen" id="navbar-fullscreen" href="javascript:;" appToggleFullscreen
             (click)="ToggleClass()"><i class=" {{toggleClass}} font-medium-3"></i></a>
-        </li>
+        </li> -->
       <li class="nav-item entity-switcher" ngbDropdown #entityDd="ngbDropdown" (openChange)="entityOpen = $event">
         <button class="entity-trigger" ngbDropdownToggle title="Switch entity/company">
           <!-- label first -->
