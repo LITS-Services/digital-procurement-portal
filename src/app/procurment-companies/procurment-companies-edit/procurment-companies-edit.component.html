@@ -10,112 +10,185 @@
       </div>
 
       <!-- Action Pane -->
-      <div class="card cstm-ui-card">
-        <div class="row">
-          <div class="col-md-6">
-            <button class="btn btn-lg mr-1" type="button" (click)="goBack()"><i class="ft-arrow-left"></i></button>
-            <span class="vl"></span>
-            <button type="submit" class="btn btn-sm cstm-ui-table-btn" form="companyForm">
-              <i class="ft-plus"></i><label class="ml-1 mt-1">Save</label>
+      <div class="card cstm-ui-card mb-2">
+        <div class="row align-items-center">
+          <div class="col-md-6 align-items-center">
+            <button class="btn btn-lg mr-1" type="button" (click)="goBack()">
+              <i class="ft-arrow-left"></i>
             </button>
-            <button type="reset" class="btn btn-sm cstm-ui-table-btn" (click)="onReset()">
-              <i class="ft-refresh-ccw"></i><label class="ml-1 mt-1">Reset</label>
+            <span class="vl"></span>
+
+            <button type="submit" class="btn btn-sm cstm-ui-table-btn ml-2" form="companyForm">
+              <i class="ft-plus"></i>
+              <label class="ml-1 mt-1">Save</label>
+            </button>
+
+            <button type="reset" class="btn btn-sm cstm-ui-table-btn ml-1" (click)="onReset()">
+              <i class="ft-refresh-ccw"></i>
+              <label class="ml-1 mt-1">Reset</label>
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Form Card -->
-      <div class="card">
-        <div class="card-body">
+      <!-- Main Form Card -->
+      <div class="card p-2">
+       
           <form [formGroup]="companyForm" id="companyForm" (ngSubmit)="onSubmit()">
+
+            <!-- Top: Company details + Logo -->
             <div class="form-row">
 
-              <!-- <div class="col-lg-4 col-md-4 col-sm-6">
-                <div class="form-group mb-2">
-                  <label>ID</label>
-                  <input type="number" formControlName="id" class="form-control" placeholder="Enter ID" />
-                </div>
-              </div> -->
-
-              <!-- <div class="col-lg-4 col-md-4 col-sm-6">
-                <div class="form-group mb-2">
-                  <label>Company GUID</label>
-                  <input type="text" formControlName="companyGUID" class="form-control" placeholder="Enter GUID" disabled/>
-                </div>
-              </div> -->
-
-              <div class="col-lg-4 col-md-4 col-sm-6">
-                <div class="form-group mb-2">
-                  <label>Name</label>
-                  <input type="text" formControlName="name" class="form-control" placeholder="Enter Company Name" />
-                </div>
-              </div>
-
-              <div class="col-lg-6 col-md-6 col-sm-12">
-                <div class="form-group mb-2">
-                  <label>Logo</label>
-                  <input type="file" (change)="onFileSelect($event)" class="form-control cstm-logo-div" />
-                  <div *ngIf="previewUrl" class="mt-2">
-                    <img [src]="previewUrl" alt="Logo Preview" width="120" class="img-thumbnail" />
+              <!-- Left: Company details -->
+              <div class="col-lg-8 col-md-7 col-sm-12 mb-3">
+                <div class="rounded cstm-inner-card h-100 p-3">
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <h6 class="mb-1">Company details</h6>
+                    </div>
                   </div>
-                  <div *ngIf="!previewUrl && existingLogo" class="mt-2">
-                    <img [src]="existingLogo" alt="Existing Logo" width="120" class="img-thumbnail" />
+
+                  <div class="form-row mt-2">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                      <div class="form-group mb-2">
+                        <label>Name</label>
+                        <input
+                          type="text"
+                          formControlName="name"
+                          class="form-control"
+                          placeholder="Enter Company Name" />
+                      </div>
+                    </div>
+
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                      <div class="form-group mb-2">
+                        <label>Status</label>
+                        <select formControlName="isDeleted" class="form-control">
+                          <option [value]="false">Active</option>
+                          <option [value]="true">Inactive</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <!-- Optional fields (uncomment if you add in TS) -->
+                    <!--
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                      <div class="form-group mb-2">
+                        <label>Default Currency</label>
+                        <select class="form-control">
+                          <option>PKR - Pakistani Rupee</option>
+                          <option>USD - US Dollar</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="col-lg-6 col-md-6 col-sm-12">
+                      <div class="form-group mb-2">
+                        <label>Email</label>
+                        <input type="email" class="form-control" placeholder="company@email.com" />
+                      </div>
+                    </div>
+                    -->
+
+                  </div>
+
+                  <div class="mt-2">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-2">
+                      <div>
+                        <button class="btn btn-primary mt-2 mb-1 mt-md-0" type="button" (click)="openAddAddressModal()">
+                          <i class="ft-plus"></i>
+                          <span class="ml-1">Add Address</span>
+                        </button>
+                      </div>
+                  
+                    </div>
+                  
+                    <div class="table-responsive" *ngIf="addresses.length > 0; else noAddresses">
+                      <table class="table table-sm pro-table mb-0">
+                        <thead>
+                          <tr>
+                            <th>Country</th>
+                            <th class="text-center">City</th>
+                            <th>Address</th>
+                            <th class="text-center" style="width: 110px;">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let addr of addresses; let i = index">
+                            <td>{{ addr.country }}</td>
+                            <td class="text-center">{{ addr.city }}</td>
+                            <td>{{ addr.address }}</td>
+                            <td class="text-center">
+                              <button type="button" class="btn btn-sm btn-outline-primary mr-1" (click)="editAddress(i)">
+                                <i class="ft-edit"></i>
+                              </button>
+                              <button type="button" class="btn btn-sm btn-outline-danger" (click)="deleteAddress(i)">
+                                <i class="ft-trash"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  
+                    <ng-template #noAddresses>
+                      <div class="alert alert-light border mt-2 mb-0 py-2 small">
+                        No addresses added yet. Click <strong>Add Address</strong> to create one.
+                      </div>
+                    </ng-template>
                   </div>
                 </div>
               </div>
 
-              <!-- Status Toggle -->
-              <div class="col-lg-4 col-md-4 col-sm-6">
-                <div class="form-group mb-2">
-                  <label>Status</label>
-                  <select formControlName="isDeleted" class="form-control">
-                    <option [value]="false">Active</option>
-                    <option [value]="true">Inactive</option>
-                  </select>
+              <!-- Right: Logo -->
+              <div class="col-lg-4 col-md-5 col-sm-12 mb-3">
+                <div class="form-group mb-2 d-flex flex-column align-items-center">
+                  <label class="mb-1">Logo</label>
+              
+                  <!-- Circle upload button -->
+                  <label class="logo-upload-circle" [ngClass]="{ 'has-image': previewUrl || existingLogo }">
+                    <input type="file" (change)="onFileSelect($event)" class="d-none" />
+              
+                    <!-- When no image selected -->
+                    <ng-container *ngIf="!previewUrl && !existingLogo">
+                      <i class="ft-image text-muted"></i>
+                      <span class="logo-upload-text">Upload</span>
+                    </ng-container>
+              
+                    <!-- When image selected / existing -->
+                    <ng-container *ngIf="previewUrl || existingLogo">
+                      <img [src]="previewUrl || existingLogo" alt="Logo" class="logo-upload-img" />
+              
+                      <!-- Hover overlay -->
+                      <div class="logo-upload-overlay">
+                        <span class="logo-upload-overlay-text">
+                          <i class="ft-upload mr-1"></i>change image
+                        </span>
+                      </div>
+                    </ng-container>
+                  </label>
+              
+                  <small class="text-muted mt-2">
+                    PNG / JPG up to 2MB.
+                  </small>
                 </div>
               </div>
-              <div class="col-12 mt-3">
-                <button class="btn btn-primary" type="button" (click)="openAddAddressModal()">
-                  <i class="ft-plus"></i> Add Address
-                </button>
-              </div>
 
-              <div class="col-12 mt-2" *ngIf="addresses.length > 0">
-                <table class="table table-bordered table-sm">
-                  <thead>
-                    <tr>
-                      <th>Country</th>
-                      <th>City</th>
-                      <th>Address</th>
-                      <th style="width:100px;">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let addr of addresses; let i = index">
-                      <td>{{ addr.country }}</td>
-                      <td>{{ addr.city }}</td>
-                      <td>{{ addr.address }}</td>
-                      <td>
-                        <button type="button" class="btn btn-sm btn-info mr-1" (click)="editAddress(i)">
-                          <i class="ft-edit"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger" (click)="deleteAddress(i)">
-                          <i class="ft-trash"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+
             </div>
+
+            <!-- Addresses Section -->
+      
+
+
           </form>
-        </div>
+        
       </div>
     </div>
   </div>
 </section>
 
+<!-- Address Modal -->
 <ng-template #addressModal let-modal>
   <div class="modal-header">
     <h5 class="modal-title text-white">
@@ -128,23 +201,23 @@
 
   <div class="modal-body">
     <form [formGroup]="addressForm">
-      <div class="form-group">
+      <div class="form-group mb-2">
         <label>Country</label>
         <input formControlName="country" class="form-control" />
       </div>
-      <div class="form-group">
+      <div class="form-group mb-2">
         <label>City</label>
         <input formControlName="city" class="form-control" />
       </div>
-      <div class="form-group">
+      <div class="form-group mb-0">
         <label>Address</label>
-        <textarea formControlName="address" class="form-control"></textarea>
+        <textarea formControlName="address" class="form-control" rows="3"></textarea>
       </div>
     </form>
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Close</button>
-    <button type="button" class="btn btn-primary" (click)="saveAddress(modal)">Save</button>
+    <button type="button" class="btn btn-secondary btn-sm" (click)="modal.dismiss()">Close</button>
+    <button type="button" class="btn btn-primary btn-sm" (click)="saveAddress(modal)">Save</button>
   </div>
 </ng-template>

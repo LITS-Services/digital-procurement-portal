@@ -9,3 +9,123 @@
      width: 80%;
 }
 
+/* ===== Round logo upload ===== */
+.logo-upload-circle {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  border: 2px dashed #d1d5db;
+  background-color: #f9fafb;
+  color: #6b7280;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.2s ease-in-out;
+}
+
+.logo-upload-circle i {
+  font-size: 20px;
+  margin-bottom: 2px;
+}
+
+.logo-upload-text {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.logo-upload-circle:hover {
+  border-color: #2563eb;
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+
+/* Image mode */
+.logo-upload-circle.has-image {
+  border-style: solid;
+  border-color: #d1d5db;
+  background-color: #ffffff;
+  padding: 0;
+}
+
+.logo-upload-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: filter 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+/* Hover overlay on image */
+.logo-upload-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(37, 99, 235, 0.12);
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.logo-upload-overlay-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: #1d4ed8;
+  background: #e0e7ff;
+  padding: 4px 8px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.logo-upload-circle.has-image:hover .logo-upload-overlay {
+  opacity: 1;
+}
+
+/* Slight blue-tint effect on hover */
+.logo-upload-circle.has-image:hover .logo-upload-img {
+  filter: brightness(0.9) hue-rotate(210deg) saturate(1.2);
+  transform: scale(1.02);
+}
+
+
+.pro-table {
+    border: 1px solid #d2d6e1;
+    border-radius: 8px;
+    font-size: 13px;
+    overflow: hidden;
+    color: #2d2f33;
+}
+
+.pro-table thead th {
+    background: #f4f6fb;
+    border-bottom: 2px solid #c7ccdb !important;
+    font-weight: 600;
+    padding: 10px 12px;
+    color: #3a3d42;
+    white-space: nowrap;
+}
+
+.pro-table tbody tr td {
+    padding: 9px 12px;
+    border-top: 1px solid #e4e6ee;
+    background: #ffffff;
+}
+
+.pro-table tbody tr:hover td {
+    background: #f8f9fc;
+}
+
+.pro-table tbody tr td:last-child,
+.pro-table thead th:last-child {
+    font-weight: 600;
+}
+
+.pro-table td, .pro-table th {
+    vertical-align: middle !important;
+}

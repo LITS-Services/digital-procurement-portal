@@ -85,18 +85,25 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
     });
   }
 
-  onFileSelect(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      this.selectedFile = input.files[0];
+onFileSelect(event: Event) {
+  const input = event.target as HTMLInputElement;
 
-      const reader = new FileReader();
-      reader.onload = () => this.previewUrl = reader.result;
-      reader.readAsDataURL(this.selectedFile);
+  if (input.files && input.files[0]) {
+    this.selectedFile = input.files[0];
 
-      this.companyForm.patchValue({ logo: this.selectedFile });
-    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previewUrl = reader.result as string;
+      this.existingLogo = null; 
+      this.cdr.detectChanges();
+    };
+
+    reader.readAsDataURL(this.selectedFile);
+
+    // if you still want to store File in the form:
+    this.companyForm.patchValue({ logo: this.selectedFile });
   }
+}
 
   //   onSubmit() {
   //     if (this.companyForm.invalid) return;
