@@ -68,3 +68,24 @@
   background-color: rgb(167, 167, 167);
   border-radius: 999px;
 }
+
+.cell-ellipsis {
+  display: block;      
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.pr-select{
+    height: 38px !important;
+    font-size: 13px !important; 
+    width: 100% !important;
+}
+
+.disabled-dropdown {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none; // avoids opening dropdown via click
+}

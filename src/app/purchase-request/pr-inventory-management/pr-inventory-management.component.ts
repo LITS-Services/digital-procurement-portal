@@ -108,23 +108,30 @@ export class PrInventoryManagementComponent implements OnInit {
       }
     });
   }
-  onCompanyChange(itemIndex: number) {
-    const fg = this.itemForms.at(itemIndex) as FormGroup;
-    const companyId = +fg.get('procurementCompanyId')?.value;
-    const addressControl = fg.get('procurementCompanyAddressDetailsId');
+onCompanyChange(itemIndex: number) {
+  const fg = this.itemForms.at(itemIndex) as FormGroup;
+  const companyId = +fg.get('procurementCompanyId')?.value;
+  const addressControl = fg.get('procurementCompanyAddressDetailsId');
 
-    // Reset address selection
-    addressControl?.reset();
-    addressControl?.disable();
+  addressControl?.reset();
+  addressControl?.disable();
 
-    if (!companyId) return;
+  fg.get('addresses')?.setValue([]);
 
-    this.lookupService.getAddressByProcCompany(companyId).subscribe((res: any[]) => {
-      fg.get('addresses')?.setValue(res); // store addresses per row
-      addressControl?.enable();
-      this.cdr.detectChanges();
-    });
-  }
+  if (!companyId) return;
+
+  this.lookupService.getAddressByProcCompany(companyId).subscribe((res: any[]) => {
+    fg.get('addresses')?.setValue(res); // store addresses per row
+    addressControl?.enable();
+    this.cdr.detectChanges();
+  });
+}
+
+isAddressDisabled(index: number): boolean {
+  const fg = this.itemForms.at(index) as FormGroup;
+  const ctrl = fg.get('procurementCompanyAddressDetailsId');
+  return !ctrl || ctrl.disabled;
+}
 
 
   onSubmit(): void {
@@ -151,5 +158,38 @@ export class PrInventoryManagementComponent implements OnInit {
   closeDialog(): void {
     this.activeModal.close();
   }
+
+
+getCompanyName(id: number | null | undefined): string {
+  if (!id) return '';
+  const found = this.procCompanies?.find(c => c.id === id);
+  return found?.description || '';
+}
+
+setCompany(rowIndex: number, company: any | null): void {
+  const fg = this.itemForms.at(rowIndex) as FormGroup;
+  const ctrl = fg.get('procurementCompanyId');
+
+  const id = company ? company.id : null;
+  ctrl?.setValue(id);
+
+  // Call your existing logic (will reset + reload addresses)
+  this.onCompanyChange(rowIndex);
+}
+setAddress(rowIndex: number, address: any | null): void {
+  if (this.isAddressDisabled(rowIndex)) return; // safety
+
+  const ctrl = this.itemForms.at(rowIndex).get('procurementCompanyAddressDetailsId');
+  const id = address ? address.id : null;
+  ctrl?.setValue(id);
+}
+
+getAddressDescription(index: number): string {
+  const addresses = this.itemForms.at(index).get('addresses')?.value || [];
+  const selectedId = this.itemForms.at(index).get('procurementCompanyAddressDetailsId')?.value;
+
+  const found = addresses.find((a: any) => a.id === selectedId);
+  return found?.description || '';
+}
 
 }

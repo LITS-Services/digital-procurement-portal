@@ -57,75 +57,141 @@
           [footerHeight]="0" [rowHeight]="'auto'" [limit]="5">
 
           <!-- Sr No -->
-          <ngx-datatable-column name="Sr. No." prop="srNo" [width]="70">
+          <ngx-datatable-column name="Sr. No." prop="srNo" [width]="40">
           </ngx-datatable-column>
 
           <!-- Type -->
-          <ngx-datatable-column name="Type" prop="type">
+          <ngx-datatable-column name="Type" prop="type" [width]="70">
+               <ng-template let-row="row" ngx-datatable-cell-template>
+                <span class="cell-ellipsis" [ngbTooltip]="row.type" container="body">
+                  {{ row.type }}
+                </span>
+            </ng-template>
           </ngx-datatable-column>
 
           <!-- Item -->
-          <ngx-datatable-column name="Item" prop="item">
+          <ngx-datatable-column name="Item" prop="item" [width]="150">
+                 <ng-template let-row="row" ngx-datatable-cell-template>
+                <span class="cell-ellipsis" [ngbTooltip]="row.item" container="body">
+                  {{ row.item }}
+                </span>
+            </ng-template>
           </ngx-datatable-column>
 
           <!-- Description -->
           <ngx-datatable-column name="Description" prop="description">
             <ng-template let-row="row" ngx-datatable-cell-template>
-              {{ row.description }}
+                <span class="cell-ellipsis" [ngbTooltip]="row.description" container="body">
+                  {{ row.description }}
+                </span>
             </ng-template>
           </ngx-datatable-column>
 
           <!-- Total Quantity -->
-          <ngx-datatable-column name="Total Quantity" prop="orderQuantity">
+          <ngx-datatable-column name="Quantity" prop="orderQuantity" [width]="70">
             <ng-template let-row="row" ngx-datatable-cell-template>
               {{ row.orderQuantity }}
             </ng-template>
           </ngx-datatable-column>
 
           <!-- Amount -->
-          <ngx-datatable-column name="Amount" prop="amount">
+          <ngx-datatable-column name="Amount" prop="amount" [width]="70">
             <ng-template let-row="row" ngx-datatable-cell-template>
               {{ row.amount | number }}
             </ng-template>
           </ngx-datatable-column>
 
           <!-- Remarks -->
-          <ngx-datatable-column name="Remarks" prop="remarks">
+          <ngx-datatable-column name="Remarks" prop="remarks" [width]="150">
             <ng-template let-row="row" ngx-datatable-cell-template>
-              {{ row.remarks }}
+                <span class="cell-ellipsis" [ngbTooltip]="row.remarks" container="body">
+                  {{ row.remarks }}
+                </span>
             </ng-template>
           </ngx-datatable-column>
 
-          <ngx-datatable-column name="Attachments">
+   
+          <ngx-datatable-column name="From Company" [width]="170">
+            <ng-template let-row="row" let-i="rowIndex" ngx-datatable-cell-template>
+          
+              <div class="dropdown filter-dropdown w-100" [container]="'body'" ngbDropdown>
+                <button
+                  class="btn btn-sm filter-btn pr-select dropdown-toggle d-flex align-items-center justify-content-between w-100 pr-cell-dropdown"
+                  ngbDropdownToggle
+                  [ngbTooltip]="getCompanyName(itemForms.at(i).get('procurementCompanyId')?.value) || 'From Company'"
+                  container="body">
+
+                  <span class="filter-label ellipsis-label">
+                    {{ getCompanyName(itemForms.at(i).get('procurementCompanyId')?.value) || 'From Company' }}
+                  </span>
+                        <i class="ft-chevron-down ml-1"></i>
+                </button>
+          
+                <div class="dropdown-menu" ngbDropdownMenu>
+                  <button class="dropdown-item border-bottom" (click)="setCompany(i, null)">
+                  <i class="fa fa-times mr-1"></i>  Clear
+                  </button>
+          
+                  <button class="dropdown-item" *ngFor="let c of procCompanies" (click)="setCompany(i, c)">
+                    {{ c.description }}
+                  </button>
+                </div>
+              </div>
+          
+            </ng-template>
+          </ngx-datatable-column>
+
+
+            <ngx-datatable-column name="From Address" [width]="140">
+              <ng-template let-row="row" let-i="rowIndex" ngx-datatable-cell-template>
+
+                <div class="dropdown filter-dropdown w-100"
+                    ngbDropdown
+                    [container]="'body'">
+
+                  <button
+                    class="btn btn-sm filter-btn pr-select dropdown-toggle d-flex align-items-center justify-content-between w-100 pr-cell-dropdown"
+                    ngbDropdownToggle
+                    [disabled]="isAddressDisabled(i)"
+                    [ngClass]="{ 'disabled-dropdown': isAddressDisabled(i) }"
+                    [ngbTooltip]="isAddressDisabled(i) ? 'Address' : (getAddressDescription(i) || 'Address')"
+                    container="body">
+
+                    <span class="filter-label ellipsis-label">
+                      {{ isAddressDisabled(i)
+                          ? 'Address'
+                          : (getAddressDescription(i) || 'Address') }}
+                    </span>
+
+                    <i class="ft-chevron-down ml-1"></i>
+                  </button>
+
+                  <!-- Only show menu when enabled -->
+                  <div class="dropdown-menu" ngbDropdownMenu *ngIf="!isAddressDisabled(i)">
+
+                    <button *ngIf="itemForms.at(i).get('addresses')?.value?.length === 0" class="dropdown-item text-muted">
+                        No Matching Address
+                    </button>
+
+                    <button
+                      class="dropdown-item"
+                      *ngFor="let a of itemForms.at(i).get('addresses')?.value"
+                      (click)="setAddress(i, a)">
+                      {{ a.description }}
+                    </button>
+                  </div>
+                </div>
+
+              </ng-template>
+            </ngx-datatable-column>
+
+
+            <ngx-datatable-column name="Attachments" [width]="100">
             <ng-template let-row="row" ngx-datatable-cell-template>
               <a matTooltip="Attachment" class="row-action-attachment" (click)="openNewEntityModal(row)"
                 [ngClass]="{'disabled': !row.hasAttachment}">
                 <i style="font-size: 1.5rem;" class="ft-paperclip mr-1"></i>
               </a>
-            </ng-template>
-          </ngx-datatable-column>
-
-          <!-- Procurement Company -->
-          <ngx-datatable-column name="Procurement Company">
-            <ng-template let-row="row" let-i="rowIndex" ngx-datatable-cell-template>
-              <select class="form-control" [formControl]="itemForms.at(i).get('procurementCompanyId')"
-                (change)="onCompanyChange(i, +$event.target.value)">
-                <option value="">Select Company</option>
-                <option *ngFor="let c of procCompanies" [value]="c.id">{{ c.description }}</option>
-              </select>
-            </ng-template>
-          </ngx-datatable-column>
-
-          <!-- Address -->
-          <ngx-datatable-column name="Address">
-            <ng-template let-row="row" let-i="rowIndex" ngx-datatable-cell-template>
-              <select class="form-control" [formControl]="itemForms.at(i).get('procurementCompanyAddressDetailsId')">
-                <option value="">Select Address</option>
-                <option *ngFor="let a of itemForms.at(i).get('addresses')?.value" [value]="a.id">
-                  {{ a.description }}
-                </option>
-              </select>
-
             </ng-template>
           </ngx-datatable-column>
         </ngx-datatable>
