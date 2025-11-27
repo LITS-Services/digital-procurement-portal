@@ -77,6 +77,13 @@
   text-overflow: ellipsis;
 }
 
+.pr-drpdown{
+    display: block;      
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .pr-select{
     height: 38px !important;

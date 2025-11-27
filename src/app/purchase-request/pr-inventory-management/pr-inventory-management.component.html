@@ -174,9 +174,10 @@
                     </button>
 
                     <button
-                      class="dropdown-item"
+                      class="dropdown-item pr-drpdown"
                       *ngFor="let a of itemForms.at(i).get('addresses')?.value"
-                      (click)="setAddress(i, a)">
+                      (click)="setAddress(i, a)"
+                      [ngbTooltip]="a.description">
                       {{ a.description }}
                     </button>
                   </div>

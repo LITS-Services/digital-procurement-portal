@@ -24,7 +24,7 @@
   justify-content: center;
   cursor: pointer;
   overflow: hidden;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease;
 }
 
 .logo-upload-circle i {
@@ -89,7 +89,7 @@
 
 /* Slight blue-tint effect on hover */
 .logo-upload-circle.has-image:hover .logo-upload-img {
-  filter: brightness(0.9) hue-rotate(210deg) saturate(1.2);
+  filter: blur(2px);
   transform: scale(1.02);
 }
 
