@@ -1,10 +1,10 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import * as Chartist from 'chartist';
 import { ChartType, ChartEvent } from "ng-chartist";
 import ChartistTooltip from 'chartist-plugin-tooltips-updated';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
-import { DashboardService } from 'app/shared/services/dashboard.service';
+import { DashboardService, RfqPipelineGraphPoint } from 'app/shared/services/dashboard.service';
 import { FirebaseMessagingService } from '../../firebase-messaging.service';
 import { ToastrService } from 'ngx-toastr';
 import { ms } from 'date-fns/locale';
@@ -70,6 +70,7 @@ export type SpendChartOptions = {
   grid: ApexGrid;
   theme: ApexTheme;
   legend:ApexLegend;
+  
 };
 
 export type SpendDonutOptions = {
@@ -105,7 +106,7 @@ export type VendorDeliveryChartOptions = {
   templateUrl: './dashboard1.component.html',
   styleUrls: ['./dashboard1.component.scss'],
 })
-export class Dashboard1Component implements OnInit {
+export class Dashboard1Component implements OnInit,AfterViewInit {
   prCounts!: PurchaseRequestsCountVM;
   rfqCounts!: QuotationRequestsCountVM;
 
@@ -156,7 +157,8 @@ export class Dashboard1Component implements OnInit {
   public spendChartOptions!: Partial<SpendChartOptions>;
   public spendDonutOptions!: Partial<SpendDonutOptions>;
   public vendorDeliveryOptions!: Partial<VendorDeliveryChartOptions>;
-
+    public isRfqChartReady = false;
+   rfqTooltipDates: string[] = [];
   constructor(
     private http: HttpClient,
     public translate: TranslateService,
@@ -164,7 +166,8 @@ export class Dashboard1Component implements OnInit {
     private messagingService: FirebaseMessagingService,
     private toaster: ToastrService,
     private cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private ngZone: NgZone
   ) {
     this.translate.onLangChange.subscribe(() => {
       // Check if the current language is Arabic
@@ -181,7 +184,20 @@ export class Dashboard1Component implements OnInit {
     this.initSpendChart();
     this.initSpendDonut();
     this.initVendorDeliveryChart();
+    
   }
+
+ngAfterViewInit(): void {
+  // Ensure the chart DOM is fully laid out before we feed data
+  this.ngZone.runOutsideAngular(() => {
+    requestAnimationFrame(() => {
+      this.ngZone.run(() => {
+        this.setChartRange('month');
+      });
+    });
+  });
+}
+
   loadPurchaseRequestsCounts(): void {
     const userId = localStorage.getItem('userId');
     const entityId = Number(localStorage.getItem('selectedCompanyId'));
@@ -277,12 +293,28 @@ export class Dashboard1Component implements OnInit {
         padding: { left: 8, right: 12 },
       },
       tooltip: {
+        shared: true,
+        intersect: false,
+        x: {
+          formatter: (val: number, opts?: any): string => {
+            const idx = opts?.dataPointIndex;
+
+            if (idx != null && this.rfqTooltipDates[idx]) {
+              const raw = this.rfqTooltipDates[idx];
+
+              // Remove time part — split by space and take the date only
+              return raw.split(' ')[0];
+            }
+
+            return String(val);
+          },
+        },
         y: {
           formatter: (val: number) => `${val.toLocaleString()} RFQs`,
         },
       },
-        legend: {
-        horizontalAlign: "left",
+      legend: {
+        horizontalAlign: 'left',
       },
       theme: {
         mode: 'light',
@@ -290,114 +322,122 @@ export class Dashboard1Component implements OnInit {
       },
     };
 
-    // default view
-    this.setChartRange('month');
   }
 
-  changeRange(range: 'month' | 'quarter' | 'year'): void {
-    if (this.activeRange === range) return;
-    this.setChartRange(range);
+changeRange(range: 'month' | 'quarter' | 'year'): void {
+  this.setChartRange(range);
+}
+private setChartRange(range: 'month' | 'quarter' | 'year'): void {
+  this.activeRange = range;
+
+  const filterType =
+    range === 'month' ? 1 :
+    range === 'quarter' ? 2 : 3;
+
+  const userId = localStorage.getItem('userId') ?? '';
+  const entity = localStorage.getItem('selectedCompanyId')
+  var entityId;
+  if(entity === 'All'){
+    entityId = null
+  }
+  else{
+    entityId = Number(localStorage.getItem('selectedCompanyId'));
   }
 
-  private setChartRange(range: 'month' | 'quarter' | 'year'): void {
-    this.activeRange = range;
 
-    let categories: string[] = [];
-    let series: any[] = [];
+  this.dashboardService
+    .getRfqPipelineGraph(userId, entityId, filterType)
+    .subscribe({
+      next: (rows: RfqPipelineGraphPoint[]) => {
+        const categories: string[] = [];
+        const totalRfq: number[] = [];
+        const rfqQuotation: number[] = [];
+        const selectedRfq: number[] = [];
+         this.rfqTooltipDates = rows.map(r => r.groupData);
 
-    switch (range) {
-      case 'month':
-        categories = Array.from({ length: 30 }, (_, i) => `Day ${i + 1}`);
+        rows.forEach((row, index) => {
+          let label: string;
 
-        series = [
-          {
-            name: 'Total RFQs',
-            data: [
-              5, 8, 6, 10, 7, 9, 11, 12, 10, 9, 8, 7, 6, 9, 11, 13, 12, 10, 9, 8, 7, 9, 10, 12, 11,
-              13, 14, 12, 10, 9,
-            ],
-          },
-          {
-            name: 'RFQs with Quotation',
-            data: [
-              3, 5, 4, 7, 5, 6, 8, 9, 7, 6, 6, 5, 4, 6, 7, 9, 8, 7, 6, 6, 5, 6, 7, 8, 7, 9, 9, 8, 7,
-              6,
-            ],
-          },
-          {
-            name: 'Selected RFQs',
-            data: [
-              1, 2, 1, 3, 2, 2, 3, 4, 3, 3, 2, 2, 1, 2, 3, 4, 3, 3, 2, 2, 2, 2, 3, 3, 3, 4, 4, 3, 3,
-              2,
-            ],
-          },
-        ];
-        break;
+          if (filterType === 1) {
+             label = this.formatDayLabel(row.groupData);
+          } else if (filterType === 2) {
+            label = this.formatWeekLabel(row.groupData);
+          } else {
+            // YEAR
+            label = this.formatMonthLabel(row.groupData);
+          }
 
-      case 'quarter':
-        // 12 weeks
-        categories = Array.from({ length: 12 }, (_, i) => `W${i + 1}`);
+          categories.push(label);
+          totalRfq.push(row.totalRfq);
+          rfqQuotation.push(row.rfqQuotation);
+          selectedRfq.push(row.quotesSelected);
+        });
 
-        series = [
-          {
-            name: 'Total RFQs',
-            data: [20, 24, 26, 30, 28, 32, 34, 36, 38, 40, 42, 45],
+        this.spendChartOptions = {
+          ...this.spendChartOptions,
+          series: [
+            {
+              name: 'Total RFQs',
+              data: totalRfq,
+            },
+            {
+              name: 'RFQs with Quotation',
+              data: rfqQuotation,
+            },
+            {
+              name: 'Selected RFQs',
+              data: selectedRfq,
+            },
+          ],
+          xaxis: {
+            ...this.spendChartOptions.xaxis,
+            categories,
           },
-          {
-            name: 'RFQs with Quotation',
-            data: [14, 16, 18, 20, 19, 22, 24, 25, 26, 28, 29, 31],
-          },
-          {
-            name: 'Selected RFQs',
-            data: [6, 7, 8, 9, 8, 10, 11, 12, 13, 14, 15, 16],
-          },
-        ];
-        break;
-
-      case 'year':
-        // 12 months
-        categories = [
-          'Jan',
-          'Feb',
-          'Mar',
-          'Apr',
-          'May',
-          'Jun',
-          'Jul',
-          'Aug',
-          'Sep',
-          'Oct',
-          'Nov',
-          'Dec',
-        ];
-
-        series = [
-          {
-            name: 'Total RFQs',
-            data: [40, 52, 48, 60, 70, 65, 80, 78, 72, 68, 74, 82],
-          },
-          {
-            name: 'RFQs with Quotation',
-            data: [28, 32, 30, 38, 45, 42, 50, 49, 46, 44, 47, 52],
-          },
-          {
-            name: 'Selected RFQs',
-            data: [12, 15, 14, 18, 22, 21, 26, 25, 23, 22, 24, 28],
-          },
-        ];
-        break;
-    }
-
-    this.spendChartOptions = {
-      ...this.spendChartOptions,
-      series,
-      xaxis: {
-        ...this.spendChartOptions.xaxis,
-        categories,
+        };
+        this.isRfqChartReady = true;  
+        this.cdr.detectChanges();
       },
-    };
+      error: (err) => {
+        console.error('Error loading RFQ pipeline graph data', err);
+      },
+    });
+}
+
+private formatWeekLabel(groupData: string): string {
+  const match = groupData.match(/W(\d+)/);
+  if (match) {
+    return `W${match[1]}`;
+  }
+  const parts = groupData.split('-');
+  return parts[parts.length - 1] || groupData;
+}
+
+private formatDayLabel(groupData: string): string {
+  // groupData: "10/26/2025 12:00:00 AM"
+  const d = new Date(groupData);
+
+  if (!isNaN(d.getTime())) {
+    const day = d.getDate(); // 26
+    const monthShort = d.toLocaleString('en-US', { month: 'short' }); // "Oct"
+    return `${day} ${monthShort}`; // "26 Oct"
   }
 
+  // fallback – if parsing fails, just show the raw string
+  return groupData;
+}
+
+private formatMonthLabel(groupData: string): string {
+  // expects "YYYY-MM-00" or "YYYY-MM"
+  const parts = groupData.split('-');
+  if (parts.length >= 2) {
+    const monthNumber = parseInt(parts[1], 10); // "09" → 9
+    if (!isNaN(monthNumber) && monthNumber >= 1 && monthNumber <= 12) {
+      const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return monthNames[monthNumber - 1];
+    }
+  }
+  return groupData;
+}
   private initSpendDonut(): void {
     this.spendDonutOptions = {
       series: [65, 35],

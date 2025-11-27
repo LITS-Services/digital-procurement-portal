@@ -661,13 +661,13 @@
                 <button class="segmented-toggle__btn" [ngClass]="{ 'segmented-toggle__btn--active': activeRange === 'year' }"
                   (click)="changeRange('year')">
                   Year
-  </button>
+                </button>
               </div>
             </div>
 
             <div class="panel-card__body">
             <div id="line-area" class="lineArea">
-              <apx-chart class="apx-chart" [series]="spendChartOptions.series" [chart]="spendChartOptions.chart"
+              <apx-chart *ngIf="isRfqChartReady" class="apx-chart" [series]="spendChartOptions.series" [chart]="spendChartOptions.chart"
                 [xaxis]="spendChartOptions.xaxis" [yaxis]="spendChartOptions.yaxis" [stroke]="spendChartOptions.stroke"
                 [dataLabels]="spendChartOptions.dataLabels" [fill]="spendChartOptions.fill" [grid]="spendChartOptions.grid"
                 [tooltip]="spendChartOptions.tooltip" [theme]="spendChartOptions.theme" [legend]="spendChartOptions.legend">
