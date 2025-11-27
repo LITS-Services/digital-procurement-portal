@@ -39,3 +39,155 @@
 .accordion-section ::ng-deep  .badge-green {
   background-color: #4188f2 !important;
 }
+
+
+
+.company-profile {
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.company-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: #eef2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: #4f46e5;
+}
+
+.company-label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: #66696f;
+}
+
+.text-muted{
+  color: #66696f !important;
+}
+
+.company-title {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.company-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.company-status-pill .status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  margin-right: 6px;
+}
+
+.company-status-onboarded {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+.company-status-onboarded .status-dot {
+  background-color: #16a34a;
+}
+
+/* 🟡 In Process – id 1 */
+.company-status-inprocess {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+.company-status-inprocess .status-dot {
+  background-color: #f59e0b;
+}
+
+.company-status-new {
+  background-color: #e0edff;
+  color: #1d4ed8;
+}
+.company-status-new .status-dot {
+  background-color: #2563eb;
+}
+
+.company-status-default {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+.company-status-default .status-dot {
+  background-color: #9ca3af;
+}
+
+.add-entity-link {
+  font-size: 13px;
+}
+
+/* Entity cards */
+.entity-card {
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  width: 520px;
+  padding: 12px 16px;
+  transition: box-shadow 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+  background-color: #ffffff;
+}
+
+.entity-card:hover {
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.05);
+  border-color: #d1d5db;
+  transform: translateY(-1px);
+}
+
+.entity-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+/* Different colors per entity icon background */
+.entity-avatar--blue {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+
+.entity-name {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.entity-meta i {
+  font-size: 12px;
+}
+
+/* Status pills */
+.entity-status-pill {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.status-in-process {
+  background: #e0edff;
+  color: #1d4ed8;
+}
+
+.status-onboarded {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.status-pending {
+  background: #fef3c7;
+  color: #92400e;
+}

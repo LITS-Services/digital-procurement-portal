@@ -15,6 +15,7 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class CompanyEditComponent implements OnInit {
 
+
   companyId: number | null = null;
   procurementCompanyId: number | null = null;
   companyGUID: string | null = null;
@@ -41,6 +42,12 @@ export class CompanyEditComponent implements OnInit {
   vendorEntityAssociationId: number | null = null;
   submitterId: string = '';
   private modalRef!: NgbModalRef;
+  companyStatusLabel: string | null = null;
+  companyStatusClass: string = '';
+  selectedTab: string = 'general-info';
+
+  associatedEntities: any[] = []; 
+
 
   constructor(
     private router: Router,
@@ -99,6 +106,9 @@ export class CompanyEditComponent implements OnInit {
       }
     });
   }
+selectTab(tabKey: string): void {
+  this.selectedTab = tabKey;
+}
 
 
 
@@ -193,7 +203,8 @@ export class CompanyEditComponent implements OnInit {
             this.vendorId = company.vendorId || '';
             this.companyName = company.name || '';
             this.aboutCompany = company.aboutCompany || '';
-
+            this.companyStatusLabel = company.requestStatus?.status || null;
+             this.companyStatusClass = this.mapCompanyStatusClass(company.requestStatusId);
             // this.vendorCategory = company.purchasingDemographics?.vendorType || '';
             // this.primaryCurrency = company.purchasingDemographics?.primaryCurrency || '';
             // this.lineOfBusiness = company.purchasingDemographics?.lineOfBusiness || '';
@@ -236,16 +247,7 @@ export class CompanyEditComponent implements OnInit {
 
 
 
-            // this.addressList = (company.addresses?.$values || []).map((a: any) => ({
-            //   id: a.id,
-            //   street: a.street,
-            //   city: a.city,
-            //   state: a.state,
-            //   zip: a.zip,
-            //   country: a.country,
-            //   isPrimary: a.isPrimary
-            // }));
-
+  
 
 
 
@@ -281,27 +283,6 @@ export class CompanyEditComponent implements OnInit {
               isPrimary: c.isPrimary
             }));
 
-            // this.attachedFiles = (company.attachments?.$values || []).map((f: any) => ({
-            //   id: f.id,
-            //   fileName: f.fileName,
-            //   format: f.fileFormat,
-            //   fileContent: f.fileContent,
-            //   attachedBy: f.attachedBy,
-            //   remarks: f.remarks,
-            //   attachedAt: f.attachedAt
-            // }));
-
-            // this.attachedFiles = (company.attachments?.$values || []).map((f: any) => ({
-            //   id: f.id,
-            //   fileName: f.fileName,
-            //   format: f.fileFormat,
-            //   fileContent: f.fileContent,
-            //   attachedBy: f.attachedBy,
-            //   remarks: f.remarks,
-            //   attachedAt: f.attachedAt
-            // }));
-            // console.log('Attachments:', this.attachedFiles);
-
 
             this.attachedFiles = (company.attachments || []).map((f: any) => ({
               id: f.id,
@@ -313,6 +294,17 @@ export class CompanyEditComponent implements OnInit {
               attachedAt: f.attachedAt
             }));
 
+                const rawEntities =
+                  company.vendorUserCompanies?.$values || company.vendorUserCompanies || [];
+
+                this.associatedEntities = rawEntities.map((v: any) => ({
+                  name: v.procurementCompany?.name || '',
+                  city: v.procurementCompany?.city || '', // if not in API, will just be blank
+                  country: v.procurementCompany?.country || '', // same here
+                  industry: v.procurementCompany?.industry || '',
+                  statusLabel: v.requestStatus?.status || '',
+                  statusClass: this.mapStatusClass(v.requestStatusId),
+                }));
 
 
             this.isEditMode = true;
@@ -327,6 +319,33 @@ export class CompanyEditComponent implements OnInit {
         }
       });
   }
+
+  mapCompanyStatusClass(statusId: number): string {
+  switch (statusId) {
+    case 12: // Onboarded
+      return 'company-status-onboarded';
+    case 1:  // In process
+      return 'company-status-inprocess';
+    case 8:  // New
+      return 'company-status-new';
+    default:
+      return 'company-status-default';
+  }
+}
+
+  mapStatusClass(statusId: number): string {
+  // adjust mappings as per your CSS / enum
+  switch (statusId) {
+    case 7: // Completed
+      return 'status-onboarded';
+    case 1: // In process
+          return 'status-pending';
+    case 8: // New
+      return 'status-in-process';
+    default:
+      return 'status-default';
+  }
+}
 
   // onActions(action: string): void {
   //   const modalRef = this.modalService.open(CompanyActionsComponent, {

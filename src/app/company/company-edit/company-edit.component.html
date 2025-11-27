@@ -10,8 +10,8 @@
       </div>
 
       <!-- Action Buttons -->
-      <div class="card mb-3">
-        <div class="row p-2">
+      <div class="card cstm-ui-card mb-2">
+        <div class="row">
           <div class="col-md-6">
             <button class="btn btn-lg mr-1" type="button" (click)="goBack()">
               <i class="ft-arrow-left"></i>
@@ -59,185 +59,300 @@
         </div>
       </div>
 
-      <!-- Company Info -->
-      <div class="card">
-        <div class="card-body">
-          <!-- <div *ngIf="isLoading" class="alert alert-info">Loading company data...</div>
-          <div *ngIf="error" class="alert alert-danger">{{ error }}</div> -->
+  <div>
 
-          <div class="accordion-section">
-            <ngb-accordion #accordion="ngbAccordion" [activeIds]="'tab-1,tab-2,tab-3,tab-4,tab-5,tab-6'"
-              [closeOthers]="false">
-              <!-- General Information -->
-              <ngb-panel id="tab-1" title="General Information">
-                <ng-template ngbPanelContent>
-                  <div class="row">
-                    <div class="col-md-12">
+    <!-- Tabs navigation -->
+    <div class="custom-tabs mb-1">
+      <nav>
+        <button
+          (click)="selectTab('general-info')"
+          [ngClass]="{ 'tab-current': selectedTab === 'general-info' }"
+          class="custom-style-tab">
+          <span>GENERAL INFORMATION</span>
+        </button>
 
-                      <p style="font-size: 18px;">
-                        <span style="font-weight:bold ;margin-right:4px;"> Company Name:</span>
-                        <span style="font-size: 16px;">{{ companyName }}</span>
-                      </p>
+        <button
+          (click)="selectTab('addresses')"
+          [ngClass]="{ 'tab-current': selectedTab === 'addresses' }"
+          class="custom-style-tab">
+          <span>ADDRESSES</span>
+        </button>
 
-                      <!-- <label style="font-weight: 700;">Company Name</label> : {{companyName}}
-                      <input type="text" class="form-control" [(ngModel)]="companyName" [disabled]="true"> -->
-                    </div>
-                  </div>
-                </ng-template>
-              </ngb-panel>
+        <button
+          (click)="selectTab('company-contacts')"
+          [ngClass]="{ 'tab-current': selectedTab === 'company-contacts' }"
+          class="custom-style-tab">
+          <span>CONTACT</span>
+        </button>
 
-              <!-- Addresses -->
-              <ngb-panel id="tab-2" title="Addresses">
-                <ng-template ngbPanelContent>
-                  <ngx-datatable [columnMode]="'force'" *ngIf="addressList && addressList.length > 0" class="bootstrap"
-                    [rows]="addressList" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="5">
-                    <ngx-datatable-column [sortable]="false" name="Street" prop="street"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="City" prop="city"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="State" prop="state"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Zip" prop="zip"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Country" prop="country"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Primary">
+        <button
+          (click)="selectTab('purchasing-demo')"
+          [ngClass]="{ 'tab-current': selectedTab === 'purchasing-demo' }"
+          class="custom-style-tab">
+          <span>DEMOGRAPHICS</span>
+        </button>
 
-                      <ng-template let-row="row" ngx-datatable-cell-template>
+        <button
+          (click)="selectTab('bank-details')"
+          [ngClass]="{ 'tab-current': selectedTab === 'bank-details' }"
+          class="custom-style-tab">
+          <span>BANK</span>
+        </button>
 
-                        <i style="font-size: 20px;" class="fa"
-                          [ngClass]="{ 'fa-circle-check': row.isPrimary === true,'fa-circle-xmark': row.isPrimary === false}"></i>
+        <button
+          (click)="selectTab('attachments')"
+          [ngClass]="{ 'tab-current': selectedTab === 'attachments' }"
+          class="custom-style-tab">
+          <span>ATTACHMENTS</span>
+        </button>
 
-                      </ng-template>
+         <button
+          (click)="selectTab('attachments')"
+          [ngClass]="{ 'tab-current': selectedTab === 'attachments' }"
+          class="custom-style-tab">
+          <span>Setup History</span>
+        </button>
 
-                    </ngx-datatable-column>
+         <button
+          (click)="selectTab('approval-history')"
+          [ngClass]="{ 'tab-current': selectedTab === 'approval-history' }"
+          class="custom-style-tab">
+          <span>Approval History</span>
+        </button>
+      </nav>
+    </div>
 
-                  </ngx-datatable>
-                </ng-template>
-              </ngb-panel>
+    <!-- TAB CONTENTS -->
 
-              <!-- Company Contact Details -->
+      <div *ngIf="selectedTab === 'general-info'">
+        <div class="card mt-0 p-3 company-profile">
 
-              <ngb-panel id="tab-3" title="Company Contact Details">
-                <ng-template ngbPanelContent>
-                  <ngx-datatable [columnMode]="'force'" *ngIf="addressList && contactList.length > 0" class="bootstrap"
-                    [rows]="contactList" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="5">
-                    <ngx-datatable-column [sortable]="false" name="Description"
-                      prop="description"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Type" prop="type"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Contact Number"
-                      prop="contactNumber"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Extension" prop="extension"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Primary">
-                      <ng-template let-row="row" ngx-datatable-cell-template>
+          <!-- Top: company header -->
+          <div class="d-flex align-items-center mb-3">
+            <div class="company-avatar mr-3">
+              <i class="ft-briefcase"></i>
+            </div>
 
-                        <i style="font-size: 20px;" class="fa"
-                          [ngClass]="{ 'fa-circle-check': row.isPrimary === true,'fa-circle-xmark': row.isPrimary === false}"></i>
+            <div class="flex-grow-1">
+              <div class="company-label text-uppercase">Company Name</div>
 
-                      </ng-template>
-                    </ngx-datatable-column>
-                  </ngx-datatable>
+              <div class="d-flex flex-wrap align-items-center">
+                <h3 class="mb-0 mr-2 company-title">{{ companyName }}</h3>
 
-                </ng-template>
-              </ngb-panel>
-
-              <!-- Purchasing Demographics -->
-              <ngb-panel id="tab-4" title="Purchasing Demographics">
-                <ng-template ngbPanelContent>
-                  <ngx-datatable [columnMode]="'force'"
-                    *ngIf="purchasingDemographicsList && purchasingDemographicsList.length > 0" class="bootstrap"
-                    [rows]="purchasingDemographicsList" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'"
-                    [limit]="5">
-
-                    <ngx-datatable-column [sortable]="false" name="Vendor Type"
-                      prop="vendorType"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Primary Currency"
-                      prop="primaryCurrency"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Line of Business"
-                      prop="lineOfBusiness"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Employee Responsible"
-                      prop="employeeResponsible"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Note" prop="note"></ngx-datatable-column>
-
-                  </ngx-datatable>
-
-                </ng-template>
-              </ngb-panel>
-
-              <!-- Bank Details -->
-              <ngb-panel id="tab-5" title="Bank Details">
-                <ng-template ngbPanelContent>
-                  <ngx-datatable *ngIf="bankDetailsList && bankDetailsList.length > 0" class="bootstrap"
-                    [rows]="bankDetailsList" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="5"
-                    [columnMode]="'force'" [sortable]="false">
-                    <ngx-datatable-column [sortable]="false" name="Bank Name" prop="bankName"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Branch Name"
-                      prop="branchName"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Branch Address"
-                      prop="branchAddress"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Account Holder"
-                      prop="accountHolderName"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Account Number"
-                      prop="accountNumber"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="IBAN" prop="iban"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="SWIFT/BIC"
-                      prop="swifT_BIC_Code"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Country" prop="country"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Currency" prop="currency"></ngx-datatable-column>
-                  </ngx-datatable>
-
-                </ng-template>
-              </ngb-panel>
-
-              <!-- Attachments -->
-
-              <ngb-panel id="tab-6" title="Attachments">
-                <ng-template ngbPanelContent>
-                  <ngx-datatable *ngIf="attachedFiles && attachedFiles.length > 0" class="bootstrap"
-                    [rows]="attachedFiles" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="5"
-                    [columnMode]="'force'">
-                    <ngx-datatable-column [sortable]="false" name="File Name" prop="fileName"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Format" prop="format"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Attached By"
-                      prop="attachedBy"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Remarks" prop="remarks"></ngx-datatable-column>
-                    <ngx-datatable-column [sortable]="false" name="Attached At" prop="attachedAt">
-                      <ng-template let-value="value" ngx-datatable-cell-template>
-                        {{ value | date:'medium' }}
-                      </ng-template>
-                    </ngx-datatable-column>
-
-                    <ngx-datatable-column [sortable]="false" name="Action">
-                      <ng-template let-row="row" ngx-datatable-cell-template>
-                        <i (click)="downloadAttachment(row)" class="fa fa-circle-down"
-                          style="font-size: 20px;cursor:pointer"></i>
-                      </ng-template>
-                    </ngx-datatable-column>
-                  </ngx-datatable>
-
-                  <div *ngIf="attachedFiles.length === 0" class="text-muted p-2">
-                    No attachments found.
-                  </div>
-                </ng-template>
-              </ngb-panel>
-
-
-            </ngb-accordion>
-
+                <span class="company-status-pill"
+                  [ngClass]="companyStatusClass"
+                   *ngIf="companyStatusLabel"
+                >
+                  <span class="status-dot"></span>
+                          {{ companyStatusLabel | uppercase }}
+                </span>
+              </div>
+            </div>
           </div>
 
+          <hr />
+
+          <!-- Associated entities header -->
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <div class="d-flex align-items-center">
+              <h5 class="mb-0 mr-2">Associated Entities</h5>
+              <span class="badge badge-light rounded-pill">
+                {{ associatedEntities.length }}
+              </span>
+            </div>
+          </div>
+
+          <p class="text-muted small mb-3">
+            Subsidiaries and business units operating under this parent company.
+          </p>
+
+          <!-- Entity list -->
+          <div class="entity-card mb-2" *ngFor="let entity of associatedEntities">
+            <div class="d-flex align-items-center justify-content-between">
+              <!-- Left: icon + name + meta -->
+              <div class="d-flex align-items-center">
+                <div class="entity-avatar mr-3 entity-avatar--blue" >
+                  <i class="fa fa-building"></i>
+                </div>
+
+                <div>
+                  <div class="entity-name">{{ entity.name }}</div>
+                  <!-- <div class="entity-meta text-muted small">
+                    <i class="ft-map-pin mr-1"></i>
+                    {{ entity.city }}, {{ entity.country }}
+                    <span class="mx-1">•</span>
+                    {{ entity.industry }}
+                  </div> -->
+                </div>
+              </div>
+
+              <!-- Right: status + chevron -->
+              <div class="d-flex align-items-center">
+                <span class="entity-status-pill" [ngClass]="entity.statusClass">
+                  {{ entity.statusLabel }}
+                </span>
+              
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <!-- Remark Modal -->
-        <ng-template #remarkModal let-modal>
-          <div class="modal-header">
-            <h5 class="modal-title" style="color: white;">{{ actionType === 2 ? 'Approve' : 'Recall' }} Company</h5>
-            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
-          </div>
-          <div class="modal-body">
-            <textarea class="form-control" [(ngModel)]="remark" placeholder="Enter remark..." rows="3"></textarea>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
-            <button type="button" class="btn btn-primary" (click)="submitRemark()">Submit</button>
-          </div>
-        </ng-template>
+    <!-- Addresses -->
+    <div *ngIf="selectedTab === 'addresses'">
+      <ngx-datatable
+        [columnMode]="'force'"
+        *ngIf="addressList && addressList.length > 0"
+        class="bootstrap"
+        [rows]="addressList"
+        [headerHeight]="50"
+        [footerHeight]="50"
+        [rowHeight]="'auto'"
+        [limit]="5">
+
+        <ngx-datatable-column [sortable]="false" name="Street" prop="street"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="City" prop="city"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="State" prop="state"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Zip" prop="zip"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Country" prop="country"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Primary">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <i
+              style="font-size: 20px;"
+              class="fa"
+              [ngClass]="{
+                'fa-circle-check': row.isPrimary === true,
+                'fa-circle-xmark': row.isPrimary === false
+              }"></i>
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
+    </div>
+
+    <!-- Company Contact Details -->
+    <div *ngIf="selectedTab === 'company-contacts'">
+      <ngx-datatable
+        [columnMode]="'force'"
+        *ngIf="contactList && contactList.length > 0"
+        class="bootstrap"
+        [rows]="contactList"
+        [headerHeight]="50"
+        [footerHeight]="50"
+        [rowHeight]="'auto'"
+        [limit]="5">
+
+        <ngx-datatable-column [sortable]="false" name="Description" prop="description"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Type" prop="type"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Contact Number" prop="contactNumber"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Extension" prop="extension"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Primary">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <i
+              style="font-size: 20px;"
+              class="fa"
+              [ngClass]="{
+                'fa-circle-check': row.isPrimary === true,
+                'fa-circle-xmark': row.isPrimary === false
+              }"></i>
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
+    </div>
+
+    <!-- Purchasing Demographics -->
+    <div *ngIf="selectedTab === 'purchasing-demo'">
+      <ngx-datatable
+        [columnMode]="'force'"
+        *ngIf="purchasingDemographicsList && purchasingDemographicsList.length > 0"
+        class="bootstrap"
+        [rows]="purchasingDemographicsList"
+        [headerHeight]="50"
+        [footerHeight]="50"
+        [rowHeight]="'auto'"
+        [limit]="5">
+
+        <ngx-datatable-column [sortable]="false" name="Vendor Type" prop="vendorType"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Primary Currency" prop="primaryCurrency"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Line of Business" prop="lineOfBusiness"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Employee Responsible" prop="employeeResponsible"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Note" prop="note"></ngx-datatable-column>
+      </ngx-datatable>
+    </div>
+
+    <!-- Bank Details -->
+    <div *ngIf="selectedTab === 'bank-details'">
+      <ngx-datatable
+        *ngIf="bankDetailsList && bankDetailsList.length > 0"
+        class="bootstrap"
+        [rows]="bankDetailsList"
+        [headerHeight]="50"
+        [footerHeight]="50"
+        [rowHeight]="'auto'"
+        [limit]="5"
+        [columnMode]="'force'">
+
+        <ngx-datatable-column [sortable]="false" name="Bank Name" prop="bankName"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Branch Name" prop="branchName"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Branch Address" prop="branchAddress"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Account Holder" prop="accountHolderName"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Account Number" prop="accountNumber"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="IBAN" prop="iban"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="SWIFT/BIC" prop="swifT_BIC_Code"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Country" prop="country"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Currency" prop="currency"></ngx-datatable-column>
+      </ngx-datatable>
+    </div>
+
+    <!-- Attachments -->
+    <div *ngIf="selectedTab === 'attachments'">
+      <ngx-datatable
+        *ngIf="attachedFiles && attachedFiles.length > 0"
+        class="bootstrap"
+        [rows]="attachedFiles"
+        [headerHeight]="50"
+        [footerHeight]="50"
+        [rowHeight]="'auto'"
+        [limit]="5"
+        [columnMode]="'force'">
+
+        <ngx-datatable-column [sortable]="false" name="File Name" prop="fileName"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Format" prop="format"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Attached By" prop="attachedBy"></ngx-datatable-column>
+        <ngx-datatable-column [sortable]="false" name="Remarks" prop="remarks"></ngx-datatable-column>
+
+        <ngx-datatable-column [sortable]="false" name="Attached At" prop="attachedAt">
+          <ng-template let-value="value" ngx-datatable-cell-template>
+            {{ value | date:'medium' }}
+          </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column [sortable]="false" name="Action">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <i
+              (click)="downloadAttachment(row)"
+              class="fa fa-circle-down"
+              style="font-size: 20px; cursor:pointer"></i>
+          </ng-template>
+        </ngx-datatable-column>
+      </ngx-datatable>
+
+      <div *ngIf="attachedFiles && attachedFiles.length === 0" class="text-muted p-2">
+        No attachments found.
       </div>
     </div>
+
+    <div *ngIf="selectedTab === 'approval-history'">
+      <app-company-approval-history [ProcurementCompanyId]="procurementCompanyId" [vendorComapnyId]="companyId"></app-company-approval-history>
+    </div>
+
   </div>
+    </div>
+
+<!-- Remark Modal (unchanged) -->
+<ng-template #remarkModal let-modal>
+  <!-- your existing modal code -->
+</ng-template>
+
+</div>
+
 </section>
