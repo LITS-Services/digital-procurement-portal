@@ -563,7 +563,7 @@
               <div class="stat-card__text">
              
                 <div class="stat-card__value">
-                  {{ poCounts?.totalOrders || 0 }}
+                  {{ poCounts?.totalPurchaseOrders || 0 }}
                 </div>
 
             
@@ -575,10 +575,10 @@
             </div>
                 <div class="stat-card__chips">
                   <span class="metric-chip">
-                    Open: <strong class="ml-1">{{ poCounts?.openOrders || 0 }}</strong>
+                    Awarded: <strong class="ml-1">{{ poCounts?.awardedPurchaseOrders || 0 }}</strong>
                   </span>
                   <span class="metric-chip metric-chip--success">
-                    Completed: <strong class="ml-1">{{ poCounts?.completedOrders || 0 }}</strong>
+                    Delivered: <strong class="ml-1">{{ poCounts?.deliveredPurchaseOrders || 0 }}</strong>
                   </span>
                 </div>
           </div>
@@ -590,7 +590,7 @@
               <div class="stat-card__text">
                 
                 <div class="stat-card__value">
-                  21
+                  {{ vendorCompaniesCounts?.totalVendorCompanies || 0 }}
                 </div>
 
                
@@ -602,7 +602,7 @@
             </div>
              <div class="stat-card__chips">
                   <span class="metric-chip">
-                    Onboarded: <strong class="ml-1">8</strong>
+                    Onboarded: <strong class="ml-1">{{ vendorCompaniesCounts?.onboardedVendorCompanies || 0 }}</strong>
                   </span>
                   
                 </div>
@@ -616,7 +616,7 @@
               <div class="stat-card__text">
       
                 <div class="stat-card__value">
-                  11
+                  {{ entitiesCounts?.totalEntities || 0 }}
                 </div>
                 
                 
@@ -628,7 +628,7 @@
             </div>
                 <div class="stat-card__chips">
                   <span class="metric-chip">
-                    Active: <strong class="ml-1">8</strong>
+                    Active: <strong class="ml-1">{{ entitiesCounts?.activeEntities || 0 }}</strong>
                   </span>
                 
                 </div>

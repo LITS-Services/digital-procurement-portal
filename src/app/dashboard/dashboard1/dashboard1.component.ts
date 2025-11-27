@@ -29,9 +29,19 @@ import { Router } from '@angular/router';
 declare var require: any;
 
 export interface PurchaseOrdersCountVM {
-  totalOrders: number;
-  openOrders: number;
-  completedOrders: number;
+  totalPurchaseOrders: number;
+  awardedPurchaseOrders: number;
+  deliveredPurchaseOrders: number;
+}
+
+export interface VendorCompaniesCountVM {
+  totalVendorCompanies: number;
+  onboardedVendorCompanies: number;
+}
+
+export interface EntitiesCountVM {
+  totalEntities: number;
+  activeEntities: number;
 }
 
 export interface Chart {
@@ -109,12 +119,9 @@ export type VendorDeliveryChartOptions = {
 export class Dashboard1Component implements OnInit,AfterViewInit {
   prCounts!: PurchaseRequestsCountVM;
   rfqCounts!: QuotationRequestsCountVM;
-
-  poCounts: PurchaseOrdersCountVM = {
-    totalOrders: 0,
-    openOrders: 0,
-    completedOrders: 0,
-  };
+  poCounts!: PurchaseOrdersCountVM;
+  vendorCompaniesCounts!: VendorCompaniesCountVM;
+  entitiesCounts!: EntitiesCountVM;
 
   recentVendors = [
     { name: 'AlaMart', location: 'Karachi', timesBought: 6, successRate: '4 Success' },
@@ -181,6 +188,9 @@ export class Dashboard1Component implements OnInit,AfterViewInit {
   ngOnInit(): void {
     this.loadPurchaseRequestsCounts();
     this.loadQuotationRequestsCounts();
+    this.loadPurchaseOrdersCounts();
+    this.loadVendorCompaniesCounts();
+    this.loadEntitiesCounts();
     this.initSpendChart();
     this.initSpendDonut();
     this.initVendorDeliveryChart();
@@ -222,6 +232,45 @@ ngAfterViewInit(): void {
       },
       error: (err) => {
         console.error('Error fetching quotation requests count:', err);
+      },
+    });
+  }
+
+  loadPurchaseOrdersCounts(): void {
+    const entityId = Number(localStorage.getItem('selectedCompanyId'));
+    this.dashboardService.getPurchaseOrdersCount(entityId).subscribe({
+      next: (data) => {
+        this.poCounts = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error fetching purchase orders count:', err);
+      },
+    });
+  }
+
+  loadVendorCompaniesCounts(): void {
+    const entityId = Number(localStorage.getItem('selectedCompanyId'));
+    this.dashboardService.getVendorCompaniesCount(entityId).subscribe({
+      next: (data) => {
+        this.vendorCompaniesCounts = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error fetching vendor companies count:', err);
+      },
+    });
+  }
+
+  loadEntitiesCounts(): void {
+    const entityId = Number(localStorage.getItem('selectedCompanyId'));
+    this.dashboardService.getEntitiesCount(entityId).subscribe({
+      next: (data) => {
+        this.entitiesCounts = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error fetching entities count:', err);
       },
     });
   }
