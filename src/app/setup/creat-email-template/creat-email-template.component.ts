@@ -8,6 +8,12 @@ import { EmailTemplateService } from 'app/shared/services/EmailTemplateService';
 import { ToastrService } from 'ngx-toastr';
 import { LookupService } from 'app/shared/services/lookup.service';
 
+interface EmailAction {
+  id: number;
+  description: string;
+  selected?: boolean;
+}
+
 declare var tinymce: any;
 
 @Component({
@@ -15,24 +21,26 @@ declare var tinymce: any;
   templateUrl: './creat-email-template.component.html',
   styleUrls: ['./creat-email-template.component.scss']
 })
+
 export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
   invitationForm!: FormGroup;
   submitted = false;
   senderName: string = '';
   dropdownOpenCompanies = false;
+  dropdownOpenTypes = false;
   dropdownOpenActions = false;
-  dropdownOpenStatus = false;
 
   companies: any[] = [];
   workflowTypes: any[] = [];
 
   // ✅ Status dropdown options (will be sent as "Action" in payload)
-  statusOptions = [
-    { name: 'Submit', selected: false },
-    { name: 'Approve', selected: false },
-    { name: 'Onhold', selected: false },
-    { name: 'Recall', selected: false }
-  ];
+  // statusOptions = [
+  //   { name: 'Submit', selected: false },
+  //   { name: 'Approve', selected: false },
+  //   { name: 'Onhold', selected: false },
+  //   { name: 'Recall', selected: false }
+  // ];
+  actionOptions: EmailAction[] = [];
 
   isEditMode = false;
   templateId: number | null = null;
@@ -61,8 +69,8 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
       subject: ['', Validators.required],
       body: ['', Validators.required],
       companies: [[], Validators.required],
-      actions: [[], Validators.required],
-      status: [[], Validators.required]
+      types: [[], Validators.required],
+      actions: [[], Validators.required]
     });
 
     this.route.queryParams.subscribe(params => {
@@ -75,6 +83,7 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
 
     this.loadCompanies();
     this.getWorkflowTypes();
+    this.loadEmailActions();
   }
 
   ngAfterViewInit() {
@@ -174,15 +183,15 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
           subject: res.subject,
           body: res.body,
           companies: res.entity?.split(', ') || [],
-          actions: res.type?.split(', ') || [],
-          status: res.action?.split(', ') || [] // ✅ Changed from res.status to res.action
+          types: res.type?.split(', ') || [],
+          actions: res.action?.split(', ') || [] 
         });
 
         if (this.companies.length > 0 && this.workflowTypes.length > 0) {
           this.mapSelectedValues();
         }
 
-        if (this.statusOptions.length > 0) {
+        if (this.actionOptions.length > 0) {
           this.mapSelectedValues();
         }
 
@@ -220,18 +229,18 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
   // Map selected checkboxes
   mapSelectedValues() {
     const selectedCompanies = this.invitationForm.value.companies || [];
-    const selectedActions = this.invitationForm.value.actions || [];
+    const selectedTypes = this.invitationForm.value.types || [];
     const selectedStatus = this.invitationForm.value.status || [];
 
     this.companies.forEach(c => c.selected = selectedCompanies.includes(c.name));
-    this.workflowTypes.forEach(w => w.selected = selectedActions.includes(w.name));
-    this.statusOptions.forEach(s => s.selected = selectedStatus.includes(s.name));
+    this.workflowTypes.forEach(w => w.selected = selectedTypes.includes(w.name));
+    this.actionOptions.forEach(s => s.selected = selectedStatus.includes(s.description));
   }
 
   // Toggle dropdowns
   toggleCompanyDropdown() { this.dropdownOpenCompanies = !this.dropdownOpenCompanies; }
+  toggleTypeDropdown() { this.dropdownOpenTypes = !this.dropdownOpenTypes; }
   toggleActionDropdown() { this.dropdownOpenActions = !this.dropdownOpenActions; }
-  toggleStatusDropdown() { this.dropdownOpenStatus = !this.dropdownOpenStatus; }
 
   selectCompany(company: any) {
     company.selected = !company.selected;
@@ -240,11 +249,11 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
     this.invitationForm.get('companies')?.markAsTouched(); // ✅ Mark as touched
   }
 
-  selectAction(type: any) {
+  selectType(type: any) {
     type.selected = !type.selected;
     const selectedNames = this.workflowTypes.filter(t => t.selected).map(t => t.name);
-    this.invitationForm.patchValue({ actions: selectedNames });
-    this.invitationForm.get('actions')?.markAsTouched(); // ✅ Mark as touched
+    this.invitationForm.patchValue({ types: selectedNames });
+    this.invitationForm.get('types')?.markAsTouched(); // ✅ Mark as touched
     // Load placeholders when selecting a workflow type
     if (type.selected) {
       this.loadPlaceholders(type.id);
@@ -253,18 +262,43 @@ export class CreatEmailTemplateComponent implements OnInit, AfterViewInit {
       this.placeholders = this.placeholders.filter(p => p.workflowTypeId !== type.id);
     }
   }
-selectStatus(s: any) {
-    s.selected = !s.selected;
-    const selectedNames = this.statusOptions.filter(opt => opt.selected).map(opt => opt.name);
-    this.invitationForm.patchValue({ status: selectedNames });
-    this.invitationForm.get('status')?.markAsTouched(); // ✅ Mark as touched
+// selectStatus(s: any) {
+//     s.selected = !s.selected;
+//     const selectedNames = this.statusOptions.filter(opt => opt.selected).map(opt => opt.name);
+//     this.invitationForm.patchValue({ status: selectedNames });
+//     this.invitationForm.get('status')?.markAsTouched(); // ✅ Mark as touched
+//   }
+
+ loadEmailActions() {
+    this.lookupService.getAllEmailActions().subscribe((res) => {
+      this.actionOptions = res.map(item => ({ ...item, selected: false }));
+    });
+  }
+
+  selectAction(action: EmailAction) {
+    action.selected = !action.selected;
+
+    // Store IDs instead of names
+    const selectedIds = this.actionOptions
+      .filter(s => s.selected)
+      .map(s => s.id);
+
+    this.invitationForm.get('actions')?.setValue(selectedIds);
+  }
+
+  // Helper to display selected names in button
+  getSelectedNames(): string {
+    return this.actionOptions
+      .filter(s => s.selected)
+      .map(s => s.description)
+      .join(', ');
   }
   // Close dropdowns when clicking outside
   @HostListener('document:click', ['$event'])
   handleClickOutside(event: Event) {
     if (this.dropdownOpenCompanies && !this.eRef.nativeElement.contains(event.target)) this.dropdownOpenCompanies = false;
+    if (this.dropdownOpenTypes && !this.eRef.nativeElement.contains(event.target)) this.dropdownOpenTypes = false;
     if (this.dropdownOpenActions && !this.eRef.nativeElement.contains(event.target)) this.dropdownOpenActions = false;
-    if (this.dropdownOpenStatus && !this.eRef.nativeElement.contains(event.target)) this.dropdownOpenStatus = false;
   }
 
   homePage() {
@@ -275,7 +309,7 @@ selectStatus(s: any) {
     this.invitationForm.reset();
     this.companies.forEach(c => c.selected = false);
     this.workflowTypes.forEach(t => t.selected = false);
-    this.statusOptions.forEach(s => s.selected = false);
+    this.actionOptions.forEach(s => s.selected = false);
     this.submitted = false;
     tinymce.get('emailEditor')?.setContent('');
   }
@@ -322,8 +356,8 @@ selectStatus(s: any) {
       subject: this.f['subject'].errors,
       body: this.f['body'].errors,
       companies: this.f['companies'].errors,
-      actions: this.f['actions'].errors,
-      status: this.f['status'].errors
+      types: this.f['types'].errors,
+      actions: this.f['actions'].errors
     });
 
     if (this.invitationForm.invalid) {
@@ -337,9 +371,9 @@ selectStatus(s: any) {
     const payload: any = {
       subject: this.invitationForm.value.subject,
       body: this.invitationForm.value.body,
-      type: this.invitationForm.value.actions.join(', '),
+      type: this.invitationForm.value.types.join(', '),
       entity: this.invitationForm.value.companies.join(', '),
-      action: this.invitationForm.value.status.join(', ') // ✅ Changed from 'status' to 'action'
+      emailActionId: this.invitationForm.value.actions.join(', ') // ✅ Changed from 'status' to 'action'
     };
 
     if (this.isEditMode && this.templateId) {
