@@ -31,16 +31,36 @@ export class SystemService {
     );
   }
 
-  getAllHttpLogs(currentPage: number, pageSize: number): Observable<any> {
-    return this.http.get<any>(
-      `${this.baseUrl}/get-all-http-logs?currentPage=${currentPage}&pageSize=${pageSize}`
-    );
+  getAllHttpLogs(currentPage: number, pageSize: number, filters?: any): Observable<any> {
+    let url = `${this.baseUrl}/get-all-http-logs?currentPage=${currentPage}&pageSize=${pageSize}`;
+    
+    // Add filter parameters if provided
+    if (filters) {
+      if (filters.search) {
+        url += `&search=${encodeURIComponent(filters.search)}`;
+      }
+      if (filters.httpMethod) {
+        url += `&httpMethod=${encodeURIComponent(filters.httpMethod)}`;
+      }
+    }
+    
+    return this.http.get<any>(url);
   }
 
-  getAllAuditTrails(currentPage: number, pageSize: number): Observable<any> {
-    return this.http.get<any>(
-      `${this.baseUrl}/get-all-audit-trails?currentPage=${currentPage}&pageSize=${pageSize}`
-    );
+  getAllAuditTrails(currentPage: number, pageSize: number, filters?: any): Observable<any> {
+    let url = `${this.baseUrl}/get-all-audit-trails?currentPage=${currentPage}&pageSize=${pageSize}`;
+    
+    // Add filter parameters if provided
+    if (filters) {
+      if (filters.search) {
+        url += `&search=${encodeURIComponent(filters.search)}`;
+      }
+      if (filters.actionType) {
+        url += `&actionType=${encodeURIComponent(filters.actionType)}`;
+      }
+    }
+    
+    return this.http.get<any>(url);
   }
   getAllGlobalConfigs(currentPage: number, pageSize: number): Observable<any> {
     return this.http.get<any>(

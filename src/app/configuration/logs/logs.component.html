@@ -1,24 +1,67 @@
 <div class="row mb-3">
   <div class="col-12">
-    <ul class="nav nav-tabs custom-tabs">
-      <li class="nav-item">
-        <a class="nav-link" [class.active]="selectedTab === 'exception'" (click)="selectTab('exception')">
-          Exception Logs
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" [class.active]="selectedTab === 'audit-trails'" (click)="selectTab('audit-trails')">
-          Audit Trails
-        </a>
-      </li>
-    </ul>
+    <div class="d-flex justify-content-between align-items-center">
+      <ul class="nav nav-tabs custom-tabs">
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="selectedTab === 'exception'" (click)="selectTab('exception')">
+            Exception Logs <!-- Keep original name -->
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="selectedTab === 'audit-trails'" (click)="selectTab('audit-trails')">
+            Audit Trails
+          </a>
+        </li>
+      </ul>
+      
+      <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
+        <i class="ft-sliders"></i><label class="ml-1 mt-1">Filter</label>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- FilterBar -->
+<div *ngIf="showFilterBar" class="filter-bar">
+  <div class="d-flex align-items-center justify-content-between pl-3 pr-1 py-2 filter-wrapper">
+    <div class="filter-search">
+      <i class="ft-filter search-icon"></i>
+      <input style="padding-left: 3.4em;" type="text" class="form-control border-left-0 cstm-ui-input"
+        placeholder="{{ selectedTab === 'exception' ? 'Search by Exception Type, Message...' : 'Search by Username, Table Name...' }}" 
+        [formControl]="searchForm.get('searchTerm')" />
+    </div>
+
+    <div class="d-flex filter-btns-div">
+      <div class="dropdown filter-dropdown" ngbDropdown>
+        <button class="btn btn-sm filter-btn dropdown-toggle" type="button" ngbDropdownToggle>
+          <span class="filter-label">{{ !statusTouched ? getFilterLabel() : selectedStatusLabel }}</span>
+          <i class="ft-chevron-down"></i>
+        </button>
+        <div class="dropdown-menu" ngbDropdownMenu>
+          <button class="dropdown-item" (click)="filterByStatus('All')">All</button>
+          <ng-container *ngIf="selectedTab === 'audit-trails'">
+            <button class="dropdown-item" (click)="filterByStatus('UPDATE')">UPDATE</button>
+            <button class="dropdown-item" (click)="filterByStatus('INSERT')">INSERT</button>
+            <button class="dropdown-item" (click)="filterByStatus('DELETE')">DELETE</button>
+          </ng-container>
+          <ng-container *ngIf="selectedTab === 'exception'">
+            <button class="dropdown-item" (click)="filterByStatus('GET')">GET</button>
+            <button class="dropdown-item" (click)="filterByStatus('POST')">POST</button>
+            <button class="dropdown-item" (click)="filterByStatus('PUT')">PUT</button>
+            <button class="dropdown-item" (click)="filterByStatus('DELETE')">DELETE</button>
+            <button class="dropdown-item" (click)="filterByStatus('PATCH')">PATCH</button>
+          </ng-container>
+        </div>
+      </div>
+
+      <button class="btn px-1 btn-sm" (click)="showFilterBar = false">✕</button>
+    </div>
   </div>
 </div>
 
 <div class="row">
   <div class="col-12">
-
-    <!-- Exception Logs Table -->
+    <!-- Exception Logs Table - Keep original columns -->
     <ngx-datatable autoResize *ngIf="selectedTab === 'exception'" class="bootstrap core-bootstrap" [rows]="logsData"
       [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="pageSize"
       [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
@@ -31,7 +74,7 @@
       <!-- Sr. No -->
       <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
         <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
-          <span>{{ rowIndex + 1 }}</span>
+          <span>{{ ((currentPage - 1) * pageSize) + rowIndex + 1 }}</span>
         </ng-template>
       </ngx-datatable-column>
 
@@ -39,19 +82,18 @@
       <ngx-datatable-column name="Exception Type" prop="exceptionType"></ngx-datatable-column>
       <ngx-datatable-column name="Message" prop="message">
         <ng-template ngx-datatable-cell-template let-value="value">
-          {{ value.length > 15 ? value.slice(0, 15) + '...' : value }}
+          {{ value && value.length > 15 ? value.slice(0, 15) + '...' : value }}
         </ng-template>
       </ngx-datatable-column>
       <ngx-datatable-column name="Http Method" prop="httpMethod"></ngx-datatable-column>
       <ngx-datatable-column name="Body" prop="body">
         <ng-template ngx-datatable-cell-template let-value="value">
-          {{ value.length > 15 ? value.slice(0, 15) + '...' : value }}
+          {{ value && value.length > 15 ? value.slice(0, 15) + '...' : value }}
         </ng-template>
       </ngx-datatable-column>
-
     </ngx-datatable>
 
-    <!-- Audit Trails Table -->
+    <!-- Audit Trails Table - Keep original columns -->
     <ngx-datatable autoResize *ngIf="selectedTab === 'audit-trails'" class="bootstrap core-bootstrap" [rows]="logsData"
       [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="pageSize"
       [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
@@ -64,7 +106,7 @@
       <!-- Sr. No -->
       <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
         <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
-          <span>{{ rowIndex + 1 }}</span>
+          <span>{{ ((currentPage - 1) * pageSize) + rowIndex + 1 }}</span>
         </ng-template>
       </ngx-datatable-column>
 
@@ -74,15 +116,14 @@
       <ngx-datatable-column name="Username" prop="username"></ngx-datatable-column>
       <ngx-datatable-column name="Changes" prop="changes">
         <ng-template ngx-datatable-cell-template let-value="value">
-          {{ value.length > 15 ? value.slice(0, 15) + '...' : value }}
+          {{ value && value.length > 15 ? value.slice(0, 15) + '...' : value }}
         </ng-template>
       </ngx-datatable-column>
     </ngx-datatable>
-
   </div>
 </div>
 
-<!-- Place modal template here, after the tables -->
+<!-- Modal template - Keep original structure -->
 <ng-template #logDetailModal let-modal>
   <div class="modal-header">
     <h5 class="modal-title">
@@ -101,12 +142,7 @@
         <input type="text" class="form-control" [value]="selectedLog.timestamp" disabled />
       </div>
 
-      <!-- <div class="mb-2" *ngIf="selectedLog.httpMethod">
-        <label class="form-label">HTTP Method</label>
-        <input type="text" class="form-control" [value]="selectedLog.httpMethod" disabled />
-      </div> -->
-
-      <!-- Exception Log Fields -->
+      <!-- Exception Log Fields - Keep original structure -->
       <ng-container *ngIf="selectedTab === 'exception'">
         <div class="mb-2">
           <label class="form-label">Http Method</label>
@@ -126,7 +162,7 @@
         </div>
       </ng-container>
 
-      <!-- Audit Trail Fields -->
+      <!-- Audit Trail Fields - Keep original structure -->
       <ng-container *ngIf="selectedTab === 'audit-trails'">
         <div class="mb-2">
           <label class="form-label">Table Name</label>

@@ -7,134 +7,133 @@
 
 <div class="modal-body">
 
-<div class="form filters-div">
-  <!-- Filter: Item -->
-  <div>
-    <div class="dropdown filter-dropdown" ngbDropdown>
-      <button
-        class="btn btn-sm  filter-btn dropdown-toggle  filter-btn-text"
-        ngbDropdownToggle
-      >
-        <span class="filter-label-text">{{ selectedItem ? selectedItem : 'All Items' }}</span>
-        <i class="ft-chevron-down"></i>
-      </button>
-      <div class="dropdown-menu w-100" ngbDropdownMenu>
-        <button class="dropdown-item" (click)="selectedItem=''; applyFiltersSort()">All Items</button>
-        <button
-          class="dropdown-item"
-          *ngFor="let it of items"
-          (click)="selectedItem = it; applyFiltersSort()"
-        >
-          {{ it }}
+  <div class="form filters-div">
+    <!-- Filter: Item -->
+    <div>
+      <div class="dropdown filter-dropdown" ngbDropdown>
+        <button class="btn btn-sm  filter-btn dropdown-toggle  filter-btn-text" ngbDropdownToggle>
+          <span class="filter-label-text">{{ selectedItem ? selectedItem : 'All Items' }}</span>
+          <i class="ft-chevron-down"></i>
         </button>
+        <div class="dropdown-menu w-100" ngbDropdownMenu>
+          <button class="dropdown-item" (click)="selectedItem=''; applyFiltersSort()">All Items</button>
+          <button class="dropdown-item" *ngFor="let it of items" (click)="selectedItem = it; applyFiltersSort()">
+            {{ it }}
+          </button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Filter: Vendor -->
-  <div>
-    <div class="dropdown filter-dropdown" ngbDropdown>
-      <button
-        class="btn btn-sm filter-btn dropdown-toggle"
-        ngbDropdownToggle
-      >
-        <span class="filter-label-text">{{ selectedVendorId ? getVendorNameById(selectedVendorId) : 'All Vendors' }}</span>
-        <i class="ft-chevron-down"></i>
-      </button>
-      <div class="dropdown-menu w-100" ngbDropdownMenu>
-        <button class="dropdown-item" (click)="selectedVendorId=''; applyFiltersSort()">All Vendors</button>
-        <button
-          class="dropdown-item"
-          *ngFor="let v of vendors"
-          (click)="selectedVendorId = v.vendorUserId; applyFiltersSort()"
-        >
-          {{ v.vendorName }}
+    <!-- Filter: Vendor -->
+    <div>
+      <div class="dropdown filter-dropdown" ngbDropdown>
+        <button class="btn btn-sm filter-btn dropdown-toggle" ngbDropdownToggle>
+          <span class="filter-label-text">{{ selectedVendorId ? getVendorNameById(selectedVendorId) : 'All Vendors'
+            }}</span>
+          <i class="ft-chevron-down"></i>
         </button>
+        <div class="dropdown-menu w-100" ngbDropdownMenu>
+          <button class="dropdown-item" (click)="selectedVendorId=''; applyFiltersSort()">All Vendors</button>
+          <button class="dropdown-item" *ngFor="let v of vendors"
+            (click)="selectedVendorId = v.vendorUserId; applyFiltersSort()">
+            {{ v.vendorName }}
+          </button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Filter: Amount Sort -->
-  <div>
-    <div class="dropdown filter-dropdown" ngbDropdown>
-      <button
-        class="btn btn-sm filter-btn dropdown-toggle"
-        ngbDropdownToggle
-      >
-        <span class="filter-label-text">
-          {{
+    <!-- Filter: Amount Sort -->
+    <div>
+      <div class="dropdown filter-dropdown" ngbDropdown>
+        <button class="btn btn-sm filter-btn dropdown-toggle" ngbDropdownToggle>
+          <span class="filter-label-text">
+            {{
             amountSort === 'asc'
-              ? 'Lowest'
-              : amountSort === 'desc'
-              ? 'Highest'
-              : 'None'
-          }}
-        </span>
-        <i class="ft-chevron-down"></i>
-      </button>
-      <div class="dropdown-menu" ngbDropdownMenu>
-        <button class="dropdown-item" (click)="amountSort='none'; applyFiltersSort()">None</button>
-        <button class="dropdown-item" (click)="amountSort='asc'; applyFiltersSort()">Lowest</button>
-        <button class="dropdown-item" (click)="amountSort='desc'; applyFiltersSort()">Highest</button>
+            ? 'Lowest'
+            : amountSort === 'desc'
+            ? 'Highest'
+            : 'None'
+            }}
+          </span>
+          <i class="ft-chevron-down"></i>
+        </button>
+        <div class="dropdown-menu" ngbDropdownMenu>
+          <button class="dropdown-item" (click)="amountSort='none'; applyFiltersSort()">None</button>
+          <button class="dropdown-item" (click)="amountSort='asc'; applyFiltersSort()">Lowest</button>
+          <button class="dropdown-item" (click)="amountSort='desc'; applyFiltersSort()">Highest</button>
+        </div>
       </div>
+    </div>
+
+    <!-- Reset Button -->
+    <div>
+      <button class="btn btn-sm clear-btn" (click)="clearFilters()">
+        <i class="ft-x"></i>
+        Clear</button>
     </div>
   </div>
 
-  <!-- Reset Button -->
-  <div>
-    <button class="btn btn-sm clear-btn" (click)="clearFilters()">
-      <i class="ft-x"></i>
-      Clear</button>
+
+  <div *ngIf="flatRows.length > 0; else noBids" class="vendor-comp-parent">
+    <ngx-datatable #table class="bootstrap core-bootstrap" [rows]="flatRows" [columnMode]="'force'" [headerHeight]="50"
+      [footerHeight]="50" [rowHeight]="'auto'" style="border: 1px solid #dee2e6; border-radius: 6px;">
+      <ngx-datatable-column name="Item" prop="itemName" [width]="220"></ngx-datatable-column>
+      <ngx-datatable-column name="Vendor" prop="vendorName" [width]="220"></ngx-datatable-column>
+      <ngx-datatable-column name="Amount" prop="biddingAmount" [width]="140">
+        <ng-template ngx-datatable-cell-template let-value="value">
+          {{ value | number:'1.0-2' }}
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column name="Comment" prop="comment" [width]="400"></ngx-datatable-column>
+
+      <ngx-datatable-column name="Attachments" [sortable]="false" [width]="120">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          <button class="btn btn-link p-0 text-secondary" (click)="openAttachmentsModal(row)" ngbTooltip="View">
+            <i class="fa fa-paperclip fs-5"></i>
+          </button>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Action" [sortable]="false" [width]="120">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          <button class="btn btn-sm mr-1" (click)="printVendor(row)">
+            <i class="ft-printer"></i>
+          </button>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-footer>
+        <ng-template ngx-datatable-footer-template>
+          <div class="total-footer px-3 py-2">
+            <strong>Total Amount:</strong>
+            {{ totalAmount | number:'1.0-2' }}
+          </div>
+        </ng-template>
+      </ngx-datatable-footer>
+
+    </ngx-datatable>
+    <!-- <ngx-datatable-footer>
+      <ng-template ngx-datatable-footer-template let-rowCount="rowCount" let-pageSize="pageSize"
+        let-selectedCount="selectedCount" let-curPage="curPage" let-offset="offset">
+        <div class="total-footer">
+          <strong>Total Amount:</strong> {{ totalAmount | number:'1.0-2' }}
+        </div>
+      </ng-template>
+    </ngx-datatable-footer> -->
+
+    <!-- <div>
+      <strong>Total Amount:</strong> {{ totalAmount | number:'1.0-2' }}
+    </div> -->
   </div>
-</div>
 
+  <ng-template #noBids>
+    <div class="alert alert-warning text-center mt-3">
+      No bid found for the selected filters.
+    </div>
+  </ng-template>
 
-<div *ngIf="flatRows.length > 0; else noBids">
-  <ngx-datatable
-    #table
-    class="bootstrap core-bootstrap"
-    [rows]="flatRows"
-    [columnMode]="'force'"
-    [headerHeight]="50"
-    [footerHeight]="40"
-    [rowHeight]="'auto'"
-    style="border: 1px solid #dee2e6; border-radius: 6px;"
-  >
-    <ngx-datatable-column name="Item" prop="itemName" [width]="220"></ngx-datatable-column>
-    <ngx-datatable-column name="Vendor" prop="vendorName" [width]="220"></ngx-datatable-column>
-    <ngx-datatable-column name="Amount" prop="biddingAmount" [width]="140">
-      <ng-template ngx-datatable-cell-template let-value="value">
-        {{ value | number:'1.0-2' }}
-      </ng-template>
-    </ngx-datatable-column>
-    <ngx-datatable-column name="Comment" prop="comment" [width]="400"></ngx-datatable-column>
-
-    <ngx-datatable-column name="Attachments" [sortable]="false" [width]="120">
-      <ng-template ngx-datatable-cell-template let-row="row">
-        <button class="btn btn-link p-0 text-secondary" (click)="openAttachmentsModal(row)" ngbTooltip="View">
-          <i class="fa fa-paperclip fs-5"></i>
-        </button>
-      </ng-template>
-    </ngx-datatable-column>
-
-    <ngx-datatable-column name="Action" [sortable]="false" [width]="120">
-      <ng-template ngx-datatable-cell-template let-row="row">
-        <button class="btn btn-sm mr-1" (click)="printVendor(row)">
-          <i class="ft-printer"></i>
-        </button>
-      </ng-template>
-    </ngx-datatable-column>
-  </ngx-datatable>
-</div>
-
-<ng-template #noBids>
-  <div class="alert alert-warning text-center mt-3">
-    No bid found for the selected filters.
-  </div>
-</ng-template>
-
-<!-- 🔹 Attachments Modal Template -->
-<!-- <ng-template #attachmentsModal let-modal>
+  <!-- 🔹 Attachments Modal Template -->
+  <!-- <ng-template #attachmentsModal let-modal>
   <div class="modal-header bg-light">
     <h5 class="modal-title me-2">
       <i class="fa fa-paperclip me-2 text-white"></i>
@@ -171,47 +170,42 @@
   </div>
 </ng-template> -->
 
-<ng-template #attachmentsModal let-modal>
-  <div class="modal-header bg-light">
-    <h5 class="modal-title me-2">
-      <i class="fa fa-paperclip me-2 text-white"></i>
-      Vendor Attachments
-    </h5>
-    <button type="button" class="close text-white" aria-label="Close" (click)="modal.dismiss()">
-    <span aria-hidden="true">&times;</span>
-  </button>
-  </div>
-
-  <div class="modal-body-attachments p-2">
-    <div *ngIf="selectedBid?.vendorAttachments?.length; else noAttachments">
-      <ul
-        class="list-group"
-        [ngStyle]="{
-          'max-height': selectedBid.vendorAttachments.length > 5 ? '300px' : 'auto',
-          'overflow-y': selectedBid.vendorAttachments.length > 5 ? 'auto' : 'visible'
-        }"
-      >
-        <li
-           class="list-group-item d-flex justify-content-between align-items-center"
-          *ngFor="let att of selectedBid.vendorAttachments"
-        >
-          <span>
-            <i class="fa fa-file text-secondary me-2"></i>
-            {{ att.fileName }}
-          </span>
-          <button class="btn btn-sm btn-outline-secondary" (click)="downloadAttachment(att)">
-            <i class="fa fa-download me-1"></i> Download
-          </button>
-        </li>
-      </ul>
+  <ng-template #attachmentsModal let-modal>
+    <div class="modal-header bg-light">
+      <h5 class="modal-title me-2">
+        <i class="fa fa-paperclip me-2 text-white"></i>
+        Vendor Attachments
+      </h5>
+      <button type="button" class="close text-white" aria-label="Close" (click)="modal.dismiss()">
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
 
-    <ng-template #noAttachments>
-      <p class="text-muted mb-0 small">No attachments available for this bid.</p>
-    </ng-template>
-  </div>
+    <div class="modal-body-attachments p-2">
+      <div *ngIf="selectedBid?.vendorAttachments?.length; else noAttachments">
+        <ul class="list-group" [ngStyle]="{
+          'max-height': selectedBid.vendorAttachments.length > 5 ? '300px' : 'auto',
+          'overflow-y': selectedBid.vendorAttachments.length > 5 ? 'auto' : 'visible'
+        }">
+          <li class="list-group-item d-flex justify-content-between align-items-center"
+            *ngFor="let att of selectedBid.vendorAttachments">
+            <span>
+              <i class="fa fa-file text-secondary me-2"></i>
+              {{ att.fileName }}
+            </span>
+            <button class="btn btn-sm btn-outline-secondary" (click)="downloadAttachment(att)">
+              <i class="fa fa-download me-1"></i> Download
+            </button>
+          </li>
+        </ul>
+      </div>
 
-  <!-- <div class="modal-footer py-2">
+      <ng-template #noAttachments>
+        <p class="text-muted mb-0 small">No attachments available for this bid.</p>
+      </ng-template>
+    </div>
+
+    <!-- <div class="modal-footer py-2">
     <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
   </div> -->
-</ng-template>
+  </ng-template>

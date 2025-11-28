@@ -29,15 +29,15 @@ export class VendorComparisionComponent implements OnInit {
   filteredVendorComparisonList: any[] = [];
 
   items: string[] = [];
-flatRows: any[] = [];        // filtered + sorted rows shown in table
-allRows: any[] = [];         // master flat dataset
+  flatRows: any[] = [];        // filtered + sorted rows shown in table
+  allRows: any[] = [];         // master flat dataset
 
-// filters
-selectedItem: string = '';
-selectedVendorId: string = '';
+  // filters
+  selectedItem: string = '';
+  selectedVendorId: string = '';
 
-amountSort: 'none' | 'asc' | 'desc' = 'none';
-@ViewChild('attachmentsModal') attachmentsModal: any;
+  amountSort: 'none' | 'asc' | 'desc' = 'none';
+  @ViewChild('attachmentsModal') attachmentsModal: any;
   selectedBid: any = null;
 
   constructor(
@@ -54,107 +54,110 @@ amountSort: 'none' | 'asc' | 'desc' = 'none';
     }
   }
 
+  loadVendorComparison(quotationRequestId: number): void {
+    this.rfqService.getVendorComparison(quotationRequestId).subscribe({
+      next: (res) => {
+        const items = res?.items || [];
 
- loadVendorComparison(quotationRequestId: number): void {
-  this.rfqService.getVendorComparison(quotationRequestId).subscribe({
-    next: (res) => {
-      const items = res?.items || [];
+        this.vendorComparisonList = items.map((item: any) => ({
+          itemName: item.itemName,
+          itemDescription: item.itemDescription,
+          vendorComparisonBid: (item.vendorComparisonBid || []).map((bid: any) => ({
+            vendorUserId: bid.vendorUserId,
+            vendorName: bid.vendorName,
+            comment: bid.comment,
+            biddingAmount: bid.biddingAmount,
+            vendorAttachments: bid.vendorAttachments || []
+          }))
+        }));
 
-      this.vendorComparisonList = items.map((item: any) => ({
-        itemName: item.itemName,
-        itemDescription: item.itemDescription,
-        vendorComparisonBid: (item.vendorComparisonBid || []).map((bid: any) => ({
-          vendorUserId: bid.vendorUserId,
-          vendorName: bid.vendorName,
-          comment: bid.comment,
-          biddingAmount: bid.biddingAmount,
-          vendorAttachments: bid.vendorAttachments || []
-        }))
-      }));
-
-      // unique vendors (unchanged from your version)
-      const vendorMap = new Map<string, string>();
-      this.vendorComparisonList.forEach(item => {
-        item.vendorComparisonBid.forEach((bid: any) => {
-          if (bid.vendorUserId && !vendorMap.has(bid.vendorUserId)) {
-            vendorMap.set(bid.vendorUserId, bid.vendorName);
-          }
-        });
-      });
-      this.vendors = Array.from(vendorMap, ([vendorUserId, vendorName]) => ({ vendorUserId, vendorName }));
-
-      // unique items for filter
-      const itemSet = new Set<string>();
-      this.vendorComparisonList.forEach(it => itemSet.add(it.itemName));
-      this.items = Array.from(itemSet);
-
-      // build master flat list once
-      const rows: any[] = [];
-      this.vendorComparisonList.forEach(item => {
-        item.vendorComparisonBid.forEach((b: any) => {
-          rows.push({
-            itemName: item.itemName,
-            itemDescription: item.itemDescription,
-            vendorUserId: b.vendorUserId,
-            vendorName: b.vendorName,
-            comment: b.comment,
-            biddingAmount: b.biddingAmount,
-            vendorAttachments: b.vendorAttachments || []
+        // unique vendors (unchanged from your version)
+        const vendorMap = new Map<string, string>();
+        this.vendorComparisonList.forEach(item => {
+          item.vendorComparisonBid.forEach((bid: any) => {
+            if (bid.vendorUserId && !vendorMap.has(bid.vendorUserId)) {
+              vendorMap.set(bid.vendorUserId, bid.vendorName);
+            }
           });
         });
-      });
-      this.allRows = rows;
+        this.vendors = Array.from(vendorMap, ([vendorUserId, vendorName]) => ({ vendorUserId, vendorName }));
 
-      // initial paint
-      this.applyFiltersSort();
+        // unique items for filter
+        const itemSet = new Set<string>();
+        this.vendorComparisonList.forEach(it => itemSet.add(it.itemName));
+        this.items = Array.from(itemSet);
 
-      this.cdr.detectChanges();
-      this.loading = false;
-    },
-    error: (err) => {
-      console.error('Error loading vendor comparison', err);
-      this.loading = false;
-    }
-  });
-}
+        // build master flat list once
+        const rows: any[] = [];
+        this.vendorComparisonList.forEach(item => {
+          item.vendorComparisonBid.forEach((b: any) => {
+            rows.push({
+              itemName: item.itemName,
+              itemDescription: item.itemDescription,
+              vendorUserId: b.vendorUserId,
+              vendorName: b.vendorName,
+              comment: b.comment,
+              biddingAmount: b.biddingAmount,
+              vendorAttachments: b.vendorAttachments || []
+            });
+          });
+        });
+        this.allRows = rows;
 
-applyFiltersSort(): void {
-  let rows = this.allRows;
+        // initial paint
+        this.applyFiltersSort();
 
-  if (this.selectedItem) {
-    rows = rows.filter(r => r.itemName === this.selectedItem);
-  }
-  if (this.selectedVendorId) {
-    rows = rows.filter(r => String(r.vendorUserId) === String(this.selectedVendorId));
-  }
-
-  // sort by amount
-  if (this.amountSort !== 'none') {
-    const dir = this.amountSort === 'asc' ? 1 : -1;
-    rows = [...rows].sort((a, b) => {
-      const A = Number(a.biddingAmount) || 0;
-      const B = Number(b.biddingAmount) || 0;
-      return (A - B) * dir;
+        this.cdr.detectChanges();
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading vendor comparison', err);
+        this.loading = false;
+      }
     });
   }
 
-  this.flatRows = rows;
+  applyFiltersSort(): void {
+    let rows = this.allRows;
 
-  // optional: if table ref exists and you want recalculation
-  // this.table?.recalculate();
-}
+    if (this.selectedItem) {
+      rows = rows.filter(r => r.itemName === this.selectedItem);
+    }
+    if (this.selectedVendorId) {
+      rows = rows.filter(r => String(r.vendorUserId) === String(this.selectedVendorId));
+    }
 
-getVendorNameById(vendorId: string): string {
-  const vendor = this.vendors.find(v => String(v.vendorUserId) === String(vendorId));
-  return vendor ? vendor.vendorName : vendorId;
-}
+    // sort by amount
+    if (this.amountSort !== 'none') {
+      const dir = this.amountSort === 'asc' ? 1 : -1;
+      rows = [...rows].sort((a, b) => {
+        const A = Number(a.biddingAmount) || 0;
+        const B = Number(b.biddingAmount) || 0;
+        return (A - B) * dir;
+      });
+    }
 
-clearFilters(): void {
-  this.selectedItem = '';
-  this.selectedVendorId = '';
-  this.amountSort = 'none';
-  this.applyFiltersSort();
-}
+    this.flatRows = rows;
+
+    // optional: if table ref exists and you want recalculation
+    // this.table?.recalculate();
+  }
+
+  get totalAmount(): number {
+    return this.flatRows.reduce((sum, row) => sum + (Number(row.biddingAmount) || 0), 0);
+  }
+
+  getVendorNameById(vendorId: string): string {
+    const vendor = this.vendors.find(v => String(v.vendorUserId) === String(vendorId));
+    return vendor ? vendor.vendorName : vendorId;
+  }
+
+  clearFilters(): void {
+    this.selectedItem = '';
+    this.selectedVendorId = '';
+    this.amountSort = 'none';
+    this.applyFiltersSort();
+  }
 
   applyVendorItemFilter() {
     this.filteredVendorComparisonList = this.vendorComparisonList

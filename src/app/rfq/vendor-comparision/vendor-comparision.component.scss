@@ -17,7 +17,7 @@
     padding: 0px !important;
 }
 
-.modal-body-attachments{
+.modal-body-attachments {
     padding: 1rem;
     height: 500px;
     position: relative;
@@ -66,23 +66,29 @@
 
 
 .filter-dropdown {
-  .dropdown-toggle {
-    max-width: 200px; /* Adjust based on layout */
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-  }
+    .dropdown-toggle {
+        max-width: 200px;
+        /* Adjust based on layout */
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
 
-  .dropdown-menu {
-    max-width: 250px; /* Controls the dropdown white-panel size */
-    white-space: normal; /* Allow text wrapping */
-    word-wrap: break-word; /* Break long words if necessary */
-  }
+    .dropdown-menu {
+        max-width: 250px;
+        /* Controls the dropdown white-panel size */
+        white-space: normal;
+        /* Allow text wrapping */
+        word-wrap: break-word;
+        /* Break long words if necessary */
+    }
 
-  .dropdown-item {
-    white-space: normal; /* Ensures text wraps to next line */
-    font-size: 14px; /* Optional: smaller font for better wrapping */
-  }
+    .dropdown-item {
+        white-space: normal;
+        /* Ensures text wraps to next line */
+        font-size: 14px;
+        /* Optional: smaller font for better wrapping */
+    }
 }
 
 .filters-div {
@@ -93,7 +99,7 @@
     margin-bottom: 12px !important;
 }
 
-.filter-label-text{
+.filter-label-text {
     flex: 1 !important;
     overflow: hidden !important;
     text-overflow: ellipsis;
@@ -101,7 +107,18 @@
     text-align: left;
 }
 
-.clear-btn{
-      background-color: white;
-  border: 1px solid #dadada;
+.clear-btn {
+    background-color: white;
+    border: 1px solid #dadada;
+}
+
+.total-footer {
+    padding: 5px 10px;
+    font-weight: bold;
+    text-align: right;
+}
+
+
+.vendor-comp-parent ::ng-deep .ngx-datatable .datatable-footer .datatable-footer-inner {
+    justify-content: end !important;
 }
