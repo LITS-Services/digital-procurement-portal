@@ -7,6 +7,7 @@ import { AuthService } from 'app/shared/auth/auth.service';
 import { EmailTemplateService } from 'app/shared/services/EmailTemplateService'; 
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PermissionService } from 'app/shared/permissions/permission.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-email-template-list',
@@ -80,39 +81,60 @@ export class EmailTemplateListComponent implements OnInit {
     });
   }
 
-  // Open confirmation modal for delete
   confirmDelete() {
-    if(!this.permissionService.can(FORM_IDS.EMAIL_TEMPLATE_LIST, 'delete'))
-      return;
-    if (!this.templateId) return;
-    this.modalService.open(this.confirmDeleteModal, { centered: true });
-  }
+  if (!this.permissionService.can(FORM_IDS.EMAIL_TEMPLATE_LIST, 'delete'))
+    return;
 
-  // Delete template after confirmation
-  deleteTemplateConfirmed() {
-    const username = localStorage.getItem('userName') || 'Unknown User';
-    this.loading = true;
+  if (!this.templateId) return;
 
-    this.emailTemplateService.deleteEmailTemplate(
-      `${this.templateId}?modifiedBy=${encodeURIComponent(username)}`
-    ).subscribe({
-      next: () => {
-        this.toastr.success('Template deleted successfully!', 'Success');
-        this.getEmailTemplates();
-        this.chkBoxSelected = [];
-        this.templateId = null;
-        this.enableDisableButtons();
-        this.loading = false;
-        this.modalService.dismissAll();
-      },
-      error: (err) => {
-        console.error('Error deleting template:', err);
-        this.toastr.error('Failed to delete template', 'Error');
-        this.loading = false;
-        this.modalService.dismissAll();
-      }
-    });
-  }
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you really want to delete this email template?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it',
+    cancelButtonText: 'Cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.deleteTemplate();
+    }
+  });
+}
+
+deleteTemplate() {
+  this.loading = true;
+
+  this.emailTemplateService.deleteEmailTemplate({
+    id: this.templateId
+  }).subscribe({
+    next: () => {
+      Swal.fire(
+        'Deleted!',
+        'Template has been deleted successfully.',
+        'success'
+      );
+
+      this.getEmailTemplates();
+      this.chkBoxSelected = [];
+      this.templateId = null;
+      this.enableDisableButtons();
+      this.loading = false;
+    },
+    error: (err) => {
+      console.error('Error deleting template:', err);
+
+      Swal.fire(
+        'Error',
+        'Failed to delete template.',
+        'error'
+      );
+
+      this.loading = false;
+    }
+  });
+}
 
   // Navigate to edit page
   editTemplate() {

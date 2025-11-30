@@ -43,104 +43,104 @@
           </div>
         </div>
 
-        <!-- ✅ Status Dropdown (will be sent as "Action" in payload) -->
-        <div class="col-md-3 mb-3 position-relative">
-          <label class="form-label">Action <span class="text-danger">*</span></label>
+<!-- ======================== Action Dropdown ======================== -->
+<div class="col-md-3 mb-3 position-relative">
+  <label class="form-label">Action <span class="text-danger">*</span></label>
 
-          <!-- <div ngbDropdown class="w-100">
-            <button ngbDropdownToggle type="button" class="form-control text-start"
-              [ngClass]="{ 'is-invalid': submitted && f['status'].errors }" (click)="$event.stopPropagation()">
-              {{ invitationForm.value.status?.length > 0
-              ? invitationForm.value.status.join(', ')
-              : 'Select Action' }}
-            </button>
+  <div ngbDropdown class="w-100">
+    <button ngbDropdownToggle type="button"
+            class="form-control text-start d-flex justify-content-between align-items-center"
+            [ngClass]="{ 'is-invalid': submitted && f['actions'].errors }"
+            style="cursor: pointer;">
+      {{ selectedActions.length > 0 ? selectedActions[0]?.description : 'Select Action' }}
+      <span class="dropdown-arrow">&#9662;</span>
+    </button>
 
-            <div ngbDropdownMenu class="w-100" style="max-height: 220px; overflow-y: auto;"
-              (click)="$event.stopPropagation()">
-              <div *ngFor="let s of statusOptions" class="dropdown-item d-flex align-items-center">
-                <input type="checkbox" class="form-check-input me-2" [checked]="s.selected"
-                  (change)="selectStatus(s); $event.stopPropagation()">
-                <span>{{ s.name }}</span>
-              </div>
-            </div>
-          </div> -->
-
-          <div ngbDropdown class="w-100">
-  <button ngbDropdownToggle type="button" class="form-control text-start"
-          [ngClass]="{ 'is-invalid': submitted && invitationForm.get('actions')?.errors }"
-          (click)="$event.stopPropagation()">
-    {{ getSelectedNames() || 'Select Action' }}
-  </button>
-
-  <div ngbDropdownMenu class="w-100" style="max-height: 220px; overflow-y: auto;"
-       (click)="$event.stopPropagation()">
-    <div *ngFor="let s of actionOptions" class="dropdown-item d-flex align-items-center">
-      <input type="checkbox" class="form-check-input me-2" [checked]="s.selected"
-             (change)="selectAction(s); $event.stopPropagation()">
-      <span>{{ s.description }}</span>
+    <div ngbDropdownMenu class="w-100 custom-dropdown">
+      <div *ngFor="let s of actionOptions" class="dropdown-item"
+           (click)="selectSingleAction(s)">
+        {{ s.description }}
+      </div>
     </div>
+  </div>
+
+  <div *ngIf="submitted && f['actions'].errors" class="text-danger mt-1">
+    Please select an action.
   </div>
 </div>
 
 
-          <div *ngIf="submitted && f['status'].errors" class="text-danger mt-1">
-            Please select at least one action.
-          </div>
-        </div>
+<!-- ======================== Companies Dropdown ======================== -->
+<div class="col-md-3 mb-3 position-relative">
+  <label class="form-label">Entities <span class="text-danger">*</span></label>
+  
+  <!-- Chips -->
+  <div class="d-flex flex-wrap gap-1 mb-1" *ngIf="selectedCompanies.length > 0">
+    <span class="chip" *ngFor="let c of selectedCompanies">
+      {{ c.name }}
+      <i class="ft-x ms-1" (click)="removeCompany(c)"></i>
+    </span>
+  </div>
 
-        <!-- ✅ Companies Dropdown -->
-        <div class="col-md-3 mb-3 position-relative">
-          <label class="form-label">Entities <span class="text-danger">*</span></label>
+  <div ngbDropdown class="w-100">
+    <button ngbDropdownToggle type="button"
+            class="form-control text-start d-flex justify-content-between align-items-center"
+            [ngClass]="{ 'is-invalid': submitted && f['companies'].errors }"
+            style="cursor: pointer;">
+      {{ selectedCompanies.length > 0 ? selectedCompanies.length + ' selected' : 'Select Companies' }}
+      <span class="dropdown-arrow">&#9662;</span>
+    </button>
 
-          <div ngbDropdown class="w-100">
-            <button ngbDropdownToggle type="button" class="form-control text-start"
-              [ngClass]="{ 'is-invalid': submitted && f['companies'].errors }" (click)="$event.stopPropagation()">
-              {{ invitationForm.value.companies?.length > 0
-              ? invitationForm.value.companies.join(', ')
-              : 'Select Companies' }}
-            </button>
+    <div ngbDropdownMenu class="w-100 custom-dropdown">
+      <div *ngFor="let company of companies" class="dropdown-item d-flex align-items-center">
+        <input type="checkbox" class="form-check-input me-2 mt-0" [checked]="company.selected"
+               (change)="selectCompany(company)">
+        <span class="text-truncate" [title]="company.name">{{ company.name }}</span>
+      </div>
+    </div>
+  </div>
 
-            <div ngbDropdownMenu class="w-100" style="max-height: 220px; overflow-y: auto;"
-              (click)="$event.stopPropagation()">
-              <div *ngFor="let company of companies" class="dropdown-item d-flex align-items-center">
-                <input type="checkbox" class="form-check-input me-2" [checked]="company.selected"
-                  (change)="selectCompany(company); $event.stopPropagation()">
-                <span>{{ company.name }}</span>
-              </div>
-            </div>
-          </div>
+  <div *ngIf="submitted && f['companies'].errors" class="text-danger mt-1">
+    Please select at least one company.
+  </div>
+</div>
 
-          <div *ngIf="submitted && f['companies'].errors" class="text-danger mt-1">
-            Please select at least one company.
-          </div>
-        </div>
+<!-- ======================== Types Dropdown ======================== -->
+<div class="col-md-3 mb-3 position-relative">
+  <label class="form-label">Type <span class="text-danger">*</span></label>
+  
+  <!-- Chips -->
+  <div class="d-flex flex-wrap gap-1 mb-1" *ngIf="selectedTypes.length > 0">
+    <span class="chip" *ngFor="let t of selectedTypes">
+      {{ t.name }}
+      <i class="ft-x ms-1" (click)="removeType(t)"></i>
+    </span>
+  </div>
 
-        <!-- ✅ Type Dropdown -->
-        <div class="col-md-3 mb-3 position-relative">
-          <label class="form-label">Type <span class="text-danger">*</span></label>
+  <div ngbDropdown class="w-100">
+    <button ngbDropdownToggle type="button"
+            class="form-control text-start d-flex justify-content-between align-items-center"
+            [ngClass]="{ 'is-invalid': submitted && f['types'].errors }"
+            style="cursor: pointer;">
+      {{ selectedTypes.length > 0 ? selectedTypes.length + ' selected' : 'Select Type' }}
+      <span class="dropdown-arrow">&#9662;</span>
+    </button>
 
-          <div ngbDropdown class="w-100">
-            <button ngbDropdownToggle type="button" class="form-control text-start"
-              [ngClass]="{ 'is-invalid': submitted && f['types'].errors }" (click)="$event.stopPropagation()">
-              {{ invitationForm.value.types?.length > 0
-              ? invitationForm.value.types.join(', ')
-              : 'Select Type' }}
-            </button>
+    <div ngbDropdownMenu class="w-100 custom-dropdown">
+      <div *ngFor="let type of workflowTypes" class="dropdown-item d-flex align-items-center">
+        <input type="checkbox" class="form-check-input me-2 mt-0" [checked]="type.selected"
+               (change)="selectType(type)">
+        <span class="text-truncate" [title]="type.name">{{ type.name }}</span>
+      </div>
+    </div>
+  </div>
 
-            <div ngbDropdownMenu class="w-100" style="max-height: 220px; overflow-y: auto;"
-              (click)="$event.stopPropagation()">
-              <div *ngFor="let type of workflowTypes" class="dropdown-item d-flex align-items-center">
-                <input type="checkbox" class="form-check-input me-2" [checked]="type.selected"
-                  (change)="selectType(type); $event.stopPropagation()">
-                <span>{{ type.name }}</span>
-              </div>
-            </div>
-          </div>
+  <div *ngIf="submitted && f['types'].errors" class="text-danger mt-1">
+    Please select at least one type.
+  </div>
+</div>
 
-          <div *ngIf="submitted && f['actions'].errors" class="text-danger mt-1">
-            Please select at least one type.
-          </div>
-        </div>
+
 
         <!-- ✅ Email Body (TinyMCE) -->
         <!-- <div class="col-md-12 mb-3">

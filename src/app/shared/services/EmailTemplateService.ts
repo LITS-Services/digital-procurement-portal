@@ -3,8 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'environments/environment';
 
-
-
 export interface VendorUserDropdown {
   $id: string,
   $values: [];
@@ -18,47 +16,37 @@ export class EmailTemplateService {
 
   constructor(private http: HttpClient) { }
 
- getEmailTemplate(): Observable<any[]> {
+  getEmailTemplate(): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiUrl}/EmailTemplate/GetAllEmailTemplates`);
   }
 
-getEmailTemplateById(id: number): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/EmailTemplate/${id}`);
+  getEmailTemplateById(id: number): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/EmailTemplate/get-template-by-id`, {
+      params: { id: id.toString() }
+    });
   }
-
-
 
   updateEmailTemplate(id: number, template: Partial<any>): Observable<any> {
     return this.http.put<any>(`${environment.apiUrl}/EmailTemplate/Update/${id}`, template);
   }
 
-//   // Soft delete template
-//   deleteEmailTemplate(id: number, modifiedBy: string): Observable<any> {
-//     let params = new HttpParams().set('modifiedBy', modifiedBy);
-//     return this.http.delete<any>(`${this.apiUrl}/Delete/${id}`, { params });
-//   }
-
- deleteEmailTemplate(id: string): Observable<any> {
-    return this.http.delete<any>(`${environment.apiUrl}/EmailTemplate/Delete/${id}`);
+  deleteEmailTemplate(payload: { id: number }): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/EmailTemplate/delete`, payload);
   }
 
+  createEmailInvitation(userData: any): Observable<string> {
+    return this.http.post(`${environment.apiUrl}/EmailLogs/create-email-invitation`, userData, { responseType: 'text' });
+  }
 
+  getUserInvitation(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/EmailLogs/get-email-logs`);
+  }
 
-
-    createEmailInvitation(userData: any): Observable<string> {
-        return this.http.post(`${environment.apiUrl}/EmailLogs/create-email-invitation`, userData, { responseType: 'text' });
-    }
-
-    getUserInvitation(): Observable<any[]> {
-        return this.http.get<any[]>(`${environment.apiUrl}/EmailLogs/get-email-logs`);
-    }
-
-    updateEmailInvitation(id: number, template: Partial<any>): Observable<any> {
+  updateEmailInvitation(id: number, template: Partial<any>): Observable<any> {
     return this.http.put<any>(`${environment.apiUrl}/EmailLogs/UpdateEmailinvitation${id}`, template);
   }
   getEmailInvitationById(id: number): Observable<any> {
     return this.http.get<any>(`${environment.apiUrl}/EmailLogs/GetEmailinvitation${id}`);
   }
-
 
 }

@@ -153,3 +153,81 @@
 }
 
 
+
+/* Chips inside dropdown buttons */
+
+::ng-deep .chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  background-color: #e9f1ff;
+  border-radius: 16px;
+  font-size: 0.85rem;
+}
+
+
+::ng-deep .chip i {
+  cursor: pointer;
+  margin-left: 4px;
+  font-style: normal;
+}
+
+::ng-deep .chips-container {
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  pointer-events: auto;
+  z-index: 1000;
+}
+
+
+
+/* Dropdown arrow inside button */
+::ng-deep .dropdown-arrow {
+  font-size: 0.7rem;
+  color: #333;
+}
+
+::ng-deep .custom-dropdown {
+    width: 100% !important;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #1E89B8;
+  background: #fff;
+  z-index: 1000;
+}
+
+::ng-deep .custom-dropdown .dropdown-item {
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+::ng-deep .custom-dropdown .dropdown-item:hover {
+  background-color: rgba(30, 137, 184, 0.1);
+}
+
+::ng-deep .dropdown-toggle {
+  display: flex;
+  align-items: center;     /* Vertically center content */
+  flex-wrap: wrap;         /* Allow chips to wrap */
+  gap: 5px;                /* Space between chips */
+  padding: 6px 12px;       /* Adjust padding */
+  min-height: 38px;        /* Ensures consistent height */
+  position: relative;
+}
+
+::ng-deep .dropdown-toggle .dropdown-arrow {
+  margin-left: auto;       /* Push arrow to the right */
+  font-size: 0.75rem;     /* Smaller arrow */
+  line-height: 1; 
+}
+
+::ng-deep .dropdown-toggle span.text-truncate {
+  max-width: calc(100% - 20px); /* leave space for arrow */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
