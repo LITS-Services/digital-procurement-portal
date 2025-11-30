@@ -14,6 +14,8 @@ import Swal from 'sweetalert2';
 import { LookupService } from 'app/shared/services/lookup.service';
 import { CompanyVM, VendorAndCompanyForFinalSelectionVM } from 'app/shared/interfaces/vendor-company-final-selection.model';
 import * as XLSX from 'xlsx';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-new-purchase-request',
@@ -49,6 +51,7 @@ export class NewPurchaseRequestComponent implements OnInit {
   vendorUsers: any[] = [];
 
   viewMode = false;
+  dataLoaded = false;
 
   newPurchaseRequestForm: FormGroup;
   itemForm: FormGroup;
@@ -98,7 +101,8 @@ export class NewPurchaseRequestComponent implements OnInit {
     private fb: FormBuilder,
     public toastr: ToastrService,
     private WorkflowServiceService: WorkflowServiceService,
-    public cdr: ChangeDetectorRef
+    public cdr: ChangeDetectorRef,
+    private spinner: NgxSpinnerService
 
   ) { }
 
@@ -962,7 +966,10 @@ export class NewPurchaseRequestComponent implements OnInit {
       cancelButtonColor: '#d33',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.purchaseRequestService.submitForApproval(this.currentRequestId).subscribe({
+        this.spinner.show();
+        this.purchaseRequestService.submitForApproval(this.currentRequestId)
+        .pipe(finalize(() => this.spinner.hide()))
+        .subscribe({
           next: (res) => {
             Swal.fire({
               icon: 'success',
@@ -970,6 +977,7 @@ export class NewPurchaseRequestComponent implements OnInit {
               text: res.message || 'Purchase Request submitted for approval successfully!',
               confirmButtonColor: '#3085d6',
             }).then(() => {
+              this.dataLoaded = true;
               this.router.navigate(['/purchase-request']);
             });
           },
@@ -980,6 +988,7 @@ export class NewPurchaseRequestComponent implements OnInit {
               title: 'Failed!',
               text: 'Failed to submit purchase request for approval.',
             });
+            this.dataLoaded = true;
           },
         });
       }
@@ -1005,11 +1014,14 @@ export class NewPurchaseRequestComponent implements OnInit {
             ActionTaken: action,
             ApproverId: localStorage.getItem('userId')
           };
-
-          this.purchaseRequestService.addRemarksWithActionTaken(payload).subscribe({
+          this.spinner.show();
+          this.purchaseRequestService.addRemarksWithActionTaken(payload)
+          .pipe(finalize(() => this.spinner.hide()))
+          .subscribe({
             next: res => {
               this.loading = false;
               if (res.message == "Approved") {
+                this.dataLoaded = true;
                 this.cdr.detectChanges();
                 this.router.navigate(['/purchase-request']);
 
@@ -1022,6 +1034,7 @@ export class NewPurchaseRequestComponent implements OnInit {
             error: err => {
               this.toastr.warning('Something went Wrong', '');
               this.loading = false;
+              this.dataLoaded = true;
             }
           });
 

@@ -6,6 +6,7 @@ import { RfqService } from '../rfq.service';
 import { ToastrService } from 'ngx-toastr';
 import { of } from 'rxjs';
 import { finalize, switchMap } from 'rxjs/operators';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-rfq-vendor-modal',
@@ -29,9 +30,9 @@ export class RfqVendorModalComponent implements OnInit {
   leftSearch = '';
   rightSearch = '';
 
-    availableVendors: any[] = [];         // LEFT LIST (all - selected)
+  availableVendors: any[] = [];         // LEFT LIST (all - selected)
   filteredSelected: any[] = [];    
-
+  dataLoaded = false;
   gridSelected: any[] = [];
   private persistedIds = new Set<number>();
   private getKey = (r: any) => (r?.vendorCompanyEntityId ?? r?.id);
@@ -40,7 +41,8 @@ export class RfqVendorModalComponent implements OnInit {
     private companyService: CompanyService,
     private rfqService: RfqService,
     public toastr: ToastrService,
-    public cdr:ChangeDetectorRef
+    public cdr:ChangeDetectorRef,
+    private spinner: NgxSpinnerService
   ) { }
 
   ngOnInit(): void {
@@ -190,6 +192,7 @@ onSubmit() {
   // “no-op” observables when nothing to add/remove
   const add$ = addPayload.length
     ? this.rfqService.addVendorsToQuotation(addPayload)
+    
     : of(null);
 
   const remove$ = toRemoveIds.length
@@ -199,25 +202,24 @@ onSubmit() {
       })
     : of(null);
 
-  //this.isSaving = true; // optional spinner flag
 
+  this.spinner.show();
   add$
     .pipe(
       switchMap(() => remove$),
-      finalize(() => (
-        //this.isSaving = false
-        console.log('Vendors updated successfully')
-      ))
+      finalize(() => this.spinner.hide())
     )
     .subscribe({
       next: () => {
 
         this.loadRfqVendors(this.quotationRequestId!); // refresh chips + selection
+        this.dataLoaded = true;
      
       },
       error: (err) => {
         console.error(err);
         this.toastr.error('Failed to update vendors');
+        this.dataLoaded = true;
       }
     });
 }
