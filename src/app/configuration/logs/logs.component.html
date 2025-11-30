@@ -78,7 +78,12 @@
         </ng-template>
       </ngx-datatable-column>
 
-      <ngx-datatable-column name="TimeStamp" prop="timestamp"></ngx-datatable-column>
+      <!-- <ngx-datatable-column name="TimeStamp" prop="timestamp"></ngx-datatable-column> -->
+      <ngx-datatable-column name="TimeStamp" prop="timestamp">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          {{ row.timestamp | date:'dd-MM-yyyy HH:mm a' }}
+        </ng-template>
+      </ngx-datatable-column>
       <ngx-datatable-column name="Exception Type" prop="exceptionType"></ngx-datatable-column>
       <ngx-datatable-column name="Message" prop="message">
         <ng-template ngx-datatable-cell-template let-value="value">
@@ -112,13 +117,19 @@
 
       <ngx-datatable-column name="Table Name" prop="tableName"></ngx-datatable-column>
       <ngx-datatable-column name="Action Type" prop="actionType"></ngx-datatable-column>
-      <ngx-datatable-column name="TimeStamp" prop="timestamp"></ngx-datatable-column>
+      <!-- <ngx-datatable-column name="TimeStamp" prop="timestamp"></ngx-datatable-column> -->
+       <ngx-datatable-column name="TimeStamp" prop="timestamp">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          {{ row.timestamp | date:'dd-MM-yyyy HH:mm a' }}
+        </ng-template>
+      </ngx-datatable-column>
       <ngx-datatable-column name="Username" prop="username"></ngx-datatable-column>
       <ngx-datatable-column name="Changes" prop="changes">
         <ng-template ngx-datatable-cell-template let-value="value">
           {{ value && value.length > 15 ? value.slice(0, 15) + '...' : value }}
         </ng-template>
       </ngx-datatable-column>
+      <ngx-datatable-column name="Is Entity Deleted" prop="isEntityDeleted"></ngx-datatable-column>
     </ngx-datatable>
   </div>
 </div>
@@ -137,9 +148,14 @@
   <div class="modal-body">
     <form *ngIf="selectedLog">
       <!-- Common fields -->
-      <div class="mb-2">
+      <!-- <div class="mb-2">
         <label class="form-label">Timestamp</label>
         <input type="text" class="form-control" [value]="selectedLog.timestamp" disabled />
+      </div> -->
+
+      <div class="mb-2">
+        <label class="form-label">Timestamp</label>
+        <input type="text" class="form-control" [value]="selectedLog?.timestamp | date:'dd-MM-yyyy HH:mm a'" disabled />
       </div>
 
       <!-- Exception Log Fields - Keep original structure -->
