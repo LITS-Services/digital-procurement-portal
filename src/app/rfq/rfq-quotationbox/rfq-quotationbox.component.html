@@ -38,12 +38,12 @@
           [class.active]="selectedVendor?.vendorUserId === v.vendorUserId && selectedVendor?.companyId=== v.companyId"
           (click)="selectVendor(v)"
         >
-          <div class="d-flex justify-content-between w-100">
-            <div class="text-left">
+          <div class="vendor-row">
+            <div class="vendor-left">
               <div class="vendor-title">{{ v.vendorName }}</div>
               <div class="small vendor-owner">{{ v.companyName }}</div>
             </div>
-            <div *ngIf="v.amount && v.amount > 0" class="text-right amount-text">
+            <div *ngIf="v.amount && v.amount > 0" class="vendor-right amount-text">
               {{ v.amount | number:'1.2-2' }}
             </div>
           </div>

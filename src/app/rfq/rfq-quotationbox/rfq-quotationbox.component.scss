@@ -41,6 +41,22 @@
 
 
 ////new
+
+.vendor-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.vendor-left {
+  flex: 1 1 auto;
+  min-width: 0;  
+}
+.vendor-right {
+  white-space: nowrap; 
+  flex-shrink: 0;     
+}
 .vendor-list
  {
     max-height: 420px;
@@ -49,9 +65,16 @@
     margin-bottom: 8px !important;
  }
 .vendor-item {
-  display: block; width: 100%; text-align: left; background: #fff; border: 0;
-  border-bottom: 1px solid #f1f3f5; padding: .65rem .75rem; cursor: pointer;
-  margin-bottom: 8px;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+    background: #fff;
+    border: 0;
+    border-bottom: 1px solid #f1f3f5;
+    padding: .65rem .75rem;
+    cursor: pointer;
+    margin-bottom: 8px;
 }
 .vendor-item:hover { background: #f6f9ff; }
 .vendor-item.active { background: #e6f0ff; box-shadow: inset 3px 0 0 #3b82f6; }
