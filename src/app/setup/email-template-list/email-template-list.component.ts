@@ -1,10 +1,8 @@
 import { ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
 import { ToastrService } from 'ngx-toastr';
-import { AuthService } from 'app/shared/auth/auth.service';
-import { EmailTemplateService } from 'app/shared/services/EmailTemplateService'; 
+import { EmailTemplateService } from 'app/shared/services/EmailTemplateService';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PermissionService } from 'app/shared/permissions/permission.service';
 import Swal from 'sweetalert2';
@@ -34,8 +32,6 @@ export class EmailTemplateListComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private modalService: NgbModal,
-    private authService: AuthService,
     private emailTemplateService: EmailTemplateService,
     private toastr: ToastrService,
     private cdr: ChangeDetectorRef,
@@ -43,29 +39,29 @@ export class EmailTemplateListComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.getEmailTemplates();
+    this.getAllEmailTemplates();
 
     // Table Columns
     this.columns = [
       { prop: 'subject', name: 'Subject' },
       { prop: 'body', name: 'Body' },
-      { prop: 'type', name: 'Type' },
-      { prop: 'entity', name: 'Entity' }
+      { prop: 'workFlowType', name: 'Type' },
+      { prop: 'procurementCompany', name: 'Entity' }
     ];
   }
 
   // Fetch all email templates
-  getEmailTemplates() {
+  getAllEmailTemplates() {
     this.loading = true;
 
-    this.emailTemplateService.getEmailTemplate().subscribe({
+    this.emailTemplateService.getAllEmailTemplates().subscribe({
       next: (res: any) => {
         this.allEmailTemplates = res.result.map(item => ({
           id: item.id,
           subject: this.truncateText(item.subject, 50),
           body: this.truncateText(item.body.replace(/<[^>]+>/g, ''), 50),
-          type: item.type,
-          entity: item.entity
+          workFlowType: item.workFlowType,
+          procurementCompany: item.procurementCompany,
         }));
 
         this.rows = [...this.allEmailTemplates];
@@ -82,75 +78,74 @@ export class EmailTemplateListComponent implements OnInit {
   }
 
   confirmDelete() {
-  if (!this.permissionService.can(FORM_IDS.EMAIL_TEMPLATE_LIST, 'delete'))
-    return;
+    if (!this.permissionService.can(FORM_IDS.EMAIL_TEMPLATE_LIST, 'delete'))
+      return;
 
-  if (!this.templateId) return;
+    if (!this.templateId) return;
 
-  Swal.fire({
-    title: 'Are you sure?',
-    text: 'Do you really want to delete this email template?',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Yes, delete it',
-    cancelButtonText: 'Cancel'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      this.deleteTemplate();
-    }
-  });
-}
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Do you really want to delete this email template?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deleteTemplate();
+      }
+    });
+  }
 
-deleteTemplate() {
-  this.loading = true;
+  deleteTemplate() {
+    this.loading = true;
 
-  this.emailTemplateService.deleteEmailTemplate({
-    id: this.templateId
-  }).subscribe({
-    next: () => {
-      Swal.fire(
-        'Deleted!',
-        'Template has been deleted successfully.',
-        'success'
-      );
+    this.emailTemplateService.deleteEmailTemplate({
+      id: this.templateId
+    }).subscribe({
+      next: () => {
+        Swal.fire(
+          'Deleted!',
+          'Template has been deleted successfully.',
+          'success'
+        );
 
-      this.getEmailTemplates();
-      this.chkBoxSelected = [];
-      this.templateId = null;
-      this.enableDisableButtons();
-      this.loading = false;
-    },
-    error: (err) => {
-      console.error('Error deleting template:', err);
+        this.getAllEmailTemplates();
+        this.chkBoxSelected = [];
+        this.templateId = null;
+        this.enableDisableButtons();
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error deleting template:', err);
 
-      Swal.fire(
-        'Error',
-        'Failed to delete template.',
-        'error'
-      );
+        Swal.fire(
+          'Error',
+          'Failed to delete template.',
+          'error'
+        );
 
-      this.loading = false;
-    }
-  });
-}
+        this.loading = false;
+      }
+    });
+  }
 
   // Navigate to edit page
   editTemplate() {
-    if(!this.permissionService.can(FORM_IDS.EMAIL_TEMPLATE_LIST, 'write'))
+    if (!this.permissionService.can(FORM_IDS.EMAIL_TEMPLATE_LIST, 'write'))
       return;
     if (!this.templateId) return;
     this.router.navigate(['/setup/create-email-template'], { queryParams: { id: this.templateId } });
   }
 
   // Truncate long text for table display
- truncateText(text: string, limit: number = 50): string {
-  if (!text) return '(...)';
-  const truncated = text.length > limit ? text.substring(0, limit) + '...' : text;
-  return `(${truncated})`;
-}
-
+  truncateText(text: string, limit: number = 50): string {
+    if (!text) return '(...)';
+    const truncated = text.length > limit ? text.substring(0, limit) + '...' : text;
+    return `(${truncated})`;
+  }
 
   // Sorting
   onSort(event) {
@@ -197,7 +192,7 @@ deleteTemplate() {
   }
 
   createTemplate() {
-    if(!this.permissionService.can(FORM_IDS.EMAIL_TEMPLATE_LIST, 'write'))
+    if (!this.permissionService.can(FORM_IDS.EMAIL_TEMPLATE_LIST, 'write'))
       return;
     this.router.navigate(['/setup/create-email-template']);
   }

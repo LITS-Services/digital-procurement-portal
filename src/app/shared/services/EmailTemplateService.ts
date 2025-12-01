@@ -12,41 +12,47 @@ export interface VendorUserDropdown {
   providedIn: 'root'
 })
 export class EmailTemplateService {
-  private apiUrl = `${environment.apiUrl}/Company`;
+  private baseUrlForEmailTemplate = `${environment.apiUrl}/EmailTemplate`;
+  private baseUrlForEmailLogs = `${environment.apiUrl}/EmailLogs`;
 
   constructor(private http: HttpClient) { }
 
-  getEmailTemplate(): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/EmailTemplate/GetAllEmailTemplates`);
+  creatEmailTemplate(payload: any) {
+    return this.http.post(`${this.baseUrlForEmailTemplate}/create`, payload);
+  }
+  getAllEmailTemplates(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrlForEmailTemplate}/get-all-templates`);
   }
 
   getEmailTemplateById(id: number): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/EmailTemplate/get-template-by-id`, {
+    return this.http.get<any>(`${this.baseUrlForEmailTemplate}/get-template-by-id`, {
       params: { id: id.toString() }
     });
   }
 
-  updateEmailTemplate(id: number, template: Partial<any>): Observable<any> {
-    return this.http.put<any>(`${environment.apiUrl}/EmailTemplate/Update/${id}`, template);
+  updateEmailTemplate(payload: any): Observable<any> {
+    return this.http.put<any>(
+      `${this.baseUrlForEmailTemplate}/update`,
+      payload
+    );
   }
 
   deleteEmailTemplate(payload: { id: number }): Observable<any> {
-    return this.http.post<any>(`${environment.apiUrl}/EmailTemplate/delete`, payload);
+    return this.http.post<any>(`${this.baseUrlForEmailTemplate}/delete`, payload);
   }
 
   createEmailInvitation(userData: any): Observable<string> {
-    return this.http.post(`${environment.apiUrl}/EmailLogs/create-email-invitation`, userData, { responseType: 'text' });
+    return this.http.post(`${this.baseUrlForEmailLogs}/create-email-invitation`, userData, { responseType: 'text' });
   }
 
   getUserInvitation(): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/EmailLogs/get-email-logs`);
+    return this.http.get<any[]>(`${this.baseUrlForEmailLogs}/get-email-logs`);
   }
 
   updateEmailInvitation(id: number, template: Partial<any>): Observable<any> {
-    return this.http.put<any>(`${environment.apiUrl}/EmailLogs/UpdateEmailinvitation${id}`, template);
+    return this.http.put<any>(`${this.baseUrlForEmailLogs}/UpdateEmailinvitation${id}`, template);
   }
   getEmailInvitationById(id: number): Observable<any> {
-    return this.http.get<any>(`${environment.apiUrl}/EmailLogs/GetEmailinvitation${id}`);
+    return this.http.get<any>(`${this.baseUrlForEmailLogs}/GetEmailinvitation${id}`);
   }
-
 }

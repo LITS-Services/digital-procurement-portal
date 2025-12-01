@@ -23,13 +23,13 @@ import { WorkflowApproverSetupComponent } from './workflow-approver-setup/workfl
 import { EmailSetupComponent } from './email-setup/email-setup.component';
 import { CreateInvitationComponent } from './create-invitation/create-invitation.component';
 import { EmailTemplateListComponent } from './email-template-list/email-template-list.component';
-import { CreatEmailTemplateComponent } from './creat-email-template/creat-email-template.component';
 import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
 import { VendorOnboardingSetupComponent } from './vendor-onboarding-setup/vendor-onboarding-setup.component';
 import { NewVendorOnboardingComponent } from './new-vendor-onboarding/new-vendor-onboarding.component';
 import { AclSetupComponent } from './acl-setup/acl-setup.component';
 import { VendorOnboardingReceiversComponent } from './vendor-onboarding-receivers/vendor-onboarding-receivers.component';
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
+import { CreateEmailTemplateComponent } from './create-email-template/create-email-template.component';
 
 
 @NgModule({
@@ -40,7 +40,7 @@ import { PermissionDirective } from 'app/shared/permissions/permission.directive
     EmailSetupComponent,
     CreateInvitationComponent,
     EmailTemplateListComponent,
-    CreatEmailTemplateComponent,
+    CreateEmailTemplateComponent,
     VendorOnboardingSetupComponent,
     NewVendorOnboardingComponent,
     AclSetupComponent,

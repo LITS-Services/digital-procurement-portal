@@ -1,0 +1,214 @@
+::ng-deep {
+  .ngx-datatable {
+
+    .sortable .sort-btn:before,
+    .sortable .sort-btn.datatable-icon-down:before,
+    .sortable .sort-btn.datatable-icon-up:before {
+      display: none !important;
+    }
+
+    // .datatable-header-inner {
+    //     background-color: #1E89B8 !important;
+    //     padding: 0.5rem;
+    // }
+
+    // .datatable-header-cell-label,
+    // .sort-btn {
+    //     color: white !important;
+    // }
+
+    // .datatable-footer {
+    //     background: #424242 !important;
+    //     color: #1E89B8;
+    // }
+
+    // .datatable-body-row.datatable-row-even {
+    //     background-color: rgba(0, 0, 0, 0.05);
+    // }
+
+    // .datatable-body-cell {
+    //     text-align: left;
+    //     padding: 0.75rem;
+    //     vertical-align: baseline;
+    // }
+  }
+}
+
+/* ---------- Custom Invitation Styles ---------- */
+// .heading {
+//     color: #1E89B8;
+//     font-weight: 700;
+//     margin-top: 0.5rem;
+// }
+
+.action-pane {
+  border-radius: 0.75rem;
+  background-color: #f8f9fa;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  color: #116AEF;
+}
+
+.action-btn i {
+  margin-right: 5px;
+  font-size: 1.1rem;
+}
+
+.full-form-card {
+  border-radius: 0.75rem;
+  background: #ffffff;
+  width: 100%;
+}
+
+// .form-label {
+//     font-weight: 600;
+//     color: #333;
+// }
+
+// .form-control {
+//     border-radius: 0.5rem;
+//     border: 1px solid #d9d9d9;
+//     transition: 0.2s;
+// }
+
+.form-control:focus {
+  box-shadow: 0 0 0 0.1rem rgba(30, 137, 184, 0.25);
+  border-color: #1E89B8;
+}
+
+// .card {
+//     //margin: 15px 0;
+//     //box-shadow: -8px 8px 14px 0 rgba(166, 166, 166, 0.412) !important;
+// }
+
+.custom-dropdown {
+  width: 100%;
+  max-height: 220px;
+  overflow-y: auto;
+  border: 1px solid #1E89B8;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  background: #ffffff;
+  z-index: 1000;
+  padding-left: 22px;
+
+}
+
+.custom-dropdown .dropdown-item {
+  cursor: pointer;
+  padding: 0.4rem 0.6rem;
+  border-radius: 0.25rem;
+}
+
+.custom-dropdown .dropdown-item:hover {
+  background-color: rgba(30, 137, 184, 0.1);
+}
+
+.form-check-input {
+  accent-color: #116AEF;
+}
+
+.cstm-dropdown {
+  padding: 9px 16px !important;
+}
+
+.body-placeholder-wrapper {
+  display: flex;
+  gap: 15px;
+}
+
+.email-body {
+  flex: 3; // Email body takes larger space
+}
+
+.placeholder-panel-wrapper {
+  flex: 1; // smaller width
+  max-width: 250px; // optional limit
+  position: sticky;
+  top: 20px; // sticks 20px from top
+  height: fit-content;
+  align-self: flex-start; // ensure sticky works with flex
+}
+
+.placeholder-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.placeholder-item {
+  cursor: pointer;
+  /* Makes cursor appear as pointer */
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.placeholder-item:hover {
+  background-color: #0dcaf0;
+  /* Slightly darker shade or highlight */
+  transform: scale(1.05);
+  /* Slight pop effect */
+}
+
+/* Dropdown arrow inside button */
+::ng-deep .dropdown-arrow {
+  font-size: 0.7rem;
+  color: #333;
+}
+
+::ng-deep .custom-dropdown {
+  width: 100% !important;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #1E89B8;
+  background: #fff;
+  z-index: 1000;
+}
+
+::ng-deep .custom-dropdown .dropdown-item {
+  //padding: 0.35rem 0.6rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+::ng-deep .custom-dropdown .dropdown-item:hover {
+  background-color: rgba(30, 137, 184, 0.1);
+}
+
+::ng-deep .dropdown-toggle {
+  display: flex;
+  align-items: center;
+  /* Vertically center content */
+  flex-wrap: wrap;
+  /* Allow chips to wrap */
+  gap: 5px;
+  /* Space between chips */
+  padding: 6px 12px;
+  /* Adjust padding */
+  min-height: 38px;
+  /* Ensures consistent height */
+  position: relative;
+}
+
+::ng-deep .dropdown-toggle .dropdown-arrow {
+  margin-left: auto;
+  /* Push arrow to the right */
+  font-size: 0.75rem;
+  /* Smaller arrow */
+  line-height: 1;
+}
+
+::ng-deep .dropdown-toggle span.text-truncate {
+  max-width: calc(100% - 20px);
+  /* leave space for arrow */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

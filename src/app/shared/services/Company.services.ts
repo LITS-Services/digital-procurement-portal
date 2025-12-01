@@ -3,8 +3,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'environments/environment';
 
-
-
 export interface VendorUserDropdown {
   $id: string,
   $values: [];
@@ -100,10 +98,6 @@ export class CompanyService {
     return this.http.get<any[]>(`${this.apiUrl}/get-all-vendor-companies`);
   }
 
-
-
-
-
   // company
   VendorCompanyAction(payload: any) {
     return this.http.post(`${environment.apiUrl}/Company/VendorCompanyAction`, payload);
@@ -113,21 +107,9 @@ export class CompanyService {
     return this.http.get<any[]>(`${environment.apiUrl}/Company/get-company-approval-history?ProcurementCompanyId=${ProcurementCompanyId}&VendorCompanyId=${vendorComapnyId}`);
   }
 
-
   setupId(associationId: number): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiUrl}/Company/SetupHistory?vendorEntityAssociationId=${associationId}`);
   }
-
-  //
-  CreatEmailTemplate(payload: any) {
-    return this.http.post(`${environment.apiUrl}/EmailTemplate/Create`, payload);
-  }
-
-
-
-
-
-
 
   GetAllCompanyOnboardingSetup(): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiUrl}/Workflow/get-all-company-onboarding-setup`);
@@ -148,11 +130,6 @@ export class CompanyService {
   DeleteCompanyOnboardingSetupById(id: number): Observable<any> {
     return this.http.delete<any>(`${environment.apiUrl}/Workflow/delete-company-onboarding-setup-by-id?Id=${id}`);
   }
-
-
-
-
-
 
   // getVendorUsers(): Observable<VendorUserDropdown> {
   //   return this.http.get<VendorUserDropdown>(`${this.apiUrl}/get-all-vendor-users`);
@@ -181,7 +158,6 @@ export class CompanyService {
   //     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   //   }
 
-
   getFilteredReceivers(EntityId: number, RoleId: string): Observable<any[]> {
     const url = `${environment.apiUrl}/Employee/get-receivers`;
     const params = {
@@ -198,8 +174,6 @@ export class CompanyService {
     });
   }
 
-
-
   assignedMe(vendorEntityAssociationId: number, approverId: string, remarks: string, setUpId: number): Observable<any> {
     const params = new HttpParams()
       .set('VendorEntityAssociationId', vendorEntityAssociationId)
@@ -209,10 +183,8 @@ export class CompanyService {
     return this.http.get<any>(`${this.apiUrl}/assigned-me`, { params });
   }
 
-
   takeAction(data: any): Observable<any> {
     return this.http.post<any>(`${environment.apiUrl}/Workflow/take-action`, data);
   }
-
 
 }

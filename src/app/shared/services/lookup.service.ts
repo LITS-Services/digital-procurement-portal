@@ -72,4 +72,8 @@ export class LookupService {
   getAllEmailActions() {
     return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=email-actions`);
   }
+
+  getAllWorkflowTypes() {
+    return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=workflow-types`);
+  }
 }

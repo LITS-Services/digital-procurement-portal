@@ -5,12 +5,12 @@ import { NewWorkflowmasterSetupComponent } from './new-workflowmaster-setup/new-
 import { EmailSetupComponent } from './email-setup/email-setup.component';
 import { CreateInvitationComponent } from './create-invitation/create-invitation.component';
 import { EmailTemplateListComponent } from './email-template-list/email-template-list.component';
-import { CreatEmailTemplateComponent } from './creat-email-template/creat-email-template.component';
 import { VendorOnboardingSetupComponent } from './vendor-onboarding-setup/vendor-onboarding-setup.component';
 import { NewVendorOnboardingComponent } from './new-vendor-onboarding/new-vendor-onboarding.component';
 import { AclSetupComponent } from './acl-setup/acl-setup.component';
 import { AclGuard } from 'app/shared/permissions/acl.guard';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
+import { CreateEmailTemplateComponent } from './create-email-template/create-email-template.component';
 
 const routes: Routes = [
 
@@ -71,7 +71,7 @@ const routes: Routes = [
       },
       {
         path: 'create-email-template',
-        component: CreatEmailTemplateComponent,
+        component: CreateEmailTemplateComponent,
         canActivate: [AclGuard],
         data: {
           title: 'Create Email Template',
