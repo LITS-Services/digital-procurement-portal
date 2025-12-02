@@ -1,43 +1,70 @@
 <div class="modal-body card">
-    <div class="card-body cstm-body">
-        <div class="d-flex justify-content-end mb-2 mr-2 mt-2">
-            <button class="btn btn-primary" [disabled]="viewMode" (click)="onSubmit()">Submit Final Vendors</button>
-        </div>
-
-        <ngx-datatable class="bootstrap core-bootstrap" [rows]="itemsData" [columnMode]="'force'" [headerHeight]="50"
-            [footerHeight]="40" [rowHeight]="50" [limit]="5" [scrollbarH]="true">
-            <ngx-datatable-column name="Sr. No." [width]="10" [sortable]="false">
-                <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
-                    <span>{{rowIndex + 1}}</span>
-                </ng-template>
-            </ngx-datatable-column>
-
-
-            <ngx-datatable-column name="Item">
-                <ng-template let-row="row" ngx-datatable-cell-template>
-                    {{row.itemName}}
-                </ng-template>
-
-            </ngx-datatable-column>
-
-            <ngx-datatable-column name="Amount" prop="amount" [sortable]="false">
-            </ngx-datatable-column>
-
-            <ngx-datatable-column name="Final Vendor" [sortable]="false" [cellClass]="'cstm-cell'" [headerClass]="'cstm-cell-header'">
-                <ng-template ngx-datatable-cell-template let-row="row" class="cstm-cell">
-                    <select [disabled]="viewMode" class="form-control custom-finalVen-dropdown" [ngModel]="selected[row.id] || null"
-                        (ngModelChange)="selected[row.id] = $event" [ngModelOptions]="{ standalone: true }">
-                        <option [ngValue]="null" disabled>Select Company</option>
-                        <option *ngFor="let v of vendorData" [ngValue]="v">
-                            {{ v.companyName }}
-                        </option>
-                    </select>
-                </ng-template>
-            </ngx-datatable-column>
-
-
-        </ngx-datatable>
+  <div class="card-body cstm-body">
+    <div class="d-flex justify-content-end mb-2 mr-2 mt-2">
+      <button class="btn btn-primary" [disabled]="viewMode" (click)="onSubmit()">Submit Final Vendors</button>
     </div>
 
+    <ngx-datatable class="bootstrap core-bootstrap" [rows]="itemsWithTotals" [columnMode]="'force'" 
+                   [headerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [footerHeight]="50">
 
+      <!-- Sr. No. -->
+      <ngx-datatable-column name="Sr. No." [width]="10" [sortable]="false">
+        <ng-template let-rowIndex="rowIndex" let-row="row" ngx-datatable-cell-template>
+          <span *ngIf="row.itemName !== 'Total'">{{rowIndex + 1}}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <!-- Item Name -->
+      <ngx-datatable-column name="Item">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <b *ngIf="row.itemName === 'Total'">{{ row.itemName }}</b>
+          <span *ngIf="row.itemName !== 'Total'">{{ row.itemName }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <!-- Budget Amount -->
+      <ngx-datatable-column name="Budget Amount" prop="amount" [sortable]="false">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <b *ngIf="row.itemName === 'Total'">{{ row.amount | number:'1.2-2' }}</b>
+          <span *ngIf="row.itemName !== 'Total'">{{ row.amount }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <!-- Quote Amount -->
+      <ngx-datatable-column name="Quote Amount" [sortable]="false">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <b *ngIf="row.itemName === 'Total'">{{ row.quoteAmount | number:'1.2-2' }}</b>
+          <span *ngIf="row.itemName !== 'Total'">{{ getQuoteAmount(row.id) !== null ? (getQuoteAmount(row.id) | number:'1.2-2') : '-' }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+
+      <!-- Difference -->
+      <!-- <ngx-datatable-column name="Difference" [sortable]="false">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <b *ngIf="row.itemName === 'Total'">{{ row.difference | number:'1.2-2' }}</b>
+        </ng-template>
+      </ngx-datatable-column> -->
+
+      <!-- Final Vendor -->
+      <ngx-datatable-column name="Final Vendor" [sortable]="false">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <ng-container *ngIf="row.itemName !== 'Total'">
+            <select [disabled]="viewMode" class="form-control" 
+                    [ngModel]="selected[row.id] || null"
+                    (ngModelChange)="selected[row.id] = $event" 
+                    [ngModelOptions]="{ standalone: true }">
+              <option [ngValue]="null" disabled>Select Company</option>
+              <option *ngFor="let v of vendorData" [ngValue]="v">{{ v.companyName }}</option>
+            </select>
+          </ng-container>
+
+          <ng-container *ngIf="row.itemName === 'Total'">
+            <span>Difference: </span>
+            <b *ngIf="row.itemName === 'Total'">{{ row.difference | number:'1.2-2' }}</b>
+          </ng-container>
+
+        </ng-template>
+      </ngx-datatable-column>
+    </ngx-datatable>
+  </div>
 </div>

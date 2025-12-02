@@ -14,9 +14,9 @@ export class RfqFinalVendorsComponent implements OnInit {
 
   itemsData: any[] = [];
   vendorData: any[] = [];
-  selected: { [id: number]: { companyId: string; vendorUserId: string } | null } = {};
+  //selected: { [id: number]: { companyId: string; vendorUserId: string } | null } = {};
+  selected: { [id: number]: any | null } = {};
   quotationRequestId: number | null = null;
-
 
   constructor(private rfqService: RfqService, private toastr: ToastrService, private cdr: ChangeDetectorRef) { }
 
@@ -66,23 +66,38 @@ export class RfqFinalVendorsComponent implements OnInit {
       }
     });
   }
+  // private mapSelectedVendors() {
+  //   if (!this.itemsData.length || !this.vendorData.length) return;
+
+  //   this.itemsData.forEach(item => {
+  //     const pre =
+  //       item.vendorCompanyId && (item.vendorUserId || item.vendorId)
+  //         ? this.vendorData.find(v =>
+  //           v.companyId === item.vendorCompanyId &&
+  //           v.vendorUserId === (item.vendorUserId ?? item.vendorId)
+  //         )
+  //         : null;
+
+  //     this.selected[item.id] = pre ?? null;
+  //   });
+
+  //   this.cdr.detectChanges();
+  // }
   private mapSelectedVendors() {
     if (!this.itemsData.length || !this.vendorData.length) return;
 
     this.itemsData.forEach(item => {
-      const pre =
-        item.vendorCompanyId && (item.vendorUserId || item.vendorId)
-          ? this.vendorData.find(v =>
-            v.companyId === item.vendorCompanyId &&
-            v.vendorUserId === (item.vendorUserId ?? item.vendorId)
-          )
-          : null;
+      const vendor = this.vendorData.find(v =>
+        v.companyId === item.vendorCompanyId &&
+        v.vendorUserId === (item.vendorUserId ?? item.vendorId)
+      );
 
-      this.selected[item.id] = pre ?? null;
+      this.selected[item.id] = vendor ?? null;  // <-- store the full vendor object
     });
 
     this.cdr.detectChanges();
   }
+
 
   onSubmit() {
     const payload = this.itemsData
@@ -111,5 +126,40 @@ export class RfqFinalVendorsComponent implements OnInit {
         next: () => this.loadItems(this.quotationRequestId),
         error: (e) => console.error(e)
       });
+  }
+
+  getQuoteAmount(itemId: number): number | null {
+    const vendor = this.selected[itemId];
+    if (!vendor?.bids) return null;
+
+    const bid = vendor.bids.find(b => b.quotationItemId === itemId);
+    return bid?.biddingAmount ?? null;
+  }
+
+  get itemsWithTotals() {
+    if (!this.itemsData.length) return [];
+
+    const totalBudget = this.itemsData.reduce((sum, i) => sum + (i.amount || 0), 0);
+
+    const totalQuote = this.itemsData.reduce((sum, i) => {
+      const vendor = this.selected[i.id];
+      if (!vendor?.bids) return sum;
+
+      const bid = vendor.bids.find((b: any) => b.quotationItemId === i.id);
+      return sum + (bid?.biddingAmount || 0);
+    }, 0);
+
+    const difference = totalBudget - totalQuote;
+
+    return [
+      ...this.itemsData,
+      {
+        id: -1,
+        itemName: 'Total',
+        amount: totalBudget,
+        quoteAmount: totalQuote,
+        difference
+      }
+    ];
   }
 }
