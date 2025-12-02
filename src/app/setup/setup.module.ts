@@ -30,6 +30,8 @@ import { AclSetupComponent } from './acl-setup/acl-setup.component';
 import { VendorOnboardingReceiversComponent } from './vendor-onboarding-receivers/vendor-onboarding-receivers.component';
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
 import { CreateEmailTemplateComponent } from './create-email-template/create-email-template.component';
+import { BulkVendorOnboardingComponent } from './bulk-vendor-onboarding/bulk-vendor-onboarding.component';
+
 
 
 @NgModule({
@@ -44,7 +46,8 @@ import { CreateEmailTemplateComponent } from './create-email-template/create-ema
     VendorOnboardingSetupComponent,
     NewVendorOnboardingComponent,
     AclSetupComponent,
-    VendorOnboardingReceiversComponent
+    VendorOnboardingReceiversComponent,
+    BulkVendorOnboardingComponent,
   ],
   imports: [
     CommonModule,

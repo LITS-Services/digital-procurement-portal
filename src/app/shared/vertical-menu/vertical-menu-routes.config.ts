@@ -83,6 +83,9 @@ export const ROUTES: RouteInfo[] = [
         path: '/setup/email-templatelist', title: 'Email Template List', icon: 'fa fa-envelope-open-text submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         formTypeId: FORM_IDS.EMAIL_TEMPLATE_LIST
       },
+       {
+        path: '/setup/bulk-vendor-onboarding', title: 'Bulk Company Onboarding', icon: 'fa fa-folder-plus submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: []
+      },
 
     ],
   },

@@ -354,3 +354,17 @@ body.modal-open {
   .modal-content { max-height: calc(100vh - 1.5rem); }
   .modal-body { padding: 0.75rem; }
 }
+
+
+body.menu-expanded .file-summary-bar.scrolled {
+  left: 310px;
+}
+
+body.nav-collapsed .file-summary-bar.scrolled {
+  left: 92px !important;
+}
+
+body.menu-hide .file-summary-bar.scrolled,
+body.vertical-overlay-menu .file-summary-bar.scrolled {
+  left: 30px !important;
+}

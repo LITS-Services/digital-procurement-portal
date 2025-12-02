@@ -1,0 +1,453 @@
+<section id="bulk-company-upload">
+  <div class="row">
+    <div class="col-12">
+
+      <!-- Header -->
+      <div class="row mb-2">
+        <div class="col-md-12">
+          <h4 class="heading mb-1">Bulk Company Upload</h4>
+          <p class="text-muted small mb-0">
+            Upload an Excel file, then review all sections (General, Address, Contact, Bank, Demographics, Attachments)
+            before importing.
+          </p>
+        </div>
+      </div>
+
+      <!-- Main card -->
+      <div class="card">
+        <div class="card-body">
+
+          <!-- STATE 1: No company yet - centered upload -->
+          <div *ngIf="!hasCompany" class="upload-center-wrapper">
+            <div class="row justify-content-center">
+              <div class="col-md-7 col-lg-6">
+
+                <div class="mb-0">
+                  <div class="card-body">
+
+                    <div class="text-center mb-3">
+                      <div class="section-title mb-1">Upload Excel file</div>
+                      <div class="text-muted extra-small">
+                        Supported: .xlsx &middot; Use the approved vendor onboarding template.
+                      </div>
+                    </div>
+
+                    <label class="upload-area w-100 mb-0">
+                      <input
+                        type="file"
+                        class="d-none"
+                        accept=".xlsx,.xls"
+                        (change)="onFileSelected($event)"
+                      />
+
+                      <div class="upload-inner text-center">
+                        <div class="upload-icon mb-2">
+                          📊
+                        </div>
+                        <div class="small">
+                          <span class="text-primary font-weight-500">Click to Upload</span>
+                          
+                        </div>
+                        <div class="text-muted extra-small mt-1">
+                          Rows will be mapped into: General, Address, Contact, Bank, Demographics, Attachments.
+                        </div>
+                      </div>
+                    </label>
+
+                    <!-- File chip (optional small feedback if already chosen but no parsed data yet) -->
+                    <div *ngIf="selectedFile && !hasCompany" class="selected-file mt-3">
+                      <div class="file-icon">📄</div>
+                      <div class="file-info">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <div class="small text-truncate" [title]="selectedFile?.name">
+                            {{ selectedFile?.name }}
+                          </div>
+                          <span class="badge badge-secondary extra-small">
+                         {{ isParsing ? 'Parsing...' : 'No valid company data found' }}
+                          </span>
+                        </div>
+                        <div class="text-muted extra-small mt-1">
+                          {{ (selectedFile?.size || 0) / 1024 | number : '1.1-1' }} KB
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- STATE 2: Company loaded - full-width preview -->
+          <div *ngIf="hasCompany" class="company-preview-wrapper">
+
+            <!-- Top row: file info + actions -->
+            <div class="file-summary-bar mb-3" [class.scrolled]="isScrolled">
+              <div class="file-summary-inner">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                  <div class="file-summary d-flex align-items-center mb-2 mb-md-0">
+                    <div class="file-icon-large mr-2">
+                      📄
+                    </div>
+                    <div>
+                      <div class="small font-weight-500 text-truncate" [title]="selectedFile?.name">
+                        {{ selectedFile?.name }}
+                      </div>
+                      <div class="text-muted extra-small">
+                        {{ (selectedFile?.size || 0) / 1024 | number : '1.1-1' }} KB
+                      </div>
+                    </div>
+                  </div>
+            
+                  <div class="mb-1 mb-md-0 d-flex">
+                    <button type="button" class="btn btn-link btn-sm p-0 mr-3 extra-small" (click)="onChangeFile()">
+                    <i class="ft ft-refresh-cw mr-1"></i>  Change file
+                    </button>
+                    <button type="button" class="btn btn-sm btn-primary" [disabled]="!hasCompany" (click)="onConfirmImport()">
+                      Confirm & Submit
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- General Information -->
+            <div class="card mb-3 shadow-sm section-card">
+              <div class="card-body">
+                <div class="section-header d-flex justify-content-between align-items-center mb-3">
+                  <div class="d-flex align-items-center">
+                    <div class="section-dot mr-2"></div>
+                    <div class="section-title mb-0">General information</div>
+                  </div>
+                  <!-- <span class="badge badge-success extra-small">
+                    {{ company?.requestStatus?.status }}
+                  </span> -->
+                </div>
+
+                <div class="d-flex flex-wrap align-items-center mb-3">
+                  <div class="company-avatar mr-2 mb-2">
+                    {{ getInitials(company?.name) }}
+                  </div>
+                  <div class="flex-grow-1 mb-2">
+                    <div class="company-title" [title]="company?.name">
+                      {{ company?.name }}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row small-fields">
+                  <div class="col-md-12 mb-2">
+                    <div class="field-label">Remarks</div>
+                    <div class="field-value text-truncate" [title]="company?.remarks">
+                      {{ company?.remarks }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Addresses -->
+            <div class="card mb-3 shadow-sm section-card">
+              <div class="card-body">
+                <div class="section-header d-flex justify-content-between align-items-center mb-3">
+                  <div class="d-flex align-items-center">
+                    <div class="section-dot mr-2"></div>
+                    <div class="section-title mb-0">Addresses</div>
+                  </div>
+                  <span class="badge badge-light extra-small">
+                    {{ company?.addresses?.length || 0 }} records
+                  </span>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="table pro-table table-sm mb-0">
+                    <thead>
+                      <tr>
+                        <th>Street</th>
+                        <th>City</th>
+                        <th>Country</th>
+                        <th>Type</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <ng-container *ngIf="company?.addresses?.length; else noAddresses">
+                        <tr *ngFor="let addr of company?.addresses">
+                        <td>{{ addr.street }}</td>
+                      
+                        <td>{{ addr.city }}</td>
+                        <td>{{ addr.country }}</td>
+                        <td>
+                          <span *ngIf="addr.isPrimary === 'Yes'; else secondary" class="badge badge-warning extra-small">
+                            Primary
+                          </span>
+                        
+                          <!-- non primary -->
+                          <ng-template #secondary>
+                            Secondary
+                          </ng-template>
+                        </td>
+                      </tr>
+                      </ng-container>
+                        <ng-template #noAddresses>
+                          <div class="text-muted extra-small py-2">
+                            No address data found in the Excel file.
+                          </div>
+                        </ng-template>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contacts -->
+            <div class="card mb-3 shadow-sm section-card">
+              <div class="card-body">
+                <div class="section-header d-flex justify-content-between align-items-center mb-3">
+                  <div class="d-flex align-items-center">
+                    <div class="section-dot mr-2"></div>
+                    <div class="section-title mb-0">Contacts</div>
+                  </div>
+                  <span class="badge badge-light extra-small">
+                    {{ company?.contacts?.length || 0 }} records
+                  </span>
+                </div>
+
+                <div class="row">
+                   <ng-container *ngIf="company?.contacts?.length; else noContacts">
+                      <div class="col-md-6 mb-2" *ngFor="let c of company?.contacts">
+                    <div class="contact-card">
+                      <div class="contact-avatar">
+                        {{ getInitials(c.description) }}
+                      </div>
+                      <div class="contact-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <div class="small font-weight-500 text-truncate" [title]="c.description">
+                            {{ c.description }}
+                          </div>
+                          <span *ngIf="c.isPrimary" class="badge badge-warning extra-small">
+                            Primary
+                          </span>
+                        </div>
+                        <div class="extra-small text-muted d-flex align-items-center mt-1">
+                        
+                          <!-- Phone -->
+                          <span class="d-flex align-items-center">
+                            <i class="ft ft-phone mr-1"></i>
+                            {{ c.phone || 'N/A' }}
+                          </span>
+                        
+                          <!-- Dot divider -->
+                          <span class="mx-2">&bull;</span>
+                        
+                          <!-- Email -->
+                          <span class="d-flex align-items-center text-truncate" [title]="c.email || 'N/A'">
+                            <i class="ft ft-mail mr-1"></i>
+                            {{ c.email || 'N/A' }}
+                          </span>
+                        
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                   </ng-container>
+
+                      <ng-template #noContacts>
+                          <div class="text-muted extra-small py-2">
+                            No contacts detail found in the Excel file.
+                          </div>
+                        </ng-template>
+                
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Bank Details -->
+            <div class="card mb-3 shadow-sm section-card">
+              <div class="card-body">
+                <div class="section-header d-flex justify-content-between align-items-center mb-3">
+                  <div class="d-flex align-items-center">
+                    <div class="section-dot mr-2"></div>
+                    <div class="section-title mb-0">Bank details</div>
+                  </div>
+                </div>
+
+
+                <div class="table-responsive">
+                  <table class="table pro-table table-sm mb-0">
+                    <thead>
+                      <tr>
+                        <th>Bank name</th>
+                        <th>Account holder</th>
+                        <th>Account / IBAN</th>
+                        <th>Branch</th>
+                        <th>Country</th>
+                        <th>Currency</th>
+                      </tr>
+                    </thead>
+                    
+             
+                    <tbody>
+                          <ng-container *ngIf="company?.bankDetails?.length; else noBank">
+                          
+                          
+                            <tr *ngFor="let b of company?.bankDetails">
+                              <td>{{ b.bankName }}</td>
+                              <td>{{ b.accountHolderName }}</td>
+                              <td>
+                                <div class="small">{{ b.accountNumber }}</div>
+                                <div class="extra-small text-muted">{{ b.iban }}</div>
+                              </td>
+                              <td>
+                                <div class="small">{{ b.branchName }}</div>
+                                <div class="extra-small text-muted">
+                                  {{ b.branchAddress }}
+                                </div>
+                              </td>
+                              <td>
+                                <div class="small">
+                                  {{ b.country }}
+                                </div>
+                              </td>
+                              <td>
+                                <span class="badge badge-light extra-small">
+                                  {{ b.currency }}
+                                </span>
+                              </td>
+                            </tr>
+                          </ng-container>
+                          
+                          <ng-template #noBank>
+                            <div class="text-muted extra-small py-2">
+                              No bank data found in the Excel file.
+                            </div>
+                          </ng-template>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Demographics -->
+            <div class="card mb-3 shadow-sm section-card">
+              <div class="card-body">
+                <div class="section-header d-flex justify-content-between align-items-center mb-3">
+                  <div class="d-flex align-items-center">
+                    <div class="section-dot mr-2"></div>
+                    <div class="section-title mb-0">Demographics</div>
+                  </div>
+                </div>
+
+                    <ng-container *ngIf="company?.demographics; else noDemographics">      
+                      <div class="row small-fields">
+                        <div class="col-md-6 mb-2">
+                          <div class="field-label">Vendor Type</div>
+                          <div class="field-value">
+                            {{ company?.demographics?.vendorType }}
+                          </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                          <div class="field-label">Primary Currency</div>
+                          <div class="field-value">
+                            {{ company?.demographics?.primaryCurrency }}
+                          </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                          <div class="field-label">Line of Business</div>
+                          <div class="field-value">
+                            {{ company?.demographics?.lineOfBusiness }}
+                          </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                          <div class="field-label">Employee Responsible</div>
+                          <div class="field-value">
+                            {{ company?.demographics?.employeeResponsible }}
+                          </div>
+                        </div>
+                    
+                        <div class="col-md-12 mb-2">
+                          <div class="field-label">Note</div>
+                          <div class="field-value">
+                            {{ company?.demographics?.note }}
+                          </div>
+                        </div>
+                      </div>
+                    </ng-container>
+
+                      <ng-template #noDemographics>
+                            <div class="text-muted extra-small py-2">
+                              No demographics data found in the Excel file.
+                            </div>
+                          </ng-template>
+              </div>
+            </div>
+
+            <!-- Attachments -->
+        <div class="card mb-3 shadow-sm section-card">
+            <div class="card-body">
+                <div class="section-header d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="section-dot mr-2"></div>
+                        <div class="section-title mb-0">Attachments</div>
+                    </div>
+        
+                    <div class="d-flex align-items-center">
+                          <div class="position-relative mr-1">
+                            <input type="file" #attachmentInput class="d-none" multiple
+                                (change)="onAttachmentSelected($event)" />
+                            <button type="button" class="btn btn-outline-primary btn-sm"
+                                (click)="attachmentInput.click()">
+                               <i class="ft ft-plus mr-1"></i> Upload Attachments
+                            </button>
+                        </div>
+
+                        <span class="badge badge-light extra-small mr-2">
+                            {{ company?.attachments?.length || 0 }} files
+                        </span>
+        
+                        <!-- Upload attachment button -->
+                    
+                    </div>
+                </div>
+        
+                <div *ngIf="!company?.attachments?.length" class="extra-small text-muted">
+                    No attachments uploaded yet. Use the <strong>Upload</strong> button to add files.
+                </div>
+        
+                <div *ngFor="let a of company?.attachments" class="attachment-row">
+                    <div class="attachment-icon">📎</div>
+                    <div class="attachment-body">
+                        <div class="small text-truncate" [title]="a.fileName">
+                            {{ a.fileName }}
+                        </div>
+                        <div class="extra-small text-muted">
+                            {{ a.fileType || 'FILE' }} · {{ a.sizeInKb }} KB
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="button" class="btn btn-danger btn-sm px-1" (click)="onRemoveAttachment(a)">
+                            <i class="fa fa-trash-alt"></i>
+                        </button>
+                    </div>
+                </div>
+        
+            </div>
+        </div>
+
+            <!-- Bottom actions -->
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mt-2">
+              <p class="text-muted extra-small mb-2 mb-md-0">
+                Review all sections. If everything looks correct, proceed with import or change file to re-upload.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

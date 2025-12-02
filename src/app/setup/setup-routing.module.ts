@@ -11,6 +11,7 @@ import { AclSetupComponent } from './acl-setup/acl-setup.component';
 import { AclGuard } from 'app/shared/permissions/acl.guard';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { CreateEmailTemplateComponent } from './create-email-template/create-email-template.component';
+import { BulkVendorOnboardingComponent } from './bulk-vendor-onboarding/bulk-vendor-onboarding.component';
 
 const routes: Routes = [
 
@@ -87,6 +88,13 @@ const routes: Routes = [
           title: 'Vendor Onboarding Setup',
           formTypeId: FORM_IDS.VENDOR_ONBOARDING,
           action: 'read',
+        }
+      },
+          {
+        path: 'bulk-vendor-onboarding',
+        component: BulkVendorOnboardingComponent,
+        data: {
+          title: 'Bulk Vendor Onboarding'
         }
       },
       {
