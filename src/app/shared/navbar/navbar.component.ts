@@ -441,21 +441,21 @@ onWindowScroll() {
     switch (referenceType) {
       case ReferenceType.RFQ:
         this.router.navigate(["/rfq/new-rfq"], {
-          queryParams: { id: referenceId,  focus: isCommentNotif ? 'comments' : undefined },
+          queryParams: { id: referenceId,  focus: isCommentNotif ? 'comments' : undefined,  mode: 'view'},
           skipLocationChange: true,
         });
         break;
 
       case ReferenceType.PR:
         this.router.navigate(["/purchase-request/new-purchase-request"], {
-          queryParams: { id: referenceId },
+          queryParams: { id: referenceId, mode: 'view' },
           skipLocationChange: true,
         });
         break;
 
       case ReferenceType.PO:
         this.router.navigate(["/purchase-order/details"], {
-          queryParams: { id: referenceId },
+          queryParams: { id: referenceId, },
           skipLocationChange: true,
         });
       // this.selectedPO = { id: n.referenceId };
