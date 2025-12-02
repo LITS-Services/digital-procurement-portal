@@ -107,8 +107,8 @@
         </button>
 
          <button
-          (click)="selectTab('attachments')"
-          [ngClass]="{ 'tab-current': selectedTab === 'attachments' }"
+          (click)="selectTab('setup-history')"
+          [ngClass]="{ 'tab-current': selectedTab === 'setup-history' }"
           class="custom-style-tab">
           <span>Setup History</span>
         </button>
@@ -343,6 +343,10 @@
 
     <div *ngIf="selectedTab === 'approval-history'">
       <app-company-approval-history [ProcurementCompanyId]="procurementCompanyId" [vendorComapnyId]="companyId"></app-company-approval-history>
+    </div>
+
+    <div *ngIf="selectedTab === 'setup-history'">
+      <app-company-setup-history [vendorEntityAssociationId]="vendorEntityAssociationId" [vendorComapnyId]="companyId"></app-company-setup-history>
     </div>
 
   </div>
