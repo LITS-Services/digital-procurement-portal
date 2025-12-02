@@ -102,8 +102,8 @@
                         </span>
                       </small>
                     </label>
-              
-                <select class="form-control custom-input" formControlName="entityId" [disabled]="isEntityLocked || viewMode">
+                <select class="form-control custom-input" formControlName="entityId" [disabled]="isEntityLocked || viewMode"
+                  (change)="loadAddressOnEntityChanges()">
                   <option [ngValue]="null">-- Select Entity --</option>
                   <option *ngFor="let e of entities" [ngValue]="e.id">
                     {{ e.description }}
@@ -112,6 +112,27 @@
                 </div>
               </div>
               
+              <div class="col-lg-4 mb-2">
+                <label>Address</label>
+                <select class="form-control" formControlName="address">
+                  <option value="">Select Address</option>
+                  <option *ngFor="let add of addresses" [value]="add.value">
+                    {{ add.description }}
+                  </option>
+                </select>
+              </div>
+              
+              <div class="col-lg-4 mb-2">
+                <label>Address 2</label>
+                <select class="form-control" formControlName="address2">
+                  <option value="">Select Address 2</option>
+                  <option *ngFor="let add2 of addresses2" [value]="add2.value">
+                    {{ add2.description }}
+                  </option>
+                </select>
+              </div>
+
+
               <div class="col-lg-4 mb-2">
                 <label>Submitted Date</label>
                 <input type="date" class="form-control custom-input" formControlName="submittedDate">

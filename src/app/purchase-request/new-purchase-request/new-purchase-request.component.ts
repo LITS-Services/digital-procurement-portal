@@ -80,6 +80,9 @@ export class NewPurchaseRequestComponent implements OnInit {
   // itemList: any[] = [];
   uomList: any[] = [];
 
+  addresses: any[] = [];
+  addresses2: any[] = [];
+
     entities: Array<{ id: number; description: string }> = [];
   isEntityLocked = false;
   entityHint = '';
@@ -96,7 +99,6 @@ export class NewPurchaseRequestComponent implements OnInit {
     private route: ActivatedRoute,
     private modalService: NgbModal,
     private purchaseRequestService: PurchaseRequestService,
-    private companyService: CompanyService,
     private lookupService: LookupService,
     private fb: FormBuilder,
     public toastr: ToastrService,
@@ -107,8 +109,6 @@ export class NewPurchaseRequestComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
-    // this.loadVendorUsers();
     this.loadUnitsOfMeasurements();
     this.loadAccounts();
     this.loadItems();
@@ -146,6 +146,8 @@ export class NewPurchaseRequestComponent implements OnInit {
       exceptionPolicy: [false],
       subject: [''],
       entityId: [null],
+      address: [''],
+      address2: [''],
     });
 
     this.newPurchaseRequestForm.valueChanges.subscribe(() => {
@@ -230,6 +232,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       // set value if exist (update mode/already selected entity)
       if (desiredId != null && this.entities?.some((e) => e.id === desiredId)) {
         ctrl.setValue(desiredId, { emitEvent: false });
+        this.loadAddressOnEntityChanges();
       } else if (!wantsLock) {
         // allow user to choose ('All entity case')
         ctrl.setValue(null, { emitEvent: false });
@@ -268,6 +271,28 @@ export class NewPurchaseRequestComponent implements OnInit {
       },
       error: (err) => console.error('Error fetching entities:', err),
     });
+  }
+
+  loadAddresses(entityId?: number) {
+    this.lookupService.getAddressByEntity(entityId).subscribe({
+      next: (res) => (this.addresses = res),
+      error: () => this.toastr.error("Unable to load Address list"),
+    });
+
+    this.lookupService.getAddress2ByEntity(entityId).subscribe({
+      next: (res) => (this.addresses2 = res),
+      error: () => this.toastr.error("Unable to load Address 2 list"),
+    });
+  }
+  loadAddressOnEntityChanges() {
+    const entityId = this.newPurchaseRequestForm.get('entityId')?.value;
+    if (entityId) {
+      this.loadAddresses(entityId);
+      this.newPurchaseRequestForm.patchValue({
+        address: '',
+        address2: ''
+      });
+    }
   }
 
   loadUnitsOfMeasurements() {
@@ -739,6 +764,8 @@ export class NewPurchaseRequestComponent implements OnInit {
       workflowMasterId: Number(f.workflowMasterId) || 0,
       createdBy: f.createdBy || '',
       entityId: finalEntityId,
+      address: f.address,
+      address2: f.address2,
       purchaseItems
     };
 
@@ -830,6 +857,8 @@ export class NewPurchaseRequestComponent implements OnInit {
       // workflowMasterId: Number(f.workflowMasterId) || 0,
       // createdBy: f.createdBy || 'USER',
       entityId: finalEntityId,
+      address: f.address,
+      address2: f.address2,
       purchaseItems
     };
 
