@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbAccordion, NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, DatatableComponent, id, SelectionType } from '@swimlane/ngx-datatable';
@@ -144,8 +144,8 @@ export class NewRfqComponent implements OnInit {
       date: [null],
       contact: [''],
       deliveryLocation: [''],
-      startDate: [null],
-      endDate: [null],
+      startDate: [null, Validators.required],
+      endDate: [null, Validators.required],
       title: [''],
       workflowMasterId: [0],
       comment: [''],

@@ -282,15 +282,21 @@
   
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-                  <label>Start Date</label>
+                  <label>Start Date</label><span class="text-danger">*</span>
                   <input type="date" class="form-control  custom-input" formControlName="startDate" />
+                  <div *ngIf="newRfqForm.get('startDate')?.touched && newRfqForm.get('startDate')?.invalid" class="text-danger">
+                    Start Date is required
+                  </div>
                 </div>
               </div>
   
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-                  <label>End Date</label>
+                  <label>End Date</label><span class="text-danger">*</span>
                   <input type="date" class="form-control  custom-input" formControlName="endDate" />
+                  <div *ngIf="newRfqForm.get('endDate')?.touched && newRfqForm.get('endDate')?.invalid" class="text-danger">
+                    End Date is required
+                  </div>
                 </div>
               </div>
   
