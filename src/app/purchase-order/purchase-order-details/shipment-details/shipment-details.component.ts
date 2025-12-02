@@ -31,7 +31,7 @@ export class ShipmentDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.poId) this.loadShipmentDetails();
-    this.getPurchaseOrderDetails();
+    // this.getPurchaseOrderDetails();
   }
   
   loadShipmentDetails() {
@@ -45,13 +45,13 @@ export class ShipmentDetailsComponent implements OnInit {
     });
   }
 
-  getPurchaseOrderDetails() {
-    this.purchaseOrderService.getPurchaseOrderById(this.poId).subscribe(res => {
-      this.poDetails = res;
-      this.loading = false;
-      this.cdr.detectChanges();
-    });
-  }
+  // getPurchaseOrderDetails() {
+  //   this.purchaseOrderService.getPurchaseOrderById(this.poId).subscribe(res => {
+  //     this.poDetails = res;
+  //     this.loading = false;
+  //     this.cdr.detectChanges();
+  //   });
+  // }
 
   toggleItems() {
     this.itemsExpanded = !this.itemsExpanded;
