@@ -222,10 +222,16 @@
 
                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-                  <label class="d-flex align-items-center justify-content-between mr-2">
-                    <span>Entity</span>
-                    <small *ngIf="isEntityLocked && entityHint" class="text-hint"><i class="ft-info mr-1"></i>{{ entityHint }}</small>
-                  </label>
+              <label class="d-flex align-items-center mr-2 w-100" [ngbTooltip]="entityHint">
+                <span class="mr-2">Entity</span>
+              
+                <small *ngIf="isEntityLocked && entityHint" class="hint-ellipsis ml-auto text-muted">
+                  <i class="ft-info mr-1"></i>
+                  <span class="hint-text">
+                    {{ entityHint }}
+                  </span>
+                </small>
+              </label>
               
                 <select class="form-control custom-input" formControlName="entityId" [disabled]="isEntityLocked || viewMode">
                   <option [ngValue]="null">-- Select Entity --</option>

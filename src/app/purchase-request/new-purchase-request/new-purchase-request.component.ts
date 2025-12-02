@@ -561,6 +561,7 @@ export class NewPurchaseRequestComponent implements OnInit {
   }
 
   loadExistingRequest(id: number) {
+    this.spinner.show();
     this.loading = true;
     this.purchaseRequestService.getPurchaseRequestById(id).subscribe({
       next: async (data) => {
@@ -640,10 +641,12 @@ export class NewPurchaseRequestComponent implements OnInit {
         const prEntityId = Number(requestData.entityId) || null;
         this.applyEntity(prEntityId);
         this.loading = false;
+        this.spinner.hide();
         this.cdr.detectChanges();
       },
 
       error: (err) => {
+        this.spinner.hide();
         this.loading = false;
         console.error('Failed to load purchase request:', err)
       }

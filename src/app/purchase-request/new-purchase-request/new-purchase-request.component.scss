@@ -20,6 +20,20 @@ form label, .form-group label {
   height: 100%; /* Ensure the content is vertically centered */
 }
 
+.hint-ellipsis {
+  display: flex;
+  align-items: center;
+  min-width: 0;       
+}
+
+.hint-ellipsis .hint-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #53667f !important;
+}
+
+
 
 .trash-icon:hover {
   transform: scale(2.5); /* Increase the size */

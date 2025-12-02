@@ -214,6 +214,18 @@ form label, .form-group label {
   margin-right: 0;
 }
 
+.hint-ellipsis {
+  display: flex;
+  align-items: center;
+  min-width: 0;       
+}
+
+.hint-ellipsis .hint-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #53667f !important;
+}
 
 ///bids tab
 
@@ -306,6 +318,3 @@ form label, .form-group label {
 }
 
 
-.text-hint{
-    color: #53667f !important;
-}

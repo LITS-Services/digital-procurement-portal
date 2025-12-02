@@ -15,6 +15,7 @@ import Swal from 'sweetalert2';
 import { LookupService } from 'app/shared/services/lookup.service';
 import { SelectedVendorsModalComponent } from './selected-vendors-modal/selected-vendors-modal.component';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-new-rfq',
@@ -100,7 +101,8 @@ export class NewRfqComponent implements OnInit {
     private lookupService: LookupService,
     public cdr: ChangeDetectorRef,
     private purchaseRequestService: PurchaseRequestService,
-    private purchaseOrderService: PurchaseOrderService
+    private purchaseOrderService:PurchaseOrderService,
+    private spinner: NgxSpinnerService,
   ) {}
 
   ngOnInit(): void {
@@ -523,7 +525,7 @@ export class NewRfqComponent implements OnInit {
   }
 
   loadExistingQuotation(id: number) {
-
+    this.spinner.show();
     this.loadVendorsAndCompanies(id);
 
     this.rfqService.getQuotationById(id).subscribe({
@@ -607,6 +609,7 @@ export class NewRfqComponent implements OnInit {
         const rfqEntityId = Number(requestData.entityId) || null;
         this.passEntityId = rfqEntityId;
         this.applyEntity(rfqEntityId);
+        this.spinner.hide();
         this.cdr.detectChanges();
       },
 
