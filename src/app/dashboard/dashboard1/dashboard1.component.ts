@@ -430,11 +430,11 @@ private setChartRange(range: 'month' | 'quarter' | 'year'): void {
               data: totalRfq,
             },
             {
-              name: 'RFQs with Quotation',
+              name: 'Total Quotations',
               data: rfqQuotation,
             },
             {
-              name: 'Selected RFQs',
+              name: 'Selected Quotations',
               data: selectedRfq,
             },
           ],
@@ -524,11 +524,10 @@ private formatMonthLabel(groupData: string): string {
   }
 
   private initVendorDeliveryChart(): void {
-    // Top 3 vendors (dummy data – replace with your API data)
     const vendors = ['AlaMart', 'Alpha Stores', 'Metro Supplies'];
 
-    const onTimeDeliveries = [41, 36, 32]; // e.g. number of on-time POs
-    const lateDeliveries = [9, 4, 6]; // e.g. number of late POs
+    const onTimeDeliveries = [41, 36, 32]; 
+    const lateDeliveries = [9, 4, 6]; 
 
     this.vendorDeliveryOptions = {
       series: [

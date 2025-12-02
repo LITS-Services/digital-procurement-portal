@@ -953,6 +953,12 @@ margin: 8px 0px;
   }
 }
 
+@media (max-width: 576px){
+  .mob-gap{
+    gap: 6px !important;
+  }
+}
+
 :host ::ng-deep .apx-chart {
   width: 100%;
 }
