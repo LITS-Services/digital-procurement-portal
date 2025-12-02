@@ -76,4 +76,22 @@ export class LookupService {
   getAllWorkflowTypes() {
     return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=workflow-types`);
   }
+
+  getAddressByEntity(entityId: number) {
+    const url = `${this.baseUrl}/dropdowns`;
+    const params = {
+      name: 'address-by-entity',
+      id: entityId.toString()
+    };
+    return this.http.get<any[]>(url, { params });
+  }
+
+  getAddress2ByEntity(entityId: number) {
+    const url = `${this.baseUrl}/dropdowns`;
+    const params = {
+      name: 'address2-by-entity',
+      id: entityId.toString()
+    };
+    return this.http.get<any[]>(url, { params });
+  }
 }
