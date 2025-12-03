@@ -368,3 +368,43 @@ body.menu-hide .file-summary-bar.scrolled,
 body.vertical-overlay-menu .file-summary-bar.scrolled {
   left: 30px !important;
 }
+
+
+
+.sticky-toolbar {
+  position: relative;
+  z-index: 30;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
+} 
+
+/* When scrolled / sticky */
+.sticky-toolbar.sticky {
+  position: fixed;
+  top: 0;
+  margin: 0 !important;
+  right: 30px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+  border-bottom: 1px solid #e5e5e5;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+
+body.menu-expanded .sticky-toolbar.sticky {
+  left: 310px;
+}
+
+body.nav-collapsed .sticky-toolbar.sticky {
+  left: 92px;
+}
+
+body.menu-hide .sticky-toolbar.sticky,
+body.vertical-overlay-menu .sticky-toolbar.sticky {
+  left: 30px;
+}
+
+
+.sticky-toolbar.sticky + .sticky-toolbar-target {
+  margin-top: 72px !important; 
+} 

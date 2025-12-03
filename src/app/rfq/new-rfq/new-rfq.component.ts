@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbAccordion, NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -89,6 +89,7 @@ export class NewRfqComponent implements OnInit {
   entities: Array<{ id: number; description: string }> = [];
   isEntityLocked = false;
   entityHint = '';
+  isToolbarSticky = false;
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -200,6 +201,12 @@ export class NewRfqComponent implements OnInit {
       this.newRfqForm.disable();
       this.itemForm.disable();
     }
+  }
+
+  @HostListener('window:scroll', [])
+  onWindowScroll(): void {
+    const threshold = 360; // adjust as you like
+    this.isToolbarSticky = window.scrollY > threshold;
   }
   homePage() {
     if (this.isNewForm && this.isFormDirty) {

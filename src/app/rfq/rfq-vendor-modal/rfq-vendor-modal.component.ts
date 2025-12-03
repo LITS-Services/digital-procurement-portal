@@ -32,7 +32,6 @@ export class RfqVendorModalComponent implements OnInit {
 
   availableVendors: any[] = [];         // LEFT LIST (all - selected)
   filteredSelected: any[] = [];    
-  dataLoaded = false;
   gridSelected: any[] = [];
   private persistedIds = new Set<number>();
   private getKey = (r: any) => (r?.vendorCompanyEntityId ?? r?.id);
@@ -213,13 +212,12 @@ onSubmit() {
       next: () => {
 
         this.loadRfqVendors(this.quotationRequestId!); // refresh chips + selection
-        this.dataLoaded = true;
+
      
       },
       error: (err) => {
         console.error(err);
         this.toastr.error('Failed to update vendors');
-        this.dataLoaded = true;
       }
     });
 }

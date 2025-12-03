@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbAccordion, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -43,7 +43,7 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
 
   // NEW: Conditional field flag
   hideConditionalFields = false;
-
+  isToolbarSticky: boolean = false;
   constructor(
     private companyService: CompanyService,
     private router: Router,
@@ -105,6 +105,12 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
         this.loadexistingWorkflowById(this.workflowmasterId);
       }
     });
+  }
+
+  @HostListener('window:scroll', [])
+  onWindowScroll(): void {
+    const threshold = 200; // adjust as you like
+    this.isToolbarSticky = window.scrollY > threshold;
   }
 
   // NEW: Update conditional fields based on selected workflow type

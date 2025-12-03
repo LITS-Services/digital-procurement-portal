@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompanyService } from 'app/shared/services/Company.services';
@@ -33,7 +33,7 @@ export class NewVendorOnboardingComponent implements OnInit {
 
   // Store all selected receivers with their details
   allSelectedReceivers: any[] = [];
-
+  isToolbarSticky: boolean = false;
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -84,6 +84,13 @@ export class NewVendorOnboardingComponent implements OnInit {
       }
     });
   }
+
+   @HostListener('window:scroll', [])
+    onWindowScroll(): void {
+      const threshold = 250; // adjust as you like
+      this.isToolbarSticky = window.scrollY > threshold;
+    }
+  
 
   // Add selected receivers to the main list
   addReceiversToTable() {

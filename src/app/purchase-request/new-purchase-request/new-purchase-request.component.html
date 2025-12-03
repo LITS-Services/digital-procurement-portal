@@ -13,7 +13,7 @@
         </div>
       </div>
 
-      <div class="card cstm-ui-card">
+      <div class="card cstm-ui-card sticky-toolbar" [class.sticky]="isToolbarSticky">
         <div class="row" *ngIf="!loading">
           <div class="col-md-6">
 
@@ -78,7 +78,7 @@
         </div>
       </div>
 
-      <div class="card">
+      <div class="card sticky-toolbar-target">
         <div class="card-body">
 
           <form [formGroup]="newPurchaseRequestForm" (ngSubmit)="submitForm()" class="mb-2">

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbAccordion, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -86,7 +86,7 @@ export class NewPurchaseRequestComponent implements OnInit {
     entities: Array<{ id: number; description: string }> = [];
   isEntityLocked = false;
   entityHint = '';
-
+  isToolbarSticky = false;
   procurementUserId = localStorage.getItem('userId');
   compareIds = (a: string | null, b: string | null) => (a ?? '').toLowerCase() === (b ?? '').toLowerCase();
 
@@ -212,6 +212,12 @@ export class NewPurchaseRequestComponent implements OnInit {
       this.itemForm.disable();
     }
   }
+
+@HostListener('window:scroll', [])
+onWindowScroll(): void {
+  const threshold = 200; // adjust as you like
+  this.isToolbarSticky = window.scrollY > threshold;
+}
 
     private checkEntitySelection(): void {
     if (!this.isNewForm) return;

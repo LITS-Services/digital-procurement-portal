@@ -94,7 +94,7 @@
       <span>APPROVAL HISTORY</span>
     </button>
   </nav>
-</div>
+  </div>
 
   <div class="tab-pane mt-1" role="tabpanel" *ngIf="selectedTab === 'rfq-input'">
     <div class="d-flex justify-content-between align-items-baseline">
@@ -128,7 +128,7 @@
   
     </div>
 
-      <div class="card cstm-ui-card" *ngIf="rfqTabs !== 'vendors'">
+      <div class="card cstm-ui-card sticky-toolbar" [class.sticky]="isToolbarSticky" *ngIf="rfqTabs !== 'vendors'">
         <div class="d-flex justify-content-between px-2">
 
           <div>
@@ -195,7 +195,7 @@
         </div>
       </div>
   
-    <div class="tab-pane mt-1" role="tabpanel" *ngIf="rfqTabs === 'details'">
+    <div class="tab-pane mt-1 sticky-toolbar-target" role="tabpanel" *ngIf="rfqTabs === 'details'">
 
       <div class="card">
         <div class="card-body">
@@ -329,7 +329,7 @@
       </div>
     </div>
 
-    <div class="tab-pane mt-1" role="tabpanel" *ngIf="rfqTabs === 'items'">
+    <div class="tab-pane mt-1 sticky-toolbar-target" role="tabpanel" *ngIf="rfqTabs === 'items'">
      <!-- Quotation Items (no accordion) -->
   <!-- Header -->
 

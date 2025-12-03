@@ -229,3 +229,7 @@
   max-width: 100%;
   margin: 0 auto;      
 }
+
+.file-summary-bar.scrolled + .section-card {
+  margin-top: 64px;   
+}

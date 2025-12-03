@@ -12,7 +12,7 @@
             </div>
 
             <!-- Action Pane -->
-            <div class="card cstm-ui-card">
+            <div class="card cstm-ui-card sticky-toolbar" [class.sticky]="isToolbarSticky">
                 <div class="row">
                     <div class="col-md-6">
                         <button class="btn btn-lg cstm-ui-table-btn mr-1" type="button" (click)="homePage()">
@@ -38,7 +38,7 @@
             </div>
 
             <!-- Main Form Card -->
-            <div class="card">
+            <div class="card sticky-toolbar-target">
                 <div class="card-header">
                     <h5 class="card-title mb-0">
                         <i class="ft-user-plus mr-1"></i>
