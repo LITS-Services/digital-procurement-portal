@@ -116,7 +116,7 @@
                 <label>Address</label>
                 <select class="form-control" formControlName="address">
                   <option value="">Select Address</option>
-                  <option *ngFor="let add of addresses" [value]="add.value">
+                  <option *ngFor="let add of addresses" [value]="add.description">
                     {{ add.description }}
                   </option>
                 </select>
@@ -126,7 +126,7 @@
                 <label>Address 2</label>
                 <select class="form-control" formControlName="address2">
                   <option value="">Select Address 2</option>
-                  <option *ngFor="let add2 of addresses2" [value]="add2.value">
+                  <option *ngFor="let add2 of addresses2" [value]="add2.description">
                     {{ add2.description }}
                   </option>
                 </select>
