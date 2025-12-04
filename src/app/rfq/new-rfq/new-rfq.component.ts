@@ -620,7 +620,10 @@ export class NewRfqComponent implements OnInit {
         this.cdr.detectChanges();
       },
 
-      error: (err) => console.error('Failed to load purchase request:', err),
+      error: (err) => {
+        console.error('Failed to load purchase request:', err);
+        this.spinner.hide();
+      }
     });
   }
 
@@ -801,6 +804,11 @@ export class NewRfqComponent implements OnInit {
           if (!newId) {
             this.toastr.warning('Quotation created but ID not returned. Please refresh.');
             this.isLoading = false; // // CHANGED
+            return;
+          }
+
+          if (newId && newId.errors[0].includes('Cannot generate RFQ since Purchase Order for one or more items of the referenced PR is already created.')) {
+            this.router.navigate(['/purchase-request']);
             return;
           }
 
