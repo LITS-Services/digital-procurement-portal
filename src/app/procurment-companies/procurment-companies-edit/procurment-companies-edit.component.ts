@@ -50,8 +50,10 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
       // id: [null],
       country: [''],
       city: [''],
+      region: [''],
       address: [''],
-      address2: ['']
+      address2: [''],
+      postCode: [null]
     });
 
     if (this.isEditMode) {
@@ -251,8 +253,10 @@ onFileSelect(event: Event) {
       //id: this.addresses[index].id,
       country: this.addresses[index].country,
       city: this.addresses[index].city,
+      region: this.addresses[index].region,
       address: this.addresses[index].address,
-      address2: this.addresses[index].address2
+      address2: this.addresses[index].address2,
+      postCode: this.addresses[index].postCode
     });
 
     this.modalService.open(this.addressModalTemplate, {
