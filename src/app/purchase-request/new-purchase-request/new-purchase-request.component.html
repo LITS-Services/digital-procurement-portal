@@ -82,7 +82,7 @@
         <div class="card-body">
 
           <form [formGroup]="newPurchaseRequestForm" (ngSubmit)="submitForm()" class="mb-2">
-            <div class="form-row">
+            <div class="form-row mb-2">
 
               <!-- Basic Fields -->
               <div class="col-lg-4 mb-2">
@@ -90,48 +90,27 @@
                 <input type="text" class="form-control custom-input" formControlName="requisitionNo" disabled>
               </div>
 
-               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-                    <label class="d-flex align-items-center mr-2 w-100" [ngbTooltip]="entityHint">
-                      <span class="mr-2">Entity</span>
-                    
-                      <small *ngIf="isEntityLocked && entityHint" class="hint-ellipsis ml-auto text-muted">
-                        <i class="ft-info mr-1"></i>
-                        <span class="hint-text">
-                          {{ entityHint }}
-                        </span>
-                      </small>
-                    </label>
-                <select class="form-control custom-input" formControlName="entityId" [disabled]="isEntityLocked || viewMode"
-                  (change)="loadAddressOnEntityChanges()">
-                  <option [ngValue]="null">-- Select Entity --</option>
-                  <option *ngFor="let e of entities" [ngValue]="e.id">
-                    {{ e.description }}
-                  </option>
-                </select>
+                  <label class="d-flex align-items-center mr-2 w-100" [ngbTooltip]="entityHint">
+                    <span class="mr-2">Entity</span>
+
+                    <small *ngIf="isEntityLocked && entityHint" class="hint-ellipsis ml-auto text-muted">
+                      <i class="ft-info mr-1"></i>
+                      <span class="hint-text">
+                        {{ entityHint }}
+                      </span>
+                    </small>
+                  </label>
+                  <select class="form-control custom-input" formControlName="entityId"
+                    [disabled]="isEntityLocked || viewMode" (change)="loadAddressOnEntityChanges()">
+                    <option [ngValue]="null">-- Select Entity --</option>
+                    <option *ngFor="let e of entities" [ngValue]="e.id">
+                      {{ e.description }}
+                    </option>
+                  </select>
                 </div>
               </div>
-              
-              <div class="col-lg-4 mb-2">
-                <label>Address</label>
-                <select class="form-control" formControlName="address">
-                  <option value="">Select Address</option>
-                  <option *ngFor="let add of addresses" [value]="add.description">
-                    {{ add.description }}
-                  </option>
-                </select>
-              </div>
-              
-              <div class="col-lg-4 mb-2">
-                <label>Address 2</label>
-                <select class="form-control" formControlName="address2">
-                  <option value="">Select Address 2</option>
-                  <option *ngFor="let add2 of addresses2" [value]="add2.description">
-                    {{ add2.description }}
-                  </option>
-                </select>
-              </div>
-
 
               <div class="col-lg-4 mb-2">
                 <label>Submitted Date</label>
@@ -208,6 +187,76 @@
               </div>
 
             </div>
+            <ngb-accordion #accordion="ngbAccordion" activeIds="ngb-panel-0">
+              <ngb-panel id="ngb-panel-0">
+                <ng-template ngbPanelTitle>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <span class="panel-icon">
+                        <div class="address-label">Receiving Address</div>
+                      </span>
+                    </div>
+                  </div>
+                </ng-template>
+
+                <ng-template ngbPanelContent>
+                  <div class="card-accordion">
+
+                    <!-- Row 1 -->
+                    <div class="row">
+                      <div class="col-lg-3 mb-2">
+                        <label>Address Code</label>
+                        <select class="form-control" formControlName="addressId"
+                          (change)="onAddressSelect($event.target.value)">
+                          <option value="">Select Address</option>
+                          <option *ngFor="let add of addresses" [value]="add.id">{{ add.addressCode }}</option>
+                        </select>
+                      </div>
+
+                      <div class="col-lg-3 mb-2">
+                        <label>Country</label>
+                        <input type="text" class="form-control custom-input" formControlName="country" disabled>
+                      </div>
+
+                      <div class="col-lg-3 mb-2">
+                        <label>City</label>
+                        <input type="text" class="form-control custom-input" formControlName="city" disabled>
+                      </div>
+
+                      <div class="col-lg-3 mb-2">
+                        <label>Region</label>
+                        <input type="text" class="form-control custom-input" formControlName="region" disabled>
+                      </div>
+                    </div>
+
+                    <!-- Row 2 -->
+                    <div class="row">
+                      <div class="col-lg-3 mb-2">
+                        <label>Post Code</label>
+                        <input type="text" class="form-control custom-input" formControlName="postCode" disabled>
+                      </div>
+
+                      <div class="col-lg-4 mb-2">
+                        <label>Address 1</label>
+                        <input type="text" class="form-control custom-input" formControlName="address" disabled>
+                      </div>
+
+                      <div class="col-lg-4 mb-2">
+                        <label>Address 2</label>
+                        <input type="text" class="form-control custom-input" formControlName="address2" disabled>
+                      </div>
+
+                      
+
+                      <!-- Empty column to keep alignment -->
+                      <div class="col-lg-4 mb-2"></div>
+                    </div>
+
+                  </div>
+                </ng-template>
+              </ngb-panel>
+            </ngb-accordion>
+
           </form>
 
           <ngb-accordion *ngIf="!viewMode" #accordion="ngbAccordion" activeIds="ngb-panel-0">
@@ -246,8 +295,6 @@
                     </button>
 
                   </div>
-
-
 
                   <div class="form-row position-relative" [formGroup]="itemForm">
 

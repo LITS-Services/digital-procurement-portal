@@ -80,18 +80,18 @@ export class LookupService {
   getAddressByEntity(entityId: number) {
     const url = `${this.baseUrl}/dropdowns`;
     const params = {
-      name: 'address-by-entity',
+      name: 'addr-code-by-entity',
       id: entityId.toString()
     };
     return this.http.get<any[]>(url, { params });
   }
 
-  getAddress2ByEntity(entityId: number) {
-    const url = `${this.baseUrl}/dropdowns`;
-    const params = {
-      name: 'address2-by-entity',
-      id: entityId.toString()
-    };
-    return this.http.get<any[]>(url, { params });
-  }
+  // getAddress2ByEntity(entityId: number) {
+  //   const url = `${this.baseUrl}/dropdowns`;
+  //   const params = {
+  //     name: 'address2-by-entity',
+  //     id: entityId.toString()
+  //   };
+  //   return this.http.get<any[]>(url, { params });
+  // }
 }

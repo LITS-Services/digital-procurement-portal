@@ -81,9 +81,8 @@ export class NewPurchaseRequestComponent implements OnInit {
   uomList: any[] = [];
 
   addresses: any[] = [];
-  addresses2: any[] = [];
 
-    entities: Array<{ id: number; description: string }> = [];
+  entities: Array<{ id: number; description: string }> = [];
   isEntityLocked = false;
   entityHint = '';
   isToolbarSticky = false;
@@ -104,11 +103,36 @@ export class NewPurchaseRequestComponent implements OnInit {
     public toastr: ToastrService,
     private WorkflowServiceService: WorkflowServiceService,
     public cdr: ChangeDetectorRef,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private companyService: CompanyService
 
   ) { }
 
   ngOnInit(): void {
+    // Purchase Request Form
+    this.newPurchaseRequestForm = this.fb.group({
+      requisitionNo: [''],
+      submittedDate: [null],
+      status: [null],
+      deliveryLocation: [''],
+      receiverName: [''],
+      receiverContact: [''],
+      department: [''],
+      designation: [''],
+      businessUnit: [''],
+      partialDeliveryAcceptable: [false],
+      exceptionPolicy: [false],
+      subject: [''],
+      entityId: [null],
+      addressId: [null],
+      country: [{ value: '', disabled: true }],
+      city: [{ value: '', disabled: true }],
+      region: [{ value: '', disabled: true }],
+      address: [{ value: '', disabled: true }],   
+      address2: [{ value: '', disabled: true }],  
+      postCode: [{ value: '', disabled: true }],
+    });
+
     this.loadUnitsOfMeasurements();
     this.loadAccounts();
     this.loadItems();
@@ -129,25 +153,6 @@ export class NewPurchaseRequestComponent implements OnInit {
         this.loadVendorsFinalSelection();
       }
 
-    });
-
-    // Purchase Request Form
-    this.newPurchaseRequestForm = this.fb.group({
-      requisitionNo: [''],
-      submittedDate: [null],
-      status: [null],
-      deliveryLocation: [''],
-      receiverName: [''],
-      receiverContact: [''],
-      department: [''],
-      designation: [''],
-      businessUnit: [''],
-      partialDeliveryAcceptable: [false],
-      exceptionPolicy: [false],
-      subject: [''],
-      entityId: [null],
-      address: [''],
-      address2: [''],
     });
 
     this.newPurchaseRequestForm.valueChanges.subscribe(() => {
@@ -206,7 +211,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       this.isFormDirty = true;
     });
 
-        this.checkEntitySelection();
+    this.checkEntitySelection();
     if (this.viewMode) {
       this.newPurchaseRequestForm.disable();
       this.itemForm.disable();
@@ -219,12 +224,12 @@ onWindowScroll(): void {
   this.isToolbarSticky = window.scrollY > threshold;
 }
 
-    private checkEntitySelection(): void {
+  private checkEntitySelection(): void {
     if (!this.isNewForm) return;
     this.applyEntity(null);
   }
 
-   private applyEntity(prId: number | null): void {
+  private applyEntity(prId: number | null): void {
     const ctrl = this.newPurchaseRequestForm.get('entityId');
     if (!ctrl) return;
 
@@ -269,7 +274,7 @@ onWindowScroll(): void {
     }
   }
 
-    private loadEntitiesForUser(userId: string, after?: () => void): void {
+  private loadEntitiesForUser(userId: string, after?: () => void): void {
     this.lookupService.getProcCompaniesByProcUserId(userId).subscribe({
       next: (res: any[]) => {
         this.entities = res || [];
@@ -279,26 +284,45 @@ onWindowScroll(): void {
     });
   }
 
-  loadAddresses(entityId?: number) {
-    this.lookupService.getAddressByEntity(entityId).subscribe({
-      next: (res) => (this.addresses = res),
-      error: () => this.toastr.error("Unable to load Address list"),
-    });
-
-    this.lookupService.getAddress2ByEntity(entityId).subscribe({
-      next: (res) => (this.addresses2 = res),
-      error: () => this.toastr.error("Unable to load Address 2 list"),
+  loadAddresses(entityId: number, callback?: () => void) {
+    this.companyService.getProcurementCompanyById(entityId).subscribe({
+      next: (res) => {
+        this.addresses = res.addressDetails ?? [];
+        this.cdr.markForCheck();
+        if (callback) callback();
+      },
+      error: () => this.toastr.error("Unable to load addresses"),
     });
   }
+
   loadAddressOnEntityChanges() {
     const entityId = this.newPurchaseRequestForm.get('entityId')?.value;
-    if (entityId) {
-      this.loadAddresses(entityId);
-      this.newPurchaseRequestForm.patchValue({
-        address: '',
-        address2: ''
-      });
-    }
+    const addressId = this.newPurchaseRequestForm.get('addressId')?.value;
+
+    if (!entityId) return;
+
+    this.loadAddresses(entityId, () => {
+      if (this.isNewForm) {
+        this.newPurchaseRequestForm.patchValue({ addressId: null }, { emitEvent: false });
+      } else if (addressId) {
+        this.newPurchaseRequestForm.patchValue({ addressId: addressId });
+        this.onAddressSelect(addressId);  
+      }
+    });
+  }
+
+  onAddressSelect(id: number) {
+    const selected = this.addresses.find(a => a.id == id);
+    if (!selected) return;
+
+    this.newPurchaseRequestForm.patchValue({
+      country: selected.country,
+      city: selected.city,
+      region: selected.region,
+      address: selected.address,
+      address2: selected.address2,
+      postCode: selected.postCode
+    });
   }
 
   loadUnitsOfMeasurements() {
@@ -371,12 +395,6 @@ onWindowScroll(): void {
     const found = this.finalVendors.find(v => v.vendorId === id);
     return found ? found.vendorName : '';
   }
-
-  // private toDateInputValue(date: any): string | null {
-  //   if (!date) return null;
-  //   const d = new Date(date);
-  //   return d.toISOString().split('T')[0];
-  // }
 
   toDateInputValue(date: any): string {
     if (!date) return '';
@@ -714,7 +732,7 @@ onWindowScroll(): void {
     const submittedDateISO = f.date ? new Date(f.submittedDate).toISOString() : new Date().toISOString();
     const entityId = Number(localStorage.getItem('selectedCompanyId'));
 
-        const lsEntity = localStorage.getItem('selectedCompanyId');
+    const lsEntity = localStorage.getItem('selectedCompanyId');
     const finalEntityId = lsEntity === 'All' ? Number(f.entityId) : Number(lsEntity);
 
     if (lsEntity === 'All' && !finalEntityId) {
@@ -770,8 +788,7 @@ onWindowScroll(): void {
       workflowMasterId: Number(f.workflowMasterId) || 0,
       createdBy: f.createdBy || '',
       entityId: finalEntityId,
-      address: f.address,
-      address2: f.address2,
+      addressId: f.addressId,
       purchaseItems
     };
 
@@ -807,7 +824,7 @@ onWindowScroll(): void {
     const f = this.newPurchaseRequestForm.getRawValue();
     const submittedDateISO = f.submittedDate ? new Date(f.submittedDate).toISOString() : new Date().toISOString();
 
-       const lsEntity = localStorage.getItem('selectedCompanyId');
+    const lsEntity = localStorage.getItem('selectedCompanyId');
     const finalEntityId = lsEntity === 'All' ? Number(f.entityId) : Number(lsEntity);
 
     if (lsEntity === 'All' && !finalEntityId) {
@@ -863,8 +880,7 @@ onWindowScroll(): void {
       // workflowMasterId: Number(f.workflowMasterId) || 0,
       // createdBy: f.createdBy || 'USER',
       entityId: finalEntityId,
-      address: f.address,
-      address2: f.address2,
+      addressId: f.addressId,
       purchaseItems
     };
 
@@ -900,93 +916,48 @@ onWindowScroll(): void {
     }
   }
 
-  // openNewEntityModal(rowIndex: number): void {
-  //   const sourceRow = rowIndex !== null
-  //     ? this.newPurchaseItemData[rowIndex] : this.itemForm.value; // new item (not yet inserted)
-  //   console.log("Source Row:", sourceRow);
-  //   const modalRef = this.modalService.open(PurchaseRequestAttachmentModalComponent, {
-  //     backdrop: 'static',
-  //     size: 'lg',
-  //     centered: true,
-  //   });
-
-  //   modalRef.componentInstance.viewMode = this.viewMode;
-  //   modalRef.componentInstance.data = {
-  //     purchaseItemId: sourceRow?.id ?? 0,
-  //     existingAttachment: sourceRow?.attachments || []
-  //   };
-
-  //   modalRef.result.then((data: any[]) => {
-  //     if (data?.length) {
-  //       const merged = [
-  //         ...(sourceRow.attachments || []),
-  //         ...data.map(a => ({
-  //           fileName: a.fileName,
-  //           contentType: a.contentType,
-  //           content: a.content,
-  //           fromForm: a.fromForm,
-  //           purchaseItemId: sourceRow?.id ?? 0,
-  //           isNew: true
-  //         }))
-  //       ];
-
-  //       if (rowIndex !== null) {
-  //         // immutably update the edited row in the grid
-  //         this.newPurchaseItemData = this.newPurchaseItemData.map((r, i) =>
-  //           i === rowIndex ? { ...r, attachments: merged } : r
-  //         );
-
-  //       } else {
-  //         // reflect on the form for a new (not yet inserted) item
-  //         this.itemForm.patchValue({ attachments: merged });
-  //       }
-  //       // this.numberOfAttachments = this.attachmentList.length;
-  //     }
-  //   }).catch(() => { });
-  // }
   openNewEntityModal(rowIndex: number | null = null) {
-  const modalRef = this.modalService.open(PurchaseRequestAttachmentModalComponent, {
+    const modalRef = this.modalService.open(PurchaseRequestAttachmentModalComponent, {
       backdrop: 'static',
       size: 'lg',
       centered: true,
     });
 
-  // Pass existing attachments to modal
-  modalRef.componentInstance.data = {
-    existingAttachment: rowIndex !== null
-      ? this.newPurchaseItemData[rowIndex].attachments || []
-      : this.itemForm.get('attachments')?.value || [],
-    purchaseItemId: rowIndex !== null ? this.newPurchaseItemData[rowIndex].id : 0
-  };
+    // Pass existing attachments to modal
+    modalRef.componentInstance.data = {
+      existingAttachment: rowIndex !== null
+        ? this.newPurchaseItemData[rowIndex].attachments || []
+        : this.itemForm.get('attachments')?.value || [],
+      purchaseItemId: rowIndex !== null ? this.newPurchaseItemData[rowIndex].id : 0
+    };
 
-  // Listen to changes immediately
-  modalRef.componentInstance.attachmentsChange.subscribe((attachments: any[]) => {
-    if (rowIndex !== null) {
-      this.newPurchaseItemData = this.newPurchaseItemData.map((item, i) =>
-        i === rowIndex ? { ...item, attachments } : item
-      );
-    } else {
-      this.itemForm.patchValue({ attachments });
-    }
-  });
-
-  // Optional: final payload when modal closes
-  modalRef.result.then((data: any[]) => {
-    if (data) {
-      // merge with existing to avoid duplicates
+    // Listen to changes immediately
+    modalRef.componentInstance.attachmentsChange.subscribe((attachments: any[]) => {
       if (rowIndex !== null) {
-        const existingAttachments = this.newPurchaseItemData[rowIndex].attachments || [];
-        const merged = [...existingAttachments, ...data.filter(d => !existingAttachments.some(e => e.fileName === d.fileName))];
-        this.newPurchaseItemData[rowIndex].attachments = merged;
+        this.newPurchaseItemData = this.newPurchaseItemData.map((item, i) =>
+          i === rowIndex ? { ...item, attachments } : item
+        );
       } else {
-        const existingAttachments = this.itemForm.get('attachments')?.value || [];
-        const merged = [...existingAttachments, ...data.filter(d => !existingAttachments.some(e => e.fileName === d.fileName))];
-        this.itemForm.patchValue({ attachments: merged });
+        this.itemForm.patchValue({ attachments });
       }
-    }
-  }).catch(() => {});
-}
+    });
 
+    // Optional: final payload when modal closes
+    modalRef.result.then((data: any[]) => {
+      if (data) {
+        // merge with existing to avoid duplicates
+        if (rowIndex !== null) {
+          const existingAttachments = this.newPurchaseItemData[rowIndex].attachments || [];
+          const merged = [...existingAttachments, ...data.filter(d => !existingAttachments.some(e => e.fileName === d.fileName))];
+          this.newPurchaseItemData[rowIndex].attachments = merged;
+        } else {
+          const existingAttachments = this.itemForm.get('attachments')?.value || [];
+          const merged = [...existingAttachments, ...data.filter(d => !existingAttachments.some(e => e.fileName === d.fileName))];
+          this.itemForm.patchValue({ attachments: merged });
+        }
+      }
+    }).catch(() => { });
+  }
 
   hasUnsavedChanges(): boolean {
     return this.newPurchaseRequestForm.dirty || this.itemForm.dirty || this.newPurchaseItemData.length > 0;
@@ -1006,29 +977,29 @@ onWindowScroll(): void {
       if (result.isConfirmed) {
         this.spinner.show();
         this.purchaseRequestService.submitForApproval(this.currentRequestId)
-        .pipe(finalize(() => this.spinner.hide()))
-        .subscribe({
-          next: (res) => {
-            Swal.fire({
-              icon: 'success',
-              title: 'Submitted!',
-              text: res.message || 'Purchase Request submitted for approval successfully!',
-              confirmButtonColor: '#3085d6',
-            }).then(() => {
+          .pipe(finalize(() => this.spinner.hide()))
+          .subscribe({
+            next: (res) => {
+              Swal.fire({
+                icon: 'success',
+                title: 'Submitted!',
+                text: res.message || 'Purchase Request submitted for approval successfully!',
+                confirmButtonColor: '#3085d6',
+              }).then(() => {
+                this.dataLoaded = true;
+                this.router.navigate(['/purchase-request']);
+              });
+            },
+            error: (err) => {
+              console.error(err);
+              Swal.fire({
+                icon: 'error',
+                title: 'Failed!',
+                text: 'Failed to submit purchase request for approval.',
+              });
               this.dataLoaded = true;
-              this.router.navigate(['/purchase-request']);
-            });
-          },
-          error: (err) => {
-            console.error(err);
-            Swal.fire({
-              icon: 'error',
-              title: 'Failed!',
-              text: 'Failed to submit purchase request for approval.',
-            });
-            this.dataLoaded = true;
-          },
-        });
+            },
+          });
       }
     });
   }
@@ -1054,27 +1025,27 @@ onWindowScroll(): void {
           };
           this.spinner.show();
           this.purchaseRequestService.addRemarksWithActionTaken(payload)
-          .pipe(finalize(() => this.spinner.hide()))
-          .subscribe({
-            next: res => {
-              this.loading = false;
-              if (res.message == "Approved") {
-                this.dataLoaded = true;
-                this.cdr.detectChanges();
-                this.router.navigate(['/purchase-request']);
+            .pipe(finalize(() => this.spinner.hide()))
+            .subscribe({
+              next: res => {
+                this.loading = false;
+                if (res.message == "Approved") {
+                  this.dataLoaded = true;
+                  this.cdr.detectChanges();
+                  this.router.navigate(['/purchase-request']);
 
-                this.toastr.success(res.message);
+                  this.toastr.success(res.message);
+                }
+                else {
+                  this.toastr.warning(res.message);
+                }
+              },
+              error: err => {
+                this.toastr.warning('Something went Wrong', '');
+                this.loading = false;
+                this.dataLoaded = true;
               }
-              else {
-                this.toastr.warning(res.message);
-              }
-            },
-            error: err => {
-              this.toastr.warning('Something went Wrong', '');
-              this.loading = false;
-              this.dataLoaded = true;
-            }
-          });
+            });
 
         }
       },
@@ -1213,6 +1184,7 @@ onWindowScroll(): void {
   //   this.uploadedItems = [];
   //   this.toastr.success('Bulk items inserted successfully!');
   // }
+
   bulkInsert(): void {
     if (!this.uploadedItems.length) {
       if (this.newPurchaseItemData.length > 0) {
