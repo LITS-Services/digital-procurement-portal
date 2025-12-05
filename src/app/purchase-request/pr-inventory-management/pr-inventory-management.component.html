@@ -70,7 +70,7 @@
           </ngx-datatable-column>
 
           <!-- Item -->
-          <ngx-datatable-column name="Item" prop="item" [width]="150">
+          <ngx-datatable-column name="Item" prop="itemName" [width]="150">
                  <ng-template let-row="row" ngx-datatable-cell-template>
                 <span class="cell-ellipsis" [ngbTooltip]="row.item" container="body">
                   {{ row.item }}

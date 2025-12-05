@@ -484,7 +484,7 @@ export class NewRfqComponent implements OnInit {
         this.hasUnusedItems = unusedItems.length > 0; // <--- flag
 
         if (!this.hasUnusedItems) {
-          this.toastr.info('All items from this PR have already been used in previous RFQ(s).');
+          this.toastr.info('No items available. Cannot generate a new RFQ.');
           return;
         }
         //  Map PR items → RFQ items
@@ -685,7 +685,7 @@ export class NewRfqComponent implements OnInit {
     if (this.purchaseRequestId) {
       if (this.allItemsUsedForRFQ()) {
         this.toastr.info(
-          'All items from this Purchase Request have already been used in RFQs. Cannot generate a new RFQ.'
+          'No Items available. Cannot generate a new RFQ.'
         );
         this.isLoading = false;
         return; // Stop execution

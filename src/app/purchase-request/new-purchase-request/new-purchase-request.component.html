@@ -6,7 +6,10 @@
       <div class="row">
         <div class="col-md-12" style=" margin-top: -0.25rem;">
           <h4 class="heading">
-            <ng-container *ngIf="viewMode === false">
+            <ng-container *ngIf="isSelectingFinalVendor">
+              Select Final Vendor
+            </ng-container>
+            <ng-container *ngIf="!isSelectingFinalVendor && viewMode === false">
               {{ isNewForm ? 'Create Purchase Request' : 'Update Purchase Request' }}
             </ng-container>
           </h4>
@@ -31,11 +34,16 @@
             </ng-container>
 
             <!-- Update Mode: Update -->
-            <ng-container *ngIf="!isNewForm && !viewMode">
-              <button class="btn btn-sm cstm-ui-table-btn"
+            <ng-container *ngIf="!viewMode">
+              <button *ngIf="!isNewForm && !isSelectingFinalVendor" class="btn btn-sm cstm-ui-table-btn"
                 [disabled]="newPurchaseRequestForm.invalid || (isStatusCompleted && !isSelectingFinalVendor) || !isSubmitter"
                 (click)="submitForm()">
                 <i class="ft-edit-2"></i><label class="ml-1 mt-1">Update</label>
+              </button>
+            
+              <button *ngIf="isSelectingFinalVendor" class="btn btn-sm cstm-ui-table-btn" (click)="createPO(selectedRow)">
+                <i class="ft-plus"></i>
+                <label class="ml-1 mt-1">Create PO</label>
               </button>
             </ng-container>
 
@@ -204,7 +212,7 @@
 
                     <!-- Row 1 -->
                     <div class="row">
-                      <div class="col-lg-3 mb-2">
+                      <div class="col-lg-3 mb-2" >
                         <label>Address Code</label>
                         <select class="form-control" formControlName="addressId"
                           (change)="onAddressSelect($event.target.value)">
@@ -459,7 +467,7 @@
           <div class="col-12">
             <div style="position: relative;">
               <ngx-datatable class="bootstrap core-bootstrap" [rows]="newPurchaseItemData" [columnMode]="'force'"
-                [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
+                [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true" (activate)="selectRow($event.row)">
 
                 <ngx-datatable-column name="Sr. No." [width]="50">
                   <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
@@ -513,7 +521,7 @@
                     </a>
 
                     <!-- Delete button -->
-                    <a matTooltip="Delete Item" disabled class="" (click)="deleteRow(rowIndex)"
+                    <a matTooltip="Delete Item" *ngIf="!isSelectingFinalVendor" disabled class="" (click)="deleteRow(rowIndex)"
                       [ngClass]="viewMode ? 'disabled' : 'row-action-delete'">
                       <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
                     </a>
@@ -527,13 +535,13 @@
     </div>
   </div>
 
-  <div *ngIf="dataLoaded; else loadingTemplate">
+  <!-- <div *ngIf="dataLoaded; else loadingTemplate"> -->
     <!-- Your main content here, e.g. the form, dropdowns, etc. -->
-  </div>
+  <!-- </div> -->
 
-  <ng-template #loadingTemplate>
+  <!-- <ng-template #loadingTemplate>
     <div class="loading-spinner">
       Loading...
     </div>
   </ng-template>
-</section>
+</section> -->

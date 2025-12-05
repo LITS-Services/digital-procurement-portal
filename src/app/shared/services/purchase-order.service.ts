@@ -34,8 +34,16 @@ export class PurchaseOrderService {
     );
   }
 
-  createPurchaseOrderFromPR(purchaseRequestId: number) {
-    return this.http.post(`${this.baseUrl}/create-pr-purchase-order?purchaseRequestId=${purchaseRequestId}`, {});
+  // createPurchaseOrderFromPR(purchaseRequestId: number) {
+  //   return this.http.post(`${this.baseUrl}/create-pr-purchase-order?purchaseRequestId=${purchaseRequestId}`, {});
+  // }
+
+  createPurchaseOrderFromPR(purchaseRequestId: number, vendorUpdates: any[] = []) {
+    const payload = {
+      purchaseRequestId,
+      vendorUpdates
+    };
+    return this.http.post(`${this.baseUrl}/create-pr-purchase-order`, payload);
   }
 
   createPurchaseOrderFromRFQ(quotationRequestId: number) {

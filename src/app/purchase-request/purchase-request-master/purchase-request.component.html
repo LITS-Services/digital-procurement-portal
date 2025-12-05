@@ -244,7 +244,7 @@
                     Create Purchase Order
                   </button>
                 </ng-template> -->
-                <button *ngIf="row.requestStatus === 'Completed' && row.isInventoryTransfer !== true; else showDisabled"
+                <!-- <button *ngIf="row.requestStatus === 'Completed' && row.isInventoryTransfer !== true; else showDisabled"
                   class="btn popover-btn btn-sm m-1" ngbTooltip="Create Purchase Order" (click)="createPO(row)"
                   appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
                   [appPermDisable]="'write'">
@@ -258,7 +258,7 @@
                     <span class="popover-icon"><i class="ft-shopping-cart" style="opacity: 0.5;"></i></span>
                     Create Purchase Order
                   </button>
-                </ng-template>
+                </ng-template> -->
 
                 
                 <button *ngIf="row.requestStatus === 'Completed'; else inventoryTransferWaitingTemplate" 

@@ -16,6 +16,7 @@ import { CompanyVM, VendorAndCompanyForFinalSelectionVM } from 'app/shared/inter
 import * as XLSX from 'xlsx';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize } from 'rxjs/operators';
+import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 
 @Component({
   selector: 'app-new-purchase-request',
@@ -51,7 +52,7 @@ export class NewPurchaseRequestComponent implements OnInit {
   vendorUsers: any[] = [];
 
   viewMode = false;
-  dataLoaded = false;
+  //dataLoaded = false;
 
   newPurchaseRequestForm: FormGroup;
   itemForm: FormGroup;
@@ -87,6 +88,7 @@ export class NewPurchaseRequestComponent implements OnInit {
   entityHint = '';
   isToolbarSticky = false;
   procurementUserId = localStorage.getItem('userId');
+  selectedRow: any;
   compareIds = (a: string | null, b: string | null) => (a ?? '').toLowerCase() === (b ?? '').toLowerCase();
 
   @ViewChild('accordion') accordion: NgbAccordion;
@@ -104,7 +106,8 @@ export class NewPurchaseRequestComponent implements OnInit {
     private WorkflowServiceService: WorkflowServiceService,
     public cdr: ChangeDetectorRef,
     private spinner: NgxSpinnerService,
-    private companyService: CompanyService
+    private companyService: CompanyService,
+    private purchaseOrderService: PurchaseOrderService
 
   ) { }
 
@@ -133,38 +136,6 @@ export class NewPurchaseRequestComponent implements OnInit {
       postCode: [{ value: '', disabled: true }],
     });
 
-    this.loadUnitsOfMeasurements();
-    this.loadAccounts();
-    this.loadItems();
-    this.route.queryParamMap.subscribe(params => {
-      const id = params.get('id');
-      const mode = params.get('mode');
-
-      this.viewMode = mode === 'view';
-      this.isNewForm = !id;
-
-      if (id) {
-        this.currentRequestId = +id;
-        this.loadExistingRequest(+id);
-      }
-      //  Add this part for Final Vendor mode
-      if (mode === 'selectVendor') {
-        this.isSelectingFinalVendor = true;
-        this.loadVendorsFinalSelection();
-      }
-
-    });
-
-    this.newPurchaseRequestForm.valueChanges.subscribe(() => {
-      this.isFormDirty = true;
-    });
-
-    this.newPurchaseRequestForm.get('workflowType')?.valueChanges.subscribe(selectedId => {
-      if (selectedId) {
-        this.GetWorkflowMasterByTypeId(selectedId);
-      }
-    });
-
     // Purchase Item Form
     this.itemForm = this.fb.group({
       id: [null],
@@ -182,7 +153,58 @@ export class NewPurchaseRequestComponent implements OnInit {
       accountId: [0],
       remarks: [''],
       attachments: this.fb.group([])
-    })
+    });
+
+    this.loadUnitsOfMeasurements();
+    this.loadAccounts();
+    this.loadItems();
+    this.route.queryParamMap.subscribe(params => {
+      const id = params.get('id');
+      const mode = params.get('mode');
+
+      this.viewMode = mode === 'view';
+      this.isNewForm = !id;
+
+      //  Add this part for Final Vendor mode
+      if (mode === 'selectVendor' && id) {
+        this.isSelectingFinalVendor = true;
+        this.loadExistingRequest(+id, false, false, true);
+        this.loadVendorsFinalSelection();
+
+        if (this.isSelectingFinalVendor) {
+        // Disable the main purchase request form
+        this.newPurchaseRequestForm.disable({ emitEvent: false });
+
+        // Disable all item form fields except vendor fields
+        Object.keys(this.itemForm.controls).forEach(key => {
+          if (key !== 'vendorUserId' && key !== 'vendorCompanyId') {
+            this.itemForm.get(key)?.disable({ emitEvent: false });
+          } else {
+            this.itemForm.get(key)?.enable({ emitEvent: false });
+          }
+        });
+      }
+      }
+
+      else if (id) {
+        this.currentRequestId = +id;
+        this.loadExistingRequest(+id);
+      }
+      
+
+    });
+
+    this.newPurchaseRequestForm.valueChanges.subscribe(() => {
+      this.isFormDirty = true;
+    });
+
+    this.newPurchaseRequestForm.get('workflowType')?.valueChanges.subscribe(selectedId => {
+      if (selectedId) {
+        this.GetWorkflowMasterByTypeId(selectedId);
+      }
+    });
+
+    
 
     // this.itemForm = this.fb.group({
     //   id: [null],
@@ -609,10 +631,10 @@ onWindowScroll(): void {
     });
   }
 
-  loadExistingRequest(id: number) {
+  loadExistingRequest(id: number, generateRfq?: boolean, forInventoryTransfer?: boolean, selectFinalVendor?: boolean) {
     this.spinner.show();
     this.loading = true;
-    this.purchaseRequestService.getPurchaseRequestById(id).subscribe({
+    this.purchaseRequestService.getPurchaseRequestById(id, generateRfq, forInventoryTransfer, selectFinalVendor).subscribe({
       next: async (data) => {
 
         // unwrap the Ardalis.Result<T> wrapper
@@ -986,7 +1008,7 @@ onWindowScroll(): void {
                 text: res.message || 'Purchase Request submitted for approval successfully!',
                 confirmButtonColor: '#3085d6',
               }).then(() => {
-                this.dataLoaded = true;
+                //this.dataLoaded = true;
                 this.router.navigate(['/purchase-request']);
               });
             },
@@ -997,7 +1019,7 @@ onWindowScroll(): void {
                 title: 'Failed!',
                 text: 'Failed to submit purchase request for approval.',
               });
-              this.dataLoaded = true;
+              //this.dataLoaded = true;
             },
           });
       }
@@ -1030,7 +1052,7 @@ onWindowScroll(): void {
               next: res => {
                 this.loading = false;
                 if (res.message == "Approved") {
-                  this.dataLoaded = true;
+                  //this.dataLoaded = true;
                   this.cdr.detectChanges();
                   this.router.navigate(['/purchase-request']);
 
@@ -1043,7 +1065,7 @@ onWindowScroll(): void {
               error: err => {
                 this.toastr.warning('Something went Wrong', '');
                 this.loading = false;
-                this.dataLoaded = true;
+                //this.dataLoaded = true;
               }
             });
 
@@ -1303,5 +1325,42 @@ onWindowScroll(): void {
     const utc_value = utc_days * 86400;
     const date_info = new Date(utc_value * 1000);
     return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate());
+  }
+
+  createPO(row: any) {
+    console.log('row:', row);
+    console.log('row.items:', row?.items);
+
+    Swal.fire({
+      title: 'Create Purchase Order?',
+      text: 'This will generate PO(s) automatically for all items based on vendor assignment.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Create PO',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const vendorUpdates = this.newPurchaseItemData.map(item => ({
+          purchaseItemId: item.id,
+          vendorUserId: item.vendorUserId,
+          vendorCompanyId: item.vendorCompanyId
+        }));
+        this.spinner.show();
+        this.purchaseOrderService.createPurchaseOrderFromPR(this.currentRequestId, vendorUpdates)
+          .pipe(finalize(() => this.spinner.hide()))
+          .subscribe({
+            next: () => {
+
+            },
+            error: () => {
+              this.toastr.error('Something went wrong while creating PO.');
+            }
+          });
+      }
+    });
+  }
+  
+  selectRow(row: any) {
+    this.selectedRow = row;
   }
 }  
