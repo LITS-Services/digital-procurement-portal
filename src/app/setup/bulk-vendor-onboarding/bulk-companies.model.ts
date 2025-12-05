@@ -21,6 +21,12 @@ export interface BankDetail {
   isDeleted?: boolean;
 }
 
+export interface UsersDetail {
+  userName:string;
+  userEmail:string
+
+}
+
 export interface AddressDetail {
   id?: number;
   street: string;
@@ -67,6 +73,7 @@ export interface Company {
   bankDetails: BankDetail[];
   addresses: AddressDetail[];
   contacts: ContactDetail[];
+  users:UsersDetail[];
   demographics: DemographicDetail | null;
   attachments: AttachmentDetail[];
 }
@@ -76,6 +83,11 @@ export type CompaniesRow = {
   CompanyKey?: string;
   Name?: string;
   Remarks?: string;
+};
+
+export type UserRow = {
+  UserName?: string;
+  UserEmail?: string;
 };
 
 export type AddressRow = {

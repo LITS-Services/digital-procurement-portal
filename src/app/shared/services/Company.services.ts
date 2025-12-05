@@ -187,4 +187,13 @@ export class CompanyService {
     return this.http.post<any>(`${environment.apiUrl}/Workflow/take-action`, data);
   }
 
+
+  registerCompanyInBulk(payload: any) {
+  return this.http.post(
+    `${environment.apiUrl}/company/register-company-in-bulk`,
+    payload
+  );
+}
+
+
 }

@@ -125,24 +125,97 @@
                   </span> -->
                 </div>
 
-                <div class="d-flex flex-wrap align-items-center mb-3">
+                <div class="d-flex align-items-center">
+                     <div class="d-flex col-md-6 pl-0 flex-wrap align-items-center mb-3">
                   <div class="company-avatar mr-2 mb-2">
                     {{ getInitials(company?.name) }}
                   </div>
                   <div class="flex-grow-1 mb-2">
+                 
+                    <div class="field-label extra-small">Company</div>
                     <div class="company-title" [title]="company?.name">
                       {{ company?.name }}
                     </div>
                   </div>
                 </div>
 
+                  <div class="d-flex col-md-6 pl-0 flex-wrap align-items-center mb-3">
+                  <div class="company-avatar mr-2 mb-2">
+                   <i class="fa fa-user-tie"></i>
+                  </div>
+                  <div class="flex-grow-1 mb-2">
+                 
+                    <div class="field-label extra-small">Vendor</div>
+                    <div class="company-title" [title]="company?.users?.[0]?.userName">
+                      <span *ngIf="company?.users.length">
+                         {{ company?.users?.[0]?.userName }} <span class="extra-small text-muted">({{ company?.users?.[0]?.userEmail }})</span>
+                      </span>
+                      <span *ngIf="!company?.users.length">
+                        N/A
+                      </span>
+                     
+                    </div>
+                  </div>
+                </div>
+                </div>
+             
+
                 <div class="row small-fields">
-                  <div class="col-md-12 mb-2">
+                  <div class="col-md-12 mb-1">
                     <div class="field-label">Remarks</div>
                     <div class="field-value text-truncate" [title]="company?.remarks">
                       {{ company?.remarks }}
                     </div>
                   </div>
+
+                  <hr class="w-100 mx-2">
+
+                <div class="col-md-12 mb-2 mt-2">
+                  <!-- Header -->
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="d-flex align-items-center">
+                      <h6 class="mb-0 mr-2">Associated Entities</h6>
+                    </div>
+                  </div>
+                
+                  <p class="text-muted extra-small mb-2">
+                    Select entities linked with this company.
+                  </p>
+                
+                  <!-- ng-select multi-select -->
+                  <ng-select class="custom-style-entity col-md-6 mb-3 pl-0" [items]="entitiesList" bindLabel="name" bindValue="id"
+                   [multiple]="true"
+                    [closeOnSelect]="false" [searchable]="true" placeholder="Select Entity" [(ngModel)]="selectedEntityIds"
+                    name="associatedEntities">
+                  </ng-select>
+                
+                  <!-- Selected entities as cards -->
+                  <div *ngIf="selectedEntities.length; else noEntities">
+                    <div class="entity-card mb-2" *ngFor="let entity of selectedEntities">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <!-- Left: icon + name -->
+                        <div class="d-flex align-items-center">
+                          <div class="entity-avatar mr-2 entity-avatar--blue">
+                            <i class="fa fa-building"></i>
+                          </div>
+                
+                          <div>
+                            <div class="entity-name">{{ entity.name }}</div>
+                          </div>
+                        </div>
+                
+                        <!-- Right: remove button -->
+                        <button type="button" class="btn btn-link btn-sm text-danger p-0" (click)="removeEntity(entity.id)">
+                          <i class="fa fa-times-circle mr-1"></i> Remove
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                
+                  <ng-template #noEntities>
+                    <span class="text-muted extra-small ml-1">No entities selected.</span>
+                  </ng-template>
+                </div>
                 </div>
               </div>
             </div>
