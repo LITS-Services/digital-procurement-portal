@@ -398,31 +398,31 @@ export class PurchaseRequestComponent implements OnInit {
   //     }
   //   });
   // }
-  createPO(row: any) {
+  // createPO(row: any) {
 
-    Swal.fire({
-      title: 'Create Purchase Order?',
-      text: 'This will generate PO(s) automatically for all items based on vendor assignment.',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Yes, Create PO',
-      cancelButtonText: 'Cancel',
-    }).then((result) => {
-      if (result.isConfirmed) {
+  //   Swal.fire({
+  //     title: 'Create Purchase Order?',
+  //     text: 'This will generate PO(s) automatically for all items based on vendor assignment.',
+  //     icon: 'question',
+  //     showCancelButton: true,
+  //     confirmButtonText: 'Yes, Create PO',
+  //     cancelButtonText: 'Cancel',
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
 
-        this.purchaseOrderService.createPurchaseOrderFromPR(row.requestId).subscribe({
-          next: () => {
-            console.log("Successfully created PO");
-            this.loadPurchaseRequests();
-          },
-          error: () => {
-            this.toastr.error('Something went wrong while creating PO.');
-          }
-        });
+  //       this.purchaseOrderService.createPurchaseOrderFromPR(row.requestId).subscribe({
+  //         next: () => {
+  //           console.log("Successfully created PO");
+  //           this.loadPurchaseRequests();
+  //         },
+  //         error: () => {
+  //           this.toastr.error('Something went wrong while creating PO.');
+  //         }
+  //       });
 
-      }
-    });
-  }
+  //     }
+  //   });
+  // }
 
   selectFinalVendor(row: any): void {
     if (row.requestStatus !== 'Completed') {

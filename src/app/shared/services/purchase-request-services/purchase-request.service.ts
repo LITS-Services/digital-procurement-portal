@@ -82,10 +82,25 @@ export class PurchaseRequestService {
     return this.http.post<any>(`${this.baseUrl}/create-request`, data);
   }
 
-  getPurchaseRequestById(id: number, forRfq: boolean = false): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/get-request-by-id`, {
-      params: { id: id.toString(), forRfq }
-    });
+  // getPurchaseRequestById(id: number, forRfq: boolean = false): Observable<any> {
+  //   return this.http.get<any>(`${this.baseUrl}/get-request-by-id`, {
+  //     params: { id: id.toString(), forRfq }
+  //   });
+  // }
+
+  getPurchaseRequestById(
+    id: number,
+    generateRfq?: boolean,
+    forInventoryTransfer?: boolean,
+    selectFinalVendor?: boolean
+  ): Observable<any> {
+    let params: any = { id: id.toString() };
+
+    if (generateRfq === true) params.generateRfq = 'true';
+    if (forInventoryTransfer === true) params.forInventoryTransfer = 'true';
+    if (selectFinalVendor === true) params.selectFinalVendor = 'true';
+
+    return this.http.get<any>(`${this.baseUrl}/get-request-by-id`, { params });
   }
 
   addRemarksWithActionTaken(data: any): Observable<any> {

@@ -56,7 +56,7 @@ export class PrInventoryManagementComponent implements OnInit {
   private loadRequest(id: number): void {
     this.loading = true;
 
-    this.purchaseRequestService.getPurchaseRequestById(id).subscribe({
+    this.purchaseRequestService.getPurchaseRequestById(id, false, true).subscribe({
       next: (requestData: any) => {
         this.requisitionNo = requestData.requisitionNo || '';
 
@@ -78,7 +78,7 @@ export class PrInventoryManagementComponent implements OnInit {
           return {
             srNo: index + 1,
             type: item.itemType,
-            item: item.itemDescription || `Item #${index + 1}`,
+            item: item.itemName || `Item #${index + 1}`,
             description: item.itemDescription,
             orderQuantity: item.orderQuantity,
             amount: item.amount,
