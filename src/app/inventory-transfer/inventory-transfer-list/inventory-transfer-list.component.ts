@@ -44,6 +44,7 @@ export class InventoryTransferListComponent implements OnInit {
     userId: null,
     entityId: null,
     prNo: null,
+    forInventoryTransfer: true
   };
 
   constructor(

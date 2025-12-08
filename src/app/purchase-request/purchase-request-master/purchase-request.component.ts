@@ -50,7 +50,8 @@ export class PurchaseRequestComponent implements OnInit {
     status: null,
     userId: null,
     entityId: null,
-    prNo: null
+    prNo: null,
+    forInventoryTransfer: false
   };
 
   showFilterBar = false;

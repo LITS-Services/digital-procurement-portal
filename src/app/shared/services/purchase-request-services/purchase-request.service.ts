@@ -17,7 +17,8 @@ export interface PRQuery {
   userId: string | null,
   entityId: number | null,
   status: string | null,
-  prNo: string | null
+  prNo: string | null,
+  forInventoryTransfer: boolean
 }
 
 export interface Dropdown {
@@ -53,13 +54,15 @@ export class PurchaseRequestService {
     userId?: string | null,
     entityId?: number | null,
     status?: string | null,
-    prNo?: string | null
+    prNo?: string | null,
+    forInventoryTransfer: boolean
   }): Observable<any> {
 
 
     let params = new HttpParams()
       .set("currentPage", q.currentPage)
-      .set("pageSize", q.pageSize);
+      .set("pageSize", q.pageSize)
+      .set("forInventoryTransfer", q.forInventoryTransfer.toString());
 
     if (q.status) params = params.set("status", q.status);
     if (q.prNo) params = params.set("prNo", q.prNo);
