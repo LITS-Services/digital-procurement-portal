@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 import { of } from 'rxjs';
 import { finalize, switchMap } from 'rxjs/operators';
 import { NgxSpinnerService } from 'ngx-spinner';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-rfq-vendor-modal',
@@ -165,64 +166,142 @@ export class RfqVendorModalComponent implements OnInit {
   }
 
 
-onSubmit() {
-  if (!this.quotationRequestId) return;
+// onSubmit() {
+//   if (!this.quotationRequestId) return;
 
-  const key = this.getKey;
+//   const key = this.getKey;
 
-  // sets for diff
-  const currentIds = new Set<number>(this.gridSelected.map((r: any) => key(r)));
-  const persisted = this.persistedIds;
+//   // sets for diff
+//   const currentIds = new Set<number>(this.gridSelected.map((r: any) => key(r)));
+//   const persisted = this.persistedIds;
 
-  // compute diffs
-  const toAddRows = this.allVendorsandCompanies.filter((r: any) =>
-    currentIds.has(key(r)) && !persisted.has(key(r))
-  );
-  const toRemoveIds = Array.from(persisted).filter(id => !currentIds.has(id));
+//   // compute diffs
+//   const toAddRows = this.allVendorsandCompanies.filter((r: any) =>
+//     currentIds.has(key(r)) && !persisted.has(key(r))
+//   );
+//   const toRemoveIds = Array.from(persisted).filter(id => !currentIds.has(id));
 
-  // payloads
-  const addPayload = toAddRows.map((v: any) => ({
-    quotationRequestId: this.quotationRequestId!,
-    vendorCompanyEntityId: key(v),
-    vendorId: v.vendorId,
-    vendorCompanyId: v.companyGUID
-  }));
+//   // payloads
+//   const addPayload = toAddRows.map((v: any) => ({
+//     quotationRequestId: this.quotationRequestId!,
+//     vendorCompanyEntityId: key(v),
+//     vendorId: v.vendorId,
+//     vendorCompanyId: v.companyGUID
+//   }));
 
-  // “no-op” observables when nothing to add/remove
-  const add$ = addPayload.length
-    ? this.rfqService.addVendorsToQuotation(addPayload)
+//   // “no-op” observables when nothing to add/remove
+//   const add$ = addPayload.length
+//     ? this.rfqService.addVendorsToQuotation(addPayload)
     
-    : of(null);
+//     : of(null);
 
-  const remove$ = toRemoveIds.length
-    ? this.rfqService.removeVendorsFromQuotation({
-        quotationRequestId: this.quotationRequestId!,
-        vendorCompanyEntityIds: toRemoveIds
-      })
-    : of(null);
+//   const remove$ = toRemoveIds.length
+//     ? this.rfqService.removeVendorsFromQuotation({
+//         quotationRequestId: this.quotationRequestId!,
+//         vendorCompanyEntityIds: toRemoveIds
+//       })
+//     : of(null);
 
 
-  this.spinner.show();
-  add$
-    .pipe(
-      switchMap(() => remove$),
-      finalize(() => this.spinner.hide())
-    )
-    .subscribe({
-      next: () => {
+//   this.spinner.show();
+//   add$
+//     .pipe(
+//       switchMap(() => remove$),
+//       finalize(() => this.spinner.hide())
+//     )
+//     .subscribe({
+//       next: () => {
 
-        this.loadRfqVendors(this.quotationRequestId!); // refresh chips + selection
+//         this.loadRfqVendors(this.quotationRequestId!); // refresh chips + selection
 
      
-      },
-      error: (err) => {
-        console.error(err);
-        this.toastr.error('Failed to update vendors');
-      }
+//       },
+//       error: (err) => {
+//         console.error(err);
+//         this.toastr.error('Failed to update vendors');
+//       }
+//     });
+// }
+
+  onSubmit() {
+    if (!this.quotationRequestId) return;
+
+    const key = this.getKey;
+
+    // sets for diff
+    const currentIds = new Set<number>(this.gridSelected.map((r: any) => key(r)));
+    const persisted = this.persistedIds;
+
+    // compute diffs
+    const toAddRows = this.allVendorsandCompanies.filter((r: any) =>
+      currentIds.has(key(r)) && !persisted.has(key(r))
+    );
+    const toRemoveIds = Array.from(persisted).filter(id => !currentIds.has(id));
+
+    // If nothing changed, no need to submit
+    if (!toAddRows.length && !toRemoveIds.length) {
+      this.toastr.info('No changes to submit.');
+      return;
+    }
+
+    // Generic confirmation message
+    const actionMessage = `You are about to ${toAddRows.length && toRemoveIds.length
+        ? 'add and remove vendors'
+        : toAddRows.length
+          ? 'add vendors'
+          : 'remove vendors'
+      }. Do you want to continue?`;
+
+    Swal.fire({
+      title: 'Confirm Submission',
+      text: actionMessage,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Submit Vendors',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33'
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+
+      // Payloads
+      const addPayload = toAddRows.map((v: any) => ({
+        quotationRequestId: this.quotationRequestId!,
+        vendorCompanyEntityId: key(v),
+        vendorId: v.vendorId,
+        vendorCompanyId: v.companyGUID
+      }));
+
+      const add$ = addPayload.length
+        ? this.rfqService.addVendorsToQuotation(addPayload)
+        : of(null);
+
+      const remove$ = toRemoveIds.length
+        ? this.rfqService.removeVendorsFromQuotation({
+          quotationRequestId: this.quotationRequestId!,
+          vendorCompanyEntityIds: toRemoveIds
+        })
+        : of(null);
+
+      // Show spinner while submitting
+      this.spinner.show();
+      add$
+        .pipe(
+          switchMap(() => remove$),
+          finalize(() => this.spinner.hide())
+        )
+        .subscribe({
+          next: () => {
+            this.loadRfqVendors(this.quotationRequestId!); // refresh chips + selection
+            this.toastr.success('Vendors updated successfully.');
+          },
+          error: (err) => {
+            console.error(err);
+            this.toastr.error('Failed to update vendors.');
+          }
+        });
     });
-}
-
-
+  }
 
   printVendor(vendor: any) {
     console.log('Printing Vendor:', vendor);
@@ -241,7 +320,4 @@ onSubmit() {
   //   return this.rfqVendors.some(v => v.vendorCompanyEntityId === companyId);
 
   // }
-
-
-
 }
