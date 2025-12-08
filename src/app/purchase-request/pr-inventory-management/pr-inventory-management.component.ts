@@ -42,8 +42,9 @@ export class PrInventoryManagementComponent implements OnInit {
 
   private buildHeaderForm(): void {
     this.headerForm = this.fb.group({
-      prNumber: [{ value: '', disabled: true }],
+      //prNumber: [{ value: '', disabled: true }],
       requisitionNumber: [{ value: '', disabled: true }],
+      receiverName: [{ value: '', disabled: true }],
       status: [{ value: '', disabled: true }],
       items: this.fb.array([])
     });
@@ -61,8 +62,9 @@ export class PrInventoryManagementComponent implements OnInit {
         this.requisitionNo = requestData.requisitionNo || '';
 
         this.headerForm.patchValue({
-          prNumber: requestData.prNumber || requestData.id || '',
+          //prNumber: requestData.prNumber || requestData.id || '',
           requisitionNumber: requestData.requisitionNo || '',
+          receiverName: requestData.receiverName || '',
           status: requestData.requestStatus || ''
         });
 
