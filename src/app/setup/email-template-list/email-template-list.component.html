@@ -45,10 +45,10 @@
 
       <!-- Datatable -->
       <ngx-datatable class="bootstrap core-bootstrap" [rows]="rows" [columnMode]="'force'" [headerHeight]="50"
-                     [footerHeight]="50" [columns]="columns" rowHeight="auto" [limit]="15" [scrollbarH]="true"
-                     [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
-                     [selectionType]="SelectionType.checkbox" (sort)="onSort($event)"
-                     (select)="customChkboxOnSelect($event)">
+        [footerHeight]="50" [columns]="columns" rowHeight="auto" [limit]="query.pageSize" [count]="totalItems"
+        [externalPaging]="true" [offset]="query.currentPage - 1" (page)="onPageChange($event)" [scrollbarH]="true"
+        [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
+        [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 
         <!-- Checkbox Column -->
         <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
