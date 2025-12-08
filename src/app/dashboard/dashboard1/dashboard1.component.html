@@ -13,46 +13,38 @@
     </div> -->
   </div>
 
-  <!-- Main 2-column grid -->
   <div class="dashboard-grid">
-    <!-- LEFT COLUMN -->
     <div class="dashboard-main">
 
-      <!-- Update the first row of stat cards with permission checks -->
-<div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-1 top-metrics-row mob-gap">
-  <!-- Purchase Request Card -->
-  <div class="col count-card">
-    <div 
-      class="stat-card stat-card--primary" 
-      [ngClass]="{ 'stat-card--disabled': !canAccessPurchaseRequest }"
-      (click)="goToPurchaseRequest()"
-      [attr.title]="!canAccessPurchaseRequest ? 'No permission to access Purchase Requests' : ''">
-      <div class="stat-card__label"> 
-        <span>Purchase Requests</span> 
-        <span class="arrow-div">
-          <i class="ft ft-arrow-up-right"></i>
-        </span>
-      </div>
-      <div class="stat-card__body">
-        <div class="stat-card__text">
-          <div class="stat-card__value">
-            {{ prCounts?.totalRequests || 0 }}
+      <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-1 top-metrics-row mob-gap">
+        <div class="col count-card">
+          <div class="stat-card stat-card--primary" (click)="goToPurchaseRequest()">
+             <div class="stat-card__label"> <span>Purchase Requests</span> <span class="arrow-div"><i class="ft ft-arrow-up-right"></i></span></div>
+            <div class="stat-card__body">
+              <div class="stat-card__text">
+                <div class="stat-card__value">
+                  {{ prCounts?.totalRequests || 0 }}
+                </div>
+
+               
+              </div>
+
+              <div class="stat-card__icon">
+                <img src="/assets/img/icons/pr-icon.svg" alt="PR" />
+              </div>
+            </div>
+             <div class="stat-card__chips">
+                  <span class="metric-chip">
+                    New: <strong class="ml-1">{{ prCounts?.newRequests || 0 }}</strong>
+                  </span>
+                  <span class="metric-chip metric-chip--muted">
+                    In Process: <strong class="ml-1">{{ prCounts?.inProcessRequests || 0 }}</strong>
+                  </span>
+                </div>
           </div>
+          
+          
         </div>
-        <div class="stat-card__icon">
-          <img src="/assets/img/icons/pr-icon.svg" alt="PR" />
-        </div>
-      </div>
-      <div class="stat-card__chips">
-        <span class="metric-chip">
-          New: <strong class="ml-1">{{ prCounts?.newRequests || 0 }}</strong>
-        </span>
-        <span class="metric-chip metric-chip--muted">
-          In Process: <strong class="ml-1">{{ prCounts?.inProcessRequests || 0 }}</strong>
-        </span>
-      </div>
-    </div>
-  </div>
 
   <!-- RFQ Card -->
   <div class="col count-card">
@@ -294,7 +286,7 @@
               <div>
                 <h3 class="panel-card__title">Monthly Spend</h3>
                 <p class="panel-card__subtitle">
-                  {{ monthlySpendLabel }}
+                  {{ monthlySpendAmount }} this month
                 </p>
               </div>
             </div>
@@ -313,7 +305,7 @@
                     {{ monthlySpendAmount }}
                   </div>
                   <div class="monthly-expenses-caption">
-                    Total this month
+                    Total
                   </div>
                 </div>
               </div>
