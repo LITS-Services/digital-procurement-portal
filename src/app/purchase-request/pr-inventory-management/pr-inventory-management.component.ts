@@ -6,6 +6,8 @@ import { LookupService } from 'app/shared/services/lookup.service';
 import { PurchaseRequestAttachmentModalComponent } from 'app/shared/modals/purchase-request-attachment-modal/purchase-request-attachment-modal.component';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize } from 'rxjs/operators';
+import { PermissionService } from 'app/shared/permissions/permission.service';
+import { FORM_IDS } from 'app/shared/permissions/form-ids';
 
 @Component({
   selector: 'app-pr-inventory-management',
@@ -14,7 +16,7 @@ import { finalize } from 'rxjs/operators';
   standalone: false
 })
 export class PrInventoryManagementComponent implements OnInit {
-
+  FORM_IDS = FORM_IDS;
   @Input() requestId!: number;
   requisitionNo: string = '';
   headerForm!: FormGroup;
@@ -32,7 +34,8 @@ export class PrInventoryManagementComponent implements OnInit {
     private lookupService: LookupService,
     private cdr: ChangeDetectorRef,
     private modalService: NgbModal,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private permissionService: PermissionService
   ) { }
 
   ngOnInit(): void {
@@ -164,6 +167,8 @@ openAttachmentView(row: any): void {
 }
 
   onSubmit(): void {
+    if (!this.permissionService.can(FORM_IDS.INVENTORY_TRANSFER, 'write'))
+          return;
     const payload = {
       prId: this.requestId,
       InventoryTransfer: this.itemForms.value.map((x: any) => ({
