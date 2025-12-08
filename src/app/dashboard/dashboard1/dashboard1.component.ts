@@ -4,7 +4,7 @@ import { ChartType, ChartEvent } from "ng-chartist";
 import ChartistTooltip from 'chartist-plugin-tooltips-updated';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
-import { DashboardService, RfqPipelineGraphPoint } from 'app/shared/services/dashboard.service';
+import { DashboardService, MonthlySpendingResponse, RfqPipelineGraphPoint } from 'app/shared/services/dashboard.service';
 import { FirebaseMessagingService } from '../../firebase-messaging.service';
 import { ToastrService } from 'ngx-toastr';
 import { ms } from 'date-fns/locale';
@@ -193,6 +193,7 @@ export class Dashboard1Component implements OnInit,AfterViewInit {
     this.loadEntitiesCounts();
     this.initSpendChart();
     this.initSpendDonut();
+    this.getMonthlySpending();
     this.initVendorDeliveryChart();
     
   }
@@ -248,6 +249,49 @@ ngAfterViewInit(): void {
       },
     });
   }
+
+getMonthlySpending() {
+  this.dashboardService.getMonthlySpendingData().subscribe({
+    next: (res: any) => {
+      console.log('monthly spending', res);
+
+      const data: MonthlySpendingResponse = Array.isArray(res) ? res[0] : res;
+
+      const inventory = Number(data?.inventory ?? 0);
+      const nonInventory = Number(data?.nonInventory ?? 0);
+
+      this.spendDonutOptions = {
+        ...this.spendDonutOptions,
+        series: [inventory, nonInventory],
+        labels: ['Inventory', 'Non-Inventory'],
+      };
+
+          this.monthlyExpenses = [
+        {
+          label: 'Inventory',
+          color: '#80ed99',
+          value: `${inventory.toFixed(2)}%`,
+        },
+        {
+          label: 'Non-Inventory',
+          color: '#219ebc',
+          value: `${nonInventory.toFixed(2)}%`,
+        },
+      ];
+
+      // Optional: update amount text under chart
+      if (data?.totalThisMonth != null) {
+        this.monthlySpendAmount = `Rs ${Number(data.totalThisMonth).toLocaleString()}`;
+      }
+
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      console.error('Error getting monthly spending', err);
+    },
+  });
+}
+
 
   loadVendorCompaniesCounts(): void {
     const entityId = Number(localStorage.getItem('selectedCompanyId'));
@@ -488,40 +532,41 @@ private formatMonthLabel(groupData: string): string {
   return groupData;
 }
   private initSpendDonut(): void {
-    this.spendDonutOptions = {
-      series: [65, 35],
-      chart: {
-        type: 'donut',
-        height: 200,
+  this.spendDonutOptions = {
+    series: [0, 0],   // will be replaced by API
+    chart: {
+      type: 'donut',
+      height: 200,
+    },
+    // default labels & colors (also overwritten if needed)
+    labels: ['Inventory', 'Non-Inventory'],
+    colors: this.monthlyExpenses.map((e) => e.color),
+    legend: {
+      show: false,
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    tooltip: {
+      y: {
+        formatter: (val: number) => `${val.toFixed(1)}%`,
       },
-      labels: this.monthlyExpenses.map((e) => e.label),
-      colors: this.monthlyExpenses.map((e) => e.color),
-      legend: {
-        show: false,
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      tooltip: {
-        y: {
-          formatter: (val: number) => `${val.toFixed(1)}%`,
-        },
-      },
-      responsive: [
-        {
-          breakpoint: 768,
-          options: {
-            chart: {
-              height: 180,
-            },
+    },
+    responsive: [
+      {
+        breakpoint: 768,
+        options: {
+          chart: {
+            height: 180,
           },
         },
-      ],
-      theme: {
-        mode: 'light',
       },
-    };
-  }
+    ],
+    theme: {
+      mode: 'light',
+    },
+  };
+}
 
   private initVendorDeliveryChart(): void {
     const vendors = ['AlaMart', 'Alpha Stores', 'Metro Supplies'];

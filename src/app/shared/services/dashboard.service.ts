@@ -11,6 +11,12 @@ export interface RfqPipelineGraphPoint {
   groupData: string;
 }
 
+export interface MonthlySpendingResponse {
+  inventory: number;
+  nonInventory: number;
+  totalThisMonth: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -60,6 +66,14 @@ export class DashboardService {
     if (entityId) params = params.set("entityId", entityId);
     return this.http.get<PurchaseOrdersCountVM>(
       `${this.baseUrl}/purchase-orders-count`, { params }
+    );
+  }
+
+  getMonthlySpendingData(filterType?: number): Observable<any[]> {
+    let params = new HttpParams()
+    if (filterType) params = params.set("filterType", filterType);
+    return this.http.get<any[]>(
+      `${this.baseUrl}/monthly-spending-graph`, { params }
     );
   }
 
