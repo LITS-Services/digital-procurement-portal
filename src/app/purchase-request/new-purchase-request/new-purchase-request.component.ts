@@ -542,7 +542,7 @@ onWindowScroll(): void {
     this.itemForm.reset({
       amount: 0,
       unitCost: 0,
-      orderQuantity: 1
+      orderQuantity: 0
     });
   }
 
@@ -585,7 +585,7 @@ onWindowScroll(): void {
       itemType: row.itemType || '',
       itemId: Number(row.itemId) || null,
       unitOfMeasurementId: Number(row.unitOfMeasurementId) || null,
-      orderQuantity: Number(row.orderQuantity) || 1,
+      orderQuantity: Number(row.orderQuantity) || 0,
       unitCost: Number(row.unitCost) || 0,
       amount: Number(row.amount) || 0,
       // reqByDate: row.reqByDate ? this.toDateInputValue(row.reqByDate) : '',
@@ -624,8 +624,16 @@ onWindowScroll(): void {
       cancelButtonColor: '#3085d6',
     }).then((result) => {
       if (result.isConfirmed) {
+        const isEditingDeletedRow = this.editingRowIndex === rowIndex;
+
         this.newPurchaseItemData.splice(rowIndex, 1);
-        this.newPurchaseItemData = [...this.newPurchaseItemData]; // refresh table
+        this.newPurchaseItemData = [...this.newPurchaseItemData]; 
+
+        if (isEditingDeletedRow) {
+          this.itemForm.reset();
+          this.editingRowIndex = null;
+        }
+
         this.toastr.success('Item deleted!', '');
       }
     });
@@ -1263,7 +1271,7 @@ onWindowScroll(): void {
         itemId: this.getItemIdByName(item['Item']) || null,
         unitOfMeasurementId: this.getUOMIdByName(item['U of M']) || null,
         unitCost: Number(item['Unit Cost']) || 0,
-        orderQuantity: Number(item['Order Quantity']) || 1,
+        orderQuantity: Number(item['Order Quantity']) || 0,
         amount: Number(item['Unit Cost']) * Number(item['Order Quantity']),
         reqByDate: parsedDate,
         itemDescription: item['Item Description'] || '',
