@@ -19,6 +19,9 @@ export const ROUTES: RouteInfo[] = [
     path: '/purchase-order', title: 'Purchase Order', icon: 'fa fa-file-invoice', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
     formTypeId: FORM_IDS.PURCHASE_ORDER
   },
+  {
+    path: '/inventory-transfer', title: 'Inventory Transfer', icon: 'fa fa-file-invoice', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: []
+  },
 
   // { path: '/tendering', title: 'Tendering', icon: 'fa fa-handshake-o', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
   {

@@ -89,6 +89,7 @@ export class NewPurchaseRequestComponent implements OnInit {
   isToolbarSticky = false;
   procurementUserId = localStorage.getItem('userId');
   selectedRow: any;
+  isInventoryTransferMode:boolean = false;
   compareIds = (a: string | null, b: string | null) => (a ?? '').toLowerCase() === (b ?? '').toLowerCase();
 
   @ViewChild('accordion') accordion: NgbAccordion;
@@ -184,6 +185,14 @@ export class NewPurchaseRequestComponent implements OnInit {
           }
         });
       }
+      }
+
+      if (mode === 'inventory-transfer' && id) {
+        this.isInventoryTransferMode = true;
+        this.currentRequestId = +id;
+        this.newPurchaseRequestForm.disable();
+        this.itemForm.disable();
+        this.loadExistingRequest(+id);
       }
 
       else if (id) {
@@ -639,98 +648,112 @@ onWindowScroll(): void {
     });
   }
 
-  loadExistingRequest(id: number, generateRfq?: boolean, forInventoryTransfer?: boolean, selectFinalVendor?: boolean) {
-    this.spinner.show();
-    this.loading = true;
-    this.purchaseRequestService.getPurchaseRequestById(id, generateRfq, forInventoryTransfer, selectFinalVendor).subscribe({
-      next: async (data) => {
+loadExistingRequest(
+  id: number,
+  generateRfq?: boolean,
+  forInventoryTransfer?: boolean,
+  selectFinalVendor?: boolean
+) {
+  this.spinner.show();
+  this.loading = true;
 
-        // unwrap the Ardalis.Result<T> wrapper
-        const requestData = data;
+  // Decide which API to call based on inventory-transfer mode
+  const api$ = this.isInventoryTransferMode
+    ? this.purchaseRequestService.getPrForInventoryTransfer(id)
+    : this.purchaseRequestService.getPurchaseRequestById(id, generateRfq, forInventoryTransfer, selectFinalVendor);
 
-        const loggedInUserId = localStorage.getItem('userId');
-        this.isSubmitter = requestData.submitterId === loggedInUserId;
+  api$.subscribe({
+    next: async (data) => {
 
-        this.isNewForm = false;
-        this.currentRequestId = requestData.id;
-        this.currentRequisitionNo = requestData.requisitionNo;
+      // unwrap the Ardalis.Result<T> wrapper (if any)
+      const requestData = data;
 
+      const loggedInUserId = localStorage.getItem('userId');
+      this.isSubmitter = requestData.submitterId === loggedInUserId;
+
+      this.isNewForm = false;
+      this.currentRequestId = requestData.id;
+      this.currentRequisitionNo = requestData.requisitionNo;
+
+      this.newPurchaseRequestForm.patchValue({
+        ...requestData,
+        submittedDate: this.toDateInputValue(requestData.submittedDate)
+      });
+
+      if (requestData.requestStatus) {
         this.newPurchaseRequestForm.patchValue({
-          ...requestData,
-          submittedDate: this.toDateInputValue(requestData.submittedDate)
+          status: requestData.requestStatus
         });
 
-        if (requestData.requestStatus) {
-          this.newPurchaseRequestForm.patchValue({
-            status: requestData.requestStatus
-          });
-          if (requestData.requestStatus === 'Completed') {
-            this.isStatusCompleted = true;
-            this.cdr.detectChanges();
-          }
-          else {
-            this.isStatusCompleted = false;
-            this.cdr.detectChanges();
-          }
-          if (requestData.requestStatus === 'InProcess') {
-            this.isStatusInProcess = true;
-            this.cdr.detectChanges();
-          }
-          else {
-            this.isStatusInProcess = false;
-            this.cdr.detectChanges();
-          }
+        if (requestData.requestStatus === 'Completed') {
+          this.isStatusCompleted = true;
+          this.cdr.detectChanges();
+        } else {
+          this.isStatusCompleted = false;
+          this.cdr.detectChanges();
         }
 
-        if (requestData.purchaseItems) {
-          const itemList = requestData.purchaseItems || [];
-
-          this.newPurchaseItemData = itemList.map((item: any) => ({
-            id: item.id,
-            requisitionNo: item.requisitionNo,
-            itemType: item.itemType,
-            itemId: item.itemId,
-            itemDescription: item.itemDescription,
-            amount: item.amount,
-            unitCost: item.unitCost,
-            unitOfMeasurementId: item.unitOfMeasurementId,
-            orderQuantity: item.orderQuantity,
-            reqByDate: this.toDateInputValue(item.reqByDate),
-            vendorUserId: item.vendorUserId,
-            vendorCompanyId: item.vendorCompanyId,
-            accountId: item.accountId,
-            remarks: item.remarks,
-            createdBy: item.createdBy,
-            purchaseRequestId: item.purchaseRequestId,
-            attachments: (item.attachments || []).map((a: any) => ({
-              id: a.id,
-              content: a.content || '',
-              contentType: a.contentType || '',
-              fileName: a.fileName || '',
-              fromForm: a.fromForm || '',
-              createdDate: a.createdDate,
-              modifiedDate: a.modifiedDate,
-              createdBy: a.createdBy || 'current-user',
-              isDeleted: a.isDeleted || false,
-              purchaseItemId: a.purchaseItemId || 0,
-              isNew: false
-            }))
-          }));
+        if (requestData.requestStatus === 'InProcess') {
+          this.isStatusInProcess = true;
+          this.cdr.detectChanges();
+        } else {
+          this.isStatusInProcess = false;
+          this.cdr.detectChanges();
         }
-        const prEntityId = Number(requestData.entityId) || null;
-        this.applyEntity(prEntityId);
-        this.loading = false;
-        this.spinner.hide();
-        this.cdr.detectChanges();
-      },
-
-      error: (err) => {
-        this.spinner.hide();
-        this.loading = false;
-        console.error('Failed to load purchase request:', err)
       }
-    });
-  }
+
+      if (requestData.purchaseItems) {
+        const itemList = requestData.purchaseItems || [];
+
+        this.newPurchaseItemData = itemList.map((item: any) => ({
+          id: item.id,
+          requisitionNo: item.requisitionNo,
+          itemType: item.itemType,
+          itemId: item.itemId,
+          itemDescription: item.itemDescription,
+          amount: item.amount,
+          unitCost: item.unitCost,
+          unitOfMeasurementId: item.unitOfMeasurementId,
+          orderQuantity: item.orderQuantity,
+          reqByDate: this.toDateInputValue(item.reqByDate),
+          vendorUserId: item.vendorUserId,
+          vendorCompanyId: item.vendorCompanyId,
+          accountId: item.accountId,
+          remarks: item.remarks,
+          createdBy: item.createdBy,
+          purchaseRequestId: item.purchaseRequestId,
+          attachments: (item.attachments || []).map((a: any) => ({
+            id: a.id,
+            content: a.content || '',
+            contentType: a.contentType || '',
+            fileName: a.fileName || '',
+            fromForm: a.fromForm || '',
+            createdDate: a.createdDate,
+            modifiedDate: a.modifiedDate,
+            createdBy: a.createdBy || 'current-user',
+            isDeleted: a.isDeleted || false,
+            purchaseItemId: a.purchaseItemId || 0,
+            isNew: false
+          }))
+        }));
+      }
+
+      const prEntityId = Number(requestData.entityId) || null;
+      this.applyEntity(prEntityId);
+
+      this.loading = false;
+      this.spinner.hide();
+      this.cdr.detectChanges();
+    },
+
+    error: (err) => {
+      this.spinner.hide();
+      this.loading = false;
+      console.error('Failed to load purchase request:', err);
+    }
+  });
+}
+
 
   homePage() {
     if (this.isNewForm && this.isFormDirty) {

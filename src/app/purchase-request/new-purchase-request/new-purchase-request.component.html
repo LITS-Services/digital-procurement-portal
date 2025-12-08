@@ -9,7 +9,10 @@
             <ng-container *ngIf="isSelectingFinalVendor">
               Select Final Vendor
             </ng-container>
-            <ng-container *ngIf="!isSelectingFinalVendor && viewMode === false">
+              <ng-container *ngIf="!isSelectingFinalVendor && isInventoryTransferMode">
+                Inventory Transfer
+              </ng-container>
+            <ng-container *ngIf="!isSelectingFinalVendor && !isInventoryTransferMode && viewMode === false">
               {{ isNewForm ? 'Create Purchase Request' : 'Update Purchase Request' }}
             </ng-container>
           </h4>
@@ -17,8 +20,8 @@
       </div>
 
       <div class="card cstm-ui-card sticky-toolbar" [class.sticky]="isToolbarSticky">
-        <div class="row" *ngIf="!loading">
-          <div class="col-md-6">
+        <div class="row align-items-center" *ngIf="!loading">
+          <div class="col-md-6 col-6 cstm-action-bar">
 
             <button class="btn btn-lg mr-1" type="button" (click)="homePage()"><i class="ft-arrow-left"></i></button>
             <span class="vl"></span>
@@ -26,10 +29,10 @@
             <ng-container *ngIf="isNewForm && !viewMode">
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="newPurchaseRequestForm.invalid"
                 (click)="submitForm()">
-                <i class="ft-plus"></i><label class="ml-1 mt-1">Save</label>
+                <i class="ft-plus"></i><label class="ml-1 mt-1 btn-label">Save</label>
               </button>
               <button class="btn btn-sm cstm-ui-table-btn" (click)="saveAsDraftAndGoBack()">
-                <i class="ft-save"></i><label class="ml-1 mt-1">Save as Draft</label>
+                <i class="ft-save"></i><label class="ml-1 mt-1 btn-label">Save as Draft</label>
               </button>
             </ng-container>
 
@@ -38,12 +41,12 @@
               <button *ngIf="!isNewForm && !isSelectingFinalVendor" class="btn btn-sm cstm-ui-table-btn"
                 [disabled]="newPurchaseRequestForm.invalid || (isStatusCompleted && !isSelectingFinalVendor) || !isSubmitter"
                 (click)="submitForm()">
-                <i class="ft-edit-2"></i><label class="ml-1 mt-1">Update</label>
+                <i class="ft-edit-2"></i><label class="ml-1 mt-1 btn-label">Update</label>
               </button>
             
               <button *ngIf="isSelectingFinalVendor" class="btn btn-sm cstm-ui-table-btn" (click)="createPO(selectedRow)">
                 <i class="ft-plus"></i>
-                <label class="ml-1 mt-1">Create PO</label>
+                <label class="ml-1 mt-1 btn-label">Create PO</label>
               </button>
             </ng-container>
 
@@ -51,24 +54,24 @@
               <button class="btn btn-sm"
                 [disabled]="newPurchaseRequestForm.invalid || isStatusCompleted || isStatusInProcess"
                 (click)="onSubmitForApproval()">
-                <i class="ft-edit-2"></i><label class="ml-1 mt-1">Submit For Approval</label>
+                <i class="ft-edit-2"></i><label class="ml-1 mt-1 btn-label">Submit For Approval</label>
               </button>
 
             </ng-container>
             <ng-container *ngIf="viewMode && !isSubmitter">
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted"
                 (click)="onAddRemarks('Approve')">
-                <i class="ft-check"></i><label class="ml-1 mt-1">Approve</label>
+                <i class="ft-check"></i><label class="ml-1 mt-1 btn-label">Approve</label>
               </button>
 
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted"
                 (click)="onAddRemarks('Reject')">
-                <i class="ft-x"></i><label class="ml-1 mt-1">Reject</label>
+                <i class="ft-x"></i><label class="ml-1 mt-1 btn-label">Reject</label>
               </button>
 
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted"
                 (click)="onAddRemarks('SendBack')">
-                <i class="ft-arrow-left"></i><label class="ml-1 mt-1">Send Back</label>
+                <i class="ft-arrow-left"></i><label class="ml-1 mt-1 btn-label">Send Back</label>
               </button>
 
               <!-- <button class="btn btn-sm" [disabled]="newRfqForm.invalid" (click)="onAddRemarks('Submit')">
@@ -77,9 +80,9 @@
             </ng-container>
 
           </div>
-          <div class="col-md-6 text-right" style="margin-top: 0.3rem;">
+          <div class="col-md-6 col-6 text-right cstm-action-bar" style="margin-top: 0.3rem;">
             <button type="reset" class="btn btn-sm cstm-ui-table-btn mr-2">
-              <i class="ft-printer"></i><label class="ml-1 mt-1" for="">Print</label>
+              <i class="ft-printer"></i><label class="ml-1 mt-1 btn-label" for="">Print</label>
             </button>
           </div>
           <!-- View Mode: No buttons -->

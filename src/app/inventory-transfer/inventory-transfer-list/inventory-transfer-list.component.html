@@ -1,0 +1,105 @@
+<section>
+  <div class="row">
+    <div class="col-12">
+
+      <!-- Header -->
+      <div class="row">
+        <div class="col-md-12" style="margin-top: -0.25rem;">
+          <h4 class="heading">Inventory Transfer</h4>
+        </div>
+      </div>
+
+      <!-- Action Pane -->
+      <div class="card cstm-ui-card">
+        <div>
+          <div class="d-flex justify-content-between align-items-center cstm-action-bar">
+
+            <div class="position-relative">
+              <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+                <i class="ft-arrow-left"></i>
+              </button>
+
+              <span class="vl"></span>
+
+              <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new Purchase Request">
+                <i class="ft-plus"></i><label class="ml-1 mt-1 btn-label">Create</label>
+              </button>
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()">
+                <i class="ft-edit"></i><label class="ml-1 mt-1 btn-label">Update</label>
+              </button>
+
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()">
+                <i class="ft-trash"></i><label class="ml-1 mt-1 btn-label">Delete</label>
+              </button>
+
+              <button type="button" class="btn btn-sm cstm-ui-table-btn">
+                <i class="ft-eye"></i><label class="ml-1 mt-1 btn-label">View</label>
+              </button> -->
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="purchaseRequestData" [columnMode]="'force'"
+        [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [limit]="query.pageSize"
+        [count]="totalItems" [externalPaging]="true" [offset]="query.currentPage - 1" (page)="onPageChange($event)"
+        [loadingIndicator]="loading" [selected]="chkBoxSelected" [selectionType]="SelectionType.checkbox"
+        (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
+
+
+        <!-- Sr. No -->
+        <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+          <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
+            <span>{{ rowIndex + 1 }}</span>
+          </ng-template>
+        </ngx-datatable-column>
+        
+         <ngx-datatable-column name="Requisition No." prop="requisitionNo">
+                <ng-template ngx-datatable-cell-template let-row="row">
+                    <a href="javascript:void(0)" (click)="openPR(row)">
+                        {{ row.requisitionNo }}
+                    </a>
+                </ng-template>
+            </ngx-datatable-column>
+        <ngx-datatable-column name="Status" prop="requestStatus"></ngx-datatable-column>
+        <ngx-datatable-column name="Date" prop="submittedDate">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            {{ row.submittedDate | date:'yyyy-MM-dd' }}
+          </ng-template>
+        </ngx-datatable-column> <ngx-datatable-column name="Entity" prop="entityName"></ngx-datatable-column>
+        <ngx-datatable-column name="Department" prop="department"></ngx-datatable-column>
+
+        <ngx-datatable-row-detail [rowHeight]="'auto'" #myDetailRow>
+          <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
+            <div class="p-2">
+              <h6>Items for Request #{{ row.requestId }}</h6>
+              <table class="table table-sm table-bordered mb-0">
+                <thead>
+                  <tr>
+                    <th>Item Description</th>
+                    <th>Vendor</th>
+                    <th>Account</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let clone of row.clones">
+                    <td>{{ clone.itemDescription }}</td>
+                    <td>{{ clone.vendor }}</td>
+                    <td>{{ clone.account }}</td>
+                    <td>{{ clone.amount }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </ng-template>
+        </ngx-datatable-row-detail>
+
+      </ngx-datatable>
+    </div>
+  </div>
+</section>
+
