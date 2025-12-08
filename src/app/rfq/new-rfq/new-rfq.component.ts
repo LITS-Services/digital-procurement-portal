@@ -801,33 +801,35 @@ export class NewRfqComponent implements OnInit {
         next: (res) => {
           const newId = res ?? null;
 
-          if (!newId) {
-            this.toastr.warning('Quotation created but ID not returned. Please refresh.');
-            this.isLoading = false; // // CHANGED
+          if (typeof res === 'number') {
+            const newId = Number(res);
+
+            if (!newId) {
+              this.toastr.warning('Quotation created but ID not returned. Please refresh.');
+              this.isLoading = false;
+              return;
+            }
+
+            if (continueToVendors) {
+              this.currentQuotationId = newId;
+              this.isNewForm = false;
+              this.loadVendorsAndCompanies(this.currentQuotationId);
+              this.loadExistingQuotation(this.currentQuotationId);
+              this.rfqTabs = 'vendors';
+              this.isLoading = false;
+            } else {
+              this.isLoading = false;
+              this.router.navigate(['/rfq']);
+            }
+
             return;
           }
-
-          if (newId && newId.errors[0].includes('Cannot generate RFQ since Purchase Order for one or more items of the referenced PR is already created.')) {
-            this.router.navigate(['/purchase-request']);
-            return;
-          }
-
-          if (continueToVendors) {
-            this.currentQuotationId = newId;
-            this.isNewForm = false;
-            this.loadVendorsAndCompanies(this.currentQuotationId);
-            this.loadExistingQuotation(this.currentQuotationId);
-            this.rfqTabs = 'vendors';
-            this.isLoading = false;
-          } else {
-            this.isLoading = false;
-            this.router.navigate(['/rfq']);
-          }
+          this.isLoading = false;
         },
         error: (err) => {
           console.error('Error creating Quotation:', err);
           this.toastr.error('Something went Wrong', '');
-          this.loading = false;
+          this.isLoading = false; // (you had `this.loading` here)
         },
       });
     }

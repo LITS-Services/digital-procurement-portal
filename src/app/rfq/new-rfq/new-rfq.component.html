@@ -107,8 +107,8 @@
             </a>
           </li>
   
-          <li class="nav-item" role="presentation">
-            <a class="nav-link" [class.active]="rfqTabs === 'items'" (click)="selectRfqTab('items')"
+          <li class="nav-item"  role="presentation">
+            <a class="nav-link" [class.disabled]="newRfqForm.invalid" [class.active]="rfqTabs === 'items'" (click)="selectRfqTab('items')"
               href="javascript:void(0)" role="tab">
               Quotation Items
             </a>
