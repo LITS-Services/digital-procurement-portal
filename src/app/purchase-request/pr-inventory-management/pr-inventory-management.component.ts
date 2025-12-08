@@ -139,8 +139,15 @@ isAddressDisabled(index: number): boolean {
       prId: this.requestId,
       InventoryTransfer: this.itemForms.value.map((x: any) => ({
         PurchaseItemId: x.purchaseItemId,
-        ProcurementCompanyId: x.procurementCompanyId,
-        ProcurementCompanyAddressDetailsId: x.procurementCompanyAddressDetailsId
+        // ProcurementCompanyId: x.procurementCompanyId,
+        // ProcurementCompanyAddressDetailsId: x.procurementCompanyAddressDetailsId
+        ProcurementCompanyId: x.procurementCompanyId
+        ? Number(x.procurementCompanyId)
+        : null,
+
+      ProcurementCompanyAddressDetailsId: x.procurementCompanyAddressDetailsId
+        ? Number(x.procurementCompanyAddressDetailsId)
+        : null
       }))
     };
 
