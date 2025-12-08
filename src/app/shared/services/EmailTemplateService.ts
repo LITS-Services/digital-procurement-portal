@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'environments/environment';
 
@@ -8,9 +8,15 @@ export interface VendorUserDropdown {
   $values: [];
 }
 
+export interface EmailTemplateQuery {
+  currentPage: number,
+  pageSize: number
+}
+
 @Injectable({
   providedIn: 'root'
 })
+
 export class EmailTemplateService {
   private baseUrlForEmailTemplate = `${environment.apiUrl}/EmailTemplate`;
   private baseUrlForEmailLogs = `${environment.apiUrl}/EmailLogs`;
@@ -20,8 +26,23 @@ export class EmailTemplateService {
   creatEmailTemplate(payload: any) {
     return this.http.post(`${this.baseUrlForEmailTemplate}/create`, payload);
   }
-  getAllEmailTemplates(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrlForEmailTemplate}/get-all-templates`);
+  
+  // getAllEmailTemplates(): Observable<any[]> {
+  //   return this.http.get<any[]>(`${this.baseUrlForEmailTemplate}/get-all-templates`);
+  // }
+
+  getAllEmailTemplates(q: {
+    currentPage: number,
+    pageSize: number
+  }): Observable<any> {
+
+
+    let params = new HttpParams()
+      .set("currentPage", q.currentPage)
+      .set("pageSize", q.pageSize);
+    return this.http.get<any>(
+      `${this.baseUrlForEmailTemplate}/get-all-templates`, { params }
+    );
   }
 
   getEmailTemplateById(id: number): Observable<any> {
