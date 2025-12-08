@@ -5,6 +5,8 @@ import { PurchaseRequestService } from 'app/shared/services/purchase-request-ser
 import { LookupService } from 'app/shared/services/lookup.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize } from 'rxjs/operators';
+import { PermissionService } from 'app/shared/permissions/permission.service';
+import { FORM_IDS } from 'app/shared/permissions/form-ids';
 
 @Component({
   selector: 'app-pr-inventory-management',
@@ -12,7 +14,7 @@ import { finalize } from 'rxjs/operators';
   styleUrls: ['./pr-inventory-management.component.scss']
 })
 export class PrInventoryManagementComponent implements OnInit {
-
+  FORM_IDS = FORM_IDS;
   @Input() requestId!: number;
   requisitionNo: string = '';
   headerForm!: FormGroup;
@@ -29,7 +31,8 @@ export class PrInventoryManagementComponent implements OnInit {
     private purchaseRequestService: PurchaseRequestService,
     private lookupService: LookupService,
     private cdr: ChangeDetectorRef,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private permissionService: PermissionService
   ) { }
 
   ngOnInit(): void {
@@ -140,6 +143,8 @@ isAddressDisabled(index: number): boolean {
 
 
   onSubmit(): void {
+    if (!this.permissionService.can(FORM_IDS.INVENTORY_TRANSFER, 'write'))
+          return;
     const payload = {
       prId: this.requestId,
       InventoryTransfer: this.itemForms.value.map((x: any) => ({
