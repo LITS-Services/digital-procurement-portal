@@ -74,7 +74,7 @@
           <div ngbDropdown class="w-100">
             <button ngbDropdownToggle type="button"
               class="form-control text-start d-flex justify-content-between align-items-center"
-              [ngClass]="{ 'is-invalid': submitted && f['companyId'].errors }" style="cursor: pointer;">
+              [ngClass]="{ 'is-invalid': submitted && f['procurementCompanyId'].errors }" style="cursor: pointer;">
               {{ selectedCompany?.description || 'Select Company' }}
               <!-- <span class="dropdown-arrow">&#9662;</span> -->
             </button>
@@ -86,7 +86,7 @@
             </div>
           </div>
 
-          <div *ngIf="submitted && f['companyId'].errors" class="text-danger mt-1">
+          <div *ngIf="submitted && f['procurementCompanyId'].errors" class="text-danger mt-1">
             Please select a company.
           </div>
         </div>
@@ -98,7 +98,7 @@
           <div ngbDropdown class="w-100">
             <button ngbDropdownToggle type="button"
               class="form-control text-start d-flex justify-content-between align-items-center"
-              [ngClass]="{ 'is-invalid': submitted && f['workflowTypeId'].errors }" style="cursor: pointer;">
+              [ngClass]="{ 'is-invalid': submitted && f['workFlowTypeId'].errors }" style="cursor: pointer;">
               {{ selectedType?.description || 'Select Type' }}
               <!-- <span class="dropdown-arrow">&#9662;</span> -->
             </button>
@@ -110,7 +110,7 @@
             </div>
           </div>
 
-          <div *ngIf="submitted && f['workflowTypeId'].errors" class="text-danger mt-1">
+          <div *ngIf="submitted && f['workFlowTypeId'].errors" class="text-danger mt-1">
             Please select a type.
           </div>
         </div>

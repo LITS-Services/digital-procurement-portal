@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
 import { LookupService } from 'app/shared/services/lookup.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-pr-inventory-management',
@@ -26,7 +28,8 @@ export class PrInventoryManagementComponent implements OnInit {
     private fb: FormBuilder,
     private purchaseRequestService: PurchaseRequestService,
     private lookupService: LookupService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private spinner: NgxSpinnerService
   ) { }
 
   ngOnInit(): void {
@@ -42,8 +45,9 @@ export class PrInventoryManagementComponent implements OnInit {
 
   private buildHeaderForm(): void {
     this.headerForm = this.fb.group({
-      prNumber: [{ value: '', disabled: true }],
+      //prNumber: [{ value: '', disabled: true }],
       requisitionNumber: [{ value: '', disabled: true }],
+      receiverName: [{ value: '', disabled: true }],
       status: [{ value: '', disabled: true }],
       items: this.fb.array([])
     });
@@ -61,8 +65,9 @@ export class PrInventoryManagementComponent implements OnInit {
         this.requisitionNo = requestData.requisitionNo || '';
 
         this.headerForm.patchValue({
-          prNumber: requestData.prNumber || requestData.id || '',
+          //prNumber: requestData.prNumber || requestData.id || '',
           requisitionNumber: requestData.requisitionNo || '',
+          receiverName: requestData.receiverName || '',
           status: requestData.requestStatus || ''
         });
 
@@ -151,9 +156,11 @@ isAddressDisabled(index: number): boolean {
       }))
     };
 
-    console.log('Submitting payload:', payload);
+    this.spinner.show();
 
-    this.purchaseRequestService.createInventoryTransfer(payload).subscribe({
+    this.purchaseRequestService.createInventoryTransfer(payload)
+    .pipe(finalize(() => this.spinner.hide()))
+    .subscribe({
       next: (res) => {
         console.log('Inventory transfer created', res);
         this.activeModal.close(res);

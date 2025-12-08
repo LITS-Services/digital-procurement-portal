@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@a
 import { Router } from '@angular/router';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
 import { ToastrService } from 'ngx-toastr';
-import { EmailTemplateService } from 'app/shared/services/EmailTemplateService';
+import { EmailTemplateQuery, EmailTemplateService } from 'app/shared/services/EmailTemplateService';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PermissionService } from 'app/shared/permissions/permission.service';
 import Swal from 'sweetalert2';
@@ -30,6 +30,14 @@ export class EmailTemplateListComponent implements OnInit {
   isOpenButtonDisabled = true;
   isAllSelected = false;
 
+  totalPages = 0;
+  totalItems = 0;
+
+  query: EmailTemplateQuery = {
+    currentPage: 1,
+    pageSize: 10
+  };
+
   constructor(
     private router: Router,
     private emailTemplateService: EmailTemplateService,
@@ -54,7 +62,7 @@ export class EmailTemplateListComponent implements OnInit {
   getAllEmailTemplates() {
     this.loading = true;
 
-    this.emailTemplateService.getAllEmailTemplates().subscribe({
+    this.emailTemplateService.getAllEmailTemplates(this.query).subscribe({
       next: (res: any) => {
         this.allEmailTemplates = res.result.map(item => ({
           id: item.id,
@@ -64,6 +72,8 @@ export class EmailTemplateListComponent implements OnInit {
           procurementCompany: item.procurementCompany,
         }));
 
+        this.totalPages = res.totalPages;
+        this.totalItems = res.totalItems;
         this.rows = [...this.allEmailTemplates];
 
         this.loading = false;
@@ -195,5 +205,10 @@ export class EmailTemplateListComponent implements OnInit {
     if (!this.permissionService.can(FORM_IDS.EMAIL_TEMPLATE_LIST, 'write'))
       return;
     this.router.navigate(['/setup/create-email-template']);
+  }
+
+  onPageChange(event: any) {
+    this.query.currentPage = (event?.offset ?? 0) + 1;
+    this.getAllEmailTemplates();
   }
 }
