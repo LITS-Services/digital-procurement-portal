@@ -1358,7 +1358,7 @@ onWindowScroll(): void {
           .pipe(finalize(() => this.spinner.hide()))
           .subscribe({
             next: () => {
-
+              this.router.navigate(['/purchase-request']);
             },
             error: () => {
               this.toastr.error('Something went wrong while creating PO.');

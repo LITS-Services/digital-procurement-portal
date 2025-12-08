@@ -434,7 +434,7 @@ export class PurchaseRequestComponent implements OnInit {
     this.router.navigate(['/purchase-request/new-purchase-request'], {
       queryParams: {
         id: row.requestId,
-        mode: 'selectVendor' // optional flag to differentiate
+        mode: 'selectVendor' 
       },
       skipLocationChange: true
     });
