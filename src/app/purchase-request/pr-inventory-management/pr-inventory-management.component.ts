@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
 import { LookupService } from 'app/shared/services/lookup.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-pr-inventory-management',
@@ -26,7 +28,8 @@ export class PrInventoryManagementComponent implements OnInit {
     private fb: FormBuilder,
     private purchaseRequestService: PurchaseRequestService,
     private lookupService: LookupService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private spinner: NgxSpinnerService
   ) { }
 
   ngOnInit(): void {
@@ -153,9 +156,11 @@ isAddressDisabled(index: number): boolean {
       }))
     };
 
-    console.log('Submitting payload:', payload);
+    this.spinner.show();
 
-    this.purchaseRequestService.createInventoryTransfer(payload).subscribe({
+    this.purchaseRequestService.createInventoryTransfer(payload)
+    .pipe(finalize(() => this.spinner.hide()))
+    .subscribe({
       next: (res) => {
         console.log('Inventory transfer created', res);
         this.activeModal.close(res);
