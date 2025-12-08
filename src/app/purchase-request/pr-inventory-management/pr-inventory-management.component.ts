@@ -4,6 +4,8 @@ import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
 import { LookupService } from 'app/shared/services/lookup.service';
 import { PurchaseRequestAttachmentModalComponent } from 'app/shared/modals/purchase-request-attachment-modal/purchase-request-attachment-modal.component';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-pr-inventory-management',
@@ -29,7 +31,8 @@ export class PrInventoryManagementComponent implements OnInit {
     private purchaseRequestService: PurchaseRequestService,
     private lookupService: LookupService,
     private cdr: ChangeDetectorRef,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private spinner: NgxSpinnerService
   ) { }
 
   ngOnInit(): void {
@@ -177,9 +180,11 @@ openAttachmentView(row: any): void {
       }))
     };
 
-    console.log('Submitting payload:', payload);
+    this.spinner.show();
 
-    this.purchaseRequestService.createInventoryTransfer(payload).subscribe({
+    this.purchaseRequestService.createInventoryTransfer(payload)
+    .pipe(finalize(() => this.spinner.hide()))
+    .subscribe({
       next: (res) => {
         console.log('Inventory transfer created', res);
         this.activeModal.close(res);
