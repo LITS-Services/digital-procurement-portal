@@ -408,3 +408,52 @@ body.vertical-overlay-menu .sticky-toolbar.sticky {
 .sticky-toolbar.sticky + .sticky-toolbar-target {
   margin-top: 72px !important; 
 } 
+
+
+/* Hide label of actions in responviveness */
+
+@media (max-width: 576px) {
+
+  .cstm-action-bar .btn-label {
+    display: none;
+  }
+
+  .cstm-action-bar .btn i {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .cstm-action-bar .btn {
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
+  }
+
+  .core-bootstrap.ngx-datatable {
+    font-size: 12px;
+  }
+
+  /* Prevent header text from breaking badly */
+  .core-bootstrap .datatable-header-cell-label {
+    white-space: nowrap;
+  }
+
+  /* Footer layout: center pagination and stack nicely */
+  .core-bootstrap .datatable-footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    row-gap: 4px;
+  }
+
+  /* Hide "0 selected /" on mobile if you don’t care about it */
+  .core-bootstrap .page-count {
+    display: none;
+  }
+
+  /* Optional: make pager buttons a bit smaller / tighter */
+  .core-bootstrap .datatable-pager li a {
+    padding: 2px 6px;
+    min-width: 26px;
+  }
+}

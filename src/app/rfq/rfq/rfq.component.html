@@ -13,7 +13,7 @@
             <!-- Action Pane -->
             <div class="card cstm-ui-card">
                 <div>
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex justify-content-between align-items-center cstm-action-bar">
                         <div class="position-relative">
 
                             <button class="btn btn-lg mr-1 " type="button" (click)="homePage()">
@@ -32,7 +32,7 @@
                             appPermission [appPermFormId]="FORM_IDS.REQUEST_FOR_QUOTATION"
                             [appPermDisable]="'delete'"
                                 [disabled]="isDeleteButtonDisabled">
-                                <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
+                                <i class="ft-trash"></i><label class="ml-1 mt-1 btn-label">Delete</label>
                             </button>
 
                             <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
@@ -42,7 +42,7 @@
                         </div>
                         <div class="d-flex align-items-center">
                             <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
-                                <i class="ft-sliders"></i><label class="ml-1 mt-1">Filter</label>
+                                <i class="ft-sliders"></i><label class="ml-1 mt-1  btn-label">Filter</label>
                             </button>
                         </div>
                         <!-- <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
