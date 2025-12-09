@@ -12,7 +12,7 @@
       <!-- Action Pane -->
       <div class="card  cstm-ui-card">
         <div class="row">
-          <div class="col-md-6">
+          <div class="col-md-6 cstm-action-bar">
             <!-- Back -->
             <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
               <i class="ft-arrow-left"></i>
@@ -25,7 +25,7 @@
               appPermission [appPermFormId]="FORM_IDS.ENTITIES"
                 [appPermDisable]="'write'">
               <i class="ft-plus"></i>
-              <label class="ml-1 mt-1">Create</label>
+              <label class="ml-1 mt-1  btn-label">Create</label>
             </button>
 
             <!-- Update -->
@@ -33,14 +33,14 @@
             appPermission [appPermFormId]="FORM_IDS.ENTITIES"
                 [appPermDisable]="'write'">
               <i class="ft-edit"></i>
-              <label class="ml-1 mt-1">Edit</label>
+              <label class="ml-1 mt-1 btn-label">Edit</label>
             </button>
 
             <!-- Delete -->
             <button type="button" class="btn btn-sm  cstm-ui-table-btn" [disabled]="isDeleteButtonDisabled"
               (click)="openDeleteModal()" appPermission [appPermFormId]="FORM_IDS.ENTITIES" [appPermDisable]="'delete'">
               <i class="ft-trash"></i>
-              <label class="ml-1 mt-1">Delete</label>
+              <label class="ml-1 mt-1 btn-label">Delete</label>
             </button>
           </div>
         </div>

@@ -12,7 +12,7 @@
       <!-- Action Pane -->
       <div class="card cstm-ui-card">
         <div>
-          <div class="d-flex justify-content-between align-items-center">
+          <div class="d-flex justify-content-between align-items-center cstm-action-bar">
 
             <div class="position-relative">
               <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
@@ -25,26 +25,26 @@
               appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
                 [appPermDisable]="'write'"
                 (click)="openEmpDetails()">
-                <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
+                <i class="ft-plus"></i><label class="ml-1 mt-1 btn-label">Create</label>
               </button>
               <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()"
               appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
                 [appPermDisable]="'write'">
-                <i class="ft-edit"></i><label class="ml-1 mt-1">Update</label>
+                <i class="ft-edit"></i><label class="ml-1 mt-1 btn-label">Update</label>
               </button>
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()"
                 [disabled]="isDeleteButtonDisabled"
                 appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
                 [appPermDisable]="'delete'">
-                <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
+                <i class="ft-trash"></i><label class="ml-1 mt-1 btn-label">Delete</label>
               </button>
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
               appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
                 [appPermDisable]="'read'"
                 (click)="onView()">
-                <i class="ft-eye"></i><label class="ml-1 mt-1">View</label>
+                <i class="ft-eye"></i><label class="ml-1 mt-1 btn-label">View</label>
               </button>
               <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="loadPurchaseRequests()"><label
                 class="ml-1 mt-1">All</label></button>
@@ -67,7 +67,7 @@
             <div class="d-flex align-items-center">
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="toggleFilterBar()">
-                <i class="ft-sliders"></i><label class="ml-1 mt-1">Filter</label>
+                <i class="ft-sliders"></i><label class="ml-1 mt-1 btn-label">Filter</label>
               </button>
 
               <div class="dropdown" ngbDropdown>
