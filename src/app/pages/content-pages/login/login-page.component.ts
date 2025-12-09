@@ -22,7 +22,7 @@ export class LoginPageComponent implements OnInit {
     username: new UntypedFormControl('', [Validators.required]),
     password: new UntypedFormControl('', [Validators.required]),
     rememberMe: new UntypedFormControl(true),
-    recaptchaReactive: new UntypedFormControl('', [Validators.required])
+    //recaptchaReactive: new UntypedFormControl('', [Validators.required])
 
   });
 

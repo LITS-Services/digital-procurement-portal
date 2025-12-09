@@ -1,12 +1,12 @@
 // Custom Components
 
 // Core variables and mixins
-@import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/mixins";
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/mixins";
 
 // Core variables and mixins overrides
 @import "core/variables/variables";
-@import "~bootstrap/scss/variables";
+@import "bootstrap/scss/variables";
 
 // Mixins
 @import "core/mixins/buttons";
@@ -33,14 +33,14 @@
 @import "core/mixins/chartist";
 @import "plugins/chartist";
 
-@import "~perfect-scrollbar/css/perfect-scrollbar.css";
-@import "~prismjs/plugins/toolbar/prism-toolbar.css";
-@import "~prismjs/themes/prism-okaidia";
-@import "~ngx-ui-switch/ui-switch.component.scss";
-@import "~@ng-select/ng-select/themes/default.theme.css";
-@import '~@angular/cdk/overlay-prebuilt.css';
-@import '~angular-archwizard/archwizard.css';
-@import '~swiper/swiper-bundle.min.css';
+@import "perfect-scrollbar/css/perfect-scrollbar.css";
+@import "prismjs/plugins/toolbar/prism-toolbar.css";
+@import "prismjs/themes/prism-okaidia";
+@import "ngx-ui-switch/ui-switch.component.scss";
+@import "@ng-select/ng-select/themes/default.theme.css";
+@import '@angular/cdk/overlay-prebuilt.css';
+@import 'angular-archwizard/archwizard.css';
+@import 'swiper/swiper-bundle.min.css';
 
 //------------------- below are the files where _palette-variables.scss is included and map-get() is used -------------------
 // Layouts
