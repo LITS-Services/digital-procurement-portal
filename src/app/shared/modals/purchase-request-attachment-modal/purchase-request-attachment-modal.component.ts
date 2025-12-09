@@ -12,6 +12,8 @@ import { ToastrService } from 'ngx-toastr';
 
 export class PurchaseRequestAttachmentModalComponent implements OnInit {
   @Input() viewMode: boolean = false;
+  @Input() isSubmitter: boolean = false;
+  @Input() isStatusCompleted: boolean = false;
   @Input() attachments: any[] = [];
   @Output() attachmentsChange = new EventEmitter<any[]>();
   @ViewChild(DatatableComponent) table: DatatableComponent;

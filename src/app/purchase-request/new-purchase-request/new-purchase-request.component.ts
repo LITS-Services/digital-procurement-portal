@@ -977,6 +977,8 @@ loadExistingRequest(
     });
 
     modalRef.componentInstance.viewMode = this.viewMode; 
+    modalRef.componentInstance.isSubmitter = this.isSubmitter;
+    modalRef.componentInstance.isStatusCompleted = this.isStatusCompleted;
 
     // Pass existing attachments to modal
     modalRef.componentInstance.data = {

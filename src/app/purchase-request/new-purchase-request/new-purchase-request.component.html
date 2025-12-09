@@ -282,7 +282,7 @@
               <ng-template ngbPanelContent class="">
                 <div class="card-accordion">
 
-                  <div class="d-flex align-items-center justify-content-end mb-3" style="gap:1em">
+                  <div *ngIf="isSubmitter && !isStatusCompleted" class="d-flex align-items-center justify-content-end mb-3" style="gap:1em">
                     <!-- File Input -->
                     <input style="padding: 6px 16px;" type="file" accept=".xlsx,.xls,.csv"
                       (change)="onFileSelected($event)" class="form-control w-auto" />
@@ -515,7 +515,7 @@
                   </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column *ngIf="!viewMode" name="Actions" [width]="70">
+                <ngx-datatable-column *ngIf="!viewMode && isSubmitter && !isStatusCompleted" name="Actions" [width]="70">
                   <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
                     <!-- Edit button -->
                     <a matTooltip="Edit Item" (click)="editRow(row, rowIndex)"
