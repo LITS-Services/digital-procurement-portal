@@ -9,6 +9,8 @@ import { WorkflowServiceService } from 'app/shared/services/WorkflowService/work
 import { WorkflowApproverSetupComponent } from '../workflow-approver-setup/workflow-approver-setup.component';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PermissionService } from 'app/shared/permissions/permission.service';
+import Swal from 'sweetalert2';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-workflow-master-setup',
   templateUrl: './workflow-master-setup.component.html',
@@ -37,7 +39,8 @@ export class WorkflowMasterSetupComponent implements OnInit {
     private purchaseRequestService: PurchaseRequestService,
     private WorkflowServiceService: WorkflowServiceService,
     private cdr: ChangeDetectorRef, 
-    private permissionService: PermissionService
+    private permissionService: PermissionService,
+    public toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -130,36 +133,45 @@ export class WorkflowMasterSetupComponent implements OnInit {
     this.isAllSelected = this.workflowMasterList.length === this.chkBoxSelected.length;
   }
 
-  /**
-   * Open Delete Modal
-   */
-  openDeleteModal(deleteModal) {
+  // Open Delete Modal
+  openDeleteModal(): void {
     if(!this.permissionService.can(FORM_IDS.WORKFLOW_SETUP, 'delete')) 
       return;
-    if (this.idsToDelete.length > 0) {
-      this.modalService.open(deleteModal, { backdrop: 'static', centered: true });
-    } else {
-      alert('Please select at least one record to delete.');
+    if (this.idsToDelete.length === 0) {
+      this.toastr.info('Please select at least one record to delete.');
+      return;
     }
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `You are about to delete ${this.idsToDelete.length} workflow(s). This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.confirmDelete();
+      }
+    });
   }
 
-  /**
-   * Confirm deletion of selected requests
-   */
-  confirmDelete() {
+  // CONFIRM DELETION OF WORKFLOW 
+  confirmDelete(): void {
     if (this.idsToDelete.length === 0) return;
 
-    console.log('Deleting IDs:', this.idsToDelete);
-
-    this.WorkflowServiceService.markworkflowDelete(this.idsToDelete).subscribe({
+    this.WorkflowServiceService.deleteWorkflow(this.idsToDelete).subscribe({
       next: () => {
-        this.modalService.dismissAll();
+        Swal.fire('Deleted!', 'Selected record(s) have been deleted successfully.', 'success');
         this.getWorkflowMasterList();
         this.chkBoxSelected = [];
         this.idsToDelete = [];
       },
       error: (err) => {
         console.error('Delete failed:', err);
+        Swal.fire('Error', 'An error occurred while deleting records.', 'error');
       }
     });
   }
