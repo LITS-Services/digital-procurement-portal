@@ -976,6 +976,8 @@ loadExistingRequest(
       centered: true,
     });
 
+    modalRef.componentInstance.viewMode = this.viewMode; 
+
     // Pass existing attachments to modal
     modalRef.componentInstance.data = {
       existingAttachment: rowIndex !== null
