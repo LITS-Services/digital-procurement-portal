@@ -3,18 +3,15 @@ import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
 import { LookupService } from 'app/shared/services/lookup.service';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { finalize } from 'rxjs/operators';
-import { PermissionService } from 'app/shared/permissions/permission.service';
-import { FORM_IDS } from 'app/shared/permissions/form-ids';
 
 @Component({
   selector: 'app-pr-inventory-management',
   templateUrl: './pr-inventory-management.component.html',
-  styleUrls: ['./pr-inventory-management.component.scss']
+  styleUrls: ['./pr-inventory-management.component.scss'],
+  standalone: false
 })
 export class PrInventoryManagementComponent implements OnInit {
-  FORM_IDS = FORM_IDS;
+
   @Input() requestId!: number;
   requisitionNo: string = '';
   headerForm!: FormGroup;
@@ -30,9 +27,7 @@ export class PrInventoryManagementComponent implements OnInit {
     private fb: FormBuilder,
     private purchaseRequestService: PurchaseRequestService,
     private lookupService: LookupService,
-    private cdr: ChangeDetectorRef,
-    private spinner: NgxSpinnerService,
-    private permissionService: PermissionService
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -143,8 +138,6 @@ isAddressDisabled(index: number): boolean {
 
 
   onSubmit(): void {
-    if (!this.permissionService.can(FORM_IDS.INVENTORY_TRANSFER, 'write'))
-          return;
     const payload = {
       prId: this.requestId,
       InventoryTransfer: this.itemForms.value.map((x: any) => ({
@@ -161,11 +154,9 @@ isAddressDisabled(index: number): boolean {
       }))
     };
 
-    this.spinner.show();
+    console.log('Submitting payload:', payload);
 
-    this.purchaseRequestService.createInventoryTransfer(payload)
-    .pipe(finalize(() => this.spinner.hide()))
-    .subscribe({
+    this.purchaseRequestService.createInventoryTransfer(payload).subscribe({
       next: (res) => {
         console.log('Inventory transfer created', res);
         this.activeModal.close(res);

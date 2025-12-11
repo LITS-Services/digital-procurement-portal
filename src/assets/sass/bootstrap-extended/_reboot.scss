@@ -27,14 +27,14 @@ body {
 
 a {
   &:focus {
-    color: darken(theme-color("info"), 5%);
+    color: $info;
     text-decoration: none;
   }
 
   &.text-info {
     &:hover,
     &:focus {
-      color: darken(theme-color("info"), 5%);
+      color: $info;
     }
   }
 }

@@ -11,7 +11,8 @@ import { finalize } from 'rxjs/operators';
 @Component({
   selector: 'app-vendor-onboarding-receivers',
   templateUrl: './vendor-onboarding-receivers.component.html',
-  styleUrls: ['./vendor-onboarding-receivers.component.scss']
+  styleUrls: ['./vendor-onboarding-receivers.component.scss'],
+  standalone: false
 })
 export class VendorOnboardingReceiversComponent implements OnInit {
 

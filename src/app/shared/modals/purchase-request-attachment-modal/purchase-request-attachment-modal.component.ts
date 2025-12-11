@@ -7,13 +7,12 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-purchase-request-attachment-modal',
   templateUrl: './purchase-request-attachment-modal.component.html',
-  styleUrls: ['./purchase-request-attachment-modal.component.scss']
+  styleUrls: ['./purchase-request-attachment-modal.component.scss'],
+  standalone: false
 })
 
 export class PurchaseRequestAttachmentModalComponent implements OnInit {
   @Input() viewMode: boolean = false;
-  @Input() isSubmitter: boolean = false;
-  @Input() isStatusCompleted: boolean = false;
   @Input() attachments: any[] = [];
   @Output() attachmentsChange = new EventEmitter<any[]>();
   @ViewChild(DatatableComponent) table: DatatableComponent;

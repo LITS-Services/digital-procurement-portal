@@ -14,17 +14,19 @@ import { LoginPageComponent } from "./login/login-page.component";
 import { MaintenancePageComponent } from "./maintenance/maintenance-page.component";
 import { RegisterPageComponent } from "./register/register-page.component";
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
-import { HttpClient } from '@angular/common/http';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { TranslateHttpLoader, TRANSLATE_HTTP_LOADER_CONFIG } from '@ngx-translate/http-loader';
 import { MainLayoutComponent } from './main-layout/main-layout.component';
 import { NgOtpInputModule } from 'ng-otp-input';
 import { NgHcaptchaModule } from 'ng-hcaptcha';
 
-export function createTranslateLoader(http: HttpClient) {
-  return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
-}
 
 @NgModule({
+  providers: [
+    {
+      provide: TRANSLATE_HTTP_LOADER_CONFIG,
+      useValue: { prefix: './assets/i18n/', suffix: '.json' }
+    }
+  ],
   imports: [
     CommonModule,
     ContentPagesRoutingModule,
@@ -36,8 +38,7 @@ export function createTranslateLoader(http: HttpClient) {
     TranslateModule.forChild({
       loader: {
         provide: TranslateLoader,
-        useFactory: createTranslateLoader,
-        deps: [HttpClient]
+        useClass: TranslateHttpLoader
       }
     }),
     NgxSpinnerModule

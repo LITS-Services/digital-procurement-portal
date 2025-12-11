@@ -17,6 +17,7 @@ import { animate, keyframes, state, style, transition, trigger } from '@angular/
   templateUrl: 'horizontal-timeline.component.html',
   styleUrls: ['horizontal-timeline.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
   animations: [
     trigger('contentState', [
       state('active', style({

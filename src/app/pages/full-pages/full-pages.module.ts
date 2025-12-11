@@ -1,10 +1,10 @@
-import { NgModule } from "@angular/core";
+import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 
 import { FullPagesRoutingModule } from "./full-pages-routing.module";
 import { ChartistModule } from "ng-chartist";
-import { AgmCoreModule } from "@agm/core";
+import { GoogleMapsModule } from "@angular/google-maps";
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { NgSelectModule } from "@ng-select/ng-select";
 import { SwiperModule } from "ngx-swiper-wrapper";
@@ -32,11 +32,11 @@ import { NgxDatatableModule } from "@swimlane/ngx-datatable";
     FullPagesRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    ChartistModule,
-    AgmCoreModule,
+    // ChartistModule, // Incompatible with Angular 21
+    GoogleMapsModule,
     NgSelectModule,
     NgbModule,
-    SwiperModule,
+    // SwiperModule, // Incompatible with Angular 21
     PipeModule,
     NgxDatatableModule,
   ],
@@ -56,5 +56,6 @@ import { NgxDatatableModule } from "@swimlane/ngx-datatable";
     UsersViewComponent,
     UsersEditComponent,
   ],
+  schemas: [NO_ERRORS_SCHEMA]
 })
 export class FullPagesModule {}

@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
   selector: 'app-invoice',
   templateUrl: './invoice.component.html',
   styleUrls: ['./invoice.component.scss'],
+  standalone: false,
   animations: [
       trigger('expandCollapse', [
         state('expanded', style({ height: '*', opacity: 1 })),

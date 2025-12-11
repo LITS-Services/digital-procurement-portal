@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from "@angular/common";
 
 import { DragulaModule } from 'ng2-dragula';
@@ -14,7 +14,7 @@ import { CrudModalComponent } from './crud-modal/crud-modal.component';
     imports: [
         CommonModule,
         TaskboardRoutingModule,
-        DragulaModule.forRoot(),
+        // DragulaModule.forRoot(), // Incompatible with Angular 21
         FormsModule,
         ReactiveFormsModule,
         NgbModule
@@ -22,6 +22,7 @@ import { CrudModalComponent } from './crud-modal/crud-modal.component';
     declarations: [
         TaskboardComponent,
         CrudModalComponent
-    ]
+    ],
+    schemas: [NO_ERRORS_SCHEMA]
 })
 export class TaskboardModule { }

@@ -9,7 +9,8 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-horizontal-menu',
   templateUrl: './horizontal-menu.component.html',
-  styleUrls: ['./horizontal-menu.component.scss']
+  styleUrls: ['./horizontal-menu.component.scss'],
+  standalone: false
 })
 export class HorizontalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 

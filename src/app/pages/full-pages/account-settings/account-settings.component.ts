@@ -5,7 +5,8 @@ import { UntypedFormGroup, UntypedFormControl, Validators } from '@angular/forms
   selector: 'app-account-settings',
   templateUrl: './account-settings.component.html',
   styleUrls: ['./account-settings.component.scss', '../../../../assets/sass/libs/select.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  standalone: false
 })
 export class AccountSettingsComponent implements OnInit {
 

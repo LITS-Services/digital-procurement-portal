@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { EmployeeRoutingModule } from './employee-routing.module';
@@ -31,19 +31,20 @@ import { NgxSpinnerModule } from 'ngx-spinner';
         ReactiveFormsModule,
         FormsModule,
         HttpClientModule,
-        CustomFormsModule,
+        // CustomFormsModule, // Incompatible with Angular 21
         MatchHeightModule,
         NgbModule,
-        UiSwitchModule,
+        // UiSwitchModule, // Incompatible with Angular 21
         PipeModule,
         QuillModule.forRoot(),
         NgSelectModule,
-        TagInputModule,
+        // TagInputModule, // Incompatible with Angular 21
         NgxDatatableModule  ,
         NgbAccordionModule,
         NgbDatepickerModule,
         ToastrModule.forRoot(),
         NgxSpinnerModule,
-  ]
+  ],
+  schemas: [NO_ERRORS_SCHEMA]
 })
 export class EmployeeModule { }

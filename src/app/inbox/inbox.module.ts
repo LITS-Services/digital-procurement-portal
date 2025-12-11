@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from "@angular/common";
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -19,11 +19,12 @@ import { InboxComponent } from "./inbox.component";
         NgbModule,
         QuillModule.forRoot(),
         FormsModule,
-        PerfectScrollbarModule,
+        // PerfectScrollbarModule, // Incompatible with Angular 21
         PipeModule
     ],
     declarations: [
         InboxComponent
-    ]
+    ],
+    schemas: [NO_ERRORS_SCHEMA]
 })
 export class InboxModule { }

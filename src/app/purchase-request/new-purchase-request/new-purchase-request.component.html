@@ -9,10 +9,7 @@
             <ng-container *ngIf="isSelectingFinalVendor">
               Select Final Vendor
             </ng-container>
-              <ng-container *ngIf="!isSelectingFinalVendor && isInventoryTransferMode">
-                Inventory Transfer
-              </ng-container>
-            <ng-container *ngIf="!isSelectingFinalVendor && !isInventoryTransferMode && viewMode === false">
+            <ng-container *ngIf="!isSelectingFinalVendor && viewMode === false">
               {{ isNewForm ? 'Create Purchase Request' : 'Update Purchase Request' }}
             </ng-container>
           </h4>
@@ -20,8 +17,8 @@
       </div>
 
       <div class="card cstm-ui-card sticky-toolbar" [class.sticky]="isToolbarSticky">
-        <div class="row align-items-center" *ngIf="!loading">
-          <div class="col-md-6 col-6 cstm-action-bar">
+        <div class="row" *ngIf="!loading">
+          <div class="col-md-6">
 
             <button class="btn btn-lg mr-1" type="button" (click)="homePage()"><i class="ft-arrow-left"></i></button>
             <span class="vl"></span>
@@ -29,10 +26,10 @@
             <ng-container *ngIf="isNewForm && !viewMode">
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="newPurchaseRequestForm.invalid"
                 (click)="submitForm()">
-                <i class="ft-plus"></i><label class="ml-1 mt-1 btn-label">Save</label>
+                <i class="ft-plus"></i><label class="ml-1 mt-1">Save</label>
               </button>
               <button class="btn btn-sm cstm-ui-table-btn" (click)="saveAsDraftAndGoBack()">
-                <i class="ft-save"></i><label class="ml-1 mt-1 btn-label">Save as Draft</label>
+                <i class="ft-save"></i><label class="ml-1 mt-1">Save as Draft</label>
               </button>
             </ng-container>
 
@@ -41,12 +38,12 @@
               <button *ngIf="!isNewForm && !isSelectingFinalVendor" class="btn btn-sm cstm-ui-table-btn"
                 [disabled]="newPurchaseRequestForm.invalid || (isStatusCompleted && !isSelectingFinalVendor) || !isSubmitter"
                 (click)="submitForm()">
-                <i class="ft-edit-2"></i><label class="ml-1 mt-1 btn-label">Update</label>
+                <i class="ft-edit-2"></i><label class="ml-1 mt-1">Update</label>
               </button>
             
               <button *ngIf="isSelectingFinalVendor" class="btn btn-sm cstm-ui-table-btn" (click)="createPO(selectedRow)">
                 <i class="ft-plus"></i>
-                <label class="ml-1 mt-1 btn-label">Create PO</label>
+                <label class="ml-1 mt-1">Create PO</label>
               </button>
             </ng-container>
 
@@ -54,24 +51,24 @@
               <button class="btn btn-sm"
                 [disabled]="newPurchaseRequestForm.invalid || isStatusCompleted || isStatusInProcess"
                 (click)="onSubmitForApproval()">
-                <i class="ft-edit-2"></i><label class="ml-1 mt-1 btn-label">Submit For Approval</label>
+                <i class="ft-edit-2"></i><label class="ml-1 mt-1">Submit For Approval</label>
               </button>
 
             </ng-container>
             <ng-container *ngIf="viewMode && !isSubmitter">
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted"
                 (click)="onAddRemarks('Approve')">
-                <i class="ft-check"></i><label class="ml-1 mt-1 btn-label">Approve</label>
+                <i class="ft-check"></i><label class="ml-1 mt-1">Approve</label>
               </button>
 
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted"
                 (click)="onAddRemarks('Reject')">
-                <i class="ft-x"></i><label class="ml-1 mt-1 btn-label">Reject</label>
+                <i class="ft-x"></i><label class="ml-1 mt-1">Reject</label>
               </button>
 
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted"
                 (click)="onAddRemarks('SendBack')">
-                <i class="ft-arrow-left"></i><label class="ml-1 mt-1 btn-label">Send Back</label>
+                <i class="ft-arrow-left"></i><label class="ml-1 mt-1">Send Back</label>
               </button>
 
               <!-- <button class="btn btn-sm" [disabled]="newRfqForm.invalid" (click)="onAddRemarks('Submit')">
@@ -80,9 +77,9 @@
             </ng-container>
 
           </div>
-          <div class="col-md-6 col-6 text-right cstm-action-bar" style="margin-top: 0.3rem;">
+          <div class="col-md-6 text-right" style="margin-top: 0.3rem;">
             <button type="reset" class="btn btn-sm cstm-ui-table-btn mr-2">
-              <i class="ft-printer"></i><label class="ml-1 mt-1 btn-label" for="">Print</label>
+              <i class="ft-printer"></i><label class="ml-1 mt-1" for="">Print</label>
             </button>
           </div>
           <!-- View Mode: No buttons -->
@@ -92,16 +89,16 @@
       <div class="card sticky-toolbar-target">
         <div class="card-body">
 
-          <form [formGroup]="newPurchaseRequestForm" (ngSubmit)="submitForm()">
-            <div class="form-grid mb-2">
+          <form [formGroup]="newPurchaseRequestForm" (ngSubmit)="submitForm()" class="mb-2">
+            <div class="form-row mb-2">
 
               <!-- Basic Fields -->
-              <div class="form-grid__item mb-2">
+              <div class="col-lg-4 mb-2">
                 <label>Requisition No.</label>
                 <input type="text" class="form-control custom-input" formControlName="requisitionNo" disabled>
               </div>
 
-              <div class="form-grid__item">
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
                   <label class="d-flex align-items-center mr-2 w-100" [ngbTooltip]="entityHint">
                     <span class="mr-2">Entity</span>
@@ -113,7 +110,7 @@
                       </span>
                     </small>
                   </label>
-                  <select class="form-control custom-input filter-label" formControlName="entityId"
+                  <select class="form-control custom-input" formControlName="entityId"
                     [disabled]="isEntityLocked || viewMode" (change)="loadAddressOnEntityChanges()">
                     <option [ngValue]="null">-- Select Entity --</option>
                     <option *ngFor="let e of entities" [ngValue]="e.id">
@@ -123,28 +120,28 @@
                 </div>
               </div>
 
-              <div class="form-grid__item mb-2">
+              <div class="col-lg-4 mb-2">
                 <label>Submitted Date</label>
                 <input type="date" class="form-control custom-input" formControlName="submittedDate">
               </div>
-              <div class="form-grid__item mb-2">
+              <div class="col-lg-4 mb-2">
                 <label>Delivery Location</label>
                 <input type="text" class="form-control custom-input" formControlName="deliveryLocation"
                   placeholder="Enter Delivery Location">
               </div>
-              <div class="form-grid__item mb-2">
+              <div class="col-lg-4 mb-2">
                 <label>Receiver Name</label>
                 <input type="text" class="form-control custom-input" formControlName="receiverName"
                   placeholder="Enter Receiver Name">
 
               </div>
-              <div class="form-grid__item mb-2">
+              <div class="col-lg-4 mb-2">
                 <label>Receiver Contact</label>
                 <input type="text" class="form-control custom-input" formControlName="receiverContact"
                   placeholder="Enter Receiver Contact">
               </div>
 
-              <div class="form-grid__item mb-2">
+              <div class="col-lg-4 mb-2">
                 <div class="form-group mb-2">
                   <label>Status</label>
                   <input type="text" formControlName="status" class="form-control" disabled />
@@ -152,21 +149,21 @@
               </div>
 
               <!-- Department, Designation, Business Unit -->
-              <div class="form-grid__item mb-2">
+              <div class="col-lg-4 mb-2">
                 <label>Department</label>
                 <input type="text" class="form-control custom-input" formControlName="department"
                   placeholder="Enter Department">
               </div>
-              <!-- <div class="form-grid__item mb-2">
+              <div class="col-lg-4 mb-2">
                 <label>Designation</label>
                 <input type="text" class="form-control custom-input" formControlName="designation"
                   placeholder="Enter Designation">
               </div>
-              <div class="form-grid__item mb-2">
+              <div class="col-lg-4 mb-2">
                 <label>Business Unit</label>
                 <input type="text" class="form-control custom-input" formControlName="businessUnit"
                   placeholder="Enter Business Unit">
-              </div> -->
+              </div>
 
               <!-- <div class="col-lg-4 mb-2">
                 <label>Workflow</label>
@@ -175,7 +172,7 @@
                 </select>
               </div> -->
 
-              <div class="form-grid__item d-flex align-items-end mb-3">
+              <div class="col-lg-4 mb-2 mt-2 d-flex align-items-center">
                 <div class="custom-control custom-switch">
                   <input type="checkbox" class="custom-control-input" id="partialDelivery"
                     formControlName="partialDeliveryAcceptable">
@@ -183,7 +180,7 @@
                 </div>
               </div>
 
-              <div class="form-grid__item d-flex align-items-end mb-3">
+              <div class="col-lg-4 mb-2 mt-2 d-flex align-items-center">
                 <div class="custom-control custom-switch">
                   <input type="checkbox" class="custom-control-input" id="exceptionPolicy"
                     formControlName="exceptionPolicy">
@@ -191,27 +188,21 @@
                 </div>
               </div>
               <!-- Subject -->
-              <div class="form-grid__item form-grid__item--full mb-2">
+              <div class="col-12 mb-2">
                 <label>Subject</label>
                 <textarea class="form-control custom-input" rows="1" formControlName="subject"
                   placeholder="Enter Subject"></textarea>
               </div>
 
             </div>
-            <ngb-accordion #accordion="ngbAccordion" class="address-card" activeIds="receiving-panel" 
-              (panelChange)="onPanelChange($event)"
-            >
-              <ngb-panel id="receiving-panel">
+            <ngb-accordion #accordion activeIds="ngb-panel-0">
+              <ngb-panel id="ngb-panel-0">
                 <ng-template ngbPanelTitle>
                   <div class="row">
-                    <div class="pl-0 col-md-12" (click)="isReceivingOpen = !isReceivingOpen">
+                    <div class="col-md-12">
                       <span class="panel-icon">
-                        <label class="address-label">Receiving Address</label>
-                        
+                        <div class="address-label">Receiving Address</div>
                       </span>
-                        <i class="ft" [ngClass]="isReceivingOpen ? 'ft-chevron-up' : 'ft-chevron-down'">
-                        </i>
-                       
                     </div>
                   </div>
                 </ng-template>
@@ -220,8 +211,8 @@
                   <div class="card-accordion">
 
                     <!-- Row 1 -->
-                    <div class="form-grid w-100">
-                      <div class="form-grid__item" >
+                    <div class="row">
+                      <div class="col-lg-3 mb-2" >
                         <label>Address Code</label>
                         <select class="form-control" formControlName="addressId"
                           (change)="onAddressSelect($event.target.value)">
@@ -230,71 +221,88 @@
                         </select>
                       </div>
 
-                      <div class="form-grid__item">
+                      <div class="col-lg-3 mb-2">
                         <label>Country</label>
                         <input type="text" class="form-control custom-input" formControlName="country" disabled>
                       </div>
 
-                      <div class="form-grid__item">
+                      <div class="col-lg-3 mb-2">
                         <label>City</label>
                         <input type="text" class="form-control custom-input" formControlName="city" disabled>
                       </div>
 
-                      <div class="form-grid__item">
+                      <div class="col-lg-3 mb-2">
                         <label>Region</label>
                         <input type="text" class="form-control custom-input" formControlName="region" disabled>
-                      </div>
-
-                        <div class="form-grid__item">
-                        <label>Post Code</label>
-                        <input type="text" class="form-control custom-input" formControlName="postCode" disabled>
-                      </div>
-
-                      <div class="form-grid__item form-grid__item--address">
-                        <label>Address 1</label>
-                        <input type="text" class="form-control custom-input" formControlName="address" disabled>
-                      </div>
-
-                      <div class="form-grid__item form-grid__item--address">
-                        <label>Address 2</label>
-                        <input type="text" class="form-control custom-input" formControlName="address2" disabled>
                       </div>
                     </div>
 
                     <!-- Row 2 -->
-               
-                    
+                    <div class="row">
+                      <div class="col-lg-3 mb-2">
+                        <label>Post Code</label>
+                        <input type="text" class="form-control custom-input" formControlName="postCode" disabled>
+                      </div>
+
+                      <div class="col-lg-4 mb-2">
+                        <label>Address 1</label>
+                        <input type="text" class="form-control custom-input" formControlName="address" disabled>
+                      </div>
+
+                      <div class="col-lg-4 mb-2">
+                        <label>Address 2</label>
+                        <input type="text" class="form-control custom-input" formControlName="address2" disabled>
+                      </div>
 
                       
 
                       <!-- Empty column to keep alignment -->
-                      <div class=""></div>
+                      <div class="col-lg-4 mb-2"></div>
                     </div>
+
+                  </div>
                 </ng-template>
               </ngb-panel>
             </ngb-accordion>
 
           </form>
 
-          <ngb-accordion *ngIf="!viewMode" #accordion="ngbAccordion" activeIds="purchase-panel"
-          (panelChange)="onPanelChange($event)">
-            <ngb-panel id="purchase-panel">
+          <ngb-accordion *ngIf="!viewMode" #accordion="ngbAccordion" activeIds="ngb-panel-0">
+            <ngb-panel id="ngb-panel-0">
               <ng-template ngbPanelTitle>
                 <div class="row">
-                  <div class="pl-0 col-md-6"   (click)="isPurchaseOpen = !isPurchaseOpen"> <span class="panel-icon">
-                      <label>Purchase Items</label> <!-- Bootstrap icon example -->
-                    </span>
-                    <i class="ft" [ngClass]="isPurchaseOpen ? 'ft-chevron-up' : 'ft-chevron-down'">
-                    </i>
-                  
-                  </div>
-                    
+                  <div class="col-md-6"> <span class="panel-icon">
+                      <label class="text-white">Purchase Items</label> <!-- Bootstrap icon example -->
+                    </span></div>
                 </div>
               </ng-template>
-              <ng-template ngbPanelContent>
-                <div class="card-accordion items-card">
+              <ng-template ngbPanelContent class="">
+                <div class="card-accordion">
 
-               
+                  <div class="d-flex align-items-center justify-content-end mb-3" style="gap:1em">
+                    <!-- File Input -->
+                    <input style="padding: 6px 16px;" type="file" accept=".xlsx,.xls,.csv"
+                      (change)="onFileSelected($event)" class="form-control w-auto" />
+
+                    <!-- Bulk Insert Button -->
+                    <button class="btn btn-primary" (click)="bulkInsert()">
+                      <i class="fa-solid fa-file-import mr-1"></i>
+                      Bulk Insert
+                    </button>
+
+                    <!-- Insert Button -->
+                    <!-- <button class="btn btn-primary" (click)="insertItem()" [disabled]="viewMode">
+                      <i class="ft-pocket mr-1"></i>
+                      Insert
+                    </button> -->
+
+                    <!-- Insert / Update Button -->
+                    <button class="btn btn-primary" (click)="insertItem()" [disabled]="viewMode">
+                      <i class="ft-pocket mr-1"></i>
+                      {{ editingRowIndex !== null ? 'Update' : 'Insert' }}
+                    </button>
+
+                  </div>
 
                   <div class="form-row position-relative" [formGroup]="itemForm">
 
@@ -304,23 +312,11 @@
                       Insert
                     </button> -->
 
-                    <div class="col-12 d-flex justify-content-between align-items-center mb-1">
-                      <div>
-                          <h6>Item Type</h6>
-
-                      </div>
-                    
-                      <div>
-                        <input #fileInput type="file" accept=".xlsx,.xls,.csv" class="d-none" (change)="onFileSelected($event)" />
-                        <button type="button" class="bulk-upload-btn btn" (click)="triggerFileUpload(fileInput)">
-                          <i class="fa-solid fa-arrow-up-from-bracket mr-1"></i>
-                          Bulk Upload
-                        </button>
-                      </div>
+                    <div class="col-12 mb-1">
+                      <h5>Item Type</h5>
                     </div>
 
-                    <div class="d-flex align-items-center pl-1">
-                      <div class="mr-4">
+                    <div class="col-6">
                       <div class="form-check-inline">
                         <label class="form-check-label">
                           <input type="radio" class="form-check-input " formControlName="itemType"
@@ -329,7 +325,7 @@
                       </div>
                     </div>
 
-                    <div>
+                    <div class="col-6">
                       <div class="form-check-inline">
                         <label class="form-check-label">
                           <input type="radio" class="form-check-input" formControlName="itemType"
@@ -337,20 +333,16 @@
                         </label>
                       </div>
                     </div>
-                    </div>
 
                     <div class="col-12">
                       <hr>
                     </div>
                     <div class="col-12">
-                      <h6>Item Details</h6>
+                      <h5>Item Details</h5>
                     </div>
 
-                      <div class="form-grid w-100 px-1">
-
-                     
                     <!-- Item Code -->
-                    <div class="form-grid__item">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                       <div class="form-group mb-2">
                         <label>Item</label>
                         <select class="form-control  custom-input" formControlName="itemId">
@@ -363,7 +355,7 @@
                     </div>
 
                     <!-- U of M -->
-                    <div class="form-grid__item">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                       <div class="form-group mb-2">
                         <label>U of M</label>
                         <select class="form-control custom-input" formControlName="unitOfMeasurementId">
@@ -375,14 +367,14 @@
                       </div>
                     </div>
 
-                    <div class="form-grid__item">
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
                       <div class="form-group mb-2">
                         <label>Order Quantity</label>
                         <input type="number" placeholder="Enter Order Quantity" class="form-control custom-input"
                           formControlName="orderQuantity" />
                       </div>
                     </div>
-                    <div class="form-grid__item">
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
                       <div class="form-group mb-2">
                         <label>Unit Cost</label>
                         <input type="number" placeholder="Enter Unit Cost" class="form-control custom-input"
@@ -390,38 +382,36 @@
                       </div>
                     </div>
 
-                    <div class="form-grid__item">
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
                       <div class="form-group mb-2">
                         <label>Budget Amount</label>
                         <input type="number" readonly class="form-control custom-input" formControlName="amount" />
                       </div>
                     </div>
-                    <div class="form-grid__item">
+                    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-6">
                       <div class="form-group mb-2">
                         <label>Req. by Date</label>
                         <input type="date" class="form-control custom-input" formControlName="reqByDate" />
                       </div>
                     </div>
 
-                    <div class="form-grid__item form-grid__item--span">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                       <div class="form-group mb-2">
                         <label>Item Description</label>
-                        <textarea rows="1" placeholder="Enter Item Description" class="form-control custom-input"
+                        <textarea rows="2" placeholder="Enter Item Description" class="form-control custom-input"
                           formControlName="itemDescription"></textarea>
                       </div>
                     </div>
-                    </div>
+
                     <div class="col-12">
                       <hr>
                     </div>
 
                     <div class="col-12">
-                      <h6>Other</h6>
+                      <h5>Other</h5>
                     </div>
 
-                    <div class="form-grid w-100 px-1">
-
-                    <div *ngIf="isSelectingFinalVendor" class="form-grid__item">
+                    <div *ngIf="isSelectingFinalVendor" class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                       <div class="form-group mb-2">
                         <label>Final Vendor</label>
                         <select class="form-control custom-input" formControlName="vendorUserId"
@@ -434,7 +424,7 @@
                       </div>
                     </div>
 
-                    <div *ngIf="isSelectingFinalVendor" class="form-grid__item">
+                    <div *ngIf="isSelectingFinalVendor" class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                       <div class="form-group mb-2">
                         <label>Vendor Company</label>
                         <select class="form-control custom-input" formControlName="vendorCompanyId"
@@ -448,7 +438,7 @@
                     </div>
 
                     <!-- Account -->
-                    <div class="form-grid__item">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
                       <div class="form-group mb-2">
                         <label>Account</label>
                         <select class="form-control custom-input" formControlName="accountId">
@@ -459,52 +449,24 @@
                         </select>
                       </div>
                     </div>
-                    <div class="form-grid__item form-grid__item--span">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                       <div class="form-group mb-2">
                         <label>Remarks</label>
-                        <input rows="1" placeholder="Enter Remarks" class="form-control custom-input"
-                          formControlName="remarks" />
+                        <textarea rows="2" placeholder="Enter Remarks" class="form-control custom-input"
+                          formControlName="remarks"></textarea>
                       </div>
                     </div>
-                     </div>
-                    </div>
-                    
-
-                     <div *ngIf="!isStatusCompleted" class="d-flex align-items-center justify-content-end my-1" style="gap:1em">
-                    <!-- File Input -->
-                         <button type="button" class="btn btn-sm" (click)="clearItemForm()">
-                          <i class="fa fa-sync mr-1"></i>
-                          Refresh
-                        </button>
-                
-                   <button class="btn btn-primary" (click)="insertItem()" [disabled]="viewMode">
-                      <i class="ft-arrow-right mr-1"></i>
-                      {{ editingRowIndex !== null ? 'Update' : 'Insert' }}
-                      </button>
-
-                     
-                <!-- Pretty Bulk Upload button -->
-         
-
-                    <!-- Insert Button -->
-                    <!-- <button class="btn btn-primary" (click)="insertItem()" [disabled]="viewMode">
-                      <i class="ft-pocket mr-1"></i>
-                      Insert
-                    </button> -->
-
-                    <!-- Insert / Update Button -->
-
-
                   </div>
+                  <br>
                 </div>
               </ng-template>
             </ngb-panel>
 
           </ngb-accordion>
 
-          <div class="col-12 p-0">
+          <div class="col-12">
             <div style="position: relative;">
-              <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="newPurchaseItemData" [columnMode]="'force'"
+              <ngx-datatable class="bootstrap core-bootstrap" [rows]="newPurchaseItemData" [columnMode]="'force'"
                 [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true" (activate)="selectRow($event.row)">
 
                 <ngx-datatable-column name="Sr. No." [width]="50">
@@ -514,36 +476,18 @@
                 </ngx-datatable-column>
 
                 <ngx-datatable-column name="Type" prop="itemType" [width]="70">
-                  <ng-template let-row="row" ngx-datatable-cell-template>
-                 <span class="cell-ellipsis" container="body">
-                  {{ row.itemType }}
-                </span>
-                  </ng-template>
-                   
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Item" [width]="180">
-                       <ng-template let-row="row" ngx-datatable-cell-template>
-                 <span class="cell-ellipsis" [ngbTooltip]="getItemNameById(row.itemId)" container="body">
-                   {{ getItemNameById(row.itemId) }}
-                </span>
+                <ngx-datatable-column name="Item" [width]="150">
+                  <ng-template let-row="row" ngx-datatable-cell-template>
+                    {{ getItemNameById(row.itemId) }}
                   </ng-template>
                 </ngx-datatable-column>
 
                 <ngx-datatable-column name="Description" [width]="150" prop="itemDescription">
-                     <ng-template let-row="row" ngx-datatable-cell-template>
-                 <span class="cell-ellipsis" [ngbTooltip]="row.itemDescription" container="body">
-                  {{ row.itemDescription }}
-                </span>
-                  </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Amount" prop="amount" [width]="100">
-                <ng-template let-row="row" ngx-datatable-cell-template>
-                  <span class="cell-ellipsis" container="body">
-                    {{ row.amount | number }}
-                  </span>
-                </ng-template>
+                <ngx-datatable-column name="Amount" prop="amount" [width]="180">
                 </ngx-datatable-column>
 
                 <ngx-datatable-column *ngIf="isSelectingFinalVendor" name="Final Vendor" [width]="100">
@@ -553,14 +497,9 @@
                 </ngx-datatable-column>
 
                 <ngx-datatable-column name="Remarks" prop="remarks" [width]="100">
-                <ng-template let-row="row" ngx-datatable-cell-template>
-                 <span class="cell-ellipsis" container="body">
-                  {{ row.remarks }}
-                </span>
-                  </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Attachments" [width]="120" [sortable]="false">
+                <ngx-datatable-column name="Attachments" [width]="70" [sortable]="false">
                   <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
                     <!-- Edit button -->
                     <a matTooltip="Attachment" class="row-action-attachment" (click)="openNewEntityModal(rowIndex)"
@@ -573,7 +512,7 @@
                   </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column *ngIf="!viewMode && !isStatusCompleted" name="Actions" [width]="100">
+                <ngx-datatable-column *ngIf="!viewMode" name="Actions" [width]="70">
                   <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
                     <!-- Edit button -->
                     <a matTooltip="Edit Item" (click)="editRow(row, rowIndex)"

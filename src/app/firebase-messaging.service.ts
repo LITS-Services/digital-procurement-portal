@@ -1,6 +1,6 @@
 // src/app/firebase-messaging.service.ts
 import { Injectable } from '@angular/core';
-import { AngularFireMessaging } from '@angular/fire/messaging';
+import { AngularFireMessaging } from '@angular/fire/compat/messaging';
 import { BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'environments/environment';

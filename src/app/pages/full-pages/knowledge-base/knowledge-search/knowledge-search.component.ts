@@ -6,7 +6,8 @@ import { KnowledgeBaseService } from '../knowledge-base.service';
 @Component({
   selector: 'app-knowledge-search',
   templateUrl: './knowledge-search.component.html',
-  styleUrls: ['./knowledge-search.component.scss']
+  styleUrls: ['./knowledge-search.component.scss'],
+  standalone: false
 })
 export class KnowledgeSearchComponent {
   knowledgeBase: KnowledgeBase[] = [];

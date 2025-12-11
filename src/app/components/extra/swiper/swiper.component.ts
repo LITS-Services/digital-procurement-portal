@@ -5,7 +5,8 @@ import { SwiperDirective, SwiperConfigInterface} from 'ngx-swiper-wrapper';
 @Component({
   selector: 'app-swiper',
   templateUrl: './swiper.component.html',
-  styleUrls: ['./swiper.component.scss']
+  styleUrls: ['./swiper.component.scss'],
+  standalone: false
 })
 export class SwiperComponent implements OnInit {
 

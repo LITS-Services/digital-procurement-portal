@@ -4,7 +4,8 @@ import {
 import { SidebarDirective } from "./sidebar.directive";
 
 @Directive({
-  selector: "[appSidebarlink]"
+  selector: "[appSidebarlink]",
+  standalone: false
 })
 export class SidebarLinkDirective implements OnInit, OnDestroy {
 

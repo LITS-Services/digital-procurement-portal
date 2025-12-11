@@ -1,14 +1,15 @@
 import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { interval, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
-import * as moment from 'moment';
+import moment from 'moment';
 import { DatePipe } from '@angular/common';
 
 @Component({
     selector: 'app-coming-soon-page',
     templateUrl: './coming-soon-page.component.html',
     styleUrls: ['./coming-soon-page.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 
 export class ComingSoonPageComponent implements OnInit, OnDestroy {
@@ -64,7 +65,7 @@ export class ComingSoonPageComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         // Unsubscribe from all subscriptions
-        this._unsubscribeAll.next();
+        this._unsubscribeAll.next(null);
         this._unsubscribeAll.complete();
     }
 

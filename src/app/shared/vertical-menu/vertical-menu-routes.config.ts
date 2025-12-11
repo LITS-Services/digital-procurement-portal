@@ -19,10 +19,6 @@ export const ROUTES: RouteInfo[] = [
     path: '/purchase-order', title: 'Purchase Order', icon: 'fa fa-file-invoice', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
     formTypeId: FORM_IDS.PURCHASE_ORDER
   },
-  {
-    path: '/inventory-transfer', title: 'Inventory Transfer', icon: 'fa fa-file-invoice', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
-    formTypeId: FORM_IDS.INVENTORY_TRANSFER
-  },
 
   // { path: '/tendering', title: 'Tendering', icon: 'fa fa-handshake-o', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
   {
@@ -88,8 +84,7 @@ export const ROUTES: RouteInfo[] = [
         formTypeId: FORM_IDS.EMAIL_TEMPLATE_LIST
       },
        {
-        path: '/setup/bulk-vendor-onboarding', title: 'Bulk Company Onboarding', icon: 'fa fa-folder-plus submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
-        formTypeId: FORM_IDS.BULK_COMPANY_ONBOARDING
+        path: '/setup/bulk-vendor-onboarding', title: 'Bulk Company Onboarding', icon: 'fa fa-folder-plus submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: []
       },
 
     ],

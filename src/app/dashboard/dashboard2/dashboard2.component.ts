@@ -53,7 +53,7 @@ var themeColors = [$info, $info_light];
 
 export interface Chart {
   type: ChartType;
-  data: Chartist.IChartistData;
+  data: any;
   options?: any;
   responsiveOptions?: any;
   events?: ChartEvent;
@@ -62,7 +62,8 @@ export interface Chart {
 @Component({
   selector: 'app-dashboard2',
   templateUrl: './dashboard2.component.html',
-  styleUrls: ['./dashboard2.component.scss']
+  styleUrls: ['./dashboard2.component.scss'],
+  standalone: false
 })
 
 export class Dashboard2Component {
@@ -86,7 +87,7 @@ export class Dashboard2Component {
     plotOptions: {
       bar: {
         horizontal: false,
-        endingShape: 'rounded',
+        borderRadius: 8,
         columnWidth: '25%',
       },
     },

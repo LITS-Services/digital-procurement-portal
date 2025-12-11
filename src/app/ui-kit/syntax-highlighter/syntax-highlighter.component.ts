@@ -4,7 +4,8 @@ import { HighlightService } from 'app/shared/services/highlight.service';
 @Component({
     selector: 'app-syntax-highlighter',
     templateUrl: './syntax-highlighter.component.html',
-    styleUrls: ['./syntax-highlighter.component.scss']
+    styleUrls: ['./syntax-highlighter.component.scss'],
+    standalone: false
 })
 
 export class SyntaxHighlighterComponent implements AfterViewChecked {

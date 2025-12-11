@@ -5,7 +5,8 @@ import { HighlightService } from 'app/shared/services/highlight.service';
 @Component({
   selector: 'app-tour',
   templateUrl: './tour.component.html',
-  styleUrls: ['./tour.component.scss']
+  styleUrls: ['./tour.component.scss'],
+  standalone: false
 })
 export class TourComponent implements AfterViewChecked, OnDestroy {
 

@@ -11,7 +11,8 @@ import {NgbdSortableHeader, SortEvent} from './sortable.directive';
   selector: 'app-tables',
   templateUrl: './tables.component.html',
   styleUrls: ['./tables.component.scss'],
-  providers: [CountryService, DecimalPipe]
+  providers: [CountryService, DecimalPipe],
+  standalone: false
 })
 export class TablesComponent {
 

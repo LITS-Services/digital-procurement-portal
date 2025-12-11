@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { SetupRoutingModule } from './setup-routing.module';
@@ -54,19 +54,19 @@ import { BulkVendorOnboardingComponent } from './bulk-vendor-onboarding/bulk-ven
     SetupRoutingModule,
         CommonModule,
         PurchaseRequestRoutingModule,
-        ArchwizardModule,
+        // ArchwizardModule, // Incompatible with Angular 21
         NgbModule,
         ReactiveFormsModule,
         FormsModule,
         HttpClientModule,
-        CustomFormsModule,
+        // CustomFormsModule, // Incompatible with Angular 21
         MatchHeightModule,
         NgbModule,
-        UiSwitchModule,
+        // UiSwitchModule, // Incompatible with Angular 21
         PipeModule,
         QuillModule.forRoot(),
         NgSelectModule,
-        TagInputModule,
+        // TagInputModule, // Incompatible with Angular 21
         NgxDatatableModule,
         NgbAccordionModule,
         NgbDatepickerModule,
@@ -74,6 +74,7 @@ import { BulkVendorOnboardingComponent } from './bulk-vendor-onboarding/bulk-ven
         NgxSpinnerModule,
         AutoResizeDatatableDirective,
         PermissionDirective
-  ]
+  ],
+  schemas: [NO_ERRORS_SCHEMA]
 })
 export class SetupModule { }

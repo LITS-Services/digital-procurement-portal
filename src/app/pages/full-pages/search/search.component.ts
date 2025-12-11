@@ -4,7 +4,8 @@ import { SwiperDirective, SwiperConfigInterface } from 'ngx-swiper-wrapper';
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
-  styleUrls: ['./search.component.scss']
+  styleUrls: ['./search.component.scss'],
+  standalone: false
 })
 export class SearchComponent implements OnInit {
 

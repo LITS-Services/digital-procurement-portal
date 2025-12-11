@@ -14,7 +14,8 @@ import { PermissionService } from 'app/shared/permissions/permission.service';
 @Component({
   selector: 'app-vendor-onboarding-setup',
   templateUrl: './vendor-onboarding-setup.component.html',
-  styleUrls: ['./vendor-onboarding-setup.component.scss']
+  styleUrls: ['./vendor-onboarding-setup.component.scss'],
+  standalone: false
 })
 export class VendorOnboardingSetupComponent implements OnInit {
   FORM_IDS = FORM_IDS;

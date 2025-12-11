@@ -9,7 +9,8 @@ import { untilDestroyed } from 'ngx-take-until-destroy';
 import { Router, NavigationEnd } from '@angular/router';
 
 @Directive({
-  selector: '[appAutocomplete]'
+  selector: '[appAutocomplete]',
+  standalone: false
 })
 export class AutocompleteDirective implements OnInit {
   @Input() appAutocomplete: AutocompleteComponent;

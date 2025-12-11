@@ -7,6 +7,7 @@ import { FormControl, FormGroup, Validators, NgForm } from '@angular/forms';
   templateUrl: './archwizard.component.html',
   styleUrls: ['./archwizard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class ArchwizardComponent implements OnInit, AfterViewInit {
 

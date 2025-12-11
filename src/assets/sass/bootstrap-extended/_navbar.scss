@@ -310,7 +310,7 @@ nav.navbar.header-navbar {
     }
   }
 }
-@include media-breakpoint-down(xs) {
+@include media-breakpoint-down(sm) {
   nav.navbar.header-navbar {
     padding: .3rem .5rem !important;
     position: fixed;

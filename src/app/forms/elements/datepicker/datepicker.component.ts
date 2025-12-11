@@ -26,7 +26,8 @@ const after = (one: NgbDateStruct, two: NgbDateStruct) =>
   selector: 'app-datepicker',
   templateUrl: './datepicker.component.html',
   styleUrls: ['../../../../assets/sass/libs/datepicker.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  standalone: false
 })
 export class DatepickerComponent implements OnInit {
   // Variable declaration

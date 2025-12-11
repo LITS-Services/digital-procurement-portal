@@ -3,6 +3,7 @@ import { NgbModal, ModalDismissReasons, NgbActiveModal } from '@ng-bootstrap/ng-
 
 @Component({
     selector: 'ngbd-modal-content',
+    standalone: false,
     template: `
     <div class="modal-header">
       <h4 class="modal-title">Hi there!</h4>
@@ -30,6 +31,7 @@ export class NgbdModalContent {
     templateUrl: './modals.component.html',
     styleUrls: ['./modals.component.scss'],
     encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 
 export class ModalsComponent {

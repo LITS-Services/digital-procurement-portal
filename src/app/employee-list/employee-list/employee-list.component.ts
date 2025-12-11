@@ -9,7 +9,8 @@ import { CompanyService } from 'app/shared/services/Company.services';
 @Component({
   selector: 'app-employee-list',
   templateUrl: './employee-list.component.html',
-  styleUrls: ['./employee-list.component.scss']
+  styleUrls: ['./employee-list.component.scss'],
+  standalone: false
 })
 export class EmployeeListComponent implements OnInit {
   FORM_IDS = FORM_IDS;

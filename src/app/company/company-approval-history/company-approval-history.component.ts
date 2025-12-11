@@ -5,7 +5,8 @@ import { CompanyService } from 'app/shared/services/Company.services';
 @Component({
   selector: 'app-company-approval-history',
   templateUrl: './company-approval-history.component.html',
-  styleUrls: ['./company-approval-history.component.scss']
+  styleUrls: ['./company-approval-history.component.scss'],
+  standalone: false
 })
 export class CompanyApprovalHistoryComponent implements OnInit {
   @Input() ProcurementCompanyId!: number;

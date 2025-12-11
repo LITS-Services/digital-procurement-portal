@@ -24,6 +24,7 @@ export const DATE_TIME_PICKER_CONTROL_VALUE_ACCESSOR: any = {
 
 @Component({
   selector: 'mwl-demo-utils-date-time-picker',
+  standalone: false,
   template: `
     <form class="form-inline">
       <div class="form-group">

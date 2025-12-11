@@ -10,7 +10,8 @@ import { finalize } from 'rxjs/operators';
 @Component({
   selector: 'app-employee',
   templateUrl: './employee.component.html',
-  styleUrls: ['./employee.component.scss']
+  styleUrls: ['./employee.component.scss'],
+  standalone: false
 })
 export class EmployeeComponent implements OnInit {
 

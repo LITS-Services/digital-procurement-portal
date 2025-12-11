@@ -10,7 +10,8 @@ import { DOCUMENT } from '@angular/common';
   selector: 'app-inbox',
   templateUrl: './inbox.component.html',
   styleUrls: ['./inbox.component.scss'],
-  providers: [InboxService]
+  providers: [InboxService],
+  standalone: false
 })
 export class InboxComponent implements OnInit, AfterViewInit, OnDestroy {
 

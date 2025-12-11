@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { StoreModule } from '@ngrx/store';
 
@@ -13,11 +13,12 @@ import { taskReducer } from '../taskboard-ngrx/store/taskboard.reducers';
     imports: [
         CommonModule,
         TaskboardNGRXRoutingModule,
-        DragulaModule.forRoot(),
+        // DragulaModule.forRoot(), // Incompatible with Angular 21
         StoreModule.forFeature('task', taskReducer)
     ],
     declarations: [
         TaskboardNGRXComponent
-    ]
+    ],
+    schemas: [NO_ERRORS_SCHEMA]
 })
 export class TaskboardNGRXModule { }

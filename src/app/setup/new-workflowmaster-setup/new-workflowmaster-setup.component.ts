@@ -1,7 +1,7 @@
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbAccordion, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAccordionItem, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { PurchaseRequestAttachmentModalComponent } from 'app/shared/modals/purchase-request-attachment-modal/purchase-request-attachment-modal.component';
 import { CompanyService } from 'app/shared/services/Company.services';
@@ -13,7 +13,8 @@ import { finalize } from 'rxjs/operators';
 @Component({
   selector: 'app-new-workflowmaster-setup',
   templateUrl: './new-workflowmaster-setup.component.html',
-  styleUrls: ['./new-workflowmaster-setup.component.scss']
+  styleUrls: ['./new-workflowmaster-setup.component.scss'],
+  standalone: false
 })
 export class NewWorkflowmasterSetupComponent implements OnInit {
   selectedEntityIdForWorkflow: number | null = null;
@@ -34,7 +35,7 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
   approverList: any[] = [];
   usersList: any[] = [];
   editableWorkFlowMasterId: number | null = null;
-  @ViewChild('accordion') accordion: NgbAccordion;
+  @ViewChild('accordion') accordion: NgbAccordionItem;
   @ViewChild(DatatableComponent) table: DatatableComponent;
   mode: string = 'Create';
   entitiesList: any[] = [];

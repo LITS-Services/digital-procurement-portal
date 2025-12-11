@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
   selector: 'app-grn-details',
   templateUrl: './grn-details.component.html',
   styleUrls: ['./grn-details.component.scss'],
+  standalone: false,
   animations: [
       trigger('expandCollapse', [
         state('expanded', style({ height: '*', opacity: 1 })),

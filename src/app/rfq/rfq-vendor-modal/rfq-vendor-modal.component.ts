@@ -12,7 +12,8 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-rfq-vendor-modal',
   templateUrl: './rfq-vendor-modal.component.html',
-  styleUrls: ['./rfq-vendor-modal.component.scss']
+  styleUrls: ['./rfq-vendor-modal.component.scss'],
+  standalone: false
 })
 export class RfqVendorModalComponent implements OnInit {
   //data!: any;

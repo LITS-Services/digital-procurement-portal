@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -44,16 +44,16 @@ import { SwiperComponent } from './extra/swiper/swiper.component';
     imports: [
         CommonModule,
         UIComponentsRoutingModule,
-        NouisliderModule,
-        FileUploadModule,
+        // NouisliderModule, // Incompatible with Angular 21
+        // FileUploadModule, // Incompatible with Angular 21
         FormsModule,
         ReactiveFormsModule,
         NgbModule,
-        DragulaModule.forRoot(),
+        // DragulaModule.forRoot(), // Incompatible with Angular 21
         MatchHeightModule,
         ImageCropperModule,
         HttpClientModule,
-        SwiperModule
+        // SwiperModule // Incompatible with Angular 21
     ],
     declarations: [
         ButtonsComponent,
@@ -84,6 +84,7 @@ import { SwiperComponent } from './extra/swiper/swiper.component';
         CropperComponent,
         AvatarComponent,
         SwiperComponent
-    ]
+    ],
+    schemas: [NO_ERRORS_SCHEMA]
 })
 export class UIComponentsModule { }

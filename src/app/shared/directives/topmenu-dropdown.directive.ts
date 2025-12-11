@@ -3,7 +3,8 @@ import { Router, NavigationEnd } from '@angular/router';
 import { TopMenuLinkDirective } from './topmenu-link.directive';
 
 @Directive({
-  selector: '[appTopMenuDropdown]'
+  selector: '[appTopMenuDropdown]',
+  standalone: false
 })
 export class TopMenuDropdownDirective implements OnInit {
   protected navlinks: Array<TopMenuLinkDirective> = [];

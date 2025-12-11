@@ -10,7 +10,8 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-global-configuration',
   templateUrl: './global-configuration.component.html',
-  styleUrls: ['./global-configuration.component.scss']
+  styleUrls: ['./global-configuration.component.scss'],
+  standalone: false
 })
 export class GlobalConfigurationComponent implements OnInit {
   FORM_IDS = FORM_IDS;

@@ -1,3 +1,4 @@
+@use "sass:map";
 @import "../core/variables/variables";
 @import "../core/variables/app-variables";
 @import "../core/colors/palette-variables";
@@ -44,7 +45,7 @@
     color: $white;
     border-radius: $border-radius;
     .ng-value-icon {
-      border: 1px solid map-get($primary-color, darken-1);
+      border: 1px solid map.get($primary-color, darken-1);
       border-right: 0 !important;
       border-top-left-radius: $border-radius;
       border-bottom-left-radius: $border-radius;
@@ -54,7 +55,7 @@
       }
     }
     .ng-value-label {
-      border: 1px solid map-get($primary-color, darken-1);
+      border: 1px solid map.get($primary-color, darken-1);
       border-left: 0 !important;
       border-top-right-radius: $border-radius;
       border-bottom-right-radius: $border-radius;

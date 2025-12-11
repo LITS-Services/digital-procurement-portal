@@ -6,6 +6,7 @@ import { RfqService } from '../rfq.service';
   selector: 'app-rfq-approval-history-modal',
   templateUrl: './rfq-approval-history.component.html',
   styleUrls: ['./rfq-approval-history.component.scss'],
+  standalone: false
 })
 export class RfqApprovalHistoryComponent implements OnInit {
   @Input() data!: any;

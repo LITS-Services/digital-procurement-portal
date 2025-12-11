@@ -8,7 +8,8 @@ import { WorkflowServiceService } from 'app/shared/services/WorkflowService/work
 @Component({
   selector: 'app-workflow-approver-setup',
   templateUrl: './workflow-approver-setup.component.html',
-  styleUrls: ['./workflow-approver-setup.component.scss']
+  styleUrls: ['./workflow-approver-setup.component.scss'],
+  standalone: false
 })
 
 export class WorkflowApproverSetupComponent implements OnInit {

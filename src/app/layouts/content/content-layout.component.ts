@@ -9,7 +9,8 @@ import { TranslateService } from '@ngx-translate/core';
   selector: 'app-content-layout',
   templateUrl: './content-layout.component.html',
   styleUrls: ['./content-layout.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 
 export class ContentLayoutComponent implements OnInit, OnDestroy {

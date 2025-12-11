@@ -1,4 +1,5 @@
 // This needs review, including colors: https://www.google.com/design/spec/style/typography.html#typography-styles
+@use "sass:map";
 @import "../core/colors/palette-variables";
 
 blockquote, .blockquote{
@@ -11,7 +12,7 @@ blockquote, .blockquote{
 .blockquote-reverse, blockquote.pull-right{
   padding-right: 15px;
   padding-left: 0;
-  border-right: 5px solid map-get($grey-color, lighten-3);
+  border-right: 5px solid map.get($grey-color, lighten-3);
   border-left: 0;
   text-align: right;
 }
@@ -23,7 +24,7 @@ h2.title{
 .description,
 .card-description,
 .footer-big p{
-  color: color("gray");
+  color: #6c757d; // $gray-600
 }
 
 .text-warning {

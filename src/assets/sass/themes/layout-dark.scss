@@ -1,9 +1,9 @@
-@import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/mixins";
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/mixins";
 
 // Load variable overrides
 @import "../core/variables/variables";
-@import "~bootstrap/scss/variables";
+@import "bootstrap/scss/variables";
 
 // Overrides user variable
 @import "../core/variables/app-variables";

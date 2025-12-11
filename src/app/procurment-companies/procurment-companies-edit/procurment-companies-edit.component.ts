@@ -7,7 +7,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-procurment-companies-edit',
   templateUrl: './procurment-companies-edit.component.html',
-  styleUrls: ['./procurment-companies-edit.component.scss']
+  styleUrls: ['./procurment-companies-edit.component.scss'],
+  standalone: false
 })
 export class ProcurmentCompaniesEditComponent implements OnInit {
   @ViewChild('addressModal') addressModalTemplate: any;

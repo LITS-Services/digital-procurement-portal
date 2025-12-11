@@ -4,7 +4,8 @@ import { NgForm } from "@angular/forms";
 @Component({
     selector: 'app-lock-screen-page',
     templateUrl: './lock-screen-page.component.html',
-    styleUrls: ['./lock-screen-page.component.scss']
+    styleUrls: ['./lock-screen-page.component.scss'],
+    standalone: false
 })
 
 export class LockScreenPageComponent {

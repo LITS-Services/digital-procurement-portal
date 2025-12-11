@@ -11,7 +11,7 @@ import Swal from 'sweetalert2';
   selector: 'app-rfq-quotationbox',
   templateUrl: './rfq-quotationbox.component.html',
   styleUrls: ['./rfq-quotationbox.component.scss'],
-  
+  standalone: false
 })
 export class RfqQuotationboxComponent implements OnInit {
   @Input() data: any;

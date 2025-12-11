@@ -3,7 +3,8 @@ import { Directive, HostListener, Inject } from '@angular/core';
 import { TopMenuLinkDirective } from "./topmenu-link.directive";
 
 @Directive({
-  selector: "[appTopMenuAnchorToggle]"
+  selector: "[appTopMenuAnchorToggle]",
+  standalone: false
 })
 export class TopMenuAnchorToggleDirective {
   protected navlink: TopMenuLinkDirective;

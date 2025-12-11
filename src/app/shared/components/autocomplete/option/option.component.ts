@@ -10,7 +10,8 @@ import { mapTo } from 'rxjs/operators';
     </div>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrls: ['./option.component.scss']
+  styleUrls: ['./option.component.scss'],
+  standalone: false
 })
 export class OptionComponent implements OnInit {
   @Input() value: string;

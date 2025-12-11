@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { FormsModule } from '@angular/forms';
 
@@ -17,11 +17,12 @@ import { ChatComponent } from "./chat.component";
         ChatRoutingModule,
         NgbModule,
         FormsModule,
-        PerfectScrollbarModule,
+        // PerfectScrollbarModule, // Incompatible with Angular 21
         PipeModule
     ],
     declarations: [
         ChatComponent
-    ]
+    ],
+    schemas: [NO_ERRORS_SCHEMA]
 })
 export class ChatModule { }

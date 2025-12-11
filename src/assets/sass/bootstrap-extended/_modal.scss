@@ -20,7 +20,7 @@
     }
   }
 }
-@include media-breakpoint-down(xs) {
+@include media-breakpoint-down(sm) {
   .modal-open .modal{
     padding: 0 .5rem !important;
   }

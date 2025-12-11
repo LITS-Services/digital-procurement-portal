@@ -7,7 +7,8 @@ const URL = 'https://evening-anchorage-3159.herokuapp.com/api/';
   selector: 'app-upload',
   templateUrl: './upload.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrls: ['./upload.component.scss']
+  styleUrls: ['./upload.component.scss'],
+  standalone: false
 })
 export class UploadComponent {
 

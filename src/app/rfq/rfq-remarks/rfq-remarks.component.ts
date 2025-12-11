@@ -5,7 +5,8 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-rfq-remarks',
   templateUrl: './rfq-remarks.component.html',
-  styleUrls: ['./rfq-remarks.component.scss']
+  styleUrls: ['./rfq-remarks.component.scss'],
+  standalone: false
 })
 export class RfqRemarksComponent implements OnInit {
 

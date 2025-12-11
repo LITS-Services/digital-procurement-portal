@@ -39,8 +39,9 @@ updateWorkflowdetails(workflowVM: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/updateUpWorkflowdetails`, workflowVM);
   }
 
-  deleteWorkflow(ids: number[]): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/delete`, { ids });
+    markworkflowDelete(ids: number[]) {
+    console.log(ids);
+    return this.http.delete(`${this.baseUrl}/MarkDeleteWorkflow/${ids}`);
   }
 
   GetWorkflowMasterByTypeId(workflowTypeId: number): Observable<any> {

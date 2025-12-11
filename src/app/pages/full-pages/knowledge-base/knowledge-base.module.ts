@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
@@ -18,7 +18,7 @@ import { KnowledgeSearchComponent } from './knowledge-search/knowledge-search.co
         FormsModule,
         ReactiveFormsModule,
         NgbModule,
-        SwiperModule,
+        // SwiperModule, // Incompatible with Angular 21
         PipeModule
     ],
     declarations: [
@@ -26,6 +26,7 @@ import { KnowledgeSearchComponent } from './knowledge-search/knowledge-search.co
         KnowledgeSearchComponent,
         KnowledgeCategoriesComponent,
         KnowledgeQuestionComponent,
-    ]
+    ],
+    schemas: [NO_ERRORS_SCHEMA]
 })
 export class KnowledgeBaseModule { }

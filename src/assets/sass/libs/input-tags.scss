@@ -1,3 +1,4 @@
+@use "sass:map";
 @import "../core/variables/variables";
 @import "../core/variables/app-variables";
 @import "../core/colors/palette-variables";
@@ -6,7 +7,7 @@
   border-color: $border-color !important;
 }
 tag {
-  background: map-get($primary-color, lighten-4) !important;
+  background: map.get($primary-color, lighten-4) !important;
   color: $primary !important;
   border-radius: $border-radius !important;
   &:hover {

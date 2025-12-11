@@ -2,12 +2,13 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
-import id from 'date-fns/esm/locale/id/index';
+import { id } from 'date-fns/locale';
 
 @Component({
   selector: 'app-purchase-order-details',
   templateUrl: './purchase-order-details.component.html',
   styleUrls: ['./purchase-order-details.component.scss'],
+  standalone: false,
   animations: [
     trigger('expandCollapse', [
       state('expanded', style({ height: '*', opacity: 1 })),

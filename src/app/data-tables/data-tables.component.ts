@@ -12,7 +12,8 @@ import { map } from 'rxjs/operators';
   selector: 'app-datatables',
   templateUrl: './data-tables.component.html',
   styleUrls: ['./data-tables.component.scss', '../../assets/sass/libs/datatables.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  standalone: false
 })
 export class DataTablesComponent implements OnInit {
   // public

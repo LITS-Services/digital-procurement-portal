@@ -11,7 +11,8 @@ import { FORM_IDS } from 'app/shared/permissions/form-ids';
 @Component({
   selector: 'app-procurment-companies',
   templateUrl: './procurment-companies.component.html',
-  styleUrls: ['./procurment-companies.component.scss']
+  styleUrls: ['./procurment-companies.component.scss'],
+  standalone: false
 })
 export class ProcurmentCompaniesComponent implements OnInit {
   FORM_IDS = FORM_IDS;

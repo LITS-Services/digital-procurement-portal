@@ -284,19 +284,19 @@ export function AutoClose() {
       confirmButton: 'btn btn-primary'
     },
     buttonsStyling: false,
-    onBeforeOpen: () => {
+    willOpen: () => {
       swal.showLoading()
       timerInterval = setInterval(() => {
-        const content = swal.getContent()
+        const content = swal.getHtmlContainer()
         if (content) {
           const b = content.querySelector('b')
           if (b) {
-            b.textContent = swal.getTimerLeft().toString()
+            b.textContent = swal.getTimerLeft()?.toString() || '0'
           }
         }
       }, 100)
     },
-    onClose: () => {
+    willClose: () => {
       clearInterval(timerInterval)
     }
   }).then((result) => {
@@ -321,8 +321,8 @@ export function OutsideClick() {
 }
 
 // Prompt Function
-export function PromptFunction() {
-  swal.mixin({
+export async function PromptFunction() {
+  const swalMixin = swal.mixin({
     input: 'text',
     confirmButtonText: 'Next &rarr;',
     showCancelButton: true,
@@ -332,23 +332,35 @@ export function PromptFunction() {
       cancelButton: 'btn btn-danger ml-1'
     },
     buttonsStyling: false,
-  }).queue([{
+  });
+  
+  // Queue functionality replaced with sequential calls
+  const result1 = await swalMixin.fire({
     title: 'Question 1',
     text: 'Chaining swal2 modals is easy'
-  },
-    'Question 2',
-    'Question 3'
-  ]).then(function (result: any) {
-    if (result.value) {
-      swal.fire({
-        title: 'All done!',
-        html: 'Your answers: <pre><code>' +
-          JSON.stringify(result.value) +
-          '</code></pre>',
-        confirmButtonText: 'Lovely!'
-      })
-    }
   });
+  if (result1.isConfirmed) {
+    const result2 = await swalMixin.fire({
+      title: 'Question 2',
+      text: 'Question 2 text'
+    });
+    if (result2.isConfirmed) {
+      const result3 = await swalMixin.fire({
+        title: 'Question 3',
+        text: 'Question 3 text'
+      });
+      if (result3.isConfirmed) {
+        const answers = [result1.value, result2.value, result3.value];
+        await swal.fire({
+          title: 'All done!',
+          html: 'Your answers: <pre><code>' +
+            JSON.stringify(answers) +
+            '</code></pre>',
+          confirmButtonText: 'Lovely!'
+        });
+      }
+    }
+  }
 }
 
 // Ajax Request

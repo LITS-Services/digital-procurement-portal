@@ -5,7 +5,8 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-knowledge-base',
   templateUrl: './knowledge-base.component.html',
-  styleUrls: ['./knowledge-base.component.scss']
+  styleUrls: ['./knowledge-base.component.scss'],
+  standalone: false
 })
 export class KnowledgeBaseComponent {
   constructor(private router: Router) {

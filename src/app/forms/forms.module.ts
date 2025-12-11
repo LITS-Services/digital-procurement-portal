@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -34,14 +34,14 @@ import { SelectComponent } from './elements/select/select.component';
         ReactiveFormsModule,
         FormsModule,
         HttpClientModule,
-        ArchwizardModule,
-        CustomFormsModule,
+        // ArchwizardModule, // Incompatible with Angular 21
+        // CustomFormsModule, // Incompatible with Angular 21
         MatchHeightModule,
         NgbModule,
-        UiSwitchModule,
+        // UiSwitchModule, // Incompatible with Angular 21
         QuillModule.forRoot(),
         NgSelectModule,
-        TagInputModule
+        // TagInputModule // Incompatible with Angular 21
     ],
     declarations: [
         ValidationFormsComponent,
@@ -57,7 +57,7 @@ import { SelectComponent } from './elements/select/select.component';
         TagsInputComponent,
         EditorComponent,
         SelectComponent,
-    ]
-
+    ],
+    schemas: [NO_ERRORS_SCHEMA]
 })
 export class FormModule { }

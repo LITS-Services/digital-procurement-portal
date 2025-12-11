@@ -10,7 +10,8 @@ import { filter, map } from 'rxjs/operators';
   selector: 'app-tags-input',
   templateUrl: './tags-input.component.html',
   styleUrls: ['./tags-input.component.scss', '../../../../assets/sass/libs/input-tags.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  standalone: false
 })
 export class TagsInputComponent {
 

@@ -6,7 +6,8 @@ import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
 @Component({
   selector: 'app-tendering',
   templateUrl: './tendering.component.html',
-  styleUrls: ['./tendering.component.scss']
+  styleUrls: ['./tendering.component.scss'],
+  standalone: false
 })
 export class TenderingComponent implements OnInit {
   public SelectionType = SelectionType;

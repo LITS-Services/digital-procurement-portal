@@ -1,6 +1,8 @@
-@import '~@swimlane/ngx-datatable/index.css';
-@import '~@swimlane/ngx-datatable/themes/bootstrap.scss';
-@import '~@swimlane/ngx-datatable/assets/icons.css';
+@use "sass:map";
+// Import ngx-datatable CSS files directly from node_modules
+@import '../../../../node_modules/@swimlane/ngx-datatable/index.css';
+// @import '@swimlane/ngx-datatable/themes/bootstrap.scss'; // Commented out - file not found
+@import '../../../../node_modules/@swimlane/ngx-datatable/assets/icons.css';
 @import "../core/variables/variables";
 @import "../core/variables/app-variables";
 @import "../core/colors/palette-variables";
@@ -82,7 +84,7 @@
 
               &.disabled {
                 a {
-                  color: map-get($grey-color, darken-1);
+                  color: map.get($grey-color, darken-1);
                   background-color: $pagination-disabled-bg;
                 }
               }

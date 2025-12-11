@@ -6,7 +6,8 @@ import { CompanyService } from 'app/shared/services/Company.services';
 @Component({
   selector: 'app-assign-me',
   templateUrl: './assign-me.component.html',
-  styleUrls: ['./assign-me.component.scss']
+  styleUrls: ['./assign-me.component.scss'],
+  standalone: false
 })
 export class AssignMeComponent implements OnInit {
   @Input() ProcurementCompanyId!: number;

@@ -14,7 +14,8 @@ import { merge } from 'rxjs';
     </ng-template>
   `,
   exportAs: 'appAutocomplete',
-  styleUrls: ['./autocomplete.component.css']
+  styleUrls: ['./autocomplete.component.css'],
+  standalone: false
 })
 export class AutocompleteComponent {
   @ViewChild('root') rootTemplate: TemplateRef<any>;

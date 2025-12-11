@@ -3,7 +3,8 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'app-maintenance-page',
     templateUrl: './maintenance-page.component.html',
-    styleUrls: ['./maintenance-page.component.scss']
+    styleUrls: ['./maintenance-page.component.scss'],
+    standalone: false
 })
 
 export class MaintenancePageComponent {

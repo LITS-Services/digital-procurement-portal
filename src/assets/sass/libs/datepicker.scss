@@ -1,3 +1,4 @@
+@use "sass:map";
 @import "../core/variables/variables";
 @import "../core/variables/app-variables";
 @import "../core/colors/palette-variables";
@@ -40,7 +41,7 @@ ngb-datepicker-navigation-select .custom-select+.custom-select {
     color: $white;
   }
   &.focused {
-    background-color: map-get($grey-color, lighten-2);
+    background-color: map.get($grey-color, lighten-2);
   }
   &.range,
   &:hover {

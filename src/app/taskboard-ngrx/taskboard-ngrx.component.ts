@@ -17,7 +17,7 @@ import { CrudModalComponent } from 'app/taskboard/crud-modal/crud-modal.componen
   styleUrls: ['./taskboard-ngrx.component.scss'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-
+  standalone: false
 })
 export class TaskboardNGRXComponent implements OnInit, OnDestroy {
 

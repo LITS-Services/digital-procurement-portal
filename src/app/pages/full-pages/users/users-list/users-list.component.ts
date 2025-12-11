@@ -10,6 +10,7 @@ import { usersListData } from "./data/users-list.data";
     "../../../../../assets/sass/libs/datatables.scss",
   ],
   encapsulation: ViewEncapsulation.None,
+  standalone: false
 })
 export class UsersListComponent implements OnInit {
   @ViewChild(DatatableComponent) table: DatatableComponent;

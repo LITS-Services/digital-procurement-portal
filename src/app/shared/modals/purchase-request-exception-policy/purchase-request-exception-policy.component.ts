@@ -7,7 +7,8 @@ import { ColumnMode, DatatableComponent } from '@swimlane/ngx-datatable';
 @Component({
   selector: 'app-purchase-request-exception-policy',
   templateUrl: './purchase-request-exception-policy.component.html',
-  styleUrls: ['./purchase-request-exception-policy.component.scss']
+  styleUrls: ['./purchase-request-exception-policy.component.scss'],
+  standalone: false
 })
 export class PurchaseRequestExceptionPolicyComponent implements OnInit {
 

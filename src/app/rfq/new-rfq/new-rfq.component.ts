@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbAccordion, NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAccordionItem, NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, DatatableComponent, id, SelectionType } from '@swimlane/ngx-datatable';
 import { DatatableData } from 'app/data-tables/data/datatables.data';
 import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
@@ -21,6 +21,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
   selector: 'app-new-rfq',
   templateUrl: './new-rfq.component.html',
   styleUrls: ['./new-rfq.component.scss'],
+  standalone: false
 })
 export class NewRfqComponent implements OnInit {
   currentRfqNo!: string;
@@ -77,7 +78,7 @@ export class NewRfqComponent implements OnInit {
 
   passEntityId: number | null = null;
 
-  @ViewChild('accordion') accordion: NgbAccordion;
+  @ViewChild('accordion') accordion: NgbAccordionItem;
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
   @ViewChild('tableResponsive') tableResponsive: any;

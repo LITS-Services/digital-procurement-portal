@@ -8,7 +8,8 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-login-page',
   templateUrl: './login-page.component.html',
-  styleUrls: ['./login-page.component.scss']
+  styleUrls: ['./login-page.component.scss'],
+  standalone: false
 })
 export class LoginPageComponent implements OnInit {
 
@@ -22,7 +23,7 @@ export class LoginPageComponent implements OnInit {
     username: new UntypedFormControl('', [Validators.required]),
     password: new UntypedFormControl('', [Validators.required]),
     rememberMe: new UntypedFormControl(true),
-    recaptchaReactive: new UntypedFormControl('', [Validators.required])
+    // recaptchaReactive: new UntypedFormControl('', [Validators.required])
 
   });
 
@@ -82,10 +83,10 @@ export class LoginPageComponent implements OnInit {
   onSubmit() {
     this.loginFormSubmitted = true;
     // captcha
-    if (this.loginForm.controls['recaptchaReactive'].invalid) {
-      this.toastr.warning('Please verify the CAPTCHA to proceed.');
-      return;
-    }
+    // if (this.loginForm.controls['recaptchaReactive'].invalid) {
+    //   this.toastr.warning('Please verify the CAPTCHA to proceed.');
+    //   return;
+    // }
 
     if (this.loginForm.invalid) return;
 

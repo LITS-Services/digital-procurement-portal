@@ -4,7 +4,8 @@ import * as chartsData from '../../shared/data/chartjs';
 @Component({
   selector: 'app-chartjs',
   templateUrl: './chartjs.component.html',
-  styleUrls: ['./chartjs.component.scss']
+  styleUrls: ['./chartjs.component.scss'],
+  standalone: false
 })
 
 export class ChartjsComponent {

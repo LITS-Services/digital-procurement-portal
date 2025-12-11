@@ -1,7 +1,7 @@
 import { Component, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError, debounceTime, distinctUntilChanged, map, tap, switchMap, merge } from 'rxjs/operators'
+import { catchError, debounceTime, distinctUntilChanged, map, tap, switchMap, mergeWith } from 'rxjs'
 
 // State constant declaration
 const states = ['Alabama', 'Alaska', 'American Samoa', 'Arizona', 'Arkansas', 'California', 'Colorado',
@@ -97,7 +97,8 @@ export class WikipediaService {
   selector: 'app-typeahead',
   templateUrl: './typeahead.component.html',
   styleUrls: ['./typeahead.component.scss'],
-  providers: [WikipediaService]
+  providers: [WikipediaService],
+  standalone: false
 })
 export class TypeaheadComponent {
   // Variable Declaration
@@ -107,7 +108,7 @@ export class TypeaheadComponent {
   modelTemp: any;
   searching = false;
   searchFailed = false;
-  hideSearchingWhenUnsubscribed = new Observable(() => () => this.searching = false);
+  hideSearchingWhenUnsubscribed = new Observable<never>(() => () => this.searching = false);
 
   // Default Search
   search = (text$: Observable<string>) =>
@@ -124,7 +125,7 @@ export class TypeaheadComponent {
       debounceTime(300),
       distinctUntilChanged(),
       tap(() => this.searching = true),
-      switchMap(term =>
+      switchMap((term: string) =>
         this._service.search(term).pipe(
           tap(() => this.searchFailed = false),
           catchError(() => {
@@ -133,7 +134,7 @@ export class TypeaheadComponent {
           }))
       ),
       tap(() => this.searching = false),
-      merge(this.hideSearchingWhenUnsubscribed)
+      mergeWith(this.hideSearchingWhenUnsubscribed)
     );
 
   // Formatter 

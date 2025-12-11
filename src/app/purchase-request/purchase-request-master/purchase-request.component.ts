@@ -19,7 +19,8 @@ import { PrInventoryManagementComponent } from '../pr-inventory-management/pr-in
 @Component({
   selector: 'app-purchase-request',
   templateUrl: './purchase-request.component.html',
-  styleUrls: ['./purchase-request.component.scss']
+  styleUrls: ['./purchase-request.component.scss'],
+  standalone: false
 })
 
 export class PurchaseRequestComponent implements OnInit {
@@ -50,8 +51,7 @@ export class PurchaseRequestComponent implements OnInit {
     status: null,
     userId: null,
     entityId: null,
-    prNo: null,
-    forInventoryTransfer: false
+    prNo: null
   };
 
   showFilterBar = false;

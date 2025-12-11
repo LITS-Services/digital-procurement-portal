@@ -16,7 +16,8 @@ declare var tinymce: any;
 @Component({
   selector: 'app-creat-email-template',
   templateUrl: './create-email-template.component.html',
-  styleUrls: ['./create-email-template.component.scss']
+  styleUrls: ['./create-email-template.component.scss'],
+  standalone: false
 })
 export class CreateEmailTemplateComponent implements OnInit, AfterViewInit {
   invitationForm!: FormGroup;

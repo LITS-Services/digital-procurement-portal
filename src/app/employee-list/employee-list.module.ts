@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { EmployeeListRoutingModule } from './employee-list-routing.module';
@@ -32,14 +32,14 @@ import { PermissionDirective } from 'app/shared/permissions/permission.directive
             ReactiveFormsModule,
             FormsModule,
             HttpClientModule,
-            CustomFormsModule,
+            // CustomFormsModule, // Incompatible with Angular 21
             MatchHeightModule,
             NgbModule,
-            UiSwitchModule,
+            // UiSwitchModule, // Incompatible with Angular 21
             PipeModule,
             QuillModule.forRoot(),
             NgSelectModule,
-            TagInputModule,
+            // TagInputModule, // Incompatible with Angular 21
             NgxDatatableModule  ,
             NgbAccordionModule,
             NgbDatepickerModule,
@@ -47,6 +47,7 @@ import { PermissionDirective } from 'app/shared/permissions/permission.directive
             NgxSpinnerModule,
             AutoResizeDatatableDirective,
             PermissionDirective
-  ]
+  ],
+  schemas: [NO_ERRORS_SCHEMA]
 })
 export class EmployeeListModule { }

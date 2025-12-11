@@ -7,7 +7,8 @@ import { FAQ, FAQMain } from './faq.model';
   selector: 'app-faq',
   templateUrl: './faq.component.html',
   styleUrls: ['./faq.component.scss'],
-  providers: [FaqService]
+  providers: [FaqService],
+  standalone: false
 })
 export class FaqComponent {
 

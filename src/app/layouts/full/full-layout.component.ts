@@ -23,7 +23,8 @@ import { filter } from 'rxjs/operators';
   selector: "app-full-layout",
   templateUrl: "./full-layout.component.html",
   styleUrls: ["./full-layout.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class FullLayoutComponent implements OnInit, AfterViewInit, OnDestroy {
 

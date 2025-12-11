@@ -20,6 +20,7 @@ import { PermissionService } from 'app/shared/permissions/permission.service';
   selector: 'app-rfq',
   templateUrl: './rfq.component.html',
   styleUrls: ['./rfq.component.scss'],
+  standalone: false
 })
 
 export class RfqComponent implements OnInit {

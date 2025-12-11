@@ -17,8 +17,7 @@ export interface PRQuery {
   userId: string | null,
   entityId: number | null,
   status: string | null,
-  prNo: string | null,
-  forInventoryTransfer: boolean
+  prNo: string | null
 }
 
 export interface Dropdown {
@@ -54,15 +53,13 @@ export class PurchaseRequestService {
     userId?: string | null,
     entityId?: number | null,
     status?: string | null,
-    prNo?: string | null,
-    forInventoryTransfer: boolean
+    prNo?: string | null
   }): Observable<any> {
 
 
     let params = new HttpParams()
       .set("currentPage", q.currentPage)
-      .set("pageSize", q.pageSize)
-      .set("forInventoryTransfer", q.forInventoryTransfer.toString());
+      .set("pageSize", q.pageSize);
 
     if (q.status) params = params.set("status", q.status);
     if (q.prNo) params = params.set("prNo", q.prNo);
@@ -104,11 +101,6 @@ export class PurchaseRequestService {
     if (selectFinalVendor === true) params.selectFinalVendor = 'true';
 
     return this.http.get<any>(`${this.baseUrl}/get-request-by-id`, { params });
-  }
-
-  getPrForInventoryTransfer(id: number){
-    let params: any = { id: id.toString() };
-    return this.http.get<any>(`${this.baseUrl}/get-request-for-inventory-transfer-by-id`, { params });
   }
 
   addRemarksWithActionTaken(data: any): Observable<any> {

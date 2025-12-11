@@ -7,7 +7,8 @@ import { NgSelectModule, NgOption } from '@ng-select/ng-select';
   selector: 'app-select',
   templateUrl: './select.component.html',
   styleUrls: ['./select.component.scss', '../../../../assets/sass/libs/select.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  standalone: false
 })
 export class SelectComponent implements OnInit {
 

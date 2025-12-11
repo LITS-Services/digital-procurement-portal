@@ -5,7 +5,8 @@ import { CompanyService } from 'app/shared/services/Company.services';
 @Component({
   selector: 'app-company-setup-history',
   templateUrl: './company-setup-history.component.html',
-  styleUrls: ['./company-setup-history.component.scss']
+  styleUrls: ['./company-setup-history.component.scss'],
+  standalone: false
 })
 export class CompanySetupHistoryComponent implements OnInit {
   @Input() vendorEntityAssociationId!: number; // Direct ID if available

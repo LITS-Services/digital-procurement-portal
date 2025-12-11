@@ -5,7 +5,8 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-crud-modal',
   templateUrl: './crud-modal.component.html',
-  styleUrls: ['./crud-modal.component.scss']
+  styleUrls: ['./crud-modal.component.scss'],
+  standalone: false
 })
 export class CrudModalComponent implements OnInit{
 

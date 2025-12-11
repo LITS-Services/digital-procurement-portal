@@ -6,7 +6,8 @@ import { HighlightService } from 'app/shared/services/highlight.service';
   selector: 'app-carousel',
   templateUrl: './carousel.component.html',
   styleUrls: ['./carousel.component.scss'],
-  providers: [NgbCarouselConfig] // add NgbCarouselConfig to the component providers
+  providers: [NgbCarouselConfig], // add NgbCarouselConfig to the component providers
+  standalone: false
 })
 
 export class CarouselComponent implements AfterViewChecked {

@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbAccordion, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAccordionItem, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { DatatableData } from 'app/data-tables/data/datatables.data';
 import { LookupService } from 'app/shared/services/lookup.service';
@@ -11,7 +11,8 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-new-global-configuration',
   templateUrl: './new-global-configuration.component.html',
-  styleUrls: ['./new-global-configuration.component.scss']
+  styleUrls: ['./new-global-configuration.component.scss'],
+  standalone: false
 })
 export class NewGlobalConfigurationComponent implements OnInit {
 
@@ -33,7 +34,7 @@ export class NewGlobalConfigurationComponent implements OnInit {
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
-  @ViewChild('accordion') accordion: NgbAccordion;
+  @ViewChild('accordion') accordion: NgbAccordionItem;
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
   @ViewChild('tableResponsive') tableResponsive: any;

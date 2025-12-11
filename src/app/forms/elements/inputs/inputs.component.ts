@@ -10,7 +10,8 @@ export class User {
 @Component({
   selector: 'app-inputs',
   templateUrl: './inputs.component.html',
-  styleUrls: ['./inputs.component.scss']
+  styleUrls: ['./inputs.component.scss'],
+  standalone: false
 })
 export class InputsComponent {
 

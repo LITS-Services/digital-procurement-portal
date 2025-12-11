@@ -5,7 +5,8 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-rfq-final-vendors',
   templateUrl: './rfq-final-vendors.component.html',
-  styleUrls: ['./rfq-final-vendors.component.scss']
+  styleUrls: ['./rfq-final-vendors.component.scss'],
+  standalone: false
 })
 export class RfqFinalVendorsComponent implements OnInit {
 

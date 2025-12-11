@@ -1,7 +1,7 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from "@angular/common";
 
-import { ChartsModule } from 'ng2-charts';
+import { NgChartsModule } from 'ng2-charts';
 import { ChartistModule} from 'ng-chartist';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgApexchartsModule } from "ng-apexcharts";
@@ -16,10 +16,10 @@ import { ApexComponent } from './apex/apex.component';
     imports: [
         CommonModule,
         ChartsRoutingModule,
-        ChartsModule,
-        ChartistModule,
-        NgxChartsModule,
-        
+        NgChartsModule,
+        // ChartistModule, // Incompatible with Angular 21
+        // NgxChartsModule, // May have compatibility issues with Angular 21
+        NgApexchartsModule,
     ],
     declarations: [
         ChartistComponent,
@@ -27,5 +27,6 @@ import { ApexComponent } from './apex/apex.component';
         NGXChartsComponent,
         ApexComponent
     ],
+    schemas: [NO_ERRORS_SCHEMA]
 })
 export class ChartsNg2Module { }

@@ -522,7 +522,7 @@ body {
   // Native Scrollbar (.menu-native-scroll)
   &.menu-native-scroll {
     .main-menu-content {
-      overflow-y: scroll;
+      overflow-y: auto;
     }
   }
 }

@@ -16,6 +16,7 @@ import { finalize } from 'rxjs/operators';
 @Component({
   selector: 'app-acl-setup',
   templateUrl: './acl-setup.component.html',
+  standalone: false,
   styleUrls: ['./acl-setup.component.scss']
 })
 export class AclSetupComponent implements OnInit {

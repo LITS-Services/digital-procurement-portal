@@ -7,7 +7,8 @@ import { DatatableComponent } from '@swimlane/ngx-datatable';
 @Component({
   selector: 'app-rfq-attachment',
   templateUrl: './rfq-attachment.component.html',
-  styleUrls: ['./rfq-attachment.component.scss']
+  styleUrls: ['./rfq-attachment.component.scss'],
+  standalone: false
 })
 
 export class RfqAttachmentComponent implements OnInit {

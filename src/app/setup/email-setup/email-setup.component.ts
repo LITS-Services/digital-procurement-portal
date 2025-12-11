@@ -9,7 +9,8 @@ import { EmailTemplateService } from 'app/shared/services/EmailTemplateService';
 @Component({
   selector: 'app-email-setup',
   templateUrl: './email-setup.component.html',
-  styleUrls: ['./email-setup.component.scss']
+  styleUrls: ['./email-setup.component.scss'],
+  standalone: false
 })
 export class EmailSetupComponent implements OnInit {
   FORM_IDS = FORM_IDS;

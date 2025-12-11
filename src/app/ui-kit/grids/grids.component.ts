@@ -4,7 +4,8 @@ import { HighlightService } from 'app/shared/services/highlight.service';
 @Component({
     selector: 'app-grids',
     templateUrl: './grids.component.html',
-    styleUrls: ['./grids.component.scss']
+    styleUrls: ['./grids.component.scss'],
+    standalone: false
 })
 
 export class GridsComponent {

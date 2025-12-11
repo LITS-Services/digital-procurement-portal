@@ -6,7 +6,7 @@
       <div class="row">
         <div class="col-md-12" style=" margin-top: -0.25rem;">
           <h4 class="heading">
-                   <button class="btn btn-lg" type="button" (click)="homePage()"><i class="ft-arrow-left"></i></button>
+            <button class="btn btn-lg" type="button" (click)="homePage()"><i class="ft-arrow-left"></i></button>
             <ng-container *ngIf="viewMode === false; else viewModeTitle">
               {{ isNewForm ? 'Create Quotation Request' : 'Update Quotation Request' }}
             </ng-container>

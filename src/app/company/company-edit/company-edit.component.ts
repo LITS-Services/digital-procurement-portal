@@ -11,7 +11,8 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-company-edit',
   templateUrl: './company-edit.component.html',
-  styleUrls: ['./company-edit.component.scss']
+  styleUrls: ['./company-edit.component.scss'],
+  standalone: false
 })
 export class CompanyEditComponent implements OnInit {
 

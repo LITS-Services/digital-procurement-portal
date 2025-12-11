@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { PurchaseRequestRoutingModule } from './purchase-request-routing.module';
@@ -31,19 +31,19 @@ import { PrInventoryManagementComponent } from './pr-inventory-management/pr-inv
   imports: [
     CommonModule,
     PurchaseRequestRoutingModule,
-    ArchwizardModule,
+    // ArchwizardModule, // Incompatible with Angular 21
     NgbModule,
     ReactiveFormsModule,
     FormsModule,
     HttpClientModule,
-    CustomFormsModule,
+    // CustomFormsModule, // Incompatible with Angular 21
     MatchHeightModule,
     NgbModule,
-    UiSwitchModule,
+    // UiSwitchModule, // Incompatible with Angular 21
     PipeModule,
     QuillModule.forRoot(),
     NgSelectModule,
-    TagInputModule,
+    // TagInputModule, // Incompatible with Angular 21
     NgxDatatableModule,
     NgbAccordionModule,
     NgbDatepickerModule,
@@ -61,5 +61,6 @@ import { PrInventoryManagementComponent } from './pr-inventory-management/pr-inv
     PrApprovalHistoryComponent,
     PrInventoryManagementComponent
   ],
+  schemas: [NO_ERRORS_SCHEMA]
 })
 export class PurchaseRequestModule { }

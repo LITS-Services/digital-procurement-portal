@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component, Input, OnInit, SimpleChanges } from "@ang
 import { FormBuilder, Validators } from "@angular/forms";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 import { RfqService } from "app/rfq/rfq.service";
-import { finalize } from "rxjs/operators";
+import { finalize } from "rxjs";
 
 enum CreatedByType {
   Procurement = 1,
@@ -13,6 +13,7 @@ enum CreatedByType {
 @Component({
   selector: "app-selected-vendors-modal",
   templateUrl: "./selected-vendors-modal.component.html",
+  standalone: false,
   styleUrls: ["./selected-vendors-modal.component.scss"],
 })
 export class SelectedVendorsModalComponent implements OnInit {

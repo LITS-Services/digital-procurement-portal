@@ -3,7 +3,8 @@ import { Component, Input, OnInit } from '@angular/core';
 @Component({
   selector: 'app-rfq-comments',
   templateUrl: './rfq-comments.component.html',
-  styleUrls: ['./rfq-comments.component.scss']
+  styleUrls: ['./rfq-comments.component.scss'],
+  standalone: false
 })
 export class RfqCommentsComponent implements OnInit {
 

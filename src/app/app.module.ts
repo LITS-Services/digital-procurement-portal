@@ -1,15 +1,15 @@
 import { APP_INITIALIZER, CUSTOM_ELEMENTS_SCHEMA, NgModule } from "@angular/core";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
-import { AngularFireModule } from "@angular/fire";
-import { AngularFireAuthModule } from "@angular/fire/auth";
+import { AngularFireModule } from "@angular/fire/compat";
+import { AngularFireAuthModule } from "@angular/fire/compat/auth";
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { ToastrModule } from "ngx-toastr";
-import { AgmCoreModule } from "@agm/core";
-import { HttpClientModule, HttpClient } from "@angular/common/http";
+import { GoogleMapsModule } from "@angular/google-maps";
+import { HttpClientModule } from "@angular/common/http";
 import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
-import { TranslateHttpLoader } from "@ngx-translate/http-loader";
+import { TranslateHttpLoader, TRANSLATE_HTTP_LOADER_CONFIG } from "@ngx-translate/http-loader";
 import { StoreModule } from "@ngrx/store";
 import { DragulaService } from "ng2-dragula";
 import { NgxSpinnerModule } from 'ngx-spinner';
@@ -38,7 +38,7 @@ import { OtpComponent } from './pages/otp/otp.component';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { responseHandlerInterceptor } from "./shared/interceptor/response-handler.interceptor";
 import { environment } from '../environments/environment';
-import { AngularFireMessagingModule } from '@angular/fire/messaging';
+import { AngularFireMessagingModule } from '@angular/fire/compat/messaging';
 import { permissionInitializer } from "./shared/permissions/permission.init";
 import { PermissionService } from "./shared/permissions/permission.service";
 
@@ -47,13 +47,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   wheelPropagation: false
 };
 
-export function createTranslateLoader(http: HttpClient) {
-  return new TranslateHttpLoader(http, "./assets/i18n/", ".json");
-}
-
 @NgModule({
   declarations: [AppComponent, FullLayoutComponent, ContentLayoutComponent, OtpComponent ],
-
   imports: [
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-right', // or 'toast-top-center' etc.
@@ -79,17 +74,18 @@ export function createTranslateLoader(http: HttpClient) {
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useFactory: createTranslateLoader,
-        deps: [HttpClient]
+        useClass: TranslateHttpLoader
       }
     }),
-    AgmCoreModule.forRoot({
-      apiKey: "AIzaSyCERobClkCv1U4mDijGm1FShKva_nxsGJY"
-    }),
-    PerfectScrollbarModule
+    GoogleMapsModule,
+    // PerfectScrollbarModule, // Incompatible with Angular 21
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
+    {
+      provide: TRANSLATE_HTTP_LOADER_CONFIG,
+      useValue: { prefix: './assets/i18n/', suffix: '.json' }
+    },
     AuthService,
     AuthGuard,
     DragulaService,

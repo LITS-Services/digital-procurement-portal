@@ -10,6 +10,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
   selector: 'app-bulk-vendor-onboarding',
   templateUrl: './bulk-vendor-onboarding.component.html',
   styleUrls: ['./bulk-vendor-onboarding.component.scss'],
+  standalone: false
 })
 export class BulkVendorOnboardingComponent implements OnInit {
   selectedFile: File | null = null;

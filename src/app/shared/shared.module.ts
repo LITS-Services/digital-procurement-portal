@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { RouterModule } from "@angular/router";
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -59,8 +59,8 @@ import { PurchaseRequestExceptionPolicyComponent } from './modals/purchase-reque
         FormsModule,
         OverlayModule,
         ReactiveFormsModule ,
-        PerfectScrollbarModule,
-        ClickOutsideModule,
+        // PerfectScrollbarModule, // Incompatible with Angular 21
+        // ClickOutsideModule, // Incompatible with Angular 21
         AutocompleteModule,
         PipeModule,
         NgxDatatableModule
@@ -84,6 +84,7 @@ import { PurchaseRequestExceptionPolicyComponent } from './modals/purchase-reque
         PurchaseRequestAttachmentModalComponent,
         PurchaseRequestAccountBudgetLookupModalComponent,
         PurchaseRequestExceptionPolicyComponent,
-    ]
+    ],
+    schemas: [NO_ERRORS_SCHEMA]
 })
 export class SharedModule { }

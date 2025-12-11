@@ -5,7 +5,8 @@ import { UntypedFormControl } from '@angular/forms';
 @Component({
   selector: 'app-timepicker',
   templateUrl: './timepicker.component.html',
-  styleUrls: ['./timepicker.component.scss']
+  styleUrls: ['./timepicker.component.scss'],
+  standalone: false
 })
 export class TimepickerComponent {
   // Variable Declaration

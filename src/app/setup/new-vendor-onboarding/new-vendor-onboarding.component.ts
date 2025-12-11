@@ -11,7 +11,8 @@ import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-dat
 @Component({
   selector: 'app-new-vendor-onboarding',
   templateUrl: './new-vendor-onboarding.component.html',
-  styleUrls: ['./new-vendor-onboarding.component.scss']
+  styleUrls: ['./new-vendor-onboarding.component.scss'],
+  standalone: false
 })
 export class NewVendorOnboardingComponent implements OnInit {
   @ViewChild(DatatableComponent) table: DatatableComponent;

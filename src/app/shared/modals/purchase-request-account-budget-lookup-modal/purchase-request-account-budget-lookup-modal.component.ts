@@ -6,7 +6,8 @@ import { ColumnMode, DatatableComponent } from '@swimlane/ngx-datatable';
 @Component({
   selector: 'app-purchase-request-account-budget-lookup-modal',
   templateUrl: './purchase-request-account-budget-lookup-modal.component.html',
-  styleUrls: ['./purchase-request-account-budget-lookup-modal.component.scss']
+  styleUrls: ['./purchase-request-account-budget-lookup-modal.component.scss'],
+  standalone: false
 })
 export class PurchaseRequestAccountBudgetLookupModalComponent implements OnInit {
   @ViewChild(DatatableComponent) table: DatatableComponent;

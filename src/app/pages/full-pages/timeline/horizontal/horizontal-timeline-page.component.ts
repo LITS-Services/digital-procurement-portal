@@ -4,7 +4,8 @@ import { TimelineElement } from './component/timeline-element';
 @Component({
     selector: 'app-horizontal-timeline-page',
     templateUrl: './horizontal-timeline-page.component.html',
-    styleUrls: ['./horizontal-timeline-page.component.scss']
+    styleUrls: ['./horizontal-timeline-page.component.scss'],
+    standalone: false
 })
 
 export class HorizontalTimelinePageComponent {

@@ -94,14 +94,3 @@
   background: #4188f2 !important; /* keep blue background */
   box-shadow: none !important;
 }
-
-@media (max-width: 576px) {
-  .custom-tabs {
-    overflow: scroll !important;
-    white-space: nowrap !important;
-  }
-
-  .bids-tab{
-    row-gap: 8px !important;
-  }
-}

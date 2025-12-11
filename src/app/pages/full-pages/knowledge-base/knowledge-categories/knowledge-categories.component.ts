@@ -6,7 +6,8 @@ import { KnowledgeBaseService } from '../knowledge-base.service';
 @Component({
   selector: 'app-knowledge-categories',
   templateUrl: './knowledge-categories.component.html',
-  styleUrls: ['./knowledge-categories.component.scss']
+  styleUrls: ['./knowledge-categories.component.scss'],
+  standalone: false
 })
 export class KnowledgeCategoriesComponent  {
   kbCategories: KBCategory[] = [];

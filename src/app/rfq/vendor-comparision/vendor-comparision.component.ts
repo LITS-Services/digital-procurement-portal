@@ -6,7 +6,8 @@ import { RfqService } from '../rfq.service';
 @Component({
   selector: 'app-vendor-comparision',
   templateUrl: './vendor-comparision.component.html',
-  styleUrls: ['./vendor-comparision.component.scss']
+  styleUrls: ['./vendor-comparision.component.scss'],
+  standalone: false
 })
 export class VendorComparisionComponent implements OnInit {
 

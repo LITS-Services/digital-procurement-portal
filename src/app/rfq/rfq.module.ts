@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { RFQRoutingModule } from './rfq-routing.module';
@@ -23,7 +23,7 @@ import { NewRfqComponent } from './new-rfq/new-rfq.component';
 import { RfqAttachmentComponent } from './rfq-attachment/rfq-attachment.component';
 import { RfqRemarksComponent } from './rfq-remarks/rfq-remarks.component';
 import { RfqApprovalHistoryComponent } from './rfq-approval-history/rfq-approval-history.component';
-import { AgmCoreModule } from "@agm/core";
+import { GoogleMapsModule } from "@angular/google-maps";
 import { SelectedVendorsModalComponent } from './new-rfq/selected-vendors-modal/selected-vendors-modal.component';
 import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
 import { RfqCommentsComponent } from './rfq-comments/rfq-comments.component';
@@ -52,22 +52,23 @@ import { PermissionDirective } from 'app/shared/permissions/permission.directive
     ReactiveFormsModule,
     FormsModule,
     HttpClientModule,
-    CustomFormsModule,
+    // CustomFormsModule, // Incompatible with Angular 21
     MatchHeightModule,
     NgbModule,
-    UiSwitchModule,
+    // UiSwitchModule, // Incompatible with Angular 21
     PipeModule,
     QuillModule.forRoot(),
     NgSelectModule,
-    TagInputModule,
+    // TagInputModule, // Incompatible with Angular 21
     NgxDatatableModule,
     NgbAccordionModule,
     NgbDatepickerModule,
     ToastrModule.forRoot(),
     NgxSpinnerModule,
-    AgmCoreModule,
+    GoogleMapsModule,
     AutoResizeDatatableDirective,
     PermissionDirective
-]
+],
+schemas: [NO_ERRORS_SCHEMA]
 })
 export class RFQModule { }

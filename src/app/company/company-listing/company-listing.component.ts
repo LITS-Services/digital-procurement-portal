@@ -8,12 +8,13 @@ import { CompanyApprovalHistoryComponent } from '../company-approval-history/com
 import { AssignMeComponent } from '../assign-me/assign-me.component';
 import { CompanySetupHistoryComponent } from '../company-setup-history/company-setup-history.component';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { finalize } from 'rxjs/operators';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-company-listing',
   templateUrl: './company-listing.component.html',
-  styleUrls: ['./company-listing.component.scss']
+  styleUrls: ['./company-listing.component.scss'],
+  standalone: false
 })
 export class CompanyListingComponent implements OnInit {
   filters: any = {}; // e.g. { entity: '', name: '', city: '', vendorType: '' }

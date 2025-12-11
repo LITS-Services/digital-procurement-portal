@@ -3,7 +3,8 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-timeline-vertical-right-page',
   templateUrl: './timeline-vertical-right-page.component.html',
-  styleUrls: ['./timeline-vertical-right-page.component.scss']
+  styleUrls: ['./timeline-vertical-right-page.component.scss'],
+  standalone: false
 })
 export class TimelineVerticalRightPageComponent implements OnInit {
 

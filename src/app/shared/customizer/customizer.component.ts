@@ -15,7 +15,8 @@ import { CustomizerService } from '../services/customizer.service';
 @Component({
   selector: "app-customizer",
   templateUrl: "./customizer.component.html",
-  styleUrls: ["./customizer.component.scss"]
+  styleUrls: ["./customizer.component.scss"],
+  standalone: false
 })
 export class CustomizerComponent implements OnInit, OnDestroy {
   @ViewChild("customizer") customizer: ElementRef;

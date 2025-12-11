@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from "@angular/common";
 
 import { DashboardRoutingModule } from "./dashboard-routing.module";
@@ -17,11 +17,11 @@ import { TranslateModule } from '@ngx-translate/core';
     imports: [
         CommonModule,
         DashboardRoutingModule,
-        ChartistModule,
+        // ChartistModule, // Incompatible with Angular 21
         NgbModule,
         MatchHeightModule,
         NgApexchartsModule,
-        AngularResizedEventModule,
+        // AngularResizedEventModule, // Incompatible with Angular 21
         TranslateModule,
     ],
     exports: [],
@@ -30,5 +30,6 @@ import { TranslateModule } from '@ngx-translate/core';
         Dashboard2Component
     ],
     providers: [],
+    schemas: [NO_ERRORS_SCHEMA]
 })
 export class DashboardModule { }

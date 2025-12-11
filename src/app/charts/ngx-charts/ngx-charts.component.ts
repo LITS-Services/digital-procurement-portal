@@ -5,7 +5,8 @@ import * as chartsData from '../../shared/configs/ngx-charts.config';
 @Component({
     selector: 'app-ngx',
     templateUrl: './ngx-charts.component.html',
-    styleUrls: ['./ngx-charts.component.scss']
+    styleUrls: ['./ngx-charts.component.scss'],
+    standalone: false
 })
 
 export class NGXChartsComponent {

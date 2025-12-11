@@ -10,6 +10,7 @@ import { PurchaseOrderService } from 'app/shared/services/purchase-order.service
   selector: 'app-purchase-order-list',
   templateUrl: './purchase-order-list.component.html',
   styleUrls: ['./purchase-order-list.component.scss'],
+  standalone: false
 })
 export class PurchaseOrderListComponent implements OnInit {
   FORM_IDS = FORM_IDS;

@@ -3,7 +3,8 @@ import { Router, NavigationEnd } from '@angular/router';
 import { SidebarLinkDirective } from './sidebar-link.directive';
 
 @Directive({
-  selector: '[appSidebarDropdown]'
+  selector: '[appSidebarDropdown]',
+  standalone: false
 })
 export class SidebarDropdownDirective implements OnInit {
   protected navlinks: Array<SidebarLinkDirective> = [];

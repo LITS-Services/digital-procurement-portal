@@ -12,7 +12,8 @@ import Quill from 'quill';
 @Component({
   selector: 'app-editor',
   templateUrl: './editor.component.html',
-  styleUrls: ['./editor.component.scss']
+  styleUrls: ['./editor.component.scss'],
+  standalone: false
 })
 export class EditorComponent implements OnInit {
 

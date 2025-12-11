@@ -5,7 +5,8 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-company-actions',
   templateUrl: './company-actions.component.html',
-  styleUrls: ['./company-actions.component.scss']
+  styleUrls: ['./company-actions.component.scss'],
+  standalone: false
 })
 export class CompanyActionsComponent implements OnInit {
   @Input() action!: string;  // e.g. Approve, Reject, etc.

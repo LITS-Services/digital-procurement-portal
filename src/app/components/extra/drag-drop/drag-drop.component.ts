@@ -16,7 +16,8 @@ class Person {
   selector: 'app-drag-drop',
   templateUrl: './drag-drop.component.html',
   styleUrls: ['./drag-drop.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  standalone: false
 })
 export class DragDropComponent implements OnDestroy {
 

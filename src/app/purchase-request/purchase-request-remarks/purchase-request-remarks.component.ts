@@ -5,7 +5,8 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-purchase-request-remarks',
   templateUrl: './purchase-request-remarks.component.html',
-  styleUrls: ['./purchase-request-remarks.component.scss']
+  styleUrls: ['./purchase-request-remarks.component.scss'],
+  standalone: false
 })
 export class PurchaseRequestRemarksComponent implements OnInit {
 

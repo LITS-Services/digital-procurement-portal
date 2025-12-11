@@ -2,7 +2,10 @@ import { Directive, HostListener, ChangeDetectorRef, OnInit, OnDestroy, HostBind
 import { TopMenuLinkDirective } from './topmenu-link.directive';
 import { Subscription } from 'rxjs';
 
-@Directive({ selector: '[appTopMenu]' })
+@Directive({ 
+  selector: '[appTopMenu]',
+  standalone: false
+})
 export class TopMenuDirective implements OnInit {
 
   protected navlinks: Array<TopMenuLinkDirective> = [];

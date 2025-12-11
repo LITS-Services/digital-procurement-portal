@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { TenderingRoutingModule } from './tendering-routing.module';
@@ -32,20 +32,21 @@ import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-r
     ReactiveFormsModule,
     FormsModule,
     HttpClientModule,
-    CustomFormsModule,
+    // CustomFormsModule, // Incompatible with Angular 21
     MatchHeightModule,
     NgbModule,
-    UiSwitchModule,
+    // UiSwitchModule, // Incompatible with Angular 21
     PipeModule,
     QuillModule.forRoot(),
     NgSelectModule,
-    TagInputModule,
+    // TagInputModule, // Incompatible with Angular 21
     NgxDatatableModule,
     NgbAccordionModule,
     NgbDatepickerModule,
     ToastrModule.forRoot() ,
     NgxSpinnerModule,
     AutoResizeDatatableDirective
-  ]
+  ],
+  schemas: [NO_ERRORS_SCHEMA]
 })
 export class TenderingModule { }

@@ -5,7 +5,8 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-notification-sidebar',
   templateUrl: './notification-sidebar.component.html',
-  styleUrls: ['./notification-sidebar.component.scss']
+  styleUrls: ['./notification-sidebar.component.scss'],
+  standalone: false
 })
 export class NotificationSidebarComponent implements OnInit, OnDestroy {
 

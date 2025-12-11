@@ -18,7 +18,8 @@ import { filterNavByPerm } from "../permissions/nav-perm";
 @Component({
   selector: "app-sidebar",
   templateUrl: "./vertical-menu.component.html",
-  animations: customAnimations
+  animations: customAnimations,
+  standalone: false
 })
 export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 

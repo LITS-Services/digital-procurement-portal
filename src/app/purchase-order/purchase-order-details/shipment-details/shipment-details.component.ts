@@ -7,6 +7,7 @@ import { ShipmentService } from 'app/shared/services/shipment.service';
   selector: 'app-shipment-details',
   templateUrl: './shipment-details.component.html',
   styleUrls: ['./shipment-details.component.scss'],
+  standalone: false,
   animations: [
     trigger('expandCollapse', [
       state('expanded', style({ height: '*', opacity: 1 })),

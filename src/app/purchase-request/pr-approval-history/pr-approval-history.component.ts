@@ -5,7 +5,8 @@ import { PurchaseRequestService } from 'app/shared/services/purchase-request-ser
 @Component({
   selector: 'app-pr-approval-history',
   templateUrl: './pr-approval-history.component.html',
-  styleUrls: ['./pr-approval-history.component.scss']
+  styleUrls: ['./pr-approval-history.component.scss'],
+  standalone: false
 })
 export class PrApprovalHistoryComponent implements OnInit {
 

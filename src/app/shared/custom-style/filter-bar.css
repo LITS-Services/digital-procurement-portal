@@ -76,12 +76,3 @@
   /* //flex-wrap: nowrap !important; */
 
 }
-
-
-@media (max-width: 576px) {
-
-  .filter-search{
-    max-width: auto !important;
-    min-width: auto !important;
-  }
-}

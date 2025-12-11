@@ -7,7 +7,8 @@ import { EmailTemplateService } from 'app/shared/services/EmailTemplateService';
 @Component({
   selector: 'app-create-invitation',
   templateUrl: './create-invitation.component.html',
-  styleUrls: ['./create-invitation.component.scss']
+  styleUrls: ['./create-invitation.component.scss'],
+  standalone: false
 })
 export class CreateInvitationComponent implements OnInit {
   invitationForm!: FormGroup;

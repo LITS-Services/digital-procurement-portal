@@ -10,7 +10,8 @@ import { Subscription } from 'rxjs';
   templateUrl: './chat.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./chat.component.scss'],
-  providers: [ChatService]
+  providers: [ChatService],
+  standalone: false
 })
 export class ChatComponent implements OnInit, OnDestroy {
 

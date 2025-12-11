@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from "@angular/common";
 import { FormsModule } from '@angular/forms';
 import { StoreModule } from '@ngrx/store';
@@ -19,12 +19,13 @@ import { chatReducer } from '../chat-ngrx/store/chat.reducers';
         FormsModule,
         ChatNGRXRoutingModule,
         NgbModule,
-        PerfectScrollbarModule,
+        // PerfectScrollbarModule, // Incompatible with Angular 21
         PipeModule,
         StoreModule.forFeature('chat', chatReducer),
     ],
     declarations: [
         ChatComponent
-    ]
+    ],
+    schemas: [NO_ERRORS_SCHEMA]
 })
 export class ChatNGRXModule { }

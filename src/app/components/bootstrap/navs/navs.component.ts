@@ -5,6 +5,7 @@ import {NgbNavChangeEvent} from '@ng-bootstrap/ng-bootstrap';
   selector: 'app-navs',
   templateUrl: './navs.component.html',
   styleUrls: ['./navs.component.scss'],
+  standalone: false
 })
 export class NavsComponent {
   vActive = 'top'; // Vertical Pills

@@ -37,7 +37,8 @@ export class TimeFormatter implements NouiFormatter {
 @Component({
     selector: 'app-nouislider',
     templateUrl: './nouislider.component.html',
-    styleUrls: ['./nouislider.component.scss']
+    styleUrls: ['./nouislider.component.scss'],
+    standalone: false
 })
 
 export class NouiSliderComponent implements OnInit {

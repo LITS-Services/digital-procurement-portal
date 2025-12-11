@@ -19,22 +19,25 @@
         <div class="form-body">
           <div class="form-group">
             <label>Event Title:</label>
-            <input type="text" name="event-title" class="form-control" [(ngModel)]="modalData?.event.title"
-              (keyup)="refresh.next()">
+            <input type="text" name="event-title" class="form-control" 
+              [ngModel]="modalData?.event?.title"
+              (ngModelChange)="modalData && modalData.event && (modalData.event.title = $event); refresh.next()">
           </div>
           <div class="row">
             <div class="col-lg-6 col-12">
               <div class="form-group">
                 <label>Primary Color:</label>
-                <input type="color" name="primary-color" [(ngModel)]="modalData?.event.color.primary"
-                  (change)="refresh.next()">
+                <input type="color" name="primary-color" 
+                  [ngModel]="modalData?.event?.color?.primary"
+                  (ngModelChange)="modalData && modalData.event && modalData.event.color && (modalData.event.color.primary = $event); refresh.next()">
               </div>
             </div>
             <div class="col-lg-6 col-12">
               <div class="form-group">
                 <label>Secondary Color:</label>
-                <input type="color" name="secondary-color" [(ngModel)]="modalData?.event.color.secondary"
-                  (change)="refresh.next()">
+                <input type="color" name="secondary-color" 
+                  [ngModel]="modalData?.event?.color?.secondary"
+                  (ngModelChange)="modalData && modalData.event && modalData.event.color && (modalData.event.color.secondary = $event); refresh.next()">
               </div>
             </div>
           </div>
@@ -42,16 +45,18 @@
             <div class="col-lg-6 col-12">
               <div class="form-group">
                 <label>Starts At:</label>
-                <mwl-demo-utils-date-time-picker name="starts-at" [(ngModel)]="modalData?.event.start"
-                  (ngModelChange)="refresh.next()" placeholder="Not set">
+                <mwl-demo-utils-date-time-picker name="starts-at" 
+                  [ngModel]="modalData?.event?.start"
+                  (ngModelChange)="modalData && modalData.event && (modalData.event.start = $event); refresh.next()" placeholder="Not set">
                 </mwl-demo-utils-date-time-picker>
               </div>
             </div>
             <div class="col-lg-6 col-12">
               <div class="form-group">
                 <label>Ends At:</label>
-                <mwl-demo-utils-date-time-picker name="ends-at" [(ngModel)]="modalData?.event.end"
-                  (ngModelChange)="refresh.next()" placeholder="Not set">
+                <mwl-demo-utils-date-time-picker name="ends-at" 
+                  [ngModel]="modalData?.event?.end"
+                  (ngModelChange)="modalData && modalData.event && (modalData.event.end = $event); refresh.next()" placeholder="Not set">
                 </mwl-demo-utils-date-time-picker>
               </div>
             </div>

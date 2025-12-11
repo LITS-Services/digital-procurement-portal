@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from "@angular/common";
 
-import { AgmCoreModule } from '@agm/core';
+import { GoogleMapsModule } from '@angular/google-maps';
 import { MapsRoutingModule } from "./maps-routing.module";
 
 import { FullScreenMapComponent } from "./full-screen-map/full-screen-map.component";
@@ -11,7 +11,7 @@ import { GoogleMapComponent } from "./google-map/google-map.component";
     imports: [
         CommonModule,
         MapsRoutingModule,
-        AgmCoreModule
+        GoogleMapsModule
     ],
     declarations: [
         FullScreenMapComponent,

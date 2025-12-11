@@ -10,9 +10,17 @@
             <div class="card">
                 <div class="card-content">
                     <div class="card-body mt-2">
-                        <agm-map [latitude]="lat" [longitude]="lng">
-                            <agm-marker [latitude]="lat" [longitude]="lng"></agm-marker>
-                        </agm-map>
+                        <google-map
+                            [center]="center"
+                            [zoom]="zoom"
+                            height="400px"
+                            width="100%">
+                            <map-marker
+                                [position]="markerPosition"
+                                [label]="markerLabel"
+                                [title]="markerTitle">
+                            </map-marker>
+                        </google-map>
                     </div>
                 </div>
             </div>

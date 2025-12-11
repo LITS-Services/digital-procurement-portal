@@ -6,7 +6,8 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
   styleUrls: ['./users-edit.component.scss',
     '../../../../../assets/sass/pages/page-users.scss',
     '../../../../../assets/sass/libs/select.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  standalone: false
 })
 export class UsersEditComponent implements OnInit {
 

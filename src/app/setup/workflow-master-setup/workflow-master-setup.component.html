@@ -27,7 +27,7 @@
                 [appPermDisable]="'write'">
               <i class="ft-edit"></i><label class="ml-1 mt-1">Edit</label>
             </button>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()" appPermission
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal(deleteModal)" appPermission
               [appPermFormId]="FORM_IDS.WORKFLOW_SETUP" [appPermDisable]="'delete'">
               <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
             </button>

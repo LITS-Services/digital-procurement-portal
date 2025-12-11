@@ -3,23 +3,30 @@
   "compilerOptions": {
     "importHelpers": true,
     "skipLibCheck": true,
-    "module": "es2020",
+    "module": "ES2022",
     "outDir": "./dist/out-tsc",
     "baseUrl": "src",
     "sourceMap": true,
     "declaration": false,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "experimentalDecorators": true,
-    "target": "es2020",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
+    "target": "ES2022",
     "lib": [
-      "es2016",
+      "ES2022",
       "dom"
-    ]
+    ],
+    "useDefineForClassFields": false,
+    "strict": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true
   },
   "angularCompilerOptions": {
-    "preserveWhitespaces": false
+    "preserveWhitespaces": false,
+    "strictInjectionParameters": false,
+    "strictInputAccessModifiers": false,
+    "strictTemplates": false
   }
 }

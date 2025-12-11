@@ -13,6 +13,7 @@ import { DragulaService } from 'ng2-dragula';
   providers: [TaskBoardService],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false
 })
 export class TaskboardComponent {
 

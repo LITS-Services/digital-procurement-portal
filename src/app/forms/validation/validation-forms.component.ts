@@ -10,7 +10,8 @@ export class User {
 @Component({
   selector: 'app-validation-forms',
   templateUrl: './validation-forms.component.html',
-  styleUrls: ['./validation-forms.component.scss']
+  styleUrls: ['./validation-forms.component.scss'],
+  standalone: false
 })
 
 export class ValidationFormsComponent implements OnInit {

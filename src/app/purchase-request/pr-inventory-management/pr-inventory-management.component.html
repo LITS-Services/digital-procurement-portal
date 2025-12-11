@@ -218,8 +218,8 @@
   <button class="btn btn-secondary" (click)="closeDialog()">
     Close
   </button>
-  <button class="btn btn-primary" (click)="onSubmit()" appPermission [appPermFormId]="FORM_IDS.INVENTORY_TRANSFER"
-    [appPermDisable]="'write'" [disabled]="itemForms.length === 0">
+  <button class="btn btn-primary" (click)="onSubmit()"
+  [disabled]="itemForms.length === 0">
     Submit Requisition
   </button>
 </div>

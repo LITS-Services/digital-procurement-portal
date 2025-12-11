@@ -13,7 +13,8 @@ import { DOCUMENT } from '@angular/common';
   selector: 'app-ngrx-chat',
   templateUrl: './chat-ngrx.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrls: ['./chat-ngrx.component.scss']
+  styleUrls: ['./chat-ngrx.component.scss'],
+  standalone: false
 })
 export class ChatComponent implements OnInit, OnDestroy {
 
