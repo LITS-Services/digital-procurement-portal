@@ -80,6 +80,7 @@ form label, .form-group label {
 
    ::ng-deep ngb-accordion .card-body {
       padding: 0px 0px 1.5rem 0px !important;
+      padding: 0px 0px 1.5rem 0px !important;
     }
 
 ::ng-deep .ngx-datatable{
@@ -133,7 +134,13 @@ form label, .form-group label {
   box-shadow: none !important;
 }
 
+.card{
+  box-shadow: none !important;
+}
+
 .card-accordion{
+    background-color: #f2f7ff;
+    padding: 0rem;
     background-color: #f2f7ff;
     padding: 0rem;
     border-radius: 0.5rem;
@@ -177,9 +184,62 @@ form label, .form-group label {
 .ngx-datatable ::ng-deep .datatable-header-cell {
   padding: 0.75rem 1.25rem;
   border-bottom: 1px solid #e5e7eb;
+.items-card{
+  padding: 12px 24px !important;
 }
 
+::ng-deep .accordion .card {
+    border-top: 1px solid #e7e7e7 !important;
+    //border-bottom: 1px solid #cbcbcb !important;
+    border-radius: 0px !important;
+}
+
+::ng-deep .accordion .card .card-header button {
+  background: none !important;
+}
+::ng-deep .accordion .card .card-header button i {
+  color: black !important;
+}
+/* TABLE WRAPPER (card look) */
+.ngx-datatable.bootstrap.core-bootstrap {
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow:none !important;
+  overflow: hidden;
+}
+
+/* HEADER */
+.ngx-datatable ::ng-deep .datatable-header {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.ngx-datatable ::ng-deep .datatable-header-inner {
+  background-color: #FAFAFA !important;   /* light grey/white */
+  border-radius: 0;                        /* no rounded header band */
+}
+
+.ngx-datatable ::ng-deep .datatable-header-cell {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+
 .ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
+.ngx-datatable ::ng-deep .datatable-header-inner .sort-btn {
+  color: #667085 !important;              /* muted header text */
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* BODY ROWS */
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-row {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.ngx-datatable ::ng-deep .datatable-body i {
+  font-size: 18px !important;
 .ngx-datatable ::ng-deep .datatable-header-inner .sort-btn {
   color: #667085 !important;              /* muted header text */
   font-size: 12px;
@@ -198,10 +258,18 @@ form label, .form-group label {
 }
 
 /* light blue band on even rows (like screenshot) */
+/* light blue band on even rows (like screenshot) */
 .ngx-datatable ::ng-deep .datatable-body .datatable-body-row.datatable-row-even {
   background-color: #f7fbff !important;              /* soft blue */
 }
 
+/* hover row */
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-row:hover .datatable-body-cell {
+  background-color: #eef4ff;
+}
+
+/* CELLS */
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-cell {
 /* hover row */
 .ngx-datatable ::ng-deep .datatable-body .datatable-body-row:hover .datatable-body-cell {
   background-color: #eef4ff;
@@ -226,11 +294,26 @@ form label, .form-group label {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+// i{
+//   font-size: 18px !important;
+// }
+
+.cell-ellipsis {
+  display: block;      
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .modal-centered .modal-dialog {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh; /* Vertically center the modal */
+}
+
+.address-card .card-accordion{
+  background-color: white !important;
 }
 
 .address-card .card-accordion{
@@ -255,6 +338,7 @@ form label, .form-group label {
     margin-left: -3px;
   }
 
+  ::ng-deep .accordion .card .card-header button label{
   ::ng-deep .accordion .card .card-header button label{
     font-size: 16px !important; 
     font-weight: 500 !important;

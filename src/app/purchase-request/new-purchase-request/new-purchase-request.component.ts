@@ -1,7 +1,11 @@
 import { ChangeDetectorRef, Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+<<<<<<< HEAD
 import { NgbAccordionDirective, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+=======
+import { NgbAccordion, NgbModal, NgbPanelChangeEvent } from '@ng-bootstrap/ng-bootstrap';
+>>>>>>> 8fe0201 (feat: redesign purchase form layout and change font size)
 import { ColumnMode, DatatableComponent, id, SelectionType } from '@swimlane/ngx-datatable';
 import { DatatableData } from 'app/data-tables/data/datatables.data';
 import { PurchaseRequestAttachmentModalComponent } from 'app/shared/modals/purchase-request-attachment-modal/purchase-request-attachment-modal.component';
@@ -96,8 +100,12 @@ export class NewPurchaseRequestComponent implements OnInit {
  isReceivingOpen = true;
   isPurchaseOpen = true;
 
+<<<<<<< HEAD
   
 
+=======
+  @ViewChild('accordion') accordion: NgbAccordion;
+>>>>>>> 8fe0201 (feat: redesign purchase form layout and change font size)
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
   @ViewChild('tableResponsive') tableResponsive: any;
@@ -258,6 +266,16 @@ export class NewPurchaseRequestComponent implements OnInit {
 onWindowScroll(): void {
   const threshold = 200; // adjust as you like
   this.isToolbarSticky = window.scrollY > threshold;
+}
+
+onPanelChange(event: NgbPanelChangeEvent) {
+  if (event.panelId === 'receiving-panel') {
+    this.isReceivingOpen = event.nextState;
+  }
+
+  if (event.panelId === 'purchase-panel') {
+    this.isPurchaseOpen = event.nextState;
+  }
 }
 
   private checkEntitySelection(): void {

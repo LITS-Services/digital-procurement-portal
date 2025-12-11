@@ -94,13 +94,17 @@
 
           <form [formGroup]="newPurchaseRequestForm" (ngSubmit)="submitForm()">
             <div class="form-grid mb-2">
+          <form [formGroup]="newPurchaseRequestForm" (ngSubmit)="submitForm()">
+            <div class="form-grid mb-2">
 
               <!-- Basic Fields -->
+              <div class="form-grid__item mb-2">
               <div class="form-grid__item mb-2">
                 <label>Requisition No.</label>
                 <input type="text" class="form-control custom-input" formControlName="requisitionNo" disabled>
               </div>
 
+              <div class="form-grid__item">
               <div class="form-grid__item">
                 <div class="form-group mb-2">
                   <label class="d-flex align-items-center mr-2 w-100" [ngbTooltip]="entityHint">
@@ -113,7 +117,7 @@
                       </span>
                     </small>
                   </label>
-                  <select class="form-control custom-input filter-label" formControlName="entityId"
+                  <select class="form-control custom-input filter-label filter-label" formControlName="entityId"
                     [disabled]="isEntityLocked || viewMode" (change)="loadAddressOnEntityChanges()">
                     <option [ngValue]="null">-- Select Entity --</option>
                     <option *ngFor="let e of entities" [ngValue]="e.id">
@@ -124,14 +128,17 @@
               </div>
 
               <div class="form-grid__item mb-2">
+              <div class="form-grid__item mb-2">
                 <label>Submitted Date</label>
                 <input type="date" class="form-control custom-input" formControlName="submittedDate">
               </div>
+              <div class="form-grid__item mb-2">
               <div class="form-grid__item mb-2">
                 <label>Delivery Location</label>
                 <input type="text" class="form-control custom-input" formControlName="deliveryLocation"
                   placeholder="Enter Delivery Location">
               </div>
+              <div class="form-grid__item mb-2">
               <div class="form-grid__item mb-2">
                 <label>Receiver Name</label>
                 <input type="text" class="form-control custom-input" formControlName="receiverName"
@@ -139,11 +146,13 @@
 
               </div>
               <div class="form-grid__item mb-2">
+              <div class="form-grid__item mb-2">
                 <label>Receiver Contact</label>
                 <input type="text" class="form-control custom-input" formControlName="receiverContact"
                   placeholder="Enter Receiver Contact">
               </div>
 
+              <div class="form-grid__item mb-2">
               <div class="form-grid__item mb-2">
                 <div class="form-group mb-2">
                   <label>Status</label>
@@ -153,19 +162,23 @@
 
               <!-- Department, Designation, Business Unit -->
               <div class="form-grid__item mb-2">
+              <div class="form-grid__item mb-2">
                 <label>Department</label>
                 <input type="text" class="form-control custom-input" formControlName="department"
                   placeholder="Enter Department">
               </div>
+              <!-- <div class="form-grid__item mb-2">
               <!-- <div class="form-grid__item mb-2">
                 <label>Designation</label>
                 <input type="text" class="form-control custom-input" formControlName="designation"
                   placeholder="Enter Designation">
               </div>
               <div class="form-grid__item mb-2">
+              <div class="form-grid__item mb-2">
                 <label>Business Unit</label>
                 <input type="text" class="form-control custom-input" formControlName="businessUnit"
                   placeholder="Enter Business Unit">
+              </div> -->
               </div> -->
 
               <!-- <div class="col-lg-4 mb-2">
@@ -477,7 +490,9 @@
 
 
           <div class="col-12 p-0">
+          <div class="col-12 p-0">
             <div style="position: relative;">
+              <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="newPurchaseItemData" [columnMode]="'force'"
               <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="newPurchaseItemData" [columnMode]="'force'"
                 [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true" (activate)="selectRow($event.row)">
 
@@ -494,8 +509,19 @@
                 </span>
                   </ng-template>
                    
+                  <ng-template let-row="row" ngx-datatable-cell-template>
+                 <span class="cell-ellipsis" container="body">
+                  {{ row.itemType }}
+                </span>
+                  </ng-template>
+                   
                 </ngx-datatable-column>
 
+                <ngx-datatable-column name="Item" [width]="180">
+                       <ng-template let-row="row" ngx-datatable-cell-template>
+                 <span class="cell-ellipsis" [ngbTooltip]="getItemNameById(row.itemId)" container="body">
+                   {{ getItemNameById(row.itemId) }}
+                </span>
                 <ngx-datatable-column name="Item" [width]="180">
                        <ng-template let-row="row" ngx-datatable-cell-template>
                  <span class="cell-ellipsis" [ngbTooltip]="getItemNameById(row.itemId)" container="body">
@@ -510,8 +536,19 @@
                   {{ row.itemDescription }}
                 </span>
                   </ng-template>
+                     <ng-template let-row="row" ngx-datatable-cell-template>
+                 <span class="cell-ellipsis" [ngbTooltip]="row.itemDescription" container="body">
+                  {{ row.itemDescription }}
+                </span>
+                  </ng-template>
                 </ngx-datatable-column>
 
+                <ngx-datatable-column name="Amount" prop="amount" [width]="100">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  <span class="cell-ellipsis" container="body">
+                    {{ row.amount | number }}
+                  </span>
+                </ng-template>
                 <ngx-datatable-column name="Amount" prop="amount" [width]="100">
                 <ng-template let-row="row" ngx-datatable-cell-template>
                   <span class="cell-ellipsis" container="body">
@@ -532,8 +569,14 @@
                   {{ row.remarks }}
                 </span>
                   </ng-template>
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                 <span class="cell-ellipsis" container="body">
+                  {{ row.remarks }}
+                </span>
+                  </ng-template>
                 </ngx-datatable-column>
 
+                <ngx-datatable-column name="Attachments" [width]="120" [sortable]="false">
                 <ngx-datatable-column name="Attachments" [width]="120" [sortable]="false">
                   <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
                     <!-- Edit button -->
@@ -547,6 +590,7 @@
                   </ng-template>
                 </ngx-datatable-column>
 
+                <ngx-datatable-column *ngIf="!viewMode && !isStatusCompleted" name="Actions" [width]="100">
                 <ngx-datatable-column *ngIf="!viewMode && !isStatusCompleted" name="Actions" [width]="100">
                   <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
                     <!-- Edit button -->
