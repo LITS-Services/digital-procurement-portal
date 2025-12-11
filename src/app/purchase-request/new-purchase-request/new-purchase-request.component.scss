@@ -1,5 +1,4 @@
 form label, .form-group label {
-    font-size: 0.85rem;
     margin-bottom: 8px;
     color: #262626 !important;
     font-weight: 400;
@@ -80,7 +79,7 @@ form label, .form-group label {
 
 
    ::ng-deep ngb-accordion .card-body {
-      padding: 1.5rem 0px !important;
+      padding: 0px 0px 1.5rem 0px !important;
     }
 
 ::ng-deep .ngx-datatable{
@@ -130,44 +129,112 @@ form label, .form-group label {
   pointer-events: none; /* Prevents click interactions */
 }
 
+.card{
+  box-shadow: none !important;
+}
+
 .card-accordion{
-    background-color: #E7F0FD;
-    padding: 1rem;
+    background-color: #f2f7ff;
+    padding: 0rem;
     border-radius: 0.5rem;
     
 }
 
-.ngx-datatable ::ng-deep .datatable-header-inner{
-  background-color: #4188F2 !important;
-  border-radius: 10px;
+.items-card{
+  padding: 12px 24px !important;
 }
+
+::ng-deep .accordion .card {
+    border-top: 1px solid #e7e7e7 !important;
+    //border-bottom: 1px solid #cbcbcb !important;
+    border-radius: 0px !important;
+}
+
+::ng-deep .accordion .card .card-header button {
+  background: none !important;
+}
+::ng-deep .accordion .card .card-header button i {
+  color: black !important;
+}
+/* TABLE WRAPPER (card look) */
+.ngx-datatable.bootstrap.core-bootstrap {
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow:none !important;
+  overflow: hidden;
+}
+
+/* HEADER */
+.ngx-datatable ::ng-deep .datatable-header {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.ngx-datatable ::ng-deep .datatable-header-inner {
+  background-color: #FAFAFA !important;   /* light grey/white */
+  border-radius: 0;                        /* no rounded header band */
+}
+
+.ngx-datatable ::ng-deep .datatable-header-cell {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
 .ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
-.ngx-datatable ::ng-deep .datatable-header-inner .sort-btn{
-  color: white !important;
+.ngx-datatable ::ng-deep .datatable-header-inner .sort-btn {
+  color: #667085 !important;              /* muted header text */
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
+/* BODY ROWS */
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-row {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.ngx-datatable ::ng-deep .datatable-body i {
+  font-size: 18px !important;
+}
+
+/* light blue band on even rows (like screenshot) */
 .ngx-datatable ::ng-deep .datatable-body .datatable-body-row.datatable-row-even {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: #f7fbff !important;              /* soft blue */
 }
 
-// .ngx-datatable.bootstrap .datatable-body .datatable-body-row {
-//   padding: 0.75rem;
-//   vertical-align: middle;
-//   border-top: 1px solid #1E89B8;
+/* hover row */
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-row:hover .datatable-body-cell {
+  background-color: #eef4ff;
+}
+
+/* CELLS */
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-cell {
+  text-align: left;
+  padding: 0.65rem 1.25rem;
+  vertical-align: middle;
+  color: #334155;
+}
+
+// i{
+//   font-size: 18px !important;
 // }
 
-.ngx-datatable ::ng-deep .datatable-body .datatable-body-row .datatable-body-cell {
-  text-align: left;
-  padding: 0.75rem;
-  vertical-align:baseline;
-  
+.cell-ellipsis {
+  display: block;      
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-
 .modal-centered .modal-dialog {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh; /* Vertically center the modal */
+}
+
+.address-card .card-accordion{
+  background-color: white !important;
 }
 
 .modal-centered .modal-dialog-centered {
@@ -188,11 +255,92 @@ form label, .form-group label {
     margin-left: -3px;
   }
 
-  .address-label {
+  ::ng-deep .accordion .card .card-header button label{
     font-size: 16px !important; 
-    font-weight: 700 !important;
-    color: white !important;
+    font-weight: 500 !important;
+   color: #116AEF !important;
     margin-bottom: 0.2rem !important;
     align-items: center;
     display: inline-block;
   }
+
+  /* Generic responsive form grid */
+.form-grid {
+  display: grid;
+  gap: 0.75rem 1.25rem;
+  --form-grid-cols: 1;
+  grid-template-columns: repeat(var(--form-grid-cols), minmax(0, 1fr));
+}
+
+/* Full-width item (e.g. Subject, long text areas) */
+.form-grid__item--full {
+  grid-column: 1 / -1;
+}
+
+.form-grid__item--span {
+  grid-column: span calc(var(--form-grid-cols) - 1);
+}
+
+.form-grid__item--address {
+  grid-column: span calc(var(--form-grid-cols) - 3);
+}
+
+/* Breakpoints tuned for your case:
+   >1600px   → 5 cols (desktop 1920 @100%)
+   1300–1600 → 4 cols (1920 @125%)
+   992–1300  → 3 cols (1920 @150% or smaller laptop)
+   576–992   → 2 cols (tablets)
+   <576      → 1 col (mobile) */
+
+@media (min-width: 1600px) {
+  .form-grid { --form-grid-cols: 5; }
+}
+
+@media (min-width: 1300px) and (max-width: 1599.98px) {
+  .form-grid { --form-grid-cols: 4; }
+  .form-grid__item--address {
+  grid-column: span calc(var(--form-grid-cols) - 3) !important;
+}
+}
+
+@media (min-width: 992px) and (max-width: 1299.98px) {
+  .form-grid { --form-grid-cols: 3; }
+
+    .form-grid__item--address {
+   grid-column: 1 / -1;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+  .form-grid { --form-grid-cols: 2; }
+}
+
+@media (max-width: 575.98px) {
+  .form-grid { --form-grid-cols: 1; }
+}
+
+
+.bulk-upload-btn {
+  border-radius: 9px;
+  border: 1px solid #116AEF;
+  color: #116AEF;
+  background-color: #ffffff;
+  font-weight: 400;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.bulk-upload-btn i {
+  font-size: 14px;
+}
+
+.bulk-upload-btn:hover {
+  background-color: #e8f0fe;
+}
+
+.bulk-upload-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

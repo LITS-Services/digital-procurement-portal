@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbAccordion, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAccordion, NgbModal, NgbPanelChangeEvent } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, DatatableComponent, id, SelectionType } from '@swimlane/ngx-datatable';
 import { DatatableData } from 'app/data-tables/data/datatables.data';
 import { PurchaseRequestAttachmentModalComponent } from 'app/shared/modals/purchase-request-attachment-modal/purchase-request-attachment-modal.component';
@@ -91,6 +91,9 @@ export class NewPurchaseRequestComponent implements OnInit {
   selectedRow: any;
   isInventoryTransferMode:boolean = false;
   compareIds = (a: string | null, b: string | null) => (a ?? '').toLowerCase() === (b ?? '').toLowerCase();
+
+ isReceivingOpen = true;
+  isPurchaseOpen = true;
 
   @ViewChild('accordion') accordion: NgbAccordion;
   @ViewChild(DatatableComponent) table: DatatableComponent;
@@ -253,6 +256,16 @@ export class NewPurchaseRequestComponent implements OnInit {
 onWindowScroll(): void {
   const threshold = 200; // adjust as you like
   this.isToolbarSticky = window.scrollY > threshold;
+}
+
+onPanelChange(event: NgbPanelChangeEvent) {
+  if (event.panelId === 'receiving-panel') {
+    this.isReceivingOpen = event.nextState;
+  }
+
+  if (event.panelId === 'purchase-panel') {
+    this.isPurchaseOpen = event.nextState;
+  }
 }
 
   private checkEntitySelection(): void {
@@ -1128,12 +1141,50 @@ loadExistingRequest(
     // this.itemForm.patchValue({ vendorCompanyId: null });
   }
 
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (!file) return;
+  clearItemForm(): void {
+  this.itemForm.reset({
+    id: null,
+    requisitionNo: '',
+    itemType: '',
+    itemId: 0,
+    unitOfMeasurementId: 0,
+    amount: 0,
+    unitCost: 0,
+    orderQuantity: 0,
+    reqByDate: null,
+    itemDescription: '',
+    vendorUserId: null,
+    vendorCompanyId: null,
+    accountId: 0,
+    remarks: '',
+    attachments: []
+  });
 
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
+  this.editingRowIndex = null;
+
+  this.filteredCompanies = [];
+
+  this.itemForm.markAsPristine();
+  this.itemForm.markAsUntouched();
+}
+  triggerFileUpload(input: HTMLInputElement): void {
+  input.click();
+}
+
+ onFileSelected(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  const file = input.files && input.files[0];
+  if (!file) {
+    return;
+  }
+
+  this.spinner.show();
+  const start = Date.now();
+
+  const reader = new FileReader();
+
+  reader.onload = (e: any) => {
+    try {
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, { type: 'array' });
       const firstSheetName = workbook.SheetNames[0];
@@ -1141,106 +1192,33 @@ loadExistingRequest(
       const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
 
       console.log('Parsed Excel JSON:', jsonData);
-      this.uploadedItems = jsonData;
-      // this.toastr.success(`${jsonData.length} items loaded from Excel.`);
-      console.log('Parsed Excel JSON:', jsonData);
+      this.uploadedItems = jsonData as any[];
 
-    };
-    reader.readAsArrayBuffer(file);
-  }
+      // 🔥 Directly run the same bulk logic
+      this.bulkInsert();
+    } catch (err) {
+      console.error('Error parsing Excel:', err);
+      this.toastr.error('Invalid or corrupted file. Please check and try again.');
+      this.spinner.hide();
+        this.cdr.markForCheck();
+    } finally {
+      this.spinner.hide();
+        this.cdr.markForCheck();
+      // allow re-selecting the same file again
+      input.value = '';
+    }
+  };
 
-  // bulkInsert(): void {
-  //   // if (!this.uploadedItems.length) {
-  //   //   this.toastr.warning('No items to insert.');
-  //   //   return;
-  //   // }
+  reader.onerror = () => {
+    console.error('FileReader error:', reader.error);
+    this.toastr.error('Failed to read file. Please try again.');
+    this.spinner.hide();
+    input.value = '';
+  };
 
-  //   //  Case 1: No uploaded items at all
-  //   if (!this.uploadedItems.length) {
-  //     if (this.newPurchaseItemData.length > 0) {
-  //       this.toastr.info('Items already inserted.');
-  //     } else {
-  //       this.toastr.warning('No items to insert.');
-  //     }
-  //     return;
-  //   }
+  reader.readAsArrayBuffer(file);
+}
 
-  //   //  Allow flexible header for date
-  //   const requiredColumns = [
-  //     'Item Type',
-  //     'Item',
-  //     'U of M',
-  //     'Unit Cost',
-  //     'Order Quantity',
-  //     'Amount',
-  //     'Item Description',
-  //     'Final Vendor',
-  //     'Vendor Company',
-  //     'Account',
-  //     'Remarks'
-  //   ];
-
-  //   //  Include both possible date header variants
-  //   const hasReqByDate = this.uploadedItems.some(
-  //     (item) => 'Req By Date' in item || 'Req. by Date' in item
-  //   );
-
-  //   if (!hasReqByDate) {
-  //     this.toastr.error('Invalid file! Missing column: Req. by Date (or Req By Date)');
-  //     return;
-  //   }
-
-  //   //  Now check for other required columns
-  //   const missingColumns: string[] = [];
-  //   for (const col of requiredColumns) {
-  //     const firstRow = this.uploadedItems[0];
-  //     if (!(col in firstRow)) {
-  //       missingColumns.push(col);
-  //     }
-  //   }
-
-  //   if (missingColumns.length > 0) {
-  //     this.toastr.error(`Invalid file! Missing columns: ${missingColumns.join(', ')}`);
-  //     return;
-  //   }
-
-  //   //  Proceed if columns are valid
-  //   const mappedData = this.uploadedItems.map((item) => {
-  //     const rawDate = item['Req By Date'] || item['Req. by Date'];
-  //     let parsedDate: Date | null = null;
-
-  //     if (rawDate) {
-  //       if (!isNaN(rawDate)) {
-  //         // Excel numeric date (e.g. 45973)
-  //         parsedDate = this.excelSerialToDate(Number(rawDate));
-  //       } else {
-  //         // Normal string date (e.g. 2025-11-03 or 03/11/2025)
-  //         parsedDate = new Date(rawDate);
-  //       }
-  //     }
-
-  //     return {
-  //       itemType: item['Item Type'] || 'Inventory',
-  //       itemId: this.getItemIdByName(item['Item']) || null,
-  //       unitOfMeasurementId: this.getUOMIdByName(item['U of M']) || null,
-  //       unitCost: Number(item['Unit Cost']) || 0,
-  //       orderQuantity: Number(item['Order Quantity']) || 1,
-  //       amount: Number(item['Unit Cost']) * Number(item['Order Quantity']),
-  //       reqByDate: parsedDate,
-  //       itemDescription: item['Item Description'] || '',
-  //       vendorUserId: this.getVendorIdByName(item['Final Vendor']) || null,
-  //       vendorCompanyId: this.getVendorCompanyIdByName(item['Vendor Company']) || null,
-  //       accountId: this.getAccountIdByName(item['Account']) || null,
-  //       remarks: item['Remarks'] || '',
-  //       attachments: []
-  //     };
-  //   });
-
-  //   // this.newPurchaseItemData = [...this.newPurchaseItemData, ...mappedData];
-  //   this.newPurchaseItemData = [...mappedData];
-  //   this.uploadedItems = [];
-  //   this.toastr.success('Bulk items inserted successfully!');
-  // }
 
   bulkInsert(): void {
     if (!this.uploadedItems.length) {
@@ -1317,6 +1295,13 @@ loadExistingRequest(
 
     this.uploadedItems = [];
     this.toastr.success('Bulk items appended successfully!');
+
+    setTimeout(() => {
+  window.scrollTo({ 
+    top: document.body.scrollHeight, 
+    behavior: 'smooth' 
+  });
+}, 50);
   }
 
   getItemIdByName(name: string): number | null {

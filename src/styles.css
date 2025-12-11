@@ -8,20 +8,20 @@
   }
 
 .btn-primary{
-  background: linear-gradient(168deg, #116AEF 0%, #114C7A 100%);
-  color: #ffffff;
-  border: #1E89B8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    background: #116AEF !important;
+    color: #ffffff;
+    display: flex;
+    border-radius: 9px;
+    align-items: center;
+    justify-content: center;
 }
 .btn-primary:hover {
   background-color: #0170a0;
-  border-color: #0170a0;
+
 }
 .btn-primary:active {
   background-color: #1E89B8;
-  border-color: #1E89B8;
+
 }
 .btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active, .show > .btn-primary.dropdown-toggle {
   color: #fff;
@@ -33,6 +33,13 @@
   background-color: #0170a0;
   border-color: #0170a0;
   box-shadow: 0 0 0 0.2rem rgba(115, 204, 255, 0.5);
+}
+.btn:hover {
+  box-shadow: none !important;
+}
+
+.btn label {
+  cursor: pointer !important;
 }
  .vl {
       border-left: 1.4px solid #cccccc;
@@ -118,7 +125,7 @@ select.form-control {
 }
 form label, .form-group label {
     text-transform: none !important;
-    font-size: 0.85rem;
+    font-size: 14px !important;
     margin-bottom: 8px;
     color: #262626 !important;
     font-weight: 400;
@@ -188,25 +195,46 @@ form label, .form-group label {
       .ngx-datatable .datatable-scroll .datatable-body-row .datatable-body-cell{
     padding: 0.85rem;
    display: block;  
+   font-size: 14px !important;
   }
 
   .ngx-datatable.bootstrap .datatable-footer {
     height: auto !important;
     color: #747474 !important;
     background-color: transparent !important;
+    
   }
 
   .ngx-datatable.bootstrap .datatable-footer .datatable-pager a {
         color: #747474 !important;
         border: 1px solid #D7D7D7 !important;
+        height: 24px !important;
+        border-radius: 6px !important;
+        height: 30px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
   }
+
+    .ngx-datatable.bootstrap .datatable-footer .datatable-pager a i {
+    display: flex;
+      color: #0256A0 !important;
+      align-items: center;
+    }
+
+    .ngx-datatable .datatable-footer .datatable-pager .pager {
+      display: flex !important;
+      justify-content: end !important;
+      align-items: center !important;
+    }
 
 
 
   .ngx-datatable.bootstrap .datatable-footer .datatable-pager ul li:not(.disabled).active a {
-    background-color: #e7f0fd !important;
-    font-weight: bold;
-    color: #000000 !important;
+    background-color: #F0F8FF !important;
+    font-weight: 400 !important;
+    border: none !important;
+    color: #0256A0 !important;
   }
 
   .ngx-datatable.bootstrap .datatable-footer .datatable-pager ul li:not(.disabled):hover a {
@@ -246,7 +274,7 @@ datatable-scroller {
   width: 100%;
   padding: 12px 16px;
   border: 1.5px solid #D7D7D7;
-  border-radius: 10px;
+  border-radius: 8px;
   color: #2B2F33;
   font-size: 15px;
   transition: all 0.25s ease;
@@ -290,7 +318,7 @@ select.custom-input {
 }
 
 .row-action-edit{
-  color: #116AEF !important;
+  color: #606060 !important;
   cursor: pointer !important;
 }
 
