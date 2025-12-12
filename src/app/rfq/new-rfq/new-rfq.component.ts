@@ -139,9 +139,9 @@ export class NewRfqComponent implements OnInit {
 
     // RFQ Form
     this.newRfqForm = this.fb.group({
-      rfqNo: [''],
+      rfqNo: [{ value: '', disabled: true }],
       purchaseRequestNo: [''],
-      status: [''],
+      status: [{ value: '', disabled: true }],
       owner: [''],
       date: [null],
       contact: [''],

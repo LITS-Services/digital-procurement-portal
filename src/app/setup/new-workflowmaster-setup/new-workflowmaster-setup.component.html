@@ -36,7 +36,7 @@
       <div class="card  sticky-toolbar-target">
         <div class="card-body">
           <form [formGroup]="workflowsetupform" (ngSubmit)="submitForm()">
-            <div class="form-row">
+            <div class="row gx-2">
 
               <!-- Basic Fields -->
               <div class="col-lg-4 mb-2">
@@ -70,150 +70,184 @@
 
             </div>
 
-            <div class="form-row">
+            <div class="row gx-2">
               <!-- Switches -->
               <div class="col-lg-4 mb-3">
                 <div class="custom-control custom-switch">
-                  <input type="checkbox" class="custom-control-input" id="status" formControlName="status">
+                  <input type="checkbox" class="custom-control-input me-1" id="status" formControlName="status">
                   <label class="custom-control-label" for="status">Status</label>
                 </div>
               </div>
             </div>
           </form>
 
-          <ngb-accordion #accordion activeIds="ngb-panel-0">
-            <ngb-panel id="ngb-panel-0">
-              <ng-template ngbPanelTitle>
-                <div class="row">
-                  <div class="col-md-6">
-                    <span class="panel-icon">
-                      <label class="text-white">Add Approver</label>
-                    </span>
+         <div ngbAccordion class="address-card" #accordion="ngbAccordion">
+  <!-- You can set [collapsed]="false" if you want it open by default -->
+  <div ngbAccordionItem [collapsed]="false" id="ngb-panel-0">
+    <h2 ngbAccordionHeader>
+      <button ngbAccordionButton type="button" class="w-100 p-0 bg-transparent border-0">
+        <div class="row">
+          <div class="col-md-12 d-flex justify-content-between align-items-center">
+            <span class="panel-icon">
+              <label class="text-white px-1 mb-1">Add Approver</label>
+            </span>
+
+            <!-- your icon (bootstrap adds its own arrow too unless you hide it via css) -->
+            <i class="ft ft-chevron-down accordion-chevron"></i>
+          </div>
+        </div>
+      </button>
+    </h2>
+
+    <div ngbAccordionCollapse>
+      <div ngbAccordionBody>
+        <!-- ✅ REQUIRED in ng-bootstrap v15+ template -->
+        <ng-template>
+          <div class="card-accordion">
+            <div class="row gx-2 position-relative" [formGroup]="approverForm">
+
+              <button
+                type="button"
+                class="btn w-auto btn-primary position-absolute"
+                style="top: 0; right: 0; z-index: 10;"
+                (click)="addApprover()"
+              >
+                <i class="ft-pocket mr-1"></i> Add
+              </button>
+
+              <div class="col-12 mt-5">
+              </div>
+
+              <div class="col-lg-6 col-md-5 col-sm-5 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>Approver</label>
+                  <select class="form-control custom-input" formControlName="approverList">
+                    <option value="" disabled>Select Approver</option>
+                    <option *ngFor="let approver of approverList" [value]="approver.id">
+                      {{ approver.userName }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Amount From & To: hide for Vendor Company Onboarding -->
+              <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+                <div class="form-group mb-2">
+                  <label>Amount From</label>
+                  <input
+                    type="number"
+                    placeholder="Enter Amount"
+                    class="form-control custom-input"
+                    formControlName="amountFrom"
+                    [disabled]="hideConditionalFields"
+                  />
+                </div>
+              </div>
+
+              <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>Amount To</label>
+                  <input
+                    type="number"
+                    placeholder="Enter Amount"
+                    class="form-control custom-input"
+                    formControlName="amountTo"
+                    [disabled]="hideConditionalFields"
+                  />
+                </div>
+              </div>
+
+              <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>Approver Level</label>
+                  <input
+                    type="number"
+                    placeholder="Enter Level"
+                    class="form-control custom-input"
+                    formControlName="approverLevel"
+                  />
+                </div>
+              </div>
+
+              <div class="col-lg-6 col-md-5 col-sm-5 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>Proxy Approver</label>
+                  <select class="form-control custom-input" formControlName="proxyApproverId">
+                    <option value="" disabled>Select Proxy Approver</option>
+                    <option *ngFor="let approver of approverList" [value]="approver.id">
+                      {{ approver.userName }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6">
+                <div class="form-group mb-2">
+                  <label>Grace Days</label>
+                  <input
+                    type="number"
+                    placeholder="Enter Grace Days"
+                    class="form-control custom-input"
+                    formControlName="graceDays"
+                  />
+                </div>
+              </div>
+
+              <!-- Switches -->
+              <div class="row gx-2 px-3 d-flex">
+                <div class="col-lg-2 mb-2">
+                  <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input me-1" id="canApprove" formControlName="canApprove" />
+                    <label class="custom-control-label" for="canApprove">Approve</label>
                   </div>
                 </div>
-              </ng-template>
 
-              <ng-template ngbPanelContent>
-                <div class="card-accordion">
-                  <div class="form-row position-relative" [formGroup]="approverForm">
-
-                    <button class="btn btn-primary position-absolute" style="top: 0; right: 0; z-index: 10;"
-                      (click)="addApprover()">
-                      <i class="ft-pocket mr-1"></i> Add
-                    </button>
-
-                    <div class="col-12 mt-4">
-                      <hr>
-                    </div>
-
-                    <div class="col-lg-6 col-md-5 col-sm-5 col-xs-6">
-                      <div class="form-group mb-2">
-                        <label>Approver</label>
-                        <select class="form-control custom-input" formControlName="approverList">
-                          <option value="" disabled>Select Approver</option>
-                          <option *ngFor="let approver of approverList" [value]="approver.id">{{ approver.userName }}
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <!-- Amount From & To: hide for Vendor Company Onboarding -->
-                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
-                      <div class="form-group mb-2">
-                        <label>Amount From</label>
-                        <input type="number" placeholder="Enter Amount" class="form-control custom-input"
-                          formControlName="amountFrom" [disabled]="hideConditionalFields" />
-                      </div>
-                    </div>
-
-                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6">
-                      <div class="form-group mb-2">
-                        <label>Amount To</label>
-                        <input type="number" placeholder="Enter Amount" class="form-control custom-input"
-                          formControlName="amountTo" [disabled]="hideConditionalFields" />
-                      </div>
-                    </div>
-
-                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6">
-                      <div class="form-group mb-2">
-                        <label>Approver Level</label>
-                        <input type="number" placeholder="Enter Level" class="form-control custom-input"
-                          formControlName="approverLevel" />
-                      </div>
-                    </div>
-
-                    <div class="col-lg-6 col-md-5 col-sm-5 col-xs-6">
-                      <div class="form-group mb-2">
-                        <label>Proxy Approver</label>
-                        <select class="form-control custom-input" formControlName="proxyApproverId">
-                          <option value="" disabled>Select Proxy Approver</option>
-                          <option *ngFor="let approver of approverList" [value]="approver.id">{{ approver.userName }}
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6">
-                      <div class="form-group mb-2">
-                        <label>Grace Days</label>
-                        <input type="number" placeholder="Enter Grace Days" class="form-control custom-input"
-                          formControlName="graceDays" />
-                      </div>
-                    </div>
-
-                    <!-- Switches -->
-                    <div class="col-lg-12 mb-2 d-flex">
-
-                      <div class="col-lg-2 mb-2">
-                        <div class="custom-control custom-switch">
-                          <input type="checkbox" class="custom-control-input" id="canApprove"
-                            formControlName="canApprove">
-                          <label class="custom-control-label" for="canApprove">Approve</label>
-                        </div>
-                      </div>
-
-                      <div class="col-lg-2 mb-2">
-                        <div class="custom-control custom-switch">
-                          <input type="checkbox" class="custom-control-input" id="canReject"
-                            formControlName="canReject">
-                          <label class="custom-control-label" for="canReject">Can Reject</label>
-                        </div>
-                      </div>
-
-                      <div class="col-lg-2 mb-3">
-                        <div class="custom-control custom-switch">
-                          <input type="checkbox" class="custom-control-input" id="canSendBack"
-                            formControlName="canSendBack">
-                          <label class="custom-control-label" for="canSendBack">Send Back</label>
-                        </div>
-                      </div>
-
-                      <div class="col-lg-2 mb-3">
-                        <div class="custom-control custom-switch">
-                          <input type="checkbox" class="custom-control-input" id="canSubmit"
-                            formControlName="canSubmit">
-                          <label class="custom-control-label" for="canSubmit">Submit</label>
-                        </div>
-                      </div>
-
-                      <div class="col-lg-2 mb-3">
-                        <div class="custom-control custom-switch">
-                          <input type="checkbox" class="custom-control-input" id="isApprovalCompulsory"
-                            formControlName="isApprovalCompulsory">
-                          <label class="custom-control-label" for="isApprovalCompulsory">Is Compulsory</label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="col-12">
-                      <hr>
-                    </div>
+                <div class="col-lg-2 mb-2">
+                  <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input me-1" id="canReject" formControlName="canReject" />
+                    <label class="custom-control-label" for="canReject">Can Reject</label>
                   </div>
-                  <br>
                 </div>
-              </ng-template>
-            </ngb-panel>
-          </ngb-accordion>
+
+                <div class="col-lg-2 mb-3">
+                  <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input me-1" id="canSendBack" formControlName="canSendBack" />
+                    <label class="custom-control-label" for="canSendBack">Send Back</label>
+                  </div>
+                </div>
+
+                <div class="col-lg-2 mb-3">
+                  <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input me-1" id="canSubmit" formControlName="canSubmit" />
+                    <label class="custom-control-label" for="canSubmit">Submit</label>
+                  </div>
+                </div>
+
+                <div class="col-lg-2 mb-3">
+                  <div class="custom-control custom-switch">
+                    <input
+                      type="checkbox"
+                      class="custom-control-input me-1"
+                      id="isApprovalCompulsory"
+                      formControlName="isApprovalCompulsory"
+                    />
+                    <label class="custom-control-label" for="isApprovalCompulsory">Is Compulsory</label>
+                  </div>
+                </div>
+              </div>
+
+ 
+                <hr />
+            </div>
+
+  
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>
+
           <div class="col-12">
             <div style="position: relative;">
               <ngx-datatable class="bootstrap core-bootstrap" [rows]="newApproverData" [columnMode]="'force'"

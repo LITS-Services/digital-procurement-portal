@@ -42,7 +42,7 @@
     <div class="spinner-border"></div>
   </div>
 </div>
-<form [formGroup]="form" (ngSubmit)="insert()" class="mt-2 d-flex align-items-center">
+<form [formGroup]="form" (ngSubmit)="insert()" class="mt-2 gap-2 d-flex align-items-center">
   <div class="col-md-10">
     <textarea id="vendorComment" class="form-control" rows="1" placeholder="Write a comment for this vendor..."
       formControlName="comment" [readonly]="viewMode"></textarea>

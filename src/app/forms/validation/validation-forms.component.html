@@ -16,7 +16,7 @@
 					<div class="card-body">
 						<p>Use <code>form.needs-validation</code> and swap <code>.&#123;valid/invalid&#125;-feedback</code> with <code>.&#123;valid/invalid&#125;-tooltip</code> to display validation feedback in a styled tooltip.</p>
 						<form class="needs-validation" #userForm="ngForm" (ngSubmit)="userForm.form.valid && onSubmit(userForm)">
-							<div class="form-row">
+							<div class="row gx-2">
 								<div class="col-md-4 mb-4 form-group">
 									<label for="validationTooltip01">First name</label>
 									<input type="text" name="fname" class="form-control" id="validationTooltip01" placeholder="First name" [(ngModel)]="model.fname" #fname="ngModel"
@@ -54,7 +54,7 @@
 					<div class="card-body">
 						<p>Use <code>form.needs-validation</code> and swap <code>.&#123;valid/invalid&#125;-feedback</code> with <code>.&#123;valid/invalid&#125;-tooltip</code> to display validation feedback in a styled tooltip.</p>
 						<form class="needs-validation" [formGroup]="employeeForm" (ngSubmit)="onReactiveFormSubmit()">
-							<div class="form-row">
+							<div class="row gx-2">
 								<div class="col-md-4 mb-4 form-group">
 									<label for="validationTooltip04">First name</label>
 									<input type="text" formControlName="fname" class="form-control" id="validationTooltip04" placeholder="First name"

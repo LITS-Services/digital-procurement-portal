@@ -12,7 +12,12 @@
           <a class="nav-link apptogglefullscreen" id="navbar-fullscreen" href="javascript:;" appToggleFullscreen
             (click)="ToggleClass()"><i class=" {{toggleClass}} font-medium-3"></i></a>
         </li> -->
-      <li class="nav-item entity-switcher" ngbDropdown #entityDd="ngbDropdown" (openChange)="entityOpen = $event">
+      <li   class="nav-item entity-switcher"
+  ngbDropdown
+  #entityDd="ngbDropdown"
+  [display]="'dynamic'"
+  [placement]="'bottom-start'"
+  (openChange)="entityOpen = $event">
         <button class="entity-trigger" ngbDropdownToggle title="Switch entity/company">
           <!-- label first -->
           <span class="entity-label text-truncate">{{ selectedCompany?.description || 'Select entity' }}</span>
@@ -164,8 +169,8 @@
             <a class="nav-link dropdown-toggle user-dropdown d-flex align-items-end" id="dropdownBasic2"
               href="javascript:;" data-toggle="dropdown" ngbDropdownToggle>
               <div class="user d-md-flex d-none me-2">
-                <span class="text-right user-text">{{username}}</span><span
-                  class="text-right text-muted font-small-3">Available</span>
+                <span class="text-end user-text">{{username}}</span><span
+                  class="text-end text-muted font-small-3">Available</span>
               </div>
               <img class="avatar" [src]="profilePicture || 'assets/img/profile/user.png'" alt="avatar" height="35"
                 width="35" />

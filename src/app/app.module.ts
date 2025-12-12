@@ -11,7 +11,7 @@ import { HttpClientModule } from "@angular/common/http";
 import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
 import { TranslateHttpLoader, TRANSLATE_HTTP_LOADER_CONFIG } from "@ngx-translate/http-loader";
 import { StoreModule } from "@ngrx/store";
-import { DragulaService } from "ng2-dragula";
+import { DragulaService, DragulaModule } from 'ng2-dragula';
 import { NgxSpinnerModule } from 'ngx-spinner';
 
 import {
@@ -52,7 +52,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   imports: [
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-right', // or 'toast-top-center' etc.
-      timeOut: 3000,
+      timeOut: 444000,
     
       closeButton: true,
       progressBar: true

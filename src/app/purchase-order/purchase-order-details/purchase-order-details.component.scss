@@ -128,6 +128,18 @@
     vertical-align: middle !important;
 }
 
+.pro-table thead,
+.pro-table thead th {
+  background-color: #f4f6fb !important; /* or your header color */
+}
+
+/* Force ONLY body “accent/striped/hover” to white */
+.pro-table tbody {
+  --bs-table-accent-bg: #fff;
+  --bs-table-striped-bg: #fff;
+  --bs-table-hover-bg: #fff;
+}
+
  .po-tabs {
     display: flex;
     border-bottom: 2px solid #e5e7eb;

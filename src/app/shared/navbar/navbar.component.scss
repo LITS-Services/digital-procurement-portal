@@ -667,6 +667,7 @@
   border-radius: 1rem;
   border: 1px solid #e5e7eb;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+      background: white;
 }
 
 .entity-item {
@@ -675,7 +676,7 @@
   justify-content: space-between;
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
-  border-radius: 0.75rem;
+  border-radius: 0.75rem !important;
 
   &:hover {
     background: #f8fafc;

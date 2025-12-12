@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, NgZone, OnInit } from '@angular/core';
 import * as XLSX from 'xlsx';
 import { Company, CompaniesRow, AddressDetail, AddressRow, ContactDetail, ContactRow, BankDetail, BankRow, DemographicDetail, AttachmentDetail, DemographicsRow, UsersDetail, UserRow } from './bulk-companies.model';
 import { ToastrService } from 'ngx-toastr';
@@ -28,7 +28,8 @@ export class BulkVendorOnboardingComponent implements OnInit {
     private toastr: ToastrService,
     private companyService: CompanyService,
     private router:Router,
-    public spinner:NgxSpinnerService
+    public spinner:NgxSpinnerService,
+      private ngZone: NgZone,
   ) {}
 
   ngOnInit(): void {
@@ -71,7 +72,9 @@ export class BulkVendorOnboardingComponent implements OnInit {
       const demographicSheet = workbook.Sheets['Demographics'];
 
       if (!companiesSheet) {
-        this.toastr.warning('Sheet "Companies" not found.');
+         this.ngZone.run(() => {
+           this.toastr.warning('Sheet "Companies" not found.');
+         });
 
         this.isParsing = false;
         this.cdr.markForCheck();

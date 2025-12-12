@@ -47,7 +47,7 @@
                 </div>
                 <div class="card-body">
                     <form [formGroup]="vendorOnboardingForm" (ngSubmit)="submitForm()">
-                        <div class="form-row">
+                        <div class="row gx-2">
 
                             <!-- Setup Name -->
                             <div class="col-lg-4 mb-2">
@@ -110,8 +110,8 @@
                             </div>
 
                             <!-- Add Users Button -->
-                            <div class="col-lg-2 mb-2">
-                                <div class="form-group mb-2">
+                            <div class="col-lg-2 mx-2">
+                                <div class="row gx-3">
                                     <label>&nbsp;</label>
                                     <button type="button" class="btn btn-block user-add-btn"
                                         [disabled]="!isAddButtonEnabled" (click)="addReceiversToTable()">
@@ -122,9 +122,9 @@
                             </div>
 
                             <!-- Status Switch -->
-                            <div class="col-lg-4 my-auto">
-                                <div class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" id="status"
+                            <div class="col-lg-2 my-auto">
+                                <div class="custom-control custom-switch d-flex align-items-center">
+                                    <input type="checkbox" class="custom-control-input me-1" id="status"
                                         formControlName="status">
                                     <label class="custom-control-label" for="status">Status</label>
                                 </div>

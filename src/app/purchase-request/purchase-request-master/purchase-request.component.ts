@@ -27,7 +27,6 @@ export class PurchaseRequestComponent implements OnInit {
   FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
-
   isStatusCompleted: boolean = false;
   hasRestrictedStatus: boolean = false; // for disabling delete button if PR status is InProcess or Completed
   activeFilter: string = ''; // default filter

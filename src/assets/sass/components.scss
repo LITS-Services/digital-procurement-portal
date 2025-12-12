@@ -33,12 +33,12 @@
 @import "core/mixins/chartist";
 @import "plugins/chartist";
 
-@import "~perfect-scrollbar/css/perfect-scrollbar.css";
-@import "~prismjs/plugins/toolbar/prism-toolbar.css";
-@import "~prismjs/themes/prism-okaidia.css";
+@import "perfect-scrollbar/css/perfect-scrollbar.css";
+@import "prismjs/plugins/toolbar/prism-toolbar.css";
+@import "prismjs/themes/prism-okaidia.css";
 @import "ngx-ui-switch/ui-switch.component.scss";
-@import "~@ng-select/ng-select/themes/default.theme.css";
-@import '~@angular/cdk/overlay-prebuilt.css';
+@import "@ng-select/ng-select/themes/default.theme.css";
+@import '@angular/cdk/overlay-prebuilt.css';
 @import 'angular-archwizard/styles/archwizard.css';
 // Swiper CSS is already imported in angular.json styles array
 // @import 'swiper/swiper-bundle.css';

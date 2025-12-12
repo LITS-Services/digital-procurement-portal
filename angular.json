@@ -9,7 +9,7 @@
       "projectType": "application",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
             "stylePreprocessorOptions": {
               "includePaths": ["node_modules"]
@@ -35,9 +35,9 @@
             ],
             "outputPath": "dist",
             "index": "src/index.html",
-            "main": "src/main.ts",
+            "browser": "src/main.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": ["src/polyfills.ts"],
             "assets": [
               "src/assets",
               "src/favicon.ico",
@@ -62,27 +62,22 @@
               "src/assets/css/demo.css",
               "src/assets/sass/core.scss",
               "src/styles.css",
-              "node_modules/@swimlane/ngx-datatable/themes/bootstrap.css"
+              "node_modules/@swimlane/ngx-datatable/themes/bootstrap.css",
+              "node_modules/ngx-spinner/animations/ball-beat.css"
             ],
             "scripts": [
               "src/assets/vendor/pace/pace.min.js",
               "node_modules/apexcharts/dist/apexcharts.min.js"
             ],
-            "vendorChunk": true,
-            "extractLicenses": false,
-            "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
-            "namedChunks": true
+            "extractLicenses": false
           },
           "configurations": {
             "development": {
               "optimization": false,
               "sourceMap": true,
-              "namedChunks": true,
-              "extractLicenses": false,
-              "vendorChunk": true,
-              "buildOptimizer": false
+              "extractLicenses": false
             },
             "production": {
               "budgets": [
@@ -94,10 +89,7 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -108,7 +100,7 @@
           },
           "defaultConfiguration": "development"
         },
-         "serve": {
+        "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "buildTarget": "matngular:build",
@@ -157,10 +149,7 @@
               "src/styles.css",
               "node_modules/@swimlane/ngx-datatable/themes/bootstrap.css"
             ],
-            "assets": [
-              "src/assets",
-              "src/favicon.ico"
-            ]
+            "assets": ["src/assets", "src/favicon.ico"]
           }
         }
       }

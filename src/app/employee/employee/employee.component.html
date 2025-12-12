@@ -30,7 +30,7 @@
         <div class="card-body">
           <!-- (ngSubmit)="onSubmit()" -->
           <form [formGroup]="companyForm" id="companyForm">
-            <div class="form-row">
+            <div class="row gx-2">
 
               <!-- Employee dropdown (only in create mode) -->
               <div class="col-lg-4 col-md-4 col-sm-6" *ngIf="!isEditMode">
@@ -131,7 +131,8 @@
               </div>
 
               <!-- Companies -->
-              <div class="col-lg-6 col-md-6 col-sm-12">
+               <div class="d-flex">
+                    <div class="col-lg-6 col-md-6 col-sm-12 me-1">
                 <div class="mb-2">
                   <label>Select Companies</label>
                   <ng-select class="custom-style" [items]="companies" bindLabel="name" bindValue="companyGUID"
@@ -174,6 +175,8 @@
                   </div>
                 </div>
               </div>
+               </div>
+          
 
               <!-- Companies -->
               <!-- <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="companies.length">

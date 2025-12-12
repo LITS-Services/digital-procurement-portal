@@ -1,7 +1,6 @@
 <div class="modal-header">
   Attachment
-  <button type="button" class="close" aria-label="Close" (click)="closeDialog()">
-    <span aria-hidden="true">&times;</span>
+  <button type="button" class="btn-close" aria-label="Close" (click)="closeDialog()">
   </button>
 </div>
 <div class="modal-body">
@@ -10,7 +9,7 @@
   </div>
   <!-- Your form fields and content -->
   <form [formGroup]="AttachmentForm">
-    <div class="form-row">
+    <div class="row gx-2">
       <!-- File Upload Button -->
       <div class="col-12 form-group mt-3">
         <!-- <label for="fileUpload">Choose files</label> -->

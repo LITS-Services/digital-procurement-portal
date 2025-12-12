@@ -33,7 +33,7 @@
             <div class="vh-title">{{ v.vendorName }}</div>
             <div class="vh-sub">{{ v.companyName }}</div>
           </div>
-          <button class="btn btn-xs btn-link add-btn" [disabled]="viewMode" (click)="addToRight(v); $event.stopPropagation()">
+          <button class="btn btn-xs add-btn" [disabled]="viewMode" (click)="addToRight(v); $event.stopPropagation()">
             Add<i class="ft-arrow-right ml-1"></i></button>
         </div>
       </div>

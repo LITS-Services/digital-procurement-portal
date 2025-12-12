@@ -11,8 +11,8 @@ import { debounceTime } from 'rxjs/operators';
   standalone: true
 })
 export class AutoResizeDatatableDirective implements AfterViewInit, OnDestroy {
-  @Input() autoResizeInitDelay = 150;   // initial kick after view settles
-  @Input() autoResizeDebounce = 300;    // debounce for resizes (ms)
+  @Input() autoResizeInitDelay = 250;   // initial kick after view settles
+  @Input() autoResizeDebounce = 500;    // debounce for resizes (ms)
 
   private ro?: ResizeObserver;
   private winSub?: Subscription;

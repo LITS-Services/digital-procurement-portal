@@ -88,6 +88,20 @@ export class PurchaseRequestService {
   //   });
   // }
 
+  getPrForInventoryTransfer(
+    id: number,
+    generateRfq?: boolean,
+    forInventoryTransfer?: boolean,
+    selectFinalVendor?: boolean
+  ): Observable<any> {
+    let params: any = { id: id.toString() };
+
+    if (generateRfq === true) params.generateRfq = 'true';
+    if (forInventoryTransfer === true) params.forInventoryTransfer = 'true';
+    if (selectFinalVendor === true) params.selectFinalVendor = 'true';
+
+    return this.http.get<any>(`${this.baseUrl}/get-request-by-id`, { params });
+  }
   getPurchaseRequestById(
     id: number,
     generateRfq?: boolean,

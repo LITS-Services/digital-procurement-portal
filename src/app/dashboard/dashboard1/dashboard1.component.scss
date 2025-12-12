@@ -702,6 +702,11 @@ margin: 8px 0px;
 }
 
 /* Upcoming auctions table */
+
+.upcoming-table {
+  --bs-table-bg: #ffffff;
+  --bs-table-accent-bg: transparent; /* <-- THIS */
+}
 .upcoming-table thead th {
   border-bottom: none;
   font-size: 12px;

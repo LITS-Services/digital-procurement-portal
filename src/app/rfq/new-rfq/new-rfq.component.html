@@ -201,7 +201,7 @@
         <div class="card-body">
   
           <form [formGroup]="newRfqForm" (ngSubmit)="submitForm()">
-            <div class="form-row">
+            <div class="row gx-2">
   
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
@@ -225,7 +225,7 @@
               <label class="d-flex align-items-center mr-2 w-100" [ngbTooltip]="entityHint">
                 <span class="mr-2">Entity</span>
               
-                <small *ngIf="isEntityLocked && entityHint" class="hint-ellipsis ml-auto text-muted">
+                <small *ngIf="isEntityLocked && entityHint" class="hint-ellipsis ms-auto text-muted">
                   <i class="ft-info mr-1"></i>
                   <span class="hint-text">
                     {{ entityHint }}
@@ -338,12 +338,12 @@
   <div *ngIf="hasUnusedItems">
     <!-- Top form (Insert + fields) -->
     <div *ngIf="!viewMode" class="card-accordion mt-2">
-      <div class="form-row position-relative" [formGroup]="itemForm">
+      <div class="row position-relative" [formGroup]="itemForm">
 
         <button
           [disabled]="viewMode"
           (click)="insertItem()"
-          class="btn btn-primary position-absolute"
+          class="btn btn-primary position-absolute w-auto mr-2"
           style="top: 0; right: 0; z-index: 10;"
         >
           <i class="ft-pocket mr-1"></i>
@@ -356,10 +356,10 @@
 
         <div class="col-6">
           <div class="form-check-inline">
-            <label class="form-check-label">
+            <label class="form-check-label me-1">
               <input
                 type="radio"
-                class="form-check-input"
+                class="form-check-input me-1"
                 name="itemType"
                 value="Inventory"
                 formControlName="itemType"
@@ -370,10 +370,10 @@
 
         <div class="col-6">
           <div class="form-check-inline">
-            <label class="form-check-label">
+            <label class="form-check-label me-1">
               <input
                 type="radio"
-                class="form-check-input"
+                class="form-check-input me-1"
                 name="itemType"
                 value="Non-Inventory"
                 formControlName="itemType"

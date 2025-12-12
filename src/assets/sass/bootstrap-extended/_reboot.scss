@@ -28,7 +28,7 @@ body {
 a {
   &:focus {
     color: $info;
-    text-decoration: none;
+    text-decoration: none !important;
   }
 
   &.text-info {

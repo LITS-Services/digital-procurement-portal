@@ -15,6 +15,18 @@
     white-space: nowrap;
 }
 
+.pro-table thead,
+.pro-table thead th {
+  background-color: #f4f6fb !important; /* or your header color */
+}
+
+/* Force ONLY body “accent/striped/hover” to white */
+.pro-table tbody {
+  --bs-table-accent-bg: #fff;
+  --bs-table-striped-bg: #fff;
+  --bs-table-hover-bg: #fff;
+}
+
 .pro-table tbody tr td {
     padding: 9px 12px;
     border-top: 1px solid #e4e6ee;

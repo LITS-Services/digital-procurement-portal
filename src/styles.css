@@ -1,11 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
 @import './app/shared/custom-style/filter-bar.css';
 @import './app/shared/custom-style/custom-tab.css';
+@import 'ngx-toastr/toastr';
 .rtl {
     direction: rtl !important;
     /* // color: red !important;
     // font-size: 30px !important; */
   }
+
+  #toast-container > div {
+  opacity: 1;
+}
 
 .btn-primary{
   background: linear-gradient(168deg, #116AEF 0%, #114C7A 100%);
@@ -36,10 +41,10 @@
 }
  .vl {
       border-left: 1.4px solid #cccccc;
-      height: 36px !important;
+      height: 100% !important;
       position: absolute;
       margin-left: -3px;
-      top: 3px;
+      top: 0px;
     }
 
     .datatable-row-detail { width: 100vw !important; }
@@ -133,7 +138,7 @@ form label, .form-group label {
 
 .cstm-ui-card{
   box-shadow: none !important;
-  padding: 6px 0px !important;
+  padding: 7px 0px !important;
 }
 .cstm-ui-table-btn{
   font-size: 14px !important;
@@ -187,7 +192,7 @@ form label, .form-group label {
 
       .ngx-datatable .datatable-scroll .datatable-body-row .datatable-body-cell{
     padding: 0.85rem;
-   display: block;  
+   /* display: block;   */
   }
 
   .ngx-datatable.bootstrap .datatable-footer {
@@ -240,6 +245,12 @@ datatable-scroller {
   width: 100% !important;
 }
 
+.textarea{
+  overflow: hidden !important;
+}
+  textarea .custom-input{
+    height: 48px !important;
+  }
   /* custom inputs */
   .custom-input {
   height: 42px;
@@ -443,4 +454,178 @@ body.vertical-overlay-menu .sticky-toolbar.sticky {
 
 .app-sidebar:hover .sidebar-content.main-menu-content {
       scrollbar-color: rgb(124 163 214) transparent;
+}
+/* 
+angular v21 update */
+.dropdown-menu{
+  background-color: white !important;
+}
+
+a{
+  text-decoration: none;
+}
+
+.card {
+  background-color: white;
+}
+
+
+/* Bootstrap 4 → 5 margin aliases */
+.ml-0 { margin-left: 0 !important; }
+.ml-1 { margin-left: 0.25rem !important; }
+.ml-2 { margin-left: 0.5rem !important; }
+.ml-3 { margin-left: 1rem !important; }
+.ml-4 { margin-left: 1.5rem !important; }
+.ml-5 { margin-left: 3rem !important; }
+
+.mr-0 { margin-right: 0 !important; }
+.mr-1 { margin-right: 0.5rem !important; }
+.mr-2 { margin-right: 0.5rem !important; }
+.mr-3 { margin-right: 1rem !important; }
+.mr-4 { margin-right: 1.5rem !important; }
+.mr-5 { margin-right: 3rem !important; }
+
+/* Bootstrap 4 → 5 padding aliases */
+.pl-0 { padding-left: 0 !important; }
+.pl-1 { padding-left: 0.25rem !important; }
+.pl-2 { padding-left: 0.5rem !important; }
+.pl-3 { padding-left: 1rem !important; }
+.pl-4 { padding-left: 1.5rem !important; }
+.pl-5 { padding-left: 3rem !important; }
+
+.pr-0 { padding-right: 0 !important; }
+.pr-1 { padding-right: 0.25rem !important; }
+.pr-2 { padding-right: 0.5rem !important; }
+.pr-3 { padding-right: 1rem !important; }
+.pr-4 { padding-right: 1.5rem !important; }
+.pr-5 { padding-right: 3rem !important; }
+
+textarea.form-control {
+    min-height: calc(2.2em + 0.85rem + 3px) !important;
+}
+
+hr{
+  border-color: #bbbaba !important;
+}
+
+.btn-danger{
+  color: white !important;
+}
+
+.btn:disabled,
+.btn.disabled {
+  --bs-btn-disabled-color: white;
+  border: inherit !important;
+}
+
+.text-right {
+  text-align: right !important;
+}
+
+.text-left {
+  text-align: left !important;
+}
+
+
+/* accordion wrapper */
+.accordion {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* each panel container */
+.accordion .accordion-item {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+/* header wrapper */
+.accordion .accordion-header {
+  border-top: 1px solid #f0f0f0;
+  border-bottom: none !important;
+}
+
+/* clickable button */
+.accordion .accordion-button {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 1rem 0 !important;
+  align-items: center;
+  border: none !important;
+}
+
+/* remove default bootstrap caret */
+.accordion .accordion-button::after {
+  display: none !important;
+}
+
+/* label styling */
+.accordion .accordion-button label {
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  color: #116AEF !important;
+  margin-bottom: 0 !important;
+}
+
+/* icon inside header */
+.accordion .accordion-button i {
+  color: #000 !important;
+}
+
+/* collapsed vs expanded */
+.accordion .accordion-button.collapsed {
+  background: #fff !important;
+}
+
+.accordion .accordion-button:not(.collapsed) {
+  background: #fff !important;
+}
+
+/* panel body */
+.accordion .accordion-body {
+  padding: 0 0 1.5rem 0 !important;
+  background-color: white !important;
+}
+
+/* address card override */
+.address-card .accordion-body {
+  background: #fff !important;
+}
+
+/* chevron animation */
+.accordion .accordion-button .accordion-chevron {
+  transition: transform 0.25s ease;
+}
+
+/* OPEN */
+.accordion .accordion-button:not(.collapsed) .accordion-chevron {
+  transform: rotate(180deg);
+}
+
+/* CLOSED */
+.accordion .accordion-button.collapsed .accordion-chevron {
+  transform: rotate(0deg);
+}
+
+input[type="checkbox"] {
+  transform: scale(1.25);
+  margin-right: 0.4rem;
+  cursor: pointer;
+}
+
+/* Increase label text size */
+input[type="checkbox"] + label,
+label:has(input[type="checkbox"]) {
+  font-size: 14px;
+  margin-bottom: 0px !important;
+}
+
+.btn-link{
+  text-decoration: none !important;
+}
+
+.modal-content {
+  background-color: #ffffff !important;
 }
