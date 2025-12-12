@@ -514,7 +514,7 @@ hr{
 
 .btn:disabled,
 .btn.disabled {
-  --bs-btn-disabled-color: white;
+  --bs-btn-disabled-color: rgb(101, 101, 101);
   border: inherit !important;
 }
 
@@ -628,4 +628,8 @@ label:has(input[type="checkbox"]) {
 
 .modal-content {
   background-color: #ffffff !important;
+}
+
+.popover-body{
+  background-color: white !important;
 }
