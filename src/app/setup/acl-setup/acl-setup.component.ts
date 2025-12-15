@@ -34,6 +34,9 @@ export class AclSetupComponent implements OnInit {
 
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
+
+  datatableVisible: boolean = true;
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -46,6 +49,16 @@ export class AclSetupComponent implements OnInit {
     private aclService: AclService,
     private permissionService: PermissionService
   ) {}
+
+  onAutoResize(): void {
+    this.datatableVisible = false;
+    this.cdr.detectChanges(); // destroy
+
+    requestAnimationFrame(() => {
+      this.datatableVisible = true;
+      this.cdr.detectChanges(); // recreate
+    });
+  }
 
   ngOnInit(): void {
     this.fetchRoles();

@@ -1,67 +1,46 @@
-// auto-resize-datatable.directive.ts
 import {
-  AfterViewInit, Directive, ElementRef, Host, Input, NgZone, OnDestroy
+  AfterViewInit,
+  Directive,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  Output
 } from '@angular/core';
-import { DatatableComponent } from '@swimlane/ngx-datatable';
-import { fromEvent, Subscription } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { Subscription, distinctUntilChanged, map, skip } from 'rxjs';
+import { ConfigService } from 'app/shared/services/config.service';
 
 @Directive({
   selector: 'ngx-datatable[autoResize]',
   standalone: true
 })
 export class AutoResizeDatatableDirective implements AfterViewInit, OnDestroy {
-  @Input() autoResizeInitDelay = 250;   // initial kick after view settles
-  @Input() autoResizeDebounce = 500;    // debounce for resizes (ms)
 
-  private ro?: ResizeObserver;
-  private winSub?: Subscription;
-  private initTimer?: any;
+  /** Sidebar animation duration (ms) */
+  @Input() autoResizeDelay = 350;
 
-  constructor(
-    @Host() private table: DatatableComponent,
-    private el: ElementRef<HTMLElement>,
-    private zone: NgZone
-  ) {}
+  /** Tell host component to rebuild datatable (*ngIf flip) */
+  @Output() autoResize = new EventEmitter<void>();
+
+  private sub?: Subscription;
+
+  constructor(private configService: ConfigService) {}
 
   ngAfterViewInit(): void {
-    // 1) Initial recalc (inside Angular so bindings update correctly)
-    this.initTimer = setTimeout(() => this.safeRecalc(true), this.autoResizeInitDelay);
-
-    // 2) Observe the container that actually changes width (usually parent)
-    const container = this.el.nativeElement.parentElement ?? this.el.nativeElement;
-    if ('ResizeObserver' in window && container) {
-      this.ro = new ResizeObserver(() => this.debouncedRecalc());
-      this.ro.observe(container);
-    }
-
-    // 3) Also listen to window resizes (fallback / zoom / sidebar toggles)
-    this.zone.runOutsideAngular(() => {
-      this.winSub = fromEvent(window, 'resize')
-        .pipe(debounceTime(this.autoResizeDebounce))
-        .subscribe(() => this.safeRecalc());
-    });
-  }
-
-  private debouncedRecalc() {
-    // container observer can be very chatty → debounce with rAF
-    requestAnimationFrame(() => this.safeRecalc());
-  }
-
-  private safeRecalc(force = false) {
-    // run inside Angular to avoid timing glitches in some layouts
-    this.zone.run(() => {
-      try { this.table.recalculate(); } catch {}
-      if (force) {
-        // some layouts need a nudge so sticky headers / virtual scroller measure again
-        try { window.dispatchEvent(new Event('resize')); } catch {}
-      }
-    });
+    this.sub = this.configService.templateConf$
+      .pipe(
+        map(conf => conf?.layout?.sidebar?.collapsed),
+        distinctUntilChanged(),
+        skip(1) // ⛔ skip initial emission (prevents first-load blink)
+      )
+      .subscribe(collapsed => {
+        // ✅ Trigger on both sidebar collapse and uncollapse
+        setTimeout(() => {
+          this.autoResize.emit();
+        }, this.autoResizeDelay);
+      });
   }
 
   ngOnDestroy(): void {
-    if (this.ro) { try { this.ro.disconnect(); } catch {} }
-    if (this.winSub) { this.winSub.unsubscribe(); }
-    if (this.initTimer) { clearTimeout(this.initTimer); }
+    this.sub?.unsubscribe();
   }
 }

@@ -49,6 +49,8 @@ export class RfqComponent implements OnInit {
   statusTouched: boolean = false;
 
   private _resizeT?: any;
+
+    datatableVisible:boolean = true;
   // public chkBoxSelected = [];
   // loading = false;
   // public rows = [];
@@ -94,6 +96,16 @@ export class RfqComponent implements OnInit {
     this.loadRfqs();
 
   }
+
+    onAutoResize(): void {
+  this.datatableVisible = false;
+  this.cdr.detectChanges(); // destroy
+
+  requestAnimationFrame(() => {
+    this.datatableVisible = true;
+    this.cdr.detectChanges(); // recreate
+  });
+}
 
   toggleFilterBar() {
     this.showFilterBar = !this.showFilterBar;

@@ -245,6 +245,14 @@ datatable-scroller {
   width: 100% !important;
 }
 
+
+.wrapper,
+.main-panel,
+.main-content,
+.content-wrapper {
+  min-width: 0 !important;
+}
+
 .textarea{
   overflow: hidden !important;
 }

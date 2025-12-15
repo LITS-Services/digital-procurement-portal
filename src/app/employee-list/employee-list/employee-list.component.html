@@ -21,15 +21,13 @@
 
             <!-- Edit Button (Top) -->
             <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
-              (click)="editSelectedRow()"
-              appPermission [appPermFormId]="FORM_IDS.PROCUREMENT_USERS"
-                [appPermDisable]="'write'">
+              (click)="editSelectedRow()" appPermission [appPermFormId]="FORM_IDS.PROCUREMENT_USERS"
+              [appPermDisable]="'write'">
               <i class="ft-edit"></i>
               <label class="ml-1 mt-1 btn-label">Edit User</label>
             </button>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="registerUser()"
-            appPermission [appPermFormId]="FORM_IDS.PROCUREMENT_USERS"
-                [appPermDisable]="'write'">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="registerUser()" appPermission
+              [appPermFormId]="FORM_IDS.PROCUREMENT_USERS" [appPermDisable]="'write'">
               <i class="ft-user-plus"></i>
               <label class="ml-1 mt-1 btn-label">Register User</label>
             </button>
@@ -38,10 +36,11 @@
       </div>
 
       <!-- Table -->
-      <ngx-datatable class="bootstrap core-bootstrap" [rows]="tenderingData" [columnMode]="'force'" [headerHeight]="50"
-        [footerHeight]="50" [rowHeight]="'auto'" [limit]="15" [scrollbarH]="true" [loadingIndicator]="loading"
-        [selected]="chkBoxSelected" [swapColumns]="false" [selectionType]="SelectionType.checkbox"
-        (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
+      @if(datatableVisible){
+      <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap" [rows]="tenderingData"
+        [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="15"
+        [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
+        [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 
         <!-- Checkbox Column -->
         <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
@@ -86,6 +85,7 @@
             </span> </ng-template>
         </ngx-datatable-column>
       </ngx-datatable>
+      }
 
     </div>
   </div>

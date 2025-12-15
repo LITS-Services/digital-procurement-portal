@@ -35,6 +35,16 @@
     font-weight: 700;
   }
 
+  :host ::ng-deep .datatable-body,
+:host ::ng-deep .datatable-header,
+:host ::ng-deep .datatable-scroll {
+  width: 100% !important;
+}
+
+.parent-flex-container {
+  min-width: 0; /* IMPORTANT */
+}
+
   
 .ngx-datatable ::ng-deep .datatable-header-inner{
   background-color: #4188F2 !important;

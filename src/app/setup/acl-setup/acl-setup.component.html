@@ -34,8 +34,10 @@
 
 
             <!-- DATA TABLE -->
-            <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="aclList" [columns]="[]"
-                [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="50" [limit]="10">
+            @if(datatableVisible){
+            <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap" [rows]="aclList"
+                [columns]="[]" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="50"
+                [limit]="10">
 
                 <!-- Loop dynamically generated columns: Form Name / Read / Write / Delete -->
                 <ngx-datatable-column *ngFor="let col of columns" [name]="col.name" [prop]="col.prop">
@@ -51,7 +53,8 @@
                         <ng-container *ngIf="col.type === 'checkbox'">
                             <div class="checkbox-wrapper-12">
                                 <div class="cbx">
-                                    <input type="checkbox" [checked]="row[col.prop]" (change)="togglePermission(row, col.prop)" appPermission
+                                    <input type="checkbox" [checked]="row[col.prop]"
+                                        (change)="togglePermission(row, col.prop)" appPermission
                                         [appPermFormId]="FORM_IDS.ACL" [appPermDisable]="'write'" />
                                     <label></label>
                                     <svg width="15" height="14" viewbox="0 0 15 14" fill="none">
@@ -78,6 +81,7 @@
                     </ng-template>
                 </ngx-datatable-column>
             </ngx-datatable>
+            }
         </div>
     </div>
 </section>

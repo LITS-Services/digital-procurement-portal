@@ -21,17 +21,14 @@
 
             <!-- Create -->
             <button type="button" ngbTooltip="Create new Procurement Company" class="btn btn-sm  cstm-ui-table-btn"
-              (click)="openEmpDetails()"
-              appPermission [appPermFormId]="FORM_IDS.ENTITIES"
-                [appPermDisable]="'write'">
+              (click)="openEmpDetails()" appPermission [appPermFormId]="FORM_IDS.ENTITIES" [appPermDisable]="'write'">
               <i class="ft-plus"></i>
               <label class="ml-1 mt-1  btn-label">Create</label>
             </button>
 
             <!-- Update -->
-            <button type="button" class="btn btn-sm  cstm-ui-table-btn" [disabled]="isEditButtonDisabled" (click)="editSelectedRow()"
-            appPermission [appPermFormId]="FORM_IDS.ENTITIES"
-                [appPermDisable]="'write'">
+            <button type="button" class="btn btn-sm  cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
+              (click)="editSelectedRow()" appPermission [appPermFormId]="FORM_IDS.ENTITIES" [appPermDisable]="'write'">
               <i class="ft-edit"></i>
               <label class="ml-1 mt-1 btn-label">Edit</label>
             </button>
@@ -47,21 +44,22 @@
       </div>
 
       <!-- Content -->
-      <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="tenderingData" [columnMode]="'force'" [headerHeight]="50"
-        [footerHeight]="50" [rowHeight]="'auto'" [selectionType]="SelectionType.checkbox" [selected]="chkBoxSelected"
-        (select)="customChkboxOnSelect($event)">
+      @if(datatableVisible){
+      <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap" [rows]="tenderingData"
+        [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'"
+        [selectionType]="SelectionType.checkbox" [selected]="chkBoxSelected" (select)="customChkboxOnSelect($event)">
         <!-- Checkbox Column -->
         <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
-                    [resizeable]="false">
+          [resizeable]="false">
           <ng-template ngx-datatable-header-template>
-              <div class="custom-control cstm-checkbox-form">
-            <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
+            <div class="custom-control cstm-checkbox-form">
+              <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
             </div>
           </ng-template>
           <ng-template ngx-datatable-cell-template let-isSelected="isSelected"
             let-onCheckboxChangeFn="onCheckboxChangeFn">
-              <div class="custom-control cstm-checkbox-form custom-checkbox ">
-            <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+            <div class="custom-control cstm-checkbox-form custom-checkbox ">
+              <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
             </div>
           </ng-template>
         </ngx-datatable-column>
@@ -89,6 +87,7 @@
           </ng-template>
         </ngx-datatable-column>
       </ngx-datatable>
+      }
     </div>
   </div>
 </section>

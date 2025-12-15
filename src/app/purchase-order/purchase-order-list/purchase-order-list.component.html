@@ -45,14 +45,14 @@
       </div>
 
       <!-- Content -->
-      <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="purchaseOrderData" [columnMode]="'force'"
-        [headerHeight]="50" [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'" [limit]="pageSize"
-        [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
-        [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
-        (sort)="onSort($event)" (select)="customChkboxOnSelect($event)" [selectionType]="SelectionType.single"
-        (activate)="onActivate($event)" (rowClick)="onRowClick($event)" (clickType)="'single'"
-        appPermission [appPermFormId]="FORM_IDS.PURCHASE_ORDER"
-                [appPermDisable]="'write'">>
+      @if(datatableVisible){
+      <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap"
+        [rows]="purchaseOrderData" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [columns]="columns"
+        [rowHeight]="'auto'" [limit]="pageSize" [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1"
+        (page)="onPageChange($event)" [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected"
+        [swapColumns]="false" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)"
+        [selectionType]="SelectionType.single" (activate)="onActivate($event)" (rowClick)="onRowClick($event)"
+        (clickType)="'single'" appPermission [appPermFormId]="FORM_IDS.PURCHASE_ORDER" [appPermDisable]="'write'">>
         <!-- <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
                     [resizeable]="false">
                     <ng-template ngx-datatable-header-template>
@@ -78,12 +78,11 @@
 
         <ngx-datatable-column name="PO No." prop="purchaseOrderNo" [sortable]="false">
           <ng-template ngx-datatable-cell-template let-row="row">
-                    <a href="javascript:void(0)" 
-                    appPermission [appPermFormId]="FORM_IDS.PURCHASE_ORDER"
-                [appPermDisable]="'write'">
-                        {{ row.purchaseOrderNo }}
-                    </a>
-                </ng-template>
+            <a href="javascript:void(0)" appPermission [appPermFormId]="FORM_IDS.PURCHASE_ORDER"
+              [appPermDisable]="'write'">
+              {{ row.purchaseOrderNo }}
+            </a>
+          </ng-template>
         </ngx-datatable-column>
 
         <ngx-datatable-column name="Requisition No." prop="requisitionNo" [sortable]="false">
@@ -120,6 +119,7 @@
                 </ngx-datatable-column> -->
 
       </ngx-datatable>
+      }
     </div>
   </div>
 </section>

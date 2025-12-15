@@ -32,6 +32,8 @@ export class VendorOnboardingSetupComponent implements OnInit {
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
+  datatableVisible: boolean = true;
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -59,6 +61,16 @@ export class VendorOnboardingSetupComponent implements OnInit {
       this.loadAllCompanyOnboardingSetups();
     });
 
+  }
+
+  onAutoResize(): void {
+    this.datatableVisible = false;
+    this.cdr.detectChanges(); // destroy
+
+    requestAnimationFrame(() => {
+      this.datatableVisible = true;
+      this.cdr.detectChanges(); // recreate
+    });
   }
 
   loadAllCompanyOnboardingSetups() {

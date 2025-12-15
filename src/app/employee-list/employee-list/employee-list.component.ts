@@ -24,6 +24,8 @@ export class EmployeeListComponent implements OnInit {
   isEditButtonDisabled = true;
   isAllSelected = false;
 
+  datatableVisible: boolean = true;
+
   constructor(
     private router: Router,
     private companyService: CompanyService,
@@ -31,6 +33,16 @@ export class EmployeeListComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private permissionService: PermissionService
   ) { }
+
+  onAutoResize(): void {
+    this.datatableVisible = false;
+    this.cdr.detectChanges(); // destroy
+
+    requestAnimationFrame(() => {
+      this.datatableVisible = true;
+      this.cdr.detectChanges(); // recreate
+    });
+  }
 
   ngOnInit(): void {
     this.getProcurementUsers();

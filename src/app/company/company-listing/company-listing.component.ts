@@ -43,6 +43,9 @@ export class CompanyListingComponent implements OnInit {
   statusTouched: boolean = false;
   showFilterBar = false;
 
+  // Table resize handling
+  datatableVisible: boolean = true;
+
   constructor(
     private router: Router,
     private modalService: NgbModal,
@@ -396,6 +399,16 @@ export class CompanyListingComponent implements OnInit {
 
   toggleFilterBar() {
     this.showFilterBar = !this.showFilterBar;
+  }
+
+  onAutoResize(): void {
+    this.datatableVisible = false;
+    this.cdr.detectChanges(); // destroy
+
+    requestAnimationFrame(() => {
+      this.datatableVisible = true;
+      this.cdr.detectChanges(); // recreate
+    });
   }
 
   isSelectedRowNew(): boolean {

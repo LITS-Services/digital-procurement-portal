@@ -35,6 +35,8 @@ export class PurchaseOrderListComponent implements OnInit {
   totalPages = 0;
   totalItems = 0;
 
+  datatableVisible: boolean = true;
+
   constructor(private purchaseOrderService: PurchaseOrderService,
     public cdr: ChangeDetectorRef,
     private router: Router,
@@ -43,6 +45,16 @@ export class PurchaseOrderListComponent implements OnInit {
     private permissionService: PermissionService
 
   ) { }
+
+  onAutoResize(): void {
+    this.datatableVisible = false;
+    this.cdr.detectChanges(); // destroy
+
+    requestAnimationFrame(() => {
+      this.datatableVisible = true;
+      this.cdr.detectChanges(); // recreate
+    });
+  }
 
   ngOnInit(): void {
     this.loadPurchaseOrders();

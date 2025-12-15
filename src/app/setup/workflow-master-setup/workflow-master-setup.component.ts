@@ -31,6 +31,7 @@ export class WorkflowMasterSetupComponent implements OnInit {
   isAllSelected = false;
   workflowMasterList: any[] = [];
 
+  datatableVisible: boolean = true;
 
   constructor(
     private router: Router,
@@ -40,6 +41,16 @@ export class WorkflowMasterSetupComponent implements OnInit {
     private cdr: ChangeDetectorRef, 
     private permissionService: PermissionService
   ) { }
+
+  onAutoResize(): void {
+    this.datatableVisible = false;
+    this.cdr.detectChanges(); // destroy
+
+    requestAnimationFrame(() => {
+      this.datatableVisible = true;
+      this.cdr.detectChanges(); // recreate
+    });
+  }
 
   ngOnInit(): void {
     this.getWorkflowMasterList();

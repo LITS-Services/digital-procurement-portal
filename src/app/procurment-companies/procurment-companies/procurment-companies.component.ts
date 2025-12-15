@@ -37,6 +37,8 @@ export class ProcurmentCompaniesComponent implements OnInit {
     { prop: 'status', name: 'Status', width: 100 } // optional column for status
   ];
 
+  datatableVisible: boolean = true;
+
   constructor(
     private router: Router,
     private companyService: CompanyService,
@@ -45,6 +47,16 @@ export class ProcurmentCompaniesComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private permissionService: PermissionService
   ) { }
+
+  onAutoResize(): void {
+    this.datatableVisible = false;
+    this.cdr.detectChanges(); // destroy
+
+    requestAnimationFrame(() => {
+      this.datatableVisible = true;
+      this.cdr.detectChanges(); // recreate
+    });
+  }
 
   ngOnInit(): void {
     // Only Admins can access

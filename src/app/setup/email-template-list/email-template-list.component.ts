@@ -31,6 +31,8 @@ export class EmailTemplateListComponent implements OnInit {
   isOpenButtonDisabled = true;
   isAllSelected = false;
 
+  datatableVisible: boolean = true;
+
   constructor(
     private router: Router,
     private emailTemplateService: EmailTemplateService,
@@ -38,6 +40,16 @@ export class EmailTemplateListComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private permissionService: PermissionService
   ) { }
+
+  onAutoResize(): void {
+    this.datatableVisible = false;
+    this.cdr.detectChanges(); // destroy
+
+    requestAnimationFrame(() => {
+      this.datatableVisible = true;
+      this.cdr.detectChanges(); // recreate
+    });
+  }
 
   ngOnInit(): void {
     this.getAllEmailTemplates();

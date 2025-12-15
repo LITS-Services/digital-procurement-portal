@@ -29,6 +29,8 @@ export class EmailSetupComponent implements OnInit {
   isResendButtonDisabled = true; // ✅ New button disable state
   isAllSelected = false;
 
+  datatableVisible: boolean = true;
+
   constructor(
     private router: Router,
     private modalService: NgbModal,
@@ -36,6 +38,16 @@ export class EmailSetupComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private permissionService: PermissionService
   ) { }
+
+  onAutoResize(): void {
+    this.datatableVisible = false;
+    this.cdr.detectChanges(); // destroy
+
+    requestAnimationFrame(() => {
+      this.datatableVisible = true;
+      this.cdr.detectChanges(); // recreate
+    });
+  }
 
   ngOnInit(): void {
     this.getEmailLogs();

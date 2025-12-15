@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, NgZone, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ColumnMode, id, SelectionType } from '@swimlane/ngx-datatable';
+import { ColumnMode, DatatableComponent, id, SelectionType } from '@swimlane/ngx-datatable';
 import { PRQuery, PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
 import { PurchaseRequestAccountBudgetLookupModalComponent } from 'app/shared/modals/purchase-request-account-budget-lookup-modal/purchase-request-account-budget-lookup-modal.component';
 import { PurchaseRequestExceptionPolicyComponent } from 'app/shared/modals/purchase-request-exception-policy/purchase-request-exception-policy.component';
@@ -10,11 +10,13 @@ import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
 import { CreatePurchaseOrderComponent } from 'app/purchase-order/create-purchase-order/create-purchase-order.component';
 import { LookupService } from 'app/shared/services/lookup.service';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { PermissionService } from 'app/shared/permissions/permission.service';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PrInventoryManagementComponent } from '../pr-inventory-management/pr-inventory-management.component';
+import { LayoutService } from 'app/shared/services/layout.service';
+import { ConfigService } from 'app/shared/services/config.service';
 
 @Component({
   selector: 'app-purchase-request',
@@ -61,6 +63,7 @@ export class PurchaseRequestComponent implements OnInit {
   statusTouched: boolean = false;
   searchText = '';
   private searchChanged$ = new Subject<string>();
+  datatableVisible:boolean = true;
 
   constructor(
     private router: Router,
@@ -71,7 +74,9 @@ export class PurchaseRequestComponent implements OnInit {
     private toastr: ToastrService,
     public lookupService: LookupService,
     private purchaseOrderService: PurchaseOrderService,
-    private permissionService: PermissionService
+    private permissionService: PermissionService,
+    private configService:ConfigService,
+    public zone: NgZone
 
   ) { }
 
@@ -80,6 +85,18 @@ export class PurchaseRequestComponent implements OnInit {
     this.loadPurchaseRequests();
     this.cdr.detectChanges();
   }
+
+
+  onAutoResize(): void {
+  this.datatableVisible = false;
+  this.cdr.detectChanges(); // destroy
+
+  requestAnimationFrame(() => {
+    this.datatableVisible = true;
+    this.cdr.detectChanges(); // recreate
+  });
+}
+
 
   loadPurchaseRequests() {
     this.loading = true;

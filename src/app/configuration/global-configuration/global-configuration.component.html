@@ -19,14 +19,13 @@
                                 <i class="ft-arrow-left"></i></button>
                             <span class="vl"></span>
                             <button type="button" class="btn btn-sm cstm-ui-table-btn"
-                                ngbTooltip="Create new Global Configuration" (click)="openEmpDetails()"
-                                appPermission [appPermFormId]="FORM_IDS.GLOBAL_CONFIGURATION"
-                                [appPermDisable]="'write'">
+                                ngbTooltip="Create new Global Configuration" (click)="openEmpDetails()" appPermission
+                                [appPermFormId]="FORM_IDS.GLOBAL_CONFIGURATION" [appPermDisable]="'write'">
                                 <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
                             </button>
                             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()"
-                            appPermission [appPermFormId]="FORM_IDS.GLOBAL_CONFIGURATION"
-                            [appPermDisable]="'write'">
+                                appPermission [appPermFormId]="FORM_IDS.GLOBAL_CONFIGURATION"
+                                [appPermDisable]="'write'">
                                 <i class="ft-edit"></i><label class="ml-1 mt-1">Update</label>
                             </button>
 
@@ -49,10 +48,12 @@
             </div>
 
             <!-- Content -->
-            <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="globalConfigData" [columnMode]="'force'"
-                [headerHeight]="50" [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'" [limit]="pageSize"
-                [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
-                [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
+            @if(datatableVisible){
+            <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap"
+                [rows]="globalConfigData" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50"
+                [columns]="columns" [rowHeight]="'auto'" [limit]="pageSize" [count]="totalItems" [externalPaging]="true"
+                [offset]="currentPage - 1" (page)="onPageChange($event)" [scrollbarH]="true"
+                [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
                 [selectionType]="SelectionType.checkbox" (sort)="onSort($event)"
                 (select)="customChkboxOnSelect($event)">
                 <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
@@ -103,6 +104,7 @@
                 </ngx-datatable-column> -->
 
             </ngx-datatable>
+            }
         </div>
     </div>
 </section>

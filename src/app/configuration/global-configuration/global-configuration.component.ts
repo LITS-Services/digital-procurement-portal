@@ -35,12 +35,25 @@ export class GlobalConfigurationComponent implements OnInit {
   pageSize = 10;
   totalPages = 0;
   totalItems = 0;
+
+  datatableVisible: boolean = true;
+
   constructor(private systemService: SystemService,
     private cdr: ChangeDetectorRef,
     public toastr: ToastrService,
     private router: Router,
     private permissionService: PermissionService
   ) { }
+
+  onAutoResize(): void {
+    this.datatableVisible = false;
+    this.cdr.detectChanges(); // destroy
+
+    requestAnimationFrame(() => {
+      this.datatableVisible = true;
+      this.cdr.detectChanges(); // recreate
+    });
+  }
 
   ngOnInit(): void {
     this.loadGlobalConfigs();

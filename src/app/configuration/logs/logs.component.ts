@@ -37,6 +37,8 @@ export class LogsComponent implements OnInit {
   selectedLog: any = null;
   searchForm: FormGroup;
 
+  datatableVisible: boolean = true;
+
   @ViewChild('logDetailModal') logDetailModal!: TemplateRef<any>;
   
   constructor(
@@ -48,6 +50,16 @@ export class LogsComponent implements OnInit {
   ) { 
     this.searchForm = this.fb.group({
       searchTerm: ['']
+    });
+  }
+
+  onAutoResize(): void {
+    this.datatableVisible = false;
+    this.cdr.detectChanges(); // destroy
+
+    requestAnimationFrame(() => {
+      this.datatableVisible = true;
+      this.cdr.detectChanges(); // recreate
     });
   }
 

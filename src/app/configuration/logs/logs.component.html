@@ -13,7 +13,7 @@
           </a>
         </li>
       </ul>
-      
+
       <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
         <i class="ft-sliders"></i><label class="ml-1 mt-1">Filter</label>
       </button>
@@ -27,7 +27,7 @@
     <div class="filter-search">
       <i class="ft-filter search-icon"></i>
       <input style="padding-left: 3.4em;" type="text" class="form-control border-left-0 cstm-ui-input"
-        placeholder="{{ selectedTab === 'exception' ? 'Search by Exception Type, Message...' : 'Search by Username, Table Name...' }}" 
+        placeholder="{{ selectedTab === 'exception' ? 'Search by Exception Type, Message...' : 'Search by Username, Table Name...' }}"
         [formControl]="searchForm.get('searchTerm')" />
     </div>
 
@@ -67,9 +67,7 @@
       [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
       [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected"
       [selectionType]="SelectionType.single" (rowClick)="onRowClick($event)" (activate)="onActivate($event)"
-      (clickType)="'single'"
-      appPermission [appPermFormId]="FORM_IDS.LOGS"
-      [appPermDisable]="'write'">
+      (clickType)="'single'" appPermission [appPermFormId]="FORM_IDS.LOGS" [appPermDisable]="'write'">
 
       <!-- Sr. No -->
       <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
@@ -104,9 +102,7 @@
       [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
       [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected"
       [selectionType]="SelectionType.single" (rowClick)="onRowClick($event)" (activate)="onActivate($event)"
-      (clickType)="'single'"
-      appPermission [appPermFormId]="FORM_IDS.LOGS"
-      [appPermDisable]="'write'">
+      (clickType)="'single'" appPermission [appPermFormId]="FORM_IDS.LOGS" [appPermDisable]="'write'">
 
       <!-- Sr. No -->
       <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
@@ -118,7 +114,7 @@
       <ngx-datatable-column name="Table Name" prop="tableName"></ngx-datatable-column>
       <ngx-datatable-column name="Action Type" prop="actionType"></ngx-datatable-column>
       <!-- <ngx-datatable-column name="TimeStamp" prop="timestamp"></ngx-datatable-column> -->
-       <ngx-datatable-column name="TimeStamp" prop="timestamp">
+      <ngx-datatable-column name="TimeStamp" prop="timestamp">
         <ng-template ngx-datatable-cell-template let-row="row">
           {{ row.timestamp | date:'dd-MM-yyyy HH:mm a' }}
         </ng-template>
@@ -182,11 +178,11 @@
       <ng-container *ngIf="selectedTab === 'audit-trails'">
         <div class="mb-2">
           <label class="form-label">Table Name</label>
-          <input type="text" class="form-control" [value]="selectedLog.tableName"disabled />
+          <input type="text" class="form-control" [value]="selectedLog.tableName" disabled />
         </div>
         <div class="mb-2">
           <label class="form-label">Action Type</label>
-          <input type="text" class="form-control" [value]="selectedLog.actionType"disabled />
+          <input type="text" class="form-control" [value]="selectedLog.actionType" disabled />
         </div>
         <div class="mb-2">
           <label class="form-label">Username</label>

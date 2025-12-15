@@ -19,22 +19,24 @@
             <span class="vl"></span>
 
             <!-- Create Template Button -->
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" appPermission [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST"
-              [appPermDisable]="'write'" (click)="createTemplate()">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" appPermission
+              [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST" [appPermDisable]="'write'" (click)="createTemplate()">
               <i class="ft-edit"></i>
               <label class="ml-1 mt-1">Create Email Template</label>
             </button>
 
             <!-- Delete Template Button -->
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="confirmDelete()" appPermission
-              [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST" [appPermDisable]="'delete'" [disabled]="isDeleteButtonDisabled">
+              [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST" [appPermDisable]="'delete'"
+              [disabled]="isDeleteButtonDisabled">
               <i class="ft-trash-2"></i>
               <label class="ml-1 mt-1">Delete</label>
             </button>
 
             <!-- Edit Template Button -->
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="editTemplate()" appPermission
-              [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST" [appPermDisable]="'write'" [disabled]="isEditButtonDisabled">
+              [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST" [appPermDisable]="'write'"
+              [disabled]="isEditButtonDisabled">
               <i class="ft-edit"></i>
               <label class="ml-1 mt-1">Edit</label>
             </button>
@@ -44,22 +46,22 @@
       </div>
 
       <!-- Datatable -->
-      <ngx-datatable class="bootstrap core-bootstrap" [rows]="rows" [columnMode]="'force'" [headerHeight]="50"
-                     [footerHeight]="50" [columns]="columns" rowHeight="auto" [limit]="15" [scrollbarH]="true"
-                     [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
-                     [selectionType]="SelectionType.checkbox" (sort)="onSort($event)"
-                     (select)="customChkboxOnSelect($event)">
+      @if(datatableVisible){
+      <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap" [rows]="rows"
+        [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [columns]="columns" rowHeight="auto" [limit]="15"
+        [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
+        [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 
         <!-- Checkbox Column -->
         <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
-                              [resizeable]="false">
+          [resizeable]="false">
           <ng-template ngx-datatable-header-template>
             <div class="custom-control cstm-checkbox-form">
               <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
             </div>
           </ng-template>
           <ng-template ngx-datatable-cell-template let-isSelected="isSelected"
-                       let-onCheckboxChangeFn="onCheckboxChangeFn">
+            let-onCheckboxChangeFn="onCheckboxChangeFn">
             <div class="custom-control custom-checkbox cstm-checkbox-form">
               <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
             </div>
@@ -75,10 +77,11 @@
 
         <!-- Dynamic Columns from TS -->
         <ngx-datatable-column *ngFor="let col of columns" [name]="col.name" [prop]="col.prop"
-                              [width]="col.width || 100">
+          [width]="col.width || 100">
         </ngx-datatable-column>
 
       </ngx-datatable>
+      }
 
     </div>
   </div>

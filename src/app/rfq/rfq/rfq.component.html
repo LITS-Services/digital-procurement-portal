@@ -14,7 +14,7 @@
             <div class="card cstm-ui-card">
                 <div>
                     <div class="d-flex justify-content-between align-items-center cstm-action-bar">
-                        <div class="position-relative">
+                        <div>
 
                             <button class="btn btn-lg mr-1 " type="button" (click)="homePage()">
                                 <i class="ft-arrow-left"></i></button>
@@ -29,9 +29,8 @@
                             </button> -->
 
                             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()"
-                            appPermission [appPermFormId]="FORM_IDS.REQUEST_FOR_QUOTATION"
-                            [appPermDisable]="'delete'"
-                                [disabled]="isDeleteButtonDisabled">
+                                appPermission [appPermFormId]="FORM_IDS.REQUEST_FOR_QUOTATION"
+                                [appPermDisable]="'delete'" [disabled]="isDeleteButtonDisabled">
                                 <i class="ft-trash"></i><label class="ml-1 mt-1 btn-label">Delete</label>
                             </button>
 
@@ -83,8 +82,9 @@
             </div>
 
             <!-- Content -->
-            <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="rfqData" [columnMode]="'force'"
-                [headerHeight]="50" [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'"
+            @if(datatableVisible){
+            <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap" [rows]="rfqData"
+                [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'"
                 [limit]="query.pageSize" [count]="totalItems" [externalPaging]="true" [offset]="query.currentPage - 1"
                 (page)="onPageChange($event)" [scrollbarH]="true" [loadingIndicator]="loading"
                 [selected]="chkBoxSelected" [swapColumns]="false" [selectionType]="SelectionType.checkbox"
@@ -112,15 +112,14 @@
                     </ng-template>
                 </ngx-datatable-column>
 
-            <ngx-datatable-column name="RFQ No." prop="rfqNo">
-                <ng-template ngx-datatable-cell-template let-row="row">
-                    <a href="javascript:void(0)" (click)="openRfq(row)"
-                    appPermission [appPermFormId]="FORM_IDS.REQUEST_FOR_QUOTATION"
-                    [appPermDisable]="'write'">
-                        {{ row.rfqNo }}
-                    </a>
-                </ng-template>
-            </ngx-datatable-column>
+                <ngx-datatable-column name="RFQ No." prop="rfqNo">
+                    <ng-template ngx-datatable-cell-template let-row="row">
+                        <a href="javascript:void(0)" (click)="openRfq(row)" appPermission
+                            [appPermFormId]="FORM_IDS.REQUEST_FOR_QUOTATION" [appPermDisable]="'write'">
+                            {{ row.rfqNo }}
+                        </a>
+                    </ng-template>
+                </ngx-datatable-column>
 
                 <ngx-datatable-column name="Status" prop="requestStatus">
                 </ngx-datatable-column>
@@ -188,6 +187,8 @@
                 </ngx-datatable-column> -->
 
             </ngx-datatable>
+            }
+
         </div>
     </div>
 </section>

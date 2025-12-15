@@ -13,15 +13,15 @@
       <div class="card cstm-ui-card">
         <div>
           <div class="d-flex justify-content-between align-items-center cstm-action-bar">
-            <div class="position-relative">
+            <div>
 
               <button class="btn btn-lg mr-1 " type="button" (click)="homePage()">
                 <i class="ft-arrow-left"></i></button>
               <span class="vl"></span>
 
               <!-- Company Review Button -->
-              <button type="button" class="btn btn-sm cstm-ui-table-btn ml-2"  [disabled]="isEditButtonDisabled || isSelectedRowNew()"
-                (click)="editSelectedRow()">
+              <button type="button" class="btn btn-sm cstm-ui-table-btn ml-2"
+                [disabled]="isEditButtonDisabled || isSelectedRowNew()" (click)="editSelectedRow()">
                 <i class="ft-edit"></i>
                 <label class="ml-1 mt-1">Company Review</label>
               </button>
@@ -68,9 +68,10 @@
       </div>
 
       <!-- Table Content -->
-      <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="rows" [columnMode]="'force'"
-        [headerHeight]="50" [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'" [limit]="15"
-        [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
+      @if(datatableVisible){
+      <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap" [rows]="rows"
+        [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'"
+        [limit]="15" [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
         [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 
         <!-- Checkbox Column -->
@@ -153,6 +154,7 @@
           </ng-template>
         </ngx-datatable-column>
       </ngx-datatable>
+      }
 
     </div>
   </div>

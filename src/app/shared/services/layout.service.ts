@@ -17,6 +17,7 @@ export class LayoutService {
   toggleNotiSidebar$ = this.toggleNotiSidebar.asObservable();
 
   toggleSidebarSmallScreen(toggle: boolean) {
+      console.log('[LayoutService] emitting toggleSidebar:', toggle);
     this.toggleSidebar.next(toggle);
   }
 

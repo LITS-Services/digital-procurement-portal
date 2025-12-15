@@ -18,10 +18,8 @@
             </button>
             <span class="vl"></span>
 
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" 
-            appPermission [appPermFormId]="FORM_IDS.INVITATION"
-                [appPermDisable]="'write'"
-            (click)="CreatInvitations()">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" appPermission
+              [appPermFormId]="FORM_IDS.INVITATION" [appPermDisable]="'write'" (click)="CreatInvitations()">
               <i class="ft-mail"></i>
               <label class="ml-1 mt-1">Create Invitation</label>
             </button>
@@ -42,10 +40,7 @@
             </button>
 
             <!-- ✅ NEW: Resend Button -->
-            <button
-              type="button"
-              class="btn btn-sm cstm-ui-table-btn"
-              [disabled]="isResendButtonDisabled"
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isResendButtonDisabled"
               (click)="resendInvitation()">
               <i class="ft-repeat"></i>
               <label class="ml-1 mt-1">Resend</label>
@@ -55,36 +50,21 @@
       </div>
 
       <!-- Content -->
-      <ngx-datatable
-        class="bootstrap core-bootstrap"
-        [rows]="rows"
-        [columnMode]="'force'"
-        [headerHeight]="50"
-        [footerHeight]="50"
-        [columns]="columns"
-        rowHeight="auto"
-        [limit]="15"
-        [scrollbarH]="true"
-        [loadingIndicator]="loading"
-        [selected]="chkBoxSelected"
-        [swapColumns]="false"
-        [selectionType]="SelectionType.checkbox"
-        (sort)="onSort($event)"
-        (select)="customChkboxOnSelect($event)"
-      >
+      @if(datatableVisible){
+      <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap" [rows]="rows"
+        [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [columns]="columns" rowHeight="auto" [limit]="15"
+        [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
+        [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
         <!-- Checkbox Column -->
-        <ngx-datatable-column
-          [width]="50"
-          [sortable]="false"
-          [canAutoResize]="false"
-          [draggable]="false"
+        <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
           [resizeable]="false">
           <ng-template ngx-datatable-header-template>
             <div class="custom-control cstm-checkbox-form">
               <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
             </div>
           </ng-template>
-          <ng-template ngx-datatable-cell-template let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
+          <ng-template ngx-datatable-cell-template let-isSelected="isSelected"
+            let-onCheckboxChangeFn="onCheckboxChangeFn">
             <div class="custom-control custom-checkbox cstm-checkbox-form">
               <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
             </div>
@@ -99,13 +79,11 @@
         </ngx-datatable-column>
 
         <!-- Dynamic Columns -->
-        <ngx-datatable-column
-          *ngFor="let col of columns"
-          [name]="col.name"
-          [prop]="col.prop"
+        <ngx-datatable-column *ngFor="let col of columns" [name]="col.name" [prop]="col.prop"
           [width]="col.width || 100">
         </ngx-datatable-column>
       </ngx-datatable>
+      }
     </div>
   </div>
 </section>

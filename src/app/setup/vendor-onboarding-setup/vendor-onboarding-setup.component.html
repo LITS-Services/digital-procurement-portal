@@ -17,22 +17,16 @@
               <i class="ft-arrow-left"></i>
             </button>
             <span class="vl"></span>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new workflow"
-            appPermission [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING"
-                [appPermDisable]="'write'"
-              (click)="NewVendorOnboarding()">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new workflow" appPermission
+              [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING" [appPermDisable]="'write'" (click)="NewVendorOnboarding()">
               <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
             </button>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" 
-            appPermission [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING"
-                [appPermDisable]="'write'"
-            (click)="onUpdate()">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" appPermission
+              [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING" [appPermDisable]="'write'" (click)="onUpdate()">
               <i class="ft-edit"></i><label class="ml-1 mt-1">Edit</label>
             </button>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" 
-            appPermission [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING"
-                [appPermDisable]="'delete'"
-            (click)="openDeleteModal()">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" appPermission
+              [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING" [appPermDisable]="'delete'" (click)="openDeleteModal()">
               <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
             </button>
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="refreshData()">
@@ -43,10 +37,11 @@
       </div>
 
       <!-- Data Table -->
-      <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="vendorOnboardingData" [columnMode]="'force'"
-        [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [limit]="15"
-        [selected]="chkBoxSelected" [selectionType]="SelectionType.checkbox" (sort)="onSort($event)"
-        (select)="customChkboxOnSelect($event)">
+      @if(datatableVisible){
+      <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap"
+        [rows]="vendorOnboardingData" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50"
+        [rowHeight]="'auto'" [scrollbarH]="true" [limit]="15" [selected]="chkBoxSelected"
+        [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 
         <!-- Checkbox Column -->
         <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
@@ -133,6 +128,7 @@
 
 
       </ngx-datatable>
+      }
 
     </div>
   </div>
