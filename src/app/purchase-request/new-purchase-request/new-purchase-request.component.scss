@@ -184,6 +184,8 @@ form label, .form-group label {
 .ngx-datatable ::ng-deep .datatable-header-cell {
   padding: 0.75rem 1.25rem;
   border-bottom: 1px solid #e5e7eb;
+
+}
 .items-card{
   padding: 12px 24px !important;
 }
@@ -240,6 +242,7 @@ form label, .form-group label {
 
 .ngx-datatable ::ng-deep .datatable-body i {
   font-size: 18px !important;
+}
 .ngx-datatable ::ng-deep .datatable-header-inner .sort-btn {
   color: #667085 !important;              /* muted header text */
   font-size: 12px;
@@ -269,7 +272,6 @@ form label, .form-group label {
 }
 
 /* CELLS */
-.ngx-datatable ::ng-deep .datatable-body .datatable-body-cell {
 /* hover row */
 .ngx-datatable ::ng-deep .datatable-body .datatable-body-row:hover .datatable-body-cell {
   background-color: #eef4ff;
@@ -331,14 +333,8 @@ form label, .form-group label {
   border-radius: 50% !important;
 }
 
-.vl {
-    border-left: 1.4px solid #cccccc;
-    height: 100%;
-    position: absolute;
-    margin-left: -3px;
-  }
 
-  ::ng-deep .accordion .card .card-header button label{
+
   ::ng-deep .accordion .card .card-header button label{
     font-size: 16px !important; 
     font-weight: 500 !important;
