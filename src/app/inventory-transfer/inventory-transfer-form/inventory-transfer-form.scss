@@ -1,0 +1,508 @@
+form label, .form-group label {
+    margin-bottom: 8px;
+    color: #262626 !important;
+    font-weight: 400;
+  }
+  .example-action-buttons {
+    display: flex;
+    justify-content: flex-end; /* Move buttons to the right */
+  }
+
+.trash-icon {
+  // transition: transform 0.3s ease, color 0.3s ease;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.center-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Ensure the content is vertically centered */
+}
+
+.hint-ellipsis {
+  display: flex;
+  align-items: center;
+  min-width: 0;       
+}
+
+.hint-ellipsis .hint-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #53667f !important;
+}
+
+
+
+.trash-icon:hover {
+  transform: scale(2.5); /* Increase the size */
+  color: black; /* Change color on hover */
+}
+
+
+  .icon-btn{
+    padding: -0.1rem 1.25rem !important;
+  }
+  .example-action-buttons button {
+    margin-left: 10px; /* Add margin between buttons */
+  }
+  .avatar-container {
+    width: 64px; /* Set the width of the container */
+    height: 64px; /* Set the height of the container */
+    border-radius: 50%; /* Make it circular */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.avatar-container img {
+    border-radius: 50%; /* Ensure the image inside is also circular */
+}
+
+.panel-icon {
+    margin-right: 10px;
+    color: black;
+     /* Adjust the spacing between the icon and the title */
+  }
+  
+  /* Style the icon as needed */
+  .panel-icon i {
+    font-size: 1.5rem; /* Adjust the icon size */
+    vertical-align: middle; /* Align the icon vertically */
+  }
+  .border {
+    border: 1px solid #ced4da; /* Define border style */
+    border-radius: 4px; /* Optionally, add border-radius for rounded corners */
+    margin-bottom: 10px; /* Optionally, add some margin for spacing */
+}
+
+
+
+   ::ng-deep ngb-accordion .card-body {
+      padding: 0px 0px 1.5rem 0px !important;
+      padding: 0px 0px 1.5rem 0px !important;
+    }
+
+::ng-deep .ngx-datatable{
+  .sortable .sort-btn:before {
+      // font-family: data-table;
+      // content: "c";
+      display: none !important;
+  }
+  .sortable .sort-btn.datatable-icon-down:before {
+      // content: "f";
+      display: none !important;
+
+  }
+  .sortable .sort-btn.datatable-icon-up:before {
+      // content: "e";
+      display: none !important;
+  }
+}
+
+.datatable-body-cell {
+    padding: 0.30rem !important;
+    text-align: left !important;
+    vertical-align: top !important;
+    line-height: 20px !important;
+  }
+
+  .dropdown-content {
+    position: absolute; /* Set the dropdown to absolute position */
+    // top: calc(100% + 10px); /* Position it below the container */
+    left: 0;
+    overflow: visible !important;
+    // z-index: 9999; /* Set a high z-index */
+    display: none; /* Hide the modal by default */
+    background-color: #fff; /* Set background color */
+    border: 1px solid #ccc; /* Add border */
+    padding: 10px; /* Add padding */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Add shadow */
+  }
+ .cashback-icon{
+  background-image: url(/assets/img/cashback.png);
+  height: 16px;
+  width: 16px;
+ }
+ a.disabled {
+  cursor: not-allowed;
+  color: #d1d4d7 !important;
+  pointer-events: none; /* Prevents click interactions */
+}
+
+.card{
+  box-shadow: none !important;
+}
+
+.card{
+  box-shadow: none !important;
+}
+
+.card-accordion{
+    background-color: #f2f7ff;
+    padding: 0rem;
+    background-color: #f2f7ff;
+    padding: 0rem;
+    border-radius: 0.5rem;
+    
+}
+
+.items-card{
+  padding: 12px 24px !important;
+}
+
+::ng-deep .accordion .card {
+    border-top: 1px solid #e7e7e7 !important;
+    //border-bottom: 1px solid #cbcbcb !important;
+    border-radius: 0px !important;
+}
+
+::ng-deep .accordion .card .card-header button {
+  background: none !important;
+}
+::ng-deep .accordion .card .card-header button i {
+  color: black !important;
+}
+/* TABLE WRAPPER (card look) */
+.ngx-datatable.bootstrap.core-bootstrap {
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow:none !important;
+  overflow: hidden;
+}
+
+/* HEADER */
+.ngx-datatable ::ng-deep .datatable-header {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.ngx-datatable ::ng-deep .datatable-header-inner {
+  background-color: #FAFAFA !important;   /* light grey/white */
+  border-radius: 0;                        /* no rounded header band */
+}
+
+.ngx-datatable ::ng-deep .datatable-header-cell {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+
+}
+.items-card{
+  padding: 12px 24px !important;
+}
+
+::ng-deep .accordion .card {
+    border-top: 1px solid #e7e7e7 !important;
+    //border-bottom: 1px solid #cbcbcb !important;
+    border-radius: 0px !important;
+}
+
+::ng-deep .accordion .card .card-header button {
+  background: none !important;
+}
+::ng-deep .accordion .card .card-header button i {
+  color: black !important;
+}
+/* TABLE WRAPPER (card look) */
+.ngx-datatable.bootstrap.core-bootstrap {
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow:none !important;
+  overflow: hidden;
+}
+
+/* HEADER */
+.ngx-datatable ::ng-deep .datatable-header {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.ngx-datatable ::ng-deep .datatable-header-inner {
+  background-color: #FAFAFA !important;   /* light grey/white */
+  border-radius: 0;                        /* no rounded header band */
+}
+
+.ngx-datatable ::ng-deep .datatable-header-cell {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+
+.ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
+.ngx-datatable ::ng-deep .datatable-header-inner .sort-btn {
+  color: #667085 !important;              /* muted header text */
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* BODY ROWS */
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-row {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.ngx-datatable ::ng-deep .datatable-body i {
+  font-size: 18px !important;
+}
+.ngx-datatable ::ng-deep .datatable-header-inner .sort-btn {
+  color: #667085 !important;              /* muted header text */
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* BODY ROWS */
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-row {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.ngx-datatable ::ng-deep .datatable-body i {
+  font-size: 18px !important;
+}
+
+/* light blue band on even rows (like screenshot) */
+/* light blue band on even rows (like screenshot) */
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-row.datatable-row-even {
+  background-color: #f7fbff !important;              /* soft blue */
+}
+
+/* hover row */
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-row:hover .datatable-body-cell {
+  background-color: #eef4ff;
+}
+
+/* CELLS */
+/* hover row */
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-row:hover .datatable-body-cell {
+  background-color: #eef4ff;
+}
+
+/* CELLS */
+.ngx-datatable ::ng-deep .datatable-body .datatable-body-cell {
+  text-align: left;
+  padding: 0.65rem 1.25rem;
+  vertical-align: middle;
+  color: #334155;
+}
+
+// i{
+//   font-size: 18px !important;
+// }
+
+.cell-ellipsis {
+  display: block;      
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+// i{
+//   font-size: 18px !important;
+// }
+
+.cell-ellipsis {
+  display: block;      
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.modal-centered .modal-dialog {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh; /* Vertically center the modal */
+}
+
+.address-card .card-accordion{
+  background-color: white !important;
+}
+
+.address-card .card-accordion{
+  background-color: white !important;
+}
+
+.modal-centered .modal-dialog-centered {
+  margin: 0; /* Remove margin to ensure true centering */
+}
+.btn .badge {
+  position: relative !important;
+  top: -1px !important;
+  left: -2px !important;
+  padding: 5px !important;
+  border-radius: 50% !important;
+}
+
+
+
+  ::ng-deep .accordion .card .card-header button label{
+    font-size: 16px !important; 
+    font-weight: 500 !important;
+   color: #116AEF !important;
+    margin-bottom: 0.2rem !important;
+    align-items: center;
+    display: inline-block;
+  }
+
+  /* Generic responsive form grid */
+.form-grid {
+  display: grid;
+  gap: 0.75rem 1.25rem;
+  --form-grid-cols: 1;
+  grid-template-columns: repeat(var(--form-grid-cols), minmax(0, 1fr));
+}
+
+/* Full-width item (e.g. Subject, long text areas) */
+.form-grid__item--full {
+  grid-column: 1 / -1;
+}
+
+.form-grid__item--span {
+  grid-column: span calc(var(--form-grid-cols) - 1);
+}
+
+.form-grid__item--address {
+  grid-column: span calc(var(--form-grid-cols) - 3);
+}
+
+/* Breakpoints tuned for your case:
+   >1600px   → 5 cols (desktop 1920 @100%)
+   1300–1600 → 4 cols (1920 @125%)
+   992–1300  → 3 cols (1920 @150% or smaller laptop)
+   576–992   → 2 cols (tablets)
+   <576      → 1 col (mobile) */
+
+@media (min-width: 1600px) {
+  .form-grid { --form-grid-cols: 5; }
+}
+
+@media (min-width: 1300px) and (max-width: 1599.98px) {
+  .form-grid { --form-grid-cols: 4; }
+  .form-grid__item--address {
+  grid-column: span calc(var(--form-grid-cols) - 3) !important;
+}
+}
+
+@media (min-width: 992px) and (max-width: 1299.98px) {
+  .form-grid { --form-grid-cols: 3; }
+
+    .form-grid__item--address {
+   grid-column: 1 / -1;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+  .form-grid { --form-grid-cols: 2; }
+}
+
+@media (max-width: 575.98px) {
+  .form-grid { --form-grid-cols: 1; }
+}
+
+
+.bulk-upload-btn {
+  border-radius: 9px;
+  border: 1px solid #116AEF;
+  color: #116AEF;
+  background-color: #ffffff;
+  font-weight: 400;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.bulk-upload-btn i {
+  font-size: 14px;
+}
+
+.bulk-upload-btn:hover {
+  background-color: #e8f0fe;
+}
+
+.bulk-upload-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+///accordion css
+:host ::ng-deep .accordion {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* each panel container */
+:host ::ng-deep .accordion .accordion-item {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  border:none;
+   //border-bottom: 1px solid #f0f0f0 !important;
+}
+
+/* header wrapper */
+:host ::ng-deep .accordion .accordion-header {
+  border-top: 1px solid #f0f0f0;
+border-bottom: none !important;
+}
+
+/* clickable button */
+:host ::ng-deep .accordion .accordion-button {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 1rem 0rem !important;
+  align-items: center;
+    border: none !important;
+}
+
+/* remove default bootstrap caret */
+:host ::ng-deep .accordion .accordion-button::after {
+  display: none !important;
+}
+
+/* your label styling (old: .card-header button label) */
+:host ::ng-deep .accordion .accordion-button label {
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  color: #116AEF !important;
+  margin-bottom: 0 !important;
+}
+
+/* icon inside header button */
+:host ::ng-deep .accordion .accordion-button i {
+  color: #000 !important;
+}
+
+/* collapsed vs expanded backgrounds */
+:host ::ng-deep .accordion .accordion-button.collapsed {
+  background: #fff !important;
+}
+
+:host ::ng-deep .accordion .accordion-button:not(.collapsed) {
+  background: #fff !important;
+}
+
+/* panel body wrapper */
+:host ::ng-deep .accordion .accordion-body {
+  padding: 0px 0px 1.5rem 0px !important; /* your old card-body rule */
+  background-color: white;
+}
+
+
+:host ::ng-deep .address-card .accordion-body {
+  background: #fff !important;
+}
+
+:host ::ng-deep .accordion .accordion-button .accordion-chevron {
+  transition: transform 0.25s ease;
+}
+
+/* OPEN state */
+:host ::ng-deep .accordion .accordion-button:not(.collapsed) .accordion-chevron {
+  transform: rotate(180deg);
+}
+
+/* CLOSED state (optional explicit) */
+:host ::ng-deep .accordion .accordion-button.collapsed .accordion-chevron {
+  transform: rotate(0deg);
+}

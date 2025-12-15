@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
   selector: 'app-inventory-transfer-list',
   templateUrl: './inventory-transfer-list.component.html',
   styleUrls: ['./inventory-transfer-list.component.scss'],
+  standalone: false,
 })
 export class InventoryTransferListComponent implements OnInit {
   FORM_IDS = FORM_IDS;
@@ -87,20 +88,36 @@ export class InventoryTransferListComponent implements OnInit {
     });
   }
 
-  onView() {
-    if (!this.permissionService.can(FORM_IDS.PURCHASE_REQUEST, 'read')) return;
-    if (this.chkBoxSelected.length !== 1) {
-      this.toastr.info('Please select exactly one record to view.');
-      return;
-    }
+  // onView() {
+  //   if (!this.permissionService.can(FORM_IDS.PURCHASE_REQUEST, 'read')) return;
+  //   if (this.chkBoxSelected.length !== 1) {
+  //     this.toastr.info('Please select exactly one record to view.');
+  //     return;
+  //   }
 
-    const selectedId = this.chkBoxSelected[0].requestId;
+  //   const selectedId = this.chkBoxSelected[0].requestId;
 
-    this.router.navigate(['/purchase-request/new-purchase-request'], {
-      queryParams: { id: selectedId, mode: 'view' },
-      skipLocationChange: true,
-    });
+  //   this.router.navigate(['/purchase-request/new-purchase-request'], {
+  //     queryParams: { id: selectedId, mode: 'view' },
+  //     skipLocationChange: true,
+  //   });
+  // }
+
+  onViewInventoryTransfer() {
+  if (!this.permissionService.can(FORM_IDS.PURCHASE_REQUEST, 'read')) return;
+
+  if (this.chkBoxSelected.length !== 1) {
+    this.toastr.info('Please select exactly one record.');
+    return;
   }
+
+  const selectedId = this.chkBoxSelected[0].requestId;
+
+  this.router.navigate(['/inventory-transfer/inventory-transfer-form'], {
+    queryParams: { id: selectedId },
+    skipLocationChange: true
+  });
+}
 
   homePage() {
     this.router.navigate(['/dashboard/dashboard1']);
@@ -209,19 +226,16 @@ export class InventoryTransferListComponent implements OnInit {
   }
 
   openPR(row: any) {
-    const currentUserId = localStorage.getItem('userId') || '';
-    const isSubmitter = row.submitterId?.toString() === currentUserId;
-
-    // const viewMode = !isSubmitter;
-
-    this.router.navigate(['/purchase-request/new-purchase-request'], {
+  this.router.navigate(
+    ['/inventory-transfer/inventory-transfer-form'],
+    {
       queryParams: {
-        id: row.requestId,
-        mode: 'inventory-transfer',
+        id: row.requestId
       },
-      skipLocationChange: true,
-    });
-  }
+      skipLocationChange: true
+    }
+  );
+}
 
   onUpdate() {
     if (!this.permissionService.can(FORM_IDS.PURCHASE_REQUEST, 'write')) return;

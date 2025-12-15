@@ -1,8 +1,9 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
 import { LookupService } from 'app/shared/services/lookup.service';
+import { PurchaseRequestAttachmentModalComponent } from 'app/shared/modals/purchase-request-attachment-modal/purchase-request-attachment-modal.component';
 
 @Component({
   selector: 'app-pr-inventory-management',
@@ -27,7 +28,8 @@ export class PrInventoryManagementComponent implements OnInit {
     private fb: FormBuilder,
     private purchaseRequestService: PurchaseRequestService,
     private lookupService: LookupService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private modalService: NgbModal
   ) { }
 
   ngOnInit(): void {
@@ -136,6 +138,27 @@ isAddressDisabled(index: number): boolean {
   return !ctrl || ctrl.disabled;
 }
 
+openAttachmentView(row: any): void {
+  if (!row?.hasAttachment) return;
+
+  const item = row?.raw; // 👈 original purchase item you stored
+  if (!item) return;
+
+  const modalRef = this.modalService.open(PurchaseRequestAttachmentModalComponent, {
+    backdrop: 'static',
+    size: 'lg',
+    centered: true,
+  });
+
+  // force view mode (no upload allowed)
+  modalRef.componentInstance.viewMode = true;
+
+  // send existing attachments only
+  modalRef.componentInstance.data = {
+    existingAttachment: (item.attachments || []).filter((a: any) => !a.isDeleted),
+    purchaseItemId: item.id || 0
+  };
+}
 
   onSubmit(): void {
     const payload = {

@@ -1,0 +1,209 @@
+<section>
+  <div class="row">
+    <div class="col-12">
+
+      <!-- Header -->
+      <div class="row">
+        <div class="col-md-12" style="margin-top: -0.25rem;">
+          <h4 class="heading">
+            Inventory Transfer
+          </h4>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="card cstm-ui-card sticky-toolbar">
+        <div class="row align-items-center" *ngIf="!loading">
+          <div class="col-md-6 col-6 cstm-action-bar">
+            <button class="btn btn-lg mr-1" type="button" (click)="goBack()">
+              <i class="ft-arrow-left"></i>
+            </button>
+          </div>
+
+          <div class="col-md-6 col-6 text-end cstm-action-bar">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn">
+              <i class="ft-printer"></i>
+              <label class="ml-1 mt-1 btn-label">Print</label>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Card -->
+      <div class="card sticky-toolbar-target">
+        <div class="card-body">
+
+          <!-- READ ONLY PR FORM -->
+          <form [formGroup]="newPurchaseRequestForm">
+
+            <div class="form-grid mb-2">
+              <div class="form-grid__item">
+                <label>Requisition No.</label>
+                <input class="form-control custom-input" formControlName="requisitionNo" disabled>
+              </div>
+
+              <div class="form-grid__item">
+                <label>Status</label>
+                <input class="form-control custom-input" formControlName="status" disabled>
+              </div>
+
+              <div class="form-grid__item">
+                <label>Submitted Date</label>
+                <input type="date" class="form-control custom-input" formControlName="submittedDate" disabled>
+              </div>
+
+              <div class="form-grid__item">
+                <label>Delivery Location</label>
+                <input class="form-control custom-input" formControlName="deliveryLocation" disabled>
+              </div>
+
+              <div class="form-grid__item">
+                <label>Receiver Name</label>
+                <input class="form-control custom-input" formControlName="receiverName" disabled>
+              </div>
+
+              <div class="form-grid__item">
+                <label>Receiver Contact</label>
+                <input class="form-control custom-input" formControlName="receiverContact" disabled>
+              </div>
+
+              <div class="form-grid__item">
+                <label>Department</label>
+                <input class="form-control custom-input" formControlName="department" disabled>
+              </div>
+
+              <div class="form-grid__item form-grid__item--full">
+                <label>Subject</label>
+                <input class="form-control custom-input" formControlName="subject" disabled>
+              </div>
+            </div>
+
+            <!-- Receiving Address -->
+            <div ngbAccordion class="address-card">
+              <div ngbAccordionItem [collapsed]="false">
+                <h2 ngbAccordionHeader>
+                  <button ngbAccordionButton type="button" class="w-100 p-0 bg-transparent border-0">
+                    <div class="row">
+                      <div class="col-md-12 d-flex justify-content-between align-items-center">
+                        <label class="address-label mb-0">Receiving Address</label>
+                        <i class="ft ft-chevron-down"></i>
+                      </div>
+                    </div>
+                  </button>
+                </h2>
+
+                <div ngbAccordionCollapse>
+                  <div ngbAccordionBody>
+                    <div class="form-grid w-100">
+                      <div class="form-grid__item">
+                        <label>Country</label>
+                        <input class="form-control custom-input" formControlName="country" disabled>
+                      </div>
+
+                      <div class="form-grid__item">
+                        <label>City</label>
+                        <input class="form-control custom-input" formControlName="city" disabled>
+                      </div>
+
+                      <div class="form-grid__item">
+                        <label>Region</label>
+                        <input class="form-control custom-input" formControlName="region" disabled>
+                      </div>
+
+                      <div class="form-grid__item">
+                        <label>Post Code</label>
+                        <input class="form-control custom-input" formControlName="postCode" disabled>
+                      </div>
+
+                      <div class="form-grid__item form-grid__item--address">
+                        <label>Address 1</label>
+                        <input class="form-control custom-input" formControlName="address" disabled>
+                      </div>
+
+                      <div class="form-grid__item form-grid__item--address">
+                        <label>Address 2</label>
+                        <input class="form-control custom-input" formControlName="address2" disabled>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </form>
+
+          <!-- ITEMS TABLE (READ ONLY) -->
+          <div class="col-12 p-0 mt-2">
+            <ngx-datatable
+              autoResize       
+              class="bootstrap core-bootstrap"
+              [rows]="newPurchaseItemData"
+              [columnMode]="'force'"
+              [headerHeight]="50"
+              [footerHeight]="50"
+              rowHeight="auto"
+              [scrollbarH]="true">
+
+              <ngx-datatable-column name="Sr" [width]="50">
+                <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                  {{ rowIndex + 1 }}
+                </ng-template>
+              </ngx-datatable-column>
+
+              <ngx-datatable-column name="Item">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  {{ getItemNameById(row.itemId) }}
+                </ng-template>
+              </ngx-datatable-column>
+
+              <ngx-datatable-column name="Description">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  {{ row.itemDescription }}
+                </ng-template>
+              </ngx-datatable-column>
+
+              <ngx-datatable-column name="Qty" [width]="80">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  {{ row.orderQuantity }}
+                </ng-template>
+              </ngx-datatable-column>
+
+              <ngx-datatable-column name="Amount" [width]="120">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  {{ row.amount | number }}
+                </ng-template>
+              </ngx-datatable-column>
+
+                <ngx-datatable-column name="From Company">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  {{ row.procurementCompany }}
+                </ng-template>
+              </ngx-datatable-column>
+
+                <ngx-datatable-column name="Address">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                  {{ row.procurementCompanyAddressDetails }}
+                </ng-template>
+              </ngx-datatable-column>
+
+              <ngx-datatable-column name="Attachments" [width]="120" [sortable]="false">
+                <ng-template ngx-datatable-cell-template let-row="row">
+                  <a
+                    class="row-action-attachment"
+                    (click)="row.hasAttachment && openAttachmentView(row)"
+                    [ngClass]="{'disabled': !row.hasAttachment}">
+                    <i class="ft-paperclip" style="font-size: 1.4rem;"></i>
+                  </a>
+                </ng-template>
+              </ngx-datatable-column>
+
+            </ngx-datatable>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+

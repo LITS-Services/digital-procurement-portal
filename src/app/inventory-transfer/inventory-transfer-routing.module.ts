@@ -1,6 +1,7 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { InventoryTransferListComponent } from "./inventory-transfer-list/inventory-transfer-list.component";
+import { InventoryTransferForm } from "./inventory-transfer-form/inventory-transfer-form";
 
 const routes: Routes = [
   {
@@ -21,7 +22,11 @@ const routes: Routes = [
     //   formTypeId: FORM_IDS.PURCHASE_ORDER,
     //   action: 'read',
     // },
-  }
+  },
+  {
+  path: 'inventory-transfer-form',
+  component: InventoryTransferForm
+}
 
 ];
 

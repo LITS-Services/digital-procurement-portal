@@ -51,12 +51,10 @@
                 [disabled]="newPurchaseRequestForm.invalid || (isStatusCompleted && !isSelectingFinalVendor) || !isSubmitter"
                 (click)="submitForm()">
                 <i class="ft-edit-2"></i><label class="ml-1 mt-1 btn-label">Update</label>
-                <i class="ft-edit-2"></i><label class="ml-1 mt-1 btn-label">Update</label>
               </button>
 
               <button *ngIf="isSelectingFinalVendor" class="btn btn-sm cstm-ui-table-btn" (click)="createPO(selectedRow)">
                 <i class="ft-plus"></i>
-                <label class="ml-1 mt-1 btn-label">Create PO</label>
                 <label class="ml-1 mt-1 btn-label">Create PO</label>
               </button>
             </ng-container>
@@ -67,7 +65,6 @@
                 class="btn btn-sm"
                 [disabled]="newPurchaseRequestForm.invalid || isStatusCompleted || isStatusInProcess"
                 (click)="onSubmitForApproval()">
-                <i class="ft-edit-2"></i><label class="ml-1 mt-1 btn-label">Submit For Approval</label>
                 <i class="ft-edit-2"></i><label class="ml-1 mt-1 btn-label">Submit For Approval</label>
               </button>
             </ng-container>

@@ -117,10 +117,6 @@ export class PurchaseRequestService {
     return this.http.get<any>(`${this.baseUrl}/get-request-by-id`, { params });
   }
 
-  getPrForInventoryTransfer(id: number){
-    let params: any = { id: id.toString() };
-    return this.http.get<any>(`${this.baseUrl}/get-request-for-inventory-transfer-by-id`, { params });
-  }
 
   addRemarksWithActionTaken(data: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/addRemarksWithActionTaken`, data);
