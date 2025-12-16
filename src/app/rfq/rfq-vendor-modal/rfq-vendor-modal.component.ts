@@ -246,21 +246,16 @@ export class RfqVendorModalComponent implements OnInit {
     }
 
     // Generic confirmation message
-    const actionMessage = `You are about to ${toAddRows.length && toRemoveIds.length
-        ? 'add and remove vendors'
-        : toAddRows.length
-          ? 'add vendors'
-          : 'remove vendors'
-      }. Do you want to continue?`;
+    const actionMessage = "Selected vendors will be notified and invited to submit their quotations for this RFQ.";
 
     Swal.fire({
-      title: 'Confirm Submission',
+      title: 'Confirm Vendor Invitation',
       text: actionMessage,
-      icon: 'question',
+      icon: 'info',
       showCancelButton: true,
-      confirmButtonText: 'Submit Vendors',
+      confirmButtonText: 'Send Invitations',
       cancelButtonText: 'Cancel',
-      confirmButtonColor: '#3085d6',
+      confirmButtonColor: '#116AEF',
       cancelButtonColor: '#d33'
     }).then((result) => {
       if (!result.isConfirmed) return;
