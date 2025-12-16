@@ -1043,15 +1043,7 @@ loadExistingRequest(
           .pipe(finalize(() => this.spinner.hide()))
           .subscribe({
             next: (res) => {
-              Swal.fire({
-                icon: 'success',
-                title: 'Submitted!',
-                text: res.message || 'Purchase Request submitted for approval successfully!',
-                confirmButtonColor: '#3085d6',
-              }).then(() => {
-                //this.dataLoaded = true;
                 this.router.navigate(['/purchase-request']);
-              });
             },
             error: (err) => {
               console.error(err);

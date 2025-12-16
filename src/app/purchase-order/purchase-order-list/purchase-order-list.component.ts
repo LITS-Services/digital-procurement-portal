@@ -151,10 +151,10 @@ export class PurchaseOrderListComponent implements OnInit {
     }
   }
 
-  onRowClick(event: any) {
+  onRowClick(row: any) {
     if(!this.permissionService.can(FORM_IDS.REQUEST_FOR_QUOTATION, 'write'))
       return;
-    const id = event?.row?.id;
+    const id = row?.id;
     if (id) {
       this.router.navigate(['/purchase-order/details'], { queryParams: { id: id }, skipLocationChange: true });
 

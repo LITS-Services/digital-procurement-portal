@@ -6,8 +6,10 @@ import {
   OnDestroy,
   Output
 } from '@angular/core';
-import { Subscription, distinctUntilChanged, map, skip } from 'rxjs';
+import { Subscription, fromEvent, merge } from 'rxjs';
+import { auditTime, distinctUntilChanged, map, skip } from 'rxjs/operators';
 import { ConfigService } from 'app/shared/services/config.service';
+import { LayoutService } from 'app/shared/services/layout.service';
 
 @Directive({
   selector: 'ngx-datatable[autoResize]',
@@ -23,20 +25,36 @@ export class AutoResizeDatatableDirective implements AfterViewInit, OnDestroy {
 
   private sub?: Subscription;
 
-  constructor(private configService: ConfigService) {}
+  constructor(
+    private configService: ConfigService,
+    private layoutService: LayoutService
+  ) {}
 
   ngAfterViewInit(): void {
-    this.sub = this.configService.templateConf$
-      .pipe(
-        map(conf => conf?.layout?.sidebar?.collapsed),
-        distinctUntilChanged(),
-        skip(1) // ⛔ skip initial emission (prevents first-load blink)
-      )
-      .subscribe(collapsed => {
-        // ✅ Trigger on both sidebar collapse and uncollapse
-        setTimeout(() => {
-          this.autoResize.emit();
-        }, this.autoResizeDelay);
+
+    // 1) collapse / uncollapse (desktop)
+    const collapsed$ = this.configService.templateConf$.pipe(
+      map(conf => !!conf?.layout?.sidebar?.collapsed),
+      distinctUntilChanged(),
+      skip(1)
+    );
+
+    // 2) small screen show/hide sidebar (your navbar toggleSidebar())
+    // toggleSidebar$ emits "isShow" (based on your code: hideSidebar = !isShow)
+    const smallScreenToggle$ = this.layoutService.toggleSidebar$.pipe(
+      distinctUntilChanged(),
+      skip(1)
+    );
+
+    // 3) any window resize (optional but very useful)
+    const windowResize$ = fromEvent(window, 'resize').pipe(
+      auditTime(150) // avoid spamming
+    );
+
+    this.sub = merge(collapsed$, smallScreenToggle$, windowResize$)
+      .pipe(auditTime(50))
+      .subscribe(() => {
+        setTimeout(() => this.autoResize.emit(), this.autoResizeDelay);
       });
   }
 
