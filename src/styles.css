@@ -834,3 +834,41 @@ label:has(input[type="checkbox"]) {
     min-width: 26px;
   }
 }
+
+
+.toast-success {
+  background-color: #22c55e !important;
+  color: #ffffff !important;
+}
+
+.toast-error {
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+}
+
+.toast-warning {
+  background-color: #f59e0b !important;
+  color: #1f2937 !important;
+}
+
+.toast-info {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+/* Optional polish */
+.toast-container .ngx-toastr {
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  font-weight: 500;
+}
+
+.toast-container {
+  position: fixed !important;
+  z-index: 999999 !important;
+  pointer-events: none; /* optional */
+}
+
+.toast-container .ngx-toastr {
+  pointer-events: auto; /* optional: allow close click */
+}
