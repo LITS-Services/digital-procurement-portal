@@ -3,7 +3,8 @@ import { ChangeDetectorRef, Component, Input, OnInit, SimpleChanges } from "@ang
 import { FormBuilder, Validators } from "@angular/forms";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 import { RfqService } from "app/rfq/rfq.service";
-import { finalize } from "rxjs";
+import { SignalRService } from "app/shared/services/signalr.service";
+import { finalize } from "rxjs/operators";
 
 enum CreatedByType {
   Procurement = 1,
@@ -34,12 +35,51 @@ export class SelectedVendorsModalComponent implements OnInit {
     private fb: FormBuilder,
    // public activeModal: NgbActiveModal,
     public rfqService: RfqService,
-    public cdr:ChangeDetectorRef
+    public cdr:ChangeDetectorRef,
+    private signalRService: SignalRService
   ) {}
 
-  ngOnInit(): void {
-    this.loadRfqComments();
-  }
+  // ngOnInit(): void {
+  //   this.loadRfqComments();
+  // }
+ngOnInit(): void {
+  this.loadRfqComments();
+
+
+  this.signalRService.startConnection()
+    .then(() => {
+      this.signalRService.joinRfq(this.quotationId.toString());
+    });
+
+  this.signalRService.comment$.subscribe(comment => {
+    if (!comment) return;
+
+    if (
+      comment.quotationId === this.quotationId &&
+      comment.vendorCompanyId === this.vendorCompanyId
+    ) {
+      this.dataComments.push({
+        vendor: this.vendorName,
+        comments: comment.commentText,
+        createdByType: comment.createdByType,
+        createdByLabel:
+          comment.createdByType === CreatedByType.Procurement
+            ? 'Procurement'
+            : 'Vendor',
+        createdOn: comment.createdAt,
+        createdBy: comment.createdBy
+      });
+
+      this.cdr.detectChanges();
+      this.scrollToBottom();
+    }
+  });
+}
+
+
+ngOnDestroy(): void {
+  this.signalRService.leaveRfq(this.quotationId.toString());
+}
 
     ngOnChanges(changes: SimpleChanges) {
     if (changes['vendorId'] || changes['vendorCompanyId'] || changes['quotationId']) {
