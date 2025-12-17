@@ -25,6 +25,7 @@ import { SharedModule } from 'app/shared/shared.module';
 import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
 import { PrInventoryManagementComponent } from './pr-inventory-management/pr-inventory-management.component';
+import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
 
 
 @NgModule({
@@ -50,6 +51,7 @@ import { PrInventoryManagementComponent } from './pr-inventory-management/pr-inv
     ToastrModule.forRoot(),
     NgxSpinnerModule,
     AutoResizeDatatableDirective,
+    DatatableAutoResizeDirective,
     PermissionDirective
   ],
   declarations: [

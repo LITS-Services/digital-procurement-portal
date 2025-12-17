@@ -24,6 +24,8 @@ import { PermissionService } from 'app/shared/permissions/permission.service';
 })
 
 export class RfqComponent implements OnInit {
+
+    @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
   FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
@@ -121,6 +123,10 @@ export class RfqComponent implements OnInit {
       }
     });
   }
+
+  get isMobile(): boolean {
+  return window.innerWidth <= 768;
+}
 
   loadRfqs() {
     this.loading = true;

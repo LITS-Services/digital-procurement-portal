@@ -111,3 +111,18 @@
     color: black;
     font-weight: 600;
 }
+
+
+
+
+/* Ensure table occupies full width */
+
+
+/* optional: keep popover buttons consistent */
+:host ::ng-deep .action-popover .popover-body {
+  padding: 0.5rem;
+}
+
+.popover-btn {
+  text-align: left;
+}

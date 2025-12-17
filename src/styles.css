@@ -236,6 +236,10 @@ form label,
 
 }
 
+.ngx-datatable .datatable-header-cell {
+  line-height: 0px !important;
+}
+
 .ngx-datatable.bootstrap .datatable-footer .datatable-pager a {
   color: #747474 !important;
   border: 1px solid #D7D7D7 !important;
@@ -769,6 +773,12 @@ input[type="checkbox"] {
   cursor: pointer;
 }
 
+.cstm-checkbox-form input[type="checkbox"] {
+  transform: scale(1);
+  margin-right: 0.4rem;
+  cursor: pointer;
+}
+
 /* Increase label text size */
 input[type="checkbox"]+label,
 label:has(input[type="checkbox"]) {
@@ -872,4 +882,34 @@ label:has(input[type="checkbox"]) {
 
 .toast-container .ngx-toastr {
   pointer-events: auto; /* optional: allow close click */
+}
+
+.pr-table-wrapper {
+  width: 100%;
+}
+
+
+.ngx-datatable {
+  width: 100% !important;
+}
+
+/* Global ellipsis for all header + body cells */
+.ngx-datatable .datatable-header-cell,
+ .ngx-datatable .datatable-body-cell {
+  overflow: hidden !important;
+}
+
+ .ngx-datatable .datatable-header-cell .datatable-header-cell-label,
+ .ngx-datatable .datatable-body-cell .datatable-body-cell-label {
+  display: block !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.ngx-datatable .datatable-header .datatable-header-cell .datatable-header-cell-template-wrap {
+    height: inherit;
+    display: flex;
+    align-items: center;
+    gap: 2px;
 }

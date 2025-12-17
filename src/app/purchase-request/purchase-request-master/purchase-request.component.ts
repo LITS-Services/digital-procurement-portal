@@ -26,6 +26,8 @@ import { ConfigService } from 'app/shared/services/config.service';
 })
 
 export class PurchaseRequestComponent implements OnInit {
+
+  @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
   FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
@@ -86,15 +88,8 @@ export class PurchaseRequestComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-
-  onAutoResize(): void {
-  this.datatableVisible = false;
-  this.cdr.detectChanges(); // destroy
-
-  requestAnimationFrame(() => {
-    this.datatableVisible = true;
-    this.cdr.detectChanges(); // recreate
-  });
+  get isMobile(): boolean {
+  return window.innerWidth <= 768;
 }
 
 

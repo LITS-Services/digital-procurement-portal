@@ -29,6 +29,7 @@ import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-r
 import { RfqCommentsComponent } from './rfq-comments/rfq-comments.component';
 import { RfqFinalVendorsComponent } from './rfq-final-vendors/rfq-final-vendors.component';
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
+import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
 
 
 @NgModule({
@@ -67,6 +68,7 @@ import { PermissionDirective } from 'app/shared/permissions/permission.directive
     NgxSpinnerModule,
     GoogleMapsModule,
     AutoResizeDatatableDirective,
+    DatatableAutoResizeDirective,
     PermissionDirective
 ],
 schemas: [NO_ERRORS_SCHEMA]
