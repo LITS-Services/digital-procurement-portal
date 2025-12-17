@@ -7,8 +7,7 @@ import { NgbModal, ModalDismissReasons, NgbActiveModal } from '@ng-bootstrap/ng-
     template: `
     <div class="modal-header">
       <h4 class="modal-title">Hi there!</h4>
-      <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
-        <span aria-hidden="true">&times;</span>
+      <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
       </button>
     </div>
     <div class="modal-body">
