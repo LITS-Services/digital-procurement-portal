@@ -510,6 +510,7 @@ export class NewRfqComponent implements OnInit {
 
           quotationItemAttachments:
             item.attachments?.map((a: any) => ({
+              id: a.id,
               content: a.content || '',
               contentType: a.contentType || '',
               fileName: a.fileName || '',
@@ -519,6 +520,7 @@ export class NewRfqComponent implements OnInit {
               modifiedDate: a.modifiedDate,
               createdBy: a.createdBy || 'current-user',
               isDeleted: a.isDeleted || false,
+              fromPr: a.fromPr,
               quotationItemId: a.quotationItemId || 0,
             })) || [],
         }));
@@ -704,14 +706,14 @@ export class NewRfqComponent implements OnInit {
         id: item.id || null,
         rfqNo: f.rfqNo || '',
         itemType: item.itemType || '',
-        itemId: Number(item.itemId) || 0,
-        unitOfMeasurementId: Number(item.unitOfMeasurementId) || 0,
+        itemId: Number(item.itemId) || null,
+        unitOfMeasurementId: Number(item.unitOfMeasurementId) || null,
         amount: item.amount || 0,
         unitCost: item.unitCost || 0,
         orderQuantity: item.orderQuantity || 0,
         reqByDate: item.reqByDate || new Date(),
         itemDescription: item.itemDescription || '',
-        accountId: Number(item.accountId) || 0,
+        accountId: Number(item.accountId) || null,
         remarks: item.remarks || '',
         createdBy: item.createdBy || '',
         quotationRequestId: item.quotationRequestId || 0,
@@ -727,6 +729,7 @@ export class NewRfqComponent implements OnInit {
           createdBy: att.createdBy || '',
           isDeleted: false,
           quotationItemId: att.quotationItemId || 0,
+          fromPr: att.fromPr || false
         })),
       }));
     } else {
@@ -736,14 +739,14 @@ export class NewRfqComponent implements OnInit {
           id: item.id || null,
           rfqNo: f.rfqNo || '',
           itemType: item.itemType || '',
-          itemId: Number(item.itemId) || 0,
-          unitOfMeasurementId: Number(item.unitOfMeasurementId) || 0,
+          itemId: Number(item.itemId) || null,
+          unitOfMeasurementId: Number(item.unitOfMeasurementId) || null,
           amount: item.amount || 0,
           unitCost: item.unitCost || 0,
           orderQuantity: item.orderQuantity || 0,
           reqByDate: item.reqByDate || new Date(),
           itemDescription: item.itemDescription || '',
-          accountId: Number(item.accountId) || 0,
+          accountId: Number(item.accountId) || null,
           remarks: item.remarks || '',
           createdBy: item.createdBy || '',
           quotationRequestId: item.quotationRequestId || 0,
@@ -759,6 +762,7 @@ export class NewRfqComponent implements OnInit {
             createdBy: att.createdBy || '',
             isDeleted: false,
             quotationItemId: att.quotationItemId || 0,
+            fromPr: att.fromPr || false
           })),
         })) || [];
     }

@@ -406,7 +406,7 @@
                           </div>
                         </div>
 
-                        <div *ngIf="!isStatusCompleted" class="d-flex align-items-center justify-content-end my-1" style="gap: 1em;">
+                        <div class="d-flex align-items-center justify-content-end my-1" style="gap: 1em;">
                           <button type="button" class="btn btn-sm" (click)="clearItemForm()">
                             <i class="fa fa-sync mr-1"></i> Refresh
                           </button>
@@ -494,7 +494,7 @@
                   </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column *ngIf="!viewMode && !isStatusCompleted" name="Actions" [width]="100">
+                <ngx-datatable-column *ngIf="!viewMode" name="Actions" [width]="100">
                   <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
                     <a matTooltip="Edit Item" (click)="editRow(row, rowIndex)" [ngClass]="viewMode ? 'disabled' : 'row-action-edit'">
                       <i style="font-size: 1.5rem;" class="ft-edit mr-1"></i>

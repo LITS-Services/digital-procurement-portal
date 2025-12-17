@@ -67,4 +67,19 @@ export class SystemService {
       `${this.baseUrl}/get-all-global-configs?currentPage=${currentPage}&pageSize=${pageSize}`
     );
   }
+
+  // for downloading attachment from any source
+  downloadAttachment(source: string, id: number): Observable<Blob> {
+    return this.http.get(
+      `${this.baseUrl}/download-attachment`,
+      {
+        params: {
+          source: source,
+          id: id.toString()
+        },
+        responseType: 'blob'
+      }
+    );
+  }
+
 }

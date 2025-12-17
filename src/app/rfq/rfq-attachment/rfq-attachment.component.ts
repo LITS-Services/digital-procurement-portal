@@ -3,6 +3,9 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
+import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
+import { SystemService } from 'app/shared/services/system.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-rfq-attachment',
@@ -29,7 +32,12 @@ export class RfqAttachmentComponent implements OnInit {
   uploadedFiles: any[] = [];
   newQuotationItemAttachmentData = [];
 
-  constructor(private http: HttpClient, private fb: FormBuilder, public activeModal: NgbActiveModal) {
+  constructor(private http: HttpClient, private fb: FormBuilder, 
+    public activeModal: NgbActiveModal, 
+    private purchaseRequestService: PurchaseRequestService,
+    private toastr: ToastrService,
+    private systemService: SystemService
+  ) {
     this.AttachmentForm = this.fb.group({
     });
   }
@@ -87,7 +95,8 @@ export class RfqAttachmentComponent implements OnInit {
         fromForm: 'Quotation Item Attachment',
         quotationItemId: quotationItemId,
         visibleToVendor: false,
-        isNew: true
+        isNew: true,
+        fromPr: false
       };
 
       this.uploadedFiles.push(newAttachment);
@@ -110,36 +119,94 @@ export class RfqAttachmentComponent implements OnInit {
     this.uploadedFiles.splice(index, 1);
   }
 
-  downloadAttachment(attachment: any) {
-    if (!attachment) return;
+  // downloadAttachment(attachment: any) {
+  //   if (!attachment) return;
 
-    if (attachment.isNew) {
-      // Download from base64 string
-      const link = document.createElement('a');
-      link.href = attachment.attachment;
-      link.download = attachment.name;
-      link.click();
-    } else {
-      // Download from API if exists
-      this.http.get(`api/Quotation/Download-Attachment/${attachment.id}`, { responseType: 'blob' }).subscribe(blob => {
+  //   if (attachment.isNew) {
+  //     // Download from base64 string
+  //     const link = document.createElement('a');
+  //     link.href = attachment.attachment;
+  //     link.download = attachment.name;
+  //     link.click();
+  //   } else {
+  //     // Download from API if exists
+  //     this.http.get(`api/Quotation/Download-Attachment/${attachment.id}`, { responseType: 'blob' }).subscribe(blob => {
+  //       const link = document.createElement('a');
+  //       link.href = window.URL.createObjectURL(blob);
+  //       link.download = attachment.name;
+  //       link.click();
+  //       window.URL.revokeObjectURL(link.href);
+  //     });
+  //   }
+  // }
+  downloadAttachment(attachment: any) {
+  if (!attachment) return;
+
+  const fileName = attachment.fileName || 'download';
+
+  if (!attachment.id) {
+    // Frontend-only download
+    const dataUrl = `data:${attachment.contentType};base64,${attachment.content}`;
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = fileName;
+    link.click();
+  } 
+  else if (attachment.id && attachment.quotationItemId == 0) {
+    this.systemService.downloadAttachment('PurchaseRequest', attachment.id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = attachment.name;
+        link.href = url;
+        link.download = fileName;
         link.click();
-        window.URL.revokeObjectURL(link.href);
-      });
-    }
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => {
+        this.toastr.error('Failed to download attachment.');
+      }
+    });
   }
+  else  {
+    // Saved attachment → download via service
+    this.systemService.downloadAttachment('RFQ', attachment.id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => {
+        this.toastr.error('Failed to download attachment.');
+      }
+    });
+  }
+}
 
   private toBase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
+      //reader.onload = () => resolve(reader.result as string);
+      reader.onload = () => {
+      const result = reader.result as string;
+
+      // Strip the "data:<mime>;base64," prefix
+      const base64Index = result.indexOf('base64,') + 'base64,'.length;
+      resolve(result.substring(base64Index));
+    };
       reader.onerror = error => reject(error);
     });
   }
 
+  deleteRow(rowIndex: number): void {
+    this.uploadedFiles.splice(rowIndex, 1);
+    this.uploadedFiles = [...this.uploadedFiles]; // refresh table
+      this.emitChanges();
+    this.toastr.success('Attachment removed!', '');
+  }
   private emitChanges() {
     this.attachmentsChange.emit(this.uploadedFiles);
   }

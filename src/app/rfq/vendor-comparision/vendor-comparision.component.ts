@@ -2,6 +2,9 @@ import { ChangeDetectorRef, Component, Input, OnInit, SimpleChanges, TemplateRef
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { RfqService } from '../rfq.service';
+import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
+import { ToastrService } from 'ngx-toastr';
+import { SystemService } from 'app/shared/services/system.service';
 
 @Component({
   selector: 'app-vendor-comparision',
@@ -44,8 +47,10 @@ export class VendorComparisionComponent implements OnInit {
   constructor(
     private rfqService: RfqService,
     private modalService: NgbModal,
-    public cdr: ChangeDetectorRef
-
+    public cdr: ChangeDetectorRef,
+    private purchaseRequestService: PurchaseRequestService,
+    private toastr: ToastrService,
+    private systemService: SystemService
   ) { }
 
   ngOnInit(): void {
@@ -201,24 +206,53 @@ export class VendorComparisionComponent implements OnInit {
     this.modalService.open(this.attachmentsModal, { size: 'lg', backdrop: 'static', centered: true });
   }
 
-  downloadAttachment(att: any): void {
-    if (!att?.content || !att?.fileName) return;
+  // downloadAttachment(att: any): void {
+  //   if (!att?.content || !att?.fileName) return;
 
-    const byteCharacters = atob(att.content);
-    const byteNumbers = new Array(byteCharacters.length)
-      .fill(0)
-      .map((_, i) => byteCharacters.charCodeAt(i));
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], { type: att.contentType || 'application/octet-stream' });
-    const url = window.URL.createObjectURL(blob);
+  //   const byteCharacters = atob(att.content);
+  //   const byteNumbers = new Array(byteCharacters.length)
+  //     .fill(0)
+  //     .map((_, i) => byteCharacters.charCodeAt(i));
+  //   const byteArray = new Uint8Array(byteNumbers);
+  //   const blob = new Blob([byteArray], { type: att.contentType || 'application/octet-stream' });
+  //   const url = window.URL.createObjectURL(blob);
 
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = att.fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
+  //   const a = document.createElement('a');
+  //   a.href = url;
+  //   a.download = att.fileName;
+  //   document.body.appendChild(a);
+  //   a.click();
+  //   document.body.removeChild(a);
+  //   window.URL.revokeObjectURL(url);
+  // }
+  downloadAttachment(attachment: any) {
+  if (!attachment) return;
+
+  const fileName = attachment.fileName || 'download';
+
+  // if (attachment.isNew) {
+  //   // Frontend-only download
+  //   const dataUrl = `data:${attachment.contentType};base64,${attachment.content}`;
+  //   const link = document.createElement('a');
+  //   link.href = dataUrl;
+  //   link.download = fileName;
+  //   link.click();
+  // } else {
+    // Saved attachment → download via service
+    this.systemService.downloadAttachment('VendorBid', attachment.id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => {
+        this.toastr.error('Failed to download attachment.');
+      }
+    });
   }
+//}
 
 }

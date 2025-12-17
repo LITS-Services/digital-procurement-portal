@@ -5,13 +5,13 @@
 </div>
 <div class="modal-body">
   <div class="col-12">
-    <h5 *ngIf="!viewMode" class="heading-upload">Upload Files</h5>
+    <h5 *ngIf="!viewMode && !isStatusCompleted" class="heading-upload">Upload Files</h5>
   </div>
   <!-- Your form fields and content -->
   <form [formGroup]="AttachmentForm">
     <div class="row gx-2">
       <!-- File Upload Button -->
-      <div *ngIf="!viewMode" class="col-12 form-group mt-3">
+      <div *ngIf="!viewMode && !isStatusCompleted" class="col-12 form-group mt-3">
         <!-- <label for="fileUpload">Choose files</label> -->
         <input type="file" (change)="onFileSelected($event)" class="form-control1"
           accept=".pdf, .doc, .docx, .xls, .csv" multiple>
@@ -42,7 +42,7 @@
             <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex">
 
               <a matTooltip="Download File" class="row-action-edit" style="margin-right: 10px;"
-                (click)="downloadLocalFile(uploadedFiles[rowIndex])">
+                (click)="downloadAttachment(uploadedFiles[rowIndex])">
                 <i style="font-size: 1.5rem;" class="ft-download"></i>
               </a>
 

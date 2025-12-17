@@ -1,8 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
+import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
+import { SystemService } from 'app/shared/services/system.service';
 import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-purchase-request-attachment-modal',
@@ -14,6 +16,8 @@ import { ToastrService } from 'ngx-toastr';
 export class PurchaseRequestAttachmentModalComponent implements OnInit {
   @Input() viewMode: boolean = false;
   @Input() attachments: any[] = [];
+  @Input() isSubmitter: boolean = false;
+  @Input() isStatusCompleted: boolean = false;
   @Output() attachmentsChange = new EventEmitter<any[]>();
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
@@ -29,7 +33,12 @@ export class PurchaseRequestAttachmentModalComponent implements OnInit {
   uploadedFiles: any[] = [];
   newAttachmentsData = [];
 
-  constructor(private http: HttpClient, private fb: FormBuilder, public activeModal: NgbActiveModal, public toastr: ToastrService) {
+  constructor(private http: HttpClient, private fb: FormBuilder, 
+    public activeModal: NgbActiveModal, 
+    public toastr: ToastrService, 
+    private purchaseRequestService: PurchaseRequestService,
+    private systemService: SystemService,
+  private cdr: ChangeDetectorRef) {
     this.AttachmentForm = this.fb.group({
     });
   }
@@ -45,7 +54,7 @@ export class PurchaseRequestAttachmentModalComponent implements OnInit {
   ngOnInit(): void {
   // Work on a copy to avoid overwriting parent data
   this.uploadedFiles = this.data?.existingAttachment
-    ? this.data.existingAttachment.map(a => ({ ...a, isNew: false }))
+    ? this.data.existingAttachment.map(a => ({ ...a }))
     : [];
 
   this.itemId = this.data?.purchaseItemId;
@@ -58,12 +67,13 @@ export class PurchaseRequestAttachmentModalComponent implements OnInit {
 
     const file = input.files[0];
     await this.addAttachment(file);
+
   }
 
   uploadFiles() {
     if (this.viewMode) return;
 
-    const payload = this.uploadedFiles.filter(a => a.isNew).map(a => ({
+    const payload = this.uploadedFiles.filter(a => !a.id).map(a => ({
       content: a.content,
       contentType: a.contentType,
       fileName: a.fileName,
@@ -94,11 +104,12 @@ export class PurchaseRequestAttachmentModalComponent implements OnInit {
         content: base64,
         fromForm: 'Purchase Item Attachment',
         purchaseItemId: purchaseItemId,
-        isNew: true
+        //isNew: true
       };
 
       this.uploadedFiles.push(newAttachment);
       this.uploadedFiles = [...this.uploadedFiles]; // Trigger UI update
+      this.cdr.detectChanges();
       this.emitChanges();
 
     } catch (error) {
@@ -110,39 +121,75 @@ export class PurchaseRequestAttachmentModalComponent implements OnInit {
     this.uploadedFiles.splice(index, 1);
   }
 
-  downloadAttachment(attachment: any) {
-    if (!attachment) return;
+  // downloadAttachment(attachment: any) {
+  //   if (!attachment) return;
 
-    if (attachment.isNew) {
-      // Download from base64 string
-      const link = document.createElement('a');
-      link.href = attachment.attachment;
-      link.download = attachment.name;
-      link.click();
-    } else {
-      // Download from API if exists
-      this.http.get(`api/Quotation/Download-Attachment/${attachment.id}`, { responseType: 'blob' }).subscribe(blob => {
+  //   if (attachment.isNew) {
+  //     // Download from base64 string
+  //     const link = document.createElement('a');
+  //     link.href = attachment.attachment;
+  //     link.download = attachment.name;
+  //     link.click();
+  //   } else {
+  //     // Download from API if exists
+  //     this.http.get(`api/Quotation/Download-Attachment/${attachment.id}`, { responseType: 'blob' }).subscribe(blob => {
+  //       const link = document.createElement('a');
+  //       link.href = window.URL.createObjectURL(blob);
+  //       link.download = attachment.name;
+  //       link.click();
+  //       window.URL.revokeObjectURL(link.href);
+  //     });
+  //   }
+  // }
+downloadAttachment(attachment: any) {
+  if (!attachment) return;
+
+  const fileName = attachment.fileName || 'download';
+
+  if (!attachment.id) {
+    // Frontend-only download
+    const dataUrl = `data:${attachment.contentType};base64,${attachment.content}`;
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = fileName;
+    link.click();
+  } else {
+    // Saved attachment → download via service
+    this.systemService.downloadAttachment('PurchaseRequest', attachment.id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = attachment.name;
+        link.href = url;
+        link.download = fileName;
         link.click();
-        window.URL.revokeObjectURL(link.href);
-      });
-    }
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => {
+        this.toastr.error('Failed to download attachment.');
+      }
+    });
   }
+}
 
   private toBase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
+      //reader.onload = () => resolve(reader.result as string);
+      reader.onload = () => {
+      const result = reader.result as string;
+
+      // Strip the "data:<mime>;base64," prefix
+      const base64Index = result.indexOf('base64,') + 'base64,'.length;
+      resolve(result.substring(base64Index));
+    };
       reader.onerror = error => reject(error);
     });
   }
   deleteRow(rowIndex: number): void {
     this.uploadedFiles.splice(rowIndex, 1);
     this.uploadedFiles = [...this.uploadedFiles]; // refresh table
-      this.emitChanges(); // 🔹 emit change
+      this.emitChanges();
     this.toastr.success('Attachment removed!', '');
   }
   private emitChanges() {
