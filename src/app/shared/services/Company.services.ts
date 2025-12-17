@@ -139,9 +139,13 @@ export class CompanyService {
   }
 
   //   // Get company by ID
-  getCompanyById(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  // getCompanyById(id: number): Observable<any> {
+  //   return this.http.get<any>(`${this.apiUrl}/${id}`);
+  // }
+    getVendorCompanyById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/get-vendor-company-by-id`, { params: { id: id.toString() } });
   }
+
 
   //   // Create company
   //   createCompany(data: any): Observable<any> {

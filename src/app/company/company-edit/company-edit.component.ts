@@ -7,6 +7,7 @@ import { Action } from 'rxjs/internal/scheduler/Action';
 import { finalize } from 'rxjs/operators';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { SystemService } from 'app/shared/services/system.service';
 
 @Component({
   selector: 'app-company-edit',
@@ -59,7 +60,7 @@ export class CompanyEditComponent implements OnInit {
     private cdRef: ChangeDetectorRef,
     private spinner: NgxSpinnerService,
     private toastr: ToastrService,
-
+    private systemService: SystemService
 
   ) { }
 
@@ -177,73 +178,73 @@ selectTab(tabKey: string): void {
   // }
 
 
-  loadCompanyById(id: number) {
-    this.isLoading = true;
-    this.error = '';
-    this.message = '';
-    this.spinner.show();
+  // loadCompanyById(id: number) {
+  //   this.isLoading = true;
+  //   this.error = '';
+  //   this.message = '';
+  //   this.spinner.show();
 
 
-    this.companyService.getCompanyById(id)
-      .pipe(finalize(() => {
-        this.spinner.hide();
-        this.cdr.detectChanges();
-      }))
+  //   this.companyService.getVendorCompanyById(id)
+  //     .pipe(finalize(() => {
+  //       this.spinner.hide();
+  //       this.cdr.detectChanges();
+  //     }))
 
-      .subscribe({
-        next: (res: any) => {
-          const company = res?.vendorCompany || res;
+  //     .subscribe({
+  //       next: (res: any) => {
+  //         const company = res?.vendorCompany || res;
 
-          // ✅ REMOVED: No longer setting isAssigned from API response
-          // this.isAssigned = company.vendorUserCompanies?.[0]?.isAssigned ?? false;
-          console.log('Is Assigned (from query params):', this.isAssigned);
+  //         // ✅ REMOVED: No longer setting isAssigned from API response
+  //         // this.isAssigned = company.vendorUserCompanies?.[0]?.isAssigned ?? false;
+  //         console.log('Is Assigned (from query params):', this.isAssigned);
 
-          if (company) {
-            this.companyId = company.id || 0;
-            this.companyGUID = company.companyGUID || null;
-            this.vendorId = company.vendorId || '';
-            this.companyName = company.name || '';
-            this.aboutCompany = company.aboutCompany || '';
-            this.companyStatusLabel = company.requestStatus?.status || null;
-             this.companyStatusClass = this.mapCompanyStatusClass(company.requestStatusId);
-            // this.vendorCategory = company.purchasingDemographics?.vendorType || '';
-            // this.primaryCurrency = company.purchasingDemographics?.primaryCurrency || '';
-            // this.lineOfBusiness = company.purchasingDemographics?.lineOfBusiness || '';
-            // this.employeeResponsible = company.purchasingDemographics?.employeeResponsible || '';
-            // this.note = company.purchasingDemographics?.note || '';
+  //         if (company) {
+  //           this.companyId = company.id || 0;
+  //           this.companyGUID = company.companyGUID || null;
+  //           this.vendorId = company.vendorId || '';
+  //           this.companyName = company.name || '';
+  //           this.aboutCompany = company.aboutCompany || '';
+  //           this.companyStatusLabel = company.requestStatus?.status || null;
+  //            this.companyStatusClass = this.mapCompanyStatusClass(company.requestStatusId);
+  //           // this.vendorCategory = company.purchasingDemographics?.vendorType || '';
+  //           // this.primaryCurrency = company.purchasingDemographics?.primaryCurrency || '';
+  //           // this.lineOfBusiness = company.purchasingDemographics?.lineOfBusiness || '';
+  //           // this.employeeResponsible = company.purchasingDemographics?.employeeResponsible || '';
+  //           // this.note = company.purchasingDemographics?.note || '';
 
-            const demographics = company.purchasingDemographics || null;
-            this.purchasingDemographicsList = demographics
-              ? [ // convert object → single-element array
-                {
-                  vendorType: demographics.vendorType,
-                  primaryCurrency: demographics.primaryCurrency,
-                  lineOfBusiness: demographics.lineOfBusiness,
-                  employeeResponsible: demographics.employeeResponsible,
-                  note: demographics.note
-                }
-              ]
-              : [];
+  //           const demographics = company.purchasingDemographics || null;
+  //           this.purchasingDemographicsList = demographics
+  //             ? [ // convert object → single-element array
+  //               {
+  //                 vendorType: demographics.vendorType,
+  //                 primaryCurrency: demographics.primaryCurrency,
+  //                 lineOfBusiness: demographics.lineOfBusiness,
+  //                 employeeResponsible: demographics.employeeResponsible,
+  //                 note: demographics.note
+  //               }
+  //             ]
+  //             : [];
 
-            console.log('Purchasing Demographics List:', this.purchasingDemographicsList);
+  //           console.log('Purchasing Demographics List:', this.purchasingDemographicsList);
 
 
-            const rawBankDetails = company.bankDetails?.$values || company.bankDetails || [];
+  //           const rawBankDetails = company.bankDetails?.$values || company.bankDetails || [];
 
-            this.bankDetailsList = rawBankDetails.map((b: any) => ({
-              id: b.id,
-              bankName: b.bankName,
-              branchName: b.branchName,
-              branchAddress: b.branchAddress,
-              accountHolderName: b.accountHolderName,
-              accountNumber: b.accountNumber,
-              iban: b.iban,
-              swifT_BIC_Code: b.swifT_BIC_Code,
-              country: b.country,
-              currency: b.currency,
-            }));
+  //           this.bankDetailsList = rawBankDetails.map((b: any) => ({
+  //             id: b.id,
+  //             bankName: b.bankName,
+  //             branchName: b.branchName,
+  //             branchAddress: b.branchAddress,
+  //             accountHolderName: b.accountHolderName,
+  //             accountNumber: b.accountNumber,
+  //             iban: b.iban,
+  //             swifT_BIC_Code: b.swifT_BIC_Code,
+  //             country: b.country,
+  //             currency: b.currency,
+  //           }));
 
-            console.log('Bank Details List:', this.bankDetailsList);
+  //           console.log('Bank Details List:', this.bankDetailsList);
 
 
 
@@ -252,74 +253,212 @@ selectTab(tabKey: string): void {
 
 
 
-            const rawAddresses = company.addresses?.$values || company.addresses || [];
+  //           const rawAddresses = company.addresses?.$values || company.addresses || [];
 
-            this.addressList = rawAddresses.map((a: any) => ({
-              id: a.id,
-              street: a.street,
-              city: a.city,
-              state: a.state,
-              zip: a.zip,
-              country: a.country,
-              isPrimary: a.isPrimary
-            }));
+  //           this.addressList = rawAddresses.map((a: any) => ({
+  //             id: a.id,
+  //             street: a.street,
+  //             city: a.city,
+  //             state: a.state,
+  //             zip: a.zip,
+  //             country: a.country,
+  //             isPrimary: a.isPrimary
+  //           }));
 
-            // this.contactList = (company.contacts?.$values || []).map((c: any) => ({
-            //   id: c.id,
-            //   description: c.description,
-            //   type: c.type,
-            //   contactNumber: c.contactNumber,
-            //   extension: c.extension,
-            //   isPrimary: c.isPrimary
-            // }));
-
-
-            const rawContacts = company.contacts?.$values || company.contacts || [];
-            this.contactList = rawContacts.map((c: any) => ({
-              id: c.id,
-              description: c.description,
-              type: c.type,
-              contactNumber: c.contactNumber,
-              extension: c.extension,
-              isPrimary: c.isPrimary
-            }));
+  //           // this.contactList = (company.contacts?.$values || []).map((c: any) => ({
+  //           //   id: c.id,
+  //           //   description: c.description,
+  //           //   type: c.type,
+  //           //   contactNumber: c.contactNumber,
+  //           //   extension: c.extension,
+  //           //   isPrimary: c.isPrimary
+  //           // }));
 
 
-            this.attachedFiles = (company.attachments || []).map((f: any) => ({
-              id: f.id,
-              fileName: f.fileName,
-              format: f.fileFormat,
-              fileContent: f.fileContent,
-              attachedBy: f.attachedBy,
-              remarks: f.remarks,
-              attachedAt: f.attachedAt
-            }));
-
-                const rawEntities =
-                  company.vendorUserCompanies?.$values || company.vendorUserCompanies || [];
-
-                this.associatedEntities = rawEntities.map((v: any) => ({
-                  name: v.procurementCompany?.name || '',
-                  city: v.procurementCompany?.city || '', // if not in API, will just be blank
-                  country: v.procurementCompany?.country || '', // same here
-                  industry: v.procurementCompany?.industry || '',
-                  statusLabel: v.requestStatus?.status || '',
-                  statusClass: this.mapStatusClass(v.requestStatusId),
-                }));
+  //           const rawContacts = company.contacts?.$values || company.contacts || [];
+  //           this.contactList = rawContacts.map((c: any) => ({
+  //             id: c.id,
+  //             description: c.description,
+  //             type: c.type,
+  //             contactNumber: c.contactNumber,
+  //             extension: c.extension,
+  //             isPrimary: c.isPrimary
+  //           }));
 
 
-            this.isEditMode = true;
-          }
+  //           this.attachedFiles = (company.attachments || []).map((f: any) => ({
+  //             id: f.id,
+  //             fileName: f.fileName,
+  //             format: f.fileFormat,
+  //             fileContent: f.fileContent,
+  //             attachedBy: f.attachedBy,
+  //             remarks: f.remarks,
+  //             attachedAt: f.attachedAt
+  //           }));
+
+  //               const rawEntities =
+  //                 company.vendorUserCompanies?.$values || company.vendorUserCompanies || [];
+
+  //               this.associatedEntities = rawEntities.map((v: any) => ({
+  //                 name: v.procurementCompany?.name || '',
+  //                 city: v.procurementCompany?.city || '', // if not in API, will just be blank
+  //                 country: v.procurementCompany?.country || '', // same here
+  //                 industry: v.procurementCompany?.industry || '',
+  //                 statusLabel: v.requestStatus?.status || '',
+  //                 statusClass: this.mapStatusClass(v.requestStatusId),
+  //               }));
+
+
+  //           this.isEditMode = true;
+  //         }
+  //         this.isLoading = false;
+  //         this.cdr.markForCheck();
+  //       },
+  //       error: (err) => {
+  //         console.error('Error loading company:', err);
+  //         this.error = 'Failed to load company.';
+  //         this.isLoading = false;
+  //       }
+  //     });
+  // }
+  loadCompanyById(id: number) {
+  this.isLoading = true;
+  this.error = '';
+  this.message = '';
+  this.spinner.show();
+
+  this.companyService.getVendorCompanyById(id)
+    .pipe(finalize(() => {
+      this.spinner.hide();
+      this.cdr.detectChanges();
+    }))
+    .subscribe({
+      next: (res: any) => {
+        const company = res?.vendorCompany || res;
+
+        if (!company) {
           this.isLoading = false;
-          this.cdr.markForCheck();
-        },
-        error: (err) => {
-          console.error('Error loading company:', err);
-          this.error = 'Failed to load company.';
-          this.isLoading = false;
+          return;
         }
-      });
-  }
+
+        // --- Basic Company Info ---
+        this.companyId = company.id || 0;
+        this.companyGUID = company.companyGUID || null;
+        this.vendorId = company.vendorId || '';
+        this.companyName = company.name || '';
+        this.aboutCompany = company.aboutCompany || '';
+        this.companyStatusLabel = company.requestStatus?.status || '';
+        this.companyStatusClass = this.mapCompanyStatusClass(company.requestStatusId);
+        // this.remarks = company.remarks || '';
+        // this.companyForm.patchValue({ remarks: this.remarks });
+
+        // --- Purchasing Demographics (single object) ---
+        const demographics = company.vendorCompanyPurchasingDemographics || null;
+        this.purchasingDemographicsList = demographics
+          ? [{
+              vendorType: demographics.vendorType,
+              primaryCurrency: demographics.primaryCurrency,
+              lineOfBusiness: demographics.lineOfBusiness,
+              employeeResponsible: demographics.employeeResponsible,
+              note: demographics.note,
+              birthCountry: demographics.birthCountry,
+              segment: demographics.segment,
+              speciality: demographics.speciality,
+              chain: demographics.chain
+            }]
+          : [];
+
+        console.log('Purchasing Demographics List:', this.purchasingDemographicsList);
+
+        // --- Bank Details ---
+        const rawBankDetails = company.vendorBankDetails || [];
+        this.bankDetailsList = rawBankDetails.map((b: any) => ({
+          id: b.id,
+          bankName: b.bankName,
+          branchName: b.branchName,
+          branchAddress: b.branchAddress,
+          accountHolderName: b.accountHolderName,
+          accountNumber: b.accountNumber,
+          iban: b.IBAN || b.iban,
+          swifT_BIC_Code: b.swifT_BIC_Code || b.swiftCode,
+          country: b.country,
+          currency: b.currency,
+          isPrimary: b.isPrimary || false
+        }));
+
+        // --- Addresses ---
+        const rawAddresses = company.vendorCompanyAddresses || [];
+        this.addressList = rawAddresses.map((a: any) => ({
+          id: a.id,
+          street: a.street,
+          city: a.city,
+          state: a.state,
+          zip: a.zip,
+          country: a.country,
+          isPrimary: a.isPrimary || false
+        }));
+
+        // --- Contacts ---
+        const rawContacts = company.vendorCompanyContactDetails || [];
+        this.contactList = rawContacts.map((c: any) => ({
+          id: c.id,
+          description: c.description,
+          type: c.type,
+          contactNumber: c.contactNumber,
+          extension: c.extension,
+          isPrimary: c.isPrimary || false
+        }));
+
+        // --- Attachments ---
+        this.attachedFiles = (company.vendorCompanyAttachments || []).map((f: any) => ({
+          id: f.id,
+          fileName: f.fileName,
+          format: f.fileFormat,
+          fileContent: f.fileContent,
+          attachedBy: f.attachedBy,
+          remarks: f.remarks,
+          attachedAt: f.attachedAt
+        }));
+
+        // --- Vendor Entities (Procurement Companies) ---
+        const rawEntities = company.vendorUserCompanies || [];
+        this.associatedEntities = rawEntities.map((v: any) => ({
+          id: v.id,
+          procurementCompanyId: v.procurementCompanyId,
+          name: v.procurementCompanyName || '',
+          city: v.procurementCompany?.city || '',
+          country: v.procurementCompany?.country || '',
+          industry: v.procurementCompany?.industry || '',
+          statusLabel: v.requestStatus || '',
+          statusClass: this.mapStatusClass(v.requestStatusId),
+          isAssigned: v.isAssigned || false,
+          requestStatusId: v.requestStatusId
+        }));
+
+        // // Auto-select first entity if available
+        // if (this.associatedEntities.length > 0) {
+        //   this.onEntitySelect(this.associatedEntities[0]);
+        // } else {
+        //   this.isReadonlyEntityFields = false;
+        //   this.bankForm.enable();
+        //   this.companyForm.enable();
+        // }
+
+        this.isEditMode = true;
+        this.isLoading = false;
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Error loading company:', err);
+        this.error = 'Failed to load company.';
+        this.isLoading = false;
+        // this.isReadonlyEntityFields = false;
+        // this.bankForm.enable();
+        // this.companyForm.enable();
+      }
+    });
+}
+
 
   mapCompanyStatusClass(statusId: number): string {
   switch (statusId) {
@@ -512,24 +651,52 @@ selectTab(tabKey: string): void {
 
 
 
-  downloadAttachment(file: any) {
-    if (!file?.fileContent) {
-      this.message = 'File content not available for download.';
-      return;
-    }
-    const byteCharacters = atob(file.fileContent);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteNumbers[i] = byteCharacters.charCodeAt(i);
-    }
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], { type: file.format || 'application/octet-stream' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = file.fileName || 'attachment';
-    a.click();
-    window.URL.revokeObjectURL(url);
+  // downloadAttachment(file: any) {
+  //   if (!file?.fileContent) {
+  //     this.message = 'File content not available for download.';
+  //     return;
+  //   }
+  //   const byteCharacters = atob(file.fileContent);
+  //   const byteNumbers = new Array(byteCharacters.length);
+  //   for (let i = 0; i < byteCharacters.length; i++) {
+  //     byteNumbers[i] = byteCharacters.charCodeAt(i);
+  //   }
+  //   const byteArray = new Uint8Array(byteNumbers);
+  //   const blob = new Blob([byteArray], { type: file.format || 'application/octet-stream' });
+  //   const url = window.URL.createObjectURL(blob);
+  //   const a = document.createElement('a');
+  //   a.href = url;
+  //   a.download = file.fileName || 'attachment';
+  //   a.click();
+  //   window.URL.revokeObjectURL(url);
+  // }
+    downloadAttachment(attachment: any) {
+  if (!attachment) return;
+
+  const fileName = attachment.fileName || 'download';
+
+  // if (attachment.isNew) {
+  //   // Frontend-only download
+  //   const dataUrl = `data:${attachment.contentType};base64,${attachment.content}`;
+  //   const link = document.createElement('a');
+  //   link.href = dataUrl;
+  //   link.download = fileName;
+  //   link.click();
+  // } else {
+    // Saved attachment → download via service
+    this.systemService.downloadAttachment('VendorCompany', attachment.id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => {
+        this.toastr.error('Failed to download attachment.');
+      }
+    });
   }
 
   goBack() {
