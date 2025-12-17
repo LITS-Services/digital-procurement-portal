@@ -17,6 +17,7 @@ import * as XLSX from 'xlsx';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize } from 'rxjs/operators';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
+import { PurchaseRequestExceptionPolicyComponent } from 'app/shared/modals/purchase-request-exception-policy/purchase-request-exception-policy.component';
 
 @Component({
   selector: 'app-new-purchase-request',
@@ -70,6 +71,7 @@ export class NewPurchaseRequestComponent implements OnInit {
   currentRequestId: number | null = null;
 
   isSelectingFinalVendor: boolean = false;
+  exceptionPolicyData: any = null;
   // finalVendors: any[] = [];
 
   // ---------------
@@ -90,13 +92,13 @@ export class NewPurchaseRequestComponent implements OnInit {
   isToolbarSticky = false;
   procurementUserId = localStorage.getItem('userId');
   selectedRow: any;
-  isInventoryTransferMode:boolean = false;
+  isInventoryTransferMode: boolean = false;
   compareIds = (a: string | null, b: string | null) => (a ?? '').toLowerCase() === (b ?? '').toLowerCase();
 
- isReceivingOpen = true;
+  isReceivingOpen = true;
   isPurchaseOpen = true;
 
-  
+
 
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
@@ -120,9 +122,9 @@ export class NewPurchaseRequestComponent implements OnInit {
   ngOnInit(): void {
     // Purchase Request Form
     this.newPurchaseRequestForm = this.fb.group({
-      requisitionNo: [{value: '', disabled: true }],
+      requisitionNo: [{ value: '', disabled: true }],
       submittedDate: [null],
-      status: [{value: null, disabled: true }],
+      status: [{ value: null, disabled: true }],
       deliveryLocation: [''],
       receiverName: [''],
       receiverContact: [''],
@@ -137,8 +139,8 @@ export class NewPurchaseRequestComponent implements OnInit {
       country: [{ value: '', disabled: true }],
       city: [{ value: '', disabled: true }],
       region: [{ value: '', disabled: true }],
-      address: [{ value: '', disabled: true }],   
-      address2: [{ value: '', disabled: true }],  
+      address: [{ value: '', disabled: true }],
+      address2: [{ value: '', disabled: true }],
       postCode: [{ value: '', disabled: true }],
     });
 
@@ -178,18 +180,18 @@ export class NewPurchaseRequestComponent implements OnInit {
         this.loadVendorsFinalSelection();
 
         if (this.isSelectingFinalVendor) {
-        // Disable the main purchase request form
-        this.newPurchaseRequestForm.disable({ emitEvent: false });
+          // Disable the main purchase request form
+          this.newPurchaseRequestForm.disable({ emitEvent: false });
 
-        // Disable all item form fields except vendor fields
-        Object.keys(this.itemForm.controls).forEach(key => {
-          if (key !== 'vendorUserId' && key !== 'vendorCompanyId') {
-            this.itemForm.get(key)?.disable({ emitEvent: false });
-          } else {
-            this.itemForm.get(key)?.enable({ emitEvent: false });
-          }
-        });
-      }
+          // Disable all item form fields except vendor fields
+          Object.keys(this.itemForm.controls).forEach(key => {
+            if (key !== 'vendorUserId' && key !== 'vendorCompanyId') {
+              this.itemForm.get(key)?.disable({ emitEvent: false });
+            } else {
+              this.itemForm.get(key)?.enable({ emitEvent: false });
+            }
+          });
+        }
       }
 
       if (mode === 'inventory-transfer' && id) {
@@ -204,7 +206,7 @@ export class NewPurchaseRequestComponent implements OnInit {
         this.currentRequestId = +id;
         this.loadExistingRequest(+id);
       }
-      
+
 
     });
 
@@ -218,7 +220,16 @@ export class NewPurchaseRequestComponent implements OnInit {
       }
     });
 
-    
+    this.newPurchaseRequestForm.get('exceptionPolicy')?.valueChanges.subscribe(checked => {
+      if (checked) {
+        this.openExceptionPolicyModal();
+        this.cdr.detectChanges();
+      } else {
+        this.exceptionPolicyData = null;
+      }
+    });
+
+
 
     // this.itemForm = this.fb.group({
     //   id: [null],
@@ -254,12 +265,21 @@ export class NewPurchaseRequestComponent implements OnInit {
     }
   }
 
-@HostListener('window:scroll', [])
-onWindowScroll(): void {
-  const threshold = 200; // adjust as you like
-  this.isToolbarSticky = window.scrollY > threshold;
-}
+  @HostListener('window:scroll', [])
+  onWindowScroll(): void {
+    const threshold = 200; // adjust as you like
+    this.isToolbarSticky = window.scrollY > threshold;
+  }
 
+  // onPanelChange(event: NgbPanelChangeEvent) {
+  //   if (event.panelId === 'receiving-panel') {
+  //     this.isReceivingOpen = event.nextState;
+  //   }
+
+  //   if (event.panelId === 'purchase-panel') {
+  //     this.isPurchaseOpen = event.nextState;
+  //   }
+  // }
 
   private checkEntitySelection(): void {
     if (!this.isNewForm) return;
@@ -343,7 +363,7 @@ onWindowScroll(): void {
         this.newPurchaseRequestForm.patchValue({ addressId: null }, { emitEvent: false });
       } else if (addressId) {
         this.newPurchaseRequestForm.patchValue({ addressId: addressId });
-        this.onAddressSelect(addressId);  
+        this.onAddressSelect(addressId);
       }
     });
   }
@@ -642,7 +662,7 @@ onWindowScroll(): void {
         const isEditingDeletedRow = this.editingRowIndex === rowIndex;
 
         this.newPurchaseItemData.splice(rowIndex, 1);
-        this.newPurchaseItemData = [...this.newPurchaseItemData]; 
+        this.newPurchaseItemData = [...this.newPurchaseItemData];
 
         if (isEditingDeletedRow) {
           this.itemForm.reset();
@@ -654,111 +674,111 @@ onWindowScroll(): void {
     });
   }
 
-loadExistingRequest(
-  id: number,
-  generateRfq?: boolean,
-  forInventoryTransfer?: boolean,
-  selectFinalVendor?: boolean
-) {
-  this.spinner.show();
-  this.loading = true;
+  loadExistingRequest(
+    id: number,
+    generateRfq?: boolean,
+    forInventoryTransfer?: boolean,
+    selectFinalVendor?: boolean
+  ) {
+    this.spinner.show();
+    this.loading = true;
 
-  // Decide which API to call based on inventory-transfer mode
-  const api$ = this.isInventoryTransferMode
-    ? this.purchaseRequestService.getPrForInventoryTransfer(id)
-    : this.purchaseRequestService.getPurchaseRequestById(id, generateRfq, forInventoryTransfer, selectFinalVendor);
+    // Decide which API to call based on inventory-transfer mode
+    const api$ = this.isInventoryTransferMode
+      ? this.purchaseRequestService.getPrForInventoryTransfer(id)
+      : this.purchaseRequestService.getPurchaseRequestById(id, generateRfq, forInventoryTransfer, selectFinalVendor);
 
-  api$.subscribe({
-    next: async (data) => {
+    api$.subscribe({
+      next: async (data) => {
 
-      // unwrap the Ardalis.Result<T> wrapper (if any)
-      const requestData = data;
+        // unwrap the Ardalis.Result<T> wrapper (if any)
+        const requestData = data;
 
-      const loggedInUserId = localStorage.getItem('userId');
-      this.isSubmitter = requestData.submitterId === loggedInUserId;
+        const loggedInUserId = localStorage.getItem('userId');
+        this.isSubmitter = requestData.submitterId === loggedInUserId;
 
-      this.isNewForm = false;
-      this.currentRequestId = requestData.id;
-      this.currentRequisitionNo = requestData.requisitionNo;
+        this.isNewForm = false;
+        this.currentRequestId = requestData.id;
+        this.currentRequisitionNo = requestData.requisitionNo;
 
-      this.newPurchaseRequestForm.patchValue({
-        ...requestData,
-        submittedDate: this.toDateInputValue(requestData.submittedDate)
-      });
-
-      if (requestData.requestStatus) {
         this.newPurchaseRequestForm.patchValue({
-          status: requestData.requestStatus
+          ...requestData,
+          submittedDate: this.toDateInputValue(requestData.submittedDate)
         });
 
-        if (requestData.requestStatus === 'Completed') {
-          this.isStatusCompleted = true;
-          this.cdr.detectChanges();
-        } else {
-          this.isStatusCompleted = false;
-          this.cdr.detectChanges();
+        if (requestData.requestStatus) {
+          this.newPurchaseRequestForm.patchValue({
+            status: requestData.requestStatus
+          });
+
+          if (requestData.requestStatus === 'Completed') {
+            this.isStatusCompleted = true;
+            this.cdr.detectChanges();
+          } else {
+            this.isStatusCompleted = false;
+            this.cdr.detectChanges();
+          }
+
+          if (requestData.requestStatus === 'InProcess') {
+            this.isStatusInProcess = true;
+            this.cdr.detectChanges();
+          } else {
+            this.isStatusInProcess = false;
+            this.cdr.detectChanges();
+          }
         }
 
-        if (requestData.requestStatus === 'InProcess') {
-          this.isStatusInProcess = true;
-          this.cdr.detectChanges();
-        } else {
-          this.isStatusInProcess = false;
-          this.cdr.detectChanges();
+        if (requestData.purchaseItems) {
+          const itemList = requestData.purchaseItems || [];
+
+          this.newPurchaseItemData = itemList.map((item: any) => ({
+            id: item.id,
+            requisitionNo: item.requisitionNo,
+            itemType: item.itemType,
+            itemId: item.itemId,
+            itemDescription: item.itemDescription,
+            amount: item.amount,
+            unitCost: item.unitCost,
+            unitOfMeasurementId: item.unitOfMeasurementId,
+            orderQuantity: item.orderQuantity,
+            reqByDate: this.toDateInputValue(item.reqByDate),
+            vendorUserId: item.vendorUserId,
+            vendorCompanyId: item.vendorCompanyId,
+            accountId: item.accountId,
+            remarks: item.remarks,
+            createdBy: item.createdBy,
+            purchaseRequestId: item.purchaseRequestId,
+            attachments: (item.attachments || []).map((a: any) => ({
+              id: a.id,
+              content: a.content || '',
+              contentType: a.contentType || '',
+              fileName: a.fileName || '',
+              fromForm: a.fromForm || '',
+              createdDate: a.createdDate,
+              modifiedDate: a.modifiedDate,
+              createdBy: a.createdBy || 'current-user',
+              isDeleted: a.isDeleted || false,
+              purchaseItemId: a.purchaseItemId || 0,
+              isNew: false
+            }))
+          }));
         }
+
+        const prEntityId = Number(requestData.entityId) || null;
+        this.applyEntity(prEntityId);
+
+        this.loading = false;
+        this.spinner.hide();
+        this.cdr.detectChanges();
+      },
+
+      error: (err) => {
+        this.spinner.hide();
+        this.loading = false;
+        console.error('Failed to load purchase request:', err);
       }
-
-      if (requestData.purchaseItems) {
-        const itemList = requestData.purchaseItems || [];
-
-        this.newPurchaseItemData = itemList.map((item: any) => ({
-          id: item.id,
-          requisitionNo: item.requisitionNo,
-          itemType: item.itemType,
-          itemId: item.itemId,
-          itemDescription: item.itemDescription,
-          amount: item.amount,
-          unitCost: item.unitCost,
-          unitOfMeasurementId: item.unitOfMeasurementId,
-          orderQuantity: item.orderQuantity,
-          reqByDate: this.toDateInputValue(item.reqByDate),
-          vendorUserId: item.vendorUserId,
-          vendorCompanyId: item.vendorCompanyId,
-          accountId: item.accountId,
-          remarks: item.remarks,
-          createdBy: item.createdBy,
-          purchaseRequestId: item.purchaseRequestId,
-          attachments: (item.attachments || []).map((a: any) => ({
-            id: a.id,
-            content: a.content || '',
-            contentType: a.contentType || '',
-            fileName: a.fileName || '',
-            fromForm: a.fromForm || '',
-            createdDate: a.createdDate,
-            modifiedDate: a.modifiedDate,
-            createdBy: a.createdBy || 'current-user',
-            isDeleted: a.isDeleted || false,
-            purchaseItemId: a.purchaseItemId || 0,
-            isNew: false
-          }))
-        }));
-      }
-
-      const prEntityId = Number(requestData.entityId) || null;
-      this.applyEntity(prEntityId);
-
-      this.loading = false;
-      this.spinner.hide();
-      this.cdr.detectChanges();
-    },
-
-    error: (err) => {
-      this.spinner.hide();
-      this.loading = false;
-      console.error('Failed to load purchase request:', err);
-    }
-  });
-}
+    });
+  }
 
 
   homePage() {
@@ -843,6 +863,7 @@ loadExistingRequest(
       businessUnit: f.businessUnit || '',
       partialDeliveryAcceptable: f.partialDeliveryAcceptable || false,
       exceptionPolicy: f.exceptionPolicy || false,
+      exceptionPolicyDetails: f.exceptionPolicy ? this.exceptionPolicyData : null,
       subject: f.subject || '',
       workflowMasterId: Number(f.workflowMasterId) || 0,
       createdBy: f.createdBy || '',
@@ -935,6 +956,7 @@ loadExistingRequest(
       businessUnit: f.businessUnit,
       partialDeliveryAcceptable: f.partialDeliveryAcceptable,
       exceptionPolicy: f.exceptionPolicy,
+      exceptionPolicyDetails: f.exceptionPolicy ? this.exceptionPolicyData : null,
       subject: f.subject,
       // workflowMasterId: Number(f.workflowMasterId) || 0,
       // createdBy: f.createdBy || 'USER',
@@ -982,7 +1004,7 @@ loadExistingRequest(
       centered: true,
     });
 
-    modalRef.componentInstance.viewMode = this.viewMode; 
+    modalRef.componentInstance.viewMode = this.viewMode;
     modalRef.componentInstance.isSubmitter = this.isSubmitter;
     modalRef.componentInstance.isStatusCompleted = this.isStatusCompleted;
 
@@ -1043,7 +1065,7 @@ loadExistingRequest(
           .pipe(finalize(() => this.spinner.hide()))
           .subscribe({
             next: (res) => {
-                this.router.navigate(['/purchase-request']);
+              this.router.navigate(['/purchase-request']);
             },
             error: (err) => {
               console.error(err);
@@ -1127,82 +1149,82 @@ loadExistingRequest(
   }
 
   clearItemForm(): void {
-  this.itemForm.reset({
-    id: null,
-    requisitionNo: '',
-    itemType: '',
-    itemId: 0,
-    unitOfMeasurementId: 0,
-    amount: 0,
-    unitCost: 0,
-    orderQuantity: 0,
-    reqByDate: null,
-    itemDescription: '',
-    vendorUserId: null,
-    vendorCompanyId: null,
-    accountId: 0,
-    remarks: '',
-    attachments: []
-  });
+    this.itemForm.reset({
+      id: null,
+      requisitionNo: '',
+      itemType: '',
+      itemId: 0,
+      unitOfMeasurementId: 0,
+      amount: 0,
+      unitCost: 0,
+      orderQuantity: 0,
+      reqByDate: null,
+      itemDescription: '',
+      vendorUserId: null,
+      vendorCompanyId: null,
+      accountId: 0,
+      remarks: '',
+      attachments: []
+    });
 
-  this.editingRowIndex = null;
+    this.editingRowIndex = null;
 
-  this.filteredCompanies = [];
+    this.filteredCompanies = [];
 
-  this.itemForm.markAsPristine();
-  this.itemForm.markAsUntouched();
-}
+    this.itemForm.markAsPristine();
+    this.itemForm.markAsUntouched();
+  }
   triggerFileUpload(input: HTMLInputElement): void {
-  input.click();
-}
-
- onFileSelected(event: Event): void {
-  const input = event.target as HTMLInputElement;
-  const file = input.files && input.files[0];
-  if (!file) {
-    return;
+    input.click();
   }
 
-  this.spinner.show();
-  const start = Date.now();
-
-  const reader = new FileReader();
-
-  reader.onload = (e: any) => {
-    try {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const firstSheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[firstSheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
-
-      console.log('Parsed Excel JSON:', jsonData);
-      this.uploadedItems = jsonData as any[];
-
-      // 🔥 Directly run the same bulk logic
-      this.bulkInsert();
-    } catch (err) {
-      console.error('Error parsing Excel:', err);
-      this.toastr.error('Invalid or corrupted file. Please check and try again.');
-      this.spinner.hide();
-        this.cdr.markForCheck();
-    } finally {
-      this.spinner.hide();
-        this.cdr.markForCheck();
-      // allow re-selecting the same file again
-      input.value = '';
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files[0];
+    if (!file) {
+      return;
     }
-  };
 
-  reader.onerror = () => {
-    console.error('FileReader error:', reader.error);
-    this.toastr.error('Failed to read file. Please try again.');
-    this.spinner.hide();
-    input.value = '';
-  };
+    this.spinner.show();
+    const start = Date.now();
 
-  reader.readAsArrayBuffer(file);
-}
+    const reader = new FileReader();
+
+    reader.onload = (e: any) => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+
+        console.log('Parsed Excel JSON:', jsonData);
+        this.uploadedItems = jsonData as any[];
+
+        // 🔥 Directly run the same bulk logic
+        this.bulkInsert();
+      } catch (err) {
+        console.error('Error parsing Excel:', err);
+        this.toastr.error('Invalid or corrupted file. Please check and try again.');
+        this.spinner.hide();
+        this.cdr.markForCheck();
+      } finally {
+        this.spinner.hide();
+        this.cdr.markForCheck();
+        // allow re-selecting the same file again
+        input.value = '';
+      }
+    };
+
+    reader.onerror = () => {
+      console.error('FileReader error:', reader.error);
+      this.toastr.error('Failed to read file. Please try again.');
+      this.spinner.hide();
+      input.value = '';
+    };
+
+    reader.readAsArrayBuffer(file);
+  }
 
 
   bulkInsert(): void {
@@ -1282,11 +1304,11 @@ loadExistingRequest(
     this.toastr.success('Bulk items appended successfully!');
 
     setTimeout(() => {
-  window.scrollTo({ 
-    top: document.body.scrollHeight, 
-    behavior: 'smooth' 
-  });
-}, 50);
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+      });
+    }, 50);
   }
 
   getItemIdByName(name: string): number | null {
@@ -1364,8 +1386,42 @@ loadExistingRequest(
       }
     });
   }
-  
+
   selectRow(row: any) {
     this.selectedRow = row;
   }
-}  
+  openExceptionPolicyModal() {
+    const modalRef = this.modalService.open(PurchaseRequestExceptionPolicyComponent, {
+      backdrop: 'static',
+      size: 'lg',
+      centered: true,
+    });
+
+    if (this.exceptionPolicyData) {
+      modalRef.componentInstance.exceptionPolicyForm.patchValue(this.exceptionPolicyData);
+    } else {
+      const f = this.newPurchaseRequestForm.getRawValue();
+      modalRef.componentInstance.exceptionPolicyForm.patchValue({
+        requisitionNo: f.requisitionNo,
+        subject: f.subject,
+        department: f.department
+      });
+    }
+
+    modalRef.result.then((result) => {
+      if (result) {
+        this.exceptionPolicyData = result;
+      } else {
+        if (!this.exceptionPolicyData) {
+          this.newPurchaseRequestForm.patchValue({ exceptionPolicy: false }, { emitEvent: false });
+        }
+      }
+      this.cdr.detectChanges();
+    }).catch(() => {
+      if (!this.exceptionPolicyData) {
+        this.newPurchaseRequestForm.patchValue({ exceptionPolicy: false }, { emitEvent: false });
+      }
+      this.cdr.detectChanges();
+    });
+  }
+}

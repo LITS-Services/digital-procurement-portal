@@ -1,4 +1,3 @@
-
 export class AuthUtils {
   static isTokenExpired(token: string, offsetSeconds: number = 0): boolean {
     if (!token) return true;
@@ -33,5 +32,18 @@ export class AuthUtils {
     } catch {
       return null;
     }
+  }
+  
+  // Additional helper methods
+  static decodeToken(token: string): any | null {
+    return this._decode(token);
+  }
+  
+  static getTokenPayload(token: string): any | null {
+    return this._decode(token);
+  }
+  
+  static getTokenExpirationDate(token: string): Date | null {
+    return this._getTokenExpirationDate(token);
   }
 }

@@ -24,10 +24,18 @@ export class PurchaseRequestExceptionPolicyComponent implements OnInit {
     private formBuilder: FormBuilder,
   ) {
     this.exceptionPolicyForm = this.formBuilder.group({
+      requisitionNo: [''],
+      requesterName: [''],
+      subject: [''],
+      date: [null],
+      department: [''],
+      description: [''],
+      estimatedValue: [''],
       supplierOption: [''], // Radio buttons for supplier option
-      supplierName: ['']    // Supplier name dropdown (conditionally displayed)
+      supplierName: [''],    // Supplier name dropdown (conditionally displayed)
+      justification: ['']
     });
-   }
+  }
 
   ngOnInit(): void {
   }
@@ -35,7 +43,6 @@ export class PurchaseRequestExceptionPolicyComponent implements OnInit {
     this.activeModal.close(false);
   }
   submitForm() {
-  
-
+    this.activeModal.close(this.exceptionPolicyForm.value);
   }
 }

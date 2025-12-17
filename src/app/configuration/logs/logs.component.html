@@ -14,9 +14,24 @@
         </li>
       </ul>
 
-      <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
-        <i class="ft-sliders"></i><label class="ml-1 mt-1">Filter</label>
-      </button>
+
+      
+<div class="d-flex align-items-center">
+        <!-- Export Button -->
+        <button type="button" class="btn btn-sm btn-outline-success mr-2" 
+                (click)="exportToExcel()"
+                [disabled]="loading || logsData.length === 0"
+                title="Export to Excel">
+          <i class="ft-download"></i>
+          <label class="ml-1 mt-1">Export Excel</label>
+        </button>
+        
+        <!-- Filter Button -->
+        <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="toggleFilterBar()">
+          <i class="ft-sliders"></i>
+          <label class="ml-1 mt-1">Filter</label>
+        </button>
+      </div>
     </div>
   </div>
 </div>

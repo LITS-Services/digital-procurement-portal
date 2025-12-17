@@ -5,8 +5,10 @@ import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PermissionService } from 'app/shared/permissions/permission.service';
 import { SystemService } from 'app/shared/services/system.service';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
-type LogType = 'exception' | 'audit-trails'; // Keep original tab name
+type LogType = 'exception' | 'audit-trails';
 
 @Component({
   selector: 'app-logs',
@@ -33,7 +35,7 @@ export class LogsComponent implements OnInit {
   totalPages = 0;
   totalItems = 0;
 
-  selectedTab: LogType = 'exception'; // Keep original tab
+  selectedTab: LogType = 'exception';
   selectedLog: any = null;
   searchForm: FormGroup;
 
@@ -135,10 +137,10 @@ export class LogsComponent implements OnInit {
     // Map HTTP logs data to exception logs structure with original columns
     this.logsData = (data?.result || []).map((log: any) => ({
       timestamp: log.timestamp,
-      exceptionType: log.type || 'HTTP Exception', // Map type to exceptionType
-      message: `${log.httpMethod} ${log.url} - Status: ${log.status}`, // Create message from HTTP data
+      exceptionType: log.type || 'HTTP Exception',
+      message: `${log.httpMethod} ${log.url} - Status: ${log.status}`,
       httpMethod: log.httpMethod,
-      body: log.requestBody || log.responseBody || 'No body content', // Use request/response body
+      body: log.requestBody || log.responseBody || 'No body content',
       // Keep original data for modal details
       originalData: log
     }));
@@ -190,5 +192,156 @@ export class LogsComponent implements OnInit {
     this.selectedStatusLabel = status === 'All' ? this.getFilterLabel() : status;
     this.currentPage = 1;
     this.loadLogs();
+  }
+
+  exportToExcel(): void {
+    if (this.logsData.length === 0) {
+      return;
+    }
+
+    // Prepare data based on selected tab
+    let excelData: any[] = [];
+    let fileName: string = '';
+
+    if (this.selectedTab === 'exception') {
+      excelData = this.prepareExceptionLogsForExcel();
+      fileName = `Exception_Logs_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    } else if (this.selectedTab === 'audit-trails') {
+      excelData = this.prepareAuditTrailsForExcel();
+      fileName = `Audit_Trails_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    }
+
+    // Create worksheet
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excelData);
+    
+    // Create workbook
+    const workbook: XLSX.WorkBook = {
+      Sheets: { 'Data': worksheet },
+      SheetNames: ['Data']
+    };
+
+
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    
+    this.saveExcelFile(excelBuffer, fileName);
+  }
+
+
+  private prepareExceptionLogsForExcel(): any[] {
+    return this.logsData.map((log, index) => ({
+      'Sr. No.': ((this.currentPage - 1) * this.pageSize) + index + 1,
+      'Timestamp': log.timestamp ? new Date(log.timestamp).toLocaleString() : 'N/A',
+      'Exception Type': log.exceptionType || 'N/A',
+      'Message': log.message || 'N/A',
+      'Http Method': log.httpMethod || 'N/A',
+      'Body': log.body || 'N/A'
+    }));
+  }
+
+  private prepareAuditTrailsForExcel(): any[] {
+    return this.logsData.map((log, index) => ({
+      'Sr. No.': ((this.currentPage - 1) * this.pageSize) + index + 1,
+      'Table Name': log.tableName || 'N/A',
+      'Action Type': log.actionType || 'N/A',
+      'Timestamp': log.timestamp ? new Date(log.timestamp).toLocaleString() : 'N/A',
+      'Username': log.username || 'N/A',
+      'Changes': log.changes || 'N/A',
+      'Is Entity Deleted': log.isEntityDeleted || false
+    }));
+  }
+
+  /**
+   * Save Excel file
+   */
+  private saveExcelFile(buffer: any, fileName: string): void {
+    const data: Blob = new Blob([buffer], { 
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' 
+    });
+    
+    // Use file-saver to save the file
+    saveAs(data, fileName);
+  }
+
+  /**
+   * Alternative method to export all data (with pagination)
+   * This method fetches all data from the server and exports it
+   */
+  exportAllToExcel(): void {
+    if (!confirm('This will export all data from the server. Continue?')) {
+      return;
+    }
+
+    this.loading = true;
+    const filters = this.buildFilters();
+    
+    // Fetch all data without pagination
+    const pageSize = 1000; // Large page size to get all data
+    
+    if (this.selectedTab === 'exception') {
+      this.systemService.getAllHttpLogs(1, pageSize, filters).subscribe({
+        next: (data: any) => {
+          this.handleExportAllData(data?.result || [], 'Exception_Logs');
+          this.loading = false;
+        },
+        error: () => this.loading = false
+      });
+    } else if (this.selectedTab === 'audit-trails') {
+      this.systemService.getAllAuditTrails(1, pageSize, filters).subscribe({
+        next: (data: any) => {
+          this.handleExportAllData(data?.result || [], 'Audit_Trails');
+          this.loading = false;
+        },
+        error: () => this.loading = false
+      });
+    }
+  }
+
+  /**
+   * Handle exporting all data
+   */
+  private handleExportAllData(data: any[], exportType: string): void {
+    if (data.length === 0) {
+      alert('No data to export!');
+      return;
+    }
+
+    let excelData: any[] = [];
+    const fileName = `${exportType}_All_${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+    if (this.selectedTab === 'exception') {
+      excelData = data.map((log, index) => ({
+        'Sr. No.': index + 1,
+        'Timestamp': log.timestamp ? new Date(log.timestamp).toLocaleString() : 'N/A',
+        'Exception Type': log.type || 'HTTP Exception',
+        'Message': `${log.httpMethod} ${log.url} - Status: ${log.status}`,
+        'Http Method': log.httpMethod || 'N/A',
+        'Body': log.requestBody || log.responseBody || 'No body content',
+        'URL': log.url || 'N/A',
+        'Status': log.status || 'N/A',
+        'Client IP': log.clientIp || 'N/A'
+      }));
+    } else if (this.selectedTab === 'audit-trails') {
+      excelData = data.map((log, index) => ({
+        'Sr. No.': index + 1,
+        'Table Name': log.tableName || 'N/A',
+        'Action Type': log.actionType || 'N/A',
+        'Timestamp': log.timestamp ? new Date(log.timestamp).toLocaleString() : 'N/A',
+        'Username': log.username || 'N/A',
+        'Changes': typeof log.changes === 'object' ? JSON.stringify(log.changes) : (log.changes || 'N/A'),
+        'Is Entity Deleted': log.isEntityDeleted || false,
+        'Entity ID': log.entityId || 'N/A'
+      }));
+    }
+
+    // Create worksheet and workbook
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook: XLSX.WorkBook = {
+      Sheets: { 'Data': worksheet },
+      SheetNames: ['Data']
+    };
+
+    // Generate and save Excel file
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    this.saveExcelFile(excelBuffer, fileName);
   }
 }

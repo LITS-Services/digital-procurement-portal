@@ -1,10 +1,29 @@
-form label, .form-group label {
-    font-size: 0.85rem;
-    margin-bottom: 8px;
-    color: #262626 !important;
-    font-weight: 400;
-  }
-  .example-action-buttons {
-    display: flex;
-    justify-content: flex-end; /* Move buttons to the right */
-  }
+form label,
+.form-group label {
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+  color: #262626 !important;
+  font-weight: 400;
+}
+
+.example-action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  /* Move buttons to the right */
+}
+
+input[readonly] {
+  background-color: #e9ecef !important;
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+.modal-body {
+  max-height: 60vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  /* Styles are now global */
+}

@@ -2,11 +2,11 @@ import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from "@angular/fire/compat/auth";
 import firebase from 'firebase/compat/app';
-import { Observable, of, ReplaySubject } from 'rxjs';
+import { Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { environment } from 'environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { AuthUtils } from './auth.util';
-import { catchError, finalize, map, tap } from 'rxjs';
+import { catchError, finalize, map, tap } from 'rxjs/operators';
 import { PermissionService } from '../permissions/permission.service';
 
 @Injectable({ providedIn: 'root' })
@@ -15,9 +15,10 @@ export class AuthService {
   private userDetails: firebase.User | null = null;
   private baseUrl = environment.apiUrl;
 
-
   private _refreshInProgress = false;
   private _refreshSubject = new ReplaySubject<string | null>(1);
+  private _authState = new Subject<boolean>();
+
   constructor(
     public _firebaseAuth: AngularFireAuth,
     private router: Router,
@@ -27,7 +28,6 @@ export class AuthService {
     this.user = _firebaseAuth.authState as unknown as Observable<firebase.User | null>;
     this.user.subscribe(user => this.userDetails = user || null);
   }
-
 
   // ===== Token Work =====
   get accessToken(): string | null {
@@ -55,6 +55,30 @@ export class AuthService {
       localStorage.removeItem('refreshToken');
     }
   }
+
+  // ===== SSO Session Setup =====
+  setSSOSession(data: any): void {
+    // Extract data from SSO callback
+    const roles = data.roles ?
+      (Array.isArray(data.roles) ? data.roles : data.roles.split(',')) :
+      [];
+
+    const sessionData = {
+      token: data.token,
+      refreshToken: data.refreshToken || '',
+      userId: data.id || data.userId || '',
+      userName: data.username || data.userName || '',
+      email: data.email || '',
+      roles: roles,
+      companyIds: data.companyIds || []
+    };
+
+    console.log('[AUTH] Setting SSO session:', sessionData);
+
+    // Use the same session setup as regular login
+    this._setSessionFromLogin(sessionData);
+  }
+
   createEmailInvitation(userData: any): Observable<string> {
     return this.http.post(`${this.baseUrl}/Auth/create-email-invitation`, userData, { responseType: 'text' });
   }
@@ -67,8 +91,8 @@ export class AuthService {
   initiateSSOLogin(returnUrl: string = '/dashboard/dashboard1'): Observable<any> {
     return this.http.get(`${this.baseUrl}/Auth/procurement-sso/login-url?returnUrl=${encodeURIComponent(returnUrl)}`);
   }
-  // =======ForgotPassword====
 
+  // =======ForgotPassword====
   forgetPassword(email: string): Observable<any> {
     return this.http.post(`${environment.apiUrl}/Auth/ProcurementForgotPassword`, { email });
   }
@@ -86,9 +110,6 @@ export class AuthService {
     const payload = { email, otp: Number(otp), resetOtp };
     return this.http.post(`${this.baseUrl}/Auth/VerifyProcurementOtp`, payload, { responseType: 'text' });
   }
-
-
-
 
   ResetPassword(payload: any) {
     return this.http.post(`${environment.apiUrl}/ProcurementUsers/ChangePassword/`, payload);
@@ -111,7 +132,6 @@ export class AuthService {
     });
   }
 
-
   // ===== Register =====
   register(userData: any): Observable<string> {
     return this.http.post(`${this.baseUrl}/Auth/ProcurementUserRegister`, userData, { responseType: 'text' });
@@ -124,7 +144,7 @@ export class AuthService {
 
   performLogout(): void {
     localStorage.clear();
-    window.location.href = 'pages/login';
+    this.router.navigate(['/pages/login']);
   }
 
   // ===== Authentication Check =====
@@ -156,6 +176,10 @@ export class AuthService {
 
   getUserName(): string | null {
     return localStorage.getItem('userName');
+  }
+
+  getUserEmail(): string | null {
+    return localStorage.getItem('userEmail');
   }
 
   getCompanyIds(): string[] {
@@ -193,8 +217,7 @@ export class AuthService {
         }),
         map((resp) => resp?.token ?? null),
         tap((newToken) => {
-
-          this._refreshSubject.next(newToken)
+          this._refreshSubject.next(newToken);
         }),
         catchError((err) => {
           // refresh failed → clean up & notify observers
@@ -218,20 +241,25 @@ export class AuthService {
     this.accessToken = res.token ?? null;
     this.refreshToken = res.refreshToken ?? null;
 
-    console.log('[AUTH] Login session set. accessToken:', this.accessToken.slice(0, 12) + '...', 'refreshToken:', this.refreshToken.slice(0, 12) + '...');
+    console.log('[AUTH] Login session set. accessToken:',
+      this.accessToken ? this.accessToken.slice(0, 12) + '...' : 'null',
+      'refreshToken:',
+      this.refreshToken ? this.refreshToken.slice(0, 12) + '...' : 'null');
 
     if (res.userId) localStorage.setItem('userId', res.userId);
     if (res.userName) localStorage.setItem('userName', res.userName);
+    if (res.email) localStorage.setItem('userEmail', res.email);
 
     const role = Array.isArray(res.roles) && res.roles.length > 0 ? res.roles[0] : '';
     localStorage.setItem('role', role);
 
     localStorage.setItem('roles', JSON.stringify(res.roles || []));
 
-    const companyIds = Array.isArray(res.companyIds) ? res.companyIds : [];
-    localStorage.setItem('companyIds', JSON.stringify(companyIds));
+    // Handle companyIds with potential $values wrapper
+    const companyIds = res.companyIds?.$values || res.companyIds || [];
+    localStorage.setItem('companyIds', JSON.stringify(Array.isArray(companyIds) ? companyIds : []));
 
-      // Store permissions
+    // Store permissions
     if (res.rolePermissions) {
       this.permissionService.setPermissions(res.rolePermissions);
       const auth = JSON.parse(localStorage.getItem('auth') || '{}');
@@ -239,6 +267,9 @@ export class AuthService {
     }
 
     localStorage.setItem('isAuthenticated', 'true');
+
+    // Notify auth state change
+    this._notifyAuthStateChange();
   }
 
   private _applySessionFromRefresh(res: any): void {
@@ -246,18 +277,18 @@ export class AuthService {
     if (res?.refreshToken) this.refreshToken = res.refreshToken; // rotate if provided
 
     console.log('[REFRESH] Applied new tokens from refresh. accessToken:',
-      this.accessToken.slice(0, 12) + '...', 'refreshToken:', this.refreshToken.slice(0, 12) + '...');
-
+      this.accessToken ? this.accessToken.slice(0, 12) + '...' : 'null',
+      'refreshToken:',
+      this.refreshToken ? this.refreshToken.slice(0, 12) + '...' : 'null');
 
     // If backend re-sends identity/roles on refresh, update them (optional)
     if (res?.userId) localStorage.setItem('userId', res.userId);
     if (res?.userName) localStorage.setItem('userName', res.userName);
+    if (res?.email) localStorage.setItem('userEmail', res.email);
 
     if (res?.roles) {
-
       const role = Array.isArray(res.roles) && res.roles.length > 0 ? res.roles[0] : '';
       localStorage.setItem('role', role);
-
       localStorage.setItem('roles', JSON.stringify(res.roles || []));
     }
     if (res?.companyIds) {
@@ -267,9 +298,20 @@ export class AuthService {
 
     // Update ACL permissions
     if (res?.rolePermissions) {
-        this.permissionService.setPermissions(res.rolePermissions);
-        const auth = JSON.parse(localStorage.getItem('auth') || '{}');
-        localStorage.setItem('auth', JSON.stringify({ ...auth, rolePermissions: res.rolePermissions }));
+      this.permissionService.setPermissions(res.rolePermissions);
+      const auth = JSON.parse(localStorage.getItem('auth') || '{}');
+      localStorage.setItem('auth', JSON.stringify({ ...auth, rolePermissions: res.rolePermissions }));
     }
+
+    // Notify auth state change
+    this._notifyAuthStateChange();
+  }
+
+  private _notifyAuthStateChange(): void {
+    this._authState.next(this.isAuthenticated());
+  }
+
+  get authState(): Observable<boolean> {
+    return this._authState.asObservable();
   }
 }
