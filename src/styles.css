@@ -779,6 +779,12 @@ input[type="checkbox"] {
   cursor: pointer;
 }
 
+.cbx input[type="checkbox"] {
+  transform: scale(1);
+  cursor: pointer;
+}
+
+
 /* Increase label text size */
 input[type="checkbox"]+label,
 label:has(input[type="checkbox"]) {
