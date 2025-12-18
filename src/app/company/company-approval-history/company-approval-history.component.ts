@@ -29,15 +29,15 @@ export class CompanyApprovalHistoryComponent implements OnInit {
 
     this.companyService.getApprovalHistoryByProcurmentcompanyId(this.ProcurementCompanyId ,this.vendorComapnyId).subscribe({
       next: (data: any) => {
-        // unwrap possible response formats
-        this.approvalHistory = data ?? data?.$values ?? [];
+           const rows = data?.value ?? data;          // prefer .NET $values if present
+        this.approvalHistory = Array.isArray(rows) ? rows : [];
         this.loading = false;
-        this.cdr.markForCheck();
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error("Error loading approval history", err);
         this.loading = false;
-        this.cdr.markForCheck();
+        this.cdr.detectChanges();
       }
     });
   }
