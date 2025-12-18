@@ -170,52 +170,7 @@
 
                   <hr class="w-100 mx-2">
 
-                <div class="col-md-12 mb-2 mt-2">
-                  <!-- Header -->
-                  <div class="d-flex justify-content-between align-items-center mb-1">
-                    <div class="d-flex align-items-center">
-                      <h6 class="mb-0 mr-2">Associated Entities</h6>
-                    </div>
-                  </div>
-                
-                  <p class="text-muted extra-small mb-2">
-                    Select entities linked with this company.
-                  </p>
-                
-                  <!-- ng-select multi-select -->
-                  <ng-select class="custom-style-entity col-md-6 mb-3 pl-0" [items]="entitiesList" bindLabel="name" bindValue="id"
-                   [multiple]="true"
-                    [closeOnSelect]="false" [searchable]="true" placeholder="Select Entity" [(ngModel)]="selectedEntityIds"
-                    name="associatedEntities">
-                  </ng-select>
-                
-                  <!-- Selected entities as cards -->
-                  <div *ngIf="selectedEntities.length; else noEntities">
-                    <div class="entity-card mb-2" *ngFor="let entity of selectedEntities">
-                      <div class="d-flex align-items-center justify-content-between">
-                        <!-- Left: icon + name -->
-                        <div class="d-flex align-items-center">
-                          <div class="entity-avatar mr-2 entity-avatar--blue">
-                            <i class="fa fa-building"></i>
-                          </div>
-                
-                          <div>
-                            <div class="entity-name">{{ entity.name }}</div>
-                          </div>
-                        </div>
-                
-                        <!-- Right: remove button -->
-                        <button type="button" class="btn btn-link btn-sm text-danger p-0" (click)="removeEntity(entity.id)">
-                          <i class="fa fa-times-circle mr-1"></i> Remove
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                
-                  <ng-template #noEntities>
-                    <span class="text-muted extra-small ml-1">No entities selected.</span>
-                  </ng-template>
-                </div>
+               
                 </div>
               </div>
             </div>

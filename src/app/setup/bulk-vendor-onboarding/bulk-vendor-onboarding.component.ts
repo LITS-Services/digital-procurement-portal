@@ -22,7 +22,7 @@ export class BulkVendorOnboardingComponent implements OnInit {
   entitiesList = [];
 
   tenderingData = [];
-  selectedEntityIds: number[] = [];
+  //selectedEntityIds: number[] = [];
   constructor(
     private cdr: ChangeDetectorRef,
     private toastr: ToastrService,
@@ -40,13 +40,13 @@ export class BulkVendorOnboardingComponent implements OnInit {
     return !!this.company;
   }
 
-  get selectedEntities() {
-    return this.entitiesList.filter((e) => this.selectedEntityIds.includes(e.id));
-  }
+  // get selectedEntities() {
+  //   return this.entitiesList.filter((e) => this.selectedEntityIds.includes(e.id));
+  // }
 
-  removeEntity(id: number) {
-    this.selectedEntityIds = this.selectedEntityIds.filter((x) => x !== id);
-  }
+  // removeEntity(id: number) {
+  //   this.selectedEntityIds = this.selectedEntityIds.filter((x) => x !== id);
+  // }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -225,7 +225,7 @@ export class BulkVendorOnboardingComponent implements OnInit {
     this.isScrolled = window.scrollY > threshold;
   }
   onChangeFile(): void {
-    this.selectedEntityIds = [];
+    //this.selectedEntityIds = [];
     this.selectedFile = null;
     this.company = null;
   }
@@ -242,10 +242,10 @@ export class BulkVendorOnboardingComponent implements OnInit {
       return;
     }
 
-    if (!this.selectedEntityIds || this.selectedEntityIds.length === 0) {
-      this.toastr.warning('Please select at least one entity before saving.');
-      return;
-    }
+    // if (!this.selectedEntityIds || this.selectedEntityIds.length === 0) {
+    //   this.toastr.warning('Please select at least one entity before saving.');
+    //   return;
+    // }
 
     this.spinner.show();
 
@@ -377,7 +377,7 @@ export class BulkVendorOnboardingComponent implements OnInit {
 
     const payload = {
       company: apiCompany,
-      procurementCompanyId: this.selectedEntityIds, // e.g. [1, 3, 4]
+      //procurementCompanyId: this.selectedEntityIds, // e.g. [1, 3, 4]
     };
 
     // ---- Call API ----
@@ -389,7 +389,7 @@ export class BulkVendorOnboardingComponent implements OnInit {
         this.toastr.success('Companies successfully submitted.');
         this.spinner.hide();
         this.onClearPreview();
-        this.selectedEntityIds = [];
+        //this.selectedEntityIds = [];
         this.router.navigate(['/company']);
         return;
       }
