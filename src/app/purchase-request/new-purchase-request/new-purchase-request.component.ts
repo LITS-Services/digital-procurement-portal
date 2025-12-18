@@ -1345,7 +1345,7 @@ export class NewPurchaseRequestComponent implements OnInit {
     );
 
     if (hasMissingVendor) {
-      this.toastr.error('Vendors are not selected for all items.');
+      this.toastr.info('Please select vendor for all items.');
       return;
     }
 
