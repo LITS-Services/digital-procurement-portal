@@ -194,14 +194,6 @@ export class NewPurchaseRequestComponent implements OnInit {
         }
       }
 
-      if (mode === 'inventory-transfer' && id) {
-        this.isInventoryTransferMode = true;
-        this.currentRequestId = +id;
-        this.newPurchaseRequestForm.disable();
-        this.itemForm.disable();
-        this.loadExistingRequest(+id);
-      }
-
       else if (id) {
         this.currentRequestId = +id;
         this.loadExistingRequest(+id);
@@ -674,21 +666,14 @@ export class NewPurchaseRequestComponent implements OnInit {
     });
   }
 
-  loadExistingRequest(
-    id: number,
-    generateRfq?: boolean,
-    forInventoryTransfer?: boolean,
-    selectFinalVendor?: boolean
-  ) {
+  loadExistingRequest(id: number, generateRfq?: boolean, forInventoryTransfer?: boolean, selectFinalVendor?: boolean) {
+ 
     this.spinner.show();
+ 
     this.loading = true;
-
-    // Decide which API to call based on inventory-transfer mode
-    const api$ = this.isInventoryTransferMode
-      ? this.purchaseRequestService.getPrForInventoryTransfer(id)
-      : this.purchaseRequestService.getPurchaseRequestById(id, generateRfq, forInventoryTransfer, selectFinalVendor);
-
-    api$.subscribe({
+ 
+    this.purchaseRequestService.getPurchaseRequestById(id, generateRfq, forInventoryTransfer, selectFinalVendor).subscribe({
+ 
       next: async (data) => {
 
         // unwrap the Ardalis.Result<T> wrapper (if any)
@@ -1355,8 +1340,14 @@ export class NewPurchaseRequestComponent implements OnInit {
   }
 
   createPO(row: any) {
-    console.log('row:', row);
-    console.log('row.items:', row?.items);
+    const hasMissingVendor = this.newPurchaseItemData.some(item =>
+      !item.vendorUserId
+    );
+
+    if (hasMissingVendor) {
+      this.toastr.error('Vendors are not selected for all items.');
+      return;
+    }
 
     Swal.fire({
       title: 'Create Purchase Order?',
