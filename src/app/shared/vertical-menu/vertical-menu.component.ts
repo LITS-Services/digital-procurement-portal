@@ -44,7 +44,7 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     private configService: ConfigService,
     private cdr: ChangeDetectorRef,
     private deviceService: DeviceDetectorService,
-    private authService: AuthService, // ✅ Inject AuthService
+    private authService: AuthService,
     private permissionService: PermissionService
   ) {
     this.config = this.configService.templateConf;
@@ -99,7 +99,7 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         this.menuItems = HROUTES;
       }
     } else if (this.config.layout.menuPosition === "Side") { // Vertical Menu
-      this.loadMenuItems(); // ✅ Load role-based menu
+      this.loadMenuItems(); 
     }
 
     if (this.config.layout.sidebar.backgroundColor === 'white') {
@@ -170,7 +170,6 @@ private loadMenuItems() {
         ROUTES,
         this.permissionService.canRead.bind(this.permissionService)
     );
-    console.log('Filtered Menu Items:', this.menuItems);
 }
 
 

@@ -71,7 +71,6 @@ export class PermissionService {
                 tap(perms => {
                     const auth = JSON.parse(localStorage.getItem('auth') || '{}');
                     localStorage.setItem('auth', JSON.stringify({ ...auth, rolePermissions: perms }));
-                    console.log("Permissions fetched", perms);
                 }),
                 map(() => void 0),
                 catchError(err => {

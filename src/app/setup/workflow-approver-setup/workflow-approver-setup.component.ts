@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -33,8 +33,8 @@ export class WorkflowApproverSetupComponent implements OnInit {
     private router: Router,
     public activeModal: NgbActiveModal,
     private fb: FormBuilder,
-    private workflowService: WorkflowServiceService
-
+    private workflowService: WorkflowServiceService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -43,6 +43,7 @@ export class WorkflowApproverSetupComponent implements OnInit {
     this.workflowService.getWorkflowDetails(this.workflowMasterId).subscribe({
       next: (data: any) => {
         this.workflowDetails = data.$values ?? data;
+        this.cdr.detectChanges();
         console.log("Workflow details in modal:", this.workflowDetails);
       },
       error: (err) => {
