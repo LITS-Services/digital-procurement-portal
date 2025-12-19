@@ -539,6 +539,14 @@ body.vertical-overlay-menu .sticky-toolbar.sticky {
 .app-sidebar .sidebar-content.main-menu-content {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
+    overflow-y: auto;
+  box-sizing: border-box;
+
+  /* KEY: reserve gutter space so width never changes */
+  scrollbar-gutter: stable;
+
+  /* optional: prevents any accidental horizontal jump */
+  overflow-x: hidden;
 }
 
 .app-sidebar:hover .sidebar-content.main-menu-content {
@@ -918,4 +926,61 @@ label:has(input[type="checkbox"]) {
     display: flex;
     align-items: center;
     gap: 2px;
+}
+
+
+.collapsed-submenu-dropdown {
+  min-width: 220px;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid #eef1f4;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.14);
+    position: fixed !important;
+  inset: auto !important;
+
+  z-index: 1999999;
+}
+
+body .dropdown-menu {
+  position: absolute !important;
+}
+
+.collapsed-submenu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+
+.collapsed-submenu-dropdown.dropdown-menu {
+  max-height: calc(100vh - 16px);
+  overflow-y: auto;
+}
+
+.collapsed-submenu-item:hover {
+  background: #f5f7fa;
+}
+
+
+/* Prevent flicker on hover */
+.ngb-dropdown-menu {
+  pointer-events: auto;
+}
+
+/* Hover */
+.collapsed-submenu-item:hover {
+  background: #f5f7fa;
+}
+
+/* Icon size */
+.collapsed-submenu-item i {
+  font-size: 16px;
+}
+
+/* Tooltip nicer */
+.sidebar-collapsed-tooltip .tooltip-inner {
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 8px;
 }

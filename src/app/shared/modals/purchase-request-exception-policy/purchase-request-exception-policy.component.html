@@ -5,7 +5,7 @@
 </div>
 <div class="modal-body">
   <form [formGroup]="exceptionPolicyForm" (ngSubmit)="submitForm()">
-    <div class="form-row">
+    <div class="row gx-2">
       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
         <div class="form-group mb-2">
           <label>Requisition No.</label>
@@ -61,7 +61,7 @@
       <div class="col-12 mb-2">
         <div class="form-check-inline">
           <label class="form-check-label">
-            <input type="radio" class="form-check-input" name="optradio" formControlName="supplierOption"
+            <input type="radio" class="form-check-input" name="supplierOption" formControlName="supplierOption"
               value="competitive">Obtain Competitive quotation from at least 3 suppliers without tendering
           </label>
         </div>
@@ -69,7 +69,7 @@
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-2">
         <div class="form-check-inline">
           <label class="form-check-label">
-            <input type="radio" class="form-check-input" name="optradio" formControlName="supplierOption"
+            <input type="radio" class="form-check-input" name="supplierOption" formControlName="supplierOption"
               value="direct">Direct Appointment with Supplier(Name of proposed supplier)
           </label>
         </div>

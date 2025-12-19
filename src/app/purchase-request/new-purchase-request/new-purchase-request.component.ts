@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, NgZone, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbAccordionDirective, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -15,9 +15,10 @@ import { LookupService } from 'app/shared/services/lookup.service';
 import { CompanyVM, VendorAndCompanyForFinalSelectionVM } from 'app/shared/interfaces/vendor-company-final-selection.model';
 import * as XLSX from 'xlsx';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { finalize } from 'rxjs/operators';
+import { distinctUntilChanged, filter, finalize, pairwise, startWith, takeUntil } from 'rxjs/operators';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { PurchaseRequestExceptionPolicyComponent } from 'app/shared/modals/purchase-request-exception-policy/purchase-request-exception-policy.component';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-new-purchase-request',
@@ -99,7 +100,10 @@ export class NewPurchaseRequestComponent implements OnInit {
   isPurchaseOpen = true;
 
 
+  private destroy$ = new Subject<void>();
 
+showExceptionPolicyView = false;
+private exceptionModalOpen = false;
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
   @ViewChild('tableResponsive') tableResponsive: any;
@@ -202,6 +206,8 @@ export class NewPurchaseRequestComponent implements OnInit {
 
     });
 
+
+
     this.newPurchaseRequestForm.valueChanges.subscribe(() => {
       this.isFormDirty = true;
     });
@@ -211,15 +217,16 @@ export class NewPurchaseRequestComponent implements OnInit {
         this.GetWorkflowMasterByTypeId(selectedId);
       }
     });
+ 
 
-    this.newPurchaseRequestForm.get('exceptionPolicy')?.valueChanges.subscribe(checked => {
-      if (checked) {
-        this.openExceptionPolicyModal();
-        this.cdr.detectChanges();
-      } else {
-        this.exceptionPolicyData = null;
-      }
-    });
+    // this.newPurchaseRequestForm.get('exceptionPolicy')?.valueChanges.subscribe(checked => {
+    //   if (checked) {
+    //     this.openExceptionPolicyModal();
+    //     this.cdr.detectChanges();
+    //   } else {
+    //     this.exceptionPolicyData = null;
+    //   }
+    // });
 
 
 
@@ -255,6 +262,11 @@ export class NewPurchaseRequestComponent implements OnInit {
       this.newPurchaseRequestForm.disable();
       this.itemForm.disable();
     }
+  }
+
+    ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   @HostListener('window:scroll', [])
@@ -748,6 +760,9 @@ export class NewPurchaseRequestComponent implements OnInit {
             }))
           }));
         }
+
+        this.exceptionPolicyData = requestData.exceptionPolicyDetails ?? null;
+        this.showExceptionPolicyView = !!this.exceptionPolicyData && !!this.newPurchaseRequestForm.get('exceptionPolicy')?.value;
 
         const prEntityId = Number(requestData.entityId) || null;
         this.applyEntity(prEntityId);
@@ -1381,38 +1396,136 @@ export class NewPurchaseRequestComponent implements OnInit {
   selectRow(row: any) {
     this.selectedRow = row;
   }
-  openExceptionPolicyModal() {
-    const modalRef = this.modalService.open(PurchaseRequestExceptionPolicyComponent, {
-      backdrop: 'static',
-      size: 'lg',
-      centered: true,
-    });
 
-    if (this.exceptionPolicyData) {
-      modalRef.componentInstance.exceptionPolicyForm.patchValue(this.exceptionPolicyData);
-    } else {
-      const f = this.newPurchaseRequestForm.getRawValue();
-      modalRef.componentInstance.exceptionPolicyForm.patchValue({
-        requisitionNo: f.requisitionNo,
-        subject: f.subject,
-        department: f.department
-      });
-    }
 
-    modalRef.result.then((result) => {
-      if (result) {
-        this.exceptionPolicyData = result;
-      } else {
-        if (!this.exceptionPolicyData) {
-          this.newPurchaseRequestForm.patchValue({ exceptionPolicy: false }, { emitEvent: false });
-        }
-      }
-      this.cdr.detectChanges();
-    }).catch(() => {
-      if (!this.exceptionPolicyData) {
-        this.newPurchaseRequestForm.patchValue({ exceptionPolicy: false }, { emitEvent: false });
-      }
-      this.cdr.detectChanges();
-    });
+async onExceptionPolicyToggle(e: Event): Promise<void> {
+  const input = e.target as HTMLInputElement;
+  const checked = !!input.checked;
+
+  const ctrl = this.newPurchaseRequestForm.get('exceptionPolicy');
+  if (!ctrl) return;
+
+  // ✅ if modal already open, block
+  if (this.exceptionModalOpen || this.modalService.hasOpenModals()) {
+    // revert UI state to form value
+    input.checked = !!ctrl.value;
+    return;
   }
+
+  // =========================
+  // ✅ CHECKED: open create modal
+  // =========================
+  if (checked) {
+    // set checkbox true immediately (so UI matches)
+    ctrl.setValue(true, { emitEvent: false });
+
+    // open modal next tick (prevents click-cycle issues)
+    setTimeout(() => this.openExceptionPolicyModal({ mode: 'create' }), 0);
+    return;
+  }
+
+  // =========================
+  // ✅ UNCHECKED: confirm + clear
+  // =========================
+  // if nothing saved, just turn off
+  if (!this.exceptionPolicyData) {
+    ctrl.setValue(false, { emitEvent: false });
+    this.showExceptionPolicyView = false;
+    return;
+  }
+
+  const res = await Swal.fire({
+    title: 'Remove Exception Policy?',
+    text: 'If you uncheck, all exception policy information will be cleared and lost.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, remove it',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+  });
+
+  if (res.isConfirmed) {
+    this.exceptionPolicyData = null;
+    this.showExceptionPolicyView = false;
+    ctrl.setValue(false, { emitEvent: false });
+  } else {
+    // revert back ON
+    ctrl.setValue(true, { emitEvent: false });
+    input.checked = true;
+    this.showExceptionPolicyView = true;
+  }
+}
+
+
+openExceptionPolicyModal(opts?: { mode: 'create' | 'view' }) {
+  if (this.exceptionModalOpen || this.modalService.hasOpenModals()) return;
+
+  const ctrl = this.newPurchaseRequestForm.get('exceptionPolicy');
+  if (!ctrl) return;
+
+  this.exceptionModalOpen = true;
+
+  const mode = opts?.mode ?? 'create';
+
+  const modalRef = this.modalService.open(PurchaseRequestExceptionPolicyComponent, {
+    backdrop: 'static',
+    size: 'lg',
+    centered: true,
+    keyboard: false
+  });
+
+  const f = this.newPurchaseRequestForm.getRawValue();
+
+  modalRef.componentInstance.data = {
+    requisitionNo: f.requisitionNo,
+    subject: f.subject,
+    department: f.department,
+    mode,
+    existing: this.exceptionPolicyData
+  };
+
+  // prefill
+  if (this.exceptionPolicyData) {
+    modalRef.componentInstance.exceptionPolicyForm?.patchValue(this.exceptionPolicyData, { emitEvent: false });
+  } else {
+    modalRef.componentInstance.exceptionPolicyForm?.patchValue(
+      { requisitionNo: f.requisitionNo, subject: f.subject, department: f.department },
+      { emitEvent: false }
+    );
+  }
+
+  modalRef.result
+    .then((result) => {
+      this.exceptionModalOpen = false;
+
+      if (result) {
+        // save
+        this.exceptionPolicyData = result;
+        this.showExceptionPolicyView = true;
+
+        ctrl.setValue(true, { emitEvent: false });
+        return;
+      }
+
+      // cancel: if nothing saved, uncheck
+      if (!this.exceptionPolicyData) {
+        ctrl.setValue(false, { emitEvent: false });
+        this.showExceptionPolicyView = false;
+      }
+    })
+    .catch(() => {
+      this.exceptionModalOpen = false;
+
+      if (!this.exceptionPolicyData) {
+        ctrl.setValue(false, { emitEvent: false });
+        this.showExceptionPolicyView = false;
+      }
+    });
+}
+
+onViewExceptionPolicy(): void {
+  if (!this.exceptionPolicyData) return;
+  this.openExceptionPolicyModal({ mode: 'view' });
+}
 }

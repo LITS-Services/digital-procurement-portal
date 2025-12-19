@@ -162,19 +162,29 @@
                 <input type="text" class="form-control custom-input" formControlName="department" placeholder="Enter Department">
               </div>
 
-              <div class="form-grid__item d-flex align-items-end mb-2">
-                <div class="custom-control custom-switch">
+              <div class="form-grid__item d-flex align-items-center mb-2">
+                <div class="custom-control custom-switch mt-2">
                   <input type="checkbox" class="custom-control-input me-1" id="partialDelivery" formControlName="partialDeliveryAcceptable">
                   <label class="custom-control-label" for="partialDelivery">Partial Delivery Acceptable</label>
                 </div>
               </div>
 
-              <div class="form-grid__item d-flex align-items-end mb-2">
-                <div class="custom-control custom-switch">
-                  <input type="checkbox" class="custom-control-input me-1" id="exceptionPolicy" formControlName="exceptionPolicy">
-                  <label class="custom-control-label" for="exceptionPolicy">Exception Policy</label>
-                </div>
-              </div>
+          <div class="form-grid__item d-flex align-items-center mb-2">
+            <div class="custom-control custom-switch d-flex align-items-center mt-2">
+              <input type="checkbox" class="custom-control-input me-1" id="exceptionPolicy" formControlName="exceptionPolicy"
+                (change)="onExceptionPolicyToggle($event)" />
+              
+              <label class="custom-control-label" for="exceptionPolicy">
+                Exception Policy
+              </label>
+              
+              <!-- View button -->
+              <a *ngIf="showExceptionPolicyView" class="ms-2 text-primary" href="#"
+                (click)="$event.preventDefault(); $event.stopPropagation(); onViewExceptionPolicy()">
+                View
+              </a>
+            </div>
+          </div>
 
               <div class="form-grid__item form-grid__item--full mb-1">
                 <label>Subject</label>
