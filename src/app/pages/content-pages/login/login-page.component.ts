@@ -23,7 +23,7 @@ export class LoginPageComponent implements OnInit {
     username: new UntypedFormControl('', [Validators.required]),
     password: new UntypedFormControl('', [Validators.required]),
     rememberMe: new UntypedFormControl(true),
-    recaptchaReactive: new UntypedFormControl('', [Validators.required])
+    // recaptchaReactive: new UntypedFormControl('', [Validators.required])
 
   });
 
@@ -83,20 +83,14 @@ export class LoginPageComponent implements OnInit {
   onSubmit() {
     this.loginFormSubmitted = true;
     // captcha
-    if (this.loginForm.controls['recaptchaReactive'].invalid) {
-      this.toastr.warning('Please verify the CAPTCHA to proceed.');
-      return;
-    }
+    // if (this.loginForm.controls['recaptchaReactive'].invalid) {
+    //   this.toastr.warning('Please verify the CAPTCHA to proceed.');
+    //   return;
+    // }
 
     if (this.loginForm.invalid) return;
 
-    this.spinner.show(undefined, {
-      type: 'ball-triangle-path',
-      size: 'medium',
-      bdColor: 'rgba(0, 0, 0, 0.8)',
-      color: '#fff',
-      fullScreen: true
-    });
+    this.spinner.show();
 
     this.authService.signinUser(
       this.loginForm.value.username,

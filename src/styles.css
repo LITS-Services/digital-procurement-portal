@@ -204,7 +204,7 @@ form label,
 }
 
 .ngx-datatable.bootstrap .datatable-body .datatable-body-row.datatable-row-even {
-  background-color: #E7F0FD !important;
+  background-color: #f4f8ff !important;
 }
 
 .ngx-datatable.bootstrap .datatable-body .datatable-body-row.datatable-row-odd {
@@ -219,8 +219,7 @@ form label,
 
 
 .ngx-datatable .datatable-header-inner {
-  background-color: #4188F2 !important;
-  color: white;
+  background-color: #FAFAFA !important;
 }
 
 .ngx-datatable .datatable-scroll .datatable-body-row .datatable-body-cell {
@@ -233,6 +232,7 @@ form label,
   height: auto !important;
   color: #747474 !important;
   background-color: transparent !important;
+  margin-top: -6px !important;
 
 }
 
@@ -280,6 +280,7 @@ form label,
 
 .ngx-datatable.bootstrap .datatable-footer .datatable-footer-inner {
   height: auto !important;
+  background-color: white !important;
 }
 
 .ngx-datatable.bootstrap .datatable-body .datatable-body-row.datatable-row-odd {
@@ -905,6 +906,7 @@ label:has(input[type="checkbox"]) {
 
 .ngx-datatable {
   width: 100% !important;
+  margin-bottom: 18px;
 }
 
 /* Global ellipsis for all header + body cells */
@@ -919,6 +921,15 @@ label:has(input[type="checkbox"]) {
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
+  color: #606060  !important;
+}
+
+.ngx-datatable datatable-selection .datatable-selection {
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
 }
 
 .ngx-datatable .datatable-header .datatable-header-cell .datatable-header-cell-template-wrap {

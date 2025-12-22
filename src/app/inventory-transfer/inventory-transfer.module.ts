@@ -8,6 +8,7 @@ import { InventoryTransferListComponent } from './inventory-transfer-list/invent
 import { InventoryTransferForm } from './inventory-transfer-form/inventory-transfer-form';
 import { NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
 import { ReactiveFormsModule } from '@angular/forms';
+import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
 
 
 
@@ -21,6 +22,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     InventoryTransferRoutingModule,
     NgxDatatableModule,
     AutoResizeDatatableDirective,
+    DatatableAutoResizeDirective,
     PermissionDirective,
     NgbAccordionModule,
     ReactiveFormsModule

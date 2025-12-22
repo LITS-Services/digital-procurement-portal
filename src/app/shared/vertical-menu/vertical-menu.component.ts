@@ -37,6 +37,41 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   collapseSidebar = false;
   resizeTimeout;
 
+    popperOpts = (opts: any) => {
+    opts.strategy = 'fixed';
+
+    opts.modifiers = opts.modifiers || [];
+
+    opts.modifiers.push(
+      {
+        name: 'offset',
+        options: { offset: [10, 0] }
+      },
+      {
+        name: 'flip',
+        options: {
+          boundary: 'viewport',
+          rootBoundary: 'viewport',
+          padding: 8,
+          fallbackPlacements: ['right-end', 'left-start', 'left-end']
+        }
+      },
+      {
+        name: 'preventOverflow',
+        options: {
+          boundary: 'viewport',
+          rootBoundary: 'viewport',
+          padding: 8,
+          altAxis: true,
+          tether: false
+        }
+      }
+    );
+
+    return opts;
+  };
+
+
   constructor(
     private router: Router,
     public translate: TranslateService,
@@ -92,6 +127,29 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loadLayout();
     }, 500);
   }
+
+navigateFromMiniMenu(item: any, dd: any) {
+  dd?.close();
+
+  if (item?.isExternalLink) {
+    window.open(item.path, '_blank');
+    return;
+  }
+
+  // if a submenu item was clicked that still has children, navigate to first child
+  if (item?.submenu?.length) {
+    const first = item.submenu[0];
+    if (first?.path) {
+      this.router.navigate([first.path]);
+    }
+    return;
+  }
+
+  if (item?.path) {
+    this.router.navigate([item.path]);
+  }
+}
+
 
   loadLayout() {
     if (this.config.layout.menuPosition === "Top") { // Horizontal Menu

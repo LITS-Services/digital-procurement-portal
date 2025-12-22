@@ -42,8 +42,9 @@
 
         </div>
       </div>
+      @if(datatableVisible){
 
-      <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="purchaseRequestData" [columnMode]="'force'"
+      <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap" [rows]="purchaseRequestData" [columnMode]="'force'"
         [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [limit]="query.pageSize"
         [count]="totalItems" [externalPaging]="true" [offset]="query.currentPage - 1" (page)="onPageChange($event)"
         [loadingIndicator]="loading" [selected]="chkBoxSelected" [selectionType]="SelectionType.checkbox"
@@ -99,6 +100,7 @@
         </ngx-datatable-row-detail>
 
       </ngx-datatable>
+    }
     </div>
   </div>
 </section>

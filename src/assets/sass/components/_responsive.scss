@@ -15,6 +15,7 @@
     }
     footer.footer {
       margin-left: $menu-expanded-width;
+      background: white;
     }
     &.sidebar-sm {
       .navbar,
@@ -64,6 +65,7 @@
     }
   }
   footer.footer {
+    margin-top: 10px !important;
     text-align: center;
   }
 }
@@ -217,6 +219,15 @@ footer.footer {
   .i18n-dropdown {
     display: none;
   }
+}
+
+.sidebar-content.collapsed .navigation > li.has-sub > a::after,
+.sidebar-content.collapsed .navigation > li.has-sub > a::before,
+.sidebar-content.collapsed .navigation > li.has-sub > a .menu-arrow,
+.sidebar-content.collapsed .navigation > li.has-sub > a .caret,
+.sidebar-content.collapsed .navigation > li.has-sub > a .submenu-arrow {
+  display: none !important;
+  content: none !important;
 }
 
 

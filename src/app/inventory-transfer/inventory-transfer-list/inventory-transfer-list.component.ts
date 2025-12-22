@@ -48,6 +48,10 @@ export class InventoryTransferListComponent implements OnInit {
     forInventoryTransfer: true
   };
 
+  
+  datatableVisible: boolean = true;
+
+
   constructor(
     private router: Router,
     private modalService: NgbModal,
@@ -64,6 +68,17 @@ export class InventoryTransferListComponent implements OnInit {
     this.loadPurchaseRequests();
     this.cdr.detectChanges();
   }
+
+  onAutoResize(): void {
+    this.datatableVisible = false;
+    this.cdr.detectChanges(); // destroy
+
+    requestAnimationFrame(() => {
+      this.datatableVisible = true;
+      this.cdr.detectChanges(); // recreate
+    });
+  }
+
 
   loadPurchaseRequests() {
     this.loading = true;

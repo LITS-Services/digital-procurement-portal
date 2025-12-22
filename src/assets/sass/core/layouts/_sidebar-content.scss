@@ -83,10 +83,6 @@ body.nav-collapsed {
         opacity: 1;
         display: inline-block;
       }
-
-      .nav-toggle {
-        display: block !important;
-      }
     }
 
     .menu-title,
@@ -96,9 +92,9 @@ body.nav-collapsed {
       display: none;
     }
 
-    .nav-toggle {
-      display: none !important;
-    }
+    // .nav-toggle {
+    //   display: none !important;
+    // }
 
     .nav-close {
       display: none !important;
@@ -289,7 +285,7 @@ body {
         display: block;
         overflow: hidden;
         line-height: $font-size-base * 2;
-        margin: 0px 8px 6px 8px !important;
+        margin: 0px 6px 6px 8px !important;
        padding: 10px 0px 10px 8px;
         background-color: transparent;
         color: $white;
@@ -552,14 +548,23 @@ body {
   a.nav-toggle {
     display: inline-block;
     position: absolute;
-    width: 32px;
-    height: 32px;
+    width: 22px;
+    height: 22px;
     line-height: 20px;
-    font-size: 22px;
+    font-size: 18px;
     text-align: center;
-    right: 14px;
+    right: -15px;
     top: 25px;
-    color: white;
+    border-radius: 6px;
+    color: #116AEF;
+    background-color: #F5F5F5;
+  }
+
+ .toggle-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
   }
 
   a.nav-close {
@@ -685,7 +690,7 @@ body {
 
     &.sidebar-lg .app-sidebar {
       &:hover {
-        width: $menu-expanded-width-lg;
+        width: $menu-collapsed-width;
       }
     }
 
@@ -711,4 +716,7 @@ body {
   .app-sidebar {
     transform: translate3d(-100%, 0, 0);
   }
+}
+.app-sidebar .dropdown-toggle::after {
+  border-top: none;
 }
