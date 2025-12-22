@@ -36,23 +36,23 @@
             <button *ngIf="isAssigned" class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId"
               (click)="onActions('sendforapproval')">
               <i class="ft-check"></i>
-              <label class="ml-1 mt-1">Submit for Approval</label>
+              <label class="ml-1">Submit for Approval</label>
             </button>
 
             <!-- If isAssigned = false → normal behavior -->
             <button *ngIf="!isAssigned" class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId"
               (click)="onActions('Approve')">
               <i class="ft-check"></i>
-              <label class="ml-1 mt-1">Approve</label>
+              <label class="ml-1">Approve</label>
             </button>
 
 
             <button class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId" (click)="onActions('Rejected')">
-              <i class="ft-x"></i><label class="ml-1 mt-1">Reject</label>
+              <i class="ft-x"></i><label class="ml-1">Reject</label>
             </button>
 
             <button class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId" (click)="onActions('SendBack')">
-              <i class="ft-arrow-left"></i><label class="ml-1 mt-1">Send Back</label>
+              <i class="ft-arrow-left"></i><label class="ml-1">Send Back</label>
             </button>
 
           </div>

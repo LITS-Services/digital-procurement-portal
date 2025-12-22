@@ -23,21 +23,21 @@
             <button type="button" ngbTooltip="Create new Procurement Company" class="btn btn-sm  cstm-ui-table-btn"
               (click)="openEmpDetails()" appPermission [appPermFormId]="FORM_IDS.ENTITIES" [appPermDisable]="'write'">
               <i class="ft-plus"></i>
-              <label class="ml-1 mt-1  btn-label">Create</label>
+              <label class="ml-1 btn-label">Create</label>
             </button>
 
             <!-- Update -->
             <button type="button" class="btn btn-sm  cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
               (click)="editSelectedRow()" appPermission [appPermFormId]="FORM_IDS.ENTITIES" [appPermDisable]="'write'">
               <i class="ft-edit"></i>
-              <label class="ml-1 mt-1 btn-label">Edit</label>
+              <label class="ml-1 btn-label">Edit</label>
             </button>
 
             <!-- Delete -->
             <button type="button" class="btn btn-sm  cstm-ui-table-btn" [disabled]="isDeleteButtonDisabled"
               (click)="openDeleteModal()" appPermission [appPermFormId]="FORM_IDS.ENTITIES" [appPermDisable]="'delete'">
               <i class="ft-trash"></i>
-              <label class="ml-1 mt-1 btn-label">Delete</label>
+              <label class="ml-1 btn-label">Delete</label>
             </button>
           </div>
         </div>

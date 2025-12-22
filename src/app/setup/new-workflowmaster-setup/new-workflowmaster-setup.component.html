@@ -20,14 +20,14 @@
             <span class="vl"></span>
             <button type="submit" class="btn btn-sm cstm-ui-table-btn" [disabled]="workflowsetupform.invalid"
               *ngIf="mode !== 'Edit'" (click)="submitForm()">
-              <i class="ft-plus"></i><label class="ml-1 mt-1">Save</label>
+              <i class="ft-plus"></i><label class="ml-1">Save</label>
             </button>
             <button [disabled]="mode !== 'Edit'" type="reset" class="btn btn-sm cstm-ui-table-btn"
               (click)="updateForm()">
-              <i class="ft-edit"></i><label class="ml-1 mt-1">{{ mode === 'Edit' ? 'Update' : 'Edit' }}</label>
+              <i class="ft-edit"></i><label class="ml-1">{{ mode === 'Edit' ? 'Update' : 'Edit' }}</label>
             </button>
             <button [disabled]="mode !== 'Edit'" type="reset" class="btn btn-sm cstm-ui-table-btn">
-              <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
+              <i class="ft-trash"></i><label class="ml-1">Delete</label>
             </button>
           </div>
         </div>

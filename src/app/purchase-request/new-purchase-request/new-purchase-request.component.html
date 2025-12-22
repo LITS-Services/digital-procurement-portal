@@ -34,11 +34,11 @@
             <!-- Create Mode: Save + Save as Draft -->
             <ng-container *ngIf="isNewForm && !viewMode">
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="newPurchaseRequestForm.invalid" (click)="submitForm()">
-                <i class="ft-plus"></i><label class="ml-1 mt-1 btn-label">Save</label>
+                <i class="ft-plus"></i><label class="ml-1 btn-label">Save</label>
               </button>
 
               <button class="btn btn-sm cstm-ui-table-btn" (click)="saveAsDraftAndGoBack()">
-                <i class="ft-save"></i><label class="ml-1 mt-1 btn-label">Save as Draft</label>
+                <i class="ft-save"></i><label class="ml-1 btn-label">Save as Draft</label>
               </button>
             </ng-container>
 
@@ -49,12 +49,12 @@
                 class="btn btn-sm cstm-ui-table-btn"
                 [disabled]="newPurchaseRequestForm.invalid || (isStatusCompleted && !isSelectingFinalVendor) || !isSubmitter"
                 (click)="submitForm()">
-                <i class="ft-edit-2"></i><label class="ml-1 mt-1 btn-label">Update</label>
+                <i class="ft-edit-2"></i><label class="ml-1 btn-label">Update</label>
               </button>
 
               <button *ngIf="isSelectingFinalVendor" class="btn btn-sm cstm-ui-table-btn" (click)="createPO(selectedRow)">
                 <i class="ft-plus"></i>
-                <label class="ml-1 mt-1 btn-label">Create PO</label>
+                <label class="ml-1 btn-label">Create PO</label>
               </button>
             </ng-container>
 
@@ -64,29 +64,29 @@
                 class="btn btn-sm"
                 [disabled]="newPurchaseRequestForm.invalid || isStatusCompleted || isStatusInProcess"
                 (click)="onSubmitForApproval()">
-                <i class="ft-edit-2"></i><label class="ml-1 mt-1 btn-label">Submit For Approval</label>
+                <i class="ft-edit-2"></i><label class="ml-1 btn-label">Submit For Approval</label>
               </button>
             </ng-container>
 
             <!-- Approver buttons -->
             <ng-container *ngIf="viewMode && !isSubmitter">
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted" (click)="onAddRemarks('Approve')">
-                <i class="ft-check"></i><label class="ml-1 mt-1 btn-label">Approve</label>
+                <i class="ft-check"></i><label class="ml-1 btn-label">Approve</label>
               </button>
 
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted" (click)="onAddRemarks('Reject')">
-                <i class="ft-x"></i><label class="ml-1 mt-1 btn-label">Reject</label>
+                <i class="ft-x"></i><label class="ml-1 btn-label">Reject</label>
               </button>
 
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted" (click)="onAddRemarks('SendBack')">
-                <i class="ft-arrow-left"></i><label class="ml-1 mt-1 btn-label">Send Back</label>
+                <i class="ft-arrow-left"></i><label class="ml-1 btn-label">Send Back</label>
               </button>
             </ng-container>
           </div>
 
           <div class="col-md-6 col-6 text-end cstm-action-bar" style="margin-top: 0.3rem;">
             <button type="reset" class="btn btn-sm cstm-ui-table-btn mr-2">
-              <i class="ft-printer"></i><label class="ml-1 mt-1 btn-label">Print</label>
+              <i class="ft-printer"></i><label class="ml-1 btn-label">Print</label>
             </button>
           </div>
         </div>

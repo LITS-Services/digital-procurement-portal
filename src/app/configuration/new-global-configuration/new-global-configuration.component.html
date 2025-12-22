@@ -25,7 +25,7 @@
             <ng-container *ngIf="isNewForm && !viewMode">
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="newGlobalConfigForm.invalid"
                 (click)="onSubmit()">
-                <i class="ft-plus"></i><label class="ml-1 mt-1">Save</label>
+                <i class="ft-plus"></i><label class="ml-1">Save</label>
               </button>
 
             </ng-container>
@@ -34,7 +34,7 @@
             <ng-container *ngIf="!isNewForm && !viewMode">
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="newGlobalConfigForm.invalid"
                 (click)="onSubmit()">
-                <i class="ft-edit-2"></i><label class="ml-1 mt-1">Update</label>
+                <i class="ft-edit-2"></i><label class="ml-1">Update</label>
               </button>
             </ng-container>
 

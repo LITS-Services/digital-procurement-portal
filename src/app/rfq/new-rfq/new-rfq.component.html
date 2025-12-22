@@ -135,7 +135,7 @@
           
             <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" (click)="goBack()"
               title="Back to RFQ Details">
-              <i class="ft-arrow-left"></i><label class="ml-1 mt-1">Back</label>
+              <i class="ft-arrow-left"></i><label class="ml-1">Back</label>
             </button>
           
           </div>
@@ -147,17 +147,17 @@
           
             <button *ngIf="isNewForm && rfqTabs === 'details'" class="btn btn-sm cstm-ui-table-btn"
               [disabled]="newRfqForm.invalid" (click)="goNext()">
-              <i class="ft-arrow-right"></i><label class="ml-1 mt-1">Next</label>
+              <i class="ft-arrow-right"></i><label class="ml-1">Next</label>
             </button>
           
                 <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" [disabled]="isLoading"
               (click)="saveAsDraftAndGoBack()">
-              <i class="ft-save"></i><label class="ml-1 mt-1">Save As Draft</label>
+              <i class="ft-save"></i><label class="ml-1">Save As Draft</label>
             </button>
           
             <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" [disabled]="isLoading"
               (click)="submitForm(true)">
-              <i class="ft-check"></i><label class="ml-1 mt-1">Save & Continue</label>
+              <i class="ft-check"></i><label class="ml-1">Save & Continue</label>
             </button>
 
          
@@ -165,27 +165,27 @@
             <button *ngIf="!isNewForm && (rfqTabs === 'details' || rfqTabs === 'items') && isSubmitter"
               class="btn btn-sm cstm-ui-table-btn" [disabled]="newRfqForm.invalid || isStatusCompleted || !isSubmitter || viewMode"
               (click)="submitForm()">
-              <i class="ft-edit-2"></i><label class="ml-1 mt-1">Update</label>
+              <i class="ft-edit-2"></i><label class="ml-1">Update</label>
             </button>
 
               <button   ngbTooltip="Create Purchase Order" *ngIf="isStatusCompleted && (rfqTabs === 'details' || rfqTabs === 'items') && isSubmitter"
               class="btn btn-sm cstm-ui-table-btn"
               (click)="createPO()">
-              <i class="ft-plus"></i><label class="ml-1 mt-1">Create PO</label>
+              <i class="ft-plus"></i><label class="ml-1">Create PO</label>
             </button>
 
             <ng-container *ngIf="viewMode && !isSubmitter">
             <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter"
               (click)="onAddRemarks('Approve')">
-              <i class="ft-check"></i><label class="ml-1 mt-1">Approve</label>
+              <i class="ft-check"></i><label class="ml-1">Approve</label>
             </button>
             <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter"
               (click)="onAddRemarks('Reject')">
-              <i class="ft-x"></i><label class="ml-1 mt-1">Reject</label>
+              <i class="ft-x"></i><label class="ml-1">Reject</label>
             </button>
             <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter"
               (click)="onAddRemarks('SendBack')">
-              <i class="ft-arrow-left"></i><label class="ml-1 mt-1">Send Back</label>
+              <i class="ft-arrow-left"></i><label class="ml-1">Send Back</label>
             </button>
             </ng-container>          
           

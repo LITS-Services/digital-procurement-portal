@@ -20,15 +20,15 @@
             <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new workflow"
               (click)="setupnewWorkflow()" appPermission [appPermFormId]="FORM_IDS.WORKFLOW_SETUP"
               [appPermDisable]="'write'">
-              <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
+              <i class="ft-plus"></i><label class="ml-1">Create</label>
             </button>
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()" appPermission
               [appPermFormId]="FORM_IDS.WORKFLOW_SETUP" [appPermDisable]="'write'">
-              <i class="ft-edit"></i><label class="ml-1 mt-1">Edit</label>
+              <i class="ft-edit"></i><label class="ml-1">Edit</label>
             </button>
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()"
               appPermission [appPermFormId]="FORM_IDS.WORKFLOW_SETUP" [appPermDisable]="'delete'">
-              <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
+              <i class="ft-trash"></i><label class="ml-1">Delete</label>
             </button>
           </div>
         </div>

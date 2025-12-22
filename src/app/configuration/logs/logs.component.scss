@@ -109,3 +109,14 @@ textarea[disabled] {
   filter: invert(1);
   /* makes close button visible on dark header */
 }
+
+.excel-btn{
+  height: 30px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e7ffeb7a;
+  color: #126619;
+  border: 1px solid #aae0b0;
+}

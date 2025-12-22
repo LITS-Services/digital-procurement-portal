@@ -24,22 +24,22 @@
               <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new Purchase Request"
                 appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST" [appPermDisable]="'write'"
                 (click)="openEmpDetails()">
-                <i class="ft-plus"></i><label class="ml-1 mt-1 btn-label">Create</label>
+                <i class="ft-plus"></i><label class="ml-1 btn-label">Create</label>
               </button>
               <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()" appPermission
                 [appPermFormId]="FORM_IDS.PURCHASE_REQUEST" [appPermDisable]="'write'">
-                <i class="ft-edit"></i><label class="ml-1 mt-1 btn-label">Update</label>
+                <i class="ft-edit"></i><label class="ml-1 btn-label">Update</label>
               </button>
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()"
                 [disabled]="isDeleteButtonDisabled" appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
                 [appPermDisable]="'delete'">
-                <i class="ft-trash"></i><label class="ml-1 mt-1 btn-label">Delete</label>
+                <i class="ft-trash"></i><label class="ml-1 btn-label">Delete</label>
               </button>
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled" appPermission
                 [appPermFormId]="FORM_IDS.PURCHASE_REQUEST" [appPermDisable]="'read'" (click)="onView()">
-                <i class="ft-eye"></i><label class="ml-1 mt-1 btn-label">Review</label>
+                <i class="ft-eye"></i><label class="ml-1 btn-label">Review</label>
               </button>
               <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="loadPurchaseRequests()"><label
                 class="ml-1 mt-1">All</label></button>
@@ -62,7 +62,7 @@
             <div class="d-flex align-items-center">
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="toggleFilterBar()">
-                <i class="ft-sliders"></i><label class="ml-1 mt-1 btn-label">Filter</label>
+                <i class="ft-sliders"></i><label class="ml-1 btn-label">Filter</label>
               </button>
 
               <div class="dropdown" ngbDropdown>
@@ -71,11 +71,11 @@
                 </button>
                 <div class="dropdown-menu" ngbDropdownMenu>
                   <button type="button" class="btn btn-sm cstm-ui-table-btn dropdown-item " (click)="openAblModal()">
-                    <i class="ft-settings"></i><label class="ml-1 mt-1">Account Budget Lookup</label>
+                    <i class="ft-settings"></i><label class="ml-1">Account Budget Lookup</label>
                   </button>
                   <button type="button" class="btn btn-sm cstm-ui-table-btn dropdown-item"
                     (click)="openExceptionPolicyModal()">
-                    <i class="ft-alert-circle"></i><label class="ml-1 mt-1">Exception Policy</label>
+                    <i class="ft-alert-circle"></i><label class="ml-1">Exception Policy</label>
                   </button>
                 </div>
               </div>
@@ -144,7 +144,10 @@
       [sortable]="false"
       [canAutoResize]="false"
       [draggable]="false"
-      [resizeable]="false">
+      [resizeable]="false"
+      cellClass="datatable-checkbox-cell"
+      headerClass="datatable-checkbox-cell"
+      >
       <ng-template ngx-datatable-header-template>
         <div class="custom-control cstm-checkbox-form">
           <input

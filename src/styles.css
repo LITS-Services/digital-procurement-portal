@@ -175,6 +175,11 @@ form label,
   font-size: 14px !important;
   color: #3D3D3D !important;
   font-weight: 400 !important;
+  display: inline-flex;
+  align-items: center;
+}
+.cstm-ui-table-btn i {
+  font-size: 18px !important;
 }
 
 .cstm-checkbox-form {
@@ -909,6 +914,12 @@ label:has(input[type="checkbox"]) {
   margin-bottom: 18px;
 }
 
+
+.ngx-datatable .datatable-body a{
+  text-decoration: underline !important;
+  color: #116AEF !important;
+}
+
 /* Global ellipsis for all header + body cells */
 .ngx-datatable .datatable-header-cell,
  .ngx-datatable .datatable-body-cell {
@@ -994,4 +1005,46 @@ body .dropdown-menu {
   padding: 6px 10px;
   font-size: 12px;
   border-radius: 8px;
+}
+
+
+/* custom checkbox in datatable header */
+
+.ngx-datatable .datatable-header-cell .custom-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px !important;
+}
+
+.ngx-datatable .datatable-body-cell.datatable-checkbox-cell .datatable-body-cell-label {
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+
+.ngx-datatable .datatable-body-cell.datatable-checkbox-cell .cstm-checkbox-form {
+  padding: 2px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.ngx-datatable
+  .cstm-checkbox-form
+  input[type="checkbox"] {
+  transform: scale(1.25);
+  cursor: pointer;
+}
+
+.ngx-datatable
+  .datatable-body-cell
+  .datatable-body-cell-label:has(.cstm-checkbox-form) {
+  padding: 2px !important;
+  margin-left: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

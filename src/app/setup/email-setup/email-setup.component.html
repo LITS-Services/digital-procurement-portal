@@ -21,29 +21,29 @@
             <button type="button" class="btn btn-sm cstm-ui-table-btn" appPermission
               [appPermFormId]="FORM_IDS.INVITATION" [appPermDisable]="'write'" (click)="CreatInvitations()">
               <i class="ft-mail"></i>
-              <label class="ml-1 mt-1">Create Invitation</label>
+              <label class="ml-1">Create Invitation</label>
             </button>
 
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="showAll()">
               <i class="ft-align-left"></i>
-              <label class="ml-1 mt-1">All</label>
+              <label class="ml-1">All</label>
             </button>
 
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="showInProcess()">
               <i class="ft-share-2"></i>
-              <label class="ml-1 mt-1">Send</label>
+              <label class="ml-1">Send</label>
             </button>
 
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="showRecall()">
               <i class="ft-refresh-ccw"></i>
-              <label class="ml-1 mt-1">Resend</label>
+              <label class="ml-1">Resend</label>
             </button>
 
             <!-- ✅ NEW: Resend Button -->
             <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isResendButtonDisabled"
               (click)="resendInvitation()">
               <i class="ft-repeat"></i>
-              <label class="ml-1 mt-1">Resend</label>
+              <label class="ml-1">Resend</label>
             </button>
           </div>
         </div>
