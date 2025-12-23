@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
 
@@ -16,7 +16,8 @@ export class PrApprovalHistoryComponent implements OnInit {
 
   constructor(
     public activeModal: NgbActiveModal,
-    private purchaseRequestService: PurchaseRequestService
+    private purchaseRequestService: PurchaseRequestService,
+    private cdr: ChangeDetectorRef
   ) { }
   ngOnInit(): void {
     this.loadApprovalHistory();
@@ -28,6 +29,7 @@ export class PrApprovalHistoryComponent implements OnInit {
         // unwrap possible response formats
         this.approvalHistory = data ?? data ?? [];
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error("Error loading approval history", err);
