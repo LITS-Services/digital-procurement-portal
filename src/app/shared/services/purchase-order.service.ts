@@ -53,4 +53,15 @@ export class PurchaseOrderService {
   getPurchaseOrderById(id: number) {
     return this.http.get<any>(`${this.baseUrl}/get-purchase-order-by-id?id=${id}`);
   }
+
+  addVendorRating(payload: any) {
+    return this.http.post(`${this.baseUrl}/add-vendor-rating`, payload);
+  }
+
+  getVendorRatingByPoId(poId: number) {
+    return this.http.get<any>(
+      `${this.baseUrl}/get-vendor-rating-by-id`,
+      { params: { poId } }
+    );
+  }
 }

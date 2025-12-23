@@ -11,6 +11,8 @@ import { ShipmentDetailsComponent } from './purchase-order-details/shipment-deta
 import { GrnDetailsComponent } from './purchase-order-details/grn-details/grn-details.component';
 import { InvoiceComponent } from './purchase-order-details/invoice/invoice.component';
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
+import { VendorRating } from './purchase-order-details/vendor-rating/vendor-rating';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -21,13 +23,15 @@ import { PermissionDirective } from 'app/shared/permissions/permission.directive
     ShipmentDetailsComponent,
     GrnDetailsComponent,
     InvoiceComponent,
+    VendorRating
   ],
   imports: [
     CommonModule,
     PurchaseOrderRoutingModule,
     NgxDatatableModule,
     AutoResizeDatatableDirective,
-    PermissionDirective
+    PermissionDirective,
+    ReactiveFormsModule
 ]
 })
 export class PurchaseOrderModule { }

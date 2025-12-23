@@ -45,6 +45,11 @@
                     [ngClass]="{ 'tab-current': selectedTab === 'invoice-details' }" class="custom-style-tab">
                     <span>INVOICING</span>
                 </button>
+
+                <button (click)="selectTab('vendor-rating')"
+                    [ngClass]="{ 'tab-current': selectedTab === 'vendor-rating' }" class="custom-style-tab">
+                    <span>VENDOR RATING</span>
+                </button>
             </nav>
         </div>
 
@@ -155,6 +160,10 @@
 
         <div *ngIf="selectedTab === 'invoice-details'">
             <app-invoice></app-invoice>
+        </div>
+
+        <div *ngIf="selectedTab === 'vendor-rating'">
+            <app-vendor-rating [poId]="poId"></app-vendor-rating>
         </div>
     </div>
 </section>

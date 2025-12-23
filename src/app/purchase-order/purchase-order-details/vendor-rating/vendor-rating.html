@@ -1,0 +1,49 @@
+<form [formGroup]="ratingForm">
+  <div class="card cstm-ui-card mb-4">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label>Purchase Order No</label>
+          <input class="form-control"
+                 formControlName="purchaseOrderNo"
+                 disabled>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label>Vendor Name</label>
+          <input class="form-control"
+                 formControlName="vendorName"
+                 disabled>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label>Rating (0-5)</label>
+          <input type="number"
+                 class="form-control"
+                 formControlName="rating"
+                 min="0"
+                 max="5"
+                 [readonly]="ratingExists">
+
+                <small *ngIf="ratingExists" class="text-muted">
+                  Rating has already been submitted and cannot be changed.
+                </small>
+        </div>
+      </div>
+
+      <button class="btn btn-primary"
+              (click)="submitRating()"
+              [disabled]="ratingForm.invalid || saving || ratingExists">
+        {{ ratingExists ? 'Rating Submitted' : 'Submit Rating' }}
+      </button>
+    </div>
+  </div>
+</form>
+
+
+<!-- <ng-template #loader>
+    <div class="text-center mt-5">
+        <div class="spinner-border"></div>
+        <p>Loading Vendor Rating...</p>
+    </div>
+</ng-template> -->
