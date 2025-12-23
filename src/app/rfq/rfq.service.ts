@@ -157,4 +157,7 @@ export class RfqService {
     return this.http.post(`${this.baseUrl}/reject-or-revise-bid`, payload);
   }
 
+  askAiVendorComparison(payload: { rfqId: number }) {
+    return this.http.post<any>(`${this.baseUrl}/ai-vendorcomparison`, payload);
+  }
 }

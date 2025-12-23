@@ -8,6 +8,14 @@
 <div class="modal-body">
 
   <div class="form filters-div">
+    <!-- Ask AI Button -->
+    <div class="mb-1">
+      <button class="btn btn-sm ask-ai-button shadow-sm" (click)="askAi(aiModal)" [disabled]="loadingAi">
+        {{ loadingAi ? 'Thinking...' : 'Ask AI' }}
+        <i class="ft-send"></i>
+      </button>
+    </div>
+
     <!-- Filter: Item -->
     <div>
       <div class="dropdown filter-dropdown" ngbDropdown>
@@ -23,7 +31,11 @@
         </div>
       </div>
     </div>
-
+  
+    <!-- AI Explanation (optional, show after response) -->
+    <!-- <div *ngIf="aiExplanation" class="alert alert-primary mt-2">
+        <strong>AI Suggestion:</strong> {{ aiExplanation }}
+      </div> -->
     <!-- Filter: Vendor -->
     <div>
       <div class="dropdown filter-dropdown" ngbDropdown>
@@ -41,7 +53,7 @@
         </div>
       </div>
     </div>
-
+  
     <!-- Filter: Amount Sort -->
     <div>
       <div class="dropdown filter-dropdown" ngbDropdown>
@@ -64,7 +76,7 @@
         </div>
       </div>
     </div>
-
+  
     <!-- Reset Button -->
     <div>
       <button class="btn btn-sm clear-btn" (click)="clearFilters()">
@@ -208,3 +220,19 @@
     <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
   </div> -->
   </ng-template>
+
+  <ng-template #aiModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title text-white">AI Recommendation</h5>
+    <button type="button" class="btn-close" aria-label="Close text-white" (click)="modal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body">
+    <p *ngIf="loadingAi">AI is thinking, please wait...</p>
+    <p *ngIf="!loadingAi">{{ aiExplanation }}</p>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary btn-sm" (click)="modal.close()">Close</button>
+  </div>
+</ng-template>

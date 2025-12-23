@@ -40,6 +40,9 @@ export class VendorComparisionComponent implements OnInit {
   selectedItem: string = '';
   selectedVendorId: string = '';
 
+  loadingAi = false;
+  aiExplanation: string = '';
+
   amountSort: 'none' | 'asc' | 'desc' = 'none';
   @ViewChild('attachmentsModal') attachmentsModal: any;
   selectedBid: any = null;
@@ -253,6 +256,31 @@ export class VendorComparisionComponent implements OnInit {
       }
     });
   }
-//}
 
+  askAi(modalRef: any) {
+    if (!this.data.quotationId) {
+      this.toastr.warning('Quotation ID not available.');
+      return;
+    }
+
+    this.loadingAi = true;
+    this.aiExplanation = '';
+
+    const payload = { rfqId: this.data.quotationId };
+
+    this.rfqService.askAiVendorComparison(payload).subscribe({
+      next: (res: any) => {
+        this.aiExplanation = res.explanation || 'No explanation returned.';
+        this.loadingAi = false;
+
+        // open modal after getting response
+        this.modalService.open(modalRef, { size: 'sm', centered: true });
+      },
+      error: (err) => {
+        console.error('AI request failed', err);
+        this.toastr.error('Failed to get AI recommendation.');
+        this.loadingAi = false;
+      }
+    });
+  }
 }

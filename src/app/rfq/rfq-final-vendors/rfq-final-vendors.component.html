@@ -1,9 +1,22 @@
 <div class="modal-body card">
   <div class="card-body cstm-body">
+    <!-- <div class="mb-1">
+      <button class="btn btn-sm ask-ai-button shadow-sm" (click)="askAi(aiModal)" [disabled]="loadingAi">
+        {{ loadingAi ? 'Thinking...' : 'Ask AI' }}
+        <i class="ft-send"></i>
+      </button>
+    </div> -->
     <div class="d-flex justify-content-end mb-2 mr-2 mt-2">
-      <button class="btn btn-primary" [disabled]="viewMode" (click)="onSubmit()">Submit Final Vendors</button>
+      <button class="btn btn-sm ask-ai-button shadow-sm me-2" (click)="askAi(aiModal)" [disabled]="loadingAi">
+        {{ loadingAi ? 'Thinking...' : 'Ask AI' }}
+        <i class="ft-send"></i>
+      </button>
+      <button class="btn btn-primary" [disabled]="viewMode || allItemsFinalized" (click)="onSubmit()">Submit Final Vendors</button>
     </div>
-
+    <div *ngIf="allItemsFinalized" class="alert alert-info mb-2">
+  <i class="fa fa-lock me-1"></i>
+  Vendors for all items have already been finalized.
+</div>
     <ngx-datatable class="bootstrap core-bootstrap" [rows]="itemsWithTotals" [columnMode]="'force'" 
                    [headerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [footerHeight]="50">
 
@@ -49,7 +62,7 @@
       <ngx-datatable-column name="Final Vendor" [sortable]="false">
         <ng-template let-row="row" ngx-datatable-cell-template>
           <ng-container *ngIf="row.itemName !== 'Total'">
-            <select [disabled]="viewMode" class="form-control" 
+            <select [disabled]="viewMode || allItemsFinalized || isItemFinalized(row)" class="form-control" 
                     [ngModel]="selected[row.id] || null"
                     (ngModelChange)="selected[row.id] = $event" 
                     [ngModelOptions]="{ standalone: true }">
@@ -68,3 +81,20 @@
     </ngx-datatable>
   </div>
 </div>
+
+
+  <ng-template #aiModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title text-white">AI Recommendation</h5>
+    <button type="button" class="btn-close" aria-label="Close text-white" (click)="modal.dismiss()"></button>
+  </div>
+
+  <div class="modal-body">
+    <p *ngIf="loadingAi">AI is thinking, please wait...</p>
+    <p *ngIf="!loadingAi">{{ aiExplanation }}</p>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary btn-sm" (click)="modal.close()">Close</button>
+  </div>
+</ng-template>

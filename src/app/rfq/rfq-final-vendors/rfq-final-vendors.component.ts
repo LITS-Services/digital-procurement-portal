@@ -1,6 +1,8 @@
 import { ChangeDetectorRef, Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { RfqService } from '../rfq.service';
 import { ToastrService } from 'ngx-toastr';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-rfq-final-vendors',
@@ -19,7 +21,12 @@ export class RfqFinalVendorsComponent implements OnInit {
   selected: { [id: number]: any | null } = {};
   quotationRequestId: number | null = null;
 
-  constructor(private rfqService: RfqService, private toastr: ToastrService, private cdr: ChangeDetectorRef) { }
+  loadingAi = false;
+  aiExplanation: string = '';
+
+  constructor(private rfqService: RfqService, private toastr: ToastrService, private cdr: ChangeDetectorRef,
+    private modalService: NgbModal,
+  ) { }
 
   ngOnInit(): void {
   }
@@ -122,12 +129,52 @@ export class RfqFinalVendorsComponent implements OnInit {
       return;
     }
 
+    Swal.fire({
+    title: 'Confirm Vendor Selection',
+    text: 'Are you sure you want to finalize the selected vendor(s)? This action cannot be undone.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, finalize',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33'
+  }).then(result => {
+    if (!result.isConfirmed) return;
+
+    // Optional loading state
+    Swal.fire({
+      title: 'Processing...',
+      text: 'Finalizing vendor selection',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+
     this.rfqService.postFinalVendors({ selectFinalVendorForQuotationItem: payload })
       .subscribe({
-        next: () => this.loadItems(this.quotationRequestId),
-        error: (e) => console.error(e)
+        next: () =>
+          {
+            Swal.fire({
+            icon: 'success',
+            title: 'Vendors Finalized',
+            text: 'Selected vendor(s) have been successfully finalized.',
+            timer: 2000,
+            showConfirmButton: false
+          });
+            this.loadItems(this.quotationRequestId); },
+        error: (e) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to finalize vendors. Please try again.'
+          });
+          console.error(e);
+        }
       });
-  }
+    });
+    }
 
   getQuoteAmount(itemId: number): number | null {
     const vendor = this.selected[itemId];
@@ -163,4 +210,50 @@ export class RfqFinalVendorsComponent implements OnInit {
       }
     ];
   }
+
+  askAi(modalRef: any) {
+    if (!this.data.quotationId) {
+      this.toastr.warning('Quotation ID not available.');
+      return;
+    }
+
+    this.loadingAi = true;
+    this.aiExplanation = '';
+
+    const payload = { rfqId: this.data.quotationId };
+
+    this.rfqService.askAiVendorComparison(payload).subscribe({
+      next: (res: any) => {
+        this.aiExplanation = res.explanation || 'No explanation returned.';
+        this.loadingAi = false;
+
+        // open modal after getting response
+        this.modalService.open(modalRef, { size: 'sm', centered: true });
+      },
+      error: (err) => {
+        console.error('AI request failed', err);
+        this.toastr.error('Failed to get AI recommendation.');
+        this.loadingAi = false;
+      }
+    });
+  }
+
+  // Item-level: is this item already finalized?
+  isItemFinalized(item: any): boolean {
+    return !!(item.vendorCompanyId && (item.vendorUserId || item.vendorId));
+  }
+
+  // Global: are ALL items finalized?
+  get allItemsFinalized(): boolean {
+    return (
+      this.itemsData.length > 0 &&
+      this.itemsData.every(item => this.isItemFinalized(item))
+    );
+  }
+
+  // Global: is ANY item still pending?
+  get hasPendingItems(): boolean {
+    return this.itemsData.some(item => !this.isItemFinalized(item));
+  }
+
 }

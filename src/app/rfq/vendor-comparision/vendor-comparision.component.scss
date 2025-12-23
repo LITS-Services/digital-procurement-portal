@@ -14,7 +14,7 @@
 }
 
 .modal-body {
-    padding: 0px !important;
+    //padding: 0px !important;
 }
 
 .modal-body-attachments {
@@ -121,4 +121,17 @@
 
 .vendor-comp-parent ::ng-deep .ngx-datatable .datatable-footer .datatable-footer-inner {
     justify-content: end !important;
+}
+
+.ask-ai-btn{
+  background-color: white;
+  padding: 5px 8px;
+  border: 1px solid #dadada;
+  font-size: 14px !important;
+    cursor: pointer;
+  transition-duration: 250ms;
+}
+
+.ask-ai-btn:hover{
+    background-color: rgb(201, 201, 201);
 }
