@@ -162,7 +162,7 @@ export class ProcurmentCompaniesComponent implements OnInit {
         queryParams: { id: selectedCompany.id }
       });
     } else {
-      alert('Please select a single company to update.');
+      this.toastr.info('Please select a single entity to edit.');
     }
   }
 

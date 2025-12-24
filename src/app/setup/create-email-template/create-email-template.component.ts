@@ -325,6 +325,9 @@ export class CreateEmailTemplateComponent implements OnInit, AfterViewInit {
     this.selectedType = null;
     this.selectedAction = null;
 
+    // Clear placeholders
+    this.placeholders = [];
+
     this.submitted = false;
 
     // Clear TinyMCE content

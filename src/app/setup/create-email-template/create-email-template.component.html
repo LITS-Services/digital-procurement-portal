@@ -12,7 +12,7 @@
         <span class="vl"></span>
 
         <!-- Reset Button -->
-        <button type="button" class="btn btn-sm cstm-ui-table-btn ms-2" (click)="resetForm()">
+        <button *ngIf="!isEditMode" type="button" class="btn btn-sm cstm-ui-table-btn ms-2" (click)="resetForm()">
           <label class="ft-refresh-ccw"> Reset</label>
         </button>
 
@@ -53,6 +53,7 @@
           <div ngbDropdown class="w-100">
             <button ngbDropdownToggle type="button"
               class="form-control text-start d-flex justify-content-between align-items-center"
+              [disabled]="isEditMode"
               [ngClass]="{ 'is-invalid': submitted && f['emailActionId'].errors }" style="cursor: pointer;">
               {{ selectedAction?.description || 'Select Action' }}
               <!-- <span class="dropdown-arrow">&#9662;</span> -->
@@ -77,6 +78,7 @@
           <div ngbDropdown class="w-100">
             <button ngbDropdownToggle type="button"
               class="form-control text-start d-flex justify-content-between align-items-center"
+              [disabled]="isEditMode"
               [ngClass]="{ 'is-invalid': submitted && f['procurementCompanyId'].errors }" style="cursor: pointer;">
               {{ selectedCompany?.description || 'Select Company' }}
               <!-- <span class="dropdown-arrow">&#9662;</span> -->
@@ -101,6 +103,7 @@
           <div ngbDropdown class="w-100">
             <button ngbDropdownToggle type="button"
               class="form-control text-start d-flex justify-content-between align-items-center"
+              [disabled]="isEditMode"
               [ngClass]="{ 'is-invalid': submitted && f['workFlowTypeId'].errors }" style="cursor: pointer;">
               {{ selectedType?.description || 'Select Type' }}
               <!-- <span class="dropdown-arrow">&#9662;</span> -->

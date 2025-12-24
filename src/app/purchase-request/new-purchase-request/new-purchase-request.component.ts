@@ -966,7 +966,10 @@ private exceptionModalOpen = false;
     };
 
     if (this.currentRequestId) {
-      this.purchaseRequestService.updatePurchaseRequest(this.currentRequestId, { purchaseRequest: payload }).subscribe({
+      this.spinner.show();
+      this.purchaseRequestService.updatePurchaseRequest(this.currentRequestId, { purchaseRequest: payload })
+      .pipe(finalize(() => this.spinner.hide()))
+      .subscribe({
         next: res => {
           this.loading = false;
           this.router.navigate(['/purchase-request']);
@@ -979,7 +982,10 @@ private exceptionModalOpen = false;
       });
     }
     else {
-      this.purchaseRequestService.createPurchaseRequest({ purchaseRequest: payload, isDraft: false }).subscribe({
+      this.spinner.show();
+      this.purchaseRequestService.createPurchaseRequest({ purchaseRequest: payload, isDraft: false })
+      .pipe(finalize(() => this.spinner.hide()))
+      .subscribe({
         next: res => {
           console.log('Purchase Request Created:', res);
           // this.attachmentList.forEach(a => a.isNew = false);

@@ -80,7 +80,7 @@ export const ROUTES: RouteInfo[] = [
         formTypeId: FORM_IDS.VENDOR_ONBOARDING
       },
       {
-        path: '/setup/email-setup', title: 'invitation', icon: 'ft-mail submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        path: '/setup/email-setup', title: 'Invitation', icon: 'ft-mail submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         formTypeId: FORM_IDS.INVITATION
       },
       {
