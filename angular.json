@@ -66,6 +66,7 @@
               "node_modules/ngx-spinner/animations/ball-beat.css"
             ],
             "scripts": [
+                  "src/assets/vendor/pace/pace-config.js",
               "src/assets/vendor/pace/pace.min.js",
               "node_modules/apexcharts/dist/apexcharts.min.js"
             ],
@@ -129,6 +130,7 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "scripts": [
+              "src/assets/vendor/pace/pace-config.js",
               "src/assets/vendor/pace/pace.min.js",
               "node_modules/apexcharts/dist/apexcharts.min.js"
             ],
