@@ -9,10 +9,20 @@
 
   <div class="form filters-div">
     <!-- Ask AI Button -->
-    <div class="mb-1">
-      <button class="btn btn-sm ask-ai-button shadow-sm" (click)="askAi(aiModal)" [disabled]="loadingAi">
-        {{ loadingAi ? 'Thinking...' : 'Ask AI' }}
-        <i class="ft-send"></i>
+    <div>
+      <!-- <button class="btn btn-sm ask-ai-button shadow-sm" (click)="askAi(aiModal)" [disabled]="loadingAi">
+            {{ loadingAi ? 'Thinking...' : 'Ask AI' }}
+            <i class="ft-send"></i>
+          </button> -->
+      <button class="btn btn-sm ask-ai-btn shadow-sm" (click)="askAi(aiModal)" [disabled]="loadingAi">
+    
+        <span class="ai-icon">
+          <img class="ai-loader" [class.spin]="loadingAi" src="assets/img/ai icon.svg" alt="AI" width="18" height="18" />
+        </span>
+    
+        <span class="ai-text">
+          {{ loadingAi ? 'Thinking...' : 'Ask AI' }}
+        </span>
       </button>
     </div>
 

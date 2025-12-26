@@ -7,10 +7,21 @@
       </button>
     </div> -->
     <div class="d-flex justify-content-end mb-2 mr-2 mt-2">
-      <button class="btn btn-sm ask-ai-button shadow-sm me-2" (click)="askAi(aiModal)" [disabled]="loadingAi">
+      <!-- <button class="btn btn-sm ask-ai-button shadow-sm me-2" (click)="askAi(aiModal)" [disabled]="loadingAi">
         {{ loadingAi ? 'Thinking...' : 'Ask AI' }}
         <i class="ft-send"></i>
+      </button> -->
+      <button class="btn btn-sm ask-ai-btn shadow-sm me-2" (click)="askAi(aiModal)" [disabled]="loadingAi">
+      
+        <span class="ai-icon">
+          <img class="ai-loader" [class.spin]="loadingAi" src="assets/img/ai icon.svg" alt="AI" width="18" height="18" />
+        </span>
+      
+        <span class="ai-text">
+          {{ loadingAi ? 'Thinking...' : 'Ask AI' }}
+        </span>
       </button>
+
       <button class="btn btn-primary" [disabled]="viewMode || allItemsFinalized" (click)="onSubmit()">Submit Final Vendors</button>
     </div>
     <div *ngIf="allItemsFinalized" class="alert alert-info mb-2">
