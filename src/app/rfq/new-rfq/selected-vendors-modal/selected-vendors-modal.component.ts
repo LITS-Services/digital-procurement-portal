@@ -23,80 +23,92 @@ export class SelectedVendorsModalComponent implements OnInit {
   @Input() vendorName!: string;
   @Input() quotationId!: number;
   @Input() vendorCompanyId: string;
-  @Input() isChatBox:boolean = false
+  @Input() isChatBox: boolean = false
   dataComments: any[] = [];
   loading = false;
   CreatedByType = CreatedByType;
   form = this.fb.group({
     comment: ["", [Validators.required, Validators.maxLength(1000)]],
   });
+
+  joinedVendorGroups = new Set<string>();
   constructor(
     private http: HttpClient,
     private fb: FormBuilder,
-   // public activeModal: NgbActiveModal,
     public rfqService: RfqService,
-    public cdr:ChangeDetectorRef,
+    public cdr: ChangeDetectorRef,
     private signalRService: SignalRService
-  ) {}
+  ) { }
 
-  // ngOnInit(): void {
+  ngOnInit(): void {
+    this.loadRfqComments();
+
+    this.signalRService.startConnection()
+      .then(() => {
+        console.log("SignalR connected");
+        this.joinVendorGroup(this.vendorId);
+      })
+      .catch(err => console.error("SignalR connection error", err));
+    this.signalRService.comment$.subscribe(comment => {
+      if (!comment) return;
+
+      if (
+        comment.quotationId === this.quotationId &&
+        comment.vendorId === this.vendorId
+      ) {
+        this.dataComments.push({
+          vendor: this.vendorName,
+          comments: comment.commentText ?? comment.message,
+          createdByType: comment.createdByType ?? 0,
+          createdByLabel:
+            (comment.createdByType ?? 0) === CreatedByType.Procurement
+              ? "Procurement"
+              : "Vendor",
+          createdOn: comment.createdAt,
+          createdBy: comment.createdBy
+        });
+
+        this.cdr.detectChanges();
+        this.scrollToBottom();
+      }
+    });
+  }
+
+  async joinVendorGroup(vendorId: string) {
+    if (!vendorId || this.joinedVendorGroups.has(vendorId)) return;
+
+    try {
+      await this.signalRService.joinQuotation(this.quotationId, vendorId);
+      this.joinedVendorGroups.add(vendorId);
+      console.log("Joined quotation group:", this.quotationId, vendorId);
+    } catch (err) {
+      console.error("Error joining vendor group:", err);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.signalRService.leaveQuotation(this.quotationId, this.vendorId);
+    this.signalRService.stopConnection();
+  }
+
+  // ngOnChanges(changes: SimpleChanges) {
+  // if (changes['vendorId'] || changes['vendorCompanyId'] || changes['quotationId']) {
   //   this.loadRfqComments();
   // }
-ngOnInit(): void {
-  this.loadRfqComments();
 
-
-  this.signalRService.startConnection()
-    .then(() => {
-      this.signalRService.joinRfq(this.quotationId.toString());
-    });
-
-  this.signalRService.comment$.subscribe(comment => {
-    if (!comment) return;
-
-    if (
-      comment.quotationId === this.quotationId &&
-      comment.vendorCompanyId === this.vendorCompanyId
-    ) {
-      this.dataComments.push({
-        vendor: this.vendorName,
-        comments: comment.commentText,
-        createdByType: comment.createdByType,
-        createdByLabel:
-          comment.createdByType === CreatedByType.Procurement
-            ? 'Procurement'
-            : 'Vendor',
-        createdOn: comment.createdAt,
-        createdBy: comment.createdBy
-      });
-
-      this.cdr.detectChanges();
-      this.scrollToBottom();
-    }
-  });
-}
-
-
-ngOnDestroy(): void {
-  this.signalRService.leaveRfq(this.quotationId.toString());
-}
-
-    ngOnChanges(changes: SimpleChanges) {
-    if (changes['vendorId'] || changes['vendorCompanyId'] || changes['quotationId']) {
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['vendorId'] && !changes['vendorId'].firstChange) {
+      this.joinVendorGroup(this.vendorId);
       this.loadRfqComments();
-   
     }
   }
 
   private scrollToBottom() {
-  setTimeout(() => {
-    const el = document.getElementById('threadScroll');
-    if (el) el.scrollTop = el.scrollHeight;
-  }, 0);
-}
-  // closeDialog() {
-  //   this.activeModal.close(false);
-  // }
+    setTimeout(() => {
+      const el = document.getElementById('threadScroll');
+      if (el) el.scrollTop = el.scrollHeight;
+    }, 0);
+  }
 
   loadRfqComments() {
     this.loading = true;
@@ -104,10 +116,8 @@ ngOnDestroy(): void {
     this.rfqService
       .getRFQComments(this.vendorId, this.quotationId, this.vendorCompanyId)
       .pipe(finalize(() => {
-        setTimeout(() => {
-            this.loading = false
-          this.cdr.detectChanges()  
-        }, 1250);
+        this.loading = false
+        this.cdr.detectChanges();
       }))
       .subscribe({
         next: (res: any) => {
@@ -123,7 +133,7 @@ ngOnDestroy(): void {
             createdOn: c?.createdOn,
             createdBy: c?.createdBy,
           }));
-        this.cdr.detectChanges();
+          this.cdr.detectChanges();
           this.scrollToBottom();
         },
         error: (err: any) => {
@@ -153,15 +163,15 @@ ngOnDestroy(): void {
       .addRfqComment(payload)
       .pipe(
         finalize(() => {
-            this.loading = false;
-            this.cdr.detectChanges();
+          this.loading = false;
+          this.cdr.detectChanges();
         })
       )
       .subscribe({
         next: (saved: any) => {
           this.form.reset();
-          this.loadRfqComments();
-          
+          //this.loadRfqComments();
+
         },
         error: (err: any) => {
           console.error("Error posting RFQ comment", err);
