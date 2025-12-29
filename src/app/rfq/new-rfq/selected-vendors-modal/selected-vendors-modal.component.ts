@@ -32,6 +32,9 @@ export class SelectedVendorsModalComponent implements OnInit {
   });
 
   joinedVendorGroups = new Set<string>();
+  isTyping = false;
+  typingTimeout: any;
+
   constructor(
     private http: HttpClient,
     private fb: FormBuilder,
@@ -72,6 +75,40 @@ export class SelectedVendorsModalComponent implements OnInit {
         this.scrollToBottom();
       }
     });
+
+    this.signalRService.typing$.subscribe(data => {
+      if (!data) return;
+
+      if (
+        data.quotationId === this.quotationId &&
+        data.vendorId === this.vendorId && data.createdByType !== CreatedByType.Procurement
+      ) {
+        this.isTyping = data.isTyping;
+        this.cdr.detectChanges();
+      }
+    });
+
+  }
+  onTyping() {
+    // Notify typing start
+    this.signalRService.sendTyping(
+      this.quotationId,
+      this.vendorId,
+      true,
+      CreatedByType.Procurement
+    );
+
+    clearTimeout(this.typingTimeout);
+
+    // Stop typing after inactivity
+    this.typingTimeout = setTimeout(() => {
+      this.signalRService.sendTyping(
+        this.quotationId,
+        this.vendorId,
+        false,
+        CreatedByType.Procurement
+      );
+    }, 3000);
   }
 
   async joinVendorGroup(vendorId: string) {
@@ -171,11 +208,30 @@ export class SelectedVendorsModalComponent implements OnInit {
         next: (saved: any) => {
           this.form.reset();
           //this.loadRfqComments();
-
+          this.signalRService.sendTyping(
+            this.quotationId,
+            this.vendorId,
+            false,
+            CreatedByType.Procurement
+          );
         },
         error: (err: any) => {
           console.error("Error posting RFQ comment", err);
         },
       });
+  }
+
+  onEnterPress(event: KeyboardEvent) {
+    if (event.shiftKey) {
+      // Shift + Enter → allow new line
+      return;
+    }
+
+    // Enter only → send message
+    event.preventDefault();
+
+    if (this.form.invalid) return;
+
+    this.insert();
   }
 }

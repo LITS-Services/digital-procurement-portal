@@ -41,11 +41,17 @@
   <div *ngIf="loading" class="datatable-spinner">
     <div class="spinner-border"></div>
   </div>
-</div>
+  <div class="typing-indicator" *ngIf="isTyping">
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+  </div>
+  </div>
+
 <form [formGroup]="form" (ngSubmit)="insert()" class="mt-2 gap-2 d-flex align-items-center">
   <div class="col-md-10">
     <textarea id="vendorComment" class="form-control" rows="1" placeholder="Write a comment for this vendor..."
-      formControlName="comment" [readonly]="viewMode"></textarea>
+      formControlName="comment" [readonly]="viewMode" (keydown)="onTyping()" (keydown.enter)="onEnterPress($event)"></textarea>
     <!-- <div class="text-danger mt-1" *ngIf="form.controls.comment.touched && form.controls.comment.invalid">
       Comment is required.
     </div> -->
