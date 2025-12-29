@@ -150,8 +150,8 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
     { label: 'Non-Inventory', color: '#219ebc', value: '35%' },
   ];
 
-  monthlySpendAmount = 'Rs 1.5L';
-  monthlySpendLabel = '8.5% higher than last month';
+  monthlySpendAmount = 'AED 0';
+  monthlySpendLabel = '';
 
   progressReport = [
     { month: 'Jan', value: 68 },
@@ -349,7 +349,7 @@ getMonthlySpending() {
 
       // Optional: update amount text under chart
       if (data?.totalThisMonth != null) {
-        this.monthlySpendAmount = `Rs ${Number(data.totalThisMonth).toLocaleString()}`;
+        this.monthlySpendAmount = `AED ${Number(data.totalThisMonth).toLocaleString()}`;
       }
 
       this.cdr.detectChanges();

@@ -134,7 +134,7 @@ form label, .form-group label {
 }
 
 .card-accordion{
-    box-shadow: -8px 8px 14px 0 rgba(25, 42, 70, 0.11);
+    //box-shadow: -8px 8px 14px 0 rgba(25, 42, 70, 0.11);
     background-color: #ffffff;
     padding: 1rem;
     border-radius: 0.5rem;
@@ -142,17 +142,6 @@ form label, .form-group label {
     
 }
 
-.ngx-datatable ::ng-deep .datatable-header-inner{
-  background-color: #4188F2 !important;
-}
-.ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
-.ngx-datatable ::ng-deep .datatable-header-inner .sort-btn{
-  color: white !important;
-}
-
-.ngx-datatable ::ng-deep .datatable-body .datatable-body-row.datatable-row-even {
-  background-color: rgba(0, 0, 0, 0.05);
-}
 
 // .ngx-datatable.bootstrap .datatable-body .datatable-body-row {
 //   padding: 0.75rem;
@@ -160,12 +149,7 @@ form label, .form-group label {
 //   border-top: 1px solid #1E89B8;
 // }
 
-.ngx-datatable ::ng-deep .datatable-body .datatable-body-row .datatable-body-cell {
-  text-align: left;
-  padding: 0.75rem;
-  vertical-align:baseline;
-  
-}
+
 
 .modal-centered .modal-dialog {
   display: flex;
@@ -315,6 +299,14 @@ form label, .form-group label {
     background: none !important;
     border: none !important;
     right: 0px;
+}
+
+.cstm-checkbox-form2{
+      display: flex !important;
+    align-items: center !important;
+    justify-content: start !important;
+    margin-left: 4px;
+    padding: 2px !important;
 }
 
 

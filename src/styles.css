@@ -498,7 +498,7 @@ body.menu-expanded .sticky-toolbar.sticky {
 }
 
 body.nav-collapsed .sticky-toolbar.sticky {
-  left: 92px;
+  left: 98px;
 }
 
 body.menu-hide .sticky-toolbar.sticky,
@@ -915,7 +915,7 @@ label:has(input[type="checkbox"]) {
 }
 
 
-.ngx-datatable .datatable-body a{
+.ngx-datatable .datatable-body a:not(:has(i)) {
   text-decoration: underline !important;
   color: #116AEF !important;
 }
@@ -999,6 +999,33 @@ body .dropdown-menu {
 .collapsed-submenu-item i {
   font-size: 16px;
 }
+
+.mini-menu{
+  position: fixed;
+  width: 240px;
+  max-height: 320px;
+  overflow: auto;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.15);
+  padding: 6px;
+  z-index: 99999;
+}
+
+.mini-item{
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  padding: 10px 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+.mini-item:hover{ background: rgba(0,0,0,.06); }
+
 
 /* Tooltip nicer */
 .sidebar-collapsed-tooltip .tooltip-inner {

@@ -21,7 +21,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
   selector: 'app-new-rfq',
   templateUrl: './new-rfq.component.html',
   styleUrls: ['./new-rfq.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class NewRfqComponent implements OnInit {
   currentRfqNo!: string;
@@ -84,6 +84,8 @@ export class NewRfqComponent implements OnInit {
   @ViewChild('tableResponsive') tableResponsive: any;
   isLoading = false;
 
+  datatableVisible: boolean = true;
+
   compareIds = (a: string | null, b: string | null) =>
     (a ?? '').toLowerCase() === (b ?? '').toLowerCase();
 
@@ -91,6 +93,7 @@ export class NewRfqComponent implements OnInit {
   isEntityLocked = false;
   entityHint = '';
   isToolbarSticky = false;
+  private lastScrollTop = 0;
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -103,8 +106,8 @@ export class NewRfqComponent implements OnInit {
     private lookupService: LookupService,
     public cdr: ChangeDetectorRef,
     private purchaseRequestService: PurchaseRequestService,
-    private purchaseOrderService:PurchaseOrderService,
-    private spinner: NgxSpinnerService,
+    private purchaseOrderService: PurchaseOrderService,
+    private spinner: NgxSpinnerService
   ) {}
 
   ngOnInit(): void {
@@ -118,12 +121,12 @@ export class NewRfqComponent implements OnInit {
       const id = params.get('id');
       const mode = params.get('mode');
       const prId = params.get('prId');
-       const focus = params.get('focus');
+      const focus = params.get('focus');
 
       this.viewMode = mode === 'view';
       this.isNewForm = !id;
 
-        if (focus === 'comments') {
+      if (focus === 'comments') {
         this.selectedTab = 'comments';
       }
 
@@ -208,6 +211,31 @@ export class NewRfqComponent implements OnInit {
   onWindowScroll(): void {
     const threshold = 360; // adjust as you like
     this.isToolbarSticky = window.scrollY > threshold;
+  }
+
+    onAutoResize(): void {
+      this.lastScrollTop = window.scrollY || document.documentElement.scrollTop || 0;
+
+      this.datatableVisible = false;
+      this.cdr.detectChanges(); // destroy
+
+      requestAnimationFrame(() => {
+        this.datatableVisible = true;
+        this.cdr.detectChanges(); // recreate
+
+        // restore scroll
+        requestAnimationFrame(() => {
+          window.scrollTo({
+            top: this.lastScrollTop,
+            left: 0,
+            behavior: 'instant' as ScrollBehavior, // or smooth if you like
+          });
+        });
+      });
+    }
+
+  get isMobile(): boolean {
+    return window.innerWidth <= 768;
   }
   homePage() {
     if (this.isNewForm && this.isFormDirty) {
@@ -404,36 +432,30 @@ export class NewRfqComponent implements OnInit {
     });
   }
 
-
-    createPO(row: any) {
-  
-      Swal.fire({
-        title: 'Create Purchase Order?',
-        text: 'This will generate PO(s) automatically for all items based on vendor assignment.',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, Create PO',
-        cancelButtonText: 'Cancel',
-      }).then((result) => {
-        if (result.isConfirmed) {
-  
-          this.purchaseOrderService.createPurchaseOrderFromRFQ(this.currentQuotationId).subscribe({
-
-            next: (res:any) => {
-              console.log(res,"Successfully created PO");
-              if(res?.isSuccess){
-                     this.router.navigate(['/purchase-order']);
-              }
-          
-            },
-            error: () => {
-              this.toastr.error('Something went wrong while creating PO.');
+  createPO(row: any) {
+    Swal.fire({
+      title: 'Create Purchase Order?',
+      text: 'This will generate PO(s) automatically for all items based on vendor assignment.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Create PO',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.purchaseOrderService.createPurchaseOrderFromRFQ(this.currentQuotationId).subscribe({
+          next: (res: any) => {
+            console.log(res, 'Successfully created PO');
+            if (res?.isSuccess) {
+              this.router.navigate(['/purchase-order']);
             }
-          });
-  
-        }
-      });
-    }
+          },
+          error: () => {
+            this.toastr.error('Something went wrong while creating PO.');
+          },
+        });
+      }
+    });
+  }
   getVendorNameById(vendorId: string): string {
     const found = this.quotationVendorUsers.find((v) => v.vendorId === vendorId);
     return found ? found.vendorName : '';
@@ -476,7 +498,7 @@ export class NewRfqComponent implements OnInit {
           date: this.toDateInputValue(pr.submittedDate),
         });
 
-                const rfqEntityId = Number(pr.entityId) || null;
+        const rfqEntityId = Number(pr.entityId) || null;
         this.applyEntity(rfqEntityId);
 
         // Map PR items → RFQ items, only include items not already used
@@ -626,7 +648,7 @@ export class NewRfqComponent implements OnInit {
       error: (err) => {
         console.error('Failed to load purchase request:', err);
         this.spinner.hide();
-      }
+      },
     });
   }
 
@@ -687,9 +709,7 @@ export class NewRfqComponent implements OnInit {
     //  Only apply selection logic if this RFQ was opened from a Purchase Request
     if (this.purchaseRequestId) {
       if (this.allItemsUsedForRFQ()) {
-        this.toastr.info(
-          'No Items available. Cannot generate a new RFQ.'
-        );
+        this.toastr.info('No Items available. Cannot generate a new RFQ.');
         this.isLoading = false;
         return; // Stop execution
       }
@@ -729,7 +749,7 @@ export class NewRfqComponent implements OnInit {
           createdBy: att.createdBy || '',
           isDeleted: false,
           quotationItemId: att.quotationItemId || 0,
-          fromPr: att.fromPr || false
+          fromPr: att.fromPr || false,
         })),
       }));
     } else {
@@ -762,7 +782,7 @@ export class NewRfqComponent implements OnInit {
             createdBy: att.createdBy || '',
             isDeleted: false,
             quotationItemId: att.quotationItemId || 0,
-            fromPr: att.fromPr || false
+            fromPr: att.fromPr || false,
           })),
         })) || [];
     }
