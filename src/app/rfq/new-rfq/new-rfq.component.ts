@@ -142,7 +142,7 @@ export class NewRfqComponent implements OnInit {
       rfqNo: [{ value: '', disabled: true }],
       purchaseRequestNo: [''],
       status: [{ value: '', disabled: true }],
-      owner: [''],
+      owner: [{ value: '', disabled: true }],
       date: [null],
       contact: [''],
       deliveryLocation: [''],
