@@ -67,7 +67,8 @@
           <div class="vh">
             <div class="vh-title">
               {{ v.vendorName }}
-              <span *ngIf="persistedIds.has(getKey(v))" class="chip chip-saved">Saved</span>
+              <span *ngIf="persistedIds.has(getKey(v))" class="chip chip-saved">Invited</span>
+                <span *ngIf="isLocked(v)" class="chip chip-locked ml-1">Quoted</span>
             </div>
             <div class="vh-sub">{{ v.companyName }}</div>
           </div>

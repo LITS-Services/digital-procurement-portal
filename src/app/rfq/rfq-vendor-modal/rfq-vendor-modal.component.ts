@@ -37,6 +37,7 @@ export class RfqVendorModalComponent implements OnInit {
   gridSelected: any[] = [];
   private persistedIds = new Set<number>();
   private getKey = (r: any) => (r?.vendorCompanyEntityId ?? r?.id);
+  quotedVendorIds = new Set<string>();
   constructor(
    // public activeModal: NgbActiveModal,
     private companyService: CompanyService,
@@ -55,23 +56,12 @@ export class RfqVendorModalComponent implements OnInit {
     if (changes['data'] && changes['data'].currentValue) {
       this.quotationRequestId = this.data.quotationId;
       this.loadRfqVendors(this.quotationRequestId);
+       this.loadQuotedVendors(this.quotationRequestId);
     }
   }
 
-  // fetchVendorsAndCompaniesForRfq() {
-  //   this.rfqService.getVendorsAndCompaniesForRfq().subscribe({
-  //     next: (res: any) => {
-
-  //       this.allVendorsandCompanies = res ?? res?.$values ?? [];
-
-  //     },
-  //     error: (err) => {
-  //       console.error('Error fetching vendors', err);
-
-  //     }
-  //   });
-  // }
   fetchVendorsAndCompaniesForRfq() {
+        this.spinner.show();
     const procurementUserId = localStorage.getItem('userId');
     //const entityId = Number(localStorage.getItem('selectedCompanyId'));
     const entityId = this.entityId
@@ -81,9 +71,11 @@ export class RfqVendorModalComponent implements OnInit {
           this.allVendorsandCompanies = res ?? res?.$values ?? [];
           this.gridSelected = this.allVendorsandCompanies.filter(r => this.persistedIds.has(this.getKey(r)));
                   this.recomputeLists();
+                  this.spinner.hide();
              this.cdr.detectChanges()
         },
         error: (err) => {
+              this.spinner.hide();
           console.error('Error fetching vendors', err);
         }
       });
@@ -91,11 +83,13 @@ export class RfqVendorModalComponent implements OnInit {
 
  
   loadRfqVendors(quotationRequestId: number): void {
+
     this.rfqService.getVendorsByQuotationRequestId(quotationRequestId).subscribe({
       next: (res: any) => {
         this.rfqVendors = res || res?.$values || [];
         this.persistedIds = new Set<number>(this.rfqVendors.map((v: any) => this.getKey(v)));
         this.fetchVendorsAndCompaniesForRfq();
+
       },
 
       error: (err) => {
@@ -103,9 +97,28 @@ export class RfqVendorModalComponent implements OnInit {
            this.persistedIds = new Set<number>();
         this.rfqVendors = [];
         this.fetchVendorsAndCompaniesForRfq();
+
       }
     });
   }
+
+  private loadQuotedVendors(quotationRequestId: number): void {
+  this.rfqService.getBidSubmissionDetailsByQuotation(quotationRequestId).subscribe({
+    next: (res: any) => {
+      const vendors = res?.vendors || [];
+      this.quotedVendorIds = new Set<string>(
+        vendors
+          .filter((v: any) => (v?.bids?.length || 0) > 0)   
+          .map((v: any) => v.vendorId || v.vendorUserId)
+          .filter((id: string) => !!id)
+      );
+    },
+    error: err => {
+      console.error('Error loading quoted vendors', err);
+      this.quotedVendorIds = new Set<string>();
+    }
+  });
+}
 
     recomputeLists(): void {
     const selectedIds = new Set(this.gridSelected.map(x => this.getKey(x)));
@@ -145,6 +158,11 @@ export class RfqVendorModalComponent implements OnInit {
   removeFromRight(vendor: any): void {
       if(this.viewMode) return;
 
+        if (this.isLocked(vendor)) {
+    this.toastr.warning('This vendor has already submitted a bid and cannot be removed.');
+    return;
+  }
+
     const id = this.getKey(vendor);
     this.gridSelected = this.gridSelected.filter(x => this.getKey(x) !== id);
     this.recomputeLists();
@@ -162,68 +180,15 @@ export class RfqVendorModalComponent implements OnInit {
   removeAll(): void {
       if(this.viewMode) return;
 
-    this.gridSelected = [];
+       this.gridSelected = this.gridSelected.filter(v => this.isLocked(v));
     this.recomputeLists();
   }
 
-
-// onSubmit() {
-//   if (!this.quotationRequestId) return;
-
-//   const key = this.getKey;
-
-//   // sets for diff
-//   const currentIds = new Set<number>(this.gridSelected.map((r: any) => key(r)));
-//   const persisted = this.persistedIds;
-
-//   // compute diffs
-//   const toAddRows = this.allVendorsandCompanies.filter((r: any) =>
-//     currentIds.has(key(r)) && !persisted.has(key(r))
-//   );
-//   const toRemoveIds = Array.from(persisted).filter(id => !currentIds.has(id));
-
-//   // payloads
-//   const addPayload = toAddRows.map((v: any) => ({
-//     quotationRequestId: this.quotationRequestId!,
-//     vendorCompanyEntityId: key(v),
-//     vendorId: v.vendorId,
-//     vendorCompanyId: v.companyGUID
-//   }));
-
-//   // “no-op” observables when nothing to add/remove
-//   const add$ = addPayload.length
-//     ? this.rfqService.addVendorsToQuotation(addPayload)
-    
-//     : of(null);
-
-//   const remove$ = toRemoveIds.length
-//     ? this.rfqService.removeVendorsFromQuotation({
-//         quotationRequestId: this.quotationRequestId!,
-//         vendorCompanyEntityIds: toRemoveIds
-//       })
-//     : of(null);
-
-
-//   this.spinner.show();
-//   add$
-//     .pipe(
-//       switchMap(() => remove$),
-//       finalize(() => this.spinner.hide())
-//     )
-//     .subscribe({
-//       next: () => {
-
-//         this.loadRfqVendors(this.quotationRequestId!); // refresh chips + selection
-
-     
-//       },
-//       error: (err) => {
-//         console.error(err);
-//         this.toastr.error('Failed to update vendors');
-//       }
-//     });
-// }
-
+    isLocked(vendor: any): boolean {
+    const id = vendor?.submitterId;
+    if (!id) return false;
+    return this.quotedVendorIds.has(id);
+  }
   onSubmit() {
     if (!this.quotationRequestId) return;
 
@@ -307,13 +272,4 @@ export class RfqVendorModalComponent implements OnInit {
     console.log('Emailing Vendor:', vendor);
   }
 
-  // closeDialog() {
-  //   this.activeModal.close(false);
-  // }
-
-  // isVendorAdded(companyId: number): boolean {
-  //   console.log("sahal", this.rfqVendors.some(v => v.vendorCompanyEntityId === companyId));
-  //   return this.rfqVendors.some(v => v.vendorCompanyEntityId === companyId);
-
-  // }
 }
