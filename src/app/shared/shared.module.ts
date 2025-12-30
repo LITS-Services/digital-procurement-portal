@@ -34,7 +34,7 @@ import { PurchaseRequestAttachmentModalComponent } from './modals/purchase-reque
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { PurchaseRequestAccountBudgetLookupModalComponent } from './modals/purchase-request-account-budget-lookup-modal/purchase-request-account-budget-lookup-modal.component';
 import { PurchaseRequestExceptionPolicyComponent } from './modals/purchase-request-exception-policy/purchase-request-exception-policy.component';
-
+import { MatMenuModule } from '@angular/material/menu';
 
 @NgModule({
     exports: [
@@ -63,7 +63,9 @@ import { PurchaseRequestExceptionPolicyComponent } from './modals/purchase-reque
         // ClickOutsideModule, // Incompatible with Angular 21
         AutocompleteModule,
         PipeModule,
-        NgxDatatableModule
+        NgxDatatableModule,
+        OverlayModule,
+        MatMenuModule
     ],
     declarations: [
         FooterComponent,

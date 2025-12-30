@@ -285,7 +285,7 @@ body {
         display: block;
         overflow: hidden;
         line-height: $font-size-base * 2;
-        margin: 0px 6px 6px 8px !important;
+        margin: 0px 6px 6px 6px !important;
        padding: 10px 0px 10px 8px;
         background-color: transparent;
         color: $white;
@@ -523,6 +523,12 @@ body {
   }
 }
 
+
+@media (min-width: 1921px) {
+  .app-sidebar .navigation li > a {
+    margin: 0 4px 6px 6px !important;   /* your custom margin here */
+  }
+}
 
 .sidenav-overlay {
   position: fixed;

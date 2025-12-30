@@ -46,200 +46,240 @@
     <ul class="navigation" appSidebarDropdown>
 
       <!-- First level menu -->
-     <li
+        <li
   appSidebarlink
-  *ngFor="let menuItem of menuItems"
+  *ngFor="let menuItem of menuItems; let i = index"
   [parent]="menuItem.title"
   [path]="menuItem.path"
-  level="{{level + 1}}"
-  [hasSub]="menuItem.class.includes('has-sub') ? true: false"
-  [ngClass]="{'has-sub': menuItem.class.includes('has-sub') ? true: false}"
+  level="{{ level + 1 }}"
+  [hasSub]="menuItem.class.includes('has-sub')"
+  [ngClass]="{ 'has-sub': menuItem.class.includes('has-sub') }"
   [routerLinkActive]="menuItem.submenu.length != 0 ? 'open' : 'active'"
-  [routerLinkActiveOptions]="{exact: false}"
-
-  ngbDropdown
-  #dd="ngbDropdown"
- [container]="'body'"
-  placement="top-right"
-  [autoClose]="'outside'"
-[popperOptions]="popperOpts"
-  [ngbDropdownDisabled]="!config.layout.sidebar.collapsed || menuItem.submenu.length === 0"
-
-  
+  [routerLinkActiveOptions]="{ exact: false }"
 >
 
-        <!-- CASE 1: HAS SUBMENU -->
-        <!-- Expanded mode: keep your existing click behavior (open inline submenu) -->
-        <!-- Collapsed mode: clicking icon opens ngbDropdown -->
-        <a
-          appSidebarAnchorToggle
-          *ngIf="menuItem.submenu.length > 0 && !menuItem.isExternalLink"
-          ngbDropdownAnchor
-          [ngbTooltip]="config.layout.sidebar.collapsed ? (menuItem.title | translate) : null"
-          (mouseenter)="config.layout.sidebar.collapsed && menuItem.submenu.length > 0 ? dd.open() : null"
-  (mouseleave)="config.layout.sidebar.collapsed && menuItem.submenu.length > 0 ? dd.close() : null"
+  <!-- ======================= -->
+  <!-- CASE 1: HAS SUBMENU     -->
+  <!-- ======================= -->
+
+  <!-- 1a) EXPANDED SIDEBAR: inline submenu (keep directive) -->
+  <a
+    appSidebarAnchorToggle
+    *ngIf="menuItem.submenu.length > 0 && !menuItem.isExternalLink && !config.layout.sidebar.collapsed"
+    [ngbTooltip]="null"
+  >
+    <i [ngClass]="[menuItem.icon]"></i>
+
+    <span class="menu-title">
+      {{ menuItem.title | translate }}
+    </span>
+  </a>
+
+<a
+  class="collapsed-has-sub"
+  *ngIf="menuItem.submenu.length > 0 && !menuItem.isExternalLink && config.layout.sidebar.collapsed"
+  [matMenuTriggerFor]="collapsedMenu"
+  (click)="$event.preventDefault(); $event.stopPropagation();"
+  [ngbTooltip]="menuItem.title | translate"
+  container="body"
+  placement="right"
+  tooltipClass="sidebar-collapsed-tooltip"
+>
+  <i [ngClass]="[menuItem.icon]"></i>
+  <span class="submenu-dot"></span>
+</a>
+
+<!-- COLLAPSED SIDEBAR: menu -->
+<mat-menu
+  #collapsedMenu="matMenu"
+  xPosition="after"
+  yPosition="below"
+  overlapTrigger="true"
+   class="sidebar-collapsed-menu"
+   
+>
+  <button
+    mat-menu-item
+    *ngFor="let menuSubItem of menuItem.submenu"
+      [routerLink]="menuSubItem.path"
+  >
+    <i [ngClass]="[menuSubItem.icon]"></i>
+    <span class="ml-2">{{ menuSubItem.title | translate }}</span>
+  </button>
+</mat-menu>
+
+  <!-- ======================= -->
+  <!-- CASE 2: NO SUBMENU      -->
+  <!-- ======================= -->
+  <a
+    appSidebarAnchorToggle
+    routerLink="{{ menuItem.path }}"
+    *ngIf="menuItem.submenu.length === 0 && !menuItem.isExternalLink"
+    [ngbTooltip]="config?.layout?.sidebar?.collapsed ? (menuItem.title | translate) : null"
+    container="body"
+    placement="right"
+    tooltipClass="sidebar-collapsed-tooltip"
+  >
+    <i [ngClass]="[menuItem.icon]"></i>
+
+    <span class="menu-title" *ngIf="!config.layout.sidebar.collapsed">
+      {{ menuItem.title | translate }}
+    </span>
+
+    <span
+      *ngIf="menuItem.badge && menuItem.badge != '' && !config.layout.sidebar.collapsed"
+      [ngClass]="[menuItem.badgeClass]"
+    >
+      {{ menuItem.badge }}
+    </span>
+  </a>
+
+  <!-- ======================= -->
+  <!-- CASE 3: EXTERNAL LINK   -->
+  <!-- ======================= -->
+  <a
+    [href]="[menuItem.path]"
+    target="_blank"
+    *ngIf="menuItem.isExternalLink"
+  >
+    <i [ngClass]="[menuItem.icon]"></i>
+    <span class="menu-title" *ngIf="!config.layout.sidebar.collapsed">
+      {{ menuItem.title | translate }}
+    </span>
+    <span
+      *ngIf="menuItem.badge && menuItem.badge != '' && !config.layout.sidebar.collapsed"
+      [ngClass]="[menuItem.badgeClass]"
+    >
+      {{ menuItem.badge }}
+    </span>
+  </a>
+
+  <!-- ======================= -->
+  <!-- SECOND LEVEL MENU       -->
+  <!-- (only when NOT collapsed) -->
+  <!-- ======================= -->
+  <ul
+    appSidebarDropdown
+    class="menu-content"
+    *ngIf="menuItem.submenu.length > 0 && !config.layout.sidebar.collapsed"
+  >
+    <li
+      appSidebarlink
+      *ngFor="let menuSubItem of menuItem.submenu"
+      [parent]="menuItem.title"
+      [hasSub]="menuSubItem.class.includes('has-sub') ? true : false"
+      [path]="menuSubItem.path"
+      level="{{ level + 2 }}"
+      [ngClass]="{ 'has-sub': menuSubItem.class.includes('has-sub') ? true : false }"
+      [routerLinkActive]="menuSubItem.submenu.length != 0 ? 'open' : 'active'"
+    >
+
+      <a
+        appSidebarAnchorToggle
+        *ngIf="menuSubItem.submenu.length > 0 && !menuSubItem.isExternalLink"
+      >
+        <i [ngClass]="[menuSubItem.icon]"></i>
+        <span class="menu-title">{{ menuSubItem.title | translate }}</span>
+        <span
+          *ngIf="menuSubItem.badge && menuSubItem.badge != ''"
+          [ngClass]="[menuSubItem.badgeClass]"
         >
-          <i [ngClass]="[menuItem.icon]"></i>
+          {{ menuSubItem.badge }}
+        </span>
+      </a>
 
-          <!-- Hide title when collapsed -->
-          <span class="menu-title" *ngIf="!config.layout.sidebar.collapsed">
-            {{menuItem.title | translate }}
-          </span>
-
-          <span *ngIf="menuItem.badge && menuItem.badge != '' && !config.layout.sidebar.collapsed"
-            [ngClass]="[menuItem.badgeClass]"
-          >
-            {{menuItem.badge}}
-          </span>
-        </a>
-
-        <!-- CASE 2: NO SUBMENU -->
-        <a
-          appSidebarAnchorToggle
-          routerLink="{{menuItem.path}}"
-          *ngIf="menuItem.submenu.length === 0 && !menuItem.isExternalLink"
-          [ngbTooltip]="config?.layout?.sidebar?.collapsed ? (menuItem.title | translate) : null"
-                    container="body"
-          placement="right"
-          tooltipClass="sidebar-collapsed-tooltip"
+      <a
+        appSidebarAnchorToggle
+        routerLink="{{ menuSubItem.path }}"
+        *ngIf="menuSubItem.submenu.length === 0 && !menuSubItem.isExternalLink"
+      >
+        <i [ngClass]="[menuSubItem.icon]"></i>
+        <span class="menu-title">{{ menuSubItem.title | translate }}</span>
+        <span
+          *ngIf="menuSubItem.badge && menuSubItem.badge != ''"
+          [ngClass]="[menuSubItem.badgeClass]"
         >
-          <i [ngClass]="[menuItem.icon]"></i>
+          {{ menuSubItem.badge }}
+        </span>
+      </a>
 
-          <span class="menu-title" *ngIf="!config.layout.sidebar.collapsed">
-            {{menuItem.title | translate }}
-          </span>
-
-          <span *ngIf="menuItem.badge && menuItem.badge != '' && !config.layout.sidebar.collapsed"
-            [ngClass]="[menuItem.badgeClass]"
-          >
-            {{menuItem.badge}}
-          </span>
-        </a>
-
-        <!-- CASE 3: EXTERNAL LINK -->
-        <a [href]="[menuItem.path]" target="_blank" *ngIf="menuItem.isExternalLink">
-          <i [ngClass]="[menuItem.icon]"></i>
-          <span class="menu-title" *ngIf="!config.layout.sidebar.collapsed">
-            {{menuItem.title | translate }}
-          </span>
-          <span *ngIf="menuItem.badge && menuItem.badge != '' && !config.layout.sidebar.collapsed"
-            [ngClass]="[menuItem.badgeClass]"
-          >
-            {{menuItem.badge}}
-          </span>
-        </a>
-
-        <!-- ✅ DROPDOWN (COLLAPSED MODE ONLY) -->
-        <div
-          ngbDropdownMenu
-          class="collapsed-submenu-dropdown"
-          *ngIf="config.layout.sidebar.collapsed && menuItem.submenu.length > 0"
-          container="body"
-          (mouseenter)="dd.open()"
-          (mouseleave)="dd.close()"
+      <a
+        routerLink="{{ menuSubItem.path }}"
+        target="_blank"
+        *ngIf="menuSubItem.isExternalLink"
+      >
+        <i [ngClass]="[menuSubItem.icon]"></i>
+        <span class="menu-title">{{ menuSubItem.title | translate }}</span>
+        <span
+          *ngIf="menuSubItem.badge && menuSubItem.badge != ''"
+          [ngClass]="[menuSubItem.badgeClass]"
         >
-          <button
-            class="dropdown-item collapsed-submenu-item"
-            *ngFor="let menuSubItem of menuItem.submenu"
-            [routerLink]="menuSubItem.path"
-            ngbDropdownItem
-          >
-            <i [ngClass]="[menuSubItem.icon]"></i>
-            <span>{{menuSubItem.title | translate}}</span>
-          </button>
-        </div>
+          {{ menuSubItem.badge }}
+        </span>
+      </a>
 
-        <!-- ✅ Second level menu (ONLY WHEN NOT COLLAPSED) -->
-        <ul
-          appSidebarDropdown
-          class="menu-content"
-          *ngIf="menuItem.submenu.length > 0 && !config.layout.sidebar.collapsed"
+      <!-- Third level menu (unchanged) -->
+      <ul
+        appSidebarDropdown
+        class="menu-content"
+        *ngIf="menuSubItem.submenu.length > 0"
+      >
+        <li
+          appSidebarlink
+          *ngFor="let menuSubsubItem of menuSubItem.submenu"
+          [parent]="menuItem.title"
+          [hasSub]="false"
+          [path]="menuSubsubItem.path"
+          level="{{ level + 3 }}"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          [ngClass]="config.layout.menuPosition === 'Side' ? menuSubsubItem.class : ''"
         >
-          <li
-            appSidebarlink
-            *ngFor="let menuSubItem of menuItem.submenu"
-            [parent]="menuItem.title"
-            [hasSub]="menuSubItem.class.includes('has-sub') ? true: false"
-            [path]="menuSubItem.path"
-            level="{{level + 2}}"
-            [ngClass]="{'has-sub': menuSubItem.class.includes('has-sub') ? true: false}"
-            [routerLinkActive]="menuSubItem.submenu.length != 0 ? 'open' : 'active'"
+          <a
+            appSidebarAnchorToggle
+            routerLink="{{ menuSubsubItem.path }}"
+            *ngIf="!menuSubsubItem.isExternalLink; else externalSubSubLinkBlock"
           >
-
-            <a appSidebarAnchorToggle *ngIf="menuSubItem.submenu.length > 0 && !menuSubItem.isExternalLink">
-              <i [ngClass]="[menuSubItem.icon]"></i>
-              <span class="menu-title">{{menuSubItem.title | translate }}</span>
-              <span *ngIf="menuSubItem.badge && menuSubItem.badge != '' " [ngClass]="[menuSubItem.badgeClass]">
-                {{menuSubItem.badge}}
-              </span>
-            </a>
-
-            <a
-              appSidebarAnchorToggle
-              routerLink="{{menuSubItem.path}}"
-              *ngIf="menuSubItem.submenu.length === 0 && !menuSubItem.isExternalLink"
+            <i [ngClass]="[menuSubsubItem.icon]"></i>
+            <span class="menu-title">
+              {{ menuSubsubItem.title | translate }}
+            </span>
+            <span
+              *ngIf="menuSubsubItem.badge && menuSubsubItem.badge != ''"
+              [ngClass]="[menuSubsubItem.badgeClass]"
             >
-              <i [ngClass]="[menuSubItem.icon]"></i>
-              <span class="menu-title">{{menuSubItem.title | translate }}</span>
-              <span *ngIf="menuSubItem.badge && menuSubItem.badge != '' " [ngClass]="[menuSubItem.badgeClass]">
-                {{menuSubItem.badge}}
-              </span>
-            </a>
+              {{ menuSubsubItem.badge }}
+            </span>
+          </a>
 
-            <a routerLink="{{menuSubItem.path}}" target="_blank" *ngIf="menuSubItem.isExternalLink">
-              <i [ngClass]="[menuSubItem.icon]"></i>
-              <span class="menu-title">{{menuSubItem.title | translate }}</span>
-              <span *ngIf="menuSubItem.badge && menuSubItem.badge != '' " [ngClass]="[menuSubItem.badgeClass]">
-                {{menuSubItem.badge}}
+          <ng-template #externalSubSubLinkBlock>
+            <a
+              routerLink="{{ menuSubsubItem.path }}"
+              target="_blank"
+            >
+              <i [ngClass]="[menuSubsubItem.icon]"></i>
+              <span class="menu-title">
+                {{ menuSubsubItem.title | translate }}
               </span>
-            </a>
-
-            <!-- Third level menu (UNCHANGED, ONLY WHEN NOT COLLAPSED) -->
-            <ul appSidebarDropdown class="menu-content" *ngIf="menuSubItem.submenu.length > 0">
-              <li
-                appSidebarlink
-                *ngFor="let menuSubsubItem of menuSubItem.submenu"
-                [parent]="menuItem.title"
-                [hasSub]="false"
-                [path]="menuSubsubItem.path"
-                level="{{level + 3}}"
-                routerLinkActive="active"
-                [routerLinkActiveOptions]="{exact: true}"
-                [ngClass]="config.layout.menuPosition === 'Side' ? menuSubsubItem.class : ''"
+              <span
+                *ngIf="menuSubsubItem.badge && menuSubsubItem.badge != ''"
+                [ngClass]="[menuSubsubItem.badgeClass]"
               >
-                <a
-                  appSidebarAnchorToggle
-                  routerLink="{{menuSubsubItem.path}}"
-                  *ngIf="!menuSubsubItem.isExternalLink; else externalSubSubLinkBlock"
-                >
-                  <i [ngClass]="[menuSubsubItem.icon]"></i>
-                  <span class="menu-title">{{menuSubsubItem.title | translate }}</span>
-                  <span *ngIf="menuSubsubItem.badge && menuSubsubItem.badge != '' "
-                    [ngClass]="[menuSubsubItem.badgeClass]"
-                  >
-                    {{menuSubsubItem.badge}}
-                  </span>
-                </a>
+                {{ menuSubsubItem.badge }}
+              </span>
+            </a>
+          </ng-template>
 
-                <ng-template #externalSubSubLinkBlock>
-                  <a routerLink="{{menuSubsubItem.path}}" target="_blank">
-                    <i [ngClass]="[menuSubsubItem.icon]"></i>
-                    <span class="menu-title">{{menuSubsubItem.title | translate }}</span>
-                    <span *ngIf="menuSubsubItem.badge && menuSubsubItem.badge != '' "
-                      [ngClass]="[menuSubsubItem.badgeClass]"
-                    >
-                      {{menuSubsubItem.badge}}
-                    </span>
-                  </a>
-                </ng-template>
+        </li>
+      </ul>
 
-              </li>
-            </ul>
+    </li>
+  </ul>
 
-          </li>
-        </ul>
+</li>
 
-      </li>
+
+      
 
     </ul>
   </div>

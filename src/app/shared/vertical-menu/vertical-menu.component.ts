@@ -14,6 +14,7 @@ import { LayoutService } from '../services/layout.service';
 import { AuthService } from 'app/shared/auth/auth.service';
 import { PermissionService } from "../permissions/permission.service";
 import { filterNavByPerm } from "../permissions/nav-perm";
+import { MatMenuTrigger } from "@angular/material/menu";
 
 @Component({
   selector: "app-sidebar",
@@ -36,41 +37,6 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   perfectScrollbarEnable = true;
   collapseSidebar = false;
   resizeTimeout;
-
-    popperOpts = (opts: any) => {
-    opts.strategy = 'fixed';
-
-    opts.modifiers = opts.modifiers || [];
-
-    opts.modifiers.push(
-      {
-        name: 'offset',
-        options: { offset: [10, 0] }
-      },
-      {
-        name: 'flip',
-        options: {
-          boundary: 'viewport',
-          rootBoundary: 'viewport',
-          padding: 8,
-          fallbackPlacements: ['right-end', 'left-start', 'left-end']
-        }
-      },
-      {
-        name: 'preventOverflow',
-        options: {
-          boundary: 'viewport',
-          rootBoundary: 'viewport',
-          padding: 8,
-          altAxis: true,
-          tether: false
-        }
-      }
-    );
-
-    return opts;
-  };
-
 
   constructor(
     private router: Router,
@@ -116,6 +82,8 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
   }
+
+
 
   @HostListener('window:resize', ['$event'])
   onWindowResize(event) {
