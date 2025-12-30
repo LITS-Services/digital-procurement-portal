@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ColumnMode, SelectionType, NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { ColumnMode, SelectionType, NgxDatatableModule, DatatableComponent } from '@swimlane/ngx-datatable';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PermissionService } from 'app/shared/permissions/permission.service';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
@@ -15,6 +15,7 @@ import { PurchaseOrderService } from 'app/shared/services/purchase-order.service
 export class PurchaseOrderListComponent implements OnInit {
   FORM_IDS = FORM_IDS;
   @ViewChild('purchaseOrderDetail') purchaseOrderDetail: TemplateRef<any>;
+  @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
   selectedPO: any;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
@@ -46,15 +47,11 @@ export class PurchaseOrderListComponent implements OnInit {
 
   ) { }
 
-  onAutoResize(): void {
-    this.datatableVisible = false;
-    this.cdr.detectChanges(); // destroy
 
-    requestAnimationFrame(() => {
-      this.datatableVisible = true;
-      this.cdr.detectChanges(); // recreate
-    });
-  }
+  get isMobile(): boolean {
+  return window.innerWidth <= 1400;
+}
+
 
   ngOnInit(): void {
     this.loadPurchaseOrders();

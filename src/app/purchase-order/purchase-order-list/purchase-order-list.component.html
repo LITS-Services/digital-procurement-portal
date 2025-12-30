@@ -45,11 +45,11 @@
       </div>
 
       <!-- Content -->
-      @if(datatableVisible){
-      <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap"
+          <div  class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
+      <ngx-datatable #datatable class="bootstrap core-bootstrap"
         [rows]="purchaseOrderData" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [columns]="columns"
         [rowHeight]="'auto'" [limit]="pageSize" [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1"
-        (page)="onPageChange($event)" [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected"
+        (page)="onPageChange($event)" [scrollbarH]="isMobile" [loadingIndicator]="loading" [selected]="chkBoxSelected"
         [swapColumns]="false" (sort)="onSort($event)" appPermission [appPermFormId]="FORM_IDS.PURCHASE_ORDER" [appPermDisable]="'write'">>
         <!-- <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
                     [resizeable]="false">
@@ -68,13 +68,13 @@
                 </ngx-datatable-column> -->
 
         <!-- Sr. No -->
-        <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false" [sortable]="false">
+        <ngx-datatable-column name="Sr. No." [flexGrow]="1" [maxWidth]="70" [canAutoResize]="false" [resizeable]="false" [sortable]="false">
           <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
             <span>{{ rowIndex + 1 }}</span>
           </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="PO No." prop="purchaseOrderNo" [sortable]="false">
+        <ngx-datatable-column name="PO No." prop="purchaseOrderNo" [flexGrow]="1" [minWidth]="100" [sortable]="false">
           <ng-template ngx-datatable-cell-template let-row="row">
             <a href="javascript:void(0)" (click)="onRowClick(row)" appPermission [appPermFormId]="FORM_IDS.PURCHASE_ORDER"
               [appPermDisable]="'write'">
@@ -83,26 +83,26 @@
           </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="Requisition No." prop="requisitionNo" [sortable]="false">
+        <ngx-datatable-column name="Requisition No." prop="requisitionNo" [sortable]="false" [flexGrow]="2" [minWidth]="140">
         </ngx-datatable-column>
 
         <!-- <ngx-datatable-column name="Date" prop="date" [width]="50">
                 </ngx-datatable-column> -->
 
-        <ngx-datatable-column name="RFQ No." prop="rfqNo" [sortable]="false">
+        <ngx-datatable-column name="RFQ No." prop="rfqNo" [sortable]="false" [flexGrow]="2" [minWidth]="160">
         </ngx-datatable-column>
-        <ngx-datatable-column name="Entity" prop="entityName" [sortable]="false">
+        <ngx-datatable-column name="Entity" prop="entityName" [sortable]="false" [flexGrow]="2" [minWidth]="120">
         </ngx-datatable-column>
-        <ngx-datatable-column name="Vendor" prop="vendorName" [sortable]="false">
+        <ngx-datatable-column name="Vendor" prop="vendorName" [sortable]="false" [flexGrow]="1" [minWidth]="120">
         </ngx-datatable-column>
-        <ngx-datatable-column name="Status" prop="requestStatus" [sortable]="false">
+        <ngx-datatable-column name="Status" prop="requestStatus" [sortable]="false" [flexGrow]="1" [minWidth]="120">
         </ngx-datatable-column>
-        <ngx-datatable-column name="Total Items" prop="itemsCount" [sortable]="false">
+        <ngx-datatable-column name="Total Items" prop="itemsCount" [sortable]="false" [flexGrow]="1" [minWidth]="80">
         </ngx-datatable-column>
         <!-- <ngx-datatable-column name="Total Amount" prop="totalAmount" [sortable]="false">
         </ngx-datatable-column> -->
 
-        <ngx-datatable-column name="Date" prop="createdDate" [sortable]="false">
+        <ngx-datatable-column name="Date" prop="createdDate" [sortable]="false" [flexGrow]="1" [minWidth]="100">
           <ng-template let-row="row" ngx-datatable-cell-template>
             {{ row.createdDate | date:'yyyy-MM-dd' }}
           </ng-template>
@@ -117,7 +117,7 @@
                 </ngx-datatable-column> -->
 
       </ngx-datatable>
-      }
+      </div>
     </div>
   </div>
 </section>

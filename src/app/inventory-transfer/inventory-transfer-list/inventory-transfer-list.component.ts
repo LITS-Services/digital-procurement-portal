@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PermissionService } from 'app/shared/permissions/permission.service';
 import { LookupService } from 'app/shared/services/lookup.service';
@@ -20,7 +20,7 @@ export class InventoryTransferListComponent implements OnInit {
   FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
-
+    @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
   isStatusCompleted: boolean = false;
   hasRestrictedStatus: boolean = false;
   activeFilter: string = '';
@@ -69,16 +69,9 @@ export class InventoryTransferListComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  onAutoResize(): void {
-    this.datatableVisible = false;
-    this.cdr.detectChanges(); // destroy
-
-    requestAnimationFrame(() => {
-      this.datatableVisible = true;
-      this.cdr.detectChanges(); // recreate
-    });
-  }
-
+   get isMobile(): boolean {
+  return window.innerWidth <= 768;
+}
 
   loadPurchaseRequests() {
     this.loading = true;

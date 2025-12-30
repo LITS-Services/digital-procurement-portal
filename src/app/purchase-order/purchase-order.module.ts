@@ -13,6 +13,7 @@ import { InvoiceComponent } from './purchase-order-details/invoice/invoice.compo
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
 import { VendorRating } from './purchase-order-details/vendor-rating/vendor-rating';
 import { ReactiveFormsModule } from '@angular/forms';
+import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
 
 
 @NgModule({
@@ -31,7 +32,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     NgxDatatableModule,
     AutoResizeDatatableDirective,
     PermissionDirective,
-    ReactiveFormsModule
-]
+    ReactiveFormsModule,
+    DatatableAutoResizeDirective
+]   
 })
 export class PurchaseOrderModule { }

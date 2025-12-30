@@ -42,36 +42,42 @@
 
         </div>
       </div>
-      @if(datatableVisible){
 
-      <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap" [rows]="purchaseRequestData" [columnMode]="'force'"
-        [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [limit]="query.pageSize"
+
+
+      <div  class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
+
+      <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="purchaseRequestData" [columnMode]="'force'"
+        [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="isMobile" [limit]="query.pageSize"
         [count]="totalItems" [externalPaging]="true" [offset]="query.currentPage - 1" (page)="onPageChange($event)"
         [loadingIndicator]="loading" [selected]="chkBoxSelected" [selectionType]="SelectionType.checkbox"
         (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 
 
         <!-- Sr. No -->
-        <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+        <ngx-datatable-column name="Sr. No." [width]="60" [canAutoResize]="false" [resizeable]="false" [sortable]="false">
           <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
             <span>{{ rowIndex + 1 }}</span>
           </ng-template>
         </ngx-datatable-column>
         
-         <ngx-datatable-column name="Requisition No." prop="requisitionNo">
+         <ngx-datatable-column name="Requisition No." prop="requisitionNo"  [flexGrow]="1" [minWidth]="140" [sortable]="false">
                 <ng-template ngx-datatable-cell-template let-row="row">
                     <a href="javascript:void(0)" (click)="openPR(row)">
                         {{ row.requisitionNo }}
                     </a>
                 </ng-template>
             </ngx-datatable-column>
-        <ngx-datatable-column name="Status" prop="requestStatus"></ngx-datatable-column>
-        <ngx-datatable-column name="Date" prop="submittedDate">
+        <ngx-datatable-column name="Status" prop="requestStatus"  [flexGrow]="1" [minWidth]="100" [sortable]="false">
+
+        </ngx-datatable-column>
+        <ngx-datatable-column name="Date" prop="submittedDate" [flexGrow]="1" [minWidth]="100" [sortable]="false">
           <ng-template let-row="row" ngx-datatable-cell-template>
             {{ row.submittedDate | date:'yyyy-MM-dd' }}
           </ng-template>
-        </ngx-datatable-column> <ngx-datatable-column name="Entity" prop="entityName"></ngx-datatable-column>
-        <ngx-datatable-column name="Department" prop="department"></ngx-datatable-column>
+        </ngx-datatable-column> 
+        <ngx-datatable-column name="Entity" prop="entityName" [flexGrow]="2" [minWidth]="300" [sortable]="false"></ngx-datatable-column>
+        <ngx-datatable-column name="Department" prop="department" [flexGrow]="1" [minWidth]="140" [sortable]="false"></ngx-datatable-column>
 
         <ngx-datatable-row-detail [rowHeight]="'auto'" #myDetailRow>
           <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
@@ -100,7 +106,7 @@
         </ngx-datatable-row-detail>
 
       </ngx-datatable>
-    }
+      </div>
     </div>
   </div>
 </section>
