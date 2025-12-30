@@ -686,7 +686,7 @@ hr {
 
 .btn:disabled,
 .btn.disabled {
-  --bs-btn-disabled-color: rgb(101, 101, 101);
+  --bs-btn-disabled-color: rgb(228, 228, 228);
   border: inherit !important;
 }
 

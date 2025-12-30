@@ -45,7 +45,7 @@
           <ngx-datatable-column name="Visible to Vendor" [width]="150">
             <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
 
-              <input type="checkbox" [disabled]="viewMode" [ngModelOptions]="{ standalone: true }"
+              <input class="ms-2" type="checkbox" [disabled]="viewMode" [ngModelOptions]="{ standalone: true }"
                 [(ngModel)]="uploadedFiles[rowIndex].visibleToVendor" (ngModelChange)="onVisibilityChange(rowIndex)" />
 
             </ng-template>
