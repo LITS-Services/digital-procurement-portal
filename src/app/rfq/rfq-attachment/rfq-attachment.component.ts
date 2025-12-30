@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import {  ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { DatatableComponent } from '@swimlane/ngx-datatable';
@@ -36,7 +36,8 @@ export class RfqAttachmentComponent implements OnInit {
     public activeModal: NgbActiveModal, 
     private purchaseRequestService: PurchaseRequestService,
     private toastr: ToastrService,
-    private systemService: SystemService
+    private systemService: SystemService,
+    private cdr: ChangeDetectorRef
   ) {
     this.AttachmentForm = this.fb.group({
     });
@@ -101,7 +102,7 @@ export class RfqAttachmentComponent implements OnInit {
 
       this.uploadedFiles.push(newAttachment);
       this.uploadedFiles = [...this.uploadedFiles]; // Trigger UI update
-
+       this.cdr.detectChanges();   
     } catch (error) {
       console.error('Failed to convert file to base64:', error);
     }
