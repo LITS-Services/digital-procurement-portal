@@ -172,8 +172,16 @@
                 <span class="text-end user-text">{{username}}</span><span
                   class="text-end text-muted font-small-3">Available</span>
               </div>
-              <img class="avatar" [src]="profilePicture || 'assets/img/profile/user.png'" alt="avatar" height="35"
-                width="35" />
+              <!-- <img class="avatar" [src]="profilePicture || 'assets/img/profile/user.png'" alt="avatar" height="35"
+                width="35" /> -->
+                
+                  <div class="profile-wrapper">
+                    <img class="profile-avatar" [src]="profilePicture || 'assets/img/profile/user.png'" alt="avatar">
+                  
+                    <div class="profile-pill">
+                      <i class="ft-chevron-down pill-icon"></i>
+                    </div>
+                  </div>
             </a>
             <div class="dropdown-menu text-left dropdown-menu-right m-0 pb-0" aria-labelledby="dropdownBasic2"
               ngbDropdownMenu>

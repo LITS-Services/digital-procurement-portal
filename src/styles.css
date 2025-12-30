@@ -9,6 +9,9 @@
     // font-size: 30px !important; */
 }
 
+
+
+
 #toast-container>div {
   opacity: 1;
 }
@@ -821,6 +824,11 @@ label:has(input[type="checkbox"]) {
 /* Hide label of actions in responviveness */
 
 @media (max-width: 576px) {
+
+  .container-fluid{
+  --bs-gutter-x: 0rem !important;
+}
+
 
   .cstm-action-bar .btn-label {
     display: none;

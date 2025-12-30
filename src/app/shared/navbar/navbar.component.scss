@@ -688,3 +688,33 @@
     box-shadow: inset 0 0 0 1px #bfdbfe;
   }
 }
+
+.profile-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.profile-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: block;
+  z-index: 2;
+}
+
+.profile-pill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border-radius: 0px 24px 24px 0px;
+    padding: 9px 16px;
+    margin-left: -12px;
+    /* box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12); */
+    z-index: 1;
+}
+
+.pill-icon {
+  font-size: 16px;
+  color: #666;
+}
