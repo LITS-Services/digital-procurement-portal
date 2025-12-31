@@ -44,9 +44,9 @@
       </div>
 
       <!-- Content -->
-      @if(datatableVisible){
-      <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap" [rows]="tenderingData"
-        [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'"
+      <div  class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
+      <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="tenderingData"
+        [columnMode]="'force'" [scrollbarH]="isMobile" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'"
         [selectionType]="SelectionType.checkbox" [selected]="chkBoxSelected" (select)="customChkboxOnSelect($event)">
         <!-- Checkbox Column -->
         <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
@@ -67,11 +67,11 @@
         <!-- ID -->
 
         <!-- Name -->
-        <ngx-datatable-column name="Name" prop="name"></ngx-datatable-column>
+        <ngx-datatable-column name="Name" prop="name" [flexGrow]="1" [minWidth]="140"></ngx-datatable-column>
 
         <!-- Status -->
         <!-- Status Column -->
-        <ngx-datatable-column name="Status">
+        <ngx-datatable-column name="Status" [flexGrow]="1" [minWidth]="120">
           <ng-template ngx-datatable-cell-template let-row="row">
             <span [ngClass]="getStatusClass(row)">
               {{ getStatus(row) }}
@@ -81,13 +81,13 @@
 
 
         <!-- Logo -->
-        <ngx-datatable-column name="Logo" prop="logo">
+        <ngx-datatable-column name="Logo" prop="logo"  [flexGrow]="1" [minWidth]="120" [maxWidth]="140">
           <ng-template ngx-datatable-cell-template let-row="row">
             <img *ngIf="row.logo" [src]="row.logo" alt="Logo" width="36" height="36" />
           </ng-template>
         </ngx-datatable-column>
       </ngx-datatable>
-      }
+      </div>
     </div>
   </div>
 </section>

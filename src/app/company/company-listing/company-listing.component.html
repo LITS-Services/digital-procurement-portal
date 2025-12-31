@@ -68,10 +68,10 @@
       </div>
 
       <!-- Table Content -->
-      @if(datatableVisible){
-      <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap" [rows]="rows"
+      <div  class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
+      <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="rows"
         [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'"
-        [limit]="15" [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
+        [limit]="15" [scrollbarH]="isMobile" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
         [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 
         <!-- Checkbox Column -->
@@ -99,20 +99,20 @@
 
 
         <!-- Company Name Column -->
-        <ngx-datatable-column name="Company" prop="name" [width]="150">
+        <ngx-datatable-column name="Company" prop="name" [flexGrow]="2" [minWidth]="140">
           <ng-template let-row="row" ngx-datatable-cell-template>
             <span>{{ row.name }}</span>
           </ng-template>
         </ngx-datatable-column>
 
         <!-- Entity Column -->
-        <ngx-datatable-column name="Entity" prop="entity" [width]="150">
+        <ngx-datatable-column name="Entity" prop="entity" [flexGrow]="1" [minWidth]="140">
           <ng-template let-row="row" ngx-datatable-cell-template>
             <span>{{ row.entity }}</span>
           </ng-template>
         </ngx-datatable-column>
         <!-- Conditionally Display Status Column -->
-        <ngx-datatable-column *ngIf="showStatusColumn" name="Status" prop="companyStatus" [width]="100">
+        <ngx-datatable-column *ngIf="showStatusColumn" name="Status" prop="companyStatus" [flexGrow]="1" [minWidth]="140">
         </ngx-datatable-column>
 
         <!-- City -->
@@ -125,7 +125,7 @@
         <!-- <ngx-datatable-column name="Currency" prop="primaryCurrency" [width]="100"></ngx-datatable-column> -->
 
         <!-- Action Column -->
-        <ngx-datatable-column name="Action" [width]="100" prop="action" [sortable]="false">
+        <ngx-datatable-column name="Action" [flexGrow]="1" [minWidth]="70" [maxWidth]="130" prop="action" [sortable]="false">
           <ng-template let-row="row" ngx-datatable-cell-template>
             <button type="button" class="btn btn-sm btn-primary" [ngbPopover]="actionToolbar"
               popoverClass="action-popover" placement="bottom" container="body">
@@ -154,7 +154,7 @@
           </ng-template>
         </ngx-datatable-column>
       </ngx-datatable>
-      }
+      </div>
 
     </div>
   </div>

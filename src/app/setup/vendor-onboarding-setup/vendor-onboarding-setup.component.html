@@ -37,10 +37,10 @@
       </div>
 
       <!-- Data Table -->
-      @if(datatableVisible){
-      <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap"
+      <div  class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
+      <ngx-datatable #datatable class="bootstrap core-bootstrap"
         [rows]="vendorOnboardingData" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50"
-        [rowHeight]="'auto'" [scrollbarH]="true" [limit]="15" [selected]="chkBoxSelected"
+        [rowHeight]="'auto'" [scrollbarH]="isMobile" [limit]="15" [selected]="chkBoxSelected"
         [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 
         <!-- Checkbox Column -->
@@ -67,7 +67,7 @@
         </ngx-datatable-column>
 
         <!-- Setup Name -->
-        <ngx-datatable-column name="Setup Name" prop="setupName">
+        <ngx-datatable-column name="Setup Name" prop="setupName" [flexGrow]="1" [minWidth]="100">
           <ng-template ngx-datatable-cell-template let-value="value">
             <span>{{ value || 'N/A' }}</span>
           </ng-template>
@@ -103,14 +103,14 @@
         </ngx-datatable-column> -->
 
         <!-- Description -->
-        <ngx-datatable-column name="Description" prop="description">
+        <ngx-datatable-column name="Description" prop="description" [flexGrow]="2" [minWidth]="350"> 
           <ng-template ngx-datatable-cell-template let-value="value">
-            <span [ngbTooltip]="value">{{ value.length > 15 ? value.slice(0, 15) + '...' : value }}</span>
+            <span [ngbTooltip]="value">{{ value }}</span>
           </ng-template>
         </ngx-datatable-column>
 
         <!-- Status -->
-        <ngx-datatable-column name="Status" prop="status" [width]="100">
+        <ngx-datatable-column name="Status" prop="status" [flexGrow]="1" [minWidth]="120">
           <ng-template ngx-datatable-cell-template let-row="row">
             <span [class]="row.status ? 'badge badge-success' : 'badge badge-danger'">
               {{ row.status ? 'Active' : 'Inactive' }}
@@ -118,7 +118,7 @@
           </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="Receivers" prop="Receivers">
+        <ngx-datatable-column name="Receivers" prop="Receivers" [flexGrow]="1" [minWidth]="100" [maxWidth]="150">
           <ng-template let-row="row" ngx-datatable-cell-template>
             <button class="btn btn-primary btn-sm position-relative" (click)="openReceiversModal(row)">
               <i class="ft-users"></i>
@@ -128,7 +128,7 @@
 
 
       </ngx-datatable>
-      }
+      </div>
 
     </div>
   </div>

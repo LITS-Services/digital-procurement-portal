@@ -1,6 +1,6 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PermissionService } from 'app/shared/permissions/permission.service';
 import { SystemService } from 'app/shared/services/system.service';
@@ -17,7 +17,7 @@ export class GlobalConfigurationComponent implements OnInit {
   FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
-
+  @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
   activeFilter: string = ''; // default filter
   hasRestrictedStatus: boolean = false; // for disabling delete button if RFQ status is InProcess or Completed
   globalConfigData: any[] = [];
@@ -59,6 +59,11 @@ export class GlobalConfigurationComponent implements OnInit {
     this.loadGlobalConfigs();
     this.cdr.detectChanges();
   }
+
+    get isMobile(): boolean {
+    return window.innerWidth <= 768;
+  }
+
 
   loadGlobalConfigs() {
     this.loading = true;

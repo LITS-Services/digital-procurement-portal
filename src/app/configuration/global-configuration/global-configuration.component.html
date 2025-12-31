@@ -48,11 +48,11 @@
             </div>
 
             <!-- Content -->
-            @if(datatableVisible){
-            <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap"
+            <div  class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
+            <ngx-datatable #datatable (autoResize)="onAutoResize()" class="bootstrap core-bootstrap"
                 [rows]="globalConfigData" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50"
                 [columns]="columns" [rowHeight]="'auto'" [limit]="pageSize" [count]="totalItems" [externalPaging]="true"
-                [offset]="currentPage - 1" (page)="onPageChange($event)" [scrollbarH]="true"
+                [offset]="currentPage - 1" (page)="onPageChange($event)" [scrollbarH]="isMobile"
                 [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
                 [selectionType]="SelectionType.checkbox" (sort)="onSort($event)"
                 (select)="customChkboxOnSelect($event)">
@@ -73,16 +73,16 @@
                 </ngx-datatable-column>
 
                 <!-- Sr. No -->
-                <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+                <ngx-datatable-column name="Sr. No." [maxWidth]="60" [resizeable]="false">
                     <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
                         <span>{{ rowIndex + 1 }}</span>
                     </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Name" prop="name">
+                <ngx-datatable-column name="Name" prop="name" [flexGrow]="1" [minWidth]="100" [maxWidth]="350">
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Value" prop="value">
+                <ngx-datatable-column name="Value" prop="value" [flexGrow]="2" [minWidth]="160">
                 </ngx-datatable-column>
 
                 <!-- <ngx-datatable-column name="Date" prop="date" [width]="50">
@@ -94,7 +94,7 @@
                     </ng-template>
                 </ngx-datatable-column> -->
 
-                <ngx-datatable-column name="Type" prop="type">
+                <ngx-datatable-column name="Type" prop="type" [flexGrow]="1" [minWidth]="120" [maxWidth]="150">
                 </ngx-datatable-column>
 
                 <!-- <ngx-datatable-column name="Comments" prop="comment">
@@ -104,7 +104,7 @@
                 </ngx-datatable-column> -->
 
             </ngx-datatable>
-            }
+            </div>
         </div>
     </div>
 </section>

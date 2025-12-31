@@ -34,13 +34,13 @@
 
 
             <!-- DATA TABLE -->
-            @if(datatableVisible){
-            <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap" [rows]="aclList"
+            <div  class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
+            <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="aclList"
                 [columns]="[]" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="50"
-                [limit]="10">
+                [limit]="10"  [scrollbarH]="isMobile">
 
                 <!-- Loop dynamically generated columns: Form Name / Read / Write / Delete -->
-                <ngx-datatable-column *ngFor="let col of columns" [name]="col.name" [prop]="col.prop">
+                <ngx-datatable-column *ngFor="let col of columns" [flexGrow]="1" sortable="false" [name]="col.name" [prop]="col.prop" [minWidth]="col.minWidth">
 
                     <ng-template ngx-datatable-cell-template let-row="row">
 
@@ -81,7 +81,7 @@
                     </ng-template>
                 </ngx-datatable-column>
             </ngx-datatable>
-            }
+            </div>
         </div>
     </div>
 </section>

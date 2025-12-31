@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { CompanyService } from 'app/shared/services/Company.services';
-import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { AuthService } from 'app/shared/auth/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
@@ -12,9 +12,10 @@ import { FORM_IDS } from 'app/shared/permissions/form-ids';
   selector: 'app-procurment-companies',
   templateUrl: './procurment-companies.component.html',
   styleUrls: ['./procurment-companies.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class ProcurmentCompaniesComponent implements OnInit {
+     @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
   FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
@@ -34,7 +35,7 @@ export class ProcurmentCompaniesComponent implements OnInit {
     { prop: 'companyGUID', name: 'Company GUID', width: 200 },
     { prop: 'name', name: 'Name', width: 200 },
     { prop: 'logo', name: 'Logo', width: 100 },
-    { prop: 'status', name: 'Status', width: 100 } // optional column for status
+    { prop: 'status', name: 'Status', width: 100 }, // optional column for status
   ];
 
   datatableVisible: boolean = true;
@@ -46,7 +47,7 @@ export class ProcurmentCompaniesComponent implements OnInit {
     private toastr: ToastrService,
     private cdr: ChangeDetectorRef,
     private permissionService: PermissionService
-  ) { }
+  ) {}
 
   onAutoResize(): void {
     this.datatableVisible = false;
@@ -56,6 +57,10 @@ export class ProcurmentCompaniesComponent implements OnInit {
       this.datatableVisible = true;
       this.cdr.detectChanges(); // recreate
     });
+  }
+
+  get isMobile(): boolean {
+    return window.innerWidth <= 768;
   }
 
   ngOnInit(): void {
@@ -80,7 +85,7 @@ export class ProcurmentCompaniesComponent implements OnInit {
         this.tenderingData = companies.map((c: any) => ({
           ...c,
           status: c.isDeleted ? 'Inactive' : 'Active', // optional: show readable status
-          logo: c.logo || ''
+          logo: c.logo || '',
         }));
 
         this.loading = false;
@@ -89,7 +94,7 @@ export class ProcurmentCompaniesComponent implements OnInit {
       error: (err) => {
         console.error('Error fetching companies:', err);
         this.loading = false;
-      }
+      },
     });
   }
 
@@ -102,14 +107,14 @@ export class ProcurmentCompaniesComponent implements OnInit {
   //   this.chkBoxSelected = this.isAllSelected ? [...this.tenderingData] : [];
   //   this.updateActionButtons();
   // }
-  
+
   toggleSelectAll(event: any) {
     if (event.target.checked) {
       this.chkBoxSelected = [...this.tenderingData];
     } else {
       this.chkBoxSelected = [];
     }
-    this.idsToDelete = this.chkBoxSelected.map(item => item.quotationId);
+    this.idsToDelete = this.chkBoxSelected.map((item) => item.quotationId);
     this.isAllSelected = event.target.checked;
     this.enableDisableButtons();
   }
@@ -137,13 +142,12 @@ export class ProcurmentCompaniesComponent implements OnInit {
 
   customChkboxOnSelect({ selected }) {
     this.chkBoxSelected = [...selected];
-    this.idsToDelete = this.chkBoxSelected.map(c => c.id);
+    this.idsToDelete = this.chkBoxSelected.map((c) => c.id);
     this.enableDisableButtons();
   }
 
   openEmpDetails() {
-    if(!this.permissionService.can(FORM_IDS.ENTITIES, 'write'))
-      return;
+    if (!this.permissionService.can(FORM_IDS.ENTITIES, 'write')) return;
     this.router.navigate(['/procurment-companies/procurment-companies-edit']);
   }
 
@@ -154,12 +158,11 @@ export class ProcurmentCompaniesComponent implements OnInit {
   }
 
   editSelectedRow() {
-    if(!this.permissionService.can(FORM_IDS.ENTITIES, 'write'))
-      return;
+    if (!this.permissionService.can(FORM_IDS.ENTITIES, 'write')) return;
     if (this.chkBoxSelected.length === 1) {
       const selectedCompany = this.chkBoxSelected[0];
       this.router.navigate(['/procurment-companies/procurment-companies-edit'], {
-        queryParams: { id: selectedCompany.id }
+        queryParams: { id: selectedCompany.id },
       });
     } else {
       this.toastr.info('Please select a single entity to edit.');
@@ -193,8 +196,7 @@ export class ProcurmentCompaniesComponent implements OnInit {
 
   // OPEN DELETE MODAL
   openDeleteModal(): void {
-    if (!this.permissionService.can(FORM_IDS.ENTITIES, 'delete'))
-      return;
+    if (!this.permissionService.can(FORM_IDS.ENTITIES, 'delete')) return;
     if (this.idsToDelete.length === 0) {
       this.toastr.info('Please select at least one record to delete.');
       return;
@@ -230,7 +232,7 @@ export class ProcurmentCompaniesComponent implements OnInit {
       error: (err) => {
         console.error('Delete failed:', err);
         Swal.fire('Error', 'An error occurred while deleting records.', 'error');
-      }
+      },
     });
   }
 

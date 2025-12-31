@@ -9,6 +9,7 @@ import { LogsComponent } from './logs/logs.component';
 import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
 import { NgbDropdownModule, NgbModalModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
+import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
 
 
 @NgModule({
@@ -27,6 +28,7 @@ import { NgbDropdownModule, NgbModalModule, NgbTooltipModule } from '@ng-bootstr
     AutoResizeDatatableDirective,
     NgbDropdownModule,
       NgbTooltipModule,
+      DatatableAutoResizeDirective,
     PermissionDirective
 ]
 })

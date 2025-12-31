@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { PurchaseRequestAccountBudgetLookupModalComponent } from 'app/shared/modals/purchase-request-account-budget-lookup-modal/purchase-request-account-budget-lookup-modal.component';
 import { PurchaseRequestExceptionPolicyComponent } from 'app/shared/modals/purchase-request-exception-policy/purchase-request-exception-policy.component';
 import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
@@ -21,7 +21,7 @@ export class WorkflowMasterSetupComponent implements OnInit {
   FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
-
+   @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
   purchaseRequestData: any[] = [];
   chkBoxSelected: any[] = [];
   idsToDelete: number[] = [];
@@ -59,6 +59,9 @@ export class WorkflowMasterSetupComponent implements OnInit {
     this.getWorkflowMasterList();
   }
 
+    get isMobile(): boolean {
+  return window.innerWidth <= 768;
+}
 
 
   getWorkflowMasterList(): void {

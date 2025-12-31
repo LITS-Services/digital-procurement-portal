@@ -1,10 +1,11 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PermissionService } from 'app/shared/permissions/permission.service';
 import { EmailTemplateService } from 'app/shared/services/EmailTemplateService';
+import { max } from 'date-fns';
 
 @Component({
   selector: 'app-email-setup',
@@ -16,7 +17,7 @@ export class EmailSetupComponent implements OnInit {
   FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
-
+  @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
   public chkBoxSelected = [];
   loading = false;
   public rows = [];
@@ -53,12 +54,17 @@ export class EmailSetupComponent implements OnInit {
     this.getEmailLogs();
 
     this.columns = [
-      { prop: 'receiverEmail', name: 'Receiver Email' },
-      { prop: 'requestStatusName', name: 'Request Status' },
-      { prop: 'subject', name: 'Subject' },
-      { prop: 'body', name: 'Body' }
+      { prop: 'receiverEmail', name: 'Receiver Email' , minWidth: 120},
+      { prop: 'requestStatusName', name: 'Request Status',minWidth: 50,},
+      { prop: 'subject', name: 'Subject', minWidth: 100 },
+      { prop: 'body', name: 'Body', minWidth: 300 }
     ];
   }
+
+        get isMobile(): boolean {
+  return window.innerWidth <= 768;
+}
+
 
   getEmailLogs() {
     this.loading = true;
@@ -69,8 +75,8 @@ export class EmailSetupComponent implements OnInit {
           id: item.id,
           receiverEmail: item.receiverEmail,
           requestStatusName: item.requestStatusName,
-          subject: this.truncateText(item.subject),
-          body: this.truncateText(item.body)
+          subject: item.subject,
+          body: item.body
         }));
 
         this.rows = [...this.allEmailLogs];

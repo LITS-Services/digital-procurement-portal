@@ -90,6 +90,7 @@
                 (page)="onPageChange($event)" [scrollbarH]="isMobile" [loadingIndicator]="loading"
                 [selected]="chkBoxSelected" [swapColumns]="false" [selectionType]="SelectionType.checkbox"
                 (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
+                
                 <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
                     [resizeable]="false">
                     <ng-template ngx-datatable-header-template>

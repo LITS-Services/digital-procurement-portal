@@ -31,6 +31,7 @@ import { VendorOnboardingReceiversComponent } from './vendor-onboarding-receiver
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
 import { CreateEmailTemplateComponent } from './create-email-template/create-email-template.component';
 import { BulkVendorOnboardingComponent } from './bulk-vendor-onboarding/bulk-vendor-onboarding.component';
+import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
 
 
 
@@ -73,6 +74,7 @@ import { BulkVendorOnboardingComponent } from './bulk-vendor-onboarding/bulk-ven
         ToastrModule.forRoot() ,
         NgxSpinnerModule,
         AutoResizeDatatableDirective,
+        DatatableAutoResizeDirective,
         PermissionDirective
   ],
   schemas: [NO_ERRORS_SCHEMA]

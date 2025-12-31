@@ -36,14 +36,14 @@
       </div>
 
       <!-- Table -->
-      @if(datatableVisible){
-      <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap" [rows]="tenderingData"
+     <div  class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
+      <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="tenderingData"
         [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="15"
-        [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
+        [scrollbarH]="isMobile" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
         [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 
         <!-- Checkbox Column -->
-        <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+        <ngx-datatable-column  [minWidth]="50" [maxWidth]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
           [resizeable]="false">
           <ng-template ngx-datatable-header-template>
             <div class="custom-control">
@@ -59,33 +59,33 @@
         </ngx-datatable-column>
 
         <!-- Sr No -->
-        <ngx-datatable-column name="Sr. No." [width]="70">
+        <ngx-datatable-column name="Sr. No." [flexGrow]="1" [minWidth]="60" [maxWidth]="60">
           <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
             {{ rowIndex + 1 }}
           </ng-template>
         </ngx-datatable-column>
 
         <!-- Full Name -->
-        <ngx-datatable-column name="Full Name" prop="fullName" [width]="200"></ngx-datatable-column>
+        <ngx-datatable-column name="Full Name" prop="fullName" [flexGrow]="2" [minWidth]="140"></ngx-datatable-column>
 
         <!-- Username -->
-        <ngx-datatable-column name="Username" prop="userName" [width]="180"></ngx-datatable-column>
+        <ngx-datatable-column name="Username" prop="userName" [flexGrow]="1" [minWidth]="180"></ngx-datatable-column>
 
         <!-- Email -->
-        <ngx-datatable-column name="Email" prop="email" [width]="250"></ngx-datatable-column>
+        <ngx-datatable-column name="Email" prop="email" [flexGrow]="1" [minWidth]="200"></ngx-datatable-column>
 
         <!-- Phone -->
-        <ngx-datatable-column name="Phone" prop="phoneNumber" [width]="150"></ngx-datatable-column>
+        <ngx-datatable-column name="Phone" prop="phoneNumber" [flexGrow]="1" [minWidth]="120"></ngx-datatable-column>
 
         <!-- Status -->
-        <ngx-datatable-column name="Status" prop="isDeleted" [width]="120">
+        <ngx-datatable-column name="Status" prop="isDeleted" [flexGrow]="1" [minWidth]="90" [maxWidth]="100">
           <ng-template let-row="row" ngx-datatable-cell-template>
             <span [ngClass]="row.isDeleted ? 'badge badge-danger' : 'badge badge-success'">
               {{ row.isDeleted ? 'In Active' : 'Active' }}
             </span> </ng-template>
         </ngx-datatable-column>
       </ngx-datatable>
-      }
+      </div>
 
     </div>
   </div>

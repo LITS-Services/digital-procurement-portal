@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
@@ -20,7 +20,7 @@ import { PermissionService } from 'app/shared/permissions/permission.service';
 export class VendorOnboardingSetupComponent implements OnInit {
   FORM_IDS = FORM_IDS;
   @ViewChild('deleteModal') deleteModal: TemplateRef<any>;
-
+   @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
   vendorOnboardingForm: FormGroup;
   vendorOnboardingList: any[] = [];
   vendorOnboardingData: any[] = [];
@@ -62,6 +62,10 @@ export class VendorOnboardingSetupComponent implements OnInit {
     });
 
   }
+
+      get isMobile(): boolean {
+  return window.innerWidth <= 768;
+}
 
   onAutoResize(): void {
     this.datatableVisible = false;

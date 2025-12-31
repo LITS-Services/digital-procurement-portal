@@ -1,6 +1,6 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { AuthService } from 'app/shared/auth/auth.service';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PermissionService } from 'app/shared/permissions/permission.service';
@@ -16,7 +16,7 @@ export class EmployeeListComponent implements OnInit {
   FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
-
+  @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
   tenderingData: any[] = []; // Table data
   chkBoxSelected: any[] = [];
   loading = false;
@@ -56,6 +56,10 @@ export class EmployeeListComponent implements OnInit {
       { prop: 'status', name: 'Status' }
     ];
   }
+
+      get isMobile(): boolean {
+  return window.innerWidth <= 768;
+}
 
   // Fetch procurement users
   getProcurementUsers() {

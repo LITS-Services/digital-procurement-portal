@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { AuthService } from 'app/shared/auth/auth.service';
 import { CompanyApprovalHistoryComponent } from '../company-approval-history/company-approval-history.component';
@@ -18,7 +18,7 @@ import { finalize } from 'rxjs';
 })
 export class CompanyListingComponent implements OnInit {
   filters: any = {}; // e.g. { entity: '', name: '', city: '', vendorType: '' }
-
+   @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
@@ -70,6 +70,10 @@ export class CompanyListingComponent implements OnInit {
       { prop: 'edit', name: 'Edit' }
     ];
   }
+
+    get isMobile(): boolean {
+  return window.innerWidth <= 768;
+}
 
   getCompanyData() {
     this.loading = true;

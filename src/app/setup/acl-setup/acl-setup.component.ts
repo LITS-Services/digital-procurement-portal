@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
+import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PermissionService } from 'app/shared/permissions/permission.service';
 import { AclService } from 'app/shared/services/acl.service';
@@ -20,6 +20,7 @@ import { finalize } from 'rxjs/operators';
   styleUrls: ['./acl-setup.component.scss']
 })
 export class AclSetupComponent implements OnInit {
+   @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
   FORM_IDS = FORM_IDS;
   chkBoxSelected: any[] = [];
   idsToDelete: number[] = [];
@@ -64,6 +65,10 @@ export class AclSetupComponent implements OnInit {
     this.fetchRoles();
   }
 
+  get isMobile(): boolean {
+  return window.innerWidth <= 768;
+  }
+
   homePage() {
     this.router.navigate(['/dashboard/dashboard1']);
   }
@@ -103,10 +108,10 @@ export class AclSetupComponent implements OnInit {
 
   setupTableColumns() {
     this.columns = [
-      { name: 'Form', prop: 'formName', type: 'text' },
-      { name: 'Read', prop: 'read', type: 'checkbox' },
-      { name: 'Write', prop: 'write', type: 'checkbox' },
-      { name: 'Delete', prop: 'delete', type: 'checkbox' }
+      { name: 'Form', prop: 'formName', type: 'text', minWidth: 450 },
+      { name: 'Read', prop: 'read', type: 'checkbox', minWidth: 100 },
+      { name: 'Write', prop: 'write', type: 'checkbox', minWidth: 100 },
+      { name: 'Delete', prop: 'delete', type: 'checkbox', minWidth: 100 }
     ];
   }
 

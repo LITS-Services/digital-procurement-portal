@@ -20,6 +20,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
+import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { PermissionDirective } from 'app/shared/permissions/permission.directive
             ToastrModule.forRoot(),
             NgxSpinnerModule,
             AutoResizeDatatableDirective,
-            PermissionDirective
+            PermissionDirective,
+            DatatableAutoResizeDirective
   ],
   schemas: [NO_ERRORS_SCHEMA]
 })

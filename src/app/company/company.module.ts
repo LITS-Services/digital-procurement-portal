@@ -22,6 +22,7 @@ import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-r
 import { CompanyApprovalHistoryComponent } from './company-approval-history/company-approval-history.component';
 import { AssignMeComponent } from './assign-me/assign-me.component';
 import { CompanySetupHistoryComponent } from './company-setup-history/company-setup-history.component';
+import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
 
 
 @NgModule({
@@ -53,7 +54,8 @@ import { CompanySetupHistoryComponent } from './company-setup-history/company-se
     NgbDatepickerModule,
     ToastrModule.forRoot(),
     NgxSpinnerModule,
-    AutoResizeDatatableDirective
+    AutoResizeDatatableDirective,
+    DatatableAutoResizeDirective
   ],
   schemas: [NO_ERRORS_SCHEMA]
 })
