@@ -695,11 +695,14 @@
 }
 
 .profile-avatar {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   display: block;
+  background-color: white;
   z-index: 2;
+  border: 1px solid #d1d1d1;
+  box-shadow: rgb(204, 219, 232) 3px 3px 6px 0px inset, rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
 }
 
 .profile-pill {
