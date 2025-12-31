@@ -165,7 +165,7 @@
             </div>
           </div>
 
-          <li class="dropdown nav-item me-1" placement="bottom-left" display="static" ngbDropdown>
+          <li class="dropdown nav-item me-1" placement="bottom-left" display="static" ngbDropdown [ngClass]="{ 'user-loading': isUserLoading }">
             <a class="nav-link dropdown-toggle user-dropdown d-flex align-items-end" id="dropdownBasic2"
               href="javascript:;" data-toggle="dropdown" ngbDropdownToggle>
               <div class="user d-md-flex d-none me-2">

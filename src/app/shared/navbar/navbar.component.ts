@@ -80,6 +80,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
     isScrolled = false;
+     isUserLoading = true;
   constructor(
     public translate: TranslateService,
     private layoutService: LayoutService,
@@ -145,17 +146,20 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
             this.username = res.fullName || this.authService.getUserName();
             this.profilePicture =
               res.profilePicture || "assets/img/profile/user.png";
+                 this.isUserLoading = false;
             this.cdr.detectChanges();
           }
         },
         error: () => {
           this.username = this.authService.getUserName();
           this.profilePicture = "assets/img/profile/user.png";
+             this.isUserLoading = false;
           this.cdr.detectChanges();
         },
       });
     } else {
       this.username = this.authService.getUserName();
+         this.isUserLoading = false;
       this.cdr.detectChanges();
     }
   }
