@@ -28,6 +28,7 @@ import { Router } from '@angular/router';
 // Import PermissionService and FORM_IDS
 import { PermissionService } from 'app/shared/permissions/permission.service';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
+import { finalize } from 'rxjs';
 
 declare var require: any;
 
@@ -115,7 +116,7 @@ export type VendorDeliveryChartOptions = {
   selector: 'app-dashboard1',
   templateUrl: './dashboard1.component.html',
   styleUrls: ['./dashboard1.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class Dashboard1Component implements OnInit, AfterViewInit {
   prCounts!: PurchaseRequestsCountVM;
@@ -124,25 +125,9 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
   vendorCompaniesCounts!: VendorCompaniesCountVM;
   entitiesCounts!: EntitiesCountVM;
 
-  recentVendors = [
-    { name: 'AlaMart', location: 'Karachi', timesBought: 6, successRate: '4 Success' },
-    { name: 'Alpha Stores', location: 'Lahore', timesBought: 10, successRate: '7 Success' },
-    { name: 'Metro Supplies', location: 'Islamabad', timesBought: 3, successRate: '2 Success' },
-    { name: 'APT (PVT) Cental PART', location: 'Dubai', timesBought: 1, successRate: '0 Success' },
-    { name: 'Geeks&Geeks', location: 'Faislabad', timesBought: 3, successRate: '1 Success' },
-  ];
+  recentVendors = [];
 
-  upcomingAuctions = [
-    { product: 'Desktops', quantity: '20 nos', date: '23-06-2024', budget: 'Rs 2,500,000' },
-    { product: 'Sanitizers', quantity: '100 nos', date: '16-06-2024', budget: 'Rs 50,000' },
-    { product: 'Billing Machines', quantity: '12 nos', date: '07-06-2024', budget: 'Rs 150,000' },
-    {
-      product: 'IT-204 Macbook',
-      quantity: '100 nos',
-      date: '16-06-2024',
-      budget: 'Rs 50,000',
-    },
-    { product: 'Billing Machines', quantity: '12 nos', date: '07-06-2024', budget: 'Rs 150,000' },
+  upcomingPurchases = [
   ];
 
   monthlyExpenses = [
@@ -175,6 +160,8 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
   canAccessCompany = false;
   canAccessEntity = false;
 
+  isVendorsLoading:boolean = false;
+  isPurchasesLoading:boolean = false;
   constructor(
     private http: HttpClient,
     public translate: TranslateService,
@@ -184,7 +171,7 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
     private cdr: ChangeDetectorRef,
     private router: Router,
     private ngZone: NgZone,
-    private permissionService: PermissionService  // Inject PermissionService
+    private permissionService: PermissionService // Inject PermissionService
   ) {
     this.translate.onLangChange.subscribe(() => {
       this.isArabic = this.translate.currentLang === 'ar';
@@ -201,7 +188,8 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
     this.initSpendDonut();
     this.getMonthlySpending();
     this.initVendorDeliveryChart();
-    
+    this.loadTopVendors();
+    this.loadUpcomingPurchases();
     // Check permissions for dashboard cards
     this.checkPermissions();
   }
@@ -210,19 +198,19 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
   private checkPermissions(): void {
     // Check Purchase Request permission (at least read access)
     this.canAccessPurchaseRequest = this.permissionService.can(FORM_IDS.PURCHASE_REQUEST, 'read');
-    
+
     // Check RFQ permission (at least read access)
     this.canAccessRFQ = this.permissionService.can(FORM_IDS.REQUEST_FOR_QUOTATION, 'read');
-    
+
     // Check Purchase Order permission (at least read access)
     this.canAccessPurchaseOrder = this.permissionService.can(FORM_IDS.PURCHASE_ORDER, 'read');
-    
+
     // Check Company permission (at least read access)
     this.canAccessCompany = this.permissionService.can(FORM_IDS.VENDOR_COMPANIES, 'read');
-    
+
     // Check Entity permission (at least read access)
     this.canAccessEntity = this.permissionService.can(FORM_IDS.ENTITIES, 'read');
-    
+
     this.cdr.detectChanges();
   }
 
@@ -277,6 +265,30 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
     this.router.navigateByUrl('/procurment-companies');
   }
 
+  loadTopVendors(): void {
+    this.isVendorsLoading = true;
+
+    this.dashboardService
+      .getTopVendors()
+      .pipe(finalize(() => (this.isVendorsLoading = false)))
+      .subscribe({
+        next: (data) => (this.recentVendors = data ?? []),
+        error: (err) => console.error(err),
+      });
+  }
+
+  loadUpcomingPurchases(): void {
+    this.isPurchasesLoading = true;
+
+    this.dashboardService
+      .getUpcomingPurchases()
+      .pipe(finalize(() => (this.isPurchasesLoading = false)))
+      .subscribe({
+        next: (data) => (this.upcomingPurchases = data ?? []),
+        error: (err) => console.error(err),
+      })
+  }
+
   loadPurchaseRequestsCounts(): void {
     const userId = localStorage.getItem('userId');
     const entityId = Number(localStorage.getItem('selectedCompanyId'));
@@ -318,48 +330,47 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
     });
   }
 
-getMonthlySpending() {
-  this.dashboardService.getMonthlySpendingData().subscribe({
-    next: (res: any) => {
-      console.log('monthly spending', res);
+  getMonthlySpending() {
+    this.dashboardService.getMonthlySpendingData().subscribe({
+      next: (res: any) => {
+        console.log('monthly spending', res);
 
-      const data: MonthlySpendingResponse = Array.isArray(res) ? res[0] : res;
+        const data: MonthlySpendingResponse = Array.isArray(res) ? res[0] : res;
 
-      const inventory = Number(data?.inventory ?? 0);
-      const nonInventory = Number(data?.nonInventory ?? 0);
+        const inventory = Number(data?.inventory ?? 0);
+        const nonInventory = Number(data?.nonInventory ?? 0);
 
-      this.spendDonutOptions = {
-        ...this.spendDonutOptions,
-        series: [inventory, nonInventory],
-        labels: ['Inventory', 'Non-Inventory'],
-      };
+        this.spendDonutOptions = {
+          ...this.spendDonutOptions,
+          series: [inventory, nonInventory],
+          labels: ['Inventory', 'Non-Inventory'],
+        };
 
-          this.monthlyExpenses = [
-        {
-          label: 'Inventory',
-          color: '#80ed99',
-          value: `${inventory.toFixed(2)}%`,
-        },
-        {
-          label: 'Non-Inventory',
-          color: '#219ebc',
-          value: `${nonInventory.toFixed(2)}%`,
-        },
-      ];
+        this.monthlyExpenses = [
+          {
+            label: 'Inventory',
+            color: '#80ed99',
+            value: `${inventory.toFixed(2)}%`,
+          },
+          {
+            label: 'Non-Inventory',
+            color: '#219ebc',
+            value: `${nonInventory.toFixed(2)}%`,
+          },
+        ];
 
-      // Optional: update amount text under chart
-      if (data?.totalThisMonth != null) {
-        this.monthlySpendAmount = `AED ${Number(data.totalThisMonth).toLocaleString()}`;
-      }
+        // Optional: update amount text under chart
+        if (data?.totalThisMonth != null) {
+          this.monthlySpendAmount = `AED ${Number(data.totalThisMonth).toLocaleString()}`;
+        }
 
-      this.cdr.detectChanges();
-    },
-    error: (err) => {
-      console.error('Error getting monthly spending', err);
-    },
-  });
-}
-
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error getting monthly spending', err);
+      },
+    });
+  }
 
   // getMonthlySpending() {
   //   this.dashboardService.getMonthlySpendingData().subscribe({
@@ -506,74 +517,70 @@ getMonthlySpending() {
   private setChartRange(range: 'month' | 'quarter' | 'year'): void {
     this.activeRange = range;
 
-    const filterType =
-      range === 'month' ? 1 :
-      range === 'quarter' ? 2 : 3;
+    const filterType = range === 'month' ? 1 : range === 'quarter' ? 2 : 3;
 
     const userId = localStorage.getItem('userId') ?? '';
-    const entity = localStorage.getItem('selectedCompanyId')
+    const entity = localStorage.getItem('selectedCompanyId');
     var entityId;
     if (entity === 'All') {
-      entityId = null
+      entityId = null;
     } else {
       entityId = Number(localStorage.getItem('selectedCompanyId'));
     }
 
-    this.dashboardService
-      .getRfqPipelineGraph(userId, entityId, filterType)
-      .subscribe({
-        next: (rows: RfqPipelineGraphPoint[]) => {
-          const categories: string[] = [];
-          const totalRfq: number[] = [];
-          const rfqQuotation: number[] = [];
-          const selectedRfq: number[] = [];
-          this.rfqTooltipDates = rows.map(r => r.groupData);
+    this.dashboardService.getRfqPipelineGraph(userId, entityId, filterType).subscribe({
+      next: (rows: RfqPipelineGraphPoint[]) => {
+        const categories: string[] = [];
+        const totalRfq: number[] = [];
+        const rfqQuotation: number[] = [];
+        const selectedRfq: number[] = [];
+        this.rfqTooltipDates = rows.map((r) => r.groupData);
 
-          rows.forEach((row, index) => {
-            let label: string;
+        rows.forEach((row, index) => {
+          let label: string;
 
-            if (filterType === 1) {
-              label = this.formatDayLabel(row.groupData);
-            } else if (filterType === 2) {
-              label = this.formatWeekLabel(row.groupData);
-            } else {
-              label = this.formatMonthLabel(row.groupData);
-            }
+          if (filterType === 1) {
+            label = this.formatDayLabel(row.groupData);
+          } else if (filterType === 2) {
+            label = this.formatWeekLabel(row.groupData);
+          } else {
+            label = this.formatMonthLabel(row.groupData);
+          }
 
-            categories.push(label);
-            totalRfq.push(row.totalRfq);
-            rfqQuotation.push(row.rfqQuotation);
-            selectedRfq.push(row.quotesSelected);
-          });
+          categories.push(label);
+          totalRfq.push(row.totalRfq);
+          rfqQuotation.push(row.rfqQuotation);
+          selectedRfq.push(row.quotesSelected);
+        });
 
-          this.spendChartOptions = {
-            ...this.spendChartOptions,
-            series: [
-              {
-                name: 'Total RFQs',
-                data: totalRfq,
-              },
-              {
-                name: 'Total Quotations',
-                data: rfqQuotation,
-              },
-              {
-                name: 'Selected Quotations',
-                data: selectedRfq,
-              },
-            ],
-            xaxis: {
-              ...this.spendChartOptions.xaxis,
-              categories,
+        this.spendChartOptions = {
+          ...this.spendChartOptions,
+          series: [
+            {
+              name: 'Total RFQs',
+              data: totalRfq,
             },
-          };
-          this.isRfqChartReady = true;
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          console.error('Error loading RFQ pipeline graph data', err);
-        },
-      });
+            {
+              name: 'Total Quotations',
+              data: rfqQuotation,
+            },
+            {
+              name: 'Selected Quotations',
+              data: selectedRfq,
+            },
+          ],
+          xaxis: {
+            ...this.spendChartOptions.xaxis,
+            categories,
+          },
+        };
+        this.isRfqChartReady = true;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading RFQ pipeline graph data', err);
+      },
+    });
   }
 
   private formatWeekLabel(groupData: string): string {
@@ -600,7 +607,20 @@ getMonthlySpending() {
     if (parts.length >= 2) {
       const monthNumber = parseInt(parts[1], 10);
       if (!isNaN(monthNumber) && monthNumber >= 1 && monthNumber <= 12) {
-        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const monthNames = [
+          'Jan',
+          'Feb',
+          'Mar',
+          'Apr',
+          'May',
+          'Jun',
+          'Jul',
+          'Aug',
+          'Sep',
+          'Oct',
+          'Nov',
+          'Dec',
+        ];
         return monthNames[monthNumber - 1];
       }
     }
@@ -608,41 +628,41 @@ getMonthlySpending() {
   }
 
   private initSpendDonut(): void {
-  this.spendDonutOptions = {
-    series: [0, 0],   // will be replaced by API
-    chart: {
-      type: 'donut',
-      height: 200,
-    },
-    // default labels & colors (also overwritten if needed)
-    labels: ['Inventory', 'Non-Inventory'],
-    colors: this.monthlyExpenses.map((e) => e.color),
-    legend: {
-      show: false,
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    tooltip: {
-      y: {
-        formatter: (val: number) => `${val.toFixed(1)}%`,
+    this.spendDonutOptions = {
+      series: [0, 0], // will be replaced by API
+      chart: {
+        type: 'donut',
+        height: 200,
       },
-    },
-    responsive: [
-      {
-        breakpoint: 768,
-        options: {
-          chart: {
-            height: 180,
-          },
+      // default labels & colors (also overwritten if needed)
+      labels: ['Inventory', 'Non-Inventory'],
+      colors: this.monthlyExpenses.map((e) => e.color),
+      legend: {
+        show: false,
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      tooltip: {
+        y: {
+          formatter: (val: number) => `${val.toFixed(1)}%`,
         },
       },
-    ],
-    theme: {
-      mode: 'light',
-    },
-  };
-}
+      responsive: [
+        {
+          breakpoint: 768,
+          options: {
+            chart: {
+              height: 180,
+            },
+          },
+        },
+      ],
+      theme: {
+        mode: 'light',
+      },
+    };
+  }
 
   private initVendorDeliveryChart(): void {
     const vendors = ['AlaMart', 'Alpha Stores', 'Metro Supplies'];
@@ -718,8 +738,7 @@ getMonthlySpending() {
         horizontalAlign: 'left',
         offsetX: -30,
         offsetY: 0,
-        markers: {
-        },
+        markers: {},
         itemMargin: {
           horizontal: 8,
           vertical: 0,

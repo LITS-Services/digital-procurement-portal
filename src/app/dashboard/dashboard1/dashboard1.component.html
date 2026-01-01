@@ -224,22 +224,39 @@
               <h3 class="panel-card__title">Recent Top Vendors</h3>
             </div>
 
-            <div class="panel-card__body panel-card__body--flush">
+            <div class="panel-card__body panel-card__body--flush panel-card__body--scroll">
               <div class="vendors-list mt-1">
-                <div class="vendor-row" *ngFor="let v of recentVendors">
-                  <div class="vendor-row__initial">
-                    {{ v.name | slice:0:1 }}
-                  </div>
-                  <div class="vendor-row__meta">
-                    <div class="vendor-row__name">{{ v.name }}</div>
-                    <div class="vendor-row__sub">
-                      <i class="ft ft-map-pin me-2"></i> {{ v.location }} &bull; {{ v.timesBought }} buys
+                  @if (isVendorsLoading) {
+                  <div class="d-flex justify-content-center align-items-center" style="min-height:200px">
+                    <div class="spinner-border text-primary" role="status">
                     </div>
                   </div>
-                  <div class="vendor-row__badge">
-                    {{ v.successRate }}
+                  }
+                  @else {
+                  @if(recentVendors.length > 0){
+                  <div class="vendor-row" *ngFor="let v of recentVendors">
+                    <div class="vendor-row__initial">
+                      {{ v.vendorName | slice:0:1 }}
+                    </div>
+                    <div class="vendor-row__meta">
+                      <div class="vendor-row__name">{{ v.vendorName }}</div>
+                      <div class="vendor-row__sub">
+                        <i class="ft ft-map-pin"></i> {{ v.city }} &bull; {{ v.numberOfBuys }} buys
+                      </div>
+                    </div>
+                    <div class="vendor-row__badge">
+                      {{ v.successCount }} Success
+                    </div>
                   </div>
-                </div>
+                  }
+                  @else {
+                  <div class="vendors-empty-state">
+                    No vendor data available.
+                  </div>
+                  }
+                  }
+               
+               
               </div>
             </div>
           </div>
@@ -247,7 +264,7 @@
       </div>
 
       <!-- Upcoming auctions + monthly expenses -->
-      <div class="row mt-2 mob-gap">
+      <div class="row mt-2 mob-gap three-cards-row">
         <div class="col-lg-4 col-12">
           <div class="panel-card cardHeight h-100">
             <div class="panel-card__header">
@@ -264,16 +281,31 @@
                     <th>Requisition No</th>
                     <th>Qty</th>
                     <th>Req Date</th>
-                    <th>Budget Amount</th>
+                    <th>Budget</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let a of upcomingAuctions">
-                    <td>{{ a.product }}</td>
-                    <td>{{ a.quantity }}</td>
-                    <td>{{ a.date }}</td>
-                    <td>{{ a.budget }}</td>
+                  @if(isPurchasesLoading) {
+                  <div class="d-flex justify-content-start align-items-center ms-4" style="min-height:150px">
+                    <div class="spinner-border text-primary" role="status">
+                    </div>
+                  </div>
+                  }
+                  @else {
+                  @if(upcomingPurchases.length > 0){
+                  <tr *ngFor="let a of upcomingPurchases">
+                    <td>{{ a.requisitionNo }}</td>
+                    <td>{{ a.qty | number }}</td>
+                    <td> {{ a.reqDate | date:'mediumDate' }}</td>
+                    <td>{{ a.budgetAmount | number:'1.2-2' }}</td>
                   </tr>
+                  }
+                  @else {
+                  <div>No data available</div>
+                  }
+                  }
+                
+                
                 </tbody>
               </table>
             </div>

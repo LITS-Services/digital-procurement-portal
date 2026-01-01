@@ -92,4 +92,12 @@ export class DashboardService {
       `${this.baseUrl}/entities-count`, { params }
     );
   }
+
+  getTopVendors(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/recent-top-vendors`);
+  }
+
+  getUpcomingPurchases(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/upcoming-purchases`);
+  }
 }
