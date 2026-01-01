@@ -761,7 +761,7 @@ private exceptionModalOpen = false;
           }));
         }
 
-        this.exceptionPolicyData = requestData.exceptionPolicyDetails ?? null;
+        this.exceptionPolicyData = requestData.prExceptionPolicy ?? null;
         this.showExceptionPolicyView = !!this.exceptionPolicyData && !!this.newPurchaseRequestForm.get('exceptionPolicy')?.value;
 
         const prEntityId = Number(requestData.entityId) || null;
@@ -1485,6 +1485,7 @@ openExceptionPolicyModal(opts?: { mode: 'create' | 'view' }) {
 
   modalRef.componentInstance.data = {
     requisitionNo: f.requisitionNo,
+    requesterName: f.receiverName,
     subject: f.subject,
     department: f.department,
     mode,
@@ -1492,14 +1493,35 @@ openExceptionPolicyModal(opts?: { mode: 'create' | 'view' }) {
   };
 
   // prefill
+  // if (this.exceptionPolicyData) {
+  //   modalRef.componentInstance.exceptionPolicyForm?.patchValue(this.exceptionPolicyData, { emitEvent: false });
+  // } else {
+  //   modalRef.componentInstance.exceptionPolicyForm?.patchValue(
+  //     { requisitionNo: f.requisitionNo, subject: f.subject, department: f.department },
+  //     { emitEvent: false }
+  //   );
+  // }
   if (this.exceptionPolicyData) {
-    modalRef.componentInstance.exceptionPolicyForm?.patchValue(this.exceptionPolicyData, { emitEvent: false });
-  } else {
-    modalRef.componentInstance.exceptionPolicyForm?.patchValue(
-      { requisitionNo: f.requisitionNo, subject: f.subject, department: f.department },
-      { emitEvent: false }
-    );
-  }
+  modalRef.componentInstance.exceptionPolicyForm?.patchValue({
+    requisitionNo: this.exceptionPolicyData.requisitionNo,
+    requesterName: this.exceptionPolicyData.requesterName,
+    subject: this.exceptionPolicyData.subject,
+    department: this.exceptionPolicyData.department,
+    description: this.exceptionPolicyData.description,
+    estimatedValue: this.exceptionPolicyData.estimatedValue,
+    justification: this.exceptionPolicyData.justification,
+    waiveApproval: this.exceptionPolicyData.waiveApproval
+  }, { emitEvent: false });
+} else {
+  modalRef.componentInstance.exceptionPolicyForm?.patchValue({
+    //purchaseRequestId: this.currentRequestId,
+    requesterName: f.receiverName,
+    requisitionNo: f.requisitionNo,
+    subject: f.subject,
+    department: f.department
+  }, { emitEvent: false });
+}
+
 
   modalRef.result
     .then((result) => {

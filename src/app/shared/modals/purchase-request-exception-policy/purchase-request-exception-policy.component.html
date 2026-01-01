@@ -25,12 +25,7 @@
           <input type="text" placeholder="Enter Subject" class="form-control" formControlName="subject" />
         </div>
       </div>
-      <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-        <div class="form-group mb-2">
-          <label>Date</label>
-          <input type="date" class="form-control" formControlName="date" />
-        </div>
-      </div>
+      
       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
         <div class="form-group mb-2">
           <label>Requesting Department</label>
@@ -48,7 +43,7 @@
       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
         <div class="form-group mb-2">
           <label>Estimated/Actual Value</label>
-          <input type="text" placeholder="Enter Estimated/Actual Value" class="form-control"
+          <input type="number" placeholder="Enter Estimated/Actual Value" class="form-control"
             formControlName="estimatedValue" />
         </div>
       </div>
@@ -58,31 +53,21 @@
         </div>
       </div>
 
-      <div class="col-12 mb-2">
-        <div class="form-check-inline">
-          <label class="form-check-label">
-            <input type="radio" class="form-check-input" name="supplierOption" formControlName="supplierOption"
-              value="competitive">Obtain Competitive quotation from at least 3 suppliers without tendering
-          </label>
-        </div>
-      </div>
-      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-2">
-        <div class="form-check-inline">
-          <label class="form-check-label">
-            <input type="radio" class="form-check-input" name="supplierOption" formControlName="supplierOption"
-              value="direct">Direct Appointment with Supplier(Name of proposed supplier)
-          </label>
-        </div>
-      </div>
-      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-2"
-        *ngIf="exceptionPolicyForm.get('supplierOption').value === 'direct'">
-        <div class="form-group mb-2">
-          <label>Supplier Name</label>
-          <select class="form-control" formControlName="supplierName">
-            <option value="" selected disabled>Select a Supplier</option>
-          </select>
-        </div>
-      </div>
+            <div class="col-12 mb-2">
+  <div class="form-check-inline">
+    <input
+      type="checkbox"
+      class="form-check-input"
+      id="waiveApproval"
+      formControlName="waiveApproval"
+    />
+    <label class="form-check-label" for="waiveApproval">
+      Waive Approval
+    </label>
+  </div>
+</div>
+
+      
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="form-group mb-2">
           <label>Waiver Request Justification</label>
@@ -98,5 +83,5 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-primary" (click)="submitForm()">Save</button>
-  <button type="button" class="btn btn-secondary" (click)="closeDialog()">cancel</button>
+  <button type="button" class="btn btn-secondary" (click)="closeDialog()">Cancel</button>
 </div>
