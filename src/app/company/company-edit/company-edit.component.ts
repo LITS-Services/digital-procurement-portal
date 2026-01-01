@@ -48,7 +48,7 @@ export class CompanyEditComponent implements OnInit {
   companyStatusClass: string = '';
   selectedTab: string = 'general-info';
 
-  associatedEntities: any[] = []; 
+  associatedEntities: any[] = [];
 
 
   constructor(
@@ -108,9 +108,9 @@ export class CompanyEditComponent implements OnInit {
       }
     });
   }
-selectTab(tabKey: string): void {
-  this.selectedTab = tabKey;
-}
+  selectTab(tabKey: string): void {
+    this.selectedTab = tabKey;
+  }
 
 
 
@@ -249,7 +249,7 @@ selectTab(tabKey: string): void {
 
 
 
-  
+
 
 
 
@@ -322,40 +322,44 @@ selectTab(tabKey: string): void {
   //     });
   // }
   loadCompanyById(id: number) {
-  this.isLoading = true;
-  this.error = '';
-  this.message = '';
-  this.spinner.show();
+    this.isLoading = true;
+    this.error = '';
+    this.message = '';
+    this.spinner.show();
 
-  this.companyService.getVendorCompanyById(id)
-    .pipe(finalize(() => {
-      this.spinner.hide();
-      this.cdr.detectChanges();
-    }))
-    .subscribe({
-      next: (res: any) => {
-        const company = res?.vendorCompany || res;
+    this.companyService.getVendorCompanyById(id)
+      .pipe(finalize(() => {
+        this.spinner.hide();
+        this.cdr.detectChanges();
+      }))
+      .subscribe({
+        next: (res: any) => {
+          console.log('API Response (loadCompanyById):', res);
 
-        if (!company) {
-          this.isLoading = false;
-          return;
-        }
+          // Handle potential 'result' wrapper from API
+          const company = res?.result?.vendorCompany || res?.result || res?.vendorCompany || res;
+          console.log('Resolved Company Object:', company);
 
-        // --- Basic Company Info ---
-        this.companyId = company.id || 0;
-        this.companyGUID = company.companyGUID || null;
-        this.vendorId = company.vendorId || '';
-        this.companyName = company.name || '';
-        this.aboutCompany = company.aboutCompany || '';
-        this.companyStatusLabel = company.requestStatus?.status || '';
-        this.companyStatusClass = this.mapCompanyStatusClass(company.requestStatusId);
-        // this.remarks = company.remarks || '';
-        // this.companyForm.patchValue({ remarks: this.remarks });
+          if (!company) {
+            this.isLoading = false;
+            return;
+          }
 
-        // --- Purchasing Demographics (single object) ---
-        const demographics = company.vendorCompanyPurchasingDemographics || null;
-        this.purchasingDemographicsList = demographics
-          ? [{
+          // --- Basic Company Info ---
+          this.companyId = company.id || 0;
+          this.companyGUID = company.companyGUID || null;
+          this.vendorId = company.vendorId || '';
+          this.companyName = company.name || '';
+          this.aboutCompany = company.aboutCompany || '';
+          this.companyStatusLabel = company.requestStatus?.status || '';
+          this.companyStatusClass = this.mapCompanyStatusClass(company.requestStatusId);
+          // this.remarks = company.remarks || '';
+          // this.companyForm.patchValue({ remarks: this.remarks });
+
+          // --- Purchasing Demographics (single object) ---
+          const demographics = company.vendorCompanyPurchasingDemographics || null;
+          this.purchasingDemographicsList = demographics
+            ? [{
               vendorType: demographics.vendorType,
               primaryCurrency: demographics.primaryCurrency,
               lineOfBusiness: demographics.lineOfBusiness,
@@ -366,126 +370,126 @@ selectTab(tabKey: string): void {
               speciality: demographics.speciality,
               chain: demographics.chain
             }]
-          : [];
+            : [];
 
-        console.log('Purchasing Demographics List:', this.purchasingDemographicsList);
+          console.log('Purchasing Demographics List:', this.purchasingDemographicsList);
 
-        // --- Bank Details ---
-        const rawBankDetails = company.vendorBankDetails || [];
-        this.bankDetailsList = rawBankDetails.map((b: any) => ({
-          id: b.id,
-          bankName: b.bankName,
-          branchName: b.branchName,
-          branchAddress: b.branchAddress,
-          accountHolderName: b.accountHolderName,
-          accountNumber: b.accountNumber,
-          iban: b.IBAN || b.iban,
-          swifT_BIC_Code: b.swifT_BIC_Code || b.swiftCode,
-          country: b.country,
-          currency: b.currency,
-          isPrimary: b.isPrimary || false
-        }));
+          // --- Bank Details ---
+          const rawBankDetails = company.vendorBankDetails || [];
+          this.bankDetailsList = rawBankDetails.map((b: any) => ({
+            id: b.id,
+            bankName: b.bankName,
+            branchName: b.branchName,
+            branchAddress: b.branchAddress,
+            accountHolderName: b.accountHolderName,
+            accountNumber: b.accountNumber,
+            iban: b.IBAN || b.iban,
+            swifT_BIC_Code: b.swifT_BIC_Code || b.swiftCode,
+            country: b.country,
+            currency: b.currency,
+            isPrimary: b.isPrimary || false
+          }));
 
-        // --- Addresses ---
-        const rawAddresses = company.vendorCompanyAddresses || [];
-        this.addressList = rawAddresses.map((a: any) => ({
-          id: a.id,
-          street: a.street,
-          city: a.city,
-          state: a.state,
-          zip: a.zip,
-          country: a.country,
-          isPrimary: a.isPrimary || false
-        }));
+          // --- Addresses ---
+          const rawAddresses = company.vendorCompanyAddresses || [];
+          this.addressList = rawAddresses.map((a: any) => ({
+            id: a.id,
+            street: a.street,
+            city: a.city,
+            state: a.state,
+            zip: a.zip,
+            country: a.country,
+            isPrimary: a.isPrimary || false
+          }));
 
-        // --- Contacts ---
-        const rawContacts = company.vendorCompanyContactDetails || [];
-        this.contactList = rawContacts.map((c: any) => ({
-          id: c.id,
-          description: c.description,
-          type: c.type,
-          contactNumber: c.contactNumber,
-          extension: c.extension,
-          isPrimary: c.isPrimary || false
-        }));
+          // --- Contacts ---
+          const rawContacts = company.vendorCompanyContactDetails || [];
+          this.contactList = rawContacts.map((c: any) => ({
+            id: c.id,
+            description: c.description,
+            type: c.type,
+            contactNumber: c.contactNumber,
+            extension: c.extension,
+            isPrimary: c.isPrimary || false
+          }));
 
-        // --- Attachments ---
-        this.attachedFiles = (company.vendorCompanyAttachments || []).map((f: any) => ({
-          id: f.id,
-          fileName: f.fileName,
-          format: f.fileFormat,
-          fileContent: f.fileContent,
-          attachedBy: f.attachedBy,
-          remarks: f.remarks,
-          attachedAt: f.attachedAt
-        }));
+          // --- Attachments ---
+          this.attachedFiles = (company.vendorCompanyAttachments || []).map((f: any) => ({
+            id: f.id,
+            fileName: f.fileName,
+            format: f.fileFormat,
+            fileContent: f.fileContent,
+            attachedBy: f.attachedBy,
+            remarks: f.remarks,
+            attachedAt: f.attachedAt
+          }));
 
-        // --- Vendor Entities (Procurement Companies) ---
-        const rawEntities = company.vendorUserCompanies || [];
-        this.associatedEntities = rawEntities.map((v: any) => ({
-          id: v.id,
-          procurementCompanyId: v.procurementCompanyId,
-          name: v.procurementCompanyName || '',
-          city: v.procurementCompany?.city || '',
-          country: v.procurementCompany?.country || '',
-          industry: v.procurementCompany?.industry || '',
-          statusLabel: v.requestStatus || '',
-          statusClass: this.mapStatusClass(v.requestStatusId),
-          isAssigned: v.isAssigned || false,
-          requestStatusId: v.requestStatusId
-        }));
+          // --- Vendor Entities (Procurement Companies) ---
+          const rawEntities = company.vendorUserCompanies || [];
+          this.associatedEntities = rawEntities.map((v: any) => ({
+            id: v.id,
+            procurementCompanyId: v.procurementCompanyId,
+            name: v.procurementCompanyName || '',
+            city: v.procurementCompany?.city || '',
+            country: v.procurementCompany?.country || '',
+            industry: v.procurementCompany?.industry || '',
+            statusLabel: v.requestStatus || '',
+            statusClass: this.mapStatusClass(v.requestStatusId),
+            isAssigned: v.isAssigned || false,
+            requestStatusId: v.requestStatusId
+          }));
 
-        // // Auto-select first entity if available
-        // if (this.associatedEntities.length > 0) {
-        //   this.onEntitySelect(this.associatedEntities[0]);
-        // } else {
-        //   this.isReadonlyEntityFields = false;
-        //   this.bankForm.enable();
-        //   this.companyForm.enable();
-        // }
+          // // Auto-select first entity if available
+          // if (this.associatedEntities.length > 0) {
+          //   this.onEntitySelect(this.associatedEntities[0]);
+          // } else {
+          //   this.isReadonlyEntityFields = false;
+          //   this.bankForm.enable();
+          //   this.companyForm.enable();
+          // }
 
-        this.isEditMode = true;
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      },
-      error: (err) => {
-        console.error('Error loading company:', err);
-        this.error = 'Failed to load company.';
-        this.isLoading = false;
-        // this.isReadonlyEntityFields = false;
-        // this.bankForm.enable();
-        // this.companyForm.enable();
-      }
-    });
-}
+          this.isEditMode = true;
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.error('Error loading company:', err);
+          this.error = 'Failed to load company.';
+          this.isLoading = false;
+          // this.isReadonlyEntityFields = false;
+          // this.bankForm.enable();
+          // this.companyForm.enable();
+        }
+      });
+  }
 
 
   mapCompanyStatusClass(statusId: number): string {
-  switch (statusId) {
-    case 12: // Onboarded
-      return 'company-status-onboarded';
-    case 1:  // In process
-      return 'company-status-inprocess';
-    case 8:  // New
-      return 'company-status-new';
-    default:
-      return 'company-status-default';
+    switch (statusId) {
+      case 12: // Onboarded
+        return 'company-status-onboarded';
+      case 1:  // In process
+        return 'company-status-inprocess';
+      case 8:  // New
+        return 'company-status-new';
+      default:
+        return 'company-status-default';
+    }
   }
-}
 
   mapStatusClass(statusId: number): string {
-  // adjust mappings as per your CSS / enum
-  switch (statusId) {
-    case 7: // Completed
-      return 'status-onboarded';
-    case 1: // In process
-          return 'status-pending';
-    case 8: // New
-      return 'status-in-process';
-    default:
-      return 'status-default';
+    // adjust mappings as per your CSS / enum
+    switch (statusId) {
+      case 7: // Completed
+        return 'status-onboarded';
+      case 1: // In process
+        return 'status-pending';
+      case 8: // New
+        return 'status-in-process';
+      default:
+        return 'status-default';
+    }
   }
-}
 
   // onActions(action: string): void {
   //   const modalRef = this.modalService.open(CompanyActionsComponent, {
@@ -670,19 +674,19 @@ selectTab(tabKey: string): void {
   //   a.click();
   //   window.URL.revokeObjectURL(url);
   // }
-    downloadAttachment(attachment: any) {
-  if (!attachment) return;
+  downloadAttachment(attachment: any) {
+    if (!attachment) return;
 
-  const fileName = attachment.fileName || 'download';
+    const fileName = attachment.fileName || 'download';
 
-  // if (attachment.isNew) {
-  //   // Frontend-only download
-  //   const dataUrl = `data:${attachment.contentType};base64,${attachment.content}`;
-  //   const link = document.createElement('a');
-  //   link.href = dataUrl;
-  //   link.download = fileName;
-  //   link.click();
-  // } else {
+    // if (attachment.isNew) {
+    //   // Frontend-only download
+    //   const dataUrl = `data:${attachment.contentType};base64,${attachment.content}`;
+    //   const link = document.createElement('a');
+    //   link.href = dataUrl;
+    //   link.download = fileName;
+    //   link.click();
+    // } else {
     // Saved attachment → download via service
     this.systemService.downloadAttachment('VendorCompany', attachment.id).subscribe({
       next: (blob) => {

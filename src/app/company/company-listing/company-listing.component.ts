@@ -18,7 +18,7 @@ import { finalize } from 'rxjs';
 })
 export class CompanyListingComponent implements OnInit {
   filters: any = {}; // e.g. { entity: '', name: '', city: '', vendorType: '' }
-   @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
+  @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
@@ -71,9 +71,9 @@ export class CompanyListingComponent implements OnInit {
     ];
   }
 
-    get isMobile(): boolean {
-  return window.innerWidth <= 768;
-}
+  get isMobile(): boolean {
+    return window.innerWidth <= 768;
+  }
 
   getCompanyData() {
     this.loading = true;
@@ -138,7 +138,7 @@ export class CompanyListingComponent implements OnInit {
     const demographics = c.purchasingDemographics || {};
 
     // Check if this is the direct API response structure (with procurementCompany field)
-    if (c.procurementCompany) {
+    if (c.procurementCompany !== undefined) {
       // This is the direct API response structure from your example
       return {
         id: c.id,
@@ -179,7 +179,7 @@ export class CompanyListingComponent implements OnInit {
         vendorCompanyId: selectedEntity?.vendorCompanyId || null,
         vendorEntityAssociationId: selectedEntity?.vendorEntityAssociationId || null, // Add this line
         isAssigned: selectedEntity?.isAssigned || false, // Add this line for fallback structure if applicable
-        setUpId: selectedEntity?.setUpId || null 
+        setUpId: selectedEntity?.setUpId || null
 
       };
     }
@@ -315,8 +315,7 @@ export class CompanyListingComponent implements OnInit {
       centered: true
     });
 
-    modalRef.componentInstance.vendorEntityAssociationId = selectedRow.vendorEntityAssociationId;
-    modalRef.componentInstance.entity = selectedRow.entity;
+    modalRef.componentInstance.vendorEntityAssociationId = selectedRow.id; modalRef.componentInstance.entity = selectedRow.entity;
     console.log('Selected Row for Approval History:', selectedRow);
     console.log('vendorEntityAssociationId sent to modal:', selectedRow.vendorEntityAssociationId);
     console.log('Entity sent to modal:', selectedRow.entity);
