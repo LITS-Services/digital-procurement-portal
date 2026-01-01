@@ -189,9 +189,9 @@ export class SelectedVendorsModalComponent implements OnInit {
 
   loadRfqComments() {
     this.loading = true;
-
+    const currentUserType = this.CreatedByType.Procurement;
     this.rfqService
-      .getRFQComments(this.vendorId, this.quotationId, this.vendorCompanyId)
+      .getRFQComments(this.vendorId, this.quotationId, this.vendorCompanyId, currentUserType)
       .pipe(finalize(() => {
         this.loading = false
         this.cdr.detectChanges();
@@ -209,6 +209,7 @@ export class SelectedVendorsModalComponent implements OnInit {
                 : "Vendor",
             createdOn: c?.createdOn,
             createdBy: c?.createdBy,
+            seenByType: c?.seenByType ?? 0
           }));
           this.cdr.detectChanges();
           this.scrollToBottom();
