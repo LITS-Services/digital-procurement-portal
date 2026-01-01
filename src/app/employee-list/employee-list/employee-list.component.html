@@ -38,7 +38,7 @@
       <!-- Table -->
      <div  class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
       <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="tenderingData"
-        [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="15"
+        [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="10"
         [scrollbarH]="isMobile" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
         [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 

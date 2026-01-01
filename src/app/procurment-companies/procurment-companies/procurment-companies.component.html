@@ -67,11 +67,11 @@
         <!-- ID -->
 
         <!-- Name -->
-        <ngx-datatable-column name="Name" prop="name" [flexGrow]="1" [minWidth]="140"></ngx-datatable-column>
+        <ngx-datatable-column name="Name" prop="name" [flexGrow]="1" [minWidth]="140" [sortable]="false"></ngx-datatable-column>
 
         <!-- Status -->
         <!-- Status Column -->
-        <ngx-datatable-column name="Status" [flexGrow]="1" [minWidth]="120">
+        <ngx-datatable-column name="Status" [flexGrow]="1" [minWidth]="120" [sortable]="false">
           <ng-template ngx-datatable-cell-template let-row="row">
             <span [ngClass]="getStatusClass(row)">
               {{ getStatus(row) }}
@@ -81,7 +81,7 @@
 
 
         <!-- Logo -->
-        <ngx-datatable-column name="Logo" prop="logo"  [flexGrow]="1" [minWidth]="120" [maxWidth]="140">
+        <ngx-datatable-column name="Logo" prop="logo"  [flexGrow]="1" [minWidth]="120" [maxWidth]="140" [sortable]="false">
           <ng-template ngx-datatable-cell-template let-row="row">
             <img *ngIf="row.logo" [src]="row.logo" alt="Logo" width="36" height="36" />
           </ng-template>
