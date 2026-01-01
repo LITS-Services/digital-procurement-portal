@@ -25,6 +25,10 @@
               <span class="time">{{ msg.createdOn | date:'short' }}</span>
             </div>
             <div class="text">{{ msg.comments }}</div>
+            <!-- Show Seen if other party has seen -->
+    <div *ngIf="msg.seenByType && msg.createdByType !== msg.seenByType" class="seen-badge text-muted small mt-1">
+      Seen
+    </div>
           </div>
         </div>
       </ng-container>

@@ -35,6 +35,7 @@ export class SelectedVendorsModalComponent implements OnInit {
   isTyping = false;
   typingTimeout: any;
 
+  currentUserType: CreatedByType = CreatedByType.Procurement;
   constructor(
     private http: HttpClient,
     private fb: FormBuilder,
@@ -44,12 +45,23 @@ export class SelectedVendorsModalComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.signalRService.setChatActive(true);
     this.loadRfqComments();
 
     this.signalRService.startConnection()
       .then(() => {
         console.log("SignalR connected");
+
         this.joinVendorGroup(this.vendorId);
+
+        const currentUserType = this.CreatedByType.Procurement; 
+        this.signalRService.hubConnection.invoke(
+          'MarkCommentAsRead',
+          this.quotationId,
+          this.vendorId,
+          currentUserType
+        ).catch(err => console.error('Failed to mark comments as read', err));
+
       })
       .catch(err => console.error("SignalR connection error", err));
     this.signalRService.comment$.subscribe(comment => {
@@ -60,6 +72,7 @@ export class SelectedVendorsModalComponent implements OnInit {
         comment.vendorId === this.vendorId
       ) {
         this.dataComments.push({
+          commentId: comment.commentId,
           vendor: this.vendorName,
           comments: comment.commentText ?? comment.message,
           createdByType: comment.createdByType ?? 0,
@@ -68,8 +81,14 @@ export class SelectedVendorsModalComponent implements OnInit {
               ? "Procurement"
               : "Vendor",
           createdOn: comment.createdAt,
-          createdBy: comment.createdBy
+          createdBy: comment.createdBy,
+          seenByType: 0
         });
+
+        if (this.signalRService.isChatActive && comment.commentId) {
+          const currentUserType = this.CreatedByType.Procurement;
+          this.signalRService.markCommentAsRead(comment.quotationId, comment.vendorId, currentUserType);
+        }
 
         this.cdr.detectChanges();
         this.scrollToBottom();
@@ -87,6 +106,26 @@ export class SelectedVendorsModalComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+
+    this.signalRService.commentSeen$.subscribe(seen => {
+      if (!seen) return;
+
+      this.dataComments
+        .filter(c => c.createdByType === this.currentUserType)
+        .forEach(c => {
+          c.seenByType = 0; 
+        });
+
+      const lastOwnMessage = [...this.dataComments]
+        .reverse()
+        .find(c => c.createdByType === this.currentUserType);
+
+      if (lastOwnMessage?.commentId === seen.commentId) {
+        lastOwnMessage.seenByType = seen.seenByType;
+        this.cdr.detectChanges();
+      }
+    });
+
 
   }
   onTyping() {
@@ -124,6 +163,7 @@ export class SelectedVendorsModalComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
+    this.signalRService.setChatActive(false);
     this.signalRService.leaveQuotation(this.quotationId, this.vendorId);
     this.signalRService.stopConnection();
   }
@@ -226,12 +266,10 @@ export class SelectedVendorsModalComponent implements OnInit {
       // Shift + Enter → allow new line
       return;
     }
-
     // Enter only → send message
     event.preventDefault();
 
     if (this.form.invalid) return;
-
     this.insert();
   }
 }
