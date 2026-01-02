@@ -142,7 +142,7 @@ export class CompanyService {
   // getCompanyById(id: number): Observable<any> {
   //   return this.http.get<any>(`${this.apiUrl}/${id}`);
   // }
-    getVendorCompanyById(id: number): Observable<any> {
+  getVendorCompanyById(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/get-vendor-company-by-id`, { params: { id: id.toString() } });
   }
 
@@ -162,11 +162,11 @@ export class CompanyService {
   //     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   //   }
 
-  getFilteredReceivers(EntityId: number, RoleId: string): Observable<any[]> {
+  getFilteredReceivers(RoleId: string): Observable<any[]> {
     const url = `${environment.apiUrl}/Employee/get-receivers`;
     const params = {
       RoleId: RoleId,
-      EntityId: EntityId.toString()
+
     };
 
     return this.http.get<any[]>(url, { params });
@@ -193,11 +193,13 @@ export class CompanyService {
 
 
   registerCompanyInBulk(payload: any) {
-  return this.http.post(
-    `${environment.apiUrl}/company/register-company-in-bulk`,
-    payload
-  );
-}
+    return this.http.post(
+      `${environment.apiUrl}/company/register-company-in-bulk`,
+      payload
+    );
+  }
 
-
+  getWorkflowUsers(setupId: number): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/Workflow/${setupId}/users`);
+  }
 }

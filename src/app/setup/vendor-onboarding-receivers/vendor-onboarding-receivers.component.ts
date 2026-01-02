@@ -63,7 +63,7 @@ export class VendorOnboardingReceiversComponent implements OnInit {
     this.spinner.show();
     console.log('Loading receivers for Entity:', entityId, 'and Role:', roleId);
 
-    this.companyService.getFilteredReceivers(entityId, roleId)
+    this.companyService.getFilteredReceivers(roleId)
       .pipe(
         finalize(() => {
           this.spinner.hide();

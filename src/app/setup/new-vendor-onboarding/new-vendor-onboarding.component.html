@@ -50,40 +50,13 @@
                         <div class="row gx-2">
 
                             <!-- Setup Name -->
-                            <div class="col-lg-4 mb-2">
+                            <div class="col-lg-6 mb-2">
                                 <label>Setup Name</label>
                                 <input type="text" class="form-control custom-input" formControlName="SetupName"
                                     placeholder="Setup Name" required>
                                 <div *ngIf="vendorOnboardingForm.get('SetupName')?.invalid && vendorOnboardingForm.get('SetupName')?.touched"
                                     class="text-danger small">
                                     Setup Name is required
-                                </div>
-                            </div>
-
-                            <!-- Select Entity -->
-                            <div class="col-lg-4 mb-2">
-                                <div class="form-group mb-2">
-                                    <label>Select Entity</label>
-                                    <ng-select class="custom-style" [items]="entitiesList" bindLabel="name"
-                                        bindValue="id" [searchable]="true" placeholder="Select Entity"
-                                        formControlName="entities" (change)="onEntitySelected($event)">
-                                    </ng-select>
-                                    <div *ngIf="vendorOnboardingForm.get('entities')?.invalid && vendorOnboardingForm.get('entities')?.touched"
-                                        class="text-danger small">
-                                        Entity is required
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Roles -->
-                            <div class="col-lg-4 mb-2">
-                                <label>Roles</label>
-                                <ng-select [items]="roles" bindLabel="name" bindValue="id" placeholder="Select Roles"
-                                    formControlName="Roles" (change)="onRoleSelected($event)">
-                                </ng-select>
-                                <div *ngIf="vendorOnboardingForm.get('Roles')?.invalid && vendorOnboardingForm.get('Roles')?.touched"
-                                    class="text-danger small">
-                                    Role is required
                                 </div>
                             </div>
 
@@ -176,7 +149,7 @@
 
                             <!-- Entity Column -->
                             <ngx-datatable-column name="Entity" prop="entityName" [width]="150">
-                            </ngx-datatable-column>    
+                            </ngx-datatable-column>
 
                             <!-- <ngx-datatable-column name="Entity" prop="entityName" [width]="150">
                                 <ng-template let-value="value" ngx-datatable-cell-template>

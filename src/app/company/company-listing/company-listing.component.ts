@@ -111,6 +111,7 @@ export class CompanyListingComponent implements OnInit {
           this.showStatusColumn = true;
 
           this.loading = false;
+          this.checkAssignments(); // Check assignments after loading data
           this.cdr.detectChanges();
 
           console.log('Mapped companies:', this.rows);
@@ -153,10 +154,10 @@ export class CompanyListingComponent implements OnInit {
         entity: c.procurementCompany || '', // Use procurementCompany directly from API
         procurementCompanyId: c.procurementCompanyId || null,
         vendorCompanyId: c.vendorCompanyId || null,
-        vendorEntityAssociationId: c.vendorEntityAssociationId || null, // Add this line
-        isAssigned: c.isAssigned || false, // Add this line to include isAssigned from API response
+        vendorEntityAssociationId: c.vendorEntityAssociationId || null,
+        isAssigned: c.isAssigned || false,
         setUpId: c.setUpId || null,
-
+        showAssignMe: false // Initialize to false
       };
     } else {
       // Fallback to the original nested structure
@@ -177,10 +178,10 @@ export class CompanyListingComponent implements OnInit {
         entity: selectedEntity?.procurementCompany || '',
         procurementCompanyId: selectedEntity?.procurementCompanyId || null,
         vendorCompanyId: selectedEntity?.vendorCompanyId || null,
-        vendorEntityAssociationId: selectedEntity?.vendorEntityAssociationId || null, // Add this line
-        isAssigned: selectedEntity?.isAssigned || false, // Add this line for fallback structure if applicable
-        setUpId: selectedEntity?.setUpId || null
-
+        vendorEntityAssociationId: selectedEntity?.vendorEntityAssociationId || null,
+        isAssigned: selectedEntity?.isAssigned || false,
+        setUpId: selectedEntity?.setUpId || null,
+        showAssignMe: false // Initialize to false
       };
     }
   }
@@ -469,6 +470,40 @@ export class CompanyListingComponent implements OnInit {
 
     this.rows = filteredRows;
     this.cdr.detectChanges();
+  }
+
+  checkAssignments() {
+    const currentUserName = localStorage.getItem('userName');
+    const currentUserEmail = localStorage.getItem('email'); // Assuming email might be stored, if not we rely on userName
+
+    if (!currentUserName) {
+      console.warn('Current user name not found in local storage.');
+      return;
+    }
+
+    this.allCompanies.forEach(company => {
+      if (company.setUpId) {
+        this.companyService.getWorkflowUsers(company.setUpId).subscribe({
+          next: (res: any) => {
+            const users = res?.value || res?.result || res || [];
+            // Check if current user is in the list
+            const isMatch = users.some(u =>
+              (u.userName && u.userName.toLowerCase() === currentUserName.toLowerCase()) ||
+              (currentUserEmail && u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase())
+            );
+
+            if (isMatch) {
+              company.showAssignMe = true;
+              // Force update if this company is currently visible
+              this.cdr.detectChanges();
+            }
+          },
+          error: (err) => {
+            console.error(`Error loading workflow users for setup ${company.setUpId}`, err);
+          }
+        });
+      }
+    });
   }
 
 }
