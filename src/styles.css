@@ -227,7 +227,7 @@ form label,
 
 
 .ngx-datatable .datatable-header-inner {
-  background-color: #FAFAFA !important;
+  background-color: #ffffff !important;
 }
 
 .ngx-datatable .datatable-scroll .datatable-body-row .datatable-body-cell {
@@ -934,7 +934,7 @@ label:has(input[type="checkbox"]) {
   overflow: hidden !important;
 }
 
- .ngx-datatable .datatable-header-cell .datatable-header-cell-label,
+
  .ngx-datatable .datatable-body-cell .datatable-body-cell-label {
   display: block !important;
   white-space: nowrap !important;
@@ -942,6 +942,14 @@ label:has(input[type="checkbox"]) {
   text-overflow: ellipsis !important;
   color: #606060  !important;
 }
+
+ .ngx-datatable .datatable-header-cell .datatable-header-cell-label{
+    display: block !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  color: #000000  !important;
+ }
 
 .ngx-datatable datatable-selection .datatable-selection {
   height: 0 !important;
