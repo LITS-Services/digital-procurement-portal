@@ -18,7 +18,7 @@ import { finalize } from 'rxjs';
 })
 export class CompanyListingComponent implements OnInit {
   filters: any = {}; // e.g. { entity: '', name: '', city: '', vendorType: '' }
-   @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
+  @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
@@ -71,9 +71,9 @@ export class CompanyListingComponent implements OnInit {
     ];
   }
 
-    get isMobile(): boolean {
-  return window.innerWidth <= 768;
-}
+  get isMobile(): boolean {
+    return window.innerWidth <= 768;
+  }
 
   getCompanyData() {
     this.loading = true;
@@ -111,6 +111,7 @@ export class CompanyListingComponent implements OnInit {
           this.showStatusColumn = true;
 
           this.loading = false;
+          this.checkAssignments(); // Check assignments after loading data
           this.cdr.detectChanges();
 
           console.log('Mapped companies:', this.rows);
@@ -138,7 +139,7 @@ export class CompanyListingComponent implements OnInit {
     const demographics = c.purchasingDemographics || {};
 
     // Check if this is the direct API response structure (with procurementCompany field)
-    if (c.procurementCompany) {
+    if (c.procurementCompany !== undefined) {
       // This is the direct API response structure from your example
       return {
         id: c.id,
@@ -153,10 +154,10 @@ export class CompanyListingComponent implements OnInit {
         entity: c.procurementCompany || '', // Use procurementCompany directly from API
         procurementCompanyId: c.procurementCompanyId || null,
         vendorCompanyId: c.vendorCompanyId || null,
-        vendorEntityAssociationId: c.vendorEntityAssociationId || null, // Add this line
-        isAssigned: c.isAssigned || false, // Add this line to include isAssigned from API response
+        vendorEntityAssociationId: c.vendorEntityAssociationId || null,
+        isAssigned: c.isAssigned || false,
         setUpId: c.setUpId || null,
-
+        showAssignMe: false // Initialize to false
       };
     } else {
       // Fallback to the original nested structure
@@ -177,10 +178,10 @@ export class CompanyListingComponent implements OnInit {
         entity: selectedEntity?.procurementCompany || '',
         procurementCompanyId: selectedEntity?.procurementCompanyId || null,
         vendorCompanyId: selectedEntity?.vendorCompanyId || null,
-        vendorEntityAssociationId: selectedEntity?.vendorEntityAssociationId || null, // Add this line
-        isAssigned: selectedEntity?.isAssigned || false, // Add this line for fallback structure if applicable
-        setUpId: selectedEntity?.setUpId || null 
-
+        vendorEntityAssociationId: selectedEntity?.vendorEntityAssociationId || null,
+        isAssigned: selectedEntity?.isAssigned || false,
+        setUpId: selectedEntity?.setUpId || null,
+        showAssignMe: false // Initialize to false
       };
     }
   }
@@ -315,8 +316,7 @@ export class CompanyListingComponent implements OnInit {
       centered: true
     });
 
-    modalRef.componentInstance.vendorEntityAssociationId = selectedRow.vendorEntityAssociationId;
-    modalRef.componentInstance.entity = selectedRow.entity;
+    modalRef.componentInstance.vendorEntityAssociationId = selectedRow.id; modalRef.componentInstance.entity = selectedRow.entity;
     console.log('Selected Row for Approval History:', selectedRow);
     console.log('vendorEntityAssociationId sent to modal:', selectedRow.vendorEntityAssociationId);
     console.log('Entity sent to modal:', selectedRow.entity);
@@ -470,6 +470,40 @@ export class CompanyListingComponent implements OnInit {
 
     this.rows = filteredRows;
     this.cdr.detectChanges();
+  }
+
+  checkAssignments() {
+    const currentUserName = localStorage.getItem('userName');
+    const currentUserEmail = localStorage.getItem('email'); // Assuming email might be stored, if not we rely on userName
+
+    if (!currentUserName) {
+      console.warn('Current user name not found in local storage.');
+      return;
+    }
+
+    this.allCompanies.forEach(company => {
+      if (company.setUpId) {
+        this.companyService.getWorkflowUsers(company.setUpId).subscribe({
+          next: (res: any) => {
+            const users = res?.value || res?.result || res || [];
+            // Check if current user is in the list
+            const isMatch = users.some(u =>
+              (u.userName && u.userName.toLowerCase() === currentUserName.toLowerCase()) ||
+              (currentUserEmail && u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase())
+            );
+
+            if (isMatch) {
+              company.showAssignMe = true;
+              // Force update if this company is currently visible
+              this.cdr.detectChanges();
+            }
+          },
+          error: (err) => {
+            console.error(`Error loading workflow users for setup ${company.setUpId}`, err);
+          }
+        });
+      }
+    });
   }
 
 }

@@ -360,11 +360,39 @@ export class PurchaseRequestComponent implements OnInit {
   /**
    * Open Exception Policy modal
    */
+  // openExceptionPolicyModal() {
+  //   this.modalService.open(PurchaseRequestExceptionPolicyComponent, {
+  //     backdrop: 'static',
+  //     size: 'lg',
+  //     centered: true,
+  //   });
+  // }
   openExceptionPolicyModal() {
-    this.modalService.open(PurchaseRequestExceptionPolicyComponent, {
-      backdrop: 'static',
-      size: 'lg',
-      centered: true,
+    if (this.chkBoxSelected.length !== 1) {
+      this.toastr.info('Please select exactly one Purchase Request.');
+      return;
+    }
+
+    const selectedRow = this.chkBoxSelected[0];
+    const prId = selectedRow.requestId;
+
+    this.purchaseRequestService.getPurchaseRequestById(prId).subscribe({
+      next: (res: any) => {
+        const modalRef = this.modalService.open(PurchaseRequestExceptionPolicyComponent, {
+          backdrop: 'static',
+          size: 'lg',
+          centered: true
+        });
+
+        modalRef.componentInstance.data = {
+          purchaseRequestId: prId,
+          requisitionNo: res.requisitionNo,
+          exceptionPolicy: res.prExceptionPolicy
+        };
+      },
+      error: () => {
+        this.toastr.error('Failed to load exception policy.');
+      }
     });
   }
 

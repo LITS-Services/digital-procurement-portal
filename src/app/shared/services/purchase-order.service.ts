@@ -64,4 +64,8 @@ export class PurchaseOrderService {
       { params: { poId } }
     );
   }
+
+  getGoodsReceiptNoteById(purchaseOrderId: number) {
+    return this.http.get<any>(`${this.baseUrl}/get-grn?purchaseOrderId=${purchaseOrderId}`);
+  }
 }

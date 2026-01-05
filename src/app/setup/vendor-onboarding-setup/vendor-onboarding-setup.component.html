@@ -5,7 +5,7 @@
       <!-- Header -->
       <div class="row">
         <div class="col-md-12" style="margin-top: -0.25rem;">
-          <h4 class="heading">Vendor Onboarding Setup</h4>
+          <h4 class="heading">Company Onboarding Setup</h4>
         </div>
       </div>
 
@@ -37,97 +37,97 @@
       </div>
 
       <!-- Data Table -->
-      <div  class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
-      <ngx-datatable #datatable class="bootstrap core-bootstrap"
-        [rows]="vendorOnboardingData" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50"
-        [rowHeight]="'auto'" [scrollbarH]="isMobile" [limit]="15" [selected]="chkBoxSelected"
-        [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
+      <div class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
+        <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="vendorOnboardingData" [columnMode]="'force'"
+          [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="isMobile" [limit]="15"
+          [selected]="chkBoxSelected" [selectionType]="SelectionType.checkbox" (sort)="onSort($event)"
+          (select)="customChkboxOnSelect($event)">
 
-        <!-- Checkbox Column -->
-        <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
-          [resizeable]="false">
-          <ng-template ngx-datatable-header-template>
-            <div class="custom-control cstm-checkbox-form">
-              <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
-            </div>
-          </ng-template>
-          <ng-template ngx-datatable-cell-template let-row="row" let-isSelected="isSelected"
-            let-onCheckboxChangeFn="onCheckboxChangeFn">
-            <div class="custom-control cstm-checkbox-form custom-checkbox">
-              <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
-            </div>
-          </ng-template>
-        </ngx-datatable-column>
+          <!-- Checkbox Column -->
+          <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+            [resizeable]="false">
+            <ng-template ngx-datatable-header-template>
+              <div class="custom-control cstm-checkbox-form">
+                <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
+              </div>
+            </ng-template>
+            <ng-template ngx-datatable-cell-template let-row="row" let-isSelected="isSelected"
+              let-onCheckboxChangeFn="onCheckboxChangeFn">
+              <div class="custom-control cstm-checkbox-form custom-checkbox">
+                <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+              </div>
+            </ng-template>
+          </ngx-datatable-column>
 
-        <!-- Sr. No -->
-        <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
-          <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
-            <span>{{ rowIndex + 1 }}</span>
-          </ng-template>
-        </ngx-datatable-column>
+          <!-- Sr. No -->
+          <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+            <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
+              <span>{{ rowIndex + 1 }}</span>
+            </ng-template>
+          </ngx-datatable-column>
 
-        <!-- Setup Name -->
-        <ngx-datatable-column name="Setup Name" prop="setupName" [flexGrow]="1" [minWidth]="100">
-          <ng-template ngx-datatable-cell-template let-value="value">
-            <span>{{ value || 'N/A' }}</span>
-          </ng-template>
-        </ngx-datatable-column>
+          <!-- Setup Name -->
+          <ngx-datatable-column name="Setup Name" prop="setupName" [flexGrow]="1" [minWidth]="100">
+            <ng-template ngx-datatable-cell-template let-value="value">
+              <span>{{ value || 'N/A' }}</span>
+            </ng-template>
+          </ngx-datatable-column>
 
 
-        <!-- Entity Name -->
-        <!-- <ngx-datatable-column name="Entity">
+          <!-- Entity Name -->
+          <!-- <ngx-datatable-column name="Entity">
           <ng-template let-row="row" ngx-datatable-cell-template>
             {{ getEntityName(row.entityId) }}
           </ng-template>
         </ngx-datatable-column> -->
 
-        <!-- Entity -->
-        <!-- <ngx-datatable-column name="Entity" prop="entityId">
+          <!-- Entity -->
+          <!-- <ngx-datatable-column name="Entity" prop="entityId">
           <ng-template ngx-datatable-cell-template let-value="value">
             <span>{{ value || 'N/A' }}</span>
           </ng-template>
         </ngx-datatable-column> -->
 
-        <!-- Role -->
-        <!-- <ngx-datatable-column name="Role" prop="roles">
+          <!-- Role -->
+          <!-- <ngx-datatable-column name="Role" prop="roles">
           <ng-template ngx-datatable-cell-template let-value="value">
             <span>{{ value || 'N/A' }}</span>
           </ng-template>
         </ngx-datatable-column> -->
 
-        <!-- Initiator -->
-        <!-- <ngx-datatable-column name="Initiator" prop="initiators">
+          <!-- Initiator -->
+          <!-- <ngx-datatable-column name="Initiator" prop="initiators">
           <ng-template ngx-datatable-cell-template let-value="value">
             <span>{{ value || 'N/A' }}</span>
           </ng-template>
         </ngx-datatable-column> -->
 
-        <!-- Description -->
-        <ngx-datatable-column name="Description" prop="description" [flexGrow]="2" [minWidth]="350"> 
-          <ng-template ngx-datatable-cell-template let-value="value">
-            <span [ngbTooltip]="value">{{ value }}</span>
-          </ng-template>
-        </ngx-datatable-column>
+          <!-- Description -->
+          <ngx-datatable-column name="Description" prop="description" [flexGrow]="2" [minWidth]="350">
+            <ng-template ngx-datatable-cell-template let-value="value">
+              <span [ngbTooltip]="value">{{ value }}</span>
+            </ng-template>
+          </ngx-datatable-column>
 
-        <!-- Status -->
-        <ngx-datatable-column name="Status" prop="status" [flexGrow]="1" [minWidth]="120">
-          <ng-template ngx-datatable-cell-template let-row="row">
-            <span [class]="row.status ? 'badge badge-success' : 'badge badge-danger'">
-              {{ row.status ? 'Active' : 'Inactive' }}
-            </span>
-          </ng-template>
-        </ngx-datatable-column>
+          <!-- Status -->
+          <ngx-datatable-column name="Status" prop="status" [flexGrow]="1" [minWidth]="120">
+            <ng-template ngx-datatable-cell-template let-row="row">
+              <span [class]="row.status ? 'badge badge-success' : 'badge badge-danger'">
+                {{ row.status ? 'Active' : 'Inactive' }}
+              </span>
+            </ng-template>
+          </ngx-datatable-column>
 
-        <ngx-datatable-column name="Receivers" prop="Receivers" [flexGrow]="1" [minWidth]="100" [maxWidth]="150">
-          <ng-template let-row="row" ngx-datatable-cell-template>
-            <button class="btn btn-primary btn-sm position-relative" (click)="openReceiversModal(row)">
-              <i class="ft-users"></i>
-            </button>
-          </ng-template>
-        </ngx-datatable-column>
+          <ngx-datatable-column name="Receivers" prop="Receivers" [flexGrow]="1" [minWidth]="100" [maxWidth]="150">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+              <button class="btn btn-primary btn-sm position-relative" (click)="openReceiversModal(row)">
+                <i class="ft-users"></i>
+              </button>
+            </ng-template>
+          </ngx-datatable-column>
 
 
-      </ngx-datatable>
+        </ngx-datatable>
       </div>
 
     </div>

@@ -12,7 +12,7 @@ describe('CompanyEditComponent', () => {
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CompanyEditComponent);
+    fixture = TestBed.createComponent(CompanyEditComponent); 
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
