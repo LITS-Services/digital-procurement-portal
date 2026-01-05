@@ -58,7 +58,7 @@ export class CreateEmailTemplateComponent implements OnInit, AfterViewInit {
     this.invitationForm = this.fb.group({
       subject: ['', Validators.required],
       body: ['', Validators.required],
-      procurementCompanyId: [null, Validators.required],
+      procurementCompanyId: [null],
       workFlowTypeId: [null, Validators.required],
       emailActionId: [null, Validators.required]
     });
