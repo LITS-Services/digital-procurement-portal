@@ -42,77 +42,92 @@ export class responseHandlerInterceptor implements HttpInterceptor {
     const isWriteMethod = /^(POST|PUT|PATCH)$/i.test(req.method);
 
     return next.handle(req).pipe(
-    tap({
-    next: (event) => {
-      if (skip) return;
+      tap({
+        next: (event) => {
+          if (skip) return;
 
-      if (event instanceof HttpResponse) {
-        const contentType = event.headers.get('Content-Type') || '';
-        if (!contentType.includes('application/json')) return;
+          if (event instanceof HttpResponse) {
+            const contentType = event.headers.get('Content-Type') || '';
+            if (!contentType.includes('application/json')) return;
 
-        const body = event.body as responseDTO | undefined;
-        if (!body || typeof body !== 'object') return;
+            const body = event.body as responseDTO | undefined;
+            if (!body || typeof body !== 'object') return;
 
-        if ('isSuccess' in body && 'errors' in body && 'status' in body) {
-          if (body.isSuccess) {
-              if (isWriteMethod) {
-                const success = body.successMessage?.trim?.();
-                if (success) {
-                  this.toastr.success(success);
+            if ('isSuccess' in body && 'errors' in body && 'status' in body) {
+              if (body.isSuccess) {
+                if (isWriteMethod) {
+                  const success = body.successMessage?.trim?.();
+                  if (success) {
+                    this.toastr.success(success);
+                  }
+                }
+              } else {
+                const msg = this.extractErrorMessage(body);
+                if (msg) {
+                  this.toastr.error(msg);
                 }
               }
-              } else {
-            const msg = this.extractErrorMessage(body);
-            if(msg){
+            }
+          }
+        },
+        error: (err: any) => {
+        
+          try {
+            if (skip || err?.status === 401) return;
+
+            // Safe token-expired check
+            const tokenMsg = (err as any)?.error?.[0]?.ErrorMessage as string | undefined;
+            if (typeof tokenMsg === 'string' && tokenMsg.toLowerCase().includes('token expired')) {
+              return;
+            }
+
+            if (err instanceof HttpErrorResponse) {
+              let msg: string | null = null;
+
+              const raw = err.error;
+
+              if (raw && typeof raw === 'object') {
+                const maybeEnvelope = raw as Partial<responseDTO>;
+                const looksLikeEnvelope = 'isSuccess' in maybeEnvelope && 'errors' in maybeEnvelope;
+
+                if (looksLikeEnvelope) {
+                  msg = this.extractErrorMessage(maybeEnvelope as responseDTO);
+                }
+              }
+
+              if (!msg) {
+                msg = 'API failed, please check API/DB.';
+              }
+
               this.toastr.error(msg);
             }
-            
+
+          } catch (e) {
+            this.toastr.error('API failed, please check API/DB.');
           }
-        }
-      }
-    },
-    error: (err: any) => {
-      if (skip || err?.status === 401) return;
-
-      if(err?.error?.[0]?.ErrorMessage.includes('token expired')){
-        return;
-      }
-
-    if (err instanceof HttpErrorResponse) {
-            const maybeEnvelope = err.error as Partial<responseDTO> | undefined;
-
-            // only toast if it *looks like* your envelope
-            const looksLikeEnvelope =
-              maybeEnvelope && typeof maybeEnvelope === 'object' &&
-              ('isSuccess' in maybeEnvelope && 'errors' in maybeEnvelope);
-
-            if (looksLikeEnvelope) {
-              const msg = this.extractErrorMessage(maybeEnvelope as responseDTO);
-              if (msg) this.toastr.error(msg);
-            }
-
-            // else: do nothing → error will still propagate (good for console/network)
-          } else {
-            // Non-HttpErrorResponse: ignore toast so it still bubbles up
-          }
-          // Important: RETURN nothing here; tap won't swallow it—the error continues downstream.
-        }
+        },
       }),
 
-  // pass value on successful responses
-  map((event: HttpEvent<any>) => {
-    if (event instanceof HttpResponse) {
-      const contentType = event.headers.get('Content-Type') || '';
-      if (!contentType.includes('application/json')) return event;
+      // pass value on successful responses
+      map((event: HttpEvent<any>) => {
+        if (event instanceof HttpResponse) {
+          const contentType = event.headers.get('Content-Type') || '';
+          if (!contentType.includes('application/json')) return event;
 
-      const body = event.body as responseDTO | undefined;
-      if (body && typeof body === 'object' && 'isSuccess' in body && (body as any).isSuccess && 'value' in body) {
-        return event.clone({ body: (body as any).value });
+          const body = event.body as responseDTO | undefined;
+          if (
+            body &&
+            typeof body === 'object' &&
+            'isSuccess' in body &&
+            (body as any).isSuccess &&
+            'value' in body
+          ) {
+            return event.clone({ body: (body as any).value });
+          }
         }
-      }
-      return event;
+        return event;
       })
-     );
+    );
   }
 
   private extractErrorMessage(body: responseDTO): string {
