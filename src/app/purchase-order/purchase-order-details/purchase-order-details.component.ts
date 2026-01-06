@@ -3,6 +3,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { id } from 'date-fns/locale';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-purchase-order-details',
@@ -30,7 +31,8 @@ export class PurchaseOrderDetailsComponent implements OnInit {
     private route: ActivatedRoute,
     private purchaseOrderService: PurchaseOrderService,
     public cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    public spinner: NgxSpinnerService
   ) { }
 
   ngOnInit(): void {
@@ -44,13 +46,24 @@ export class PurchaseOrderDetailsComponent implements OnInit {
     
   }
 
-  getPurchaseOrderDetails(id: number) {
-    this.purchaseOrderService.getPurchaseOrderById(id).subscribe(res => {
+getPurchaseOrderDetails(id: number) {
+  this.spinner.show();
+
+  this.purchaseOrderService.getPurchaseOrderById(id).subscribe({
+    next: (res) => {
       this.poDetails = res;
       this.loading = false;
       this.cdr.detectChanges();
-    });
-  }
+    },
+    error: (err) => {
+      this.loading = false;
+      console.error('PO Load Error', err);
+    },
+    complete: () => {
+      this.spinner.hide();
+    }
+  });
+}
 
   toggleItems() {
     this.itemsExpanded = !this.itemsExpanded;
