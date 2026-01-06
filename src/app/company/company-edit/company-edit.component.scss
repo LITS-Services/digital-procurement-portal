@@ -50,13 +50,23 @@
 .company-avatar {
   width: 48px;
   height: 48px;
-  border-radius: 16px;
+  border-radius: 25px;
   background: #eef2ff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 22px;
   color: #4f46e5;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.042);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.06);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 25px;
+  }
 }
 
 .company-label {
