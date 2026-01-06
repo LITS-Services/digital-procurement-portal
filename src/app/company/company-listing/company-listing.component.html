@@ -20,8 +20,8 @@
               <span class="vl"></span>
 
               <!-- Company Review Button -->
-              <button type="button" class="btn btn-sm cstm-ui-table-btn ml-2"
-                [disabled]="isEditButtonDisabled || isSelectedRowNew()" (click)="editSelectedRow()">
+              <button type="button" class="btn btn-sm cstm-ui-table-btn ml-2" [disabled]="isEditButtonDisabled"
+                (click)="editSelectedRow()">
                 <i class="ft-edit"></i>
                 <label class="ml-1">Company Review</label>
               </button>
@@ -130,7 +130,7 @@
             [sortable]="false">
             <ng-template let-row="row" ngx-datatable-cell-template>
               <button type="button" class="btn btn-sm btn-primary" [ngbPopover]="actionToolbar"
-                popoverClass="action-popover" placement="bottom" container="body">
+                popoverClass="action-popover" placement="bottom" container="body" [disabled]="!row.showAssignMe">
                 <i class="ft-settings"></i>
               </button>
 

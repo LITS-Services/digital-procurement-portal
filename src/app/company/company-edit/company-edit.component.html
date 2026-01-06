@@ -41,19 +41,21 @@
               <label class="ml-1">Submit for Approval</label>
             </button>
 
-            <!-- If isAssigned = false → normal behavior -->
-            <button *ngIf="!isAssigned" class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId"
-              (click)="onActions('Approve')">
+            <!-- If isAssigned = false AND workflowMasterId != 0 AND mainApproverId == currentUserId → show Approve -->
+            <button *ngIf="!isAssigned && workflowMasterId != 0 && mainApproverId == currentUserId"
+              class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId" (click)="onActions('Approve')">
               <i class="ft-check"></i>
               <label class="ml-1">Approve</label>
             </button>
 
 
-            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId" (click)="onActions('Rejected')">
+            <button *ngIf="isAssigned || (workflowMasterId != 0 && mainApproverId == currentUserId)"
+              class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId" (click)="onActions('Rejected')">
               <i class="ft-x"></i><label class="ml-1">Reject</label>
             </button>
 
-            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId" (click)="onActions('SendBack')">
+            <button *ngIf="isAssigned || (workflowMasterId != 0 && mainApproverId == currentUserId)"
+              class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId" (click)="onActions('SendBack')">
               <i class="ft-arrow-left"></i><label class="ml-1">Send Back</label>
             </button>
 

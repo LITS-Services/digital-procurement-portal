@@ -35,6 +35,9 @@ export class CompanyEditComponent implements OnInit {
   isEditMode: boolean = false;
   isLoading: boolean = false;
   isAssigned: boolean = null;
+  workflowMasterId: number = 0;
+  mainApproverId: string = '';
+  currentUserId: string = '';
   error: string = '';
   remark: string = '';
   message: string = '';
@@ -60,7 +63,7 @@ export class CompanyEditComponent implements OnInit {
     private spinner: NgxSpinnerService,
     private toastr: ToastrService,
     private systemService: SystemService
-  ) {}
+  ) { }
 
   // ngOnInit(): void {
   //   this.route.queryParams.subscribe(params => {
@@ -79,7 +82,16 @@ export class CompanyEditComponent implements OnInit {
   // }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
+    this.currentUserId = localStorage.getItem('userId') || '';
+    this.route.queryParams.subscribe(params => {
+      console.log('=== QUERY PARAMS DEBUG ===');
+      console.log('All params:', params);
+      console.log('isAssigned value:', params['isAssigned']);
+      console.log('isAssigned type:', typeof params['isAssigned']);
+      console.log('isAssigned === "true":', params['isAssigned'] === 'true');
+      console.log('isAssigned === true:', params['isAssigned'] === true);
+      console.log('=== END DEBUG ===');
+
       // Parse company ID and vendor association ID
       if (params['id']) {
         this.companyId = +params['id'];
@@ -144,6 +156,8 @@ export class CompanyEditComponent implements OnInit {
 
           this.companyLogoUrl = company.logo ? `data:image/png;base64,${company.logo}` : null;
           this.companyWebsite = company.websiteUrl || null;
+          this.workflowMasterId = company.workflowMasterId || 0;
+          this.mainApproverId = company.mainApproverId || '';
           // this.remarks = company.remarks || '';
           // this.companyForm.patchValue({ remarks: this.remarks });
 
@@ -151,18 +165,18 @@ export class CompanyEditComponent implements OnInit {
           const demographics = company.vendorCompanyPurchasingDemographics || null;
           this.purchasingDemographicsList = demographics
             ? [
-                {
-                  vendorType: demographics.vendorType,
-                  primaryCurrency: demographics.primaryCurrency,
-                  lineOfBusiness: demographics.lineOfBusiness,
-                  employeeResponsible: demographics.employeeResponsible,
-                  note: demographics.note,
-                  birthCountry: demographics.birthCountry,
-                  segment: demographics.segment,
-                  speciality: demographics.speciality,
-                  chain: demographics.chain,
-                },
-              ]
+              {
+                vendorType: demographics.vendorType,
+                primaryCurrency: demographics.primaryCurrency,
+                lineOfBusiness: demographics.lineOfBusiness,
+                employeeResponsible: demographics.employeeResponsible,
+                note: demographics.note,
+                birthCountry: demographics.birthCountry,
+                segment: demographics.segment,
+                speciality: demographics.speciality,
+                chain: demographics.chain,
+              },
+            ]
             : [];
 
           console.log('Purchasing Demographics List:', this.purchasingDemographicsList);
@@ -284,10 +298,10 @@ export class CompanyEditComponent implements OnInit {
   }
 
   normalizeWebsite(url: string | null): string | null {
-  if (!url) return null;
-  if (/^https?:\/\//i.test(url)) return url;
-  return 'https://' + url;
-}
+    if (!url) return null;
+    if (/^https?:\/\//i.test(url)) return url;
+    return 'https://' + url;
+  }
 
   // onActions(action: string): void {
   //   const modalRef = this.modalService.open(CompanyActionsComponent, {
@@ -400,8 +414,8 @@ export class CompanyEditComponent implements OnInit {
           action === 'Approve'
             ? 'Company Approved Successfully!'
             : action === 'Rejected'
-            ? 'Company Rejected Successfully!'
-            : 'Company Sent Back Successfully!';
+              ? 'Company Rejected Successfully!'
+              : 'Company Sent Back Successfully!';
         this.cdr.detectChanges();
         this.router.navigate(['/company']);
       },
