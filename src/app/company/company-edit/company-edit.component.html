@@ -116,8 +116,12 @@
             <!-- Top: company header -->
             <div class="d-flex align-items-center mb-3">
               <div class="company-avatar mr-3">
+                @if (companyLogoUrl) {
+                <img [src]="companyLogoUrl" [alt]="companyName || 'Company Logo'" class="company-logo-img" />
+                } @else {
                 <i class="ft-briefcase"></i>
-              </div>
+                }
+                </div>
 
               <div class="flex-grow-1">
                 <div class="company-label text-uppercase">Company Name</div>
@@ -130,7 +134,17 @@
                     {{ companyStatusLabel | uppercase }}
                   </span>
                 </div>
+
+                
               </div>
+              @if (companyWebsite) {
+                <div class="company-website mt-1 d-flex align-items-center">
+                  <i class="ft-globe mr-1"></i>
+                  <a [href]="normalizeWebsite(companyWebsite)" target="_blank" rel="noopener">
+                    {{ companyWebsite }}
+                  </a>
+                </div>
+                }
             </div>
 
             <hr />

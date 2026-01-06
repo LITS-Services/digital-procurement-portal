@@ -13,11 +13,9 @@ import { SystemService } from 'app/shared/services/system.service';
   selector: 'app-company-edit',
   templateUrl: './company-edit.component.html',
   styleUrls: ['./company-edit.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class CompanyEditComponent implements OnInit {
-
-
   companyId: number | null = null;
   procurementCompanyId: number | null = null;
   companyGUID: string | null = null;
@@ -50,7 +48,8 @@ export class CompanyEditComponent implements OnInit {
 
   associatedEntities: any[] = [];
 
-
+  companyLogoUrl: string | null = null;
+  companyWebsite: string | null = null;
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -61,8 +60,7 @@ export class CompanyEditComponent implements OnInit {
     private spinner: NgxSpinnerService,
     private toastr: ToastrService,
     private systemService: SystemService
-
-  ) { }
+  ) {}
 
   // ngOnInit(): void {
   //   this.route.queryParams.subscribe(params => {
@@ -81,19 +79,13 @@ export class CompanyEditComponent implements OnInit {
   // }
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      console.log('=== QUERY PARAMS DEBUG ===');
-      console.log('All params:', params);
-      console.log('isAssigned value:', params['isAssigned']);
-      console.log('isAssigned type:', typeof params['isAssigned']);
-      console.log('isAssigned === "true":', params['isAssigned'] === 'true');
-      console.log('isAssigned === true:', params['isAssigned'] === true);
-      console.log('=== END DEBUG ===');
-
+    this.route.queryParams.subscribe((params) => {
       // Parse company ID and vendor association ID
       if (params['id']) {
         this.companyId = +params['id'];
-        this.vendorEntityAssociationId = params['vendorEntityAssociationId'] ? +params['vendorEntityAssociationId'] : null;
+        this.vendorEntityAssociationId = params['vendorEntityAssociationId']
+          ? +params['vendorEntityAssociationId']
+          : null;
 
         // Parse isAssigned safely
         // Query params are always strings, so compare with "true"
@@ -101,7 +93,9 @@ export class CompanyEditComponent implements OnInit {
         console.log('Final isAssigned value:', this.isAssigned);
 
         // Parse procurementCompanyId if present
-        this.procurementCompanyId = params['procurementCompanyId'] ? +params['procurementCompanyId'] : null;
+        this.procurementCompanyId = params['procurementCompanyId']
+          ? +params['procurementCompanyId']
+          : null;
 
         // Now load company data
         this.loadCompanyById(this.companyId);
@@ -112,226 +106,20 @@ export class CompanyEditComponent implements OnInit {
     this.selectedTab = tabKey;
   }
 
-
-
-
-  // loadCompanyById(id: number) {
-  //   this.isLoading = true;
-  //   this.error = '';
-  //   this.message = '';
-
-  //   this.companyService.getCompanyById(id).subscribe({
-  //     next: (res: any) => {
-  //       const company = res?.vendorCompany || res;
-  //       if (company) {
-  //         this.companyId = company.id || 0;
-  //         this.companyGUID = company.companyGUID || null;
-  //         this.vendorId = company.vendorId || '';
-  //         this.companyName = company.name || '';
-  //         this.aboutCompany = company.aboutCompany || '';
-  //         this.vendorCategory = company.purchasingDemographics?.vendorType || '';
-  //         this.primaryCurrency = company.purchasingDemographics?.primaryCurrency || '';
-  //         this.lineOfBusiness = company.purchasingDemographics?.lineOfBusiness || '';
-  //         this.employeeResponsible = company.purchasingDemographics?.employeeResponsible || '';
-  //         this.note = company.purchasingDemographics?.note || '';
-
-  //         this.addressList = (company.addresses?.$values || []).map((a: any) => ({
-  //           id: a.id,
-  //           street: a.street,
-  //           city: a.city,
-  //           state: a.state,
-  //           zip: a.zip,
-  //           country: a.country,
-  //           isPrimary: a.isPrimary
-  //         }));
-
-  //         this.contactList = (company.contacts?.$values || []).map((c: any) => ({
-  //           id: c.id,
-  //           description: c.description,
-  //           type: c.type,
-  //           contactNumber: c.contactNumber,
-  //           extension: c.extension,
-  //           isPrimary: c.isPrimary
-  //         }));
-
-  //         this.attachedFiles = (company.attachments?.$values || []).map((f: any) => ({
-  //           id: f.id,
-  //           fileName: f.fileName,
-  //           format: f.fileFormat,
-  //           fileContent: f.fileContent,
-  //           attachedBy: f.attachedBy,
-  //           remarks: f.remarks,
-  //           attachedAt: f.attachedAt
-  //         }));
-
-  //         this.isEditMode = true;
-  //       }
-  //       this.isLoading = false;
-  //       this.cdr.markForCheck();
-  //     },
-  //     error: (err) => {
-  //       console.error('Error loading company:', err);
-  //       this.error = 'Failed to load company.';
-  //       this.isLoading = false;
-  //     }
-  //   });
-  // }
-
-
-  // loadCompanyById(id: number) {
-  //   this.isLoading = true;
-  //   this.error = '';
-  //   this.message = '';
-  //   this.spinner.show();
-
-
-  //   this.companyService.getVendorCompanyById(id)
-  //     .pipe(finalize(() => {
-  //       this.spinner.hide();
-  //       this.cdr.detectChanges();
-  //     }))
-
-  //     .subscribe({
-  //       next: (res: any) => {
-  //         const company = res?.vendorCompany || res;
-
-  //         // ✅ REMOVED: No longer setting isAssigned from API response
-  //         // this.isAssigned = company.vendorUserCompanies?.[0]?.isAssigned ?? false;
-  //         console.log('Is Assigned (from query params):', this.isAssigned);
-
-  //         if (company) {
-  //           this.companyId = company.id || 0;
-  //           this.companyGUID = company.companyGUID || null;
-  //           this.vendorId = company.vendorId || '';
-  //           this.companyName = company.name || '';
-  //           this.aboutCompany = company.aboutCompany || '';
-  //           this.companyStatusLabel = company.requestStatus?.status || null;
-  //            this.companyStatusClass = this.mapCompanyStatusClass(company.requestStatusId);
-  //           // this.vendorCategory = company.purchasingDemographics?.vendorType || '';
-  //           // this.primaryCurrency = company.purchasingDemographics?.primaryCurrency || '';
-  //           // this.lineOfBusiness = company.purchasingDemographics?.lineOfBusiness || '';
-  //           // this.employeeResponsible = company.purchasingDemographics?.employeeResponsible || '';
-  //           // this.note = company.purchasingDemographics?.note || '';
-
-  //           const demographics = company.purchasingDemographics || null;
-  //           this.purchasingDemographicsList = demographics
-  //             ? [ // convert object → single-element array
-  //               {
-  //                 vendorType: demographics.vendorType,
-  //                 primaryCurrency: demographics.primaryCurrency,
-  //                 lineOfBusiness: demographics.lineOfBusiness,
-  //                 employeeResponsible: demographics.employeeResponsible,
-  //                 note: demographics.note
-  //               }
-  //             ]
-  //             : [];
-
-  //           console.log('Purchasing Demographics List:', this.purchasingDemographicsList);
-
-
-  //           const rawBankDetails = company.bankDetails?.$values || company.bankDetails || [];
-
-  //           this.bankDetailsList = rawBankDetails.map((b: any) => ({
-  //             id: b.id,
-  //             bankName: b.bankName,
-  //             branchName: b.branchName,
-  //             branchAddress: b.branchAddress,
-  //             accountHolderName: b.accountHolderName,
-  //             accountNumber: b.accountNumber,
-  //             iban: b.iban,
-  //             swifT_BIC_Code: b.swifT_BIC_Code,
-  //             country: b.country,
-  //             currency: b.currency,
-  //           }));
-
-  //           console.log('Bank Details List:', this.bankDetailsList);
-
-
-
-
-
-
-
-
-  //           const rawAddresses = company.addresses?.$values || company.addresses || [];
-
-  //           this.addressList = rawAddresses.map((a: any) => ({
-  //             id: a.id,
-  //             street: a.street,
-  //             city: a.city,
-  //             state: a.state,
-  //             zip: a.zip,
-  //             country: a.country,
-  //             isPrimary: a.isPrimary
-  //           }));
-
-  //           // this.contactList = (company.contacts?.$values || []).map((c: any) => ({
-  //           //   id: c.id,
-  //           //   description: c.description,
-  //           //   type: c.type,
-  //           //   contactNumber: c.contactNumber,
-  //           //   extension: c.extension,
-  //           //   isPrimary: c.isPrimary
-  //           // }));
-
-
-  //           const rawContacts = company.contacts?.$values || company.contacts || [];
-  //           this.contactList = rawContacts.map((c: any) => ({
-  //             id: c.id,
-  //             description: c.description,
-  //             type: c.type,
-  //             contactNumber: c.contactNumber,
-  //             extension: c.extension,
-  //             isPrimary: c.isPrimary
-  //           }));
-
-
-  //           this.attachedFiles = (company.attachments || []).map((f: any) => ({
-  //             id: f.id,
-  //             fileName: f.fileName,
-  //             format: f.fileFormat,
-  //             fileContent: f.fileContent,
-  //             attachedBy: f.attachedBy,
-  //             remarks: f.remarks,
-  //             attachedAt: f.attachedAt
-  //           }));
-
-  //               const rawEntities =
-  //                 company.vendorUserCompanies?.$values || company.vendorUserCompanies || [];
-
-  //               this.associatedEntities = rawEntities.map((v: any) => ({
-  //                 name: v.procurementCompany?.name || '',
-  //                 city: v.procurementCompany?.city || '', // if not in API, will just be blank
-  //                 country: v.procurementCompany?.country || '', // same here
-  //                 industry: v.procurementCompany?.industry || '',
-  //                 statusLabel: v.requestStatus?.status || '',
-  //                 statusClass: this.mapStatusClass(v.requestStatusId),
-  //               }));
-
-
-  //           this.isEditMode = true;
-  //         }
-  //         this.isLoading = false;
-  //         this.cdr.markForCheck();
-  //       },
-  //       error: (err) => {
-  //         console.error('Error loading company:', err);
-  //         this.error = 'Failed to load company.';
-  //         this.isLoading = false;
-  //       }
-  //     });
-  // }
   loadCompanyById(id: number) {
     this.isLoading = true;
     this.error = '';
     this.message = '';
     this.spinner.show();
 
-    this.companyService.getVendorCompanyById(id)
-      .pipe(finalize(() => {
-        this.spinner.hide();
-        this.cdr.detectChanges();
-      }))
+    this.companyService
+      .getVendorCompanyById(id)
+      .pipe(
+        finalize(() => {
+          this.spinner.hide();
+          this.cdr.detectChanges();
+        })
+      )
       .subscribe({
         next: (res: any) => {
           console.log('API Response (loadCompanyById):', res);
@@ -351,25 +139,30 @@ export class CompanyEditComponent implements OnInit {
           this.vendorId = company.vendorId || '';
           this.companyName = company.name || '';
           this.aboutCompany = company.aboutCompany || '';
-          this.companyStatusLabel = company.requestStatus?.status || '';
+          this.companyStatusLabel = company.requestStatus || '';
           this.companyStatusClass = this.mapCompanyStatusClass(company.requestStatusId);
+
+          this.companyLogoUrl = company.logo ? `data:image/png;base64,${company.logo}` : null;
+          this.companyWebsite = company.websiteUrl || null;
           // this.remarks = company.remarks || '';
           // this.companyForm.patchValue({ remarks: this.remarks });
 
           // --- Purchasing Demographics (single object) ---
           const demographics = company.vendorCompanyPurchasingDemographics || null;
           this.purchasingDemographicsList = demographics
-            ? [{
-              vendorType: demographics.vendorType,
-              primaryCurrency: demographics.primaryCurrency,
-              lineOfBusiness: demographics.lineOfBusiness,
-              employeeResponsible: demographics.employeeResponsible,
-              note: demographics.note,
-              birthCountry: demographics.birthCountry,
-              segment: demographics.segment,
-              speciality: demographics.speciality,
-              chain: demographics.chain
-            }]
+            ? [
+                {
+                  vendorType: demographics.vendorType,
+                  primaryCurrency: demographics.primaryCurrency,
+                  lineOfBusiness: demographics.lineOfBusiness,
+                  employeeResponsible: demographics.employeeResponsible,
+                  note: demographics.note,
+                  birthCountry: demographics.birthCountry,
+                  segment: demographics.segment,
+                  speciality: demographics.speciality,
+                  chain: demographics.chain,
+                },
+              ]
             : [];
 
           console.log('Purchasing Demographics List:', this.purchasingDemographicsList);
@@ -387,7 +180,7 @@ export class CompanyEditComponent implements OnInit {
             swifT_BIC_Code: b.swifT_BIC_Code || b.swiftCode,
             country: b.country,
             currency: b.currency,
-            isPrimary: b.isPrimary || false
+            isPrimary: b.isPrimary || false,
           }));
 
           // --- Addresses ---
@@ -399,7 +192,7 @@ export class CompanyEditComponent implements OnInit {
             state: a.state,
             zip: a.zip,
             country: a.country,
-            isPrimary: a.isPrimary || false
+            isPrimary: a.isPrimary || false,
           }));
 
           // --- Contacts ---
@@ -410,7 +203,7 @@ export class CompanyEditComponent implements OnInit {
             type: c.type,
             contactNumber: c.contactNumber,
             extension: c.extension,
-            isPrimary: c.isPrimary || false
+            isPrimary: c.isPrimary || false,
           }));
 
           // --- Attachments ---
@@ -421,7 +214,7 @@ export class CompanyEditComponent implements OnInit {
             fileContent: f.fileContent,
             attachedBy: f.attachedBy,
             remarks: f.remarks,
-            attachedAt: f.attachedAt
+            attachedAt: f.attachedAt,
           }));
 
           // --- Vendor Entities (Procurement Companies) ---
@@ -436,7 +229,7 @@ export class CompanyEditComponent implements OnInit {
             statusLabel: v.requestStatus || '',
             statusClass: this.mapStatusClass(v.requestStatusId),
             isAssigned: v.isAssigned || false,
-            requestStatusId: v.requestStatusId
+            requestStatusId: v.requestStatusId,
           }));
 
           // // Auto-select first entity if available
@@ -459,18 +252,17 @@ export class CompanyEditComponent implements OnInit {
           // this.isReadonlyEntityFields = false;
           // this.bankForm.enable();
           // this.companyForm.enable();
-        }
+        },
       });
   }
-
 
   mapCompanyStatusClass(statusId: number): string {
     switch (statusId) {
       case 12: // Onboarded
         return 'company-status-onboarded';
-      case 1:  // In process
+      case 1: // In process
         return 'company-status-inprocess';
-      case 8:  // New
+      case 8: // New
         return 'company-status-new';
       default:
         return 'company-status-default';
@@ -490,6 +282,12 @@ export class CompanyEditComponent implements OnInit {
         return 'status-default';
     }
   }
+
+  normalizeWebsite(url: string | null): string | null {
+  if (!url) return null;
+  if (/^https?:\/\//i.test(url)) return url;
+  return 'https://' + url;
+}
 
   // onActions(action: string): void {
   //   const modalRef = this.modalService.open(CompanyActionsComponent, {
@@ -541,9 +339,7 @@ export class CompanyEditComponent implements OnInit {
   //   );
   // }
 
-
   onActions(action: string): void {
-
     // Always direct for sendforapproval
     if (action === 'sendforapproval') {
       this.submitForApproval(action);
@@ -562,7 +358,7 @@ export class CompanyEditComponent implements OnInit {
     const modalRef = this.modalService.open(CompanyActionsComponent, {
       size: 'lg',
       backdrop: 'static',
-      centered: true
+      centered: true,
     });
 
     modalRef.componentInstance.action = action;
@@ -585,9 +381,6 @@ export class CompanyEditComponent implements OnInit {
     );
   }
 
-
-
-
   private performCompanyAction(action: string, remarks: string) {
     this.isLoading = true;
 
@@ -597,7 +390,7 @@ export class CompanyEditComponent implements OnInit {
       procurementCompanyId: this.procurementCompanyId || 0,
       actionTaken: action,
       remarks,
-      approverId: localStorage.getItem('userId') || ''
+      approverId: localStorage.getItem('userId') || '',
     };
 
     this.companyService.VendorCompanyAction(payload).subscribe({
@@ -607,8 +400,8 @@ export class CompanyEditComponent implements OnInit {
           action === 'Approve'
             ? 'Company Approved Successfully!'
             : action === 'Rejected'
-              ? 'Company Rejected Successfully!'
-              : 'Company Sent Back Successfully!';
+            ? 'Company Rejected Successfully!'
+            : 'Company Sent Back Successfully!';
         this.cdr.detectChanges();
         this.router.navigate(['/company']);
       },
@@ -616,7 +409,7 @@ export class CompanyEditComponent implements OnInit {
         this.isLoading = false;
         this.error = 'Failed to perform action!';
         console.error(err);
-      }
+      },
     });
   }
 
@@ -630,7 +423,7 @@ export class CompanyEditComponent implements OnInit {
       Action: action,
       RequesterId: this.submitterId,
       vendorEntityAssociationId: this.vendorEntityAssociationId,
-      remarks: remarks
+      remarks: remarks,
     };
 
     this.companyService.takeAction(payload).subscribe({
@@ -646,14 +439,9 @@ export class CompanyEditComponent implements OnInit {
         console.error(err);
         this.toastr.error(err);
         this.error = 'Failed to perform action!';
-      }
+      },
     });
   }
-
-
-
-
-
 
   // downloadAttachment(file: any) {
   //   if (!file?.fileContent) {
@@ -699,7 +487,7 @@ export class CompanyEditComponent implements OnInit {
       },
       error: () => {
         this.toastr.error('Failed to download attachment.');
-      }
+      },
     });
   }
 
