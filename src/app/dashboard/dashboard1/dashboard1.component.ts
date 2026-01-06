@@ -4,7 +4,7 @@ import { ChartType, ChartEvent } from "ng-chartist";
 import ChartistTooltip from 'chartist-plugin-tooltips-updated';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
-import { DashboardService, MonthlySpendingResponse, RfqPipelineGraphPoint } from 'app/shared/services/dashboard.service';
+import { DashboardService, DeliveryPerformanceVM, MonthlySpendingResponse, RfqPipelineGraphPoint } from 'app/shared/services/dashboard.service';
 import { FirebaseMessagingService } from '../../firebase-messaging.service';
 import { ToastrService } from 'ngx-toastr';
 import { ms } from 'date-fns/locale';
@@ -664,91 +664,101 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
     };
   }
 
-  private initVendorDeliveryChart(): void {
-    const vendors = ['AlaMart', 'Alpha Stores', 'Metro Supplies'];
-    const onTimeDeliveries = [41, 36, 32];
-    const lateDeliveries = [9, 4, 6];
+private initVendorDeliveryChart(): void {
+  this.dashboardService.getDeliveryPerformance().subscribe({
+    next: (rows: DeliveryPerformanceVM[]) => {
+      const vendors = (rows ?? []).map(r => r.vendorCompanyName);
+      const onTimeDeliveries = (rows ?? []).map(r => r.onTimeCount);
+      const lateDeliveries = (rows ?? []).map(r => r.lateCount);
 
-    this.vendorDeliveryOptions = {
-      series: [
-        {
-          name: 'On-Time',
-          data: onTimeDeliveries,
+      this.vendorDeliveryOptions = {
+        series: [
+          {
+            name: 'On-Time',
+            data: onTimeDeliveries,
+          },
+          {
+            name: 'Late',
+            data: lateDeliveries,
+          },
+        ],
+        colors: ['#116aef', '#f97316'],
+        chart: {
+          type: 'bar',
+          height: 210,
+          stacked: true,
+          toolbar: { show: false },
+          parentHeightOffset: 0,
+          offsetY: 0,
         },
-        {
-          name: 'Late',
-          data: lateDeliveries,
-        },
-      ],
-      colors: ['#116aef', '#f97316'],
-      chart: {
-        type: 'bar',
-        height: 210,
-        stacked: true,
-        toolbar: { show: false },
-        parentHeightOffset: 0,
-        offsetY: 0,
-      },
-      plotOptions: {
-        bar: {
-          horizontal: true,
-          barHeight: '55%',
-        },
-      },
-      grid: {
-        borderColor: 'rgba(148,163,184,0.35)',
-        strokeDashArray: 4,
-        xaxis: { lines: { show: true } },
-        yaxis: { lines: { show: false } },
-      },
-      dataLabels: {
-        enabled: false,
-      },
-      stroke: {
-        width: 1,
-        colors: ['#ffffff'],
-      },
-      xaxis: {
-        categories: vendors,
-        labels: {
-          style: {
-            fontSize: '12px',
+        plotOptions: {
+          bar: {
+            horizontal: true,
+            barHeight: '55%',
           },
         },
-        title: {
-          text: 'Deliveries',
+        grid: {
+          borderColor: 'rgba(148,163,184,0.35)',
+          strokeDashArray: 4,
+          xaxis: { lines: { show: true } },
+          yaxis: { lines: { show: false } },
         },
-      },
-      yaxis: {
-        labels: {
-          style: { fontSize: '12px' },
-          offsetX: 0,
+        dataLabels: {
+          enabled: false,
         },
-      },
-      fill: {
-        opacity: 1,
-      },
-      tooltip: {
-        y: {
-          formatter: (val: number) => `${val} orders`,
+        stroke: {
+          width: 1,
+          colors: ['#ffffff'],
         },
-      },
-      legend: {
-        position: 'top',
-        horizontalAlign: 'left',
-        offsetX: -30,
-        offsetY: 0,
-        markers: {},
-        itemMargin: {
-          horizontal: 8,
-          vertical: 0,
+        xaxis: {
+          categories: vendors,
+          labels: {
+            style: {
+              fontSize: '12px',
+            },
+          },
+          title: {
+            text: 'Deliveries',
+          },
         },
-      },
-      theme: {
-        mode: 'light',
-      },
-    };
-  }
+        yaxis: {
+          labels: {
+            style: { fontSize: '12px' },
+            offsetX: 0,
+          },
+        },
+        fill: {
+          opacity: 1,
+        },
+        tooltip: {
+          y: {
+            formatter: (val: number) => `${val} orders`,
+          },
+        },
+        legend: {
+          position: 'top',
+          horizontalAlign: 'left',
+          offsetX: -30,
+          offsetY: 0,
+          markers: {},
+          itemMargin: {
+            horizontal: 8,
+            vertical: 0,
+          },
+        },
+        theme: {
+          mode: 'light',
+        },
+      };
+
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      console.error('Error loading delivery performance', err);
+    },
+  });
+}
+
 
   onResized(event: any) {
     setTimeout(() => {

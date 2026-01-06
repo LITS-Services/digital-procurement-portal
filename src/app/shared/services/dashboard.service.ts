@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { EntitiesCountVM, PurchaseOrdersCountVM, PurchaseRequestsCountVM, QuotationRequestsCountVM, VendorCompaniesCountVM } from 'app/dashboard/dashboard1/dashboard1.component';
 import { environment } from 'environments/environment';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 export interface RfqPipelineGraphPoint {
   totalRfq: number;
@@ -15,6 +15,12 @@ export interface MonthlySpendingResponse {
   inventory: number;
   nonInventory: number;
   totalThisMonth: number;
+}
+
+export interface DeliveryPerformanceVM {
+  vendorCompanyName: string;
+  onTimeCount: number;
+  lateCount: number;
 }
 
 @Injectable({
@@ -100,4 +106,20 @@ export class DashboardService {
   getUpcomingPurchases(): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/upcoming-purchases`);
   }
+
+  getDeliveryPerformance(): Observable<DeliveryPerformanceVM[]> {
+  return this.http
+    .get<any>(`${this.baseUrl}/proc-portal-delivery-performance`)
+    .pipe(
+      map((res: any) => {
+        if (Array.isArray(res)) {
+          return res as DeliveryPerformanceVM[];
+        }
+        if (res && Array.isArray(res.data)) {
+          return res.data as DeliveryPerformanceVM[];
+        }
+        return [];
+      })
+    );
+}
 }

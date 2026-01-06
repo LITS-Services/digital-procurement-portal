@@ -16,7 +16,7 @@
   <div class="dashboard-grid">
     <div class="dashboard-main">
 
-      <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 g-1 top-metrics-row mob-gap">
+      <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 top-metrics-row mob-gap">
         <div class="col count-card">
           <div class="stat-card stat-card--primary" (click)="goToPurchaseRequest()">
              <div class="stat-card__label"> <span>Purchase Requests</span> <span class="arrow-div"><i class="ft ft-arrow-up-right"></i></span></div>
@@ -362,14 +362,25 @@
             </div>
 
             <div class="panel-card__body">
-              <apx-chart class="apx-chart" [series]="vendorDeliveryOptions.series" [chart]="vendorDeliveryOptions.chart"
-                [plotOptions]="vendorDeliveryOptions.plotOptions" [xaxis]="vendorDeliveryOptions.xaxis"
-                [yaxis]="vendorDeliveryOptions.yaxis" [dataLabels]="vendorDeliveryOptions.dataLabels"
-                [stroke]="vendorDeliveryOptions.stroke" [fill]="vendorDeliveryOptions.fill"
-                [tooltip]="vendorDeliveryOptions.tooltip" [legend]="vendorDeliveryOptions.legend"
-                [grid]="vendorDeliveryOptions.grid" [colors]="vendorDeliveryOptions.colors"
-                [theme]="vendorDeliveryOptions.theme">
-              </apx-chart>
+              
+                @if (vendorDeliveryOptions?.series?.length &&
+                vendorDeliveryOptions.series[0]?.data?.length) {
+                
+                <apx-chart class="apx-chart" [series]="vendorDeliveryOptions.series" [chart]="vendorDeliveryOptions.chart"
+                  [plotOptions]="vendorDeliveryOptions.plotOptions" [xaxis]="vendorDeliveryOptions.xaxis"
+                  [yaxis]="vendorDeliveryOptions.yaxis" [dataLabels]="vendorDeliveryOptions.dataLabels"
+                  [stroke]="vendorDeliveryOptions.stroke" [fill]="vendorDeliveryOptions.fill" [tooltip]="vendorDeliveryOptions.tooltip"
+                  [legend]="vendorDeliveryOptions.legend" [grid]="vendorDeliveryOptions.grid" [colors]="vendorDeliveryOptions.colors"
+                  [theme]="vendorDeliveryOptions.theme">
+                </apx-chart>
+                
+                } @else {
+                
+                <div class="vendors-empty-state text-muted px-1 mt-1">
+                  No delivery data available.
+                </div>
+                
+                }
             </div>
           </div>
 
