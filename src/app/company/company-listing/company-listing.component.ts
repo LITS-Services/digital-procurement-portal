@@ -157,6 +157,7 @@ export class CompanyListingComponent implements OnInit {
         vendorEntityAssociationId: c.vendorEntityAssociationId || null,
         isAssigned: c.isAssigned || false,
         setUpId: c.setUpId || null,
+        workflowMasterId: c.workflowMasterId || 0,
         showAssignMe: false // Initialize to false
       };
     } else {
@@ -181,6 +182,7 @@ export class CompanyListingComponent implements OnInit {
         vendorEntityAssociationId: selectedEntity?.vendorEntityAssociationId || null,
         isAssigned: selectedEntity?.isAssigned || false,
         setUpId: selectedEntity?.setUpId || null,
+        workflowMasterId: selectedEntity?.workflowMasterId || 0,
         showAssignMe: false // Initialize to false
       };
     }
@@ -482,6 +484,12 @@ export class CompanyListingComponent implements OnInit {
     }
 
     this.allCompanies.forEach(company => {
+      // If workflowMasterId is present (not 0) OR status is 'SendBack', do not show Assign Me
+      if ((company.workflowMasterId && company.workflowMasterId !== 0) || company.companyStatus?.toLowerCase() === 'sendback') {
+        company.showAssignMe = false;
+        return;
+      }
+
       if (company.setUpId) {
         this.companyService.getWorkflowUsers(company.setUpId).subscribe({
           next: (res: any) => {

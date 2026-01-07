@@ -103,8 +103,8 @@ export class CompanyService {
     return this.http.post(`${environment.apiUrl}/Company/VendorCompanyAction`, payload);
   }
 
-  getApprovalHistoryByProcurmentcompanyId(ProcurementCompanyId: number, vendorComapnyId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/Company/get-company-approval-history?ProcurementCompanyId=${ProcurementCompanyId}&VendorCompanyId=${vendorComapnyId}`);
+  getApprovalHistoryByProcurmentcompanyId(vendorComapnyId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/Company/get-company-approval-history?VendorCompanyId=${vendorComapnyId}`);
   }
 
   setupId(associationId: number): Observable<any[]> {

@@ -10,7 +10,7 @@ import { CompanyService } from 'app/shared/services/Company.services';
 })
 export class CompanyApprovalHistoryComponent implements OnInit {
   @Input() ProcurementCompanyId!: number;
-  @Input() entity!: string; 
+  @Input() entity!: string;
   @Input() vendorComapnyId!: number;
   approvalHistory: any[] = [];
   loading = true;
@@ -27,9 +27,9 @@ export class CompanyApprovalHistoryComponent implements OnInit {
   loadApprovalHistory() {
     this.loading = true;
 
-    this.companyService.getApprovalHistoryByProcurmentcompanyId(this.ProcurementCompanyId ,this.vendorComapnyId).subscribe({
+    this.companyService.getApprovalHistoryByProcurmentcompanyId(this.vendorComapnyId).subscribe({
       next: (data: any) => {
-           const rows = data?.value ?? data;          // prefer .NET $values if present
+        const rows = data?.value ?? data;          // prefer .NET $values if present
         this.approvalHistory = Array.isArray(rows) ? rows : [];
         this.loading = false;
         this.cdr.detectChanges();
