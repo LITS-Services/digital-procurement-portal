@@ -489,8 +489,12 @@ export class CompanyListingComponent implements OnInit {
     }
 
     this.allCompanies.forEach(company => {
-      // If workflowMasterId is present (not 0) OR status is 'SendBack', do not show Assign Me
-      if ((company.workflowMasterId && company.workflowMasterId !== 0) || company.companyStatus?.toLowerCase() === 'sendback') {
+      // If workflowMasterId is present (not 0) OR status is 'SendBack' OR 'Rejected', do not show Assign Me
+      if (
+        (company.workflowMasterId && company.workflowMasterId !== 0) ||
+        company.companyStatus?.toLowerCase() === 'sendback' ||
+        company.companyStatus?.toLowerCase() === 'rejected'
+      ) {
         company.showAssignMe = false;
         return;
       }
