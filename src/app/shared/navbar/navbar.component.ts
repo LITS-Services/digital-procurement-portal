@@ -79,8 +79,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   entityOpen = false;
   private destroy$ = new Subject<void>();
 
-    isScrolled = false;
-     isUserLoading = true;
+  isScrolled = false;
+  isUserLoading = true;
   constructor(
     public translate: TranslateService,
     private layoutService: LayoutService,
@@ -94,7 +94,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     private toaster: ToastrService,
     private userService: UserServiceService,
     private lookupService: LookupService,
-    private sanitizer: DomSanitizer  
+    private sanitizer: DomSanitizer
   ) {
     const browserLang: string = translate.getBrowserLang();
     translate.use(browserLang.match(/en|es|pt|de|ar/) ? browserLang : "en");
@@ -146,20 +146,20 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
             this.username = res.fullName || this.authService.getUserName();
             this.profilePicture =
               res.profilePicture || "assets/img/profile/user.png";
-                 this.isUserLoading = false;
+            this.isUserLoading = false;
             this.cdr.detectChanges();
           }
         },
         error: () => {
           this.username = this.authService.getUserName();
           this.profilePicture = "assets/img/profile/user.png";
-             this.isUserLoading = false;
+          this.isUserLoading = false;
           this.cdr.detectChanges();
         },
       });
     } else {
       this.username = this.authService.getUserName();
-         this.isUserLoading = false;
+      this.isUserLoading = false;
       this.cdr.detectChanges();
     }
   }
@@ -206,8 +206,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (res: any[]) => {
         this.companies = res || [];
 
-      const allOption = { id: 'All', description: 'All Entities' };
-      this.companies = [allOption, ...this.companies];
+        const allOption = { id: 'All', description: 'All Entities' };
+        this.companies = [allOption, ...this.companies];
 
         if (this.companies.length > 0) {
           // Set first company as default
@@ -216,12 +216,12 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
             this.selectedCompanyId = Number(entityId);
           }
           else {
-             this.selectedCompanyId = 'All';
-             localStorage.setItem('selectedCompanyId', 'All');
+            this.selectedCompanyId = 'All';
+            localStorage.setItem('selectedCompanyId', 'All');
           }
-               this.syncSelectedCompany();
+          this.syncSelectedCompany();
         }
-        
+
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Error fetching companies:', err)
@@ -229,29 +229,29 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private syncSelectedCompany(): void {
-  this.selectedCompany = this.companies?.find(c => c.id == this.selectedCompanyId);
-}
+    this.selectedCompany = this.companies?.find(c => c.id == this.selectedCompanyId);
+  }
 
   //   get selectedCompanyName(): string {
   //   const company = this.companies?.find(c => c.id == this.selectedCompanyId);
   //   return company ? company.description : 'Select Company';
   // }
 
-onCompanyChange(eventOrId: any): void {
-  const id = (eventOrId && eventOrId.target) ? eventOrId.target.value : eventOrId;
+  onCompanyChange(eventOrId: any): void {
+    const id = (eventOrId && eventOrId.target) ? eventOrId.target.value : eventOrId;
 
-  if (id === 'All') {
-    this.selectedCompanyId = 'All';
-    localStorage.setItem('selectedCompanyId', 'All');
-  } else {
-    this.selectedCompanyId = +id;
-    localStorage.setItem('selectedCompanyId', String(this.selectedCompanyId));
+    if (id === 'All') {
+      this.selectedCompanyId = 'All';
+      localStorage.setItem('selectedCompanyId', 'All');
+    } else {
+      this.selectedCompanyId = +id;
+      localStorage.setItem('selectedCompanyId', String(this.selectedCompanyId));
+    }
+
+    this.syncSelectedCompany();
+    console.log('Active Company changed:', this.selectedCompanyId);
+    window.location.reload();
   }
-
-  this.syncSelectedCompany();
-  console.log('Active Company changed:', this.selectedCompanyId);
-  window.location.reload();
-}
 
   bindSearch(): void {
     this.searchCtrl.valueChanges
@@ -283,48 +283,48 @@ onCompanyChange(eventOrId: any): void {
       });
   }
 
-private escapeRegExp(text: string): string {
-  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
+  private escapeRegExp(text: string): string {
+    return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
 
-highlightText(message: string | undefined | null, term: string | undefined | null): string {
-  if (!message) return '';
-  if (!term) return message;
+  highlightText(message: string | undefined | null, term: string | undefined | null): string {
+    if (!message) return '';
+    if (!term) return message;
 
-  const safeTerm = this.escapeRegExp(term.trim());
-  if (!safeTerm) return message;
+    const safeTerm = this.escapeRegExp(term.trim());
+    if (!safeTerm) return message;
 
-  const regex = new RegExp(`(${safeTerm})`, 'gi');
-  return message.replace(regex, '<span class="search-highlight">$1</span>');
-}
+    const regex = new RegExp(`(${safeTerm})`, 'gi');
+    return message.replace(regex, '<span class="search-highlight">$1</span>');
+  }
   openPanel(): void {
     if ((this.searchCtrl.value || "").length) this.panelOpen = true;
   }
 
   getBadgeLabel(message: string | undefined | null): string {
-  if (!message) {
-    return '--';
-  }
-  const upper = message.toUpperCase();
+    if (!message) {
+      return '--';
+    }
+    const upper = message.toUpperCase();
 
-  if (upper.includes('RFQ')) {
-    return 'RFQ';
+    if (upper.includes('RFQ')) {
+      return 'RFQ';
+    }
+    if (upper.includes(' PO')) {
+      return 'PO';
+    }
+    if (upper.includes(' PR')) {
+      return 'PR';
+    }
+    const words = message.trim().split(/\s+/);
+    if (words.length === 1) {
+      return words[0].substring(0, 2).toUpperCase();
+    }
+    const first = words[0]?.charAt(0) ?? '';
+    const second = words[1]?.charAt(0) ?? '';
+    const label = (first + second).toUpperCase();
+    return label || '--';
   }
-  if (upper.includes(' PO')) {
-    return 'PO';
-  }
-  if (upper.includes(' PR')) {
-    return 'PR';
-  }
-  const words = message.trim().split(/\s+/);
-  if (words.length === 1) {
-    return words[0].substring(0, 2).toUpperCase();
-  }
-  const first = words[0]?.charAt(0) ?? '';
-  const second = words[1]?.charAt(0) ?? '';
-  const label = (first + second).toUpperCase();
-  return label || '--';
-}
 
   closePanelsearch(): void {
     this.panelOpen = false;
@@ -356,12 +356,12 @@ highlightText(message: string | undefined | null, term: string | undefined | nul
     }
   }
 
-  selectCompany(c: { id: string|number; description: string }, dd: any): void {
-  this.selectedCompanyId = c.id;
-  this.selectedCompany = c;
-  this.onCompanyChange(c.id);
-  dd.close();
-}
+  selectCompany(c: { id: string | number; description: string }, dd: any): void {
+    this.selectedCompanyId = c.id;
+    this.selectedCompany = c;
+    this.onCompanyChange(c.id);
+    dd.close();
+  }
   selectResult(item: any): void {
     this.redirection(item.referenceType, item.referenceId);
     this.closePanelsearch();
@@ -392,31 +392,31 @@ highlightText(message: string | undefined | null, term: string | undefined | nul
   onDocClick(ev: MouseEvent): void {
     const target = ev.target as Node;
 
-  // Notifications
-  if (this.notifOpen) {
-    const notifEl = this.notifRoot?.nativeElement;
-    if (!notifEl || !notifEl.contains(target)) {
-      this.closePanel(); 
+    // Notifications
+    if (this.notifOpen) {
+      const notifEl = this.notifRoot?.nativeElement;
+      if (!notifEl || !notifEl.contains(target)) {
+        this.closePanel();
+      }
+    }
+
+    //  Search 
+    if (this.panelOpen) {
+      const sroot = this.searchRoot?.nativeElement;
+      if (!sroot || !sroot.contains(target)) {
+        this.closePanelsearch();
+        this.cdr.detectChanges();
+      }
     }
   }
 
-  //  Search 
-  if (this.panelOpen) {
-    const sroot = this.searchRoot?.nativeElement;
-    if (!sroot || !sroot.contains(target)) {
-      this.closePanelsearch();   
-      this.cdr.detectChanges(); 
-    }
+
+
+
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+    this.isScrolled = window.scrollY > 10;   // threshold
   }
-  }
-
-
-
-
-@HostListener('window:scroll', [])
-onWindowScroll() {
-  this.isScrolled = window.scrollY > 10;   // threshold
-}
 
   getNotification() {
     this.notificationService.getNotification().subscribe((res: any) => {
@@ -437,16 +437,16 @@ onWindowScroll() {
     });
   }
 
-  redirection(referenceType: any, referenceId: any, title?:string) {
+  redirection(referenceType: any, referenceId: any, title?: string) {
 
-    
-      const isCommentNotif =
-    !!title && title.toLowerCase().includes('comment');
+
+    const isCommentNotif =
+      !!title && title.toLowerCase().includes('comment');
 
     switch (referenceType) {
       case ReferenceType.RFQ:
         this.router.navigate(["/rfq/new-rfq"], {
-          queryParams: { id: referenceId,  focus: isCommentNotif ? 'comments' : undefined,  mode: 'view'},
+          queryParams: { id: referenceId, focus: isCommentNotif ? 'comments' : undefined, mode: 'view' },
           skipLocationChange: true,
         });
         break;
@@ -463,9 +463,14 @@ onWindowScroll() {
           queryParams: { id: referenceId, },
           skipLocationChange: true,
         });
-      // this.selectedPO = { id: n.referenceId };
-      // this.modalService.open(this.purchaseOrderDetail, { size: 'lg', centered: true });
-      // break;
+        break;
+
+      case ReferenceType.Company:
+        this.router.navigate(["/company/company-edit"], {
+          queryParams: { id: referenceId },
+          skipLocationChange: true,
+        });
+        break;
 
       case ReferenceType.Default:
         return ReferenceType.Default;
@@ -502,49 +507,49 @@ onWindowScroll() {
   }
 
   clearAllNotification() {
-       Swal.fire({
-          title: 'Clear all notifications?',
-          text: 'This will delete all the notifications',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: 'Yes, Delete',
-          cancelButtonText: 'Cancel',
-          confirmButtonColor: '#dc3741',
-        }).then((result) => {
-          if (result.isConfirmed) {  
-             this.notificationService.clearAllNotification().subscribe({
-              next: () => {
-                this.getNotification();
-              },
-              error: () => {
-                this.toaster.error('Something went wrong while creating PO.');
-              }
-            });
+    Swal.fire({
+      title: 'Clear all notifications?',
+      text: 'This will delete all the notifications',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Delete',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#dc3741',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.notificationService.clearAllNotification().subscribe({
+          next: () => {
+            this.getNotification();
+          },
+          error: () => {
+            this.toaster.error('Something went wrong while creating PO.');
           }
         });
+      }
+    });
   }
 
 
   markAllAsRead() {
-      Swal.fire({
-          title: 'Mark all as read?',
-          text: 'This will mark all notifications as read',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: 'Yes, Mark all as read',
-          cancelButtonText: 'Cancel',
-        }).then((result) => {
-          if (result.isConfirmed) {
-             this.notificationService.markAllAsRead().subscribe({
-              next: () => {
-                this.getNotification();
-              },
-              error: () => {
-                this.toaster.error('Something went wrong while creating PO.');
-              }
-            });
+    Swal.fire({
+      title: 'Mark all as read?',
+      text: 'This will mark all notifications as read',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Mark all as read',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.notificationService.markAllAsRead().subscribe({
+          next: () => {
+            this.getNotification();
+          },
+          error: () => {
+            this.toaster.error('Something went wrong while creating PO.');
           }
         });
+      }
+    });
   }
 
   @HostListener("window:resize", ["$event"])

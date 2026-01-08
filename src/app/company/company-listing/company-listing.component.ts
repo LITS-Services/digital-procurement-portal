@@ -158,6 +158,8 @@ export class CompanyListingComponent implements OnInit {
         isAssigned: c.isAssigned || false,
         setUpId: c.setUpId || null,
         workflowMasterId: c.workflowMasterId || 0,
+        assignedUserName: c.approverName || '',
+        assignedUserRemarks: c.remarks || '',
         showAssignMe: false // Initialize to false
       };
     } else {
@@ -337,7 +339,10 @@ export class CompanyListingComponent implements OnInit {
     modalRef.componentInstance.ProcurementCompanyId = selectedRow.procurementCompanyId;
     modalRef.componentInstance.vendorComapnyId = selectedRow.vendorCompanyId || selectedRow.id;
     modalRef.componentInstance.entity = selectedRow.entity;
+    modalRef.componentInstance.entity = selectedRow.entity;
     modalRef.componentInstance.vendorEntityAssociationId = selectedRow.vendorEntityAssociationId;
+    modalRef.componentInstance.assignedUserName = selectedRow.assignedUserName;
+    modalRef.componentInstance.assignedUserRemarks = selectedRow.assignedUserRemarks;
 
     console.log('Selected Row for Assign Me:', selectedRow);
     console.log('ProcurementCompanyId sent to modal:', selectedRow.procurementCompanyId);

@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { CompanyActionsComponent } from '../company-actions/company-actions.component';
-import { Action } from 'rxjs/internal/scheduler/Action';
+
 import { finalize } from 'rxjs/operators';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
@@ -232,19 +232,19 @@ export class CompanyEditComponent implements OnInit {
           }));
 
           // --- Vendor Entities (Procurement Companies) ---
-          const rawEntities = company.vendorUserCompanies || [];
-          this.associatedEntities = rawEntities.map((v: any) => ({
-            id: v.id,
-            procurementCompanyId: v.procurementCompanyId,
-            name: v.procurementCompanyName || '',
-            city: v.procurementCompany?.city || '',
-            country: v.procurementCompany?.country || '',
-            industry: v.procurementCompany?.industry || '',
-            statusLabel: v.requestStatus || '',
-            statusClass: this.mapStatusClass(v.requestStatusId),
-            isAssigned: v.isAssigned || false,
-            requestStatusId: v.requestStatusId,
-          }));
+          // const rawEntities = company.vendorUserCompanies || [];
+          // this.associatedEntities = rawEntities.map((v: any) => ({
+          //   id: v.id,
+          //   procurementCompanyId: v.procurementCompanyId,
+          //   name: v.procurementCompanyName || '',
+          //   city: v.procurementCompany?.city || '',
+          //   country: v.procurementCompany?.country || '',
+          //   industry: v.procurementCompany?.industry || '',
+          //   statusLabel: v.requestStatus || '',
+          //   statusClass: this.mapStatusClass(v.requestStatusId),
+          //   isAssigned: v.isAssigned || false,
+          //   requestStatusId: v.requestStatusId,
+          // }));
 
           // // Auto-select first entity if available
           // if (this.associatedEntities.length > 0) {

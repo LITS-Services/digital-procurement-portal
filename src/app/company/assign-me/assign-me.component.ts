@@ -17,6 +17,7 @@ export class AssignMeComponent implements OnInit {
   @Input() isAssigned!: boolean;
   @Input() assignedUserName!: string;
   @Input() setUpId!: number;
+  @Input() assignedUserRemarks!: string;
 
 
   assignMeForm: FormGroup;

@@ -3,10 +3,11 @@ import { Injectable } from "@angular/core";
 import { environment } from "environments/environment";
 import { Observable } from "rxjs";
 export enum ReferenceType {
-    PR = 1,
-    RFQ = 2,
-    PO = 3,
-    Default = 99
+  PR = 1,
+  RFQ = 2,
+  PO = 3,
+  Company = 4,
+  Default = 99
 }
 
 @Injectable({
@@ -14,11 +15,11 @@ export enum ReferenceType {
 })
 
 export class NotifcationService {
-     private apiUrl = `${environment.apiUrl}`;
+  private apiUrl = `${environment.apiUrl}`;
 
-     constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) { }
 
-    getNotification(): Observable<any[]> {
+  getNotification(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/System/get-notifications`);
   }
 
@@ -26,17 +27,17 @@ export class NotifcationService {
     return this.http.get<any>(`${this.apiUrl}/System/mark-notification-as-read/${id}`);
   }
 
-  
-    markAllAsRead(): Observable<any[]> {
+
+  markAllAsRead(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/System/mark-all-notifications-as-read`);
   }
 
-    clearAllNotification(): Observable<any[]> {
+  clearAllNotification(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/System/clear-all-notifications`);
   }
 
 
-    getSearch(param:string): Observable<any[]> {
+  getSearch(param: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/System/search/${param}`);
   }
 }

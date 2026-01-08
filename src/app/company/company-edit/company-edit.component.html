@@ -35,17 +35,18 @@
 
 
             <!-- If isAssigned = true → show Submit for Approval -->
+            <button *ngIf="!isAssigned && workflowMasterId != 0 && mainApproverId == currentUserId"
+              class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId" (click)="onActions('SendBackFromApproval')">
+              <i class="ft-arrow-left"></i>
+              <label class="ml-1">Sendback</label>
+            </button>
+
             <button *ngIf="isAssigned" class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId"
               (click)="onActions('sendforapproval')">
               <i class="ft-check"></i>
               <label class="ml-1">Submit for Approval</label>
             </button>
 
-            <button *ngIf="!isAssigned && workflowMasterId != 0 && mainApproverId == currentUserId"
-              class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId" (click)="onActions('SendBackFromApproval')">
-              <i class="ft-check"></i>
-              <label class="ml-1">Sendbackworks</label>
-            </button>
 
             <!-- If isAssigned = false AND workflowMasterId != 0 AND mainApproverId == currentUserId → show Approve -->
             <button *ngIf="!isAssigned && workflowMasterId != 0 && mainApproverId == currentUserId"
@@ -160,48 +161,46 @@
             <hr />
 
             <!-- Associated entities header -->
-            <div class="d-flex justify-content-between align-items-center mb-1">
+            <!-- <div class="d-flex justify-content-between align-items-center mb-1">
               <div class="d-flex align-items-center">
                 <h5 class="mb-0 mr-2">Associated Entities</h5>
                 <span class="badge badge-light rounded-pill">
                   {{ associatedEntities.length }}
                 </span>
               </div>
-            </div>
+            </div> -->
 
             <p class="text-muted small mb-3">
               Subsidiaries and business units operating under this parent company.
             </p>
 
             <!-- Entity list -->
-            <div class="entity-card mb-2" *ngFor="let entity of associatedEntities">
-              <div class="d-flex align-items-center justify-content-between">
-                <!-- Left: icon + name + meta -->
-                <div class="d-flex align-items-center">
+            <!-- <div class="entity-card mb-2" *ngFor="let entity of associatedEntities">
+              <div class="d-flex align-items-center justify-content-between"> -->
+            <!-- Left: icon + name + meta -->
+            <!-- <div class="d-flex align-items-center">
                   <div class="entity-avatar mr-3 entity-avatar--blue">
                     <i class="fa fa-building"></i>
                   </div>
 
                   <div>
-                    <div class="entity-name">{{ entity.name }}</div>
-                    <!-- <div class="entity-meta text-muted small">
+                    <div class="entity-name">{{ entity.name }}</div> -->
+            <!-- <div class="entity-meta text-muted small">
                     <i class="ft-map-pin mr-1"></i>
                     {{ entity.city }}, {{ entity.country }}
                     <span class="mx-1">•</span>
                     {{ entity.industry }}
                   </div> -->
-                  </div>
-                </div>
+            <!-- </div>
+                </div> -->
 
-                <!-- Right: status + chevron -->
-                <div class="d-flex align-items-center">
+            <!-- Right: status + chevron -->
+            <!-- <div class="d-flex align-items-center">
                   <span class="entity-status-pill" [ngClass]="entity.statusClass">
                     {{ entity.statusLabel }}
                   </span>
 
-                </div>
-              </div>
-            </div>
+                </div> -->
           </div>
         </div>
 
@@ -318,8 +317,8 @@
         </div>
 
         <div *ngIf="selectedTab === 'setup-history'">
-          <app-company-setup-history [vendorEntityAssociationId]="vendorEntityAssociationId"
-            [vendorComapnyId]="companyId"></app-company-setup-history>
+          <app-company-setup-history [vendorEntityAssociationId]="vendorEntityAssociationId">
+          </app-company-setup-history>
         </div>
 
       </div>
