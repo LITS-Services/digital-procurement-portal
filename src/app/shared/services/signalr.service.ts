@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
+import { environment } from 'environments/environment';
 
 enum CreatedByType {
   Procurement = 1,
@@ -9,6 +10,12 @@ enum CreatedByType {
 }
 @Injectable({ providedIn: 'root' })
 export class SignalRService {
+  private signalRUrl = (
+  environment.apiUrl.endsWith('/api')
+    ? environment.apiUrl.slice(0, -4)
+    : environment.apiUrl
+) + '/notification';
+
   public hubConnection!: signalR.HubConnection;
 
   constructor(private authService: AuthService) { }
@@ -32,7 +39,7 @@ export class SignalRService {
   // Start the connection
   startConnection(): Promise<void> {
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl('https://localhost:7188/notification', {
+      .withUrl(this.signalRUrl, {
         accessTokenFactory: () => this.authService.accessToken || ''
       })
       .withAutomaticReconnect()

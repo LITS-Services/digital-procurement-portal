@@ -112,7 +112,7 @@ export class LoginPageComponent implements OnInit {
 
         // Save companyIds
         const companyIds = res?.companyIds?.$values || [];
-        console.log('Extracted companyIds:', companyIds);
+        
         localStorage.setItem('companyIds', JSON.stringify(companyIds));
 
         this.router.navigate(['/dashboard/dashboard1']);

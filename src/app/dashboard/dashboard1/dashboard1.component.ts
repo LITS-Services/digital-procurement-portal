@@ -333,7 +333,7 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
   getMonthlySpending() {
     this.dashboardService.getMonthlySpendingData().subscribe({
       next: (res: any) => {
-        console.log('monthly spending', res);
+        
 
         const data: MonthlySpendingResponse = Array.isArray(res) ? res[0] : res;
 

@@ -35,10 +35,8 @@ export class AuthService {
   }
   set accessToken(token: string | null) {
     if (token) {
-      console.log('[AUTH] Setting accessToken:', token.slice(0, 12) + '...');
       localStorage.setItem('token', token);
     } else {
-      console.log('[AUTH] Clearing accessToken');
       localStorage.removeItem('token');
     }
   }
@@ -48,10 +46,8 @@ export class AuthService {
   }
   set refreshToken(token: string | null) {
     if (token) {
-      console.log('[AUTH] Setting refreshToken:', token.slice(0, 12) + '...');
       localStorage.setItem('refreshToken', token);
     } else {
-      console.log('[AUTH] Clearing refreshToken');
       localStorage.removeItem('refreshToken');
     }
   }
@@ -73,7 +69,6 @@ export class AuthService {
       companyIds: data.companyIds || []
     };
 
-    console.log('[AUTH] Setting SSO session:', sessionData);
 
     // Use the same session setup as regular login
     this._setSessionFromLogin(sessionData);
@@ -212,7 +207,6 @@ export class AuthService {
       .pipe(
         tap((resp) => {
           // EXPECTED: { token, refreshToken? (optional rotation), userId?, userName?, roles?, companyIds? }
-          console.log('[AUTH] Refresh success: new tokens received');
           this._applySessionFromRefresh(resp);
         }),
         map((resp) => resp?.token ?? null),
@@ -221,7 +215,6 @@ export class AuthService {
         }),
         catchError((err) => {
           // refresh failed → clean up & notify observers
-          console.error('[REFRESH] Refresh failed:', err);
           this._refreshSubject.next(null);
           return of(null);
         }),
@@ -241,10 +234,9 @@ export class AuthService {
     this.accessToken = res.token ?? null;
     this.refreshToken = res.refreshToken ?? null;
 
-    console.log('[AUTH] Login session set. accessToken:',
       this.accessToken ? this.accessToken.slice(0, 12) + '...' : 'null',
       'refreshToken:',
-      this.refreshToken ? this.refreshToken.slice(0, 12) + '...' : 'null');
+      this.refreshToken ? this.refreshToken.slice(0, 12) + '...' : 'null';
 
     if (res.userId) localStorage.setItem('userId', res.userId);
     if (res.userName) localStorage.setItem('userName', res.userName);
@@ -276,10 +268,9 @@ export class AuthService {
     if (res?.token) this.accessToken = res.token;
     if (res?.refreshToken) this.refreshToken = res.refreshToken; // rotate if provided
 
-    console.log('[REFRESH] Applied new tokens from refresh. accessToken:',
       this.accessToken ? this.accessToken.slice(0, 12) + '...' : 'null',
       'refreshToken:',
-      this.refreshToken ? this.refreshToken.slice(0, 12) + '...' : 'null');
+      this.refreshToken ? this.refreshToken.slice(0, 12) + '...' : 'null';
 
     // If backend re-sends identity/roles on refresh, update them (optional)
     if (res?.userId) localStorage.setItem('userId', res.userId);
