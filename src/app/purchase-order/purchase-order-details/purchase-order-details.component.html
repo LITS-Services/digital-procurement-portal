@@ -159,7 +159,7 @@
         </div>
 
         <div *ngIf="selectedTab === 'invoice-details'">
-            <app-invoice></app-invoice>
+            <app-invoice [poId]="poId"></app-invoice>
         </div>
 
         <div *ngIf="selectedTab === 'vendor-rating'">

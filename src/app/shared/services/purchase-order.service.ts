@@ -68,4 +68,8 @@ export class PurchaseOrderService {
   getGoodsReceiptNoteById(purchaseOrderId: number) {
     return this.http.get<any>(`${this.baseUrl}/get-grn?purchaseOrderId=${purchaseOrderId}`);
   }
+
+  getInvoiceByPoId(purchaseOrderId: number) {
+    return this.http.get<any>(`${this.baseUrl}/get-invoice-by-id?purchaseOrderId=${purchaseOrderId}`);
+  }
 }
