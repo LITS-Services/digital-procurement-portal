@@ -34,8 +34,8 @@ export class CompanyService {
     return this.http.post<any>(`${this.apiUrl}/register-procurement-company`, data);
   }
 
-  getProCompanies(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/get-all-procurement-companies`);
+  getProCompanies(currentPage: number, pageSize: number, userId?: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/get-all-procurement-companies?currentPage=${currentPage}&pageSize=${pageSize}&userId=${userId}`);
   }
 
   deleteProcurementCompanies(ids: number[]): Observable<any> {

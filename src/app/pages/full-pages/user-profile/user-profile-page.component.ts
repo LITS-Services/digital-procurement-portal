@@ -60,6 +60,11 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
   hideOldPassword: boolean = true;
   hideConfirmPassword: boolean = true;
 
+  currentPage: number = 1;
+  pageSize: number = 10;
+  totalItems: number = 0;
+  totalPages: number = 0;
+
   constructor(
     private configService: ConfigService,
     private layoutService: LayoutService,
@@ -157,9 +162,12 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
 
   // Load companies for dropdown
   loadCompanies() {
-    this.companyService.getProCompanies().subscribe({
+    const userId = localStorage.getItem('userId');
+    this.companyService.getProCompanies(this.currentPage, this.pageSize, userId).subscribe({
       next: (res: any) => {
         this.companies = res?.result || [];
+        this.totalItems = res.totalItems;
+        this.totalPages = res.totalPages;
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Error loading companies:', err)

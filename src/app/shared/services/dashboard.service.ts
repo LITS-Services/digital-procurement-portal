@@ -91,9 +91,10 @@ export class DashboardService {
     );
   }
 
-  getEntitiesCount(entityId: number): Observable<EntitiesCountVM> {
+  getEntitiesCount(entityId: number, userId: string): Observable<EntitiesCountVM> {
     let params = new HttpParams()
     if (entityId) params = params.set("entityId", entityId);
+    if (userId) params = params.set("userId", userId);
     return this.http.get<EntitiesCountVM>(
       `${this.baseUrl}/entities-count`, { params }
     );

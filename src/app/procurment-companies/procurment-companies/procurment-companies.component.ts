@@ -40,6 +40,11 @@ export class ProcurmentCompaniesComponent implements OnInit {
 
   datatableVisible: boolean = true;
 
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = 0;
+  totalItems = 0;
+
   constructor(
     private router: Router,
     private companyService: CompanyService,
@@ -76,8 +81,9 @@ export class ProcurmentCompaniesComponent implements OnInit {
 
   // Load companies
   loadCompanyData() {
+    const userId = localStorage.getItem('userId');
     this.loading = true;
-    this.companyService.getProCompanies().subscribe({
+    this.companyService.getProCompanies(this.currentPage, this.pageSize, userId).subscribe({
       next: (res: any) => {
         // Use paginated result array
         const companies = res?.result || [];
@@ -87,7 +93,8 @@ export class ProcurmentCompaniesComponent implements OnInit {
           status: c.isDeleted ? 'Inactive' : 'Active', // optional: show readable status
           logo: c.logo || '',
         }));
-
+        this.totalPages = res.totalPages;
+        this.totalItems = res.totalItems;
         this.loading = false;
         this.cdr.detectChanges();
       },

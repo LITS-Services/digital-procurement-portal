@@ -29,6 +29,11 @@ export class EmployeeComponent implements OnInit {
   passwordFieldType: string = 'password';
   confirmPasswordFieldType: string = 'password';
 
+  currentPage = 1;
+  pageSize = 10;
+  totalItems = 0;
+  totalPages = 0;
+
   constructor(
     private fb: UntypedFormBuilder,
     private route: ActivatedRoute,
@@ -103,9 +108,12 @@ export class EmployeeComponent implements OnInit {
   }
 
   loadCompanies() {
-    this.companyService.getProCompanies().subscribe({
+    const userId = localStorage.getItem('userId');
+    this.companyService.getProCompanies(this.currentPage, this.pageSize, userId).subscribe({
       next: (res: any) => {
         this.companies = res?.result || [];
+        this.totalItems = res.totalItems;
+        this.totalPages = res.totalPages;
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Error loading companies:', err)

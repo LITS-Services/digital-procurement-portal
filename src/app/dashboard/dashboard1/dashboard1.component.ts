@@ -425,8 +425,9 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
   }
 
   loadEntitiesCounts(): void {
+    const userId = localStorage.getItem('userId');
     const entityId = Number(localStorage.getItem('selectedCompanyId'));
-    this.dashboardService.getEntitiesCount(entityId).subscribe({
+    this.dashboardService.getEntitiesCount(entityId, userId).subscribe({
       next: (data) => {
         this.entitiesCounts = data;
         this.cdr.detectChanges();

@@ -28,6 +28,11 @@ export class VendorOnboardingReceiversComponent implements OnInit {
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
 
+  currentPage = 1;
+  pageSize = 10;
+  totalItems = 0;
+  totalPages = 0;
+
   constructor(
     public activeModal: NgbActiveModal,
     private fb: FormBuilder,
@@ -115,13 +120,16 @@ export class VendorOnboardingReceiversComponent implements OnInit {
   }
 
   loadEntities() {
+    const userId = localStorage.getItem('userId');
     this.spinner.show();
     this.companyService
-      .getProCompanies()
+      .getProCompanies(this.currentPage, this.pageSize, userId)
       .pipe(finalize(() => { this.spinner.hide(); this.cdr.detectChanges(); }))
       .subscribe({
         next: (res: any) => {
           const companies = res?.result || [];
+          this.totalPages = res.totalPages;
+          this.totalItems = res.totalItems;
           this.entitiesList = companies.map((c: any) => ({
             ...c,
             status: c.isDeleted ? 'Inactive' : 'Active',

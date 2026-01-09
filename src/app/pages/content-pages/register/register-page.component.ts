@@ -22,6 +22,11 @@ export class RegisterPageComponent implements OnInit {
   selectedEmployee: any = null;
   dropdownOpen = false;
 
+  currentPage = 1;
+  pageSize = 10;
+  totalItems = 0;
+  totalPages = 0;
+
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
@@ -79,11 +84,15 @@ export class RegisterPageComponent implements OnInit {
   }
 
   loadProcurmentCompanies() {
+    const userId = this.authService.getUserId();
     this.spinner.show();
-    this.companyService.getProCompanies().subscribe({
+    this.companyService.getProCompanies(this.currentPage, this.pageSize, userId).subscribe({
       next: (res: any) => {
         this.spinner.hide();
+        
         this.procurmentCompanies = res?.$values || [];
+        this.totalItems = res.totalItems;
+        this.totalPages = res.totalPages;
       },
       error: () => {
         this.spinner.hide();

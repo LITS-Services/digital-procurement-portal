@@ -23,6 +23,11 @@ export class BulkVendorOnboardingComponent implements OnInit {
 
   tenderingData = [];
   //selectedEntityIds: number[] = [];
+
+  currentPage = 1;
+  pageSize = 10;
+  totalItems = 0;
+  totalPages = 0;
   constructor(
     private cdr: ChangeDetectorRef,
     private toastr: ToastrService,
@@ -433,7 +438,8 @@ export class BulkVendorOnboardingComponent implements OnInit {
   }
 
   loadCompanyData() {
-    this.companyService.getProCompanies().subscribe({
+    const userId = localStorage.getItem('userId');
+    this.companyService.getProCompanies(this.currentPage, this.pageSize, userId).subscribe({
       next: (res: any) => {
         const companies = res?.result || [];
 
@@ -455,6 +461,8 @@ export class BulkVendorOnboardingComponent implements OnInit {
             raw: x, // keep full object if needed later
           }));
 
+        this.totalPages = res.totalPages;
+        this.totalItems = res.totalItems;
         this.cdr.detectChanges();
       },
       error: (err) => {

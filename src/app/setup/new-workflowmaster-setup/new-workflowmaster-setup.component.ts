@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbAccordionItem, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
+import { AuthService } from 'app/shared/auth/auth.service';
 import { PurchaseRequestAttachmentModalComponent } from 'app/shared/modals/purchase-request-attachment-modal/purchase-request-attachment-modal.component';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { WorkflowServiceService } from 'app/shared/services/WorkflowService/workflow-service.service';
@@ -45,6 +46,11 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
   // NEW: Conditional field flag
   hideConditionalFields = false;
   isToolbarSticky: boolean = false;
+
+  currentPage = 1;
+  pageSize = 10;
+  totalItems = 0;
+  totalPages = 0;
   constructor(
     private companyService: CompanyService,
     private router: Router,
@@ -53,7 +59,8 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
     private WorkflowServiceService: WorkflowServiceService,
     private fb: FormBuilder,
     public toastr: ToastrService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -152,13 +159,17 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
 
   getEntities(): void {
     debugger;
+    const userId = this.authService.getUserId();
     this.spinner.show();
-    this.companyService.getProCompanies()
+    this.companyService.getProCompanies(this.currentPage, this.pageSize, userId)
       .pipe(finalize(() => this.spinner.hide()))
       .subscribe({
         next: (res: any) => {
           this.entitiesList = res.result || [];
+          this.totalItems = res.totalItems;
+          this.totalPages = res.totalPages;
           this.dataLoaded = true;
+
         },
         error: (err) => {
           console.error('Error fetching entities:', err);
@@ -381,6 +392,7 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
   }
 
   loadexistingWorkflowById(id: number) {
+    const userId = localStorage.getItem('userId');
     this.WorkflowServiceService.GetWorkflowById(id).subscribe({
       next: (res: any) => {
         const master = Array.isArray(res) ? res[0] : res;
@@ -401,10 +413,11 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
           const selectedEntity = master.entity?.[0];
           if (selectedEntity) {
             // Fetch all available entities first
-            this.companyService.getProCompanies().subscribe({
+            this.companyService.getProCompanies(this.currentPage, this.pageSize, userId).subscribe({
               next: (res: any) => {
                 this.entitiesList = res?.result || [];
-
+                this.totalItems = res.totalItems;
+                this.totalPages = res.totalPages;
                 // Try to find a match by id or name
                 const matchedEntity =
                   this.entitiesList.find(

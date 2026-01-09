@@ -34,6 +34,10 @@ export class VendorOnboardingSetupComponent implements OnInit {
 
   datatableVisible: boolean = true;
 
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = 0;
+  totalItems = 0;
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -273,9 +277,10 @@ export class VendorOnboardingSetupComponent implements OnInit {
   }
 
   loadEntities(callback?: () => void) {
+    const userId = localStorage.getItem('userId');
     this.spinner.show();
     this.companyService
-      .getProCompanies()
+      .getProCompanies(this.currentPage, this.pageSize, userId)
       .pipe(finalize(() => {
         this.spinner.hide();
         this.cdr.detectChanges();
@@ -284,6 +289,8 @@ export class VendorOnboardingSetupComponent implements OnInit {
       .subscribe({
         next: (res: any) => {
           const companies = res?.result || [];
+          this.totalItems = res.totalItems;
+          this.totalPages = res.totalPages;
           this.entitiesList = companies.map((c: any) => ({
             ...c,
             status: c.isDeleted ? 'Inactive' : 'Active',
