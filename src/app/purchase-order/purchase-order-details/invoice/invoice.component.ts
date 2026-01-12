@@ -21,7 +21,7 @@ import { PurchaseOrderService } from 'app/shared/services/purchase-order.service
 export class InvoiceComponent implements OnInit {
   @Input() poId!: number;
   loading = true;
-  invoiceDetails: any;
+  invoiceDetails: any = {};
   itemsExpanded: boolean = true;
   constructor(private router: Router, private purchaseOrderService: PurchaseOrderService, private cdr: ChangeDetectorRef) { }
   ngOnInit(): void {

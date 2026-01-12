@@ -20,7 +20,7 @@ import { PurchaseOrderService } from 'app/shared/services/purchase-order.service
 })
 export class GrnDetailsComponent implements OnInit {
   @Input() poId!: number;
-  grnDetails: any;
+  grnDetails: any = {};
   loading = true;
   itemsExpanded: boolean = true;
   constructor(private router: Router,
