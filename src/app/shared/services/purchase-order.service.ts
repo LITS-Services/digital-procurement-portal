@@ -24,11 +24,12 @@ export class PurchaseOrderService {
   }
 
   // Fetch all Purchase Orders
-  getAllPurchaseOrders(currentPage: number, pageSize: number, entityId: number): Observable<any> {
+  getAllPurchaseOrders(currentPage: number, pageSize: number, entityId: number, userId: string): Observable<any> {
     let params = new HttpParams()
         if (currentPage) params = params.set("currentPage", currentPage);
         if (pageSize) params = params.set("pageSize", pageSize);
         if (entityId) params = params.set("entityId", entityId);
+        if (userId) params = params.set("userId", userId);
     return this.http.get<any>(
       `${this.baseUrl}/get-all-purchase-orders`, { params } 
     );

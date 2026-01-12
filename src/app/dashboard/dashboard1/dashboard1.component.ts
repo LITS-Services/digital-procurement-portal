@@ -318,8 +318,9 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
   }
 
   loadPurchaseOrdersCounts(): void {
+    const userId = localStorage.getItem('userId');
     const entityId = Number(localStorage.getItem('selectedCompanyId'));
-    this.dashboardService.getPurchaseOrdersCount(entityId).subscribe({
+    this.dashboardService.getPurchaseOrdersCount(entityId, userId).subscribe({
       next: (data) => {
         this.poCounts = data;
         this.cdr.detectChanges();

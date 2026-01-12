@@ -38,6 +38,9 @@ export class NotifcationService {
 
 
   getSearch(param: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/System/search/${param}`);
+    const userId = localStorage.getItem('userId');
+    return this.http.get<any[]>(`${this.apiUrl}/System/search/${param}`, {
+      params: { userId: userId || '' }
+    });
   }
 }

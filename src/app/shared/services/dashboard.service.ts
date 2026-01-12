@@ -67,9 +67,10 @@ export class DashboardService {
     );
   }
 
-  getPurchaseOrdersCount(entityId: number): Observable<PurchaseOrdersCountVM> {
+  getPurchaseOrdersCount(entityId: number, userId?: string): Observable<PurchaseOrdersCountVM> {
     let params = new HttpParams()
     if (entityId) params = params.set("entityId", entityId);
+    if (userId) params = params.set("userId", userId);
     return this.http.get<PurchaseOrdersCountVM>(
       `${this.baseUrl}/purchase-orders-count`, { params }
     );
