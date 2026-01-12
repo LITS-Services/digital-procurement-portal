@@ -338,7 +338,7 @@ export class CompanyListingComponent implements OnInit {
     modalRef.componentInstance.setUpId = selectedRow.setUpId;
     modalRef.componentInstance.ProcurementCompanyId = selectedRow.procurementCompanyId;
     modalRef.componentInstance.vendorComapnyId = selectedRow.vendorCompanyId || selectedRow.id;
-    modalRef.componentInstance.entity = selectedRow.entity;
+    modalRef.componentInstance.companyName = selectedRow.name;
     modalRef.componentInstance.entity = selectedRow.entity;
     modalRef.componentInstance.vendorEntityAssociationId = selectedRow.vendorEntityAssociationId;
     modalRef.componentInstance.assignedUserName = selectedRow.assignedUserName;

@@ -466,8 +466,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
 
       case ReferenceType.Company:
-        this.router.navigate(["/company/company-edit"], {
-          queryParams: { id: referenceId },
+        this.router.navigate(["/company"], {
           skipLocationChange: true,
         });
         break;
@@ -559,10 +558,11 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   logout(): void {
-    this.authService.logout().subscribe({
-      next: () => this.authService.performLogout(),
-      error: () => this.authService.performLogout(),
-    });
+    // this.authService.logout().subscribe({
+    //   next: () => this.authService.performLogout(),
+    //   error: () => this.authService.performLogout(),
+    // });
+    this.authService.performLogout();
   }
 
   loadLayout() {

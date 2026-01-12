@@ -1,13 +1,23 @@
 <div class="modal-header">
-    <h4 class="modal-title text-white">Assign to Me - {{ entity }}</h4>
+    <h4 class="modal-title text-white">Assign to Me - {{ companyName }}</h4>
     <button type="button" class="btn-close" aria-label="Close" (click)="closeDialog()">
     </button>
 </div>
 
 <div class="modal-body">
 
-    <!-- Already Assigned Message -->
-    <div *ngIf="isAssigned && !showRemarks" class="alert">
+    <!-- Already Assigned to ME Message -->
+    <div *ngIf="isAssigned && isAssignedToMe" class="alert alert-info border-info">
+        <strong>Already Assigned!</strong><br>
+        This company is already assigned to you.
+        <br><br>
+        <!-- <div class="mt-2">
+            <button class="btn btn-primary" (click)="closeDialog()">OK</button>
+        </div> -->
+    </div>
+
+    <!-- Already Assigned to SOMEONE ELSE Message -->
+    <div *ngIf="isAssigned && !isAssignedToMe && !showRemarks" class="alert border-warning">
         <strong>Already Assigned!</strong><br>
         This company is already assigned to:
         <b>{{ assignedUserName }}</b>
@@ -22,7 +32,7 @@
         </div>
     </div>
 
-    <form [formGroup]="assignMeForm" (ngSubmit)="submitForm()">
+    <form *ngIf="!isAssignedToMe" [formGroup]="assignMeForm" (ngSubmit)="submitForm()">
 
         <!-- Remarks Section -->
         <div *ngIf="showRemarks">

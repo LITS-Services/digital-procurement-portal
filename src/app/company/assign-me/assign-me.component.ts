@@ -11,6 +11,7 @@ import { CompanyService } from 'app/shared/services/Company.services';
 })
 export class AssignMeComponent implements OnInit {
   @Input() ProcurementCompanyId!: number;
+  @Input() companyName!: string;
   @Input() entity!: string;
   @Input() vendorComapnyId!: number;
   @Input() vendorEntityAssociationId!: number;
@@ -23,6 +24,7 @@ export class AssignMeComponent implements OnInit {
   assignMeForm: FormGroup;
   loading: boolean = false;
   errorMessage: string = '';
+  isAssignedToMe: boolean = false;
 
   showRemarks: boolean = false;   // <-- NEW
 
@@ -39,6 +41,12 @@ export class AssignMeComponent implements OnInit {
   ngOnInit(): void {
 
     console.log("Setup ID received in modal:", this.setUpId);
+
+    const currentUserName = localStorage.getItem('userName');
+    if (this.isAssigned && this.assignedUserName && currentUserName &&
+      this.assignedUserName.toLowerCase() === currentUserName.toLowerCase()) {
+      this.isAssignedToMe = true;
+    }
 
     // Hide remarks initially when already assigned
     if (this.isAssigned) {

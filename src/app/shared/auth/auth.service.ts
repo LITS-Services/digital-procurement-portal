@@ -234,7 +234,7 @@ export class AuthService {
     this.accessToken = res.token ?? null;
     this.refreshToken = res.refreshToken ?? null;
 
-      this.accessToken ? this.accessToken.slice(0, 12) + '...' : 'null',
+    this.accessToken ? this.accessToken.slice(0, 12) + '...' : 'null',
       'refreshToken:',
       this.refreshToken ? this.refreshToken.slice(0, 12) + '...' : 'null';
 
@@ -268,7 +268,7 @@ export class AuthService {
     if (res?.token) this.accessToken = res.token;
     if (res?.refreshToken) this.refreshToken = res.refreshToken; // rotate if provided
 
-      this.accessToken ? this.accessToken.slice(0, 12) + '...' : 'null',
+    this.accessToken ? this.accessToken.slice(0, 12) + '...' : 'null',
       'refreshToken:',
       this.refreshToken ? this.refreshToken.slice(0, 12) + '...' : 'null';
 
