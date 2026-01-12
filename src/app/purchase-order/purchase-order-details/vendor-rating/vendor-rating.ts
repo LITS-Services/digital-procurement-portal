@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize } from 'rxjs';
 
 @Component({
@@ -22,7 +23,8 @@ export class VendorRating {
   constructor(
     private fb: FormBuilder,
     private poService: PurchaseOrderService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private spinner: NgxSpinnerService
   ) { }
 
   ngOnInit(): void {
@@ -39,6 +41,8 @@ export class VendorRating {
   }
 
   loadVendorRating() {
+    this.loading = true;
+    this.spinner.show();
     this.poService.getVendorRatingByPoId(this.poId)
       .subscribe({
         next: (res) => {
@@ -53,6 +57,8 @@ export class VendorRating {
             });
 
             this.ratingForm.get('rating')?.disable();
+            this.loading = false;
+            this.spinner.hide();
             this.cdr.detectChanges();
           }
         },
@@ -65,6 +71,7 @@ export class VendorRating {
 
   loadPoDetails() {
     this.loading = true;
+    this.spinner.show();
     this.poService.getPurchaseOrderById(this.poId)
       .pipe(finalize(() => { this.loading = false; this.cdr.detectChanges(); }))
       .subscribe({
@@ -74,6 +81,8 @@ export class VendorRating {
             purchaseOrderNo: res.purchaseOrderNo || '-',
             vendorName: res.vendorName || '-'
           });
+          this.loading = false;
+          this.spinner.hide();
         },
         error: () => {
           this.ratingForm.patchValue({ purchaseOrderNo: '-', vendorName: '-' });

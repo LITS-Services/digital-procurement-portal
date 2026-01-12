@@ -2,6 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-invoice',
@@ -23,16 +24,22 @@ export class InvoiceComponent implements OnInit {
   loading = true;
   invoiceDetails: any = {};
   itemsExpanded: boolean = true;
-  constructor(private router: Router, private purchaseOrderService: PurchaseOrderService, private cdr: ChangeDetectorRef) { }
-  ngOnInit(): void {
+  constructor(private router: Router, 
+    private purchaseOrderService: PurchaseOrderService, 
+    private cdr: ChangeDetectorRef,
+    private spinner: NgxSpinnerService) { }
+    ngOnInit(): void {
     if (this.poId) this.loadInvoiceDetails();
   }
 
   loadInvoiceDetails() {
+    this.loading = true;
+    this.spinner.show();
     this.purchaseOrderService.getInvoiceByPoId(this.poId).subscribe({
       next: res => {
         this.invoiceDetails = res;
         this.loading = false;
+        this.spinner.hide();
         this.cdr.detectChanges();
       },
       error: () => this.loading = false

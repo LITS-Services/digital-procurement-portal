@@ -2,6 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { ShipmentService } from 'app/shared/services/shipment.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-shipment-details',
@@ -27,7 +28,8 @@ export class ShipmentDetailsComponent implements OnInit {
   itemsExpanded = true;
   constructor(private shipmentService: ShipmentService,
     private purchaseOrderService: PurchaseOrderService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private spinner: NgxSpinnerService
   ) { }
 
   ngOnInit(): void {
@@ -36,10 +38,13 @@ export class ShipmentDetailsComponent implements OnInit {
   }
   
   loadShipmentDetails() {
+    this.loading = true;
+    this.spinner.show();
     this.shipmentService.getShipmentDetailById(this.poId).subscribe({
       next: res => {
         this.shipmentDetails = res; // because your API returns Result<T>
         this.loading = false;
+        this.spinner.hide();
         this.cdr.detectChanges();
       },
       error: () => this.loading = false
