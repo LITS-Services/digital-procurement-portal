@@ -1482,7 +1482,7 @@ openExceptionPolicyModal(opts?: { mode: 'create' | 'view' }) {
   });
 
   const f = this.newPurchaseRequestForm.getRawValue();
-
+  modalRef.componentInstance.viewMode = this.viewMode;
   modalRef.componentInstance.data = {
     requisitionNo: f.requisitionNo,
     requesterName: f.receiverName,

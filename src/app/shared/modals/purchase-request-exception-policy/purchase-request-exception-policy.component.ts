@@ -12,6 +12,7 @@ import { ColumnMode, DatatableComponent } from '@swimlane/ngx-datatable';
 })
 export class PurchaseRequestExceptionPolicyComponent implements OnInit {
   @Input() data: any;
+  @Input() viewMode: false;
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
   @ViewChild('tableResponsive') tableResponsive: any;
@@ -40,7 +41,9 @@ export class PurchaseRequestExceptionPolicyComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.data) return;
-
+    if (this.viewMode) {
+      this.exceptionPolicyForm.disable();
+    }
     // Patch base fields
     this.exceptionPolicyForm.patchValue({
       purchaseRequestId: this.data.purchaseRequestId,
