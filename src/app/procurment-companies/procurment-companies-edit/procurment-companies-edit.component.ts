@@ -152,7 +152,7 @@ onFileSelect(event: Event) {
       companyGUID: this.companyForm.value.companyGUID || this.generateGUID(),
       name: this.companyForm.value.name,
       logo: this.existingLogo || 'string',
-      isDeleted: !!this.companyForm.value.isDeleted,
+      isDeleted: this.companyForm.value.isDeleted,
       addressDetails: this.addresses
     };
 
