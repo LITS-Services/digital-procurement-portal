@@ -67,6 +67,7 @@
     appSidebarAnchorToggle
     *ngIf="menuItem.submenu.length > 0 && !menuItem.isExternalLink && !config.layout.sidebar.collapsed"
     [ngbTooltip]="null"
+    triggers="mouseenter:mouseleave"
   >
     <i [ngClass]="[menuItem.icon]"></i>
 
@@ -81,6 +82,7 @@
   [matMenuTriggerFor]="collapsedMenu"
   (click)="$event.preventDefault(); $event.stopPropagation();"
   [ngbTooltip]="menuItem.title | translate"
+  triggers="mouseenter:mouseleave"
   container="body"
   placement="right"
   tooltipClass="sidebar-collapsed-tooltip"
@@ -116,6 +118,7 @@
     routerLink="{{ menuItem.path }}"
     *ngIf="menuItem.submenu.length === 0 && !menuItem.isExternalLink"
     [ngbTooltip]="config?.layout?.sidebar?.collapsed ? (menuItem.title | translate) : null"
+    triggers="mouseenter:mouseleave"
     container="body"
     placement="right"
     tooltipClass="sidebar-collapsed-tooltip"

@@ -387,10 +387,10 @@
         <div class="col-12">
           <div class="row">
             <!-- Left: Item Details -->
-            <div class="col-6">
+            <div class="col-md-6 col-12">
               <h5>Item Details</h5>
               <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-6 col-12">
                   <div class="form-group mb-2">
                     <label>Item</label>
                     <select class="form-control" formControlName="itemId">
@@ -402,7 +402,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-6 col-12">
                   <div class="form-group mb-2">
                     <label>U of M</label>
                     <select class="form-control custom-input" formControlName="unitOfMeasurementId">
@@ -416,14 +416,14 @@
               </div>
 
               <div class="row">
-                 <div class="col-md-6">
+                 <div class="col-md-6 col-12">
                   <div class="form-group mb-2">
                     <label>Order Quantity</label>
                     <input type="number" placeholder="Enter Order Quantity" class="form-control custom-input" formControlName="orderQuantity" />
                   </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-6 col-12">
                   <div class="form-group mb-2">
                     <label>Unit Cost</label>
                     <input type="number" placeholder="Enter Unit Cost" class="form-control custom-input" formControlName="unitCost" />
@@ -432,7 +432,7 @@
               </div>
 
               <div class="row">
-                  <div class="col-md-6">
+                  <div class="col-md-6 col-12">
                   <div class="form-group mb-2">
                     <label>Amount</label>
                     <input type="number" placeholder="Enter Amount" class="form-control custom-input" formControlName="amount" />
@@ -440,7 +440,7 @@
                 </div>
                
 
-                <div class="col-md-6">
+                <div class="col-md-6 col-12">
                   <div class="form-group mb-2">
                     <label>Req. by Date</label>
                     <input type="date" class="form-control custom-input" formControlName="reqByDate" />
@@ -448,14 +448,14 @@
                 </div>
               </div>
 
-              <div class="form-group mb-2">
+              <div class="form-group mb-2 col-12">
                 <label>Item Description</label>
                 <textarea rows="2" placeholder="Enter Item Description" class="form-control custom-input" formControlName="itemDescription"></textarea>
               </div>
             </div>
 
             <!-- Right: Other Details -->
-            <div class="col-6">
+            <div class="col-12 col-md-6">
               <h5>Other Details</h5>
 
               <!-- <div *ngIf="!isNewForm" class="form-group mb-2">
@@ -482,7 +482,7 @@
                 </select>
               </div> -->
 
-              <div class="form-group mb-2">
+              <div class="form-group mb-2 ">
                 <label>Account</label>
                 <select class="form-control custom-input" formControlName="accountId">
                   <option value="" disabled selected>Select Account</option>

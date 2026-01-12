@@ -96,6 +96,16 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     }, 500);
   }
 
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const tooltipElements = document.querySelectorAll('.tooltip');
+    tooltipElements.forEach((tooltip: any) => {
+      if (tooltip.parentNode) {
+        tooltip.parentNode.removeChild(tooltip);
+      }
+    });
+  }
+
 navigateFromMiniMenu(item: any, dd: any) {
   dd?.close();
 
