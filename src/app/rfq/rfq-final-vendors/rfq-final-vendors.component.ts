@@ -3,6 +3,7 @@ import { RfqService } from '../rfq.service';
 import { ToastrService } from 'ngx-toastr';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-rfq-final-vendors',
@@ -23,9 +24,14 @@ export class RfqFinalVendorsComponent implements OnInit {
 
   loadingAi = false;
   aiExplanation: string = '';
+  private pendingRequests = 0;
 
-  constructor(private rfqService: RfqService, private toastr: ToastrService, private cdr: ChangeDetectorRef,
+  constructor(private rfqService: RfqService,
+     private toastr: ToastrService, 
+     private cdr: ChangeDetectorRef,
     private modalService: NgbModal,
+    private spinner: NgxSpinnerService
+
   ) { }
 
   ngOnInit(): void {
@@ -34,6 +40,8 @@ export class RfqFinalVendorsComponent implements OnInit {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['data'] && changes['data'].currentValue) {
       this.quotationRequestId = this.data.quotationId;
+      this.pendingRequests = 2;
+      this.spinner.show();
       this.loadItems(this.quotationRequestId);
       this.loadBiddingVendors(this.quotationRequestId);
     }
@@ -52,9 +60,11 @@ export class RfqFinalVendorsComponent implements OnInit {
         });
         this.mapSelectedVendors();
         this.cdr.detectChanges();
+        this.checkAndHideLoader();
       },
       error: (err) => {
         console.error('Error fetching items', err);
+        this.checkAndHideLoader();
       }
     });
   }
@@ -68,11 +78,22 @@ export class RfqFinalVendorsComponent implements OnInit {
         this.vendorData = (res.vendors || []).filter(v => v.bids && v.bids.length > 0);
         this.mapSelectedVendors();
         this.cdr.detectChanges();
+        this.checkAndHideLoader();
       },
       error: (err) => {
         console.error('Error fetching bidding vendors', err);
+        this.checkAndHideLoader();
       }
     });
+  }
+
+  private checkAndHideLoader() {
+    if (this.pendingRequests > 0) {
+      this.pendingRequests--;
+      if (this.pendingRequests === 0) {
+        this.spinner.hide();
+      }
+    }
   }
   // private mapSelectedVendors() {
   //   if (!this.itemsData.length || !this.vendorData.length) return;
