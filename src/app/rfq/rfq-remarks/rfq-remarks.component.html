@@ -1,12 +1,10 @@
 <div class="modal-header bg-primary text-white">
   <h4 class="modal-title">Remarks Details - {{ action }}</h4>
-  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()">&times;</button>
+  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
 </div>
 
 <div class="modal-body">
-  <textarea [(ngModel)]="remarks"
-            class="form-control"
-            placeholder="Enter remarks..."></textarea>
+  <textarea [(ngModel)]="remarks" class="form-control" placeholder="Enter remarks..."></textarea>
 </div>
 
 <div class="modal-footer">
