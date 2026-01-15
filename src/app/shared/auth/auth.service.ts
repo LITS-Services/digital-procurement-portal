@@ -134,7 +134,7 @@ export class AuthService {
 
   // ===== Logout =====
   logout(): Observable<any> {
-    return this.http.post(`${this.baseUrl}/Auth/logout`, {});
+    return this.http.post(`${this.baseUrl}/Auth/Procurementlogout`, {});
   }
 
   performLogout(): void {
