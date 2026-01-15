@@ -2,6 +2,7 @@ import { Component, ViewChild, ChangeDetectorRef, OnInit } from '@angular/core';
 import { NgForm, UntypedFormGroup, UntypedFormControl, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from "@angular/router";
 import { AuthService } from 'app/shared/auth/auth.service';
+import { PermissionService } from 'app/shared/permissions/permission.service';
 import { NgxSpinnerService } from "ngx-spinner";
 import { ToastrService } from 'ngx-toastr';
 
@@ -33,7 +34,8 @@ export class LoginPageComponent implements OnInit {
     private spinner: NgxSpinnerService,
     private route: ActivatedRoute,
     public toastr: ToastrService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private perms: PermissionService
   ) { }
 
   ngOnInit() {
@@ -55,6 +57,7 @@ export class LoginPageComponent implements OnInit {
     const error = params.get('error');
 
     if (token) {
+      this.spinner.show();
       console.log("✅ Token found from Azure redirect:", token);
       localStorage.setItem('token', token);
       if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
@@ -62,7 +65,22 @@ export class LoginPageComponent implements OnInit {
       if (userId) localStorage.setItem('userId', userId);
       if (username) localStorage.setItem('username', username);
 
-      this.router.navigate(['/dashboard/dashboard1'], { replaceUrl: true });
+      localStorage.setItem('isAuthenticated', 'true');
+
+      // ✅ load permissions immediately (same thing that happens on page refresh)
+      this.perms.refreshForCurrentUser$().subscribe({
+        next: () => {
+          this.spinner.hide();
+          this.router.navigate(['/dashboard/dashboard1'], { replaceUrl: true });
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          // even if perms fail, still navigate (optional)
+          this.spinner.hide();
+          this.router.navigate(['/dashboard/dashboard1'], { replaceUrl: true });
+          this.cdr.detectChanges();
+        }
+      });
       return;
     }
 
