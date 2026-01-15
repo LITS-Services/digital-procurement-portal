@@ -6,6 +6,7 @@ import { AuthService } from 'app/shared/auth/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize } from 'rxjs/operators';
+import { LookupService } from 'app/shared/services/lookup.service';
 
 @Component({
   selector: 'app-employee',
@@ -43,7 +44,7 @@ export class EmployeeComponent implements OnInit {
     private toastr: ToastrService,
     private cdr: ChangeDetectorRef,
     private spinner: NgxSpinnerService,
-
+    private lookupService: LookupService
   ) { }
 
   ngOnInit(): void {
@@ -67,7 +68,8 @@ export class EmployeeComponent implements OnInit {
         Validators.pattern(/^(?=.*[A-Z])(?=.*[!@#$%^&*]).{6,}$/)
       ]],
       confirmPassword: [{ value: '', disabled: this.isEditMode }, this.isEditMode ? [] : Validators.required],
-      companyGUIDs: [[], Validators.required], //
+      //companyGUIDs: [[], Validators.required], //
+      companyIds: [[], Validators.required],
       roleId: [null, Validators.required],
       isDeleted: [false]
     }, { validators: this.passwordMatchValidator });
@@ -107,18 +109,30 @@ export class EmployeeComponent implements OnInit {
     });
   }
 
+  // loadCompanies() {
+  //   const userId = localStorage.getItem('userId');
+  //   this.companyService.getProCompanies(this.currentPage, this.pageSize, userId).subscribe({
+  //     next: (res: any) => {
+  //       this.companies = res?.result || [];
+  //       this.totalItems = res.totalItems;
+  //       this.totalPages = res.totalPages;
+  //       this.cdr.detectChanges();
+  //     },
+  //     error: (err) => console.error('Error loading companies:', err)
+  //   });
+  // }
   loadCompanies() {
-    const userId = localStorage.getItem('userId');
-    this.companyService.getProCompanies(this.currentPage, this.pageSize, userId).subscribe({
-      next: (res: any) => {
-        this.companies = res?.result || [];
-        this.totalItems = res.totalItems;
-        this.totalPages = res.totalPages;
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error('Error loading companies:', err)
-    });
-  }
+  const userId = localStorage.getItem('userId');
+
+  this.lookupService.getProcCompaniesByProcUserId(userId!).subscribe({
+    next: (res: any[]) => {
+      this.companies = res || [];
+      this.cdr.detectChanges();
+    },
+    error: err => console.error('Error loading companies', err)
+  });
+}
+
 
 
   loadEmployees() {
@@ -218,7 +232,11 @@ export class EmployeeComponent implements OnInit {
               ? emp.companies.$values.map((c: any) => c.companyGUID)
               : emp.companies.map((c: any) => c.companyGUID);
 
-            this.companyForm.patchValue({ companyGUIDs: this.selectedCompanyGUIDs });
+            //this.companyForm.patchValue({ companyGUIDs: this.selectedCompanyGUIDs });
+            this.companyForm.patchValue({
+              companyIds: emp.companies.map((c: any) => c.id)
+            });
+
           }
 
           console.log(' Employee data loaded:', emp);
@@ -383,10 +401,15 @@ export class EmployeeComponent implements OnInit {
     const formValues = this.companyForm.getRawValue();
 
     //  Step 3: use form control directly for selected companies
-    const selectedCompanyGUIDs = formValues.companyGUIDs || [];
+    //const selectedCompanyGUIDs = formValues.companyGUIDs || [];
+    const selectedCompanyIds: number[] = formValues.companyIds;
 
     //  Step 4: make sure at least one company is selected
-    if (selectedCompanyGUIDs.length === 0) {
+    // if (selectedCompanyGUIDs.length === 0) {
+    //   this.toastr.warning('Please select at least one company.');
+    //   return;
+    // }
+    if (!selectedCompanyIds || selectedCompanyIds.length === 0) {
       this.toastr.warning('Please select at least one company.');
       return;
     }
@@ -403,9 +426,10 @@ export class EmployeeComponent implements OnInit {
         phoneNumber: '',
         isDeleted: formValues.isDeleted,
         profilePicture: '',
-        selectedCompanyIds: this.companies
-          .filter(c => selectedCompanyGUIDs.includes(c.companyGUID))
-          .map(c => c.id),
+        // selectedCompanyIds: this.companies
+        //   .filter(c => selectedCompanyGUIDs.includes(c.companyGUID))
+        //   .map(c => c.id),
+        selectedCompanyIds: selectedCompanyIds,
         selectedRoleIds: selectedRole ? [selectedRole.id] : []
       };
 
@@ -433,9 +457,10 @@ export class EmployeeComponent implements OnInit {
       phoneNumber: '',
       isDeleted: formValues.isDeleted,
       profilePicture: '',
-      selectedCompanyIds: this.companies
-        .filter(c => selectedCompanyGUIDs.includes(c.companyGUID))
-        .map(c => c.id),
+      // selectedCompanyIds: this.companies
+      //   .filter(c => selectedCompanyGUIDs.includes(c.companyGUID))
+      //   .map(c => c.id),
+      selectedCompanyIds: selectedCompanyIds,
       roleNames: selectedRole ? [selectedRole.name] : [],
       password: formValues.password
     };

@@ -29,7 +29,7 @@
 
       <div class="col-lg-4 col-md-6 mb-3">
         <label>Invoice Date</label>
-        <input class="form-control form-control-sm" [value]="invoiceDetails?.invoiceDate" disabled>
+        <input class="form-control form-control-sm" [value]="invoiceDetails?.invoiceDate | date:'yyyy-MM-dd'" disabled>
       </div>
 
       <div class="col-lg-4 col-md-6 mb-3">
@@ -49,7 +49,7 @@
 
       <div class="col-lg-4 col-md-6 mb-3">
         <label>Due Date</label>
-        <input class="form-control form-control-sm" [value]="invoiceDetails?.dueDate" disabled>
+        <input class="form-control form-control-sm" [value]="invoiceDetails?.dueDate | date:'yyyy-MM-dd'" disabled>
       </div>
 
       <div class="col-lg-8 col-md-6 mb-3">

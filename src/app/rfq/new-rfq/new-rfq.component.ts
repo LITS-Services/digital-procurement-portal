@@ -67,6 +67,8 @@ export class NewRfqComponent implements OnInit {
   purchaseRequestId: number | null = null;
   hasUnusedItems: boolean = true;
 
+  allItemsFinalized = false;
+
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
   newPurchaseRequestForm: FormGroup;
@@ -442,12 +444,13 @@ export class NewRfqComponent implements OnInit {
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
+        this.loading = true;
+        this.spinner.show();
         this.purchaseOrderService.createPurchaseOrderFromRFQ(this.currentQuotationId).subscribe({
           next: (res: any) => {
-            console.log(res, 'Successfully created PO');
-            if (res?.isSuccess) {
-              this.router.navigate(['/purchase-order']);
-            }
+            this.loading = false;
+            this.spinner.hide();
+            this.router.navigate(['/purchase-order']);
           },
           error: () => {
             this.toastr.error('Something went wrong while creating PO.');
@@ -1146,11 +1149,14 @@ export class NewRfqComponent implements OnInit {
       cancelButtonColor: '#d33',
     }).then((result) => {
       if (!result.isConfirmed) return;
-
+      this.loading = true;
+      this.spinner.show();
       this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
         next: () => {
           // Navigate only on success
           this.router.navigate(['/rfq']);
+          this.loading = false;
+          this.spinner.hide();
         },
         error: () => {
           // don't show Swal — interceptor already shows error toast
@@ -1180,11 +1186,14 @@ export class NewRfqComponent implements OnInit {
             ActionTaken: action,
             ApproverId: localStorage.getItem('userId'),
           };
-
+          this.loading = true;
+          this.spinner.show();
           this.rfqService.addRemarksWithActionTaken(payload).subscribe({
             next: (res) => {
               this.loading = false;
               if (res.message == 'Approved') {
+                this.loading = false;
+                this.spinner.hide();
                 this.cdr.detectChanges();
                 this.router.navigate(['/rfq']);
                 this.toastr.success(res.message);
@@ -1213,5 +1222,9 @@ export class NewRfqComponent implements OnInit {
     return this.newQuotationItemData.every(
       (item) => item.quotationRequestId && item.quotationRequestId > 0
     );
+  }
+
+  onAllItemsFinalizedChange(finalized: boolean) {
+    this.allItemsFinalized = finalized;
   }
 }

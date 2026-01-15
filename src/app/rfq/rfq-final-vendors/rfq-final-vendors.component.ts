@@ -1,9 +1,10 @@
-import { ChangeDetectorRef, Component, Input, OnInit, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { RfqService } from '../rfq.service';
 import { ToastrService } from 'ngx-toastr';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-rfq-final-vendors',
@@ -12,7 +13,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
   standalone: false
 })
 export class RfqFinalVendorsComponent implements OnInit {
-
+  @Output() allItemsFinalizedChange = new EventEmitter<boolean>();
   @Input() data: any;
   @Input() viewMode: boolean = false;
 
@@ -25,6 +26,7 @@ export class RfqFinalVendorsComponent implements OnInit {
   loadingAi = false;
   aiExplanation: string = '';
   private pendingRequests = 0;
+  loading = false;
 
   constructor(private rfqService: RfqService,
      private toastr: ToastrService, 
@@ -172,8 +174,14 @@ export class RfqFinalVendorsComponent implements OnInit {
       }
     });
 
-
+    this.loading = true;
+    this.spinner.show();
     this.rfqService.postFinalVendors({ selectFinalVendorForQuotationItem: payload })
+    .pipe(finalize(() => {
+            this.loading = false;
+            this.spinner.hide();
+            this.cdr.detectChanges();
+          }))
       .subscribe({
         next: () =>
           {
@@ -266,10 +274,17 @@ export class RfqFinalVendorsComponent implements OnInit {
 
   // Global: are ALL items finalized?
   get allItemsFinalized(): boolean {
-    return (
-      this.itemsData.length > 0 &&
-      this.itemsData.every(item => this.isItemFinalized(item))
-    );
+    // return (
+    //   this.itemsData.length > 0 &&
+    //   this.itemsData.every(item => this.isItemFinalized(item))
+    // );
+    const finalized = this.itemsData.length > 0 &&
+      this.itemsData.every(item => this.isItemFinalized(item));
+
+    // Emit to parent whenever checked
+    this.allItemsFinalizedChange.emit(finalized);
+
+    return finalized;
   }
 
   // Global: is ANY item still pending?
