@@ -7,7 +7,7 @@
         <h5 class="mt-2 fw-bold">Invoice Details</h5>
       </div>
     </div> -->
-
+@if (invoiceDetails?.invoiceNo) {
 <div class="card cstm-ui-card mb-4">
   <div class="card-body">
 
@@ -75,7 +75,7 @@
           <thead>
             <tr>
               <th>Item</th>
-              <th class="text-center">Accepted Qty</th>
+              <th class="text-center">Total Qty</th>
               <!-- <th class="text-end">Unit Price</th> -->
               <th class="text-end">Total Amount</th>
             </tr>
@@ -83,7 +83,7 @@
           <tbody>
             <tr *ngFor="let item of invoiceDetails?.invoiceItems">
               <td>{{ item.itemName }}</td>
-              <td class="text-center">{{ item.acceptedQuantity }}</td>
+              <td class="text-center">{{ item.totalQuantity }}</td>
               <!-- <td class="text-end">{{ item.price | number:'1.2-2' }}</td> -->
               <td class="text-end fw-bold">{{ item.totalAmount | number:'1.2-2' }}</td>
             </tr>
@@ -93,6 +93,16 @@
     </div>
   </div>
 </div>
+}
+
+@else {
+  <div class="empty-state">
+    <i class="fa fa-receipt empty-icon"></i>
+    <h5 class="empty-message">Invoice has not been sent for payment yet</h5>
+    <p class="empty-submessage">Please check back later or contact the responsible team.</p>
+  </div>
+}
+
 <!-- Totals -->
 <!-- <div class="d-flex justify-content-end mt-2">
   <div class="text-end">

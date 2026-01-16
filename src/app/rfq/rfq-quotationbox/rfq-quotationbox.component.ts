@@ -6,6 +6,7 @@ import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
 import { RfqService } from '../rfq.service';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-rfq-quotationbox',
@@ -53,7 +54,8 @@ export class RfqQuotationboxComponent implements OnInit {
     private fb: FormBuilder,
     private rfqService: RfqService,
     private toastr: ToastrService,
-    public cdr: ChangeDetectorRef
+    public cdr: ChangeDetectorRef,
+    public spinner: NgxSpinnerService
   ) {}
 
   ngOnInit(): void {
@@ -187,11 +189,14 @@ private applyOfferFilterAndSort() {
           vendorUserId: vendor.vendorUserId,
           action: 'Rejected'
         };
-
+        
+        this.loading = true;
+        this.spinner.show();
         this.rfqService.rejectOrReviseBid(payload).subscribe({
 
           next: () => {
- 
+            this.loading = false;
+            this.spinner.hide();
        ``   },
           error: () => {
           }

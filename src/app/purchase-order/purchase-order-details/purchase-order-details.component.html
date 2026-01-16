@@ -123,7 +123,6 @@
                                         <th>Item</th>
                                         <th>Description</th>
                                         <th class="text-end">Quantity</th>
-                                        <th class="text-end">Unit Price</th>
                                         <th class="text-end">Amount</th>
                                     </tr>
                                 </thead>
@@ -132,7 +131,6 @@
                                         <td>{{ item.itemName }}</td>
                                         <td>{{ item.itemDescription }}</td>
                                         <td class="text-end">{{ item.quantity }}</td>
-                                        <td class="text-end">{{ item.unitPrice | number:'1.2-2' }}</td>
                                         <td class="text-end fw-semibold">{{ item.amount | number:'1.2-2' }}</td>
                                     </tr>
                                 </tbody>

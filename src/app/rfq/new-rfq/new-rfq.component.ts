@@ -840,6 +840,7 @@ export class NewRfqComponent implements OnInit {
 
             if (continueToVendors) {
               this.currentQuotationId = newId;
+              this.purchaseRequestId = null;
               this.isNewForm = false;
               this.loadVendorsAndCompanies(this.currentQuotationId);
               this.loadExistingQuotation(this.currentQuotationId);

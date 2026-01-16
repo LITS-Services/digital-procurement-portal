@@ -7,7 +7,7 @@
                 <h5 class="mt-2 fw-bold">Good Receiving Notes</h5>
             </div>
         </div> -->
-
+@if(grnDetails?.grNumber) {
 <div class="card cstm-ui-card mb-4">
     <div class="card-body">
 
@@ -81,8 +81,6 @@
                             <th>Item</th>
                             <th class="text-center">Ordered Qty</th>
                             <th class="text-center">Received Qty</th>
-                            <th class="text-center">Accepted Qty</th>
-                            <th class="text-center">Rejected Qty</th>
                             <th class="text-center">Received Date</th>
                             <th>Remarks</th>
                         </tr>
@@ -92,8 +90,6 @@
                             <td>{{ item.itemCode }}</td>
                             <td class="text-center">{{ item.orderedQuantity }}</td>
                             <td class="text-center">{{ item.receivedQuantity }}</td>
-                            <td class="text-center">{{ item.acceptedQuantity }}</td>
-                            <td class="text-center">{{ item.rejectedQuantity }}</td>
                             <td class="text-center">{{ item.receivedDate | date:'yyyy-MM-dd' }}</td>
                             <td>{{ item.remarks }}</td>
                         </tr>
@@ -103,3 +99,12 @@
         </div>
     </div>
 </div>
+}
+
+@else {
+  <div class="empty-state">
+    <i class="fa fa-box-open empty-icon"></i>
+    <h5 class="empty-message">GRN is not received yet</h5>
+    <p class="empty-submessage">Please check back later or contact the responsible team.</p>
+  </div>
+}

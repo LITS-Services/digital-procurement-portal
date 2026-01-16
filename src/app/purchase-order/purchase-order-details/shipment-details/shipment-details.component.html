@@ -1,6 +1,7 @@
 
 
         <!-- Shipment Details Card -->
+         @if (shipmentDetails?.shipmentDetailNo) {
         <div class="card cstm-ui-card mb-4">
             <div class="card-body">
                 <!-- <h5 class="fw-bold mb-3">Shipment Details</h5> -->
@@ -8,8 +9,7 @@
                 <div class="row">
                     <div class="col-lg-4 col-md-6 mb-3">
                         <label>Shipment No</label>
-                        <input class="form-control custom-input" [value]="shipmentDetails?.shipmentDetailNo || '-'"
-                            disabled>
+                        <input class="form-control custom-input" [value]="shipmentDetails?.shipmentDetailNo" disabled>
                     </div>
 
                     <div class="col-lg-4 col-md-6 mb-3">
@@ -96,17 +96,17 @@
                                 <thead>
                                     <tr>
                                         <th>Item</th>
-                                        <th class="text-end">Ordered Qty</th>
-                                        <th class="text-end">Shipping Qty</th>
-                                        <th>Delivery Date</th>
+                                        <th>Ordered Qty</th>
+                                        <th>Shipping Qty</th>
+                                        <th class="text-end">Delivery Date</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr *ngFor="let item of shipmentDetails?.items">
                                         <td>{{ item.itemName }}</td>
-                                        <td class="text-end">{{ item.orderedQty }}</td>
-                                        <td class="text-end">{{ item.shippingQuantity }}</td>
-                                        <td>{{ item.deliveryDate | date:'yyyy-MM-dd' }}</td>
+                                        <td>{{ item.orderedQty }}</td>
+                                        <td>{{ item.shippingQuantity }}</td>
+                                        <td class="text-end">{{ item.deliveryDate | date:'yyyy-MM-dd' }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -115,11 +115,12 @@
                     </div>
                 </div>
             </div>
+        }
 
-
-<ng-template #loader>
-    <div class="text-center mt-5">
-        <div class="spinner-border"></div>
-        <p>Loading Shipment details...</p>
+    @else {
+    <div class="empty-state">
+        <i class="fa fa-shipping-fast empty-icon"></i>
+        <h5 class="empty-message">The vendor has not submitted shipment details yet</h5>
+        <p class="empty-submessage">Please check back later or contact the responsible team.</p>
     </div>
-</ng-template>
+    }
