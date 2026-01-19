@@ -555,7 +555,7 @@ private exceptionModalOpen = false;
       const merged = {
         ...existing,
         ...newItem,
-        itemId: newItemId,
+        itemId: existing.itemId,
         attachments: existing?.attachments ?? []
       };
 
@@ -760,7 +760,7 @@ private exceptionModalOpen = false;
             }))
           }));
         }
-
+        console.log('list item data:', this.newPurchaseItemData);
         this.exceptionPolicyData = requestData.prExceptionPolicy ?? null;
         this.showExceptionPolicyView = !!this.exceptionPolicyData && !!this.newPurchaseRequestForm.get('exceptionPolicy')?.value;
 
@@ -1361,6 +1361,11 @@ private exceptionModalOpen = false;
   }
 
   createPO(row: any) {
+    if (!this.newPurchaseItemData || this.newPurchaseItemData.length === 0) {
+      this.toastr.info('No items available to create Purchase Order.');
+      return;
+    }
+
     const hasMissingVendor = this.newPurchaseItemData.some(item =>
       !item.vendorUserId
     );
