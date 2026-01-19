@@ -46,6 +46,12 @@ export class CompanyListingComponent implements OnInit {
   // Table resize handling
   datatableVisible: boolean = true;
 
+  // Pagination
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = 0;
+  totalItems = 0;
+
   constructor(
     private router: Router,
     private modalService: NgbModal,
@@ -88,7 +94,7 @@ export class CompanyListingComponent implements OnInit {
     }
 
     this.spinner.show();
-    this.companyService.getCompaniesByUserEntity(userId)
+    this.companyService.getCompaniesByUserEntity(this.currentPage, this.pageSize, userId)
       .pipe(finalize(() => {
         this.spinner.hide();
         this.cdr.detectChanges();
@@ -96,7 +102,6 @@ export class CompanyListingComponent implements OnInit {
       .subscribe({
         next: (res: any) => {
           const companies = res?.result || res || [];
-          console.log('Raw API Response:', companies); // Debug log
           this.allCompanies = companies.map(c => this.mapCompany(c));
           // this.tenderingData = this.allCompanies.filter(c =>
           //   !c.companyStatus || ['inprocess', 'approve'].includes(c.companyStatus.toLowerCase())
@@ -109,12 +114,11 @@ export class CompanyListingComponent implements OnInit {
           this.activeFilter = 'All';
           this.selectedStatusLabel = 'All';
           this.showStatusColumn = true;
-
+          this.totalItems = res.totalItems;
+          this.totalPages = res.totalPages;
           this.loading = false;
           this.checkAssignments(); // Check assignments after loading data
           this.cdr.detectChanges();
-
-          console.log('Mapped companies:', this.rows);
         },
         error: (err) => {
           console.error('Error fetching companies:', err);
@@ -523,4 +527,8 @@ export class CompanyListingComponent implements OnInit {
     });
   }
 
+  onPageChange(event: any) {
+    this.currentPage = (event?.offset ?? 0) + 1;
+    this.getCompanyData();
+  }
 }

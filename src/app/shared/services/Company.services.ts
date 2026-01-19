@@ -23,9 +23,11 @@ export class CompanyService {
   registerEmployee(data: any): Observable<any> {
     return this.http.post<any>(`${environment.apiUrl}/Employee/Create`, data);
   }
-  getCompaniesByUserEntity(userId: string): Observable<any[]> {
+  getCompaniesByUserEntity(currentPage: number, pageSize: number, userId: string): Observable<any[]> {
     return this.http.post<any[]>(`${environment.apiUrl}/Company/get-companies-by-user-entity`, {
-      userId: userId
+      userId: userId,
+      currentPage: currentPage,
+      pageSize: pageSize
     });
   }
 

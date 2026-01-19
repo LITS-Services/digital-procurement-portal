@@ -69,9 +69,10 @@
 
       <!-- Table Content -->
       <div class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
-        <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="rows" [columnMode]="'force'"
-          [headerHeight]="50" [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'" [limit]="15"
-          [scrollbarH]="isMobile" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
+        <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="rows" [columnMode]="'force'" [headerHeight]="50"
+          [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'" [limit]="pageSize" [count]="totalItems"
+          [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)" [scrollbarH]="isMobile"
+          [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
           [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 
           <!-- Checkbox Column -->
