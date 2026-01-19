@@ -25,10 +25,26 @@ export class SystemService {
     });
   }
 
-  getAllExceptionLogs(currentPage: number, pageSize: number): Observable<any> {
-    return this.http.get<any>(
-      `${this.baseUrl}/get-all-exception-logs?currentPage=${currentPage}&pageSize=${pageSize}`
-    );
+  // getAllExceptionLogs(currentPage: number, pageSize: number): Observable<any> {
+  //   return this.http.get<any>(
+  //     `${this.baseUrl}/get-all-exception-logs?currentPage=${currentPage}&pageSize=${pageSize}`
+  //   );
+  // }
+
+  getAllExceptionLogs(currentPage: number, pageSize: number, filters?: any): Observable<any> {
+    let url = `${this.baseUrl}/get-all-exception-logs?currentPage=${currentPage}&pageSize=${pageSize}`;
+    
+    // Add filter parameters if provided
+    if (filters) {
+      if (filters.search) {
+        url += `&search=${encodeURIComponent(filters.search)}`;
+      }
+      if (filters.httpMethod) {
+        url += `&httpMethod=${encodeURIComponent(filters.httpMethod)}`;
+      }
+    }
+    
+    return this.http.get<any>(url);
   }
 
   getAllHttpLogs(currentPage: number, pageSize: number, filters?: any): Observable<any> {

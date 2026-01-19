@@ -103,8 +103,8 @@ export class LogsComponent implements OnInit {
 
     if (this.selectedTab === 'exception') {
       // Use HTTP logs but map to exception log structure
-      this.systemService.getAllHttpLogs(this.currentPage, this.pageSize, filters).subscribe({
-        next: (data: any) => this.handleHttpLogsResponse(data),
+      this.systemService.getAllExceptionLogs(this.currentPage, this.pageSize, filters).subscribe({
+        next: (data: any) => this.handlExceptionLogsResponse(data),
         error: () => this.loading = false
       });
     } else if (this.selectedTab === 'audit-trails') {
@@ -133,14 +133,14 @@ export class LogsComponent implements OnInit {
     return filters;
   }
 
-  handleHttpLogsResponse(data: any) {
+  handlExceptionLogsResponse(data: any) {
     // Map HTTP logs data to exception logs structure with original columns
     this.logsData = (data?.result || []).map((log: any) => ({
       timestamp: log.timestamp,
-      exceptionType: log.type || 'HTTP Exception',
+      exceptionType: log.exceptionType || 'HTTP Exception',
       message: `${log.httpMethod} ${log.url} - Status: ${log.status}`,
       httpMethod: log.httpMethod,
-      body: log.requestBody || log.responseBody || 'No body content',
+      body: log.body || 'No body content',
       // Keep original data for modal details
       originalData: log
     }));
@@ -278,7 +278,7 @@ export class LogsComponent implements OnInit {
     const pageSize = 1000; // Large page size to get all data
     
     if (this.selectedTab === 'exception') {
-      this.systemService.getAllHttpLogs(1, pageSize, filters).subscribe({
+      this.systemService.getAllExceptionLogs(1, pageSize, filters).subscribe({
         next: (data: any) => {
           this.handleExportAllData(data?.result || [], 'Exception_Logs');
           this.loading = false;
@@ -312,7 +312,7 @@ export class LogsComponent implements OnInit {
       excelData = data.map((log, index) => ({
         'Sr. No.': index + 1,
         'Timestamp': log.timestamp ? new Date(log.timestamp).toLocaleString() : 'N/A',
-        'Exception Type': log.type || 'HTTP Exception',
+        'Exception Type': log.exceptionType || 'HTTP Exception',
         'Message': `${log.httpMethod} ${log.url} - Status: ${log.status}`,
         'Http Method': log.httpMethod || 'N/A',
         'Body': log.requestBody || log.responseBody || 'No body content',
