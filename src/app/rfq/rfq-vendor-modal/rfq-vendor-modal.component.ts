@@ -254,7 +254,7 @@ export class RfqVendorModalComponent implements OnInit {
         .subscribe({
           next: () => {
             this.loadRfqVendors(this.quotationRequestId!); // refresh chips + selection
-            this.toastr.success('Vendors updated successfully.');
+            //this.toastr.success('Vendors updated successfully.');
           },
           error: (err) => {
             console.error(err);
