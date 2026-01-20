@@ -412,6 +412,17 @@ export class CompanyListingComponent implements OnInit {
     }
   }
 
+  getStatusClass(status: any): string {
+    const s = (status ?? '').toString().trim().toLowerCase();
+
+    if (s === 'new') return 'status-pill--new';
+    if (s === 'inprocess' || s === 'in process' || s === 'in_process' || s === 'rejected') return 'status-pill--inprocess';
+    if (s === 'sendback') return 'status-pill--sendback';
+    if (s === 'onboarded' || s === 'completed' || 'completed') return 'status-pill--completed';
+
+    return 'status-pill--default';
+  }
+
   toggleFilterBar() {
     this.showFilterBar = !this.showFilterBar;
   }

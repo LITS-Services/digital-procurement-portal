@@ -92,7 +92,7 @@
           </ngx-datatable-column>
 
           <!-- Sr No Column -->
-          <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+          <ngx-datatable-column name="Sr. No." [flexGrow]="1" [minWidth]="60" [maxWidth]="60" [resizeable]="false">
             <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
               <span>{{ rowIndex + 1 }}</span>
             </ng-template>
@@ -110,6 +110,12 @@
           <!-- Conditionally Display Status Column -->
           <ngx-datatable-column *ngIf="showStatusColumn" name="Status" prop="companyStatus" [flexGrow]="1"
             [minWidth]="140">
+
+            <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
+              <span class="status-pill" [ngClass]="getStatusClass(value)">
+                {{ value }}
+              </span>
+            </ng-template>
           </ngx-datatable-column>
 
           <!-- City -->
@@ -122,7 +128,7 @@
           <!-- <ngx-datatable-column name="Currency" prop="primaryCurrency" [width]="100"></ngx-datatable-column> -->
 
           <!-- Action Column -->
-          <ngx-datatable-column name="Action" [flexGrow]="1" [minWidth]="70" [maxWidth]="130" prop="action"
+          <ngx-datatable-column name="Action" [flexGrow]="1" [minWidth]="70" [maxWidth]="180" prop="action"
             [sortable]="false">
             <ng-template let-row="row" ngx-datatable-cell-template>
               <button type="button" class="btn btn-sm btn-primary" [ngbPopover]="actionToolbar"

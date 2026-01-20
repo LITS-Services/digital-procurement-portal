@@ -110,6 +110,58 @@
   /* optional: to make it scroll if content overflows */
 }
 
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1;
+  font-weight: 500;
+  border: 1px solid transparent;
+  background: transparent;
+  white-space: nowrap;
+}
+
+/* New (blue outline) */
+.status-pill--new {
+  color: #3B82F6;
+  border-color: #3B82F6;
+  background: rgba(59, 130, 246, 0.07);
+
+}
+
+/* In Process (orange outline) */
+.status-pill--inprocess {
+  color: #DA8900;
+  border-color: #DA8900;
+  background: rgba(218, 137, 0, 0.07);
+
+}
+
+/* Completed (green outline) */
+.status-pill--completed {
+  color: #2EAF5E;
+  border-color: #2EAF5E;
+  background: rgba(46, 175, 94, 0.07);
+}
+
+/* Fallback */
+.status-pill--default {
+  color: #616d89;
+  border-color: #cfd6e4;
+  background: rgba(97, 109, 137, 0.08);
+}
+
+.status-pill--sendback {
+  color: #aeac12;
+  border-color: #fffc6f;
+  background: rgb(255 255 226);
+}
+
+
 ::ng-deep .action-popover {
   //padding: 0.5rem;
   border-radius: 8px;
