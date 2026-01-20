@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { WorkflowMasterSetupComponent } from './workflow-master-setup/workflow-master-setup.component';
 import { NewWorkflowmasterSetupComponent } from './new-workflowmaster-setup/new-workflowmaster-setup.component';
 import { EmailSetupComponent } from './email-setup/email-setup.component';
-import { CreateInvitationComponent } from './create-invitation/create-invitation.component';
 import { EmailTemplateListComponent } from './email-template-list/email-template-list.component';
 import { VendorOnboardingSetupComponent } from './vendor-onboarding-setup/vendor-onboarding-setup.component';
 import { NewVendorOnboardingComponent } from './new-vendor-onboarding/new-vendor-onboarding.component';
@@ -50,17 +49,6 @@ const routes: Routes = [
         }
       },
       {
-        path: 'create-invitation',
-        component: CreateInvitationComponent,
-        canActivate: [AclGuard],
-        data: {
-          title: 'Create Invitation',
-          formTypeId: FORM_IDS.INVITATION,
-          action: 'read',
-        }
-      },
-
-      {
         path: 'email-templatelist',
         component: EmailTemplateListComponent,
         canActivate: [AclGuard],
@@ -90,7 +78,7 @@ const routes: Routes = [
           action: 'read',
         }
       },
-          {
+      {
         path: 'bulk-vendor-onboarding',
         component: BulkVendorOnboardingComponent,
         data: {

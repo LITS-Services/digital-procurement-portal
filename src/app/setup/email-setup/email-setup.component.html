@@ -12,77 +12,112 @@
       <!-- Action Pane -->
       <div class="card cstm-ui-card">
         <div class="row">
-          <div class="col-md-12">
-            <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
-              <i class="ft-arrow-left"></i>
-            </button>
-            <span class="vl"></span>
+          <div class="col-md-12 d-flex justify-content-between align-items-center">
+            <div>
+              <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+                <i class="ft-arrow-left"></i>
+              </button>
+              <span class="vl"></span>
 
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" appPermission
-              [appPermFormId]="FORM_IDS.INVITATION" [appPermDisable]="'write'" (click)="CreatInvitations()">
-              <i class="ft-mail"></i>
-              <label class="ml-1">Create Invitation</label>
-            </button>
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" appPermission
+                [appPermFormId]="FORM_IDS.INVITATION" [appPermDisable]="'write'"
+                (click)="CreatInvitations(invitationModal)">
+                <i class="ft-mail"></i>
+                <label class="ml-1">Create Invitation</label>
+              </button>
 
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="showAll()">
-              <i class="ft-align-left"></i>
-              <label class="ml-1">All</label>
-            </button>
+              <!-- ✅ Resend Invitation Logic -->
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isResendButtonDisabled"
+                (click)="resendInvitation(invitationModal)">
+                <i class="ft-repeat"></i>
+                <label class="ml-1">Resend</label>
+              </button>
+            </div>
 
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="showInProcess()">
-              <i class="ft-share-2"></i>
-              <label class="ml-1">Send</label>
-            </button>
-
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="showRecall()">
-              <i class="ft-refresh-ccw"></i>
-              <label class="ml-1">Resend</label>
-            </button>
-
-            <!-- ✅ NEW: Resend Button -->
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isResendButtonDisabled"
-              (click)="resendInvitation()">
-              <i class="ft-repeat"></i>
-              <label class="ml-1">Resend</label>
-            </button>
+            <div ngbDropdown placement="bottom-right" class="d-inline-block">
+              <button class="btn btn-sm cstm-ui-table-btn" id="filterDropdown" ngbDropdownToggle>
+                <i class="ft-filter"></i>
+                <label class="ml-1">Filters</label>
+              </button>
+              <div ngbDropdownMenu aria-labelledby="filterDropdown">
+                <button ngbDropdownItem (click)="showAll()">
+                  <i class="ft-align-left mr-1 text-primary"></i> All
+                </button>
+                <button ngbDropdownItem (click)="showInProcess()">
+                  <i class="ft-share-2 mr-1 text-success"></i> Send
+                </button>
+                <button ngbDropdownItem (click)="showRecall()">
+                  <i class="ft-refresh-ccw mr-1 text-info"></i> Resend
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Content -->
-      <div  class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
-      <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="rows"
-        [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [columns]="columns" rowHeight="auto" [limit]="15"
-        [scrollbarH]="isMobile" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
-        [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
-        <!-- Checkbox Column -->
-        <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
-          [resizeable]="false">
-          <ng-template ngx-datatable-header-template>
-            <div class="custom-control cstm-checkbox-form">
-              <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
-            </div>
-          </ng-template>
-          <ng-template ngx-datatable-cell-template let-isSelected="isSelected"
-            let-onCheckboxChangeFn="onCheckboxChangeFn">
-            <div class="custom-control custom-checkbox cstm-checkbox-form">
-              <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
-            </div>
-          </ng-template>
-        </ngx-datatable-column>
+      <div class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
+        <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="rows" [columnMode]="'force'"
+          [headerHeight]="50" [footerHeight]="50" [columns]="columns" rowHeight="auto" [limit]="10"
+          [scrollbarH]="isMobile" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
+          [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
+          <!-- Checkbox Column -->
+          <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+            [resizeable]="false">
+            <ng-template ngx-datatable-header-template>
+              <div class="custom-control cstm-checkbox-form">
+                <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
+              </div>
+            </ng-template>
+            <ng-template ngx-datatable-cell-template let-isSelected="isSelected"
+              let-onCheckboxChangeFn="onCheckboxChangeFn">
+              <div class="custom-control custom-checkbox cstm-checkbox-form">
+                <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+              </div>
+            </ng-template>
+          </ngx-datatable-column>
 
-        <!-- Sr No -->
-        <ngx-datatable-column name="Sr. No." [minWidth]="50" [maxWidth]="60" [resizeable]="false">
-          <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
-            <span>{{ rowIndex + 1 }}</span>
-          </ng-template>
-        </ngx-datatable-column>
+          <!-- Sr No -->
+          <ngx-datatable-column name="Sr. No." [minWidth]="50" [maxWidth]="60" [resizeable]="false">
+            <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
+              <span>{{ rowIndex + 1 }}</span>
+            </ng-template>
+          </ngx-datatable-column>
 
-        <!-- Dynamic Columns -->
-        <ngx-datatable-column *ngFor="let col of columns" [name]="col.name" [prop]="col.prop" [minWidth]="col.minWidth"   [flexGrow]="1">
-        </ngx-datatable-column>
-      </ngx-datatable>
+          <!-- Dynamic Columns -->
+          <ngx-datatable-column *ngFor="let col of columns" [name]="col.name" [prop]="col.prop"
+            [minWidth]="col.minWidth" [flexGrow]="1">
+          </ngx-datatable-column>
+        </ngx-datatable>
       </div>
     </div>
   </div>
 </section>
+
+<!-- Invitation Modal -->
+<ng-template #invitationModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">{{ modalTitle }}</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="invitationForm">
+      <div class="form-group">
+        <label for="receiverEmail">Vendor Email</label>
+        <input type="email" id="receiverEmail" class="form-control" formControlName="receiverEmail"
+          [ngClass]="{ 'is-invalid': submitted && f.receiverEmail.errors }" placeholder="Enter vendor email" />
+        <div *ngIf="submitted && f.receiverEmail.errors" class="invalid-feedback">
+          <div *ngIf="f.receiverEmail.errors.required">Email is required</div>
+          <div *ngIf="f.receiverEmail.errors.email">Please enter a valid email address</div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="sendInvitation(modal)" [disabled]="isSending">
+      <span *ngIf="isSending" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      <span [class.ml-1]="isSending">{{ modalButtonText }}</span>
+    </button>
+  </div>
+</ng-template>

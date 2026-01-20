@@ -193,8 +193,11 @@ export class NewVendorOnboardingComponent implements OnInit {
           const mapReceivers = () => {
             const receiverRows = (data.detailedReceivers || []).map(r => ({
               ...r,
-              // entityName: ... // If we need entity name we might need to fetch it or expect it in detailedReceivers
-              roleName: 'Admin' // Start with Admin default or map if roleId present
+              id: r.id || r.userId, // Normalize ID for internal use
+              department: r.department || r.departmentName || '',
+              position: r.position || r.designation || '',
+              entityName: r.entityName || '',
+              roleName: r.roleName || 'Admin'
             }));
 
             this.receiverRows = [...receiverRows];
@@ -274,13 +277,13 @@ export class NewVendorOnboardingComponent implements OnInit {
 
     // Prepare detailed receiver information
     const detailedReceivers = this.allSelectedReceivers.map(receiver => ({
-      userId: receiver.id,
+      userId: receiver.id || receiver.userId,
       roleId: receiver.roleId,
-      entityId: receiver.entityId,
-      userName: receiver.userName,
-      email: receiver.email,
-      department: receiver.department,
-      position: receiver.position
+      userName: receiver.userName || '',
+      email: receiver.email || '',
+      department: receiver.department || '',
+      position: receiver.position || '',
+      entityName: receiver.entityName || ''
     }));
 
     // Prepare the data for API with correct format

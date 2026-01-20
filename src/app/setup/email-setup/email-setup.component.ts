@@ -5,6 +5,8 @@ import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-dat
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PermissionService } from 'app/shared/permissions/permission.service';
 import { EmailTemplateService } from 'app/shared/services/EmailTemplateService';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 import { max } from 'date-fns';
 
 @Component({
@@ -29,15 +31,24 @@ export class EmailSetupComponent implements OnInit {
   isOpenButtonDisabled = true;
   isResendButtonDisabled = true; // ✅ New button disable state
   isAllSelected = false;
+  invitationForm: FormGroup;
+  submitted = false;
+  senderName: string = '';
 
   datatableVisible: boolean = true;
+  modalTitle: string = 'Send Invitation';
+  modalButtonText: string = 'Send Invite';
+  requestStatus: string = 'Send';
+  isSending: boolean = false;
 
   constructor(
     private router: Router,
     private modalService: NgbModal,
     private EmailTemplateService: EmailTemplateService,
     private cdr: ChangeDetectorRef,
-    private permissionService: PermissionService
+    private permissionService: PermissionService,
+    private fb: FormBuilder,
+    private toastr: ToastrService
   ) { }
 
   onAutoResize(): void {
@@ -51,19 +62,27 @@ export class EmailSetupComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const storedUserName = localStorage.getItem('userName');
+    this.senderName = storedUserName ? storedUserName : 'Procurement Team';
+
     this.getEmailLogs();
 
+    this.invitationForm = this.fb.group({
+      receiverEmail: ['', [Validators.required, Validators.email]],
+      subject: ['Invitation to Register', Validators.required],
+      body: [this.getDefaultBody(), Validators.required],
+    });
+
     this.columns = [
-      { prop: 'receiverEmail', name: 'Receiver Email' , minWidth: 120},
-      { prop: 'requestStatusName', name: 'Request Status',minWidth: 50,},
-      { prop: 'subject', name: 'Subject', minWidth: 100 },
-      { prop: 'body', name: 'Body', minWidth: 300 }
+      { prop: 'receiverEmail', name: 'Receiver Email', minWidth: 120 },
+      { prop: 'requestStatusName', name: 'Request Status', minWidth: 50, },
+      { prop: 'createdDate', name: 'Date', minWidth: 100 }
     ];
   }
 
-        get isMobile(): boolean {
-  return window.innerWidth <= 768;
-}
+  get isMobile(): boolean {
+    return window.innerWidth <= 768;
+  }
 
 
   getEmailLogs() {
@@ -75,8 +94,11 @@ export class EmailSetupComponent implements OnInit {
           id: item.id,
           receiverEmail: item.receiverEmail,
           requestStatusName: item.requestStatusName,
-          subject: item.subject,
-          body: item.body
+          createdDate: item.createdDate ? new Date(item.createdDate).toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+          }).replace(/ /g, '-') : ''
         }));
 
         this.rows = [...this.allEmailLogs];
@@ -143,18 +165,111 @@ export class EmailSetupComponent implements OnInit {
     this.router.navigate(['/dashboard/dashboard1']);
   }
 
-  CreatInvitations() {
-    if(!this.permissionService.can(FORM_IDS.INVITATION, 'write'))
+  CreatInvitations(content) {
+    if (!this.permissionService.can(FORM_IDS.INVITATION, 'write'))
       return;
-    this.router.navigate(['/setup/create-invitation']);
+    this.submitted = false;
+    this.modalTitle = 'Send Invitation';
+    this.modalButtonText = 'Send Invite';
+    this.requestStatus = 'Send';
+    this.invitationForm.reset({
+      receiverEmail: '',
+      subject: 'Invitation to Register',
+      body: this.getDefaultBody()
+    });
+    this.invitationForm.get('receiverEmail')?.enable(); // ✅ Ensure email is enabled
+    this.modalService.open(content, { size: 'md', centered: true, backdrop: 'static', keyboard: false });
   }
 
-  // ✅ NEW: Resend button logic
-  resendInvitation() {
+  get f() {
+    return this.invitationForm.controls;
+  }
+
+  sendInvitation(modal: any) {
+    this.submitted = true;
+    if (this.invitationForm.invalid) return;
+
+    // ✅ Duplication check for "Send" request
+    if (this.requestStatus === 'Send') {
+      const emailExists = this.allEmailLogs.some(log =>
+        log.receiverEmail.toLowerCase() === this.invitationForm.value.receiverEmail.toLowerCase()
+      );
+      if (emailExists) {
+        this.toastr.error('Request already exist', 'Error');
+        return;
+      }
+    }
+
+    this.isSending = true; // ✅ Start loader
+
+    // ✅ Get value from form (including disabled fields for Resend)
+    const receiverEmail = this.invitationForm.getRawValue().receiverEmail;
+
+    const userData = {
+      submitterName: this.senderName,
+      receiverEmail: receiverEmail,
+      subject: this.invitationForm.value.subject,
+      body: this.invitationForm.value.body,
+      Status: this.requestStatus // ✅ Added dynamic Status parameter
+    };
+
+    this.EmailTemplateService.createEmailInvitation(userData).subscribe({
+      next: (res) => {
+        this.isSending = false; // ✅ Stop loader
+        this.toastr.success(`Invitation ${this.requestStatus === 'Send' ? 'sent' : 'resent'} successfully!`, 'Success');
+
+        // ✅ Clear selections after success
+        this.chkBoxSelected = [];
+        this.enableDisableButtons();
+
+        modal.close();
+        this.getEmailLogs();
+      },
+      error: (err) => {
+        this.isSending = false; // ✅ Stop loader
+        console.error('Error sending invitation:', err);
+        this.toastr.error(`Failed to ${this.requestStatus === 'Send' ? 'send' : 'resend'} invitation.`, 'Error');
+      }
+    });
+  }
+
+  getDefaultBody(): string {
+    return (
+      `Dear Vendor,\n\n` +
+      `We are pleased to invite you to register on our Procurement Portal.\n` +
+      `Please click the link below to complete your registration process.\n` +
+      `http://localhost:4200/pages/registeration\n\n` +
+      `Best Regards,\n` +
+      `${this.senderName}`
+    );
+  }
+
+  // ✅ UPDATED: Resend button logic to use modal
+  resendInvitation(content) {
     if (this.announcementId) {
-      this.router.navigate(['/setup/create-invitation'], {
-        queryParams: { id: this.announcementId, mode: 'resend' }
+      const selectedInvitation = this.chkBoxSelected[0];
+      this.submitted = false;
+      this.modalTitle = 'Resend Invitation';
+      this.modalButtonText = 'Resend';
+      this.requestStatus = 'Resend';
+      this.invitationForm.reset({
+        receiverEmail: selectedInvitation.receiverEmail,
+        subject: 'Invitation to Register',
+        body: this.getDefaultBody()
       });
+      this.invitationForm.get('receiverEmail')?.disable(); // ✅ Disable email on resend
+      this.modalService.open(content, { size: 'md', centered: true, backdrop: 'static', keyboard: false });
     }
   }
+
+  cancel() {
+    if (this.isSending) return; // ✅ Don't close if request is pending
+
+    // ✅ Clear selections when closing
+    this.chkBoxSelected = [];
+    this.enableDisableButtons();
+
+    this.modalService.dismissAll();
+  }
+
 }

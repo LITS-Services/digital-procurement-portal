@@ -13,18 +13,20 @@
   background-origin: content-box;
 }
 
-::ng-deep .ng-select.custom-style.ng-select-multiple .ng-select-container .ng-value-container .ng-placeholder {
+::ng-deep .ng-select.custom-style.ng-select-multiple 
+  .ng-select-container 
+  .ng-value-container 
+  .ng-placeholder {
   padding-top: 8px;
 }
 
 
-.ngx-datatable ::ng-deep .datatable-header-inner {
+.ngx-datatable ::ng-deep .datatable-header-inner{
   background-color: #4188F2 !important;
   border-radius: 10px;
 }
-
 .ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
-.ngx-datatable ::ng-deep .datatable-header-inner .sort-btn {
+.ngx-datatable ::ng-deep .datatable-header-inner .sort-btn{
   color: white !important;
 }
 
@@ -41,58 +43,49 @@
 .ngx-datatable ::ng-deep .datatable-body .datatable-body-row .datatable-body-cell {
   text-align: left;
   padding: 0.75rem;
-  vertical-align: baseline;
-
+  vertical-align:baseline;
+  
 }
 
 .datatable-body-cell {
-  padding: 0.30rem !important;
-  text-align: left !important;
-  vertical-align: top !important;
-  line-height: 20px !important;
-}
+    padding: 0.30rem !important;
+    text-align: left !important;
+    vertical-align: top !important;
+    line-height: 20px !important;
+  }
 
-::ng-deep .ngx-datatable {
+  ::ng-deep .ngx-datatable{
   .sortable .sort-btn:before {
-    // font-family: data-table;
-    // content: "c";
-    display: none !important;
+      // font-family: data-table;
+      // content: "c";
+      display: none !important;
   }
-
   .sortable .sort-btn.datatable-icon-down:before {
-    // content: "f";
-    display: none !important;
+      // content: "f";
+      display: none !important;
 
   }
-
   .sortable .sort-btn.datatable-icon-up:before {
-    // content: "e";
-    display: none !important;
+      // content: "e";
+      display: none !important;
   }
 }
 
-form label,
-.form-group label {
-  font-size: 0.85rem;
-  margin-bottom: 8px;
-  color: #262626 !important;
-  font-weight: 400;
-}
-
-.example-action-buttons {
-  display: flex;
-  justify-content: flex-end;
-  /* Move buttons to the right */
-}
+form label, .form-group label {
+     font-size: 0.85rem;
+    margin-bottom: 8px;
+    color: #262626 !important;
+    font-weight: 400;
+  }
+  .example-action-buttons {
+    display: flex;
+    justify-content: flex-end; /* Move buttons to the right */
+  }
 
 
 .vl {
-  border-left: 1.4px solid #cccccc;
-  height: 100%;
-  position: absolute;
-  margin-left: -3px;
-}
-
-.ft-pocket {
-  margin-right: 130px;
-}
+    border-left: 1.4px solid #cccccc;
+    height: 100%;
+    position: absolute;
+    margin-left: -3px;
+  }

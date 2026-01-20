@@ -21,7 +21,6 @@ import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { WorkflowApproverSetupComponent } from './workflow-approver-setup/workflow-approver-setup.component';
 import { EmailSetupComponent } from './email-setup/email-setup.component';
-import { CreateInvitationComponent } from './create-invitation/create-invitation.component';
 import { EmailTemplateListComponent } from './email-template-list/email-template-list.component';
 import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
 import { VendorOnboardingSetupComponent } from './vendor-onboarding-setup/vendor-onboarding-setup.component';
@@ -41,7 +40,6 @@ import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-au
     NewWorkflowmasterSetupComponent,
     WorkflowApproverSetupComponent,
     EmailSetupComponent,
-    CreateInvitationComponent,
     EmailTemplateListComponent,
     CreateEmailTemplateComponent,
     VendorOnboardingSetupComponent,
@@ -53,29 +51,29 @@ import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-au
   imports: [
     CommonModule,
     SetupRoutingModule,
-        CommonModule,
-        PurchaseRequestRoutingModule,
-        // ArchwizardModule, // Incompatible with Angular 21
-        NgbModule,
-        ReactiveFormsModule,
-        FormsModule,
-        HttpClientModule,
-        // CustomFormsModule, // Incompatible with Angular 21
-        MatchHeightModule,
-        NgbModule,
-        // UiSwitchModule, // Incompatible with Angular 21
-        PipeModule,
-        QuillModule.forRoot(),
-        NgSelectModule,
-        // TagInputModule, // Incompatible with Angular 21
-        NgxDatatableModule,
-        NgbAccordionModule,
-        NgbDatepickerModule,
-        ToastrModule.forRoot() ,
-        NgxSpinnerModule,
-        AutoResizeDatatableDirective,
-        DatatableAutoResizeDirective,
-        PermissionDirective
+    CommonModule,
+    PurchaseRequestRoutingModule,
+    // ArchwizardModule, // Incompatible with Angular 21
+    NgbModule,
+    ReactiveFormsModule,
+    FormsModule,
+    HttpClientModule,
+    // CustomFormsModule, // Incompatible with Angular 21
+    MatchHeightModule,
+    NgbModule,
+    // UiSwitchModule, // Incompatible with Angular 21
+    PipeModule,
+    QuillModule.forRoot(),
+    NgSelectModule,
+    // TagInputModule, // Incompatible with Angular 21
+    NgxDatatableModule,
+    NgbAccordionModule,
+    NgbDatepickerModule,
+    ToastrModule.forRoot(),
+    NgxSpinnerModule,
+    AutoResizeDatatableDirective,
+    DatatableAutoResizeDirective,
+    PermissionDirective
   ],
   schemas: [NO_ERRORS_SCHEMA]
 })
