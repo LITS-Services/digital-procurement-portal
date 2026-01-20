@@ -56,8 +56,18 @@
   box-shadow: none !important;
 }
 
+.btn {
+  transition-property: color, background-color, box-shadow !important;
+}
+
 .btn label {
   cursor: pointer !important;
+}
+
+.btn[class*="btn-"]:not(:disabled):not(.disabled):active,
+.btn[class*="btn-"]:not(:disabled):not(.disabled).active,
+.show > .btn[class*="btn-"].dropdown-toggle {
+  border: none !important;
 }
 
 .vl {
