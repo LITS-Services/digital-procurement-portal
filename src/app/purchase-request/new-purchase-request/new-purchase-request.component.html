@@ -146,8 +146,39 @@
               </div>
 
               <div class="form-grid__item mb-2">
-                <label>Receiver Contact</label>
-                <input type="text" class="form-control custom-input" formControlName="receiverContact" placeholder="Enter Receiver Contact">
+                <div class="form-group mb-2 phone-field-wrapper">
+                  <label>Receiver Contact</label>
+                  <ngx-intl-tel-input
+                    class="vendor-phone"
+                    name="receiverContact"
+                    formControlName="receiverContact"
+                    [cssClass]="'form-control custom-input'"
+                    [preferredCountries]="preferredCountries"
+                    [enableAutoCountrySelect]="true"
+                    [searchCountryFlag]="true"
+                    [searchCountryField]="[SearchCountryField.All]"
+                    [selectFirstCountry]="true"
+                    [separateDialCode]="true"
+                    [selectedCountryISO]="selectedCountryISO"
+                    [numberFormat]="PhoneNumberFormat.International"
+                    [maxLength]="20">
+                  </ngx-intl-tel-input>
+
+                  @if (
+                    newPurchaseRequestForm.get('receiverContact')?.invalid &&
+                    newPurchaseRequestForm.get('receiverContact')?.touched
+                  ) {
+                    <div class="phone-error">
+                      <i class="ft-alert-circle me-1"></i>
+              
+                      @if (newPurchaseRequestForm.get('receiverContact')?.hasError('required')) {
+                        Receiver Contact is required
+                      } @else {
+                        Invalid phone number
+                      }
+                    </div>
+                  }
+                </div>
               </div>
 
               <div class="form-grid__item mb-2">

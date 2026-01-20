@@ -19,6 +19,8 @@ import { distinctUntilChanged, filter, finalize, pairwise, startWith, takeUntil 
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { PurchaseRequestExceptionPolicyComponent } from 'app/shared/modals/purchase-request-exception-policy/purchase-request-exception-policy.component';
 import { Subject } from 'rxjs';
+import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
+import { PhoneNumberUtil, PhoneNumberFormat as LibPhoneNumberFormat } from 'google-libphonenumber';
 
 @Component({
   selector: 'app-new-purchase-request',
@@ -29,6 +31,20 @@ import { Subject } from 'rxjs';
 
 export class NewPurchaseRequestComponent implements OnInit {
   uploadedItems: any[] = [];
+
+  // ngx-intl-tel-input config (used in template)
+  SearchCountryField = SearchCountryField;
+  PhoneNumberFormat = PhoneNumberFormat;
+  preferredCountries: CountryISO[] = [
+    CountryISO.Pakistan,
+    CountryISO.UnitedArabEmirates,
+    CountryISO.SaudiArabia,
+    CountryISO.UnitedStates,
+    CountryISO.UnitedKingdom
+  ];
+
+  selectedCountryISO: CountryISO = CountryISO.Pakistan;
+  private phoneUtil = PhoneNumberUtil.getInstance();
 
   isNewForm = true; // true = create, false = edit
   isFormDirty = false; // track if any field was touched
@@ -123,6 +139,17 @@ private exceptionModalOpen = false;
 
   ) { }
 
+  private normalizePhoneToString(value: any): string {
+    if (!value) return '';
+    if (typeof value === 'string') return value;
+
+    return (
+      value?.e164Number ||
+      null
+    );
+  }
+
+
   ngOnInit(): void {
     // Purchase Request Form
     this.newPurchaseRequestForm = this.fb.group({
@@ -131,7 +158,7 @@ private exceptionModalOpen = false;
       status: [{ value: null, disabled: true }],
       deliveryLocation: [''],
       receiverName: [''],
-      receiverContact: [''],
+      receiverContact: ['', Validators.required],
       department: [''],
       designation: [''],
       businessUnit: [''],
@@ -284,6 +311,31 @@ private exceptionModalOpen = false;
   //     this.isPurchaseOpen = event.nextState;
   //   }
   // }
+
+  private patchReceiverContactFromE164(e164: string | null | undefined): void {
+    if (!e164) return;
+  
+    try {
+      const phone = this.phoneUtil.parseAndKeepRawInput(e164);
+      const region = this.phoneUtil.getRegionCodeForNumber(phone) || 'PK';
+  
+      this.selectedCountryISO = (CountryISO as any)[region] ?? CountryISO.Pakistan;
+  
+      // build the object ngx-intl-tel-input understands
+      const valueObj = {
+        number: String(phone.getNationalNumber()),
+        internationalNumber: this.phoneUtil.format(phone, LibPhoneNumberFormat.INTERNATIONAL),
+        nationalNumber: this.phoneUtil.format(phone, LibPhoneNumberFormat.NATIONAL),
+        e164Number: this.phoneUtil.format(phone, LibPhoneNumberFormat.E164),
+        countryCode: region,
+        dialCode: `+${phone.getCountryCode()}`
+      };
+  
+      this.newPurchaseRequestForm.get('receiverContact')?.setValue(valueObj, { emitEvent: false });
+    } catch {
+      this.newPurchaseRequestForm.get('receiverContact')?.setValue(e164, { emitEvent: false });
+    }
+  }
 
   private checkEntitySelection(): void {
     if (!this.isNewForm) return;
@@ -703,6 +755,8 @@ private exceptionModalOpen = false;
           submittedDate: this.toDateInputValue(requestData.submittedDate)
         });
 
+        this.patchReceiverContactFromE164(requestData.receiverContact);
+
         if (requestData.requestStatus) {
           this.newPurchaseRequestForm.patchValue({
             status: requestData.requestStatus
@@ -856,7 +910,7 @@ private exceptionModalOpen = false;
       submittedDate: f.submittedDate || null,
       deliveryLocation: f.deliveryLocation || '',
       receiverName: f.receiverName || '',
-      receiverContact: f.receiverContact || '',
+      receiverContact: this.normalizePhoneToString(f.receiverContact),
       // status: 'Draft',
       department: f.department || '',
       designation: f.designation || '',
@@ -949,7 +1003,7 @@ private exceptionModalOpen = false;
       submittedDate: f.submittedDate || null,
       deliveryLocation: f.deliveryLocation,
       receiverName: f.receiverName,
-      receiverContact: f.receiverContact,
+      receiverContact: this.normalizePhoneToString(f.receiverContact),
       // status: f.status,
       department: f.department,
       designation: f.designation,
