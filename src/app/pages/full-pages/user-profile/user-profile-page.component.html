@@ -16,8 +16,8 @@
           <i class="ft-arrow-left"></i>
         </button>
         <span class="vl"></span>
-        <button style="cursor: pointer;" type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="resetPasswordForm.invalid"
-          (click)="onResetPassword()">
+        <button style="cursor: pointer;" type="button" class="btn btn-sm cstm-ui-table-btn"
+          [disabled]="resetPasswordForm.invalid" (click)="onResetPassword()">
           <i class="ft-lock"></i>
           <label class="ml-1 mt-1">Change Password</label>
         </button>
@@ -257,12 +257,14 @@
                           </div>
 
 
-                          <small class="text-danger"
-                            *ngIf="resetPasswordForm.get('newPassword')?.invalid && resetPasswordForm.get('newPassword')?.touched">
-                            Password must be at least 6 characters, include 1 uppercase letter and 1 number, and must
-                            not match old
-                            password.
-                          </small>
+                          <div
+                            *ngIf="(resetPasswordForm.get('newPassword')?.invalid && (resetPasswordForm.get('newPassword')?.touched || resetPasswordForm.get('newPassword')?.dirty)) || (resetPasswordForm.hasError('sameAsOld') && resetPasswordForm.get('newPassword')?.touched)"
+                            class="text-danger">
+                            <small>
+                              Password must be at least 6 characters, include 1 uppercase letter, 1 number, 1 special
+                              character (!@#$%^&*?), and must not match the old password.
+                            </small>
+                          </div>
                         </div>
 
                         <!-- Confirm Password -->
@@ -368,11 +370,14 @@
                     <i class="eye-icon ft" [ngClass]="hidePassword ? 'ft-eye-off' : 'ft-eye'"
                       (click)="togglePasswordVisibility('password')"></i>
                   </div>
-                  <small class="text-danger"
-                    *ngIf="resetPasswordForm.get('newPassword')?.invalid && resetPasswordForm.get('newPassword')?.touched">
-                    Password must be at least 6 characters, include 1 uppercase letter and 1 number, and must not match
-                    old password.
-                  </small>
+                  <div
+                    *ngIf="(resetPasswordForm.get('newPassword')?.invalid && (resetPasswordForm.get('newPassword')?.touched || resetPasswordForm.get('newPassword')?.dirty)) || (resetPasswordForm.hasError('sameAsOld') && resetPasswordForm.get('newPassword')?.touched)"
+                    class="text-danger">
+                    <small>
+                      Password must be at least 6 characters, include 1 uppercase letter, 1 number, 1 special character
+                      (!@#$%^&*?), and must not match the old password.
+                    </small>
+                  </div>
                 </div>
 
                 <!-- Confirm Password -->
@@ -441,11 +446,14 @@
             <i class="fas" [ngClass]="showNewPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
           </button>
         </div>
-        <small class="text-danger"
-          *ngIf="resetPasswordForm.get('newPassword')?.invalid && resetPasswordForm.get('newPassword')?.touched">
-          Password must be at least 6 characters, include 1 uppercase letter and 1 number, and must not match old
-          password.
-        </small>
+        <div
+          *ngIf="(resetPasswordForm.get('newPassword')?.invalid && (resetPasswordForm.get('newPassword')?.touched || resetPasswordForm.get('newPassword')?.dirty)) || (resetPasswordForm.hasError('sameAsOld') && resetPasswordForm.get('newPassword')?.touched)"
+          class="text-danger">
+          <small>
+            Password must be at least 6 characters, include 1 uppercase letter, 1 number, 1 special character
+            (!@#$%^&*?), and must not match the old password.
+          </small>
+        </div>
       </div>
 
       <!-- Confirm Password -->

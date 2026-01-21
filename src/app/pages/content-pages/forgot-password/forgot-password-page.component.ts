@@ -206,8 +206,10 @@ export class ForgotPasswordPageComponent {
 
         this.authService.ProcurementResetPassword(payload).subscribe({
             next: (response) => {
-                this.toastr.success('Password reset successfully!');
-                this.router.navigate(['/pages/login']);
+                this.ngZone.run(() => {
+                    this.toastr.success('Password reset successfully!');
+                    this.router.navigate(['/pages/login']);
+                });
                 this.spinner.hide();
             },
             error: (error) => {
