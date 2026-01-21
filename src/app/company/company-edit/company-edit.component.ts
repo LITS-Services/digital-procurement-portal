@@ -100,9 +100,10 @@ export class CompanyEditComponent implements OnInit {
           : null;
 
         // Parse isAssigned safely
-        // Query params are always strings, so compare with "true"
-        this.isAssigned = params['isAssigned'] === 'true';
-        console.log('Final isAssigned value:', this.isAssigned);
+        // Query params are usually strings, but could be booleans depending on navigation
+        const isAssignedVal = params['isAssigned'];
+        this.isAssigned = isAssignedVal === 'true' || isAssignedVal === true || isAssignedVal === '1';
+        console.log('Final isAssigned value from params:', this.isAssigned);
 
         // Parse procurementCompanyId if present
         this.procurementCompanyId = params['procurementCompanyId']
@@ -158,6 +159,12 @@ export class CompanyEditComponent implements OnInit {
           this.companyWebsite = company.websiteUrl || null;
           this.workflowMasterId = company.workflowMasterId || 0;
           this.mainApproverId = company.mainApproverId || '';
+
+          // If isAssigned is null or false, try to get it from the company object
+          if (this.isAssigned === null || this.isAssigned === false) {
+            this.isAssigned = company.isAssigned || false;
+            console.log('Updated isAssigned from API response:', this.isAssigned);
+          }
           // this.remarks = company.remarks || '';
           // this.companyForm.patchValue({ remarks: this.remarks });
 
