@@ -883,7 +883,14 @@ export class NewRfqComponent implements OnInit {
       this.isLoading = false;
       return;
     }
-
+    if (this.purchaseRequestId) {
+      if (this.allItemsUsedForRFQ()) {
+        this.toastr.info('No Items available. Cannot generate a new RFQ.');
+        this.isLoading = false;
+        return; // Stop execution
+      }
+    }
+    
     const quotationItems = this.newQuotationItemData?.length
       ? this.newQuotationItemData.map((item) => ({
           id: item.id || null,

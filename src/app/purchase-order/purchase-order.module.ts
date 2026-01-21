@@ -14,6 +14,7 @@ import { PermissionDirective } from 'app/shared/permissions/permission.directive
 import { VendorRating } from './purchase-order-details/vendor-rating/vendor-rating';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
+import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 
 
 @NgModule({
@@ -33,7 +34,8 @@ import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-au
     AutoResizeDatatableDirective,
     PermissionDirective,
     ReactiveFormsModule,
-    DatatableAutoResizeDirective
+    DatatableAutoResizeDirective,
+    NgbModule
 ]   
 })
 export class PurchaseOrderModule { }

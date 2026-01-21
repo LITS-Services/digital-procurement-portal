@@ -73,4 +73,12 @@ export class PurchaseOrderService {
   getInvoiceByPoId(purchaseOrderId: number) {
     return this.http.get<any>(`${this.baseUrl}/get-invoice-by-id?purchaseOrderId=${purchaseOrderId}`);
   }
+
+  downloadInvoicePdf(invoiceId: number): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/download-pdf/${invoiceId}`, { responseType: 'blob' });
+  }
+
+  createGoodsReceiptNote(data: any) {
+    return this.http.post(`${this.baseUrl}/create-grn`, data);
+  }
 }

@@ -1,110 +1,98 @@
-<!-- Action Bar -->
-<!-- <div class="card cstm-ui-card mb-3 py-2 px-3 d-flex justify-content-start flex-wrap">
-            <div class="d-flex align-items-center">
-                <button class="btn btn-lg position-relative me-2" type="button" (click)="goBack()">
-                    <i class="ft-arrow-left"></i>
-                </button>
-                <h5 class="mt-2 fw-bold">Good Receiving Notes</h5>
-            </div>
-        </div> -->
-@if(grnDetails?.grNumber) {
-<div class="card cstm-ui-card mb-4">
-    <div class="card-body">
+<!-- @if (isShipmentAvailable) { -->
+<div class="card cstm-ui-card mb-4" [formGroup]="form">
+  <div class="card-body">
 
-        <div class="row">
-            <div class="col-lg-4 col-md-6 mb-3">
-                <label>GRN No</label>
-                <input class="form-control form-control-sm" [value]="grnDetails?.grNumber ?? ''" disabled>
-            </div>
+    <!-- Header Row -->
+    <div class="d-flex justify-content-end align-items-start mb-3">
+      <button
+  class="btn btn-primary"
+  (click)="save()"
+  [disabled]="isGrnSubmitted"
+>
+  {{ isGrnSubmitted ? 'GRN Submitted' : 'Submit GRN' }}
+</button>
 
-            <div class="col-lg-4 col-md-6 mb-3">
-                <label>PO No</label>
-                <input class="form-control form-control-sm" [value]="grnDetails?.purchaseOrderNo ?? ''" disabled>
-            </div>
-
-            <div class="col-lg-4 col-md-6 mb-3">
-                <label>Vendor</label>
-                <input class="form-control form-control-sm" [value]="grnDetails?.vendorName ?? ''" disabled>
-            </div>
-
-            <div class="col-lg-4 col-md-6 mb-3">
-                <label>Receiver</label>
-                <input class="form-control form-control-sm" [value]="grnDetails?.receiverName ?? ''" disabled>
-            </div>
-
-            <div class="col-lg-4 col-md-6 mb-3">
-                <label>Status</label>
-                <input class="form-control form-control-sm" [value]="grnDetails?.requestStatus ?? ''" disabled>
-            </div>
-
-            <div class="col-lg-4 col-md-6 mb-3">
-                <label>Remarks</label>
-                <input class="form-control form-control-sm" [value]="grnDetails?.remarks ?? ''" disabled>
-            </div>
-
-            <!-- <div class="col-lg-4 col-md-6 mb-3">
-                    <label>Received Date</label>
-                    <input class="form-control form-control-sm" [value]="grnDetails.receivedDate" disabled>
-                </div>
-
-                <div class="col-lg-4 col-md-6 mb-3">
-                    <label>Warehouse</label>
-                    <input class="form-control form-control-sm" [value]="grnDetails.warehouse" disabled>
-                </div>
-
-                <div class="col-lg-4 col-md-6 mb-3">
-                    <label>Received By</label>
-                    <input class="form-control form-control-sm" [value]="grnDetails.receivedBy" disabled>
-                </div>
-
-                <div class="col-lg-4 col-md-6 mb-3">
-                    <label>Remarks</label>
-                    <textarea class="form-control form-control-sm" disabled rows="2">{{ grnDetails.remarks }}</textarea>
-                </div> -->
-        </div>
     </div>
-</div>
-<!-- Items Section -->
-<h5 class="heading mb-3 fw-bold" (click)="toggleItems()" style="cursor: pointer;">
-    Items
-    <i class="fa" [ngClass]="itemsExpanded ? 'fa-chevron-down' : 'fa-chevron-up'" style="font-size: 12px;"></i>
-</h5>
 
-<div [@expandCollapse]="itemsExpanded ? 'expanded' : 'collapsed'" style="overflow: hidden;">
-    <div class="card cstm-ui-card border-0 shadow-sm">
+    <div class="row mb-3">
+        <div class="col-md-4 mb-3">
+        <label class="form-label small">GRN No</label>
+        <input class="form-control form-control-sm" formControlName="grNumber" disabled>
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <label class="form-label small">PO No</label>
+        <input class="form-control form-control-sm" formControlName="purchaseOrderNo" disabled>
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <label class="form-label small">Vendor Name</label>
+        <input class="form-control form-control-sm" formControlName="vendorName" disabled>
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <label class="form-label small">Receiver Name</label>
+        <input class="form-control form-control-sm" formControlName="receiverName" disabled>
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <label class="form-label small">Status</label>
+        <input class="form-control form-control-sm" formControlName="requestStatus" disabled>
+      </div>
+
+      <div class="col-md-8 mb-3">
+        <label class="form-label small">Remarks</label>
+        <textarea class="form-control form-control-sm" rows="2" formControlName="remarks"></textarea>
+      </div>
+    </div>
+
+    <!-- Items Section -->
+    <h5 class="heading mb-3 fw-bold" (click)="toggleItems()" style="cursor: pointer;">
+      Items
+      <i class="fa" [ngClass]="itemsExpanded ? 'fa-chevron-down' : 'fa-chevron-up'" style="font-size: 12px;"></i>
+    </h5>
+
+    <div [@expandCollapse]="itemsExpanded ? 'expanded' : 'collapsed'" style="overflow: hidden;">
+      <div class="card cstm-ui-card border-0 shadow-sm">
         <div class="card-body p-0">
-
-            <div class="table-responsive">
-                <table class="table table-sm pro-table mb-0">
-                    <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th class="text-center">Ordered Qty</th>
-                            <th class="text-center">Received Qty</th>
-                            <th class="text-center">Received Date</th>
-                            <th>Remarks</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let item of grnDetails?.goodsReceiptItems">
-                            <td>{{ item.itemCode }}</td>
-                            <td class="text-center">{{ item.orderedQuantity }}</td>
-                            <td class="text-center">{{ item.receivedQuantity }}</td>
-                            <td class="text-center">{{ item.receivedDate | date:'yyyy-MM-dd' }}</td>
-                            <td>{{ item.remarks }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+          <div class="table-responsive">
+            <table class="table table-sm pro-table mb-0">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th class="text-center">Ordered Qty</th>
+                  <th class="text-center">Received Qty</th>
+                  <th class="text-center">Received Date</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody formArrayName="items">
+                <tr *ngFor="let item of itemsForm.controls; let i = index" [formGroupName]="i">
+                  <td>{{ item.get('itemName')?.value }}</td>
+                  <td class="text-center">{{ item.get('orderedQty')?.value }}</td>
+                  <td class="text-center">{{ item.get('receivedQuantity')?.value }}</td>
+                  <td class="text-center">
+                    <input type="date" class="form-control form-control-sm" formControlName="receivedDate">
+                  </td>
+                  <td>
+                    <input type="text" class="form-control form-control-sm" formControlName="remarks">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
+      </div>
     </div>
-</div>
-}
 
-@else {
-  <div class="empty-state">
-    <i class="fa fa-box-open empty-icon"></i>
-    <h5 class="empty-message">GRN is not received yet</h5>
-    <p class="empty-submessage">Please check back later or contact the responsible team.</p>
   </div>
-}
+</div>
+<!-- } -->
+
+<!-- @else {
+  <div class="empty-state">
+        <i class="fa fa-box-open empty-icon"></i>
+        <h5 class="empty-message">Shipment Details aren't received yet, Unable to Submit GRN</h5>
+        <p class="empty-submessage">Please check back later or contact the responsible team.</p>
+    </div>
+} -->
