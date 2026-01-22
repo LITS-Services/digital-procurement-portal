@@ -165,14 +165,14 @@ export class RfqFinalVendorsComponent implements OnInit {
     if (!result.isConfirmed) return;
 
     // Optional loading state
-    Swal.fire({
-      title: 'Processing...',
-      text: 'Finalizing vendor selection',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      }
-    });
+    // Swal.fire({
+    //   title: 'Processing...',
+    //   text: 'Finalizing vendor selection',
+    //   allowOutsideClick: false,
+    //   didOpen: () => {
+    //     Swal.showLoading();
+    //   }
+    // });
 
     this.loading = true;
     this.spinner.show();
@@ -185,13 +185,13 @@ export class RfqFinalVendorsComponent implements OnInit {
       .subscribe({
         next: () =>
           {
-            Swal.fire({
-            icon: 'success',
-            title: 'Vendors Finalized',
-            text: 'Selected vendor(s) have been successfully finalized.',
-            timer: 2000,
-            showConfirmButton: false
-          });
+          //   Swal.fire({
+          //   icon: 'success',
+          //   title: 'Vendors Finalized',
+          //   text: 'Selected vendor(s) have been successfully finalized.',
+          //   timer: 2000,
+          //   showConfirmButton: false
+          // });
             this.loadItems(this.quotationRequestId); },
         error: (e) => {
           Swal.fire({
