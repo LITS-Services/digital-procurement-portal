@@ -59,13 +59,13 @@ export interface Chart {
 export interface PurchaseRequestsCountVM {
   totalRequests: number;
   newRequests: number;
-  inProcessRequests: number;
+  inProgressRequests: number;
   completedRequests: number;
 }
 
 export interface QuotationRequestsCountVM {
   totalQuotations: number;
-  inProcessQuotations: number;
+  inProgressQuotations: number;
   completedQuotations: number;
   rejectedQuotations: number;
 }

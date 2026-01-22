@@ -116,7 +116,7 @@ export class EmailSetupComponent implements OnInit {
     this.rows = [...this.allEmailLogs];
   }
 
-  showInProcess() {
+  showInProgress() {
     this.rows = this.allEmailLogs.filter(log =>
       log.requestStatusName?.toLowerCase() === 'send'
     );

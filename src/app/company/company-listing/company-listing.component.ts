@@ -104,7 +104,7 @@ export class CompanyListingComponent implements OnInit {
           const companies = res?.result || res || [];
           this.allCompanies = companies.map(c => this.mapCompany(c));
           // this.tenderingData = this.allCompanies.filter(c =>
-          //   !c.companyStatus || ['inprocess', 'approve'].includes(c.companyStatus.toLowerCase())
+          //   !c.companyStatus || ['inprogress', 'approve'].includes(c.companyStatus.toLowerCase())
           // );
           // this.rows = [...this.tenderingData];
 
@@ -169,7 +169,7 @@ export class CompanyListingComponent implements OnInit {
     } else {
       // Fallback to the original nested structure
       const selectedEntity =
-        (c.vendorUseCompaniesVM?.find((v) => v.status?.toLowerCase() === 'inprocess')) ||
+        (c.vendorUseCompaniesVM?.find((v) => v.status?.toLowerCase() === 'inprogress')) ||
         (c.vendorUseCompaniesVM?.[0] || null);
 
       return {
@@ -197,7 +197,7 @@ export class CompanyListingComponent implements OnInit {
   /** FILTER BUTTONS LOGIC */
   // showAll() {
   //   this.rows = this.allCompanies.filter(c =>
-  //     !c.companyStatus || ['inprocess', 'approve'].includes(c.companyStatus.toLowerCase())
+  //     !c.companyStatus || ['inprogress', 'approve'].includes(c.companyStatus.toLowerCase())
   //   );
   //   this.activeFilter = 'All';
   //   this.selectedStatusLabel = 'All';
@@ -206,12 +206,12 @@ export class CompanyListingComponent implements OnInit {
   //   this.cdr.detectChanges();
   // }
 
-  // showInProcess() {
+  // showInProgress() {
   //   this.rows = this.allCompanies.filter(c =>
-  //     c.companyStatus.toLowerCase() === 'inprocess'
+  //     c.companyStatus.toLowerCase() === 'inprogress'
   //   );
-  //   this.activeFilter = 'InProcess';
-  //   this.selectedStatusLabel = 'InProcess';
+  //   this.activeFilter = 'InProgress';
+  //   this.selectedStatusLabel = 'InProgress';
   //   this.statusTouched = true;
   //   this.showStatusColumn = true;
   //   this.cdr.detectChanges();
@@ -232,14 +232,14 @@ export class CompanyListingComponent implements OnInit {
     switch (status) {
       case 'All':
         this.rows = this.allCompanies.filter(c =>
-          !c.companyStatus || ['inprocess', 'approve', 'sendback', 'new', 'completed'].includes(c.companyStatus.toLowerCase())
+          !c.companyStatus || ['inprogress', 'approve', 'sendback', 'new', 'completed'].includes(c.companyStatus.toLowerCase())
         );
         this.showStatusColumn = true;
         break;
 
-      case 'InProcess':
+      case 'InProgress':
         this.rows = this.allCompanies.filter(c =>
-          c.companyStatus.toLowerCase() === 'inprocess'
+          c.companyStatus.toLowerCase() === 'inprogress'
         );
         this.showStatusColumn = true;
         break;
@@ -416,7 +416,7 @@ export class CompanyListingComponent implements OnInit {
     const s = (status ?? '').toString().trim().toLowerCase();
 
     if (s === 'new') return 'status-pill--new';
-    if (s === 'inprocess' || s === 'in process' || s === 'in_process' || s === 'rejected') return 'status-pill--inprocess';
+    if (s === 'inprogress' || s === 'in progress' || s === 'in_progress' || s === 'rejected') return 'status-pill--inprogress';
     if (s === 'sendback') return 'status-pill--sendback';
     if (s === 'onboarded' || s === 'completed' || 'completed') return 'status-pill--completed';
 
@@ -455,12 +455,12 @@ export class CompanyListingComponent implements OnInit {
     switch (this.activeFilter) {
       case 'All':
         filteredRows = filteredRows.filter(c =>
-          !c.companyStatus || ['inprocess', 'approve', 'sendback', 'new', 'completed'].includes(c.companyStatus.toLowerCase())
+          !c.companyStatus || ['inprogress', 'approve', 'sendback', 'new', 'completed'].includes(c.companyStatus.toLowerCase())
         );
         break;
-      case 'InProcess':
+      case 'InProgress':
         filteredRows = filteredRows.filter(c =>
-          c.companyStatus?.toLowerCase() === 'inprocess'
+          c.companyStatus?.toLowerCase() === 'inprogress'
         );
         break;
       case 'Recall':

@@ -179,7 +179,7 @@ export class InventoryTransferListComponent implements OnInit {
     this.isAllSelected = this.purchaseRequestData.length === this.chkBoxSelected.length;
 
     const hasRestrictedStatus = this.chkBoxSelected.some(
-      (row) => row.requestStatus === 'InProcess' || row.requestStatus === 'Completed'
+      (row) => row.requestStatus === 'InProgress' || row.requestStatus === 'Completed'
     );
 
     if (hasRestrictedStatus) {
@@ -197,7 +197,7 @@ export class InventoryTransferListComponent implements OnInit {
       return;
     }
     if (this.hasRestrictedStatus) {
-      this.toastr.warning('Cannot delete records with status "InProcess" or "Completed".');
+      this.toastr.warning('Cannot delete records with status "InProgress" or "Completed".');
       return;
     }
 

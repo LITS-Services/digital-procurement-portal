@@ -648,7 +648,7 @@
       
       <div>
         <ng-container *ngIf="isSubmitter">
-          <button class="btn btn-sm submit-approval-btn shadow-sm" [disabled]="!allItemsFinalized || newRfqForm.invalid || isStatusCompleted || isStatusInProcess" (click)="onSubmitForApproval()">
+          <button class="btn btn-sm submit-approval-btn shadow-sm" [disabled]="!allItemsFinalized || newRfqForm.invalid || isStatusCompleted || isStatusInProgress" (click)="onSubmitForApproval()">
             <i class="ft-check" style="color: #1161cc;"></i><label class="ml-1">Submit for Approval</label>
           </button>
         </ng-container>

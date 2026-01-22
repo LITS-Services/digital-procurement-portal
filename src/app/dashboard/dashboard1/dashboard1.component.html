@@ -38,7 +38,7 @@
                     New: <strong class="ml-1">{{ prCounts?.newRequests || 0 }}</strong>
                   </span>
                   <span class="metric-chip metric-chip--muted">
-                    In Process: <strong class="ml-1">{{ prCounts?.inProcessRequests || 0 }}</strong>
+                    In Progress: <strong class="ml-1">{{ prCounts?.inProgressRequests || 0 }}</strong>
                   </span>
                 </div>
           </div>
@@ -71,7 +71,7 @@
       </div>
       <div class="stat-card__chips">
         <span class="metric-chip">
-          In Process: <strong class="ml-1">{{ rfqCounts?.inProcessQuotations || 0 }}</strong>
+          In Progress: <strong class="ml-1">{{ rfqCounts?.inProgressQuotations || 0 }}</strong>
         </span>
         <span class="metric-chip metric-chip--danger">
           Rejected: <strong class="ml-1">{{ rfqCounts?.rejectedQuotations || 0 }}</strong>
@@ -421,7 +421,7 @@
       <div class="mini-stat mini-stat--amber">
         <div class="mini-stat__label">Viewed Enquiries</div>
         <div class="mini-stat__value">
-          {{ rfqCounts?.inProcessQuotations || 0 }}
+          {{ rfqCounts?.inProgressQuotations || 0 }}
         </div>
         <div class="mini-stat__sub">
           RFQs currently in progress

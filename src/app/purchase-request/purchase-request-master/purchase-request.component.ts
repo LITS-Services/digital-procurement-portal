@@ -32,7 +32,7 @@ export class PurchaseRequestComponent implements OnInit {
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
   isStatusCompleted: boolean = false;
-  hasRestrictedStatus: boolean = false; // for disabling delete button if PR status is InProcess or Completed
+  hasRestrictedStatus: boolean = false; // for disabling delete button if PR status is InProgress or Completed
   activeFilter: string = ''; // default filter
   purchaseRequestData: any[] = [];
   chkBoxSelected: any[] = [];
@@ -264,7 +264,7 @@ export class PurchaseRequestComponent implements OnInit {
 
     // Disable delete if any selected row has restricted status
     const hasRestrictedStatus = this.chkBoxSelected.some(
-      row => row.requestStatus === 'InProcess' || row.requestStatus === 'Completed'
+      row => row.requestStatus === 'InProgress' || row.requestStatus === 'Completed'
     );
 
     if (hasRestrictedStatus) {
@@ -284,7 +284,7 @@ export class PurchaseRequestComponent implements OnInit {
       return;
     }
     if (this.hasRestrictedStatus) {
-      this.toastr.warning('Cannot delete records with status "InProcess" or "Completed".');
+      this.toastr.warning('Cannot delete records with status "InProgress" or "Completed".');
       return;
     }
 

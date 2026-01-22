@@ -51,7 +51,7 @@ export class NewPurchaseRequestComponent implements OnInit {
   currentRequisitionNo!: string;
 
   isStatusCompleted: boolean = false;
-  isStatusInProcess: boolean = false;
+  isStatusInProgress: boolean = false;
   isSubmitter: boolean = false;
 
   pendingAttachment: any[] = [];
@@ -770,11 +770,11 @@ private exceptionModalOpen = false;
             this.cdr.detectChanges();
           }
 
-          if (requestData.requestStatus === 'InProcess') {
-            this.isStatusInProcess = true;
+          if (requestData.requestStatus === 'InProgress') {
+            this.isStatusInProgress = true;
             this.cdr.detectChanges();
           } else {
-            this.isStatusInProcess = false;
+            this.isStatusInProgress = false;
             this.cdr.detectChanges();
           }
         }

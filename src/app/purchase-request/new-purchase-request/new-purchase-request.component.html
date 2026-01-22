@@ -62,7 +62,7 @@
             <ng-container *ngIf="viewMode && isSubmitter">
               <button
                 class="btn btn-sm"
-                [disabled]="newPurchaseRequestForm.invalid || isStatusCompleted || isStatusInProcess"
+                [disabled]="newPurchaseRequestForm.invalid || isStatusCompleted || isStatusInProgress"
                 (click)="onSubmitForApproval()">
                 <i class="ft-edit-2"></i><label class="ml-1 btn-label">Submit For Approval</label>
               </button>

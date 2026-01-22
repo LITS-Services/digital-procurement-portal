@@ -281,8 +281,8 @@ export class CompanyEditComponent implements OnInit {
     switch (statusId) {
       case 12: // Onboarded
         return 'company-status-onboarded';
-      case 1: // In process
-        return 'company-status-inprocess';
+      case 1: // In progress
+        return 'company-status-inprogress';
       case 8: // New
         return 'company-status-new';
       default:
@@ -295,7 +295,7 @@ export class CompanyEditComponent implements OnInit {
     switch (statusId) {
       case 7: // Completed
         return 'status-onboarded';
-      case 1: // In process
+      case 1: // In progress
         return 'status-pending';
       case 8: // New
         return 'status-in-process';

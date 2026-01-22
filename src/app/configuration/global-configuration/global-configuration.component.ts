@@ -19,7 +19,7 @@ export class GlobalConfigurationComponent implements OnInit {
   public ColumnMode = ColumnMode;
   @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
   activeFilter: string = ''; // default filter
-  hasRestrictedStatus: boolean = false; // for disabling delete button if RFQ status is InProcess or Completed
+  hasRestrictedStatus: boolean = false; // for disabling delete button if RFQ status is InProgress or Completed
   globalConfigData: any[] = [];
   chkBoxSelected: any[] = [];
   idsToDelete: number[] = [];

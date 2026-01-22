@@ -30,7 +30,7 @@ export class NewRfqComponent implements OnInit {
   isSubmitter: boolean = false;
 
   isStatusCompleted: boolean = false;
-  isStatusInProcess: boolean = false;
+  isStatusInProgress: boolean = false;
   numberOfAttachments = 0;
   attachmentList: any[] = [];
   pendingAttachment: any[] = [];
@@ -595,11 +595,11 @@ export class NewRfqComponent implements OnInit {
             this.isStatusCompleted = false;
             this.cdr.detectChanges();
           }
-          if (requestData.requestStatus === 'InProcess') {
-            this.isStatusInProcess = true;
+          if (requestData.requestStatus === 'InProgress') {
+            this.isStatusInProgress = true;
             this.cdr.detectChanges();
           } else {
-            this.isStatusInProcess = false;
+            this.isStatusInProgress = false;
             this.cdr.detectChanges();
           }
         }

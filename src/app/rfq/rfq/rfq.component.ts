@@ -31,7 +31,7 @@ export class RfqComponent implements OnInit {
   public ColumnMode = ColumnMode;
 
   activeFilter: string = ''; // default filter
-  hasRestrictedStatus: boolean = false; // for disabling delete button if RFQ status is InProcess or Completed
+  hasRestrictedStatus: boolean = false; // for disabling delete button if RFQ status is InProgress or Completed
   rfqData: any[] = [];
   chkBoxSelected: any[] = [];
   idsToDelete: number[] = [];
@@ -259,7 +259,7 @@ export class RfqComponent implements OnInit {
 
     // Disable delete if any selected item has restricted status
     const hasRestrictedStatus = this.chkBoxSelected.some(
-      row => row.requestStatus === 'InProcess' || row.requestStatus === 'Completed'
+      row => row.requestStatus === 'InProgress' || row.requestStatus === 'Completed'
     );
 
     if (hasRestrictedStatus) {
@@ -279,7 +279,7 @@ export class RfqComponent implements OnInit {
       return;
     }
     if (this.hasRestrictedStatus) {
-      this.toastr.warning('Cannot delete records with status "InProcess" or "Completed".');
+      this.toastr.warning('Cannot delete records with status "InProgress" or "Completed".');
       return;
     }
 
