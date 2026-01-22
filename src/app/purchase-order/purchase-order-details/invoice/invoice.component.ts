@@ -46,6 +46,18 @@ export class InvoiceComponent implements OnInit {
     });
   }
 
+  downloadInvoice(invoiceId: number, invoiceNo: string) {
+    this.purchaseOrderService.downloadInvoicePdf(invoiceId).subscribe(blob => {
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Invoice_${invoiceNo}.pdf`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+    });
+  }
+
   toggleItems() {
     this.itemsExpanded = !this.itemsExpanded;
   }

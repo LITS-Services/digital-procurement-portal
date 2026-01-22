@@ -95,7 +95,11 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
     // Initialize Reset Password Form
     this.resetPasswordForm = this.fb.group({
       oldPassword: ['', Validators.required],
-      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      newPassword: ['', [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.pattern(/^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*?]).{6,}$/)
+      ]],
       confirmPassword: ['', Validators.required]
     }, { validators: this.passwordMatchValidator });
   }
@@ -176,13 +180,13 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
 
   // Load User Data
   loadUserData(id: string) {
-    this.spinner.show(); 
+    this.spinner.show();
 
     this.companyService
       .getprocurementusersbyid(id)
       .pipe(finalize(() => {
-        this.spinner.hide(); 
-        this.cdr.detectChanges(); 
+        this.spinner.hide();
+        this.cdr.detectChanges();
       }))
       .subscribe({
         next: (res: any) => {

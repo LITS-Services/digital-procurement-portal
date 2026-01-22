@@ -496,44 +496,58 @@ export class CompanyListingComponent implements OnInit {
 
   checkAssignments() {
     const currentUserName = localStorage.getItem('userName');
-    const currentUserEmail = localStorage.getItem('email'); // Assuming email might be stored, if not we rely on userName
+    const currentUserEmail = localStorage.getItem('email');
 
     if (!currentUserName) {
       console.warn('Current user name not found in local storage.');
       return;
     }
 
-    this.allCompanies.forEach(company => {
-      // If workflowMasterId is present (not 0) OR status is 'SendBack' OR 'Rejected', do not show Assign Me
-      if (
-        (company.workflowMasterId && company.workflowMasterId !== 0) ||
-        company.companyStatus?.toLowerCase() === 'sendback' ||
-        company.companyStatus?.toLowerCase() === 'rejected'
-      ) {
-        company.showAssignMe = false;
-        return;
-      }
+    // Find the first company with a valid setUpId to perform the "one-time" request
+    const firstCompanyWithSetup = this.allCompanies.find(c => c.setUpId && c.setUpId !== 0);
 
-      if (company.setUpId) {
-        this.companyService.getWorkflowUsers(company.setUpId).subscribe({
-          next: (res: any) => {
-            const users = res?.value || res?.result || res || [];
-            // Check if current user is in the list
-            const isMatch = users.some(u =>
-              (u.userName && u.userName.toLowerCase() === currentUserName.toLowerCase()) ||
-              (currentUserEmail && u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase())
-            );
+    if (!firstCompanyWithSetup) {
+      console.warn('No company with a valid setUpId found to check workflow users.');
+      return;
+    }
 
-            if (isMatch) {
-              company.showAssignMe = true;
-              // Force update if this company is currently visible
-              this.cdr.detectChanges();
-            }
-          },
-          error: (err) => {
-            console.error(`Error loading workflow users for setup ${company.setUpId}`, err);
+    // Call getWorkflowUsers once for the first found setUpId
+    this.companyService.getWorkflowUsers(firstCompanyWithSetup.setUpId).subscribe({
+      next: (res: any) => {
+        const users = res?.value || res?.result || res || [];
+
+        // Check if current user is in the list of workflow users
+        const isMatch = users.some(u =>
+          (u.userName && u.userName.toLowerCase() === currentUserName.toLowerCase()) ||
+          (currentUserEmail && u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase())
+        );
+
+        // Apply the results to all companies
+        this.allCompanies.forEach(company => {
+          const status = company.companyStatus?.toLowerCase();
+
+          // Disable button for specific statuses: onboarded, sendback, rejected
+          const isRestrictedStatus = ['onboarded', 'sendback', 'rejected'].includes(status);
+
+          // Disable if workflowMasterId is anything EXCEPT 0 (meaning it's already assigned)
+          const isAlreadyAssigned = company.workflowMasterId && company.workflowMasterId !== 0;
+
+          if (isRestrictedStatus || isAlreadyAssigned) {
+            company.showAssignMe = false;
+          } else if (company.setUpId && isMatch) {
+            // Only show if it has a setup ID and the user is a workflow user for the setup
+            company.showAssignMe = true;
+          } else {
+            // User is not in the setup or no setup ID
+            company.showAssignMe = false;
           }
         });
+
+        // Force update to reflect changes in the table
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error(`Error loading workflow users for setup ${firstCompanyWithSetup.setUpId}`, err);
       }
     });
   }

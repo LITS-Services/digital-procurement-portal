@@ -60,7 +60,7 @@ export class EmployeeComponent implements OnInit {
 
     this.companyForm = this.fb.group({
       employeeId: [null],
-      name: [{ value: '', disabled: this.isEditMode }, Validators.required],
+      name: [{ value: '', disabled: this.isEditMode }, [Validators.required, Validators.pattern(/^\S+$/)]],
       email: [{ value: '', disabled: this.isEditMode }, [Validators.required, Validators.email]],
       password: [{ value: '', disabled: this.isEditMode }, this.isEditMode ? [] : [
         Validators.required,
@@ -122,16 +122,16 @@ export class EmployeeComponent implements OnInit {
   //   });
   // }
   loadCompanies() {
-  const userId = localStorage.getItem('userId');
+    const userId = localStorage.getItem('userId');
 
-  this.lookupService.getProcCompaniesByProcUserId(userId!).subscribe({
-    next: (res: any[]) => {
-      this.companies = res || [];
-      this.cdr.detectChanges();
-    },
-    error: err => console.error('Error loading companies', err)
-  });
-}
+    this.lookupService.getProcCompaniesByProcUserId(userId!).subscribe({
+      next: (res: any[]) => {
+        this.companies = res || [];
+        this.cdr.detectChanges();
+      },
+      error: err => console.error('Error loading companies', err)
+    });
+  }
 
 
 

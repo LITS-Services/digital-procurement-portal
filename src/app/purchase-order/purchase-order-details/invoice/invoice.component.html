@@ -11,6 +11,12 @@
 <div class="card cstm-ui-card mb-4">
   <div class="card-body">
 
+    <div class="d-flex justify-content-end align-items-end mb-3">
+    <button class="btn btn-primary btn-large" (click)="downloadInvoice(invoiceDetails.id, invoiceDetails.invoiceNo)" ngbTooltip="View/Download Invoice">
+      <i class="fa-regular fa-file-pdf"></i>
+    </button>
+  </div>
+
     <div class="row">
       <div class="col-lg-4 col-md-6 mb-3">
         <label>Invoice No</label>
@@ -50,6 +56,11 @@
       <div class="col-lg-4 col-md-6 mb-3">
         <label>Due Date</label>
         <input class="form-control form-control-sm" [value]="invoiceDetails?.dueDate | date:'yyyy-MM-dd'" disabled>
+      </div>
+
+      <div class="col-lg-4 col-md-6 mb-3">
+        <label>Status</label>
+        <input class="form-control form-control-sm" [value]="invoiceDetails?.requestStatus" disabled>
       </div>
 
       <div class="col-lg-8 col-md-6 mb-3">

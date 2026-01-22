@@ -51,6 +51,12 @@
                   <label>Name</label>
                   <input type="text" formControlName="name" class="form-control" placeholder="Enter Name"
                     [disabled]="isEditMode" />
+                  <div
+                    *ngIf="companyForm.get('name')?.invalid && (companyForm.get('name')?.touched || companyFormSubmitted)"
+                    class="text-danger">
+                    <small *ngIf="companyForm.get('name')?.errors?.['required']">Name is required.</small>
+                    <small *ngIf="companyForm.get('name')?.errors?.['pattern']">Name cannot contain spaces.</small>
+                  </div>
                 </div>
               </div>
 
@@ -131,52 +137,52 @@
               </div>
 
               <!-- Companies -->
-               <div class="d-flex">
-                    <div class="col-lg-6 col-md-6 col-sm-12 me-1">
-                <div class="mb-2">
-                  <label>Select Companies</label>
-                  <ng-select class="custom-style" [items]="companies" bindLabel="description" bindValue="id"
-                    [multiple]="true" [searchable]="true" placeholder="Select Company(s)"
-                    formControlName="companyIds">
-                  </ng-select>
+              <div class="d-flex">
+                <div class="col-lg-6 col-md-6 col-sm-12 me-1">
+                  <div class="mb-2">
+                    <label>Select Companies</label>
+                    <ng-select class="custom-style" [items]="companies" bindLabel="description" bindValue="id"
+                      [multiple]="true" [searchable]="true" placeholder="Select Company(s)"
+                      formControlName="companyIds">
+                    </ng-select>
 
-                  <div *ngIf="companyForm.get('companyIds')?.invalid && companyFormSubmitted && !isEditMode"
-                    class="text-danger">
-                    Please select at least one company.
+                    <div *ngIf="companyForm.get('companyIds')?.invalid && companyFormSubmitted && !isEditMode"
+                      class="text-danger">
+                      Please select at least one company.
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <!-- Status toggle button -->
-              <div class="form-group mb-2">
-                <label>Status</label>
-                <!-- <div>
+                <!-- Status toggle button -->
+                <div class="form-group mb-2">
+                  <label>Status</label>
+                  <!-- <div>
                   <button type="button" class="btn"
                     [ngClass]="companyForm.get('isDeleted')?.value ? 'btn-danger' : 'btn-success'"
                     (click)="toggleStatus()">
                     {{ companyForm.get('isDeleted')?.value ? 'Inactive' : 'Active' }}
                   </button>
                 </div> -->
-                <div>
-                  <div class="checkbox-wrapper-4">
-                    <!-- <input formControlName="isDeleted" class="inp-cbx" id="Active" type="checkbox" /> -->
-                    <input id="Active" type="checkbox" class="inp-cbx" [checked]="!companyForm.get('isDeleted')?.value"
-                      (change)="onActiveChange($event)" />
-                    <label class="cbx" for="Active"><span>
-                        <svg width="12px" height="10px">
-                          <use xlink:href="#check-4"></use>
-                        </svg></span><span>Active</span></label>
-                    <svg class="inline-svg">
-                      <symbol id="check-4" viewbox="0 0 12 10">
-                        <polyline points="1.5 6 4.5 9 10.5 1">
-                        </polyline>
-                      </symbol>
-                    </svg>
+                  <div>
+                    <div class="checkbox-wrapper-4">
+                      <!-- <input formControlName="isDeleted" class="inp-cbx" id="Active" type="checkbox" /> -->
+                      <input id="Active" type="checkbox" class="inp-cbx"
+                        [checked]="!companyForm.get('isDeleted')?.value" (change)="onActiveChange($event)" />
+                      <label class="cbx" for="Active"><span>
+                          <svg width="12px" height="10px">
+                            <use xlink:href="#check-4"></use>
+                          </svg></span><span>Active</span></label>
+                      <svg class="inline-svg">
+                        <symbol id="check-4" viewbox="0 0 12 10">
+                          <polyline points="1.5 6 4.5 9 10.5 1">
+                          </polyline>
+                        </symbol>
+                      </svg>
+                    </div>
                   </div>
                 </div>
               </div>
-               </div>
-          
+
 
               <!-- Companies -->
               <!-- <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="companies.length">
