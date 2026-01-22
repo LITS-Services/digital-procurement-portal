@@ -26,7 +26,7 @@ export class EmailTemplateService {
   creatEmailTemplate(payload: any) {
     return this.http.post(`${this.baseUrlForEmailTemplate}/create`, payload);
   }
-  
+
   // getAllEmailTemplates(): Observable<any[]> {
   //   return this.http.get<any[]>(`${this.baseUrlForEmailTemplate}/get-all-templates`);
   // }
@@ -64,6 +64,9 @@ export class EmailTemplateService {
 
   createEmailInvitation(userData: any): Observable<string> {
     return this.http.post(`${this.baseUrlForEmailLogs}/create-email-invitation`, userData, { responseType: 'text' });
+  }
+  resendEmailInvitation(userData: any): Observable<string> {
+    return this.http.post(`${this.baseUrlForEmailLogs}/resend-email-invitation`, userData, { responseType: 'text' });
   }
 
   getUserInvitation(): Observable<any[]> {

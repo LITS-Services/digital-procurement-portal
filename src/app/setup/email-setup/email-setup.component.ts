@@ -208,12 +208,14 @@ export class EmailSetupComponent implements OnInit {
     const userData = {
       submitterName: this.senderName,
       receiverEmail: receiverEmail,
-      subject: this.invitationForm.value.subject,
-      body: this.invitationForm.value.body,
-      Status: this.requestStatus // ✅ Added dynamic Status parameter
+      createdDate: new Date().toISOString()
     };
 
-    this.EmailTemplateService.createEmailInvitation(userData).subscribe({
+    const apiCall = this.requestStatus === 'Send'
+      ? this.EmailTemplateService.createEmailInvitation(userData)
+      : this.EmailTemplateService.resendEmailInvitation(userData);
+
+    apiCall.subscribe({
       next: (res) => {
         this.isSending = false; // ✅ Stop loader
         this.toastr.success(`Invitation ${this.requestStatus === 'Send' ? 'sent' : 'resent'} successfully!`, 'Success');
