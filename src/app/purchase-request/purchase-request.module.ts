@@ -26,6 +26,7 @@ import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-r
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
 import { PrInventoryManagementComponent } from './pr-inventory-management/pr-inventory-management.component';
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
+import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 
 
 @NgModule({
@@ -50,6 +51,7 @@ import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-au
     NgbDatepickerModule,
     ToastrModule.forRoot(),
     NgxSpinnerModule,
+    NgxIntlTelInputModule,
     AutoResizeDatatableDirective,
     DatatableAutoResizeDirective,
     PermissionDirective
