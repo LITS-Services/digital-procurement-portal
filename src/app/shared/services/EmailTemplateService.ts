@@ -79,4 +79,10 @@ export class EmailTemplateService {
   getEmailInvitationById(id: number): Observable<any> {
     return this.http.get<any>(`${this.baseUrlForEmailLogs}/GetEmailinvitation${id}`);
   }
+
+  getGlobalEmailTemplate(): Observable<any> {
+    return this.http.post<any>(`${this.baseUrlForEmailTemplate}/get-by-global-config`, {
+      templateName: 'InviteEmailTemplate'
+    });
+  }
 }

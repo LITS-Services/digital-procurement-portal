@@ -11,11 +11,11 @@ import { CompanyService } from 'app/shared/services/Company.services';
 export class CompanySetupHistoryComponent implements OnInit {
   @Input() vendorEntityAssociationId!: number; // Direct ID if available
   @Input() selectedRow!: any; // Entire row if ID needs to be constructed
-  @Input() entity!: string; 
-  
+  @Input() entity!: string;
+
   approvalHistory: any[] = [];
   loading = true;
-  
+
   constructor(
     //public activeModal: NgbActiveModal, 
     private companyService: CompanyService,
@@ -30,14 +30,14 @@ export class CompanySetupHistoryComponent implements OnInit {
     this.loading = true;
 
     // Determine which ID to use
-    const associationId = this.vendorEntityAssociationId || 
-                         this.selectedRow?.vendorEntityAssociationId ||
-                         this.constructAssociationId();
+    const associationId = this.vendorEntityAssociationId ||
+      this.selectedRow?.vendorEntityAssociationId ||
+      this.constructAssociationId();
 
     if (!associationId) {
       console.error("No vendorEntityAssociationId available");
       this.loading = false;
-        this.cdr.markForCheck();
+      this.cdr.markForCheck();
       return;
     }
 
@@ -45,12 +45,12 @@ export class CompanySetupHistoryComponent implements OnInit {
       next: (data: any) => {
         this.approvalHistory = data ?? data?.$values ?? [];
         this.loading = false;
-          this.cdr.markForCheck();
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error("Error loading approval history", err);
         this.loading = false;
-          this.cdr.markForCheck();
+        this.cdr.markForCheck();
       }
     });
   }

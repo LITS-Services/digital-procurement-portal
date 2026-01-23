@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
+import { SKIP_TOAST } from '../interceptor/response-handler.interceptor';
 import { Observable } from 'rxjs';
 import { environment } from 'environments/environment';
 
@@ -106,11 +107,15 @@ export class CompanyService {
   }
 
   getApprovalHistoryByProcurmentcompanyId(vendorComapnyId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/Company/get-company-approval-history?VendorCompanyId=${vendorComapnyId}`);
+    return this.http.get<any[]>(`${environment.apiUrl}/Company/get-company-approval-history?VendorCompanyId=${vendorComapnyId}`, {
+      context: new HttpContext().set(SKIP_TOAST, true)
+    });
   }
 
   setupId(associationId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/Company/SetupHistory?vendorEntityAssociationId=${associationId}`);
+    return this.http.get<any[]>(`${environment.apiUrl}/Company/SetupHistory?vendorEntityAssociationId=${associationId}`, {
+      context: new HttpContext().set(SKIP_TOAST, true)
+    });
   }
 
   GetAllCompanyOnboardingSetup(): Observable<any[]> {

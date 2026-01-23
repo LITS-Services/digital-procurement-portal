@@ -12,7 +12,9 @@
           "builder": "@angular-devkit/build-angular:application",
           "options": {
             "stylePreprocessorOptions": {
-              "includePaths": ["node_modules"]
+              "includePaths": [
+                "node_modules"
+              ]
             },
             "allowedCommonJsDependencies": [
               "dragula",
@@ -37,7 +39,9 @@
             "index": "src/index.html",
             "browser": "src/main.ts",
             "tsConfig": "src/tsconfig.app.json",
-            "polyfills": ["src/polyfills.ts"],
+            "polyfills": [
+              "src/polyfills.ts"
+            ],
             "assets": [
               "src/assets",
               "src/favicon.ico",
@@ -52,10 +56,7 @@
               "src/assets/css/quill.snow.css",
               "src/assets/css/quill.bubble.css",
               "src/assets/css/hopscotch.css",
-              "src/assets/css/animate.min.css",
-              "node_modules/nouislider/dist/nouislider.min.css",
               "node_modules/angular-calendar/scss/angular-calendar.scss",
-              "node_modules/dragula/dist/dragula.css",
               "node_modules/swiper/swiper-bundle.min.css",
               "node_modules/ngx-toastr/toastr.css",
               "node_modules/@swimlane/ngx-datatable/index.css",
@@ -68,7 +69,7 @@
               "node_modules/ngx-spinner/animations/ball-beat.css"
             ],
             "scripts": [
-                  "src/assets/vendor/pace/pace-config.js",
+              "src/assets/vendor/pace/pace-config.js",
               "src/assets/vendor/pace/pace.min.js",
               "node_modules/apexcharts/dist/apexcharts.min.js"
             ],
@@ -125,7 +126,9 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "stylePreprocessorOptions": {
-              "includePaths": ["node_modules"]
+              "includePaths": [
+                "node_modules"
+              ]
             },
             "main": "src/test.ts",
             "karmaConfig": "./karma.conf.js",
@@ -135,7 +138,6 @@
               "src/assets/vendor/pace/pace-config.js",
               "src/assets/vendor/pace/pace.min.js",
               "node_modules/apexcharts/dist/apexcharts.min.js"
-              
             ],
             "styles": [
               "node_modules/sweetalert2/dist/sweetalert2.min.css",
@@ -143,20 +145,20 @@
               "src/assets/css/wizard.css",
               "src/assets/css/quill.snow.css",
               "src/assets/css/quill.bubble.css",
-              "src/assets/css/hopscotch.css",
-              "node_modules/nouislider/dist/nouislider.min.css",
               "node_modules/angular-calendar/scss/angular-calendar.scss",
-              "node_modules/dragula/dist/dragula.css",
               "node_modules/swiper/swiper-bundle.min.css",
               "node_modules/ngx-toastr/toastr.css",
               "node_modules/@swimlane/ngx-datatable/index.css",
               "node_modules/@swimlane/ngx-datatable/assets/icons.css",
               "src/assets/css/demo.css",
               "src/styles.css",
-                "node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "node_modules/@swimlane/ngx-datatable/themes/bootstrap.css"
             ],
-            "assets": ["src/assets", "src/favicon.ico"]
+            "assets": [
+              "src/assets",
+              "src/favicon.ico"
+            ]
           }
         }
       }

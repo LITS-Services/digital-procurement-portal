@@ -25,6 +25,12 @@ export class CompanyApprovalHistoryComponent implements OnInit {
 
   }
   loadApprovalHistory() {
+    if (!this.vendorComapnyId) {
+      this.approvalHistory = [];
+      this.loading = false;
+      this.cdr.detectChanges();
+      return;
+    }
     this.loading = true;
 
     this.companyService.getApprovalHistoryByProcurmentcompanyId(this.vendorComapnyId).subscribe({

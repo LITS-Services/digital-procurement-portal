@@ -8,6 +8,7 @@ import { finalize } from 'rxjs/operators';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { SystemService } from 'app/shared/services/system.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-company-edit',
@@ -159,6 +160,12 @@ export class CompanyEditComponent implements OnInit {
           this.companyWebsite = company.websiteUrl || null;
           this.workflowMasterId = company.workflowMasterId || 0;
           this.mainApproverId = company.mainApproverId || '';
+
+          // If vendorEntityAssociationId is missing from query params, try to get it from API response
+          if (!this.vendorEntityAssociationId) {
+            this.vendorEntityAssociationId = company.vendorEntityAssociationId || null;
+            console.log('Resolved vendorEntityAssociationId from API response:', this.vendorEntityAssociationId);
+          }
 
           // If isAssigned is null or false, try to get it from the company object
           if (this.isAssigned === null || this.isAssigned === false) {
@@ -363,8 +370,20 @@ export class CompanyEditComponent implements OnInit {
   onActions(action: string): void {
     // Always direct for sendforapproval
     if (action === 'sendforapproval') {
-      this.submitForApproval(action);
-      this.router.navigate(['/company']);
+      Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to submit this company for approval?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#116AEF',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, Submit'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.submitForApproval(action);
+          this.router.navigate(['/company']);
+        }
+      });
       return;
     }
 

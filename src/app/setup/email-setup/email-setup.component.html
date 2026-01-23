@@ -117,13 +117,32 @@
   </div>
   <div class="modal-body">
     <form [formGroup]="invitationForm">
-      <div class="form-group">
+      <div class="form-group mb-2">
         <label for="receiverEmail">Vendor Email</label>
         <input type="email" id="receiverEmail" class="form-control" formControlName="receiverEmail"
           [ngClass]="{ 'is-invalid': submitted && f.receiverEmail.errors }" placeholder="Enter vendor email" />
         <div *ngIf="submitted && f.receiverEmail.errors" class="invalid-feedback">
           <div *ngIf="f.receiverEmail.errors.required">Email is required</div>
           <div *ngIf="f.receiverEmail.errors.email">Please enter a valid email address</div>
+        </div>
+      </div>
+
+      <div class="form-group mb-2">
+        <label for="subject">Subject</label>
+        <input type="text" id="subject" class="form-control" formControlName="subject"
+          [ngClass]="{ 'is-invalid': submitted && f.subject.errors }" placeholder="Enter subject" />
+        <div *ngIf="submitted && f.subject.errors" class="invalid-feedback">
+          <div *ngIf="f.subject.errors.required">Subject is required</div>
+        </div>
+      </div>
+
+      <div class="form-group mb-0">
+        <label for="emailInvitationEditor">Body</label>
+        <div id="emailInvitationEditor" style="min-height: 300px; border: 1px solid #ced4da; border-radius: 0.25rem;">
+        </div>
+        <input type="hidden" formControlName="body" />
+        <div *ngIf="submitted && f.body.errors" class="text-danger small mt-1">
+          <div *ngIf="f.body.errors.required">Body is required</div>
         </div>
       </div>
     </form>
