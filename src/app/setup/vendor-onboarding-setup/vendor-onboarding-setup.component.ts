@@ -103,7 +103,10 @@ export class VendorOnboardingSetupComponent implements OnInit {
             console.warn('Unexpected API response structure:', response);
           }
 
-          this.vendorOnboardingData = [...this.vendorOnboardingList];
+          this.vendorOnboardingData = ([...this.vendorOnboardingList]).map((wf: any) => ({
+          ...wf,
+          statusClass: `chip ${this.mapStatusKey(wf.status ? 'Active' : 'InActive')}`
+        }));;
           console.log('Vendor Onboarding List:', this.vendorOnboardingList);
           this.cdr.detectChanges();
         },
@@ -310,6 +313,22 @@ export class VendorOnboardingSetupComponent implements OnInit {
     if (!entityId || !this.entitiesList?.length) return '—';
     const entity = this.entitiesList.find(e => e.id === entityId);
     return entity ? entity.name : '—';
+  }
+
+  private mapStatusKey(status: string): 'chip--success' | 'chip--pending' | 'chip--rejected' | 'chip--approved' {
+    const s = status?.toLowerCase();
+
+    if (s === 'completed' || s === 'successful' || s === 'accepted'  || s === 'paid' || s === 'delivered' || s === 'active')
+      return 'chip--success';
+
+    if (s === 'rejected')
+      return 'chip--rejected';
+
+    if (s === 'pending for payment' || s === 'pending' || s === 'on hold' || s === 'inactive' || s === 'inprogress' || s === 'draft' || s === 'sendback' || s === 'in active')  
+    return 'chip--pending';
+
+    if (s === 'approved for payment' || s === 'approved' || s === 'new' || s === 'awarded')
+    return 'chip--approved';
   }
 
 }

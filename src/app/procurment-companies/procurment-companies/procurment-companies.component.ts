@@ -91,7 +91,7 @@ export class ProcurmentCompaniesComponent implements OnInit {
         this.tenderingData = companies.map((c: any) => ({
           ...c,
           status: c.isDeleted ? 'Inactive' : 'Active', // optional: show readable status
-          statusClass: `chip ${this.mapStatusKey(c.isDeleted ? 'Inactive' : 'Active')}`,
+          statusClass: `chip ${this.mapStatusKey(c.isDeleted ? 'InActive' : 'Active')}`,
           logo: c.logo || '',
         }));
         this.totalPages = res.totalPages;

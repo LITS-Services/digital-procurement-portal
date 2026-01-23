@@ -124,6 +124,11 @@
                 </ngx-datatable-column>
 
                 <ngx-datatable-column name="Status" prop="requestStatus" [flexGrow]="1" [minWidth]="120">
+                    <ng-template ngx-datatable-cell-template let-row="row">
+                        <span [ngClass]="row.statusClass">
+                            {{ row.requestStatus }}
+                        </span>
+                    </ng-template>
                 </ngx-datatable-column>
 
                 <!-- <ngx-datatable-column name="Date" prop="date" [width]="50">

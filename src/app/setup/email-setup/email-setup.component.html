@@ -87,6 +87,21 @@
           <!-- Dynamic Columns -->
           <ngx-datatable-column *ngFor="let col of columns" [name]="col.name" [prop]="col.prop"
             [minWidth]="col.minWidth" [flexGrow]="1">
+            <ng-template ngx-datatable-cell-template let-row="row">
+    
+    <!-- ✅ Status chip rendering -->
+    <ng-container *ngIf="col.prop === 'requestStatusName'; else defaultCell">
+      <span class="chip" [ngClass]="row.statusClass">
+        {{ row.requestStatusName }}
+      </span>
+    </ng-container>
+
+    <!-- ✅ Default rendering for other columns -->
+    <ng-template #defaultCell>
+      {{ row[col.prop] }}
+    </ng-template>
+
+  </ng-template>
           </ngx-datatable-column>
         </ngx-datatable>
       </div>

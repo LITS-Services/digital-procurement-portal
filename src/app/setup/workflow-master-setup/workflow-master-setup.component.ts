@@ -71,7 +71,10 @@ export class WorkflowMasterSetupComponent implements OnInit {
         console.log("Raw API Response:", data);
 
         // Fix: Extract $values if it exists
-        this.workflowMasterList = data.$values ?? data;
+        this.workflowMasterList = (data.$values ?? data).map((wf: any) => ({
+          ...wf,
+          statusClass: `chip ${this.mapStatusKey(wf.isActive ? 'Active' : 'In Active')}`
+        }));
         //this.loading = false;
 
         console.log("Extracted WorkflowMasters List:", this.workflowMasterList);
@@ -224,5 +227,20 @@ export class WorkflowMasterSetupComponent implements OnInit {
     modalRef.componentInstance.workflowMasterId = row.workflowMasterId;
   }
 
+  private mapStatusKey(status: string): 'chip--success' | 'chip--pending' | 'chip--rejected' | 'chip--approved' {
+    const s = status?.toLowerCase();
+
+    if (s === 'completed' || s === 'successful' || s === 'accepted'  || s === 'paid' || s === 'delivered' || s === 'active')
+      return 'chip--success';
+
+    if (s === 'rejected')
+      return 'chip--rejected';
+
+    if (s === 'pending for payment' || s === 'pending' || s === 'on hold' || s === 'inactive' || s === 'inprogress' || s === 'draft' || s === 'sendback' || s === 'in active')  
+    return 'chip--pending';
+
+    if (s === 'approved for payment' || s === 'approved' || s === 'new' || s === 'awarded')
+    return 'chip--approved';
+  }
 
 }

@@ -82,6 +82,7 @@ export class InventoryTransferListComponent implements OnInit {
         this.purchaseRequestData = (data?.result || []).map((pr: any) => ({
           ...pr,
           canGenerateRfq: pr.requestStatus === 'Completed',
+          statusClass: `chip ${this.mapStatusKey(pr.requestStatus || pr.status)}`,
         }));
 
         this.totalPages = data.totalPages;
@@ -286,5 +287,21 @@ export class InventoryTransferListComponent implements OnInit {
   onPageChange(event: any) {
     this.query.currentPage = (event?.offset ?? 0) + 1;
     this.loadPurchaseRequests();
+  }
+
+  private mapStatusKey(status: string): 'chip--success' | 'chip--pending' | 'chip--rejected' | 'chip--approved' {
+    const s = status?.toLowerCase();
+
+    if (s === 'completed' || s === 'successful' || s === 'accepted'  || s === 'paid' || s === 'delivered' || s === 'active')
+      return 'chip--success';
+
+    if (s === 'rejected')
+      return 'chip--rejected';
+
+    if (s === 'pending for payment' || s === 'pending' || s === 'on hold' || s === 'inactive')
+    return 'chip--pending';
+
+    if (s === 'approved for payment' || s === 'approved' || s === 'new' || s === 'awarded')
+    return 'chip--approved';
   }
 }

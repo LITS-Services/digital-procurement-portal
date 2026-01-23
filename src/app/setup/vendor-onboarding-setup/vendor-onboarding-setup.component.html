@@ -111,11 +111,16 @@
 
           <!-- Status -->
           <ngx-datatable-column name="Status" prop="status" [flexGrow]="1" [minWidth]="120">
-            <ng-template ngx-datatable-cell-template let-row="row">
+            <!-- <ng-template ngx-datatable-cell-template let-row="row">
               <span [class]="row.status ? 'badge badge-success' : 'badge badge-danger'">
                 {{ row.status ? 'Active' : 'Inactive' }}
               </span>
-            </ng-template>
+            </ng-template> -->
+            <ng-template ngx-datatable-cell-template let-row="row">
+    <span [ngClass]="row.statusClass">
+      {{ row.status ? 'Active' : 'In Active' }}
+    </span>
+  </ng-template>
           </ngx-datatable-column>
 
           <ngx-datatable-column name="Receivers" prop="Receivers" [flexGrow]="1" [minWidth]="100" [maxWidth]="150">

@@ -102,7 +102,8 @@ export class PurchaseRequestComponent implements OnInit {
       next: (data: any) => {
         this.purchaseRequestData = (data?.result || []).map((pr: any) => ({
           ...pr,
-          canGenerateRfq: pr.requestStatus === 'Completed'
+          canGenerateRfq: pr.requestStatus === 'Completed',
+          statusClass: `chip ${this.mapStatusKey(pr.requestStatus || pr.status)}`
         }));
 
         // Capture pagination info
@@ -479,5 +480,21 @@ export class PurchaseRequestComponent implements OnInit {
       },
       skipLocationChange: true
     });
+  }
+
+  private mapStatusKey(status: string): 'chip--success' | 'chip--pending' | 'chip--rejected' | 'chip--approved' {
+    const s = status?.toLowerCase();
+
+    if (s === 'completed' || s === 'successful' || s === 'accepted'  || s === 'paid' || s === 'delivered' || s === 'active')
+      return 'chip--success';
+
+    if (s === 'rejected')
+      return 'chip--rejected';
+
+    if (s === 'pending for payment' || s === 'pending' || s === 'on hold' || s === 'inactive' || s === 'inprogress' || s === 'draft' || s === 'sendback')  
+    return 'chip--pending';
+
+    if (s === 'approved for payment' || s === 'approved' || s === 'new' || s === 'awarded')
+    return 'chip--approved';
   }
 }

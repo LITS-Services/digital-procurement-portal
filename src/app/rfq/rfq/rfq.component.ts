@@ -137,7 +137,10 @@ export class RfqComponent implements OnInit {
       next: (data: any) => {
 
         // Extract paginated data correctly
-        this.rfqData = data?.result || [];
+        this.rfqData = (data?.result || []).map((r: any) => ({
+        ...r,
+        statusClass: `chip ${this.mapStatusKey(r.requestStatus || r.status)}`
+      }));
 
         // Capture pagination info
         this.totalPages = data.totalPages;
@@ -386,5 +389,21 @@ export class RfqComponent implements OnInit {
     // ngx-datatable gives 0-based offset
     this.query.currentPage = (event?.offset ?? 0) + 1;
     this.loadRfqs();
+  }
+
+  private mapStatusKey(status: string): 'chip--success' | 'chip--pending' | 'chip--rejected' | 'chip--approved' {
+    const s = status?.toLowerCase();
+
+    if (s === 'completed' || s === 'successful' || s === 'accepted'  || s === 'paid' || s === 'delivered' || s === 'active')
+      return 'chip--success';
+
+    if (s === 'rejected')
+      return 'chip--rejected';
+
+    if (s === 'pending for payment' || s === 'pending' || s === 'on hold' || s === 'inactive' || s === 'inprogress' || s === 'draft' || s === 'sendback')  
+    return 'chip--pending';
+
+    if (s === 'approved for payment' || s === 'approved' || s === 'new' || s === 'awarded')
+    return 'chip--approved';
   }
 }

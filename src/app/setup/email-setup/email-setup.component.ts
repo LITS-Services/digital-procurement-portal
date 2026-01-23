@@ -98,7 +98,8 @@ export class EmailSetupComponent implements OnInit {
             day: '2-digit',
             month: 'short',
             year: 'numeric'
-          }).replace(/ /g, '-') : ''
+          }).replace(/ /g, '-') : '',
+          statusClass: `chip ${this.mapStatusKey(item.requestStatusName || item.status)}`
         }));
 
         this.rows = [...this.allEmailLogs];
@@ -272,6 +273,22 @@ export class EmailSetupComponent implements OnInit {
     this.enableDisableButtons();
 
     this.modalService.dismissAll();
+  }
+
+  private mapStatusKey(status: string): 'chip--success' | 'chip--pending' | 'chip--rejected' | 'chip--approved' {
+    const s = status?.toLowerCase();
+
+    if (s === 'completed' || s === 'successful' || s === 'accepted'  || s === 'paid' || s === 'delivered' || s === 'active')
+      return 'chip--success';
+
+    if (s === 'rejected' || s === 'resend')
+      return 'chip--rejected';
+
+    if (s === 'pending for payment' || s === 'pending' || s === 'on hold' || s === 'inactive' || s === 'inprogress' || s === 'draft' || s === 'sendback')  
+    return 'chip--pending';
+
+    if (s === 'approved for payment' || s === 'approved'  || s === 'approve' || s === 'new' || s === 'send')
+    return 'chip--approved';
   }
 
 }

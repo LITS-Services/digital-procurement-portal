@@ -68,11 +68,16 @@
         <ngx-datatable-column name="Name" prop="workflowName" [flexGrow]="1" [minWidth]="140"></ngx-datatable-column>
         <ngx-datatable-column name="Document" prop="workflowType" [flexGrow]="1" [minWidth]="160"></ngx-datatable-column>
         <ngx-datatable-column name="Status" prop="isActive" [flexGrow]="1" [minWidth]="120">
-          <ng-template ngx-datatable-cell-template let-row="row">
+          <!-- <ng-template ngx-datatable-cell-template let-row="row">
             <span>
               {{ row.isActive ? 'Active' : 'In Active' }}
             </span>
-          </ng-template>
+          </ng-template> -->
+          <ng-template ngx-datatable-cell-template let-row="row">
+    <span [ngClass]="row.statusClass">
+      {{ row.isActive ? 'Active' : 'In Active' }}
+    </span>
+  </ng-template>
         </ngx-datatable-column>
 
         <ngx-datatable-column name="Approver" prop="createdDate" [flexGrow]="1" [minWidth]="100" [maxWidth]="120">
