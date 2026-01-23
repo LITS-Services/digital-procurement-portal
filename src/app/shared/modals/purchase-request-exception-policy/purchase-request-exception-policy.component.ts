@@ -33,7 +33,7 @@ export class PurchaseRequestExceptionPolicyComponent implements OnInit {
       subject: [''],
       department: [''],
       description: [''],
-      estimatedValue: [''],
+      estimatedValue: [null],
       justification: [''],
       waiveApproval: [false],
     });

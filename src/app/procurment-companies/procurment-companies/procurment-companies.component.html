@@ -71,13 +71,20 @@
 
         <!-- Status -->
         <!-- Status Column -->
-        <ngx-datatable-column name="Status" [flexGrow]="1" [minWidth]="120" [sortable]="false">
+        <!-- <ngx-datatable-column name="Status" [flexGrow]="1" [minWidth]="120" [sortable]="false">
           <ng-template ngx-datatable-cell-template let-row="row">
             <span [ngClass]="getStatusClass(row)">
               {{ getStatus(row) }}
             </span>
           </ng-template>
-        </ngx-datatable-column>
+        </ngx-datatable-column> -->
+<ngx-datatable-column name="Status" [flexGrow]="1" [minWidth]="120" [sortable]="false">
+  <ng-template ngx-datatable-cell-template let-row="row">
+    <span [ngClass]="row.statusClass">
+      {{ row.status }}
+    </span>
+  </ng-template>
+</ngx-datatable-column>
 
 
         <!-- Logo -->

@@ -48,8 +48,8 @@ export class EmployeeComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    if (!this.authService.hasRole('Admin')) {
-      this.toastr.warning('Access denied. Only Admins can access this page.');
+    if (!this.authService.hasRole('Super Admin')) {
+      this.toastr.warning('Access denied. Only Super Admin can access this page.');
       this.router.navigate(['/dashboard/dashboard1']);
       return;
     }
@@ -109,29 +109,28 @@ export class EmployeeComponent implements OnInit {
     });
   }
 
-  // loadCompanies() {
-  //   const userId = localStorage.getItem('userId');
-  //   this.companyService.getProCompanies(this.currentPage, this.pageSize, userId).subscribe({
-  //     next: (res: any) => {
-  //       this.companies = res?.result || [];
-  //       this.totalItems = res.totalItems;
-  //       this.totalPages = res.totalPages;
-  //       this.cdr.detectChanges();
-  //     },
-  //     error: (err) => console.error('Error loading companies:', err)
-  //   });
-  // }
   loadCompanies() {
     const userId = localStorage.getItem('userId');
-
-    this.lookupService.getProcCompaniesByProcUserId(userId!).subscribe({
-      next: (res: any[]) => {
-        this.companies = res || [];
+    this.companyService.getProCompanies(this.currentPage, this.pageSize, userId).subscribe({
+      next: (res: any) => {
+        this.companies = res?.result || [];
+        this.totalItems = res.totalItems;
+        this.totalPages = res.totalPages;
         this.cdr.detectChanges();
       },
-      error: err => console.error('Error loading companies', err)
+      error: (err) => console.error('Error loading companies:', err)
     });
   }
+
+  // loadCompanies() {
+  //   this.lookupService.getAllProcurementCompanies().subscribe({
+  //     next: (res: any[]) => {
+  //       this.companies = res || [];
+  //       this.cdr.detectChanges();
+  //     },
+  //     error: err => console.error('Error loading companies', err)
+  //   });
+  // }
 
 
 

@@ -69,12 +69,12 @@ export class ProcurmentCompaniesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Only Admins can access
-    if (!this.authService.hasRole('Admin')) {
-      this.toastr.warning('Access denied. Only Admins can access this page.');
-      this.router.navigate(['/dashboard/dashboard1']);
-      return;
-    }
+    // Only Super Admins can access
+    // if (!this.authService.hasRole('Super Admin')) {
+    //   this.toastr.warning('Access denied. Only Super Admin can access this page.');
+    //   this.router.navigate(['/dashboard/dashboard1']);
+    //   return;
+    // }
 
     this.loadCompanyData();
   }
@@ -91,6 +91,7 @@ export class ProcurmentCompaniesComponent implements OnInit {
         this.tenderingData = companies.map((c: any) => ({
           ...c,
           status: c.isDeleted ? 'Inactive' : 'Active', // optional: show readable status
+          statusClass: `chip ${this.mapStatusKey(c.isDeleted ? 'Inactive' : 'Active')}`,
           logo: c.logo || '',
         }));
         this.totalPages = res.totalPages;
@@ -249,5 +250,21 @@ export class ProcurmentCompaniesComponent implements OnInit {
 
   getStatusClass(row: any): string {
     return row.isDeleted ? '' : '';
+  }
+
+  private mapStatusKey(status: string): 'chip--success' | 'chip--pending' | 'chip--rejected' | 'chip--approved' {
+    const s = status?.toLowerCase();
+
+    if (s === 'completed' || s === 'successful' || s === 'accepted'  || s === 'paid' || s === 'delivered' || s === 'active')
+      return 'chip--success';
+
+    if (s === 'rejected')
+      return 'chip--rejected';
+
+    if (s === 'pending for payment' || s === 'pending' || s === 'on hold' || s === 'inactive')
+    return 'chip--pending';
+
+    if (s === 'approved for payment' || s === 'approved' || s === 'new' || s === 'awarded')
+    return 'chip--approved';
   }
 }

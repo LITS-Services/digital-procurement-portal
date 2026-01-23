@@ -5,6 +5,7 @@ import { AuthService } from 'app/shared/auth/auth.service';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PermissionService } from 'app/shared/permissions/permission.service';
 import { CompanyService } from 'app/shared/services/Company.services';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-employee-list',
@@ -31,7 +32,8 @@ export class EmployeeListComponent implements OnInit {
     private companyService: CompanyService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
-    private permissionService: PermissionService
+    private permissionService: PermissionService,
+    private toastr: ToastrService
   ) { }
 
   onAutoResize(): void {
@@ -148,7 +150,7 @@ export class EmployeeListComponent implements OnInit {
       const selectedUser = this.chkBoxSelected[0];
       this.router.navigate(['/employee'], { queryParams: { id: selectedUser.id } });
     } else {
-      alert('Please select a single user to edit.');
+      this.toastr.info('Please select a single user to edit.');
     }
   }
 }

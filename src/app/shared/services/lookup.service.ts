@@ -86,6 +86,9 @@ export class LookupService {
     return this.http.get<any[]>(url, { params });
   }
 
+  getAllProcurementCompanies() {
+    return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=procurement-companies`);
+  }
   // getAddress2ByEntity(entityId: number) {
   //   const url = `${this.baseUrl}/dropdowns`;
   //   const params = {
