@@ -106,7 +106,8 @@
           {{ value | number:'1.0-2' }}
         </ng-template>
       </ngx-datatable-column>
-      <ngx-datatable-column name="Comment" prop="comment" [width]="400"></ngx-datatable-column>
+      <ngx-datatable-column name="Comment" prop="comment" [width]="300"></ngx-datatable-column>
+      <ngx-datatable-column name="Status" prop="requestStatus" [width]="150"></ngx-datatable-column>
 
       <ngx-datatable-column name="Attachments" [sortable]="false" [width]="120">
         <ng-template ngx-datatable-cell-template let-row="row">
@@ -116,22 +117,22 @@
         </ng-template>
       </ngx-datatable-column>
 
-      <ngx-datatable-column name="Action" [sortable]="false" [width]="120">
+      <!-- <ngx-datatable-column name="Action" [sortable]="false" [width]="120">
         <ng-template ngx-datatable-cell-template let-row="row">
           <button class="btn btn-sm mr-1" (click)="printVendor(row)">
             <i class="ft-printer"></i>
           </button>
         </ng-template>
-      </ngx-datatable-column>
+      </ngx-datatable-column> -->
 
-      <ngx-datatable-footer>
+      <!-- <ngx-datatable-footer>
         <ng-template ngx-datatable-footer-template>
           <div class="total-footer px-3 py-2">
             <strong>Total Amount:</strong>
             {{ totalAmount | number:'1.0-2' }}
           </div>
         </ng-template>
-      </ngx-datatable-footer>
+      </ngx-datatable-footer> -->
 
     </ngx-datatable>
     <!-- <ngx-datatable-footer>
