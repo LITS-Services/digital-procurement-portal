@@ -15,7 +15,7 @@ import { FORM_IDS } from 'app/shared/permissions/form-ids';
   standalone: false,
 })
 export class ProcurmentCompaniesComponent implements OnInit {
-     @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
+  @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
   FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
@@ -52,7 +52,7 @@ export class ProcurmentCompaniesComponent implements OnInit {
     private toastr: ToastrService,
     private cdr: ChangeDetectorRef,
     private permissionService: PermissionService
-  ) {}
+  ) { }
 
   onAutoResize(): void {
     this.datatableVisible = false;
@@ -88,12 +88,18 @@ export class ProcurmentCompaniesComponent implements OnInit {
         // Use paginated result array
         const companies = res?.result || [];
 
-        this.tenderingData = companies.map((c: any) => ({
-          ...c,
-          status: c.isDeleted ? 'Inactive' : 'Active', // optional: show readable status
-          statusClass: `chip ${this.mapStatusKey(c.isDeleted ? 'InActive' : 'Active')}`,
-          logo: c.logo || '',
-        }));
+        this.tenderingData = companies.map((c: any) => {
+          let logo = c.logo || '';
+          if (logo && typeof logo === 'string' && !logo.startsWith('data:image')) {
+            logo = `data:image/png;base64,${logo}`;
+          }
+          return {
+            ...c,
+            status: c.isDeleted ? 'Inactive' : 'Active', // optional: show readable status
+            statusClass: `chip ${this.mapStatusKey(c.isDeleted ? 'InActive' : 'Active')}`,
+            logo: logo,
+          };
+        });
         this.totalPages = res.totalPages;
         this.totalItems = res.totalItems;
         this.loading = false;
@@ -255,16 +261,16 @@ export class ProcurmentCompaniesComponent implements OnInit {
   private mapStatusKey(status: string): 'chip--success' | 'chip--pending' | 'chip--rejected' | 'chip--approved' {
     const s = status?.toLowerCase();
 
-    if (s === 'completed' || s === 'successful' || s === 'accepted'  || s === 'paid' || s === 'delivered' || s === 'active')
+    if (s === 'completed' || s === 'successful' || s === 'accepted' || s === 'paid' || s === 'delivered' || s === 'active')
       return 'chip--success';
 
     if (s === 'rejected')
       return 'chip--rejected';
 
     if (s === 'pending for payment' || s === 'pending' || s === 'on hold' || s === 'inactive')
-    return 'chip--pending';
+      return 'chip--pending';
 
     if (s === 'approved for payment' || s === 'approved' || s === 'new' || s === 'awarded')
-    return 'chip--approved';
+      return 'chip--approved';
   }
 }

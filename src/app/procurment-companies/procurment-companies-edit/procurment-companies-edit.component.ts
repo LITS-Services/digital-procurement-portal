@@ -76,8 +76,15 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
         });
 
         if (company.logo && company.logo !== 'string') {
-          this.previewUrl = company.logo;
-          this.existingLogo = company.logo;
+          // Check if it's already a full data URI; if not, assume it's raw Base64 and add the prefix
+          if (typeof company.logo === 'string' && !company.logo.startsWith('data:image')) {
+            const fullLogo = `data:image/png;base64,${company.logo}`;
+            this.previewUrl = fullLogo;
+            this.existingLogo = fullLogo;
+          } else {
+            this.previewUrl = company.logo;
+            this.existingLogo = company.logo;
+          }
         } else {
           this.previewUrl = null;
         }
@@ -89,25 +96,25 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
     });
   }
 
-onFileSelect(event: Event) {
-  const input = event.target as HTMLInputElement;
+  onFileSelect(event: Event) {
+    const input = event.target as HTMLInputElement;
 
-  if (input.files && input.files[0]) {
-    this.selectedFile = input.files[0];
+    if (input.files && input.files[0]) {
+      this.selectedFile = input.files[0];
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.previewUrl = reader.result as string;
-      this.existingLogo = null; 
-      this.cdr.detectChanges();
-    };
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewUrl = reader.result as string;
+        this.existingLogo = null;
+        this.cdr.detectChanges();
+      };
 
-    reader.readAsDataURL(this.selectedFile);
+      reader.readAsDataURL(this.selectedFile);
 
-    // if you still want to store File in the form:
-    this.companyForm.patchValue({ logo: this.selectedFile });
+      // if you still want to store File in the form:
+      this.companyForm.patchValue({ logo: this.selectedFile });
+    }
   }
-}
 
   //   onSubmit() {
   //     if (this.companyForm.invalid) return;
