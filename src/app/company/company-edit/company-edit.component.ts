@@ -35,6 +35,7 @@ export class CompanyEditComponent implements OnInit {
   bankDetailsList: any[] = [];
   isEditMode: boolean = false;
   isLoading: boolean = false;
+  isSubmitting: boolean = false;
   isAssigned: boolean = null;
   workflowMasterId: number = 0;
   mainApproverId: string = '';
@@ -121,7 +122,6 @@ export class CompanyEditComponent implements OnInit {
   }
 
   loadCompanyById(id: number) {
-    this.isLoading = true;
     this.error = '';
     this.message = '';
     this.spinner.show();
@@ -381,7 +381,6 @@ export class CompanyEditComponent implements OnInit {
       }).then((result) => {
         if (result.isConfirmed) {
           this.submitForApproval(action);
-          this.router.navigate(['/company']);
         }
       });
       return;
@@ -390,7 +389,6 @@ export class CompanyEditComponent implements OnInit {
     // ✅ IF isAssigned (from query params) AND Approve → Direct API
     if (this.isAssigned && action === 'Approve') {
       this.submitForApproval(action);
-      this.router.navigate(['/company']);
       return;
     }
 
@@ -422,7 +420,7 @@ export class CompanyEditComponent implements OnInit {
   }
 
   private performCompanyAction(action: string, remarks: string) {
-    this.isLoading = true;
+    this.isSubmitting = true;
 
     const payload = {
       vendorCompanyId: this.companyId,
@@ -434,20 +432,22 @@ export class CompanyEditComponent implements OnInit {
     };
 
     this.companyService.VendorCompanyAction(payload).subscribe({
-      next: (res) => {
-        this.isLoading = false;
+      next: (res: any) => {
+        this.isSubmitting = false;
         this.message =
           action === 'Approve'
             ? 'Company Approved Successfully!'
             : action === 'Rejected'
               ? 'Company Rejected Successfully!'
               : 'Company Sent Back Successfully!';
+        this.toastr.success(res.message || this.message);
         this.cdr.detectChanges();
         this.router.navigate(['/company']);
       },
       error: (err) => {
-        this.isLoading = false;
+        this.isSubmitting = false;
         this.error = 'Failed to perform action!';
+        this.toastr.error(err.error?.message || this.error);
         console.error(err);
       },
     });
@@ -467,17 +467,17 @@ export class CompanyEditComponent implements OnInit {
     };
 
     this.companyService.takeAction(payload).subscribe({
-      next: (res) => {
-        this.isLoading = false;
+      next: (res: any) => {
+        this.isSubmitting = false;
         this.message = `Company ${action} Successfully!`;
-        this.toastr.success(this.message);
+        this.toastr.success(res.message || this.message);
         this.cdr.detectChanges();
         this.router.navigate(['/company']);
       },
       error: (err) => {
-        this.isLoading = false;
+        this.isSubmitting = false;
         console.error(err);
-        this.toastr.error(err);
+        this.toastr.error(err.error?.message || 'Failed to perform action!');
         this.error = 'Failed to perform action!';
       },
     });

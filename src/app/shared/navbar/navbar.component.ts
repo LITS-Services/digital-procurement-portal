@@ -466,7 +466,10 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         break;
 
       case ReferenceType.Company:
-        this.router.navigate(["/company"]);
+        this.router.navigate(["/company/company-edit"], {
+          queryParams: { id: referenceId },
+          skipLocationChange: true,
+        });
         break;
 
       case ReferenceType.Default:

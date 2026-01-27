@@ -10,7 +10,9 @@ export interface VendorUserDropdown {
 
 export interface EmailTemplateQuery {
   currentPage: number,
-  pageSize: number
+  pageSize: number,
+  workFlowType?: string,
+  searchTerm?: string
 }
 
 @Injectable({
@@ -31,15 +33,21 @@ export class EmailTemplateService {
   //   return this.http.get<any[]>(`${this.baseUrlForEmailTemplate}/get-all-templates`);
   // }
 
-  getAllEmailTemplates(q: {
-    currentPage: number,
-    pageSize: number
-  }): Observable<any> {
+  getAllEmailTemplates(q: EmailTemplateQuery): Observable<any> {
 
 
     let params = new HttpParams()
       .set("currentPage", q.currentPage)
       .set("pageSize", q.pageSize);
+
+    if (q.workFlowType && q.workFlowType !== 'All') {
+      params = params.set("workFlowType", q.workFlowType);
+    }
+
+    if (q.searchTerm) {
+      params = params.set("searchTerm", q.searchTerm);
+    }
+
     return this.http.get<any>(
       `${this.baseUrlForEmailTemplate}/get-all-templates`, { params }
     );

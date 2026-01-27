@@ -109,11 +109,8 @@ export class CompanyListingComponent implements OnInit {
           // this.rows = [...this.tenderingData];
 
 
-          // Show ALL companies by default
-          this.rows = [...this.allCompanies];
-          this.activeFilter = 'All';
-          this.selectedStatusLabel = 'All';
-          this.showStatusColumn = true;
+          // Apply current filters instead of resetting
+          this.applyFilters();
           this.totalItems = res.totalItems;
           this.totalPages = res.totalPages;
           this.loading = false;
@@ -127,15 +124,6 @@ export class CompanyListingComponent implements OnInit {
       });
   }
 
-  applyFilters() {
-    this.rows = this.tenderingData.filter(row => {
-      return Object.keys(this.filters).every(key => {
-        const filterVal = this.filters[key]?.toString().toLowerCase().trim();
-        if (!filterVal) return true; // skip empty filters
-        return row[key]?.toString().toLowerCase().includes(filterVal);
-      });
-    });
-  }
 
   private mapCompany(c: any) {
     const primaryAddress = Array.isArray(c.addressesVM) && c.addressesVM.length ? c.addressesVM[0] : {};
@@ -229,51 +217,65 @@ export class CompanyListingComponent implements OnInit {
   // }
 
   filterByStatus(status: string) {
-    switch (status) {
+    this.activeFilter = status;
+    this.selectedStatusLabel = status === 'new' ? 'new' : (status === 'completed' ? 'completed' : status);
+    this.statusTouched = true;
+    this.applyFilters();
+  }
+
+  applyFilters() {
+    const term = this.searchTerm.trim().toLowerCase();
+    let filteredRows = [...this.allCompanies];
+
+    // 1. Apply Status Filter
+    switch (this.activeFilter) {
       case 'All':
-        this.rows = this.allCompanies.filter(c =>
-          !c.companyStatus || ['inprogress', 'approve', 'sendback', 'new', 'completed'].includes(c.companyStatus.toLowerCase())
-        );
+        // Show everything when 'All' is selected
         this.showStatusColumn = true;
         break;
 
       case 'InProgress':
-        this.rows = this.allCompanies.filter(c =>
-          c.companyStatus.toLowerCase() === 'inprogress'
+        filteredRows = filteredRows.filter(c =>
+          c.companyStatus?.toLowerCase() === 'inprogress'
         );
         this.showStatusColumn = true;
         break;
 
       case 'Recall':
-        this.rows = this.allCompanies.filter(c =>
-          c.companyStatus.toLowerCase() === 'sendback'
+        filteredRows = filteredRows.filter(c =>
+          c.companyStatus?.toLowerCase() === 'sendback'
         );
         this.showStatusColumn = false;
         break;
 
       case 'new':
-        this.rows = this.allCompanies.filter(c =>
-          c.companyStatus.toLowerCase() === 'new'
+        filteredRows = filteredRows.filter(c =>
+          c.companyStatus?.toLowerCase() === 'new'
         );
         this.showStatusColumn = true;
         break;
 
       case 'completed':
-        this.rows = this.allCompanies.filter(c =>
-          c.companyStatus.toLowerCase() === 'completed'
+        filteredRows = filteredRows.filter(c =>
+          ['completed', 'onboarded'].includes(c.companyStatus?.toLowerCase())
         );
         this.showStatusColumn = true;
         break;
 
       default:
-        this.rows = [...this.allCompanies];
         this.showStatusColumn = true;
         break;
     }
 
-    this.activeFilter = status;
-    this.selectedStatusLabel = status;
-    this.statusTouched = true;
+    // 2. Apply Search Term Filter (Search by Entity or Company Name)
+    if (term) {
+      filteredRows = filteredRows.filter(c =>
+        (c.entity && typeof c.entity === 'string' && c.entity.toLowerCase().includes(term)) ||
+        (c.name && typeof c.name === 'string' && c.name.toLowerCase().includes(term))
+      );
+    }
+
+    this.rows = filteredRows;
     this.cdr.detectChanges();
   }
 
@@ -418,7 +420,7 @@ export class CompanyListingComponent implements OnInit {
     if (s === 'new') return 'status-pill--new';
     if (s === 'inprogress' || s === 'in progress' || s === 'in_progress' || s === 'rejected') return 'status-pill--inprogress';
     if (s === 'sendback') return 'status-pill--sendback';
-    if (s === 'onboarded' || s === 'completed' || 'completed') return 'status-pill--completed';
+    if (s === 'onboarded' || s === 'completed') return 'status-pill--completed';
 
     return 'status-pill--default';
   }
@@ -438,7 +440,6 @@ export class CompanyListingComponent implements OnInit {
   }
 
   isSelectedRowNew(): boolean {
-    // If no row or multiple rows selected, don't disable
     if (this.chkBoxSelected.length !== 1) return false;
 
     const row = this.chkBoxSelected[0];
@@ -446,59 +447,15 @@ export class CompanyListingComponent implements OnInit {
   }
 
   applySearchFilter() {
-    const term = this.searchTerm.trim().toLowerCase();
-
-    // Start with all companies
-    let filteredRows = [...this.allCompanies];
-
-    // Apply status filter
-    switch (this.activeFilter) {
-      case 'All':
-        filteredRows = filteredRows.filter(c =>
-          !c.companyStatus || ['inprogress', 'approve', 'sendback', 'new', 'completed'].includes(c.companyStatus.toLowerCase())
-        );
-        break;
-      case 'InProgress':
-        filteredRows = filteredRows.filter(c =>
-          c.companyStatus?.toLowerCase() === 'inprogress'
-        );
-        break;
-      case 'Recall':
-        filteredRows = filteredRows.filter(c =>
-          c.companyStatus?.toLowerCase() === 'sendback'
-        );
-        break;
-      case 'new':
-        filteredRows = filteredRows.filter(c =>
-          c.companyStatus?.toLowerCase() === 'new'
-        );
-        break;
-      case 'completed':
-        filteredRows = filteredRows.filter(c =>
-          c.companyStatus?.toLowerCase() === 'completed'
-        );
-        break;
-      default:
-        filteredRows = [...this.allCompanies];
-        break;
-    }
-
-    // Apply search term filter
-    if (term) {
-      filteredRows = filteredRows.filter(c =>
-        c.entity?.toLowerCase().includes(term) || c.name?.toLowerCase().includes(term)
-      );
-    }
-
-    this.rows = filteredRows;
-    this.cdr.detectChanges();
+    this.applyFilters();
   }
 
   checkAssignments() {
     const currentUserName = localStorage.getItem('userName');
-    const currentUserEmail = localStorage.getItem('email');
+    const currentUserEmail = localStorage.getItem('userEmail');
+    const isSuperAdmin = this.authService.hasRole('Super Admin');
 
-    if (!currentUserName) {
+    if (!currentUserName && !isSuperAdmin) {
       console.warn('Current user name not found in local storage.');
       return;
     }
@@ -506,8 +463,36 @@ export class CompanyListingComponent implements OnInit {
     // Find the first company with a valid setUpId to perform the "one-time" request
     const firstCompanyWithSetup = this.allCompanies.find(c => c.setUpId && c.setUpId !== 0);
 
+    const updateCompaniesWithMatch = (isMatch: boolean) => {
+      this.allCompanies.forEach(company => {
+        const status = company.companyStatus?.toLowerCase();
+
+        // Disable button for specific statuses: onboarded, sendback, rejected
+        const isRestrictedStatus = ['onboarded', 'sendback', 'rejected'].includes(status);
+
+        // Disable if workflowMasterId is anything EXCEPT 0 (meaning it's already assigned)
+        const isAlreadyAssigned = company.workflowMasterId && company.workflowMasterId !== 0;
+
+        if (isRestrictedStatus || isAlreadyAssigned) {
+          company.showAssignMe = false;
+        } else if (company.setUpId && (isMatch || isSuperAdmin)) {
+          // Show if it has a setup ID and (user is a workflow user OR user is Super Admin)
+          company.showAssignMe = true;
+        } else {
+          // User is not in the setup or no setup ID
+          company.showAssignMe = false;
+        }
+      });
+      // Force update to reflect changes in the table
+      this.cdr.detectChanges();
+    };
+
     if (!firstCompanyWithSetup) {
       console.warn('No company with a valid setUpId found to check workflow users.');
+      // If we are super admin, we might still want to show buttons if they have setUpIds later 
+      // but if NO company has it, then there's nothing to assign to.
+      // However, we should still run the loop to set showAssignMe to false for others.
+      updateCompaniesWithMatch(false);
       return;
     }
 
@@ -518,36 +503,16 @@ export class CompanyListingComponent implements OnInit {
 
         // Check if current user is in the list of workflow users
         const isMatch = users.some(u =>
-          (u.userName && u.userName.toLowerCase() === currentUserName.toLowerCase()) ||
+          (u.userName && currentUserName && u.userName.toLowerCase() === currentUserName.toLowerCase()) ||
           (currentUserEmail && u.email && u.email.toLowerCase() === currentUserEmail.toLowerCase())
         );
 
-        // Apply the results to all companies
-        this.allCompanies.forEach(company => {
-          const status = company.companyStatus?.toLowerCase();
-
-          // Disable button for specific statuses: onboarded, sendback, rejected
-          const isRestrictedStatus = ['onboarded', 'sendback', 'rejected'].includes(status);
-
-          // Disable if workflowMasterId is anything EXCEPT 0 (meaning it's already assigned)
-          const isAlreadyAssigned = company.workflowMasterId && company.workflowMasterId !== 0;
-
-          if (isRestrictedStatus || isAlreadyAssigned) {
-            company.showAssignMe = false;
-          } else if (company.setUpId && isMatch) {
-            // Only show if it has a setup ID and the user is a workflow user for the setup
-            company.showAssignMe = true;
-          } else {
-            // User is not in the setup or no setup ID
-            company.showAssignMe = false;
-          }
-        });
-
-        // Force update to reflect changes in the table
-        this.cdr.detectChanges();
+        updateCompaniesWithMatch(isMatch);
       },
       error: (err) => {
         console.error(`Error loading workflow users for setup ${firstCompanyWithSetup.setUpId}`, err);
+        // Fallback: if user is super admin, they can still assign themselves
+        updateCompaniesWithMatch(false);
       }
     });
   }

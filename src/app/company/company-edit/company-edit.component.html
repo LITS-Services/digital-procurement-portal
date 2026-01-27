@@ -9,6 +9,20 @@
         </div>
       </div>
 
+      <!-- Alerts for Messages/Errors -->
+      <div *ngIf="message" class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" (click)="message = ''" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ error }}
+        <button type="button" class="close" (click)="error = ''" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
       <div class="card cstm-ui-card mb-2">
 
 
@@ -36,34 +50,50 @@
 
             <!-- If isAssigned = true → show Submit for Approval -->
             <button *ngIf="!isAssigned && workflowMasterId != 0 && mainApproverId == currentUserId"
-              class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId" (click)="onActions('SendBackFromApproval')">
-              <i class="ft-arrow-left"></i>
+              class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
+              (click)="onActions('SendBackFromApproval')">
+              <i *ngIf="!isSubmitting" class="ft-arrow-left"></i>
+              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm" role="status"
+                aria-hidden="true"></span>
               <label class="ml-1">Sendback</label>
             </button>
 
             <button *ngIf="isAssigned && mainApproverId == currentUserId" class="btn btn-sm cstm-ui-table-btn"
-              [disabled]="!companyId" (click)="onActions('sendforapproval')">
-              <i class="ft-check"></i>
+              [disabled]="!companyId || isSubmitting" (click)="onActions('sendforapproval')">
+              <i *ngIf="!isSubmitting" class="ft-check"></i>
+              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm" role="status"
+                aria-hidden="true"></span>
               <label class="ml-1">Submit for Approval</label>
             </button>
 
 
             <!-- If isAssigned = false AND workflowMasterId != 0 AND mainApproverId == currentUserId → show Approve -->
             <button *ngIf="!isAssigned && workflowMasterId != 0 && mainApproverId == currentUserId"
-              class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId" (click)="onActions('Approve')">
-              <i class="ft-check"></i>
+              class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
+              (click)="onActions('Approve')">
+              <i *ngIf="!isSubmitting" class="ft-check"></i>
+              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm" role="status"
+                aria-hidden="true"></span>
               <label class="ml-1">Approve</label>
             </button>
 
 
             <button *ngIf="(isAssigned || workflowMasterId != 0) && mainApproverId == currentUserId"
-              class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId" (click)="onActions('Rejected')">
-              <i class="ft-x"></i><label class="ml-1">Reject</label>
+              class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
+              (click)="onActions('Rejected')">
+              <i *ngIf="!isSubmitting" class="ft-x"></i>
+              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm" role="status"
+                aria-hidden="true"></span>
+              <label class="ml-1">Reject</label>
             </button>
 
             <button *ngIf="isAssigned && workflowMasterId == 0 && mainApproverId == currentUserId"
-              class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId" (click)="onActions('SendBack')">
-              <i class="ft-arrow-left"></i><label class="ml-1">Send Back</label>
+              class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
+              (click)="onActions('SendBack')">
+              <i *ngIf="!isSubmitting" class="ft-arrow-left"></i>
+              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm" role="status"
+                aria-hidden="true"></span>
+              <label class="ml-1">Send Back</label>
             </button>
 
 

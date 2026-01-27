@@ -41,6 +41,12 @@ export class EmailTemplateListComponent implements OnInit {
     pageSize: 10
   };
 
+  searchTerm: string = '';
+  activeFilter: string = 'All';
+  selectedStatusLabel: string = 'All';
+  statusTouched: boolean = false;
+  showFilterBar = false;
+
   constructor(
     private router: Router,
     private emailTemplateService: EmailTemplateService,
@@ -75,10 +81,18 @@ export class EmailTemplateListComponent implements OnInit {
   getAllEmailTemplates() {
     this.loading = true;
 
+    // Only send workFlowType to backend. searchTerm is now handled locally.
+    this.query.workFlowType = this.activeFilter !== 'All' ? this.activeFilter : undefined;
+    this.query.searchTerm = undefined;
+
     this.emailTemplateService.getAllEmailTemplates(this.query).subscribe({
       next: (res: any) => {
         this.allEmailTemplates = res.result.map(item => ({
           id: item.id,
+          // Store original full text for potential local use
+          fullSubject: item.subject || '',
+          fullBody: (item.body || '').replace(/<[^>]+>/g, ''),
+          // Truncated version for display
           subject: this.truncateText(item.subject, 50),
           body: this.truncateText(item.body.replace(/<[^>]+>/g, ''), 50),
           workFlowType: item.workFlowType,
@@ -87,7 +101,10 @@ export class EmailTemplateListComponent implements OnInit {
 
         this.totalPages = res.totalPages;
         this.totalItems = res.totalItems;
-        this.rows = [...this.allEmailTemplates];
+
+        // After loading from backend (potentially with a type filter),
+        // apply the local search filter to the results.
+        this.applyFilters();
 
         this.loading = false;
         this.cdr.detectChanges();
@@ -98,6 +115,55 @@ export class EmailTemplateListComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  applyFilters() {
+    const term = this.searchTerm.trim().toLowerCase();
+    let filteredRows = [...this.allEmailTemplates];
+
+    // Local Search Filter (Subject, Body, or Entity)
+    if (term) {
+      filteredRows = filteredRows.filter(t =>
+        (t.fullSubject && t.fullSubject.toLowerCase().includes(term)) ||
+        (t.fullBody && t.fullBody.toLowerCase().includes(term)) ||
+        (t.procurementCompany && typeof t.procurementCompany === 'string' && t.procurementCompany.toLowerCase().includes(term))
+      );
+    }
+
+    this.rows = filteredRows;
+    this.cdr.detectChanges();
+  }
+
+  applySearchFilter() {
+    this.applyFilters(); // Search is now entirely local
+  }
+
+  filterByWorkFlowType(type: string) {
+    this.activeFilter = type;
+
+    // UI mapping for the dropdown button label
+    const labels = {
+      'All': 'All',
+      'Request For Quotation': 'Request For Quotation',
+      'Purchase Request': 'Purchase Request',
+      'Purchase Order': 'Purchase Order',
+      'Vendor Onboarding': 'Vendor Onboarding',
+      'RFQ': 'Request For Quotation',
+      'PR': 'Purchase Request',
+      'PO': 'Purchase Order'
+    };
+
+    this.selectedStatusLabel = labels[type] || type;
+    this.statusTouched = true;
+
+    // Reset to page 1 and load from backend for type change
+    this.query.currentPage = 1;
+    this.getAllEmailTemplates();
+  }
+
+  toggleFilterBar() {
+    this.showFilterBar = !this.showFilterBar;
+    this.cdr.detectChanges();
   }
 
   confirmDelete() {

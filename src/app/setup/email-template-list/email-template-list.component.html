@@ -11,36 +11,76 @@
 
       <!-- Action Pane -->
       <div class="card cstm-ui-card">
-        <div class="row">
-          <div class="col-md-6">
-            <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
-              <i class="ft-arrow-left"></i>
-            </button>
-            <span class="vl"></span>
+        <div>
+          <div class="d-flex justify-content-between align-items-center cstm-action-bar">
+            <div>
+              <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+                <i class="ft-arrow-left"></i>
+              </button>
+              <span class="vl"></span>
 
-            <!-- Create Template Button -->
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" appPermission
-              [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST" [appPermDisable]="'write'" (click)="createTemplate()">
-              <i class="ft-edit"></i>
-              <label class="ml-1">Create Email Template</label>
-            </button>
+              <!-- Create Template Button -->
+              <button type="button" class="btn btn-sm cstm-ui-table-btn ml-2" appPermission
+                [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST" [appPermDisable]="'write'" (click)="createTemplate()">
+                <i class="ft-edit"></i>
+                <label class="ml-1">Create Email Template</label>
+              </button>
 
-            <!-- Delete Template Button -->
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="confirmDelete()" appPermission
-              [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST" [appPermDisable]="'delete'"
-              [disabled]="isDeleteButtonDisabled">
-              <i class="ft-trash-2"></i>
-              <label class="ml-1">Delete</label>
-            </button>
+              <!-- Delete Template Button -->
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="confirmDelete()" appPermission
+                [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST" [appPermDisable]="'delete'"
+                [disabled]="isDeleteButtonDisabled">
+                <i class="ft-trash-2"></i>
+                <label class="ml-1">Delete</label>
+              </button>
 
-            <!-- Edit Template Button -->
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="editTemplate()" appPermission
-              [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST" [appPermDisable]="'write'"
-              [disabled]="isEditButtonDisabled">
-              <i class="ft-edit"></i>
-              <label class="ml-1">Edit</label>
-            </button>
+              <!-- Edit Template Button -->
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="editTemplate()" appPermission
+                [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST" [appPermDisable]="'write'"
+                [disabled]="isEditButtonDisabled">
+                <i class="ft-edit"></i>
+                <label class="ml-1">Edit</label>
+              </button>
+            </div>
 
+            <div class="d-flex align-items-center">
+              <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
+                <i class="ft-sliders"></i><label class="ml-1 btn-label">Filter</label>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="showFilterBar" class="filter-bar">
+        <div class="d-flex align-items-center justify-content-between pl-3 pr-1 py-2 filter-wrapper">
+          <div class="filter-search">
+            <!-- <i class="ft-filter search-icon"></i>
+            <input style="padding-left: 3.4em;" type="text" class="form-control border-left-0 cstm-ui-input"
+              placeholder="Search by Subject, Body or Entity..." [(ngModel)]="searchTerm"
+              (ngModelChange)="applySearchFilter()" /> -->
+
+          </div>
+
+          <div class="d-flex filter-btns-div">
+            <div class="dropdown filter-dropdown" ngbDropdown [ngbTooltip]="statusTouched ? 'Type' : null">
+              <button class="btn btn-sm filter-btn dropdown-toggle" ngbDropdownToggle>
+                <span class="filter-label">{{ !statusTouched ? "Type" : selectedStatusLabel }} </span>
+                <i class="ft-chevron-down"></i>
+              </button>
+              <div class="dropdown-menu" ngbDropdownMenu>
+                <button class="dropdown-item" (click)="filterByWorkFlowType('All')">All</button>
+                <button class="dropdown-item" (click)="filterByWorkFlowType('Request For Quotation')">Request For
+                  Quotation</button>
+                <button class="dropdown-item" (click)="filterByWorkFlowType('Purchase Request')">Purchase
+                  Request</button>
+                <button class="dropdown-item" (click)="filterByWorkFlowType('Purchase Order')">Purchase Order</button>
+                <button class="dropdown-item" (click)="filterByWorkFlowType('Vendor Onboarding')">Vendor
+                  Onboarding</button>
+              </div>
+            </div>
+
+            <button class="btn px-1 btn-sm" (click)="showFilterBar = false">✕</button>
           </div>
         </div>
       </div>
@@ -48,10 +88,11 @@
       <!-- Datatable -->
       @if(datatableVisible){
       <ngx-datatable autoResize (autoResize)="onAutoResize()" class="bootstrap core-bootstrap" [rows]="rows"
-        [columnMode]="'force'" [headerHeight]="50"  [footerHeight]="50" [columns]="columns" rowHeight="auto" [limit]="query.pageSize" [count]="totalItems"
-        [externalPaging]="true" [offset]="query.currentPage - 1" (page)="onPageChange($event)" [scrollbarH]="true"
-        [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
-        [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
+        [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [columns]="columns" rowHeight="auto"
+        [limit]="query.pageSize" [count]="totalItems" [externalPaging]="true" [offset]="query.currentPage - 1"
+        (page)="onPageChange($event)" [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected"
+        [swapColumns]="false" [selectionType]="SelectionType.checkbox" (sort)="onSort($event)"
+        (select)="customChkboxOnSelect($event)">
 
 
         <!-- Checkbox Column -->
