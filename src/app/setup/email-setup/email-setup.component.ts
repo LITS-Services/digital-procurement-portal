@@ -184,7 +184,7 @@ export class EmailSetupComponent implements OnInit, OnDestroy {
           'searchreplace visualblocks code fullscreen insertdatetime media table',
           'emoticons help wordcount autosave directionality visualchars codesample pagebreak quickbars nonbreaking template'
         ],
-        toolbar: 'undo redo | blocks | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image table emoticons codesample | removeformat | ltr rtl | pagebreak | preview fullscreen | code help',
+        toolbar: 'undo redo | blocks | bold italic underline strikethrough ',
         content_style: `body { font-family:Helvetica,Arial,sans-serif; font-size:14px; padding:10px; }`,
         setup: (editor: any) => {
           editor.on('init', () => {
