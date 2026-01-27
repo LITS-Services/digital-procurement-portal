@@ -201,7 +201,11 @@ export class UserProfilePageComponent implements OnInit, AfterViewInit, OnDestro
           });
 
           if (res.profilePicture) {
-            this.profileImage = res.profilePicture;
+            if (typeof res.profilePicture === 'string' && !res.profilePicture.startsWith('data:image')) {
+              this.profileImage = `data:image/png;base64,${res.profilePicture}`;
+            } else {
+              this.profileImage = res.profilePicture;
+            }
           }
 
           console.log('User data loaded:', res);

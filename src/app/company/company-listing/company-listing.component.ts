@@ -8,7 +8,7 @@ import { CompanyApprovalHistoryComponent } from '../company-approval-history/com
 import { AssignMeComponent } from '../assign-me/assign-me.component';
 import { CompanySetupHistoryComponent } from '../company-setup-history/company-setup-history.component';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { finalize } from 'rxjs';
+import { finalize, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-company-listing',
@@ -52,6 +52,9 @@ export class CompanyListingComponent implements OnInit {
   totalPages = 0;
   totalItems = 0;
 
+
+  searchSubject = new Subject<string>();
+
   constructor(
     private router: Router,
     private modalService: NgbModal,
@@ -60,7 +63,13 @@ export class CompanyListingComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private spinner: NgxSpinnerService,
 
-  ) { }
+  ) {
+    this.searchSubject.subscribe(searchTerm => {
+      this.searchTerm = searchTerm;
+      this.currentPage = 1; // Reset to page 1 on new search
+      this.getCompanyData();
+    });
+  }
 
   ngOnInit(): void {
     this.getCompanyData();
@@ -93,8 +102,10 @@ export class CompanyListingComponent implements OnInit {
       return;
     }
 
+    const statusFilter = this.activeFilter === 'All' ? '' : this.activeFilter;
+
     this.spinner.show();
-    this.companyService.getCompaniesByUserEntity(this.currentPage, this.pageSize, userId)
+    this.companyService.getCompaniesByUserEntity(this.currentPage, this.pageSize, userId, this.searchTerm, statusFilter)
       .pipe(finalize(() => {
         this.spinner.hide();
         this.cdr.detectChanges();
@@ -218,65 +229,46 @@ export class CompanyListingComponent implements OnInit {
 
   filterByStatus(status: string) {
     this.activeFilter = status;
-    this.selectedStatusLabel = status === 'new' ? 'new' : (status === 'completed' ? 'completed' : status);
+    this.selectedStatusLabel = status;
     this.statusTouched = true;
-    this.applyFilters();
+    this.currentPage = 1; // Reset to page 1
+    this.getCompanyData();
   }
 
   applyFilters() {
     const term = this.searchTerm.trim().toLowerCase();
     let filteredRows = [...this.allCompanies];
 
-    // 1. Apply Status Filter
-    switch (this.activeFilter) {
-      case 'All':
-        // Show everything when 'All' is selected
-        this.showStatusColumn = true;
-        break;
+    // 1. Apply Status Filter - SERVER SIDE NOW, this is just for any remaining local logic if needed
+    // switch (this.activeFilter) {
+    //   case 'All':
+    //     this.showStatusColumn = true;
+    //     break;
+    //   case 'InProgress':
+    //   case 'Recall':
+    //   case 'new':
+    //   case 'completed':
+    //   default:
+    //     this.showStatusColumn = true;
+    //     break;
+    // }
 
-      case 'InProgress':
-        filteredRows = filteredRows.filter(c =>
-          c.companyStatus?.toLowerCase() === 'inprogress'
-        );
-        this.showStatusColumn = true;
-        break;
-
-      case 'Recall':
-        filteredRows = filteredRows.filter(c =>
-          c.companyStatus?.toLowerCase() === 'sendback'
-        );
-        this.showStatusColumn = false;
-        break;
-
-      case 'new':
-        filteredRows = filteredRows.filter(c =>
-          c.companyStatus?.toLowerCase() === 'new'
-        );
-        this.showStatusColumn = true;
-        break;
-
-      case 'completed':
-        filteredRows = filteredRows.filter(c =>
-          ['completed', 'onboarded'].includes(c.companyStatus?.toLowerCase())
-        );
-        this.showStatusColumn = true;
-        break;
-
-      default:
-        this.showStatusColumn = true;
-        break;
-    }
+    this.showStatusColumn = true;
 
     // 2. Apply Search Term Filter (Search by Entity or Company Name)
-    if (term) {
-      filteredRows = filteredRows.filter(c =>
-        (c.entity && typeof c.entity === 'string' && c.entity.toLowerCase().includes(term)) ||
-        (c.name && typeof c.name === 'string' && c.name.toLowerCase().includes(term))
-      );
-    }
+    // if (term) {
+    //   filteredRows = filteredRows.filter(c =>
+    //     (c.entity && typeof c.entity === 'string' && c.entity.toLowerCase().includes(term)) ||
+    //     (c.name && typeof c.name === 'string' && c.name.toLowerCase().includes(term))
+    //   );
+    // }
 
     this.rows = filteredRows;
     this.cdr.detectChanges();
+  }
+
+  applySearchFilter() {
+    this.searchSubject.next(this.searchTerm);
   }
 
 
@@ -360,6 +352,8 @@ export class CompanyListingComponent implements OnInit {
     modalRef.result.then((result) => {
       if (result === 'success') {
         // Refresh the company data after successful assignment
+        this.chkBoxSelected = [];
+        this.enableDisableButtons();
         this.getCompanyData();
       }
     }).catch((error) => {
@@ -418,8 +412,9 @@ export class CompanyListingComponent implements OnInit {
     const s = (status ?? '').toString().trim().toLowerCase();
 
     if (s === 'new') return 'status-pill--new';
-    if (s === 'inprogress' || s === 'in progress' || s === 'in_progress' || s === 'rejected') return 'status-pill--inprogress';
+    if (s === 'inprogress' || s === 'in progress' || s === 'in_progress') return 'status-pill--inprogress';
     if (s === 'sendback') return 'status-pill--sendback';
+    if (s === 'rejected') return 'status-pill--rejected'; // Added rejected style if available, or map to danger in CSS
     if (s === 'onboarded' || s === 'completed') return 'status-pill--completed';
 
     return 'status-pill--default';
@@ -446,9 +441,9 @@ export class CompanyListingComponent implements OnInit {
     return row.companyStatus?.toLowerCase() === 'new';
   }
 
-  applySearchFilter() {
-    this.applyFilters();
-  }
+  // applySearchFilter() {
+  //   this.applyFilters();
+  // }
 
   checkAssignments() {
     const currentUserName = localStorage.getItem('userName');

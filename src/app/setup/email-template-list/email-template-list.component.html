@@ -55,10 +55,9 @@
       <div *ngIf="showFilterBar" class="filter-bar">
         <div class="d-flex align-items-center justify-content-between pl-3 pr-1 py-2 filter-wrapper">
           <div class="filter-search">
-            <!-- <i class="ft-filter search-icon"></i>
+            <i class="ft-filter search-icon"></i>
             <input style="padding-left: 3.4em;" type="text" class="form-control border-left-0 cstm-ui-input"
-              placeholder="Search by Subject, Body or Entity..." [(ngModel)]="searchTerm"
-              (ngModelChange)="applySearchFilter()" /> -->
+              placeholder="Search..." [(ngModel)]="searchTerm" (ngModelChange)="applySearchFilter()" />
 
           </div>
 
@@ -70,13 +69,12 @@
               </button>
               <div class="dropdown-menu" ngbDropdownMenu>
                 <button class="dropdown-item" (click)="filterByWorkFlowType('All')">All</button>
-                <button class="dropdown-item" (click)="filterByWorkFlowType('Request For Quotation')">Request For
-                  Quotation</button>
+                <button class="dropdown-item" (click)="filterByWorkFlowType('Vendor Company Onboarding')">Vendor Company
+                  Onboarding</button>
+                <button class="dropdown-item" (click)="filterByWorkFlowType('Request for quotation')">Request for
+                  quotation</button>
                 <button class="dropdown-item" (click)="filterByWorkFlowType('Purchase Request')">Purchase
                   Request</button>
-                <button class="dropdown-item" (click)="filterByWorkFlowType('Purchase Order')">Purchase Order</button>
-                <button class="dropdown-item" (click)="filterByWorkFlowType('Vendor Onboarding')">Vendor
-                  Onboarding</button>
               </div>
             </div>
 

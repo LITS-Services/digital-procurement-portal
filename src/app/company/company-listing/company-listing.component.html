@@ -55,10 +55,11 @@
               </button>
               <div class="dropdown-menu" ngbDropdownMenu>
                 <button class="dropdown-item" (click)="filterByStatus('All')">All</button>
+                <button class="dropdown-item" (click)="filterByStatus('New')">New</button>
                 <button class="dropdown-item" (click)="filterByStatus('InProgress')">InProgress</button>
-                <button class="dropdown-item" (click)="filterByStatus('Recall')">Recall</button>
-                <button class="dropdown-item" (click)="filterByStatus('new')">new</button>
-                <button class="dropdown-item" (click)="filterByStatus('completed')">completed</button>
+                <button class="dropdown-item" (click)="filterByStatus('Rejected')">Rejected</button>
+                <button class="dropdown-item" (click)="filterByStatus('Sendback')">Sendback</button>
+                <button class="dropdown-item" (click)="filterByStatus('Onboarded')">Onboarded</button>
               </div>
             </div>
 
@@ -69,10 +70,10 @@
 
       <!-- Table Content -->
       <div class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
-        <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="rows" [columnMode]="'force'" [headerHeight]="50"
-          [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'" [limit]="pageSize" [count]="totalItems"
-          [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)" [scrollbarH]="isMobile"
-          [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
+        <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="rows" [columnMode]="'force'"
+          [headerHeight]="50" [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'" [limit]="pageSize"
+          [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
+          [scrollbarH]="isMobile" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
           [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 
           <!-- Checkbox Column -->

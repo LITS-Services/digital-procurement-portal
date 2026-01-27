@@ -156,7 +156,15 @@ export class CompanyEditComponent implements OnInit {
           this.companyStatusLabel = company.requestStatus || '';
           this.companyStatusClass = this.mapCompanyStatusClass(company.requestStatusId);
 
-          this.companyLogoUrl = company.logo ? `data:image/png;base64,${company.logo}` : null;
+          if (company.logo) {
+            if (typeof company.logo === 'string' && !company.logo.startsWith('data:image')) {
+              this.companyLogoUrl = `data:image/png;base64,${company.logo}`;
+            } else {
+              this.companyLogoUrl = company.logo;
+            }
+          } else {
+            this.companyLogoUrl = null;
+          }
           this.companyWebsite = company.websiteUrl || null;
           this.workflowMasterId = company.workflowMasterId || 0;
           this.mainApproverId = company.mainApproverId || '';

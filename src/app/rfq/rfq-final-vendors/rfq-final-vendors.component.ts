@@ -29,8 +29,8 @@ export class RfqFinalVendorsComponent implements OnInit {
   loading = false;
 
   constructor(private rfqService: RfqService,
-     private toastr: ToastrService, 
-     private cdr: ChangeDetectorRef,
+    private toastr: ToastrService,
+    private cdr: ChangeDetectorRef,
     private modalService: NgbModal,
     private spinner: NgxSpinnerService
 
@@ -137,8 +137,8 @@ export class RfqFinalVendorsComponent implements OnInit {
         if (!sel) return null;
         return {
           quotationItemId: row.id,
-          vendorUserId: sel.vendorUserId,   
-          vendorCompanyId: sel.companyId 
+          vendorUserId: sel.vendorUserId,
+          vendorCompanyId: sel.companyId
         };
       })
       .filter(Boolean) as Array<{
@@ -153,57 +153,57 @@ export class RfqFinalVendorsComponent implements OnInit {
     }
 
     Swal.fire({
-    title: 'Confirm Vendor Selection',
-    text: 'Are you sure you want to finalize the selected vendor(s)? This action cannot be undone.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, finalize',
-    cancelButtonText: 'Cancel',
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33'
-  }).then(result => {
-    if (!result.isConfirmed) return;
+      title: 'Confirm Vendor Selection',
+      text: 'Are you sure you want to finalize the selected vendor(s)? This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, finalize',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33'
+    }).then(result => {
+      if (!result.isConfirmed) return;
 
-    // Optional loading state
-    // Swal.fire({
-    //   title: 'Processing...',
-    //   text: 'Finalizing vendor selection',
-    //   allowOutsideClick: false,
-    //   didOpen: () => {
-    //     Swal.showLoading();
-    //   }
-    // });
+      // Optional loading state
+      // Swal.fire({
+      //   title: 'Processing...',
+      //   text: 'Finalizing vendor selection',
+      //   allowOutsideClick: false,
+      //   didOpen: () => {
+      //     Swal.showLoading();
+      //   }
+      // });
 
-    this.loading = true;
-    this.spinner.show();
-    this.rfqService.postFinalVendors({ selectFinalVendorForQuotationItem: payload })
-    .pipe(finalize(() => {
-            this.loading = false;
-            this.spinner.hide();
-            this.cdr.detectChanges();
-          }))
-      .subscribe({
-        next: () =>
-          {
-          //   Swal.fire({
-          //   icon: 'success',
-          //   title: 'Vendors Finalized',
-          //   text: 'Selected vendor(s) have been successfully finalized.',
-          //   timer: 2000,
-          //   showConfirmButton: false
-          // });
-            this.loadItems(this.quotationRequestId); },
-        error: (e) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Failed to finalize vendors. Please try again.'
-          });
-          console.error(e);
-        }
-      });
+      this.loading = true;
+      this.spinner.show();
+      this.rfqService.postFinalVendors({ selectFinalVendorForQuotationItem: payload })
+        .pipe(finalize(() => {
+          this.loading = false;
+          this.spinner.hide();
+          this.cdr.detectChanges();
+        }))
+        .subscribe({
+          next: () => {
+            //   Swal.fire({
+            //   icon: 'success',
+            //   title: 'Vendors Finalized',
+            //   text: 'Selected vendor(s) have been successfully finalized.',
+            //   timer: 2000,
+            //   showConfirmButton: false
+            // });
+            this.loadItems(this.quotationRequestId);
+          },
+          error: (e) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Failed to finalize vendors. Please try again.'
+            });
+            console.error(e);
+          }
+        });
     });
-    }
+  }
 
   getQuoteAmount(itemId: number): number | null {
     const vendor = this.selected[itemId];
