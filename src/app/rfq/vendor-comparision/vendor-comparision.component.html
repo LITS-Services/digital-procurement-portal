@@ -21,7 +21,7 @@
         </span>
     
         <span class="ai-text">
-          {{ loadingAi ? 'Thinking...' : 'Ask AI' }}
+          {{ loadingAi ? 'Thinking...' : 'AI Vendor Suggestion' }}
         </span>
       </button>
     </div>
@@ -150,8 +150,13 @@
   </div>
 
   <ng-template #noBids>
-    <div class="alert alert-warning text-center mt-3">
+    <!-- <div class="alert alert-warning text-center mt-3">
       No bid found for the selected filters.
+    </div> -->
+    <div class="empty-state">
+        <i class="fa fa-file-signature empty-icon"></i>
+        <h5 class="empty-message">No bid found for the selected filters</h5>
+        <p class="empty-submessage">Please check back later or contact the vendor.</p>
     </div>
   </ng-template>
 

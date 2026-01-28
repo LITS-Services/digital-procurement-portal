@@ -176,3 +176,41 @@
     transform: rotate(360deg);
   }
 }
+
+ .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  margin: 2rem 0;
+  border: 2px dashed #ced4da;
+  border-radius: 0.5rem;
+  background-color: #f8f9fa;
+  color: #6c757d;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #f1f3f5;
+    border-color: #adb5bd;
+  }
+
+  .empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #adb5bd;
+  }
+
+  .empty-message {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .empty-submessage {
+    font-size: 0.95rem;
+    color: #868e96;
+    margin: 0;
+  }
+}

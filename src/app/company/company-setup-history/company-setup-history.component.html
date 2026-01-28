@@ -7,18 +7,19 @@
 
 <!-- <div class="modal-body"> -->
 <!-- Show loading state -->
-<div *ngIf="loading" class="text-center mt-3">
+<!-- <div *ngIf="loading" class="text-center mt-3">
     <span class="spinner-border spinner-border-sm"></span> Loading...
-</div>
+</div> -->
 
 <!-- Show data when loaded -->
-<div *ngIf="!loading">
+<!-- <div *ngIf="!loading"> -->
     <!-- Show message if no history found -->
-    <div *ngIf="approvalHistory.length === 0" class="text-center mt-3">
+    <!-- <div *ngIf="approvalHistory.length === 0" class="text-center mt-3">
         <p>Not found in list</p>
-    </div>
+    </div> -->
 
     <!-- Show table if history exists -->
+     @if (approvalHistory.length > 0) {
     <ngx-datatable *ngIf="approvalHistory.length > 0" class="bootstrap core-bootstrap" [rows]="approvalHistory"
         [columnMode]="'force'" [headerHeight]="50" [footerHeight]="40" [rowHeight]="50" [limit]="5">
 
@@ -40,7 +41,16 @@
             </ng-template>
         </ngx-datatable-column>
     </ngx-datatable>
-</div>
+<!-- </div> -->
+     }
+       @else {
+    <div class="empty-state">
+        <i class="fa fa-history empty-icon"></i>
+        <h5 class="empty-message">No setup history found</h5>
+        <p class="empty-submessage">Please check back later or contact the responsible team.</p>
+    </div>
+    }
+
 <!-- </div> -->
 
 <!-- <div class="modal-footer">

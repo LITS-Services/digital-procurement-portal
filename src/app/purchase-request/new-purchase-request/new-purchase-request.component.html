@@ -245,7 +245,7 @@
                       <div class="card-accordion">
                         <div class="form-grid w-100">
                           <div class="form-grid__item">
-                            <label>Address Code</label>
+                            <label>Address Code<span class="text-danger">*</span></label>
                             <select class="form-control" formControlName="addressId" (change)="onAddressSelect($event.target.value)">
                               <option value="">Select Address</option>
                               <option *ngFor="let add of addresses" [value]="add.id">{{ add.addressCode }}</option>

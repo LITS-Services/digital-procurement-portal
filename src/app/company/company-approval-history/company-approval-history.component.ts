@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CompanyService } from 'app/shared/services/Company.services';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-company-approval-history',
@@ -17,7 +18,8 @@ export class CompanyApprovalHistoryComponent implements OnInit {
   constructor(
     //public activeModal: NgbActiveModal, 
     private companyService: CompanyService,
-    public cdr: ChangeDetectorRef
+    public cdr: ChangeDetectorRef,
+    private spinner: NgxSpinnerService
   ) { }
 
   ngOnInit(): void {
@@ -32,12 +34,13 @@ export class CompanyApprovalHistoryComponent implements OnInit {
       return;
     }
     this.loading = true;
-
+    this.spinner.show();
     this.companyService.getApprovalHistoryByProcurmentcompanyId(this.vendorComapnyId).subscribe({
       next: (data: any) => {
         const rows = data?.value ?? data;          // prefer .NET $values if present
         this.approvalHistory = Array.isArray(rows) ? rows : [];
         this.loading = false;
+        this.spinner.hide();
         this.cdr.detectChanges();
       },
       error: (err) => {

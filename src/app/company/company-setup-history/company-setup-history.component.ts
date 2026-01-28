@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CompanyService } from 'app/shared/services/Company.services';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-company-setup-history',
@@ -19,7 +20,8 @@ export class CompanySetupHistoryComponent implements OnInit {
   constructor(
     //public activeModal: NgbActiveModal, 
     private companyService: CompanyService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private spinner: NgxSpinnerService
   ) { }
 
   ngOnInit(): void {
@@ -27,7 +29,7 @@ export class CompanySetupHistoryComponent implements OnInit {
   }
 
   loadApprovalHistory() {
-    this.loading = true;
+    
 
     // Determine which ID to use
     const associationId = this.vendorEntityAssociationId ||
@@ -40,11 +42,13 @@ export class CompanySetupHistoryComponent implements OnInit {
       this.cdr.markForCheck();
       return;
     }
-
+    this.loading = true;
+    this.spinner.show();
     this.companyService.setupId(associationId).subscribe({
       next: (data: any) => {
         this.approvalHistory = data ?? data?.$values ?? [];
         this.loading = false;
+        this.spinner.hide();
         this.cdr.markForCheck();
       },
       error: (err) => {

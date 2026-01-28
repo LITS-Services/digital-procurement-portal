@@ -166,7 +166,7 @@ private exceptionModalOpen = false;
       exceptionPolicy: [false],
       subject: [''],
       entityId: [null],
-      addressId: [null],
+      addressId: [null, Validators.required],
       country: [{ value: '', disabled: true }],
       city: [{ value: '', disabled: true }],
       region: [{ value: '', disabled: true }],
@@ -1448,7 +1448,7 @@ private exceptionModalOpen = false;
           .pipe(finalize(() => this.spinner.hide()))
           .subscribe({
             next: () => {
-              this.router.navigate(['/purchase-request']);
+              this.router.navigate(['/purchase-order']);
             },
             error: () => {
               this.toastr.error('Something went wrong while creating PO.');
