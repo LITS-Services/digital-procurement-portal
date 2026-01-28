@@ -51,6 +51,7 @@ export class NewPurchaseRequestComponent implements OnInit {
   currentRequisitionNo!: string;
 
   isStatusCompleted: boolean = false;
+  isStatusDraft: boolean = false;
   isStatusInProgress: boolean = false;
   isSubmitter: boolean = false;
 
@@ -775,6 +776,14 @@ private exceptionModalOpen = false;
             this.cdr.detectChanges();
           } else {
             this.isStatusInProgress = false;
+            this.cdr.detectChanges();
+          }
+
+          if (requestData.requestStatus === 'Draft') {
+            this.isStatusDraft = true;
+            this.cdr.detectChanges();
+          } else {
+            this.isStatusDraft = false;
             this.cdr.detectChanges();
           }
         }
