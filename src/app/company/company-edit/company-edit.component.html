@@ -52,17 +52,13 @@
             <button *ngIf="!isAssigned && workflowMasterId != 0 && mainApproverId == currentUserId"
               class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
               (click)="onActions('SendBackFromApproval')">
-              <i *ngIf="!isSubmitting" class="ft-arrow-left"></i>
-              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm" role="status"
-                aria-hidden="true"></span>
+              <i class="ft-arrow-left"></i>
               <label class="ml-1">Sendback</label>
             </button>
 
             <button *ngIf="isAssigned && mainApproverId == currentUserId" class="btn btn-sm cstm-ui-table-btn"
               [disabled]="!companyId || isSubmitting" (click)="onActions('sendforapproval')">
-              <i *ngIf="!isSubmitting" class="ft-check"></i>
-              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm" role="status"
-                aria-hidden="true"></span>
+              <i class="ft-check"></i>
               <label class="ml-1">Submit for Approval</label>
             </button>
 
@@ -71,9 +67,7 @@
             <button *ngIf="!isAssigned && workflowMasterId != 0 && mainApproverId == currentUserId"
               class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
               (click)="onActions('Approve')">
-              <i *ngIf="!isSubmitting" class="ft-check"></i>
-              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm" role="status"
-                aria-hidden="true"></span>
+              <i class="ft-check"></i>
               <label class="ml-1">Approve</label>
             </button>
 
@@ -81,18 +75,14 @@
             <button *ngIf="(isAssigned || workflowMasterId != 0) && mainApproverId == currentUserId"
               class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
               (click)="onActions('Rejected')">
-              <i *ngIf="!isSubmitting" class="ft-x"></i>
-              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm" role="status"
-                aria-hidden="true"></span>
+              <i class="ft-x"></i>
               <label class="ml-1">Reject</label>
             </button>
 
             <button *ngIf="isAssigned && workflowMasterId == 0 && mainApproverId == currentUserId"
               class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
               (click)="onActions('SendBack')">
-              <i *ngIf="!isSubmitting" class="ft-arrow-left"></i>
-              <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm" role="status"
-                aria-hidden="true"></span>
+              <i class="ft-arrow-left"></i>
               <label class="ml-1">Send Back</label>
             </button>
 
@@ -147,8 +137,8 @@
               <span>Approval History</span>
             </button>
 
-            <button (click)="selectTab('vendor-rating')"
-              [ngClass]="{ 'tab-current': selectedTab === 'vendor-rating' }" class="custom-style-tab">
+            <button (click)="selectTab('vendor-rating')" [ngClass]="{ 'tab-current': selectedTab === 'vendor-rating' }"
+              class="custom-style-tab">
               <span>Vendor Rating</span>
             </button>
           </nav>
@@ -205,9 +195,7 @@
               </div>
             </div> -->
 
-            <p class="text-muted small mb-3">
-              Subsidiaries and business units operating under this parent company.
-            </p>
+
 
             <!-- Entity list -->
             <!-- <div class="entity-card mb-2" *ngFor="let entity of associatedEntities">
