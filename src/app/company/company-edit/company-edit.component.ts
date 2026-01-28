@@ -429,6 +429,7 @@ export class CompanyEditComponent implements OnInit {
 
   private performCompanyAction(action: string, remarks: string) {
     this.isSubmitting = true;
+    this.spinner.show();
 
     const payload = {
       vendorCompanyId: this.companyId,
@@ -442,6 +443,7 @@ export class CompanyEditComponent implements OnInit {
     this.companyService.VendorCompanyAction(payload).subscribe({
       next: (res: any) => {
         this.isSubmitting = false;
+        this.spinner.hide();
         this.message =
           action === 'Approve'
             ? 'Company Approved Successfully!'
@@ -454,6 +456,7 @@ export class CompanyEditComponent implements OnInit {
       },
       error: (err) => {
         this.isSubmitting = false;
+        this.spinner.hide();
         this.error = 'Failed to perform action!';
         this.toastr.error(err.error?.message || this.error);
         console.error(err);
@@ -463,6 +466,8 @@ export class CompanyEditComponent implements OnInit {
 
   private submitForApproval(action: string, remarks: string = ''): void {
     this.isLoading = true;
+    this.isSubmitting = true;
+    this.spinner.show();
 
     const payload = {
       vendorCompanyId: this.companyId,
@@ -477,13 +482,19 @@ export class CompanyEditComponent implements OnInit {
     this.companyService.takeAction(payload).subscribe({
       next: (res: any) => {
         this.isSubmitting = false;
-        this.message = `Company ${action} Successfully!`;
-        this.toastr.success(res.message || this.message);
+        this.message =
+          action === 'sendforapproval'
+            ? 'Submit for approval Success'
+            : `Company ${action} Successfully!`;
+        // Prioritize local message to avoid backend messages that might contain user IDs or other details
+        this.toastr.success(this.message);
         this.cdr.detectChanges();
         this.router.navigate(['/company']);
       },
       error: (err) => {
+        this.isLoading = false;
         this.isSubmitting = false;
+        this.spinner.hide();
         console.error(err);
         this.toastr.error(err.error?.message || 'Failed to perform action!');
         this.error = 'Failed to perform action!';
