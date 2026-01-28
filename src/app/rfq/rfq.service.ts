@@ -126,18 +126,9 @@ export class RfqService {
     return this.http.post<any>(`${this.baseUrl}/addRemarksWithActionTaken`, data);
   }
 
-  // getVendorsAndCompaniesForRfq(): Observable<any[]> {
-  //   return this.http.get<any[]>(`${this.baseUrl}/get-all-vendors-companies-for-rfq`);
-  // }
-  getVendorsAndCompaniesForRfq(procurementUserId: string, entityId: number): Observable<any[]> {
-    let params = new HttpParams()
-    if (procurementUserId) params = params.set("procurementUserId", procurementUserId);
-    if (entityId) params = params.set("entityId", entityId);
-    return this.http.get<any>(
-      `${this.baseUrl}/get-all-vendors-companies-for-rfq`, { params }
-    );
+  getVendorsAndCompaniesForRfq(): Observable<any[]> {
+    return this.http.get<any>(`${this.baseUrl}/get-all-vendors-companies-for-rfq`);
   }
-
 
   getAllQuotationsByStatus(status: string, currentPage: number, pageSize: number): Observable<any> {
     return this.http.get<any>(

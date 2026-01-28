@@ -61,11 +61,8 @@ export class RfqVendorModalComponent implements OnInit {
   }
 
   fetchVendorsAndCompaniesForRfq() {
-        this.spinner.show();
-    const procurementUserId = localStorage.getItem('userId');
-    //const entityId = Number(localStorage.getItem('selectedCompanyId'));
-    const entityId = this.entityId
-    this.rfqService.getVendorsAndCompaniesForRfq(procurementUserId, entityId)
+    this.spinner.show();
+    this.rfqService.getVendorsAndCompaniesForRfq()
       .subscribe({
         next: (res: any) => {
           this.allVendorsandCompanies = res ?? res?.$values ?? [];
