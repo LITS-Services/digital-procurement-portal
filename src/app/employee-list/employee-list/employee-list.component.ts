@@ -84,7 +84,8 @@ export class EmployeeListComponent implements OnInit {
           phoneNumber: u.phoneNumber || 'N/A',
           isDeleted: u.isDeleted,
           profilePicture: u.profilePicture || '',    // New field
-          emailConfirmed: u.emailConfirmed || false // New field
+          emailConfirmed: u.emailConfirmed || false, // New field
+          status: u.isDeleted ? 'Inactive' : 'Active'
         }));
         this.cdr.detectChanges();
         this.loading = false;
@@ -152,5 +153,21 @@ export class EmployeeListComponent implements OnInit {
     } else {
       this.toastr.info('Please select a single user to edit.');
     }
+  }
+
+  private mapStatusKey(status: string): 'chip--success' | 'chip--pending' | 'chip--rejected' | 'chip--approved' {
+    const s = status?.toLowerCase();
+
+    if (s === 'completed' || s === 'successful' || s === 'accepted'  || s === 'paid' || s === 'delivered' || s === 'active')
+      return 'chip--success';
+
+    if (s === 'rejected')
+      return 'chip--rejected';
+
+    if (s === 'pending for payment' || s === 'pending' || s === 'on hold' || s === 'inactive' || s === 'inprogress' || s === 'draft' || s === 'sendback')  
+    return 'chip--pending';
+
+    if (s === 'approved for payment' || s === 'approved' || s === 'new' || s === 'awarded')
+    return 'chip--approved';
   }
 }

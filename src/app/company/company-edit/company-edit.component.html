@@ -146,6 +146,11 @@
               [ngClass]="{ 'tab-current': selectedTab === 'approval-history' }" class="custom-style-tab">
               <span>Approval History</span>
             </button>
+
+            <button (click)="selectTab('vendor-rating')"
+              [ngClass]="{ 'tab-current': selectedTab === 'vendor-rating' }" class="custom-style-tab">
+              <span>Vendor Rating</span>
+            </button>
           </nav>
         </div>
 
@@ -349,6 +354,11 @@
         <div *ngIf="selectedTab === 'setup-history'">
           <app-company-setup-history [vendorEntityAssociationId]="vendorEntityAssociationId">
           </app-company-setup-history>
+        </div>
+
+        <div *ngIf="selectedTab === 'vendor-rating'">
+          <app-vendor-rating [vendorUserId]="submitterId">
+          </app-vendor-rating>
         </div>
 
       </div>

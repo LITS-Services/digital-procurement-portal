@@ -309,4 +309,105 @@ form label, .form-group label {
     padding: 2px !important;
 }
 
+.phone-field-wrapper {
+  position: relative;
+}
 
+.phone-error {
+  position: absolute;
+  bottom: -20px;       // push below input
+  left: 0;
+  font-size: 12px;
+  color: #dc3545;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+:host ::ng-deep ngx-intl-tel-input {
+  display: block;
+}
+
+:host ::ng-deep ngx-intl-tel-input .iti {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 42px;       
+  border-radius: 8px;
+  border: 1px solid #D7D7D7;
+  background-color: #ffffff;
+  padding-right: 12px;
+}
+
+:host ::ng-deep ngx-intl-tel-input .iti input:disabled {
+  background-color: #f5f5f5 !important;
+}
+
+:host ::ng-deep ngx-intl-tel-input .iti:has(input:disabled) {
+  background-color: #f5f5f5 !important;
+}
+
+
+:host ::ng-deep ngx-intl-tel-input .iti__flag-container {
+  position: static;           
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 10px;
+  border-right: 1px solid #e0e3e8;
+  margin: 0;
+}
+
+
+:host ::ng-deep ngx-intl-tel-input .iti__selected-flag {
+  margin: 0;
+  display: flex;
+    align-items: center;
+    width: 100% !important;
+}
+
+
+
+:host ::ng-deep ngx-intl-tel-input .iti__selected-dial-code {
+  margin-left: 6px;
+  font-size: 14px;
+}
+
+:host ::ng-deep ngx-intl-tel-input .iti input {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  padding: 10px !important;
+  font-size: 14px;
+}
+
+:host ::ng-deep ngx-intl-tel-input .iti__divider {
+  display: block;
+  height: 1px;
+  margin: 4px 0;
+  border: 0;
+  background-color: #e0e3e8;  
+}
+
+:host ::ng-deep ngx-intl-tel-input .iti input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+
+:host ::ng-deep ngx-intl-tel-input .iti__country-list {
+  max-height: 260px;          
+  -webkit-overflow-scrolling: touch;
+}
+
+:host ::ng-deep ngx-intl-tel-input .iti__country-container {
+  width: 100% !important;            
+  margin-top: 6px !important;          
+
+}
+
+:host ::ng-deep ngx-intl-tel-input .iti__dropdown-content {
+  overflow: hidden !important;
+}

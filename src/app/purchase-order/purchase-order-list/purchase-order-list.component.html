@@ -83,6 +83,14 @@
           </ng-template>
         </ngx-datatable-column>
 
+        <ngx-datatable-column name="Status" prop="requestStatus" [sortable]="false" [flexGrow]="1" [minWidth]="120">
+          <ng-template ngx-datatable-cell-template let-row="row">
+            <span [ngClass]="row.statusClass">
+              {{ row.requestStatus }}
+            </span>
+          </ng-template>
+        </ngx-datatable-column>
+        
         <ngx-datatable-column name="Requisition No." prop="requisitionNo" [sortable]="false" [flexGrow]="2" [minWidth]="140">
         </ngx-datatable-column>
 
@@ -95,13 +103,7 @@
         </ngx-datatable-column>
         <ngx-datatable-column name="Vendor" prop="vendorCompanyName" [sortable]="false" [flexGrow]="1" [minWidth]="120">
         </ngx-datatable-column>
-        <ngx-datatable-column name="Status" prop="requestStatus" [sortable]="false" [flexGrow]="1" [minWidth]="120">
-          <ng-template ngx-datatable-cell-template let-row="row">
-            <span [ngClass]="row.statusClass">
-              {{ row.requestStatus }}
-            </span>
-          </ng-template>
-        </ngx-datatable-column>
+        
         <ngx-datatable-column name="Total Items" prop="itemsCount" [sortable]="false" [flexGrow]="1" [minWidth]="80">
         </ngx-datatable-column>
         <!-- <ngx-datatable-column name="Total Amount" prop="totalAmount" [sortable]="false">

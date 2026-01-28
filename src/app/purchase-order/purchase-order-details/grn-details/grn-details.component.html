@@ -96,3 +96,58 @@
         <p class="empty-submessage">Please check back later or contact the responsible team.</p>
     </div>
 } -->
+
+<!-- Vendor Rating Modal -->
+<div class="rating-backdrop" *ngIf="showRatingModal">
+  <div class="rating-modal">
+
+    <h4 class="rating-title">What is your rating?</h4>
+
+    <p class="rating-subtitle">
+      How was your experience with
+      <strong>{{ vendorName }}</strong>
+      for Purchase Order
+      <strong>#{{ purchaseOrderNo }}</strong>?
+    </p>
+
+    <!-- Stars -->
+    <div class="stars-wrapper">
+      <div class="star-container" *ngFor="let star of stars; let i = index" (mousemove)="hoverStar($event, i)"
+        (mouseleave)="clearHover()" (click)="selectRating(i)">
+        <span class="rating-value" *ngIf="hoverIndex === i">
+          {{ hoverRating | number:'1.1-1' }}
+        </span>
+
+        <!-- <i class="fa" [ngClass]="
+            (hoverRating || selectedRating) >= i + 1
+              ? 'fa-star'
+              : (hoverRating || selectedRating) >= i + 0.5
+              ? 'fa-star-half-alt'
+              : 'fa-star-o'
+          "></i> -->
+          <i class="fa" [ngClass]="getStarFill(i)"></i>
+
+
+      </div>
+    </div>
+
+    <div class="selected-rating" *ngIf="selectedRating">
+      Selected Rating: <strong>{{ selectedRating | number:'1.1-1' }}</strong>
+    </div>
+
+    <!-- Comment -->
+    <div class="mt-3">
+      <textarea class="form-control" rows="3" placeholder="Add a comment (optional)" [formControl]="ratingComment"></textarea>
+    </div>
+
+    <button class="btn btn-primary w-100 mt-3" (click)="submitVendorRating()"
+      [disabled]="!selectedRating || savingRating">
+      Submit Rating
+    </button>
+
+    <button class="btn btn-link text-muted mt-2" (click)="closeRatingModal()">
+      Close
+    </button>
+
+  </div>
+</div>

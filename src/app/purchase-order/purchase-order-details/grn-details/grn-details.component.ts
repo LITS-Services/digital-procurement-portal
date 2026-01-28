@@ -24,13 +24,26 @@ import Swal from 'sweetalert2';
 })
 export class GrnDetailsComponent implements OnInit {
   @Input() poId!: number;
-  // @Input() isShipmentAvailable: boolean = false;
   form!: FormGroup;
   itemsForm!: FormArray;
   grnId?: number;
   itemsExpanded: boolean = true;
   loading = true;
   isGrnSubmitted = false;
+
+  showRatingModal = false;
+  vendorName = '';
+  purchaseOrderNo = '';
+
+  stars = Array(5);
+
+  hoverIndex: number | null = null;
+  hoverRating: number | null = null;
+  selectedRating: number | null = null;
+  ratingComment = this.fb.control('');
+
+
+  savingRating = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -187,11 +200,97 @@ export class GrnDetailsComponent implements OnInit {
         purchaseOrderId: this.poId,
         goodsReceiptNote: grnPayload
       }).subscribe({
-        next: () => {
+        next: (res: any) => {
+          if (typeof res !== 'number') {
+            if (!res?.isSuccess) {
+              return;
+            }
+          }
+
           this.loadGrnOrPurchaseOrder();
+          this.vendorName = this.form.get('vendorName')?.value;
+          this.purchaseOrderNo = this.form.get('purchaseOrderNo')?.value;
+          this.openRatingModal();
         },
         error: () => this.toastr.error('Failed to create GRN.')
       });
     });
+  }
+
+  openRatingModal() {
+    this.selectedRating = null;
+    this.ratingComment.reset();
+    this.hoverRating = null;
+    this.hoverIndex = null;    
+    this.showRatingModal = true;
+  }
+
+  closeRatingModal() {
+    this.showRatingModal = false;
+    this.cdr.markForCheck();
+  }
+
+  hoverStar(event: MouseEvent, index: number) {
+    const target = event.target as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    const offsetX = event.clientX - rect.left;
+
+    this.hoverIndex = index;
+
+    this.hoverRating =
+      offsetX < rect.width / 2
+        ? index + 0.5
+        : index + 1;
+  }
+
+  clearHover() {
+    this.hoverIndex = null;
+    this.hoverRating = null;
+  }
+
+  selectRating(index: number) {
+    this.selectedRating = this.hoverRating ?? index + 1;
+  }
+
+  getStarFill(index: number): 'fa-star' | 'fa-star-half-alt' | 'fa-star-o' {
+    // Use hoverRating if hovering, else selectedRating, else 0
+    const rating = this.hoverRating != null ? this.hoverRating :
+      this.selectedRating != null ? this.selectedRating :
+        0;
+
+    if (rating >= index + 1) return 'fa-star';
+    if (rating >= index + 0.5) return 'fa-star-half-alt';
+    return 'fa-star-o';
+  }
+
+
+  submitVendorRating() {
+    if (!this.selectedRating) return;
+
+    this.savingRating = true;
+
+    const payload = {
+      purchaseOrderId: this.poId,
+      vendorRating: {
+        rating: this.selectedRating,
+        comment: this.ratingComment.value
+      }
+    };
+    this.loading = true;
+    this.spinner.show();
+    this.purchaseOrderService.addVendorRating(payload)
+      .subscribe({
+        next: () => {
+          this.closeRatingModal();
+          this.loading = false;
+          this.spinner.hide();
+        },
+        error: () => {
+          this.toastr.error('Failed to submit rating.');
+        },
+        complete: () => {
+          this.savingRating = false;
+        }
+      });
   }
 }

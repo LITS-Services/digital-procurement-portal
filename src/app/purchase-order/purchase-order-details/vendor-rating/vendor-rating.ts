@@ -1,8 +1,17 @@
-import { ChangeDetectorRef, Component, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize } from 'rxjs';
+
+export interface AvgVendorRatingVM {
+  rating: number;
+  avgRating: number;
+  totalCount: number;
+  comment?: string;
+  createdBy?: string;
+  createdDate?: Date; 
+}
 
 @Component({
   selector: 'app-vendor-rating',
@@ -10,32 +19,21 @@ import { finalize } from 'rxjs';
   styleUrl: './vendor-rating.scss',
   standalone: false
 })
-export class VendorRating {
-  @Input() poId!: number; // Pass PO Id from parent tab
-  ratingForm!: FormGroup;
-  loading = true;
-  saving = false;
-  poDetails: any;
 
-  ratingExists = false;
-  existingRatingId?: number;
+export class VendorRating implements OnInit {
+  @Input() poId!: number;
+  @Input() vendorUserId!: string; // New input
+  ratingData: AvgVendorRatingVM[] = [];
+  loading = true;
 
   constructor(
-    private fb: FormBuilder,
     private poService: PurchaseOrderService,
     private cdr: ChangeDetectorRef,
     private spinner: NgxSpinnerService
   ) { }
 
   ngOnInit(): void {
-    this.ratingForm = this.fb.group({
-      purchaseOrderNo: [{ value: '', disabled: true }],
-      vendorName: [{ value: '', disabled: true }],
-      rating: [null, [Validators.required, Validators.min(0), Validators.max(5)]]
-    });
-
-    if (this.poId) {
-      this.loadPoDetails();
+    if (this.vendorUserId) {
       this.loadVendorRating();
     }
   }
@@ -43,90 +41,57 @@ export class VendorRating {
   loadVendorRating() {
     this.loading = true;
     this.spinner.show();
-    this.poService.getVendorRatingByPoId(this.poId)
-      .subscribe({
-        next: (res) => {
-          if (res) {
-            const rating = res;
 
-            this.ratingExists = true;
-            this.existingRatingId = rating.id;
-
-            this.ratingForm.patchValue({
-              rating: rating.rating
-            });
-
-            this.ratingForm.get('rating')?.disable();
-            this.loading = false;
-            this.spinner.hide();
-            this.cdr.detectChanges();
-          }
-        },
-        error: () => {
-          this.ratingExists = false;
-          this.ratingForm.get('rating')?.enable();
-        }
-      });
-  }
-
-  loadPoDetails() {
-    this.loading = true;
-    this.spinner.show();
-    this.poService.getPurchaseOrderById(this.poId)
-      .pipe(finalize(() => { this.loading = false; this.cdr.detectChanges(); }))
-      .subscribe({
-        next: (res: any) => {
-          this.poDetails = res;
-          this.ratingForm.patchValue({
-            purchaseOrderNo: res.purchaseOrderNo || '-',
-            vendorName: res.vendorName || '-'
-          });
-          this.loading = false;
-          this.spinner.hide();
-        },
-        error: () => {
-          this.ratingForm.patchValue({ purchaseOrderNo: '-', vendorName: '-' });
-        }
-      });
-  }
-
-  // loadVendorRating() {
-  //   this.ratingService.getVendorRatingByPoId(this.poId)
-  //     .subscribe({
-  //       next: (res: any) => {
-  //         if (res && res.rating != null) {
-  //           this.ratingForm.patchValue({ rating: res.rating });
-  //         }
-  //       },
-  //       error: () => { }
-  //     });
-  // }
-
-  submitRating() {
-    if (this.ratingForm.invalid || this.ratingExists) return;
-
-    this.saving = true;
-
-    const payload = {
-      purchaseOrderId: this.poId,
-      vendorRating: {
-        rating: this.ratingForm.value.rating
-      }
-    };
-
-    this.poService.addVendorRating(payload)
+    this.poService.avgVendorRating(this.vendorUserId)
       .pipe(finalize(() => {
-        this.saving = false;
+        this.loading = false;
+        this.spinner.hide();
         this.cdr.detectChanges();
       }))
       .subscribe({
-        next: () => {
-          this.ratingExists = true;
-          this.ratingForm.get('rating')?.disable();
+        next: (res) => {
+          this.ratingData = res;
         },
-        error: (err) => {
-          console.error(err);
-        }
+        error: (err) => console.error(err)
       });
+  }
+
+  getRatingCount(min: number, max: number): number {
+    if (!this.ratingData.length) return 0;
+
+    return this.ratingData.filter(r => {
+      const rating = r.rating;
+      if (rating === min && min !== 0) return false; // exact min goes to previous bucket
+      return rating > min && rating <= max;
+    }).length;
+  }
+
+  getStarFill(starNumber: number): number {
+    const avg = this.avgRating || 0;
+
+    if (avg >= starNumber) return 100;          // full star
+    if (avg + 1 > starNumber) return (avg - (starNumber - 1)) * 100; // partial star
+    return 0;                                  // empty star
+  }
+
+  // Max count for normalization (e.g., 5 latest ratings)
+  get maxRatingCount(): number {
+    return this.ratingData.length || 1;
+  }
+
+  getReviewStarFill(rating: number, starNumber: number): number {
+  if (rating >= starNumber) return 100;                  // full star
+  if (rating + 1 > starNumber) return (rating - (starNumber - 1)) * 100; // partial star
+  return 0;                                           // empty star
+}
+
+
+  // Avg Rating display (all same, pick first)
+  get avgRating(): number {
+    return this.ratingData.length ? this.ratingData[0].avgRating : 0;
+  }
+
+  get totalCount(): number {
+    return this.ratingData.length ? this.ratingData[0].totalCount : 0;
   }
 }

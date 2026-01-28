@@ -1,49 +1,139 @@
-<form [formGroup]="ratingForm">
-  <div class="card cstm-ui-card mb-4">
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label>Purchase Order No</label>
-          <input class="form-control"
-                 formControlName="purchaseOrderNo"
-                 disabled>
+<div class="card cstm-ui-card mb-4">
+  <div class="card-body">
+
+    <!-- ===== TOP SECTION ===== -->
+    <div class="top-summary d-flex justify-content-center align-items-start text-center mb-4">
+
+      <!-- Total Reviews -->
+      <div class="summary-item">
+        <div class="label fw-bold text-muted">Total Reviews</div>
+        <div class="number display-5 fw-bold">{{ totalCount }}</div>
+      </div>
+
+      <div class="vertical-divider"></div>
+
+      <!-- Average Rating -->
+      <!-- <div class="summary-item">
+        <div class="label fw-bold text-muted">Average Rating</div>
+        <div class="d-flex align-items-center justify-content-center">
+          <div class="number display-5 fw-bold me-2">{{ avgRating.toFixed(1) }}</div>
+          <div class="avg-rating-stars">
+            <ng-container *ngFor="let star of [1,2,3,4,5]; let i = index">
+              <i class="fa" [ngClass]="{
+                  'fa-star text-warning': getStarFill(i + 1) === 100,
+                  'fa-star-half-alt text-warning': getStarFill(i + 1) > 0 && getStarFill(i + 1) < 100,
+                  'fa-star-o text-muted': getStarFill(i + 1) === 0
+                }"></i>
+            </ng-container>
+          </div>
         </div>
+      </div> -->
+      <div class="summary-item">
+  <div class="label fw-bold text-muted">Average Rating</div>
+  <div class="rating-value-wrapper text-center">
+    <span class="number fw-bold">{{ avgRating.toFixed(1) }}</span>
+    <span class="avg-rating-stars">
+      <ng-container *ngFor="let star of [1,2,3,4,5]; let i = index">
+        <i class="fa" [ngClass]="{
+            'fa-star text-warning': getStarFill(i + 1) === 100,
+            'fa-star-half-alt text-warning': getStarFill(i + 1) > 0 && getStarFill(i + 1) < 100,
+            'fa-star-o text-muted': getStarFill(i + 1) === 0
+          }"></i>
+      </ng-container>
+    </span>
+  </div>
+</div>
 
-        <div class="col-md-6 mb-3">
-          <label>Vendor Name</label>
-          <input class="form-control"
-                 formControlName="vendorName"
-                 disabled>
+
+      <div class="vertical-divider"></div>
+
+      <!-- Rating Bars -->
+      <div class="rating-bars-section">
+        <div *ngFor="let star of [5,4,3,2,1]" class="rating-bar-row">
+
+          <!-- Star icon column -->
+          <div class="star-col">
+            <i class="fa fa-star text-warning"></i>
+          </div>
+
+          <!-- Number column -->
+          <div class="number-col">
+            {{ star }}
+          </div>
+
+          <!-- Bar + count column -->
+          <!-- <div class="bar-col">
+            <div class="progress">
+              <div class="progress-bar" [ngClass]="'bar-' + star"
+                [style.width.%]="(getRatingCount(star - 1, star)/maxRatingCount)*100"></div>
+            </div>
+            <div class="bar-count">
+              {{ getRatingCount(star - 1, star) }}
+            </div>
+          </div> -->
+<!-- Bar + count column -->
+    <div class="bar-col">
+      <div class="progress">
+        <div class="progress-bar" 
+             [ngClass]="'bar-' + star"
+             >
         </div>
+      </div>
+      <div class="bar-count">
+        {{ getRatingCount(star - 1, star) }}
+      </div>
+    </div>
 
-        <div class="col-md-6 mb-3">
-          <label>Rating (0-5)</label>
-          <input type="number"
-                 class="form-control"
-                 formControlName="rating"
-                 min="0"
-                 max="5"
-                 [readonly]="ratingExists">
 
-                <small *ngIf="ratingExists" class="text-muted">
-                  Rating has already been submitted and cannot be changed.
-                </small>
+
+
+
         </div>
       </div>
 
-      <button class="btn btn-primary"
-              (click)="submitRating()"
-              [disabled]="ratingForm.invalid || saving || ratingExists">
-        {{ ratingExists ? 'Rating Submitted' : 'Submit Rating' }}
-      </button>
+
     </div>
+
+    <!-- ===== REVIEW LIST ===== -->
+<div class="review-list">
+  <div *ngFor="let r of ratingData" class="review-item">
+    <div class="review-row">
+
+      <!-- Created By column -->
+      <div class="created-by">
+        <div class="fw-bold">{{ r.createdBy }}</div>
+        <div class="text-muted small">{{ r.createdByEmail || '' }}</div>
+      </div>
+
+      <!-- Stars + Date + Comment column -->
+      <div class="review-right">
+        <!-- Stars + Date -->
+        <div class="stars-date d-flex align-items-center mb-1">
+          <div class="stars me-2" style="display: flex; gap: 2px;">
+            <ng-container *ngFor="let star of [1,2,3,4,5]; let i = index">
+              <div class="star-container">
+                <i class="fa fa-star-o text-muted"></i>
+                <div class="star-fill" [style.width.%]="getReviewStarFill(r.rating, i + 1)">
+                  <i class="fa fa-star text-warning"></i>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+          <div class="review-date text-muted small">{{ r.createdDate | date:'yyyy-MM-dd' }}</div>
+        </div>
+
+        <!-- Comment -->
+        <div class="review-comment text-muted small">
+          {{ r.comment }}
+        </div>
+      </div>
+
+    </div>
+    <hr />
   </div>
-</form>
+</div>
 
 
-<!-- <ng-template #loader>
-    <div class="text-center mt-5">
-        <div class="spinner-border"></div>
-        <p>Loading Vendor Rating...</p>
-    </div>
-</ng-template> -->
+
+  </div>
+</div>

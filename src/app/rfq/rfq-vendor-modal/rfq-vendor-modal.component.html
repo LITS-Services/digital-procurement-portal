@@ -29,10 +29,31 @@
         <div class="row-item clickable"
              *ngFor="let v of availableVendors"
              (click)="addToRight(v)">
-          <div class="vh">
+          <!-- <div class="vh">
             <div class="vh-title">{{ v.vendorName }}</div>
             <div class="vh-sub">{{ v.companyName }}</div>
+          </div> -->
+          <div class="vh">
+            <div class="vh-title">{{ v.vendorName }}</div>
+          
+            <div class="vh-sub">{{ v.companyName }}</div>
+          
+            <div class="vendor-meta">
+  <span class="rating" title="Vendor Rating">
+    <i class="ft-star"></i>
+    {{ v.rating | number:'1.1-1' }}
+  </span>
+
+  <span class="dot">•</span>
+
+  <span class="buys" title="Number of Buys">
+    <i class="ft-file-text"></i>
+    {{ v.numberOfBuys }}
+  </span>
+</div>
+
           </div>
+
           <button class="btn btn-xs add-btn" [disabled]="viewMode" (click)="addToRight(v); $event.stopPropagation()">
             Add<i class="ft-arrow-right ml-1"></i></button>
         </div>

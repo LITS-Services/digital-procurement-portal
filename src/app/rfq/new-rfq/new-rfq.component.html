@@ -264,13 +264,7 @@
                 </div>
               </div>
   
-              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
-                <div class="form-group mb-2">
-                  <label>Contact</label>
-                  <input type="text" formControlName="contact" placeholder="Enter Contact No."
-                    class="form-control  custom-input" />
-                </div>
-              </div>
+              
   
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
@@ -297,6 +291,44 @@
                   <div *ngIf="newRfqForm.get('endDate')?.touched && newRfqForm.get('endDate')?.invalid" class="text-danger">
                     End Date is required
                   </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                <div class="form-group mb-2 phone-field-wrapper">
+                  <label>Contact</label>
+                  <!-- <input type="text" formControlName="contact" placeholder="Enter Contact No."
+                    class="form-control  custom-input" /> -->
+                    <ngx-intl-tel-input
+                    class="vendor-phone"
+                    name="contact"
+                    formControlName="contact"
+                    [cssClass]="'form-control custom-input'"
+                    [preferredCountries]="preferredCountries"
+                    [enableAutoCountrySelect]="true"
+                    [searchCountryFlag]="true"
+                    [searchCountryField]="[SearchCountryField.All]"
+                    [selectFirstCountry]="true"
+                    [separateDialCode]="true"
+                    [selectedCountryISO]="selectedCountryISO"
+                    [numberFormat]="PhoneNumberFormat.International"
+                    [maxLength]="20">
+                  </ngx-intl-tel-input>
+
+                  @if (
+                    newRfqForm.get('contact')?.invalid &&
+                    newRfqForm.get('contact')?.touched
+                  ) {
+                    <div class="phone-error">
+                      <i class="ft-alert-circle me-1"></i>
+              
+                      @if (newRfqForm.get('contact')?.hasError('required')) {
+                        Contact is required
+                      } @else {
+                        Invalid phone number
+                      }
+                    </div>
+                  }
                 </div>
               </div>
   

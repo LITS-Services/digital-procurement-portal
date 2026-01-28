@@ -23,6 +23,8 @@ import { CompanyApprovalHistoryComponent } from './company-approval-history/comp
 import { AssignMeComponent } from './assign-me/assign-me.component';
 import { CompanySetupHistoryComponent } from './company-setup-history/company-setup-history.component';
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
+import { RatingComponent } from 'app/components/bootstrap/rating/rating.component';
+import { VendorRating } from 'app/purchase-order/purchase-order-details/vendor-rating/vendor-rating';
 
 
 @NgModule({
@@ -32,7 +34,8 @@ import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-au
     CompanyActionsComponent,
     CompanyApprovalHistoryComponent,
     AssignMeComponent,
-    CompanySetupHistoryComponent
+    CompanySetupHistoryComponent,
+    VendorRating
   ],
   imports: [
     CommonModule,

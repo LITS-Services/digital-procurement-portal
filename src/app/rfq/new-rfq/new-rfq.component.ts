@@ -16,6 +16,8 @@ import { LookupService } from 'app/shared/services/lookup.service';
 import { SelectedVendorsModalComponent } from './selected-vendors-modal/selected-vendors-modal.component';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
+import { PhoneNumberUtil, PhoneNumberFormat as LibPhoneNumberFormat } from 'google-libphonenumber';
 
 @Component({
   selector: 'app-new-rfq',
@@ -96,6 +98,20 @@ export class NewRfqComponent implements OnInit {
   entityHint = '';
   isToolbarSticky = false;
   private lastScrollTop = 0;
+
+  SearchCountryField = SearchCountryField;
+  PhoneNumberFormat = PhoneNumberFormat;
+  preferredCountries: CountryISO[] = [
+    CountryISO.Pakistan,
+    CountryISO.UnitedArabEmirates,
+    CountryISO.SaudiArabia,
+    CountryISO.UnitedStates,
+    CountryISO.UnitedKingdom
+  ];
+
+  selectedCountryISO: CountryISO = CountryISO.Pakistan;
+  private phoneUtil = PhoneNumberUtil.getInstance();
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -582,7 +598,7 @@ export class NewRfqComponent implements OnInit {
           startDate: this.toDateInputValue(requestData.startDate),
           endDate: this.toDateInputValue(requestData.endDate),
         });
-
+        this.patchReceiverContactFromE164(requestData.contact);
         //  this.newQuotationItemData = requestData.quotationItems || [];
         if (requestData.requestStatus) {
           this.newRfqForm.patchValue({
@@ -796,7 +812,7 @@ export class NewRfqComponent implements OnInit {
       purchaseRequestNo: f.purchaseRequestNo,
       owner: f.owner,
       date: f.date,
-      contact: f.contact,
+      contact: this.normalizePhoneToString(f.contact),
       deliveryLocation: f.deliveryLocation,
       startDate: f.startDate,
       endDate: f.endDate,
@@ -928,7 +944,7 @@ export class NewRfqComponent implements OnInit {
       status: 'Draft',
       owner: f.owner || '',
       date: f.date,
-      contact: f.contact || '',
+      contact: this.normalizePhoneToString(f.contact) || '',
       deliveryLocation: f.deliveryLocation || '',
       startDate: f.startDate,
       endDate: f.endDate,
@@ -1234,5 +1250,40 @@ export class NewRfqComponent implements OnInit {
 
   onAllItemsFinalizedChange(finalized: boolean) {
     this.allItemsFinalized = finalized;
+  }
+
+  private normalizePhoneToString(value: any): string {
+    if (!value) return '';
+    if (typeof value === 'string') return value;
+
+    return (
+      value?.e164Number ||
+      null
+    );
+  }
+
+  private patchReceiverContactFromE164(e164: string | null | undefined): void {
+    if (!e164) return;
+  
+    try {
+      const phone = this.phoneUtil.parseAndKeepRawInput(e164);
+      const region = this.phoneUtil.getRegionCodeForNumber(phone) || 'PK';
+  
+      this.selectedCountryISO = (CountryISO as any)[region] ?? CountryISO.Pakistan;
+  
+      // build the object ngx-intl-tel-input understands
+      const valueObj = {
+        number: String(phone.getNationalNumber()),
+        internationalNumber: this.phoneUtil.format(phone, LibPhoneNumberFormat.INTERNATIONAL),
+        nationalNumber: this.phoneUtil.format(phone, LibPhoneNumberFormat.NATIONAL),
+        e164Number: this.phoneUtil.format(phone, LibPhoneNumberFormat.E164),
+        countryCode: region,
+        dialCode: `+${phone.getCountryCode()}`
+      };
+  
+      this.newRfqForm.get('contact')?.setValue(valueObj, { emitEvent: false });
+    } catch {
+      this.newRfqForm.get('contact')?.setValue(e164, { emitEvent: false });
+    }
   }
 }

@@ -150,7 +150,7 @@ export class CompanyEditComponent implements OnInit {
           // --- Basic Company Info ---
           this.companyId = company.id || 0;
           this.companyGUID = company.companyGUID || null;
-          this.vendorId = company.vendorId || '';
+          this.submitterId = company.submitterId || '';
           this.companyName = company.name || '';
           this.aboutCompany = company.aboutCompany || '';
           this.companyStatusLabel = company.requestStatus || '';

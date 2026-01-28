@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { AvgVendorRatingVM } from 'app/purchase-order/purchase-order-details/vendor-rating/vendor-rating';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 
@@ -80,5 +81,11 @@ export class PurchaseOrderService {
 
   createGoodsReceiptNote(data: any) {
     return this.http.post(`${this.baseUrl}/create-grn`, data);
+  }
+
+  avgVendorRating(vendorUserId: string) {
+    return this.http.get<AvgVendorRatingVM[]>(
+      `${this.baseUrl}/avg-vendor-rating?vendorUserId=${vendorUserId}`
+    );
   }
 }

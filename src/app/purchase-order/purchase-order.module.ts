@@ -24,8 +24,7 @@ import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
     PurchaseOrderDetailsComponent,
     ShipmentDetailsComponent,
     GrnDetailsComponent,
-    InvoiceComponent,
-    VendorRating
+    InvoiceComponent
   ],
   imports: [
     CommonModule,

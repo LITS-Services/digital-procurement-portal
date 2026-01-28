@@ -30,6 +30,7 @@ import { RfqCommentsComponent } from './rfq-comments/rfq-comments.component';
 import { RfqFinalVendorsComponent } from './rfq-final-vendors/rfq-final-vendors.component';
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
+import { NgxIntlTelInputComponent, NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 
 
 @NgModule({
@@ -69,7 +70,8 @@ import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-au
     GoogleMapsModule,
     AutoResizeDatatableDirective,
     DatatableAutoResizeDirective,
-    PermissionDirective
+    PermissionDirective,
+    NgxIntlTelInputModule
 ],
 schemas: [NO_ERRORS_SCHEMA]
 })

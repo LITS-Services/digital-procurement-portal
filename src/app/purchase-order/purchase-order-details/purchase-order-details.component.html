@@ -46,10 +46,10 @@
                     <span>INVOICING</span>
                 </button>
 
-                <button (click)="selectTab('vendor-rating')"
+                <!-- <button (click)="selectTab('vendor-rating')"
                     [ngClass]="{ 'tab-current': selectedTab === 'vendor-rating' }" class="custom-style-tab">
                     <span>VENDOR RATING</span>
-                </button>
+                </button> -->
             </nav>
         </div>
 
@@ -165,16 +165,8 @@
             <app-invoice [poId]="poId"></app-invoice>
         </div>
 
-        <div *ngIf="selectedTab === 'vendor-rating'">
-            <app-vendor-rating [poId]="poId"></app-vendor-rating>
-        </div>
+        <!-- <div *ngIf="selectedTab === 'vendor-rating'">
+            <app-vendor-rating [poId]="poId" [vendorUserId]="poDetails?.vendorUserId"></app-vendor-rating>
+        </div> -->
     </div>
 </section>
-
-<!-- Loader -->
-<!-- <ng-template #loader>
-    <div class="text-center mt-5">
-        <div class="spinner-border"></div>
-        <p>Loading Purchase Order details...</p>
-    </div>
-</ng-template> -->

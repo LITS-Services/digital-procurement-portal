@@ -89,6 +89,44 @@
     ////new
     
 .vendor-picker {
+  .vendor-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 2px;
+
+  .dot {
+    font-weight: 700;
+    margin: 0 4px;
+    color: #94a3b8;
+  }
+
+  .rating {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    color: #000000; // star yellow
+
+    i {
+      font-size: 12px;
+      color: #F8B82C
+    }
+  }
+
+  .buys {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #000000;
+
+    i {
+      font-size: 12px;
+    }
+  }
+}
+
   .picker-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
