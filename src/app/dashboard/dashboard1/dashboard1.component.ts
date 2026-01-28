@@ -362,7 +362,7 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
 
         // Optional: update amount text under chart
         if (data?.totalThisMonth != null) {
-          this.monthlySpendAmount = `AED ${Number(data.totalThisMonth).toLocaleString()}`;
+          this.monthlySpendAmount = Number(data.totalThisMonth).toLocaleString();
         }
 
         this.cdr.detectChanges();

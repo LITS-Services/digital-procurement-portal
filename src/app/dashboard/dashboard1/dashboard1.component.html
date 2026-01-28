@@ -318,7 +318,7 @@
               <div>
                 <h3 class="panel-card__title">Monthly Spend</h3>
                 <p class="panel-card__subtitle">
-                  {{ monthlySpendAmount }} this month
+                  <span>AED </span>{{ monthlySpendAmount }} this month
                 </p>
               </div>
             </div>
@@ -334,7 +334,8 @@
 
                 <div class="monthly-expenses-center">
                   <div class="monthly-expenses-amount">
-                    {{ monthlySpendAmount }}
+                    <span class="currency">AED</span>
+                    <span class="amount">{{ monthlySpendAmount }}</span>
                   </div>
                   <div class="monthly-expenses-caption">
                     Total
