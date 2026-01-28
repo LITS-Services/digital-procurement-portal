@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { RfqService } from '../rfq.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-rfq-approval-history-modal',
@@ -14,9 +14,9 @@ export class RfqApprovalHistoryComponent implements OnInit {
   loading = true;
 
   constructor(
-    //public activeModal: NgbActiveModal,
     private rfqService: RfqService,
     private cdr: ChangeDetectorRef,
+    private spinner: NgxSpinnerService
   ) { }
 
   ngOnInit(): void {
@@ -25,7 +25,7 @@ export class RfqApprovalHistoryComponent implements OnInit {
 
   loadApprovalHistory() {
     this.loading = true;
-
+    this.spinner.show();
     this.rfqService.getApprovalHistoryByRfqNo(this.data?.rfqNo).subscribe({
       next: (data: any) => {
         // unwrap possible response formats
@@ -37,10 +37,8 @@ export class RfqApprovalHistoryComponent implements OnInit {
 
         this.approvalHistory = [...arr];
         this.loading = false;
+        this.spinner.hide();
         this.cdr.detectChanges();
-
-
-  
       },
       error: (err) => {
         console.error("Error loading approval history", err);
@@ -51,8 +49,4 @@ export class RfqApprovalHistoryComponent implements OnInit {
       }
     });
   }
-
-  // closeDialog() {
-  //   this.activeModal.close();
-  // }
 }

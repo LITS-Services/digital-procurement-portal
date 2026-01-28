@@ -1,14 +1,8 @@
-<!-- <div class="modal-header">
-    <h4 class="modal-title text-white">Approval History - {{ rfqNo }}</h4>
-    <button type="button" class="close text-white" aria-label="Close" (click)="closeDialog()">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div> -->
-
 <div class="modal-body">
+    @if (approvalHistory && approvalHistory.length > 0) {
     <ngx-datatable class="bootstrap core-bootstrap" [rows]="approvalHistory" [columnMode]="'force'" [headerHeight]="50"
         [footerHeight]="40" [rowHeight]="50" [limit]="5">
-
+    
         <ngx-datatable-column name="Approver" prop="approverName"></ngx-datatable-column>
         <ngx-datatable-column name="Remarks" prop="remarks"></ngx-datatable-column>
         <ngx-datatable-column name="Approval Date" prop="createdDate">
@@ -17,12 +11,13 @@
             </ng-template>
         </ngx-datatable-column>
     </ngx-datatable>
+    }
 
-    <div *ngIf="loading" class="text-center mt-3">
-        <span class="spinner-border spinner-border-sm"></span> Loading...
+    @else {
+    <div class="empty-state">
+        <i class="fa fa-history empty-icon"></i>
+        <h5 class="empty-message">No approval history found</h5>
+        <p class="empty-submessage">Please check back later or contact the responsible team.</p>
     </div>
+    }
 </div>
-
-<!-- <div class="modal-footer">
-    <button class="btn btn-secondary" (click)="closeDialog()">Close</button>
-</div> -->
