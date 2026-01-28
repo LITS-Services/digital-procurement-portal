@@ -158,6 +158,12 @@
   background: rgb(255 255 226);
 }
 
+.status-pill--rejected {
+  color: #EF4444;
+  border-color: #EF4444;
+  background: rgba(239, 68, 68, 0.07);
+}
+
 
 ::ng-deep .action-popover {
   //padding: 0.5rem;

@@ -55,10 +55,10 @@
               </button>
               <div class="dropdown-menu" ngbDropdownMenu>
                 <button class="dropdown-item" (click)="filterByStatus('All')">All</button>
-                <button class="dropdown-item" (click)="filterByStatus('New')">New</button>
                 <button class="dropdown-item" (click)="filterByStatus('InProgress')">InProgress</button>
+                <button class="dropdown-item" (click)="filterByStatus('SendBack')">SendBack</button>
+                <button class="dropdown-item" (click)="filterByStatus('New')">New</button>
                 <button class="dropdown-item" (click)="filterByStatus('Rejected')">Rejected</button>
-                <button class="dropdown-item" (click)="filterByStatus('Sendback')">Sendback</button>
                 <button class="dropdown-item" (click)="filterByStatus('Onboarded')">Onboarded</button>
               </div>
             </div>
@@ -80,9 +80,9 @@
           <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
             [resizeable]="false">
             <ng-template ngx-datatable-header-template>
-              <div class="custom-control cstm-checkbox-form">
+              <!-- <div class="custom-control cstm-checkbox-form">
                 <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
-              </div>
+              </div> -->
             </ng-template>
             <ng-template ngx-datatable-cell-template let-isSelected="isSelected"
               let-onCheckboxChangeFn="onCheckboxChangeFn">

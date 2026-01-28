@@ -6,32 +6,30 @@
             <div class="row">
                 <div class="col-md-12" style="margin-top: -0.25rem;">
                     <h4 class="heading">
-                        {{ mode === 'Edit' ? 'Edit Vendor Onboarding Setup' : 'Create Vendor Onboarding Setup' }}
+                        {{ mode === 'Edit' ? 'Edit Company Onboarding Setup' : 'Create Company Onboarding Setup' }}
                     </h4>
                 </div>
             </div>
 
             <!-- Action Pane -->
-            <div class="card cstm-ui-card sticky-toolbar" [class.sticky]="isToolbarSticky">
+            <div class="card cstm-ui-card">
                 <div class="row">
-                    <div class="col-md-6">
-                        <button class="btn btn-lg cstm-ui-table-btn mr-1" type="button" (click)="homePage()">
+                    <div class="col-md-12">
+                        <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
                             <i class="ft-arrow-left"></i>
                         </button>
                         <span class="vl"></span>
-                        <button type="submit" class="btn btn-sm cstm-ui-table-btn"
+
+                        <button type="submit" class="btn btn-sm cstm-ui-table-btn ml-2"
                             [disabled]="vendorOnboardingForm.invalid || receiverRows.length === 0"
                             *ngIf="mode !== 'Edit'" (click)="submitForm()">
-                            <i class="ft-plus"></i><label class="ml-1">Save</label>
+                            <i class="ft-plus"></i><label class="ml-1 mb-0 pointer">Save</label>
                         </button>
-                        <button
-                            [disabled]="mode !== 'Edit' || vendorOnboardingForm.invalid || receiverRows.length === 0"
-                            type="reset" class="btn btn-sm cstm-ui-table-btn" (click)="updateForm()">
-                            <i class="ft-edit"></i><label class="ml-1">{{ mode === 'Edit' ? 'Update' : 'Edit'
-                                }}</label>
-                        </button>
-                        <button [disabled]="mode !== 'Edit'" type="reset" class="btn btn-sm cstm-ui-table-btn">
-                            <i class="ft-trash"></i><label class="ml-1">Delete</label>
+
+                        <button type="button" class="btn btn-sm cstm-ui-table-btn ml-2"
+                            [disabled]="vendorOnboardingForm.invalid || receiverRows.length === 0"
+                            *ngIf="mode === 'Edit'" (click)="updateForm()">
+                            <i class="ft-edit"></i><label class="ml-1 mb-0 pointer">Update</label>
                         </button>
                     </div>
                 </div>
@@ -49,68 +47,50 @@
                     <form [formGroup]="vendorOnboardingForm" (ngSubmit)="submitForm()">
                         <div class="row gx-2">
 
-                            <!-- Setup Name -->
-                            <div class="col-lg-6 mb-2">
-                                <label>Setup Name</label>
-                                <input type="text" class="form-control custom-input" formControlName="SetupName"
-                                    placeholder="Setup Name" required>
+                            <!-- Row 1: Setup and Receivers -->
+                            <div class="col-lg-4 mb-2">
+                                <label class="form-label mb-1">Setup Name</label>
+                                <input type="text" class="form-control custom-input py-1" formControlName="SetupName"
+                                    placeholder="Setup name" required>
                                 <div *ngIf="vendorOnboardingForm.get('SetupName')?.invalid && vendorOnboardingForm.get('SetupName')?.touched"
-                                    class="text-danger small">
-                                    Setup Name is required
+                                    class="text-danger xsmall mt-1">
+                                    Required
                                 </div>
                             </div>
 
-                            <!-- Request Receiver(s) -->
                             <div class="col-lg-6 mb-2">
-                                <div class="form-group mb-2">
-                                    <label>Select Receivers to Add</label>
-                                    <ng-select class="custom-style" [items]="filteredReceivers" bindLabel="userName"
-                                        bindValue="userId" [multiple]="true" [searchable]="true"
-                                        placeholder="Select Receivers" formControlName="Receivers">
-                                    </ng-select>
-                                    <!-- <div class="text-info small mt-1">
-                                        Currently selected: {{ vendorOnboardingForm.get('Receivers')?.value?.length || 0 }} user(s)
-                                    </div>
-                                    <div *ngIf="filteredReceivers.length === 0 && vendorOnboardingForm.get('entities')?.value && vendorOnboardingForm.get('Roles')?.value" 
-                                         class="text-info small">
-                                        No receivers found for selected entity and role
-                                    </div>
-                                    <div *ngIf="!vendorOnboardingForm.get('entities')?.value || !vendorOnboardingForm.get('Roles')?.value" 
-                                         class="text-info small">
-                                        Please select Entity and Role to see available receivers
-                                    </div> -->
-                                </div>
+                                <label class="form-label mb-1">Select Receivers</label>
+                                <ng-select class="custom-style compact-select" [items]="filteredReceivers"
+                                    bindLabel="userName" bindValue="userId" [multiple]="true" [searchable]="true"
+                                    placeholder="Select user(s)" formControlName="Receivers">
+                                </ng-select>
                             </div>
 
-                            <!-- Add Users Button -->
-                            <div class="col-lg-2 mx-2">
-                                <div class="row gx-3">
-                                    <label>&nbsp;</label>
-                                    <button type="button" class="btn btn-block user-add-btn"
-                                        [disabled]="!isAddButtonEnabled" (click)="addReceiversToTable()">
-                                        <i class="ft-user-plus mr-1"></i>
-                                        Add Users
-                                    </button>
-                                </div>
+                            <div class="col-lg-2 mb-2">
+                                <label class="form-label mb-1">&nbsp;</label>
+                                <button type="button" class="btn btn-block user-add-btn h-34px mb-0"
+                                    [disabled]="!isAddButtonEnabled" (click)="addReceiversToTable()">
+                                    <i class="ft-user-plus mr-1"></i>
+                                    Add
+                                </button>
                             </div>
 
-                            <!-- Status Switch -->
-                            <div class="col-lg-2 my-auto">
-                                <div class="custom-control custom-switch d-flex align-items-center">
-                                    <input type="checkbox" class="custom-control-input me-1" id="status"
-                                        formControlName="status">
-                                    <label class="custom-control-label" for="status">Status</label>
-                                </div>
-                            </div>
-
-                            <!-- Description -->
-                            <div class="col-lg-8 mb-2">
-                                <label>Description</label>
-                                <textarea class="form-control custom-input" rows="3" placeholder="Enter description"
-                                    formControlName="Description"></textarea>
+                            <!-- Row 2: Description and Status -->
+                            <div class="col-lg-10 mb-2">
+                                <label class="form-label mb-1">Description</label>
+                                <textarea class="form-control custom-input py-1" rows="1"
+                                    placeholder="Enter description" formControlName="Description"></textarea>
                                 <div *ngIf="vendorOnboardingForm.get('Description')?.invalid && vendorOnboardingForm.get('Description')?.touched"
-                                    class="text-danger small">
-                                    Description is required
+                                    class="text-danger xsmall mt-1">
+                                    Required
+                                </div>
+                            </div>
+
+                            <div class="col-lg-2 mb-2 d-flex align-items-center pt-3">
+                                <div class="custom-slide-toggle d-flex align-items-center">
+                                    <input type="checkbox" id="status" formControlName="status">
+                                    <label for="status" class="toggle-label mb-0"></label>
+                                    <span class="status-text ml-2">Active</span>
                                 </div>
                             </div>
 
@@ -121,55 +101,47 @@
 
             <!-- Selected Receivers Table -->
             <div class="card" *ngIf="receiverRows.length > 0">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">
                         <i class="ft-users mr-1"></i>
-                        All Request Receivers ({{ receiverRows.length }} users)
+                        Selected Request Receivers
                     </h5>
+                    <span class="badge badge-primary">{{ receiverRows.length }} user(s)</span>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-0">
                     <div class="table-responsive">
-                        <ngx-datatable class="bootstrap table-striped" [rows]="receiverRows" [columns]="receiverColumns"
+                        <ngx-datatable class="bootstrap table-striped" [rows]="receiverRows"
                             [columnMode]="ColumnMode.force" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'"
                             [limit]="10" [selectionType]="SelectionType.single" [scrollbarH]="false">
 
                             <!-- User Name Column -->
-                            <ngx-datatable-column name="User Name" prop="userName" [width]="200">
+                            <ngx-datatable-column name="User Name" prop="userName" [minWidth]="150">
                                 <ng-template let-value="value" ngx-datatable-cell-template>
-                                    <strong>{{ value || 'N/A' }}</strong>
+                                    <span class="font-weight-bold">{{ value || 'N/A' }}</span>
                                 </ng-template>
                             </ngx-datatable-column>
 
                             <!-- Email Column -->
-                            <ngx-datatable-column name="Email" prop="email" [width]="250">
+                            <ngx-datatable-column name="Email" prop="email" [minWidth]="200">
                                 <ng-template let-value="value" ngx-datatable-cell-template>
                                     {{ value || 'N/A' }}
                                 </ng-template>
                             </ngx-datatable-column>
 
-                            <!-- Entity Column -->
-                            <ngx-datatable-column name="Entity" prop="entityName" [width]="150">
-                            </ngx-datatable-column>
-
-                            <!-- <ngx-datatable-column name="Entity" prop="entityName" [width]="150">
-                                <ng-template let-value="value" ngx-datatable-cell-template>
-                                    <span>{{ value || 'N/A' }}</span>
-                                </ng-template>
-                            </ngx-datatable-column> -->
-
                             <!-- Role Column -->
-                            <ngx-datatable-column name="Role" prop="roleName" [width]="150">
+                            <ngx-datatable-column name="Role" prop="roleName" [minWidth]="100">
                                 <ng-template let-value="value" ngx-datatable-cell-template>
                                     <span class="badge badge-info">{{ value || 'N/A' }}</span>
                                 </ng-template>
                             </ngx-datatable-column>
 
                             <!-- Actions Column -->
-                            <ngx-datatable-column name="Actions" [width]="100" [sortable]="false">
+                            <ngx-datatable-column name="Actions" [width]="80" [sortable]="false"
+                                [canAutoResize]="false">
                                 <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                                    <button class="btn btn-sm btn-danger" (click)="removeReceiver(row.id)"
+                                    <button class="btn btn-sm btn-outline-danger" (click)="removeReceiver(row.id)"
                                         title="Remove from List" type="button">
-                                        <i class="ft-trash"></i>
+                                        <i class="ft-trash-2"></i>
                                     </button>
                                 </ng-template>
                             </ngx-datatable-column>
@@ -181,10 +153,13 @@
 
             <!-- Empty State Message -->
             <div class="card" *ngIf="receiverRows.length === 0">
-                <div class="card-body text-center py-4">
-                    <i class="ft-users text-muted" style="font-size: 48px;"></i>
-                    <h5 class="text-muted mt-2">No Receivers Added Yet</h5>
-
+                <div class="card-body text-center py-5">
+                    <div class="mb-3">
+                        <i class="ft-users text-muted" style="font-size: 64px; opacity: 0.3;"></i>
+                    </div>
+                    <h5 class="text-muted">No Receivers Added Yet</h5>
+                    <p class="text-muted small">Select users from the form above and click "Add Users" to populate this
+                        list.</p>
                 </div>
             </div>
 

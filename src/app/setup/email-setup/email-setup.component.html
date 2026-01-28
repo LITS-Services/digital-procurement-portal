@@ -34,23 +34,38 @@
               </button>
             </div>
 
-            <div ngbDropdown placement="bottom-right" class="d-inline-block">
-              <button class="btn btn-sm cstm-ui-table-btn" id="filterDropdown" ngbDropdownToggle>
-                <i class="ft-filter"></i>
-                <label class="ml-1">Filters</label>
+            <div class="d-flex align-items-center">
+              <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
+                <i class="ft-sliders"></i><label class="ml-1 btn-label">Filter</label>
               </button>
-              <div ngbDropdownMenu aria-labelledby="filterDropdown">
-                <button ngbDropdownItem (click)="showAll()">
-                  <i class="ft-align-left mr-1 text-primary"></i> All
-                </button>
-                <button ngbDropdownItem (click)="showInProgress()">
-                  <i class="ft-share-2 mr-1 text-success"></i> Send
-                </button>
-                <button ngbDropdownItem (click)="showRecall()">
-                  <i class="ft-refresh-ccw mr-1 text-info"></i> Resend
-                </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="showFilterBar" class="filter-bar">
+        <div class="d-flex align-items-center justify-content-between pl-3 pr-1 py-2 filter-wrapper">
+          <div class="filter-search">
+            <i class="ft-filter search-icon"></i>
+            <input style="padding-left: 3.4em;" type="text" class="form-control border-left-0 cstm-ui-input"
+              placeholder="Search..." [(ngModel)]="searchTerm" (ngModelChange)="applySearchFilter()" />
+
+          </div>
+
+          <div class="d-flex filter-btns-div">
+            <div class="dropdown filter-dropdown" ngbDropdown [ngbTooltip]="statusTouched ? 'Status' : null">
+              <button class="btn btn-sm filter-btn dropdown-toggle" ngbDropdownToggle>
+                <span class="filter-label">{{ !statusTouched ? "Status" : selectedStatusLabel }} </span>
+                <i class="ft-chevron-down"></i>
+              </button>
+              <div class="dropdown-menu" ngbDropdownMenu>
+                <button class="dropdown-item" (click)="filterByStatus('All')">All</button>
+                <button class="dropdown-item" (click)="filterByStatus('Send')">Send</button>
+                <button class="dropdown-item" (click)="filterByStatus('Resend')">Resend</button>
               </div>
             </div>
+
+            <button class="btn px-1 btn-sm" (click)="showFilterBar = false">✕</button>
           </div>
         </div>
       </div>
@@ -65,9 +80,9 @@
           <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
             [resizeable]="false">
             <ng-template ngx-datatable-header-template>
-              <div class="custom-control cstm-checkbox-form">
+              <!-- <div class="custom-control cstm-checkbox-form">
                 <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
-              </div>
+              </div> -->
             </ng-template>
             <ng-template ngx-datatable-cell-template let-isSelected="isSelected"
               let-onCheckboxChangeFn="onCheckboxChangeFn">

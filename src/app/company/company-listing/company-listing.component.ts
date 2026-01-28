@@ -231,6 +231,7 @@ export class CompanyListingComponent implements OnInit {
     this.activeFilter = status;
     this.selectedStatusLabel = status;
     this.statusTouched = true;
+    this.applyFilters();
     this.currentPage = 1; // Reset to page 1
     this.getCompanyData();
   }
@@ -441,9 +442,7 @@ export class CompanyListingComponent implements OnInit {
     return row.companyStatus?.toLowerCase() === 'new';
   }
 
-  // applySearchFilter() {
-  //   this.applyFilters();
-  // }
+
 
   checkAssignments() {
     const currentUserName = localStorage.getItem('userName');

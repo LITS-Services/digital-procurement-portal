@@ -47,9 +47,9 @@
           <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
             [resizeable]="false">
             <ng-template ngx-datatable-header-template>
-              <div class="custom-control cstm-checkbox-form">
+              <!-- <div class="custom-control cstm-checkbox-form">
                 <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
-              </div>
+              </div> -->
             </ng-template>
             <ng-template ngx-datatable-cell-template let-row="row" let-isSelected="isSelected"
               let-onCheckboxChangeFn="onCheckboxChangeFn">
@@ -117,10 +117,10 @@
               </span>
             </ng-template> -->
             <ng-template ngx-datatable-cell-template let-row="row">
-    <span [ngClass]="row.statusClass">
-      {{ row.status ? 'Active' : 'In Active' }}
-    </span>
-  </ng-template>
+              <span [ngClass]="row.statusClass">
+                {{ row.status ? 'Active' : 'In Active' }}
+              </span>
+            </ng-template>
           </ngx-datatable-column>
 
           <ngx-datatable-column name="Receivers" prop="Receivers" [flexGrow]="1" [minWidth]="100" [maxWidth]="150">

@@ -41,6 +41,11 @@ export class EmailSetupComponent implements OnInit, OnDestroy {
   modalButtonText: string = 'Send Invite';
   requestStatus: string = 'Send';
   isSending: boolean = false;
+  searchTerm: string = '';
+  activeFilter: string = 'All';
+  selectedStatusLabel: string = 'All';
+  statusTouched: boolean = false;
+  showFilterBar = false;
 
   constructor(
     private router: Router,
@@ -115,20 +120,66 @@ export class EmailSetupComponent implements OnInit, OnDestroy {
   }
 
   showAll() {
-    this.rows = [...this.allEmailLogs];
+    this.filterByStatus('All');
   }
 
   showInProgress() {
-    this.rows = this.allEmailLogs.filter(log =>
-      log.requestStatusName?.toLowerCase() === 'send'
-    );
+    this.filterByStatus('Send');
   }
 
   showRecall() {
-    this.rows = this.allEmailLogs.filter(log =>
-      log.requestStatusName?.toLowerCase() === 'resend' ||
-      log.requestStatusName?.toLowerCase() === 'sendback'
-    );
+    this.filterByStatus('Resend');
+  }
+
+  applySearchFilter() {
+    this.filterRows();
+  }
+
+  filterByStatus(status: string) {
+    this.activeFilter = status;
+
+    const labels = {
+      'All': 'All',
+      'Send': 'Send',
+      'Resend': 'Resend',
+    };
+
+    this.selectedStatusLabel = labels[status] || status;
+    this.statusTouched = true;
+
+    this.filterRows();
+  }
+
+  filterRows() {
+    let filtered = [...this.allEmailLogs];
+
+    if (this.activeFilter !== 'All') {
+      if (this.activeFilter === 'Send') {
+        filtered = filtered.filter(log => log.requestStatusName?.toLowerCase() === 'send');
+      } else if (this.activeFilter === 'Resend') {
+        filtered = filtered.filter(log =>
+          log.requestStatusName?.toLowerCase() === 'resend' ||
+          log.requestStatusName?.toLowerCase() === 'sendback'
+        );
+      }
+    }
+
+    if (this.searchTerm) {
+      const search = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(log =>
+        log.receiverEmail?.toLowerCase().includes(search) ||
+        log.requestStatusName?.toLowerCase().includes(search) ||
+        log.createdDate?.toLowerCase().includes(search)
+      );
+    }
+
+    this.rows = filtered;
+    this.cdr.detectChanges();
+  }
+
+  toggleFilterBar() {
+    this.showFilterBar = !this.showFilterBar;
+    this.cdr.detectChanges();
   }
 
   truncateText(text: string, limit: number = 50): string {

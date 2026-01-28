@@ -1,256 +1,384 @@
-.btn-custom-primary {
-    background-color: rgb(30, 137, 184);
-    border-color: rgb(30, 137, 184);
-    color: white;
-    /* Ensure text is white for contrast */
+// Modern Design System for User Profile
+:host {
+  display: block;
 }
 
-.btn-custom-primary:hover {
-    background-color: rgb(24, 109, 147);
-    /* Slightly darker on hover */
-    border-color: rgb(24, 109, 147);
-    color: white;
+.page-user-profile {
+  &.container-fluid {
+    background: radial-gradient(circle at top right, rgba(30, 137, 184, 0.05) 0%, transparent 60%);
+    min-height: 100vh;
+  }
 }
 
-.text-custom-primary {
-    color: rgb(30, 137, 184) !important;
+// Glassmorphism Base
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-.border-custom-primary {
-    border-color: rgb(30, 137, 184) !important;
+// Entrance Animations
+.fade-in-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
 }
 
-.bg-custom-primary {
-    background-color: rgb(30, 137, 184) !important;
-}
-
-.ngx-datatable .datatable-header-inner {
-    background-color: #1E89B8 !important;
-}
-
-
-.accordion-section ::ng-deep .accordion .card .card-header button {
-    padding: 1rem;
-    width: 100%;
-    text-align: start;
-    align-self: center;
-    font-size: 16px;
-    font-weight: 700;
-    color: #115ec3 !important;
-    // background: linear-gradient(168deg, #116AEF 0%, #114C7A 100%); 
-    background: #fff !important;
-}
-
-.accordion-section ::ng-deep .accordion .card .card-header {
-    border-bottom: 1px solid #D7D7D7 !important;
-}
-
-
-.accordion-section ::ng-deep .badge-pill {
-    border-radius: 27rem !important;
-    width: 20px !important;
-    height: 20px !important;
-    padding: 4px !important;
-}
-
-
-.accordion-section ::ng-deep .badge {
-    font-size: 92% !important;
-}
-
-.accordion-section ::ng-deep .badge-bg {
-    background-color: #4188f2 !important;
-}
-
-.accordion-section ::ng-deep .badge-green {
-    background-color: #4188f2 !important;
-}
-
-.profile-image-upload-area {
-    position: relative;
-    display: inline-block;
-}
-
-/* Wrap image + overlay together */
-.profile-image-wrapper {
-    position: relative;
-    display: inline-block;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Image styling */
-.user-profile-image {
-    display: block;
-    border-radius: 50%;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-    transition: filter 0.3s ease;
-}
-
-/* Overlay (perfect circle on top) */
-.camera-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.4);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-}
-
-/* Icon animation */
-.camera-overlay i {
-    transform: scale(0.8);
-    transition: transform 0.3s ease;
-}
-
-/* Hover effects */
-label:hover .profile-image-wrapper {
-    transform: scale(1.05);
-    // box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-}
-
-label:hover .user-profile-image {
-    filter: brightness(0.8);
-}
-
-label:hover .camera-overlay {
-    opacity: 1;
-}
-
-label:hover .camera-overlay i {
-    transform: scale(1);
-}
-
-
-/* Password input container */
-.password-input-group {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-/* Input styling (inherits your global styles but ensures space for icon) */
-.password-input-group input {
-  width: 100%;
-  padding-right: 40px;
-  /* space for the eye icon */
-  height: 45px;
-  border-radius: 10px;
-  border: 1px solid #ced4da;
-  font-size: 14px;
-  transition: border-color 0.2s ease-in-out;
-}
-
-/* Focus effect */
-.password-input-group input:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.25);
-}
-
-/* Eye icon styling */
-.password-input-group .eye-icon {
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 16px;
-  color: #888;
-  cursor: pointer;
-  z-index: 2;
-  pointer-events: auto;
-  transition: color 0.2s ease-in-out;
-}
-
-/* Hover effect */
-.password-input-group .eye-icon:hover {
-  color: #007bff;
-}
-
-
-.user-info-card {
-  width: 100%;
-}
-
-.user-info-item .label {
-  font-weight: 600; /* Bold label text */
-  color: #6c757d;   /* Muted gray for labels */
-  font-size: 0.9rem;
-  margin-bottom: 2px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.user-info-item .value {
-  font-weight: 500;
-  color: #212529;
-  font-size: 1rem;
-}
-
-
-.custom-tabs-container {
-//   border: 1px solid #dee2e6;
-//   border-radius: 10px;
-//   background: #fff;
-  overflow: hidden;
-}
-
-/* Header */
-.custom-tabs-header {
-  border-bottom: 1px solid #dee2e6;
-  display: flex;
-  justify-content: flex-start;
-}
-
-.custom-tabs-header .tab-btn {
-  padding: 12px 20px;
-  border: none;
-  background: none;
-  font-weight: 600;
-  color: #6c757d;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  border-bottom: 3px solid transparent;
-
-}
-
-.custom-tabs-header .tab-btn:hover {
-  color: #1E89B8;
-  background-color: rgba(30, 137, 184, 0.08);
-}
-
-.custom-tabs-header .tab-btn.active {
-  color: #1E89B8;
-  border-bottom: 3px solid #1E89B8;
-  background-color: #fff;
-}
-
-/* Tab content animation */
-.tab-content {
-  background-color: #fff;
-  animation: fadeIn 0.25s ease-in-out;
-}
-
-.fade-in {
-  animation: fadeIn 0.25s ease-in;
-}
-
-@keyframes fadeIn {
+@keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* Optional shadow */
-.shadow-sm {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+// Profile Header Section
+.profile-header {
+  margin-bottom: 2rem;
+
+  .heading {
+    color: #1e89b8;
+    font-weight: 800;
+    font-size: 1.75rem;
+    letter-spacing: -0.5px;
+    position: relative;
+    display: inline-block;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 40px;
+      height: 4px;
+      background: #1e89b8;
+      border-radius: 2px;
+    }
+  }
+}
+
+// Action Bar
+.cstm-action-bar {
+  padding: 1rem 1.5rem;
+  border-radius: 15px;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  .vl {
+    width: 1px;
+    height: 24px;
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-lg {
+    padding: 0.5rem;
+    color: #1e89b8;
+    background: rgba(30, 137, 184, 0.1);
+    border-radius: 10px;
+
+    &:hover {
+      background: rgba(30, 137, 184, 0.2);
+      color: #146d97;
+    }
+  }
+}
+
+// Profile Avatar Modernization
+.avatar-section {
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+
+  .profile-image-wrapper {
+    position: relative;
+    display: inline-block;
+    padding: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1e89b8, #5bc0de);
+    box-shadow: 0 10px 25px rgba(30, 137, 184, 0.3);
+    margin-bottom: 2rem;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      right: -5px;
+      bottom: -5px;
+      border-radius: 50%;
+      border: 2px solid rgba(30, 137, 184, 0.2);
+      animation: pulse-ring 2s infinite;
+    }
+
+    img {
+      border: 4px solid #fff;
+      border-radius: 50%;
+      transition: all 0.5s ease;
+    }
+
+    .camera-overlay {
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      width: 45px;
+      height: 45px;
+      background: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 5;
+
+      i {
+        color: #1e89b8;
+        font-size: 1.25rem;
+      }
+
+      &:hover {
+        transform: scale(1.1) rotate(15deg);
+        background: #1e89b8;
+
+        i {
+          color: #fff;
+        }
+      }
+    }
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 0.2;
+  }
+
+  100% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+}
+
+// User Summary
+.user-summary {
+  .user-name {
+    font-weight: 800;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+  }
+
+  .user-email {
+    color: #7f8c8d;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .role-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1.25rem;
+    background: rgba(30, 137, 184, 0.1);
+    color: #1e89b8;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    i {
+      margin-right: 8px;
+    }
+  }
+}
+
+// Tabs Modernization
+.modern-tabs {
+  .tabs-header {
+    display: flex;
+    gap: 0.5rem;
+    background: rgba(0, 0, 0, 0.03);
+    padding: 0.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+
+    .tab-btn {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: none;
+      background: transparent;
+      color: #7f8c8d;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+
+      i {
+        font-size: 1.1rem;
+      }
+
+      &.active {
+        background: #fff;
+        color: #1e89b8;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      &:hover:not(.active) {
+        background: rgba(255, 255, 255, 0.5);
+        color: #2c3e50;
+      }
+    }
+  }
+}
+
+// Information Grid
+.info-card-modern {
+  padding: 2rem;
+
+  .info-item {
+    margin-bottom: 1.75rem;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.02);
+
+    .label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #95a5a6;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.4rem;
+    }
+
+    .value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+  }
+}
+
+// Password Form Modernization
+.password-form-modern {
+  padding: 2rem;
+
+  .form-label {
+    font-weight: 700;
+    color: #34495e;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    i {
+      color: #1e89b8;
+    }
+  }
+
+  .password-wrapper {
+    position: relative;
+    margin-bottom: 1.5rem;
+
+    input {
+      width: 100%;
+      height: 52px;
+      padding: 0 50px 0 1.25rem;
+      border-radius: 12px;
+      border: 1.5px solid rgba(0, 0, 0, 0.08);
+      background: #fff;
+      transition: all 0.3s ease;
+      font-size: 1rem;
+
+      &:focus {
+        border-color: #1e89b8;
+        box-shadow: 0 0 0 4px rgba(30, 137, 184, 0.1);
+        outline: none;
+      }
+    }
+
+    .eye-icon {
+      position: absolute;
+      right: 1.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #bdc3c7;
+      cursor: pointer;
+      padding: 5px;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: #1e89b8;
+      }
+    }
+  }
+}
+
+// Utility Classes
+.btn-modern {
+  padding: 0.75rem 2rem;
+  border-radius: 12px;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  &.btn-primary {
+    background: #1e89b8;
+    border: none;
+    box-shadow: 0 4px 15px rgba(30, 137, 184, 0.3);
+
+    &:hover {
+      background: #146d97;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(30, 137, 184, 0.4);
+    }
+  }
+
+  &.btn-outline {
+    background: transparent;
+    border: 1.5px solid #bdc3c7;
+    color: #7f8c8d;
+
+    &:hover {
+      border-color: #95a5a6;
+      background: rgba(0, 0, 0, 0.02);
+      color: #2c3e50;
+    }
+  }
+}
+
+// Responsive Adjustments
+@media (max-width: 768px) {
+  .avatar-section {
+    padding: 1.5rem 1rem;
+
+    .profile-image-wrapper {
+      img {
+        width: 180px;
+        height: 180px;
+      }
+    }
+  }
+
+  .modern-tabs .tabs-header {
+    flex-direction: column;
+  }
 }

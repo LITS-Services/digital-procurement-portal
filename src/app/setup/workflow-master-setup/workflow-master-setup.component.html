@@ -26,8 +26,8 @@
               [appPermFormId]="FORM_IDS.WORKFLOW_SETUP" [appPermDisable]="'write'">
               <i class="ft-edit"></i><label class="ml-1">Edit</label>
             </button>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()"
-              appPermission [appPermFormId]="FORM_IDS.WORKFLOW_SETUP" [appPermDisable]="'delete'">
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()" appPermission
+              [appPermFormId]="FORM_IDS.WORKFLOW_SETUP" [appPermDisable]="'delete'">
               <i class="ft-trash"></i><label class="ml-1">Delete</label>
             </button>
           </div>
@@ -35,60 +35,61 @@
       </div>
 
       <!-- Data Table -->
-     <div  class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
-      <ngx-datatable #datatable class="bootstrap core-bootstrap"
-        [rows]="workflowMasterList" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'"
-        [scrollbarH]="isMobile" [limit]="15" [loadingIndicator]="loading" [selected]="chkBoxSelected"
-        [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
+      <div class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
+        <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="workflowMasterList" [columnMode]="'force'"
+          [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="isMobile" [limit]="15"
+          [loadingIndicator]="loading" [selected]="chkBoxSelected" [selectionType]="SelectionType.checkbox"
+          (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 
-        <!-- Checkbox Column -->
-        <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
-          [resizeable]="false">
-          <ng-template ngx-datatable-header-template>
-            <div class="custom-control cstm-checkbox-form">
+          <!-- Checkbox Column -->
+          <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+            [resizeable]="false">
+            <ng-template ngx-datatable-header-template>
+              <!-- <div class="custom-control cstm-checkbox-form">
               <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
-            </div>
-          </ng-template>
-          <ng-template ngx-datatable-cell-template let-isSelected="isSelected"
-            let-onCheckboxChangeFn="onCheckboxChangeFn">
-            <div class="custom-control cstm-checkbox-form custom-checkbox ">
-              <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
-            </div>
-          </ng-template>
-        </ngx-datatable-column>
+            </div> -->
+            </ng-template>
+            <ng-template ngx-datatable-cell-template let-isSelected="isSelected"
+              let-onCheckboxChangeFn="onCheckboxChangeFn">
+              <div class="custom-control cstm-checkbox-form custom-checkbox ">
+                <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+              </div>
+            </ng-template>
+          </ngx-datatable-column>
 
-        <!-- Sr. No -->
-        <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
-          <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
-            <span>{{ rowIndex + 1 }}</span>
-          </ng-template>
-        </ngx-datatable-column>
+          <!-- Sr. No -->
+          <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+            <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
+              <span>{{ rowIndex + 1 }}</span>
+            </ng-template>
+          </ngx-datatable-column>
 
-        <!-- Request Info -->
-        <ngx-datatable-column name="Name" prop="workflowName" [flexGrow]="1" [minWidth]="140"></ngx-datatable-column>
-        <ngx-datatable-column name="Document" prop="workflowType" [flexGrow]="1" [minWidth]="160"></ngx-datatable-column>
-        <ngx-datatable-column name="Status" prop="isActive" [flexGrow]="1" [minWidth]="120">
-          <!-- <ng-template ngx-datatable-cell-template let-row="row">
+          <!-- Request Info -->
+          <ngx-datatable-column name="Name" prop="workflowName" [flexGrow]="1" [minWidth]="140"></ngx-datatable-column>
+          <ngx-datatable-column name="Document" prop="workflowType" [flexGrow]="1"
+            [minWidth]="160"></ngx-datatable-column>
+          <ngx-datatable-column name="Status" prop="isActive" [flexGrow]="1" [minWidth]="120">
+            <!-- <ng-template ngx-datatable-cell-template let-row="row">
             <span>
               {{ row.isActive ? 'Active' : 'In Active' }}
             </span>
           </ng-template> -->
-          <ng-template ngx-datatable-cell-template let-row="row">
-    <span [ngClass]="row.statusClass">
-      {{ row.isActive ? 'Active' : 'In Active' }}
-    </span>
-  </ng-template>
-        </ngx-datatable-column>
+            <ng-template ngx-datatable-cell-template let-row="row">
+              <span [ngClass]="row.statusClass">
+                {{ row.isActive ? 'Active' : 'In Active' }}
+              </span>
+            </ng-template>
+          </ngx-datatable-column>
 
-        <ngx-datatable-column name="Approver" prop="createdDate" [flexGrow]="1" [minWidth]="100" [maxWidth]="120">
-          <ng-template let-row="row" ngx-datatable-cell-template>
-            <button class="btn btn-primary btn-sm position-relative" (click)="openApproverModal(row)">
-              <i class="ft-user-check"></i>
-            </button>
-          </ng-template>
-        </ngx-datatable-column>
+          <ngx-datatable-column name="Approver" prop="createdDate" [flexGrow]="1" [minWidth]="100" [maxWidth]="120">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+              <button class="btn btn-primary btn-sm position-relative" (click)="openApproverModal(row)">
+                <i class="ft-user-check"></i>
+              </button>
+            </ng-template>
+          </ngx-datatable-column>
 
-      </ngx-datatable>
+        </ngx-datatable>
       </div>
     </div>
   </div>

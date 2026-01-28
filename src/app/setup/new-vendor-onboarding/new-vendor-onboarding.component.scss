@@ -1,7 +1,143 @@
-.user-add-btn{
+.user-add-btn {
     background-color: #1158a9;
-    border: unset;
-    color: #ffff;
-    
-    
+    border: none;
+    color: #ffffff;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+    font-weight: 500;
+    white-space: nowrap;
+    padding: 0.2rem 0.5rem;
+    font-size: 14px;
+
+    &:hover:not(:disabled) {
+        background-color: #0d4686;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    &:disabled {
+        background-color: #f0f0f0;
+        color: #b0b0b0;
+        cursor: not-allowed;
+    }
+}
+
+.h-34px {
+    height: 34px !important;
+}
+
+.custom-input {
+    border-radius: 4px;
+    border: 1px solid #dcdcdc;
+    padding: 0.4rem 0.75rem;
+    font-size: 14px;
+    transition: border-color 0.2s;
+
+    &:focus {
+        border-color: #1158a9;
+        box-shadow: 0 0 0 0.15rem rgba(17, 88, 169, 0.1);
+    }
+}
+
+.form-label {
+    font-weight: 500;
+    color: #495057;
+    font-size: 13px;
+    display: block;
+}
+
+.xsmall {
+    font-size: 11px;
+}
+
+/* Custom Slide Toggle */
+.custom-slide-toggle {
+    display: flex;
+    align-items: center;
+
+    input[type="checkbox"] {
+        display: none;
+    }
+
+    .toggle-label {
+        width: 40px;
+        height: 20px;
+        background-color: #ccc;
+        border-radius: 20px;
+        position: relative;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-bottom: 0;
+
+        &::after {
+            content: '';
+            width: 16px;
+            height: 16px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+    }
+
+    input[type="checkbox"]:checked+.toggle-label {
+        background-color: #1158a9;
+
+        &::after {
+            transform: translateX(20px);
+        }
+    }
+
+    .status-text {
+        font-size: 13px;
+        font-weight: 500;
+        color: #6c757d;
+    }
+}
+
+.compact-select ::ng-deep .ng-select-container {
+    min-height: 34px !important;
+    height: 34px !important;
+    font-size: 14px;
+}
+
+.badge-primary {
+    background-color: #1158a9;
+}
+
+.font-weight-bold {
+    font-weight: 600 !important;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.vl {
+    display: inline-block;
+    width: 1px;
+    height: 24px;
+    background-color: #ddd;
+    margin: 0;
+    vertical-align: middle;
+}
+
+.card-body {
+    padding: 1rem !important;
+}
+
+.row.gx-2>.col-lg-12,
+.row.gx-2>.col-lg-9,
+.row.gx-2>.col-lg-3,
+.row.gx-2>.col-lg-10,
+.row.gx-2>.col-lg-2 {
+    padding-left: 5px !important;
+    padding-right: 5px !important;
 }
