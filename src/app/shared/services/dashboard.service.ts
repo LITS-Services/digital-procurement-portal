@@ -76,9 +76,11 @@ export class DashboardService {
     );
   }
 
-  getMonthlySpendingData(filterType?: number): Observable<any[]> {
+  getMonthlySpendingData(filterType?: number, companyId?: number, userId?: string): Observable<any[]> {
     let params = new HttpParams()
     if (filterType) params = params.set("filterType", filterType);
+    if (companyId) params = params.set("companyId", companyId);
+    if (userId) params = params.set("userId", userId);
     return this.http.get<any[]>(
       `${this.baseUrl}/monthly-spending-graph`, { params }
     );

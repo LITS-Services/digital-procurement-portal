@@ -29,6 +29,7 @@ import { Router } from '@angular/router';
 import { PermissionService } from 'app/shared/permissions/permission.service';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { finalize } from 'rxjs';
+import { AuthService } from 'app/shared/auth/auth.service';
 
 declare var require: any;
 
@@ -171,7 +172,8 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
     private cdr: ChangeDetectorRef,
     private router: Router,
     private ngZone: NgZone,
-    private permissionService: PermissionService // Inject PermissionService
+    private permissionService: PermissionService, // Inject PermissionService
+    private authService: AuthService
   ) {
     this.translate.onLangChange.subscribe(() => {
       this.isArabic = this.translate.currentLang === 'ar';
@@ -332,7 +334,9 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
   }
 
   getMonthlySpending() {
-    this.dashboardService.getMonthlySpendingData().subscribe({
+    const loggedInUser = this.authService.getUserId();
+    const entityId = Number(localStorage.getItem('selectedCompanyId'));
+    this.dashboardService.getMonthlySpendingData(0, entityId, loggedInUser).subscribe({
       next: (res: any) => {
         
 
