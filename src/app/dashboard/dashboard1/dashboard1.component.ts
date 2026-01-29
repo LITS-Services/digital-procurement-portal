@@ -281,9 +281,10 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
 
   loadUpcomingPurchases(): void {
     this.isPurchasesLoading = true;
-
+    const loggedInUser = this.authService.getUserId();
+    const entityId = Number(localStorage.getItem('selectedCompanyId'));
     this.dashboardService
-      .getUpcomingPurchases()
+      .getUpcomingPurchases(entityId, loggedInUser)
       .pipe(finalize(() => (this.isPurchasesLoading = false)))
       .subscribe({
         next: (data) => (this.upcomingPurchases = data ?? []),

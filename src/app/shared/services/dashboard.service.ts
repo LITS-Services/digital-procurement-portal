@@ -107,8 +107,11 @@ export class DashboardService {
     return this.http.get<any>(`${this.baseUrl}/recent-top-vendors`);
   }
 
-  getUpcomingPurchases(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/upcoming-purchases`);
+  getUpcomingPurchases(companyId?: number, userId?: string): Observable<any> {
+    let params = new HttpParams()
+    if (companyId) params = params.set("companyId", companyId);
+    if (userId) params = params.set("userId", userId);
+    return this.http.get<any>(`${this.baseUrl}/upcoming-purchases`, { params });
   }
 
   getDeliveryPerformance(): Observable<DeliveryPerformanceVM[]> {
