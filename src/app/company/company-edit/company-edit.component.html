@@ -170,8 +170,13 @@
                     {{ companyStatusLabel | uppercase }}
                   </span>
                 </div>
-
-
+                @if (trnNumber) {
+                <div class="company-trn mt-1 d-flex align-items-center">
+                  <i class="ft-file-text mr-1 text-primary"></i>
+                  <span class="text-muted mr-1 extra-small">TRN:</span>
+                  <span class="font-weight-bold small text-dark">{{ trnNumber }}</span>
+                </div>
+                }
               </div>
               @if (companyWebsite) {
               <div class="company-website mt-1 d-flex align-items-center">

@@ -55,6 +55,7 @@ export class CompanyEditComponent implements OnInit {
 
   companyLogoUrl: string | null = null;
   companyWebsite: string | null = null;
+  trnNumber: string = '';
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -155,6 +156,7 @@ export class CompanyEditComponent implements OnInit {
           this.aboutCompany = company.aboutCompany || '';
           this.companyStatusLabel = company.requestStatus || '';
           this.companyStatusClass = this.mapCompanyStatusClass(company.requestStatusId);
+          this.trnNumber = company.trnNumber || company.trn || '';
 
           if (company.logo) {
             if (typeof company.logo === 'string' && !company.logo.startsWith('data:image')) {
