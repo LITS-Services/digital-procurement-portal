@@ -112,6 +112,8 @@ export class NewRfqComponent implements OnInit {
   selectedCountryISO: CountryISO = CountryISO.Pakistan;
   private phoneUtil = PhoneNumberUtil.getInstance();
 
+  phoneInputReady: boolean = true;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -165,7 +167,7 @@ export class NewRfqComponent implements OnInit {
       status: [{ value: '', disabled: true }],
       owner: [{ value: '', disabled: true }],
       date: [null],
-      contact: [''],
+      contact: [null],
       deliveryLocation: [''],
       startDate: [null, Validators.required],
       endDate: [null, Validators.required],
@@ -502,9 +504,10 @@ export class NewRfqComponent implements OnInit {
 
   loadFromPurchaseRequest(prId: number): void {
     //new work
+    this.spinner.show();
     this.purchaseRequestId = prId;
     this.purchaseRequestService.getPurchaseRequestById(prId, true).subscribe({
-      next: (pr) => {
+      next: async (pr) => {
         if (!pr) return;
 
         //  Patch header-level fields
@@ -512,10 +515,14 @@ export class NewRfqComponent implements OnInit {
           purchaseRequestId: pr.id,
           purchaseRequestNo: pr.requisitionNo,
           deliveryLocation: pr.deliveryLocation,
-          contact: pr.receiverContact || '',
           // date: pr.submittedDate || new Date(),
           date: this.toDateInputValue(pr.submittedDate),
-        });
+        }, { emitEvent: false });
+
+        await this.resetPhoneInput();
+        setTimeout(() =>  this.patchReceiverContactFromE164(pr.receiverContact), 0);
+   
+        this.cdr.detectChanges();
 
         const rfqEntityId = Number(pr.entityId) || null;
         this.applyEntity(rfqEntityId);
@@ -527,6 +534,8 @@ export class NewRfqComponent implements OnInit {
 
         if (!this.hasUnusedItems) {
           this.toastr.info('No items available. Cannot generate a new RFQ.');
+          this.spinner.hide();
+          this.cdr.markForCheck();
           return;
         }
         //  Map PR items → RFQ items
@@ -568,8 +577,12 @@ export class NewRfqComponent implements OnInit {
         //  Refresh datatable
 
         this.newQuotationItemData = [...this.newQuotationItemData];
+           this.spinner.hide();
+        this.cdr.detectChanges();
       },
       error: (err) => {
+           this.spinner.hide();
+        this.cdr.detectChanges();
         console.error('Error loading PR', err);
       },
     });
@@ -705,8 +718,10 @@ export class NewRfqComponent implements OnInit {
   }
 
   // NEW: Back from Items -> Details (Create mode wizard)
-  goBack() {
-    this.rfqTabs = 'details';
+ async goBack() {
+  this.rfqTabs = 'details';
+  this.cdr.detectChanges();
+
   }
 
   submitForm(continueToVendors: boolean = false) {
@@ -1264,26 +1279,48 @@ export class NewRfqComponent implements OnInit {
 
   private patchReceiverContactFromE164(e164: string | null | undefined): void {
     if (!e164) return;
-  
+
+    const ctrl = this.newRfqForm.get('contact');
+    if (!ctrl) return;
+
     try {
-      const phone = this.phoneUtil.parseAndKeepRawInput(e164);
-      const region = this.phoneUtil.getRegionCodeForNumber(phone) || 'PK';
-  
+      const phone = this.phoneUtil.parse(e164);
+      const region = (this.phoneUtil.getRegionCodeForNumber(phone) || 'PK').toUpperCase();
+      const iso2 = region.toLowerCase();
       this.selectedCountryISO = (CountryISO as any)[region] ?? CountryISO.Pakistan;
-  
-      // build the object ngx-intl-tel-input understands
+
       const valueObj = {
         number: String(phone.getNationalNumber()),
         internationalNumber: this.phoneUtil.format(phone, LibPhoneNumberFormat.INTERNATIONAL),
         nationalNumber: this.phoneUtil.format(phone, LibPhoneNumberFormat.NATIONAL),
         e164Number: this.phoneUtil.format(phone, LibPhoneNumberFormat.E164),
-        countryCode: region,
+        countryCode: iso2,
         dialCode: `+${phone.getCountryCode()}`
       };
-  
-      this.newRfqForm.get('contact')?.setValue(valueObj, { emitEvent: false });
+
+      ctrl.reset(null, { emitEvent: false });
+      ctrl.setValue(valueObj, { emitEvent: false });
+      ctrl.updateValueAndValidity({ emitEvent: false });
     } catch {
-      this.newRfqForm.get('contact')?.setValue(e164, { emitEvent: false });
+      ctrl.reset(null, { emitEvent: false });
+      ctrl.updateValueAndValidity({ emitEvent: false });
     }
   }
+
+
+  private resetPhoneInput(): Promise<void> {
+    this.phoneInputReady = false;
+    this.cdr.detectChanges();
+
+    return new Promise((resolve) => {
+
+      setTimeout(() => {
+        this.phoneInputReady = true;
+        this.cdr.detectChanges();
+
+        requestAnimationFrame(() => resolve());
+      });
+    });
+  }
+
 }

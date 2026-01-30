@@ -195,7 +195,7 @@
         </div>
       </div>
   
-    <div class="tab-pane mt-1 sticky-toolbar-target" role="tabpanel" *ngIf="rfqTabs === 'details'">
+    <div class="tab-pane mt-1 sticky-toolbar-target" role="tabpanel" [hidden]="rfqTabs !== 'details'">
 
       <div class="card">
         <div class="card-body">
@@ -299,6 +299,7 @@
                   <label>Contact</label>
                   <!-- <input type="text" formControlName="contact" placeholder="Enter Contact No."
                     class="form-control  custom-input" /> -->
+                  
                     <ngx-intl-tel-input
                     class="vendor-phone"
                     name="contact"
@@ -314,7 +315,7 @@
                     [numberFormat]="PhoneNumberFormat.International"
                     [maxLength]="20">
                   </ngx-intl-tel-input>
-
+                
                   @if (
                     newRfqForm.get('contact')?.invalid &&
                     newRfqForm.get('contact')?.touched
