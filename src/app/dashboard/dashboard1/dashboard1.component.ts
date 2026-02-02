@@ -35,7 +35,7 @@ declare var require: any;
 
 export interface PurchaseOrdersCountVM {
   totalPurchaseOrders: number;
-  awardedPurchaseOrders: number;
+  openPurchaseOrders: number;
   deliveredPurchaseOrders: number;
 }
 
@@ -55,6 +55,22 @@ export interface Chart {
   options?: any;
   responsiveOptions?: any;
   events?: ChartEvent;
+}
+
+export interface ProcurementDashboardCountsVM {
+  totalPR: number;
+  newPR: number;
+  inProgressPR: number;
+  totalQR: number;
+  inProgressQR: number;
+  rejectedQR: number;
+  totalPO: number;
+  openPO: number;
+  deliveredPO: number;
+  totalVendorCompanies: number;
+  onboardedVendorCompanies: number;
+  totalProcurementCompanies: number;
+  activeProcurementCompanies: number;
 }
 
 export interface PurchaseRequestsCountVM {
@@ -125,6 +141,7 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
   poCounts!: PurchaseOrdersCountVM;
   vendorCompaniesCounts!: VendorCompaniesCountVM;
   entitiesCounts!: EntitiesCountVM;
+  procurementDashboardCounts!: ProcurementDashboardCountsVM;
 
   recentVendors = [];
 
@@ -181,6 +198,7 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.loadProcurementDashboardCounts();
     this.loadPurchaseRequestsCounts();
     this.loadQuotationRequestsCounts();
     this.loadPurchaseOrdersCounts();
@@ -288,6 +306,17 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
       .pipe(finalize(() => (this.isPurchasesLoading = false)))
       .subscribe({
         next: (data) => (this.upcomingPurchases = data ?? []),
+        error: (err) => console.error(err),
+      })
+  }
+
+  loadProcurementDashboardCounts(): void {
+    const loggedInUser = this.authService.getUserId();
+    const entityId = Number(localStorage.getItem('selectedCompanyId'));
+    this.dashboardService
+      .getProcurementDashboardCounts(loggedInUser, entityId)
+      .subscribe({
+        next: (data) => (this.procurementDashboardCounts = data),
         error: (err) => console.error(err),
       })
   }

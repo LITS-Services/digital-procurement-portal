@@ -71,9 +71,17 @@
                   <td>{{ item.get('itemName')?.value }}</td>
                   <td class="text-center">{{ item.get('orderedQty')?.value }}</td>
                   <td class="text-center">{{ item.get('receivedQuantity')?.value }}</td>
-                  <td class="text-center">
+                  <!-- <td class="text-center">
                     <input type="date" class="form-control form-control-sm" formControlName="receivedDate">
-                  </td>
+                    <span class="required-star">*</span>
+                  </td> -->
+                  <td class="text-center">
+  <div class="d-flex justify-content-center gap-1">
+    <input type="date" class="form-control form-control-sm" formControlName="receivedDate">
+    <span class="required-star">*</span>
+  </div>
+</td>
+
                   <td>
                     <input type="text" class="form-control form-control-sm" formControlName="remarks">
                   </td>

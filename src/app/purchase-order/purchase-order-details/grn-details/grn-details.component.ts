@@ -1,6 +1,6 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -132,7 +132,7 @@ export class GrnDetailsComponent implements OnInit {
           itemName: [item.itemName],
           orderedQty: [item.orderedQuantity],
           receivedQuantity: [item.receivedQuantity],
-          receivedDate: [item.receivedDate ? item.receivedDate.split('T')[0] : null],
+          receivedDate: [item.receivedDate ? item.receivedDate.split('T')[0] : null, Validators.required],
           remarks: [item.remarks]
         })
       );
@@ -156,7 +156,7 @@ export class GrnDetailsComponent implements OnInit {
           itemName: [line.itemName],
           orderedQty: [line.quantity],
           receivedQuantity: [line.shippingQuantity], // prefilled from ShippingQuantity
-          receivedDate: [null],
+          receivedDate: [null, Validators.required],
           remarks: ['']
         })
       );
@@ -169,7 +169,7 @@ export class GrnDetailsComponent implements OnInit {
     if (this.isGrnSubmitted) return;
 
     if (this.form.invalid) {
-      this.toastr.warning('Please fill required fields.');
+      this.toastr.warning('Please fill all required fields.');
       return;
     }
 

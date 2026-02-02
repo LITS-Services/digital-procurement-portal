@@ -23,7 +23,7 @@
             <div class="stat-card__body">
               <div class="stat-card__text">
                 <div class="stat-card__value">
-                  {{ prCounts?.totalRequests || 0 }}
+                  {{ procurementDashboardCounts?.totalPR || 0 }}
                 </div>
 
                
@@ -35,10 +35,10 @@
             </div>
              <div class="stat-card__chips">
                   <span class="metric-chip">
-                    New: <strong class="ml-1">{{ prCounts?.newRequests || 0 }}</strong>
+                    New: <strong class="ml-1">{{ procurementDashboardCounts?.newPR || 0 }}</strong>
                   </span>
                   <span class="metric-chip metric-chip--muted">
-                    In Progress: <strong class="ml-1">{{ prCounts?.inProgressRequests || 0 }}</strong>
+                    In Progress: <strong class="ml-1">{{ procurementDashboardCounts?.inProgressPR || 0 }}</strong>
                   </span>
                 </div>
           </div>
@@ -62,7 +62,7 @@
       <div class="stat-card__body">
         <div class="stat-card__text">
           <div class="stat-card__value">
-            {{ rfqCounts?.totalQuotations || 0 }}
+            {{ procurementDashboardCounts?.totalQR || 0 }}
           </div>
         </div>
         <div class="stat-card__icon">
@@ -71,10 +71,10 @@
       </div>
       <div class="stat-card__chips">
         <span class="metric-chip">
-          In Progress: <strong class="ml-1">{{ rfqCounts?.inProgressQuotations || 0 }}</strong>
+          In Progress: <strong class="ml-1">{{ procurementDashboardCounts?.inProgressQR || 0 }}</strong>
         </span>
         <span class="metric-chip metric-chip--danger">
-          Rejected: <strong class="ml-1">{{ rfqCounts?.rejectedQuotations || 0 }}</strong>
+          Rejected: <strong class="ml-1">{{ procurementDashboardCounts?.rejectedQR || 0 }}</strong>
         </span>
       </div>
     </div>
@@ -96,7 +96,7 @@
       <div class="stat-card__body">
         <div class="stat-card__text">
           <div class="stat-card__value">
-            {{ poCounts?.totalPurchaseOrders || 0 }}
+            {{ procurementDashboardCounts?.totalPO || 0 }}
           </div>
         </div>
         <div class="stat-card__icon">
@@ -105,10 +105,10 @@
       </div>
       <div class="stat-card__chips">
         <span class="metric-chip">
-          Awarded: <strong class="ml-1">{{ poCounts?.awardedPurchaseOrders || 0 }}</strong>
+          Open: <strong class="ml-1">{{ procurementDashboardCounts?.openPO || 0 }}</strong>
         </span>
         <span class="metric-chip metric-chip--success">
-          Delivered: <strong class="ml-1">{{ poCounts?.deliveredPurchaseOrders || 0 }}</strong>
+          Delivered: <strong class="ml-1">{{ procurementDashboardCounts?.deliveredPO || 0 }}</strong>
         </span>
       </div>
     </div>
@@ -130,7 +130,7 @@
       <div class="stat-card__body">
         <div class="stat-card__text">
           <div class="stat-card__value">
-            {{ vendorCompaniesCounts?.totalVendorCompanies || 0 }}
+            {{ procurementDashboardCounts?.totalVendorCompanies || 0 }}
           </div>
         </div>
         <div class="stat-card__icon">
@@ -139,7 +139,7 @@
       </div>
       <div class="stat-card__chips">
         <span class="metric-chip">
-          Onboarded: <strong class="ml-1">{{ vendorCompaniesCounts?.onboardedVendorCompanies || 0 }}</strong>
+          Onboarded: <strong class="ml-1">{{ procurementDashboardCounts?.onboardedVendorCompanies || 0 }}</strong>
         </span>
       </div>
     </div>
@@ -161,7 +161,7 @@
       <div class="stat-card__body">
         <div class="stat-card__text">
           <div class="stat-card__value">
-            {{ entitiesCounts?.totalEntities || 0 }}
+            {{ procurementDashboardCounts?.totalProcurementCompanies || 0 }}
           </div>
         </div>
         <div class="stat-card__icon">
@@ -170,7 +170,7 @@
       </div>
       <div class="stat-card__chips">
         <span class="metric-chip">
-          Active: <strong class="ml-1">{{ entitiesCounts?.activeEntities || 0 }}</strong>
+          Active: <strong class="ml-1">{{ procurementDashboardCounts?.activeProcurementCompanies || 0 }}</strong>
         </span>
       </div>
     </div>

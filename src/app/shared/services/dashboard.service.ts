@@ -115,18 +115,25 @@ export class DashboardService {
   }
 
   getDeliveryPerformance(): Observable<DeliveryPerformanceVM[]> {
-  return this.http
-    .get<any>(`${this.baseUrl}/proc-portal-delivery-performance`)
-    .pipe(
-      map((res: any) => {
-        if (Array.isArray(res)) {
-          return res as DeliveryPerformanceVM[];
-        }
-        if (res && Array.isArray(res.data)) {
-          return res.data as DeliveryPerformanceVM[];
-        }
-        return [];
-      })
-    );
-}
+    return this.http
+      .get<any>(`${this.baseUrl}/proc-portal-delivery-performance`)
+      .pipe(
+        map((res: any) => {
+          if (Array.isArray(res)) {
+            return res as DeliveryPerformanceVM[];
+          }
+          if (res && Array.isArray(res.data)) {
+            return res.data as DeliveryPerformanceVM[];
+          }
+          return [];
+        })
+      );
+  }
+
+  getProcurementDashboardCounts(userId?: string, entityId?: number): Observable<any> {
+    let params = new HttpParams()
+    if (userId) params = params.set("userId", userId);
+    if (entityId) params = params.set("entityId", entityId);
+    return this.http.get<any>(`${this.baseUrl}/procurement-dashboard-counts`, { params });
+  }
 }
