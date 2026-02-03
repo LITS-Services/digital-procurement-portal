@@ -12,7 +12,7 @@ import { PurchaseRequestRemarksComponent } from '../purchase-request-remarks/pur
 import { WorkflowServiceService } from 'app/shared/services/WorkflowService/workflow-service.service';
 import Swal from 'sweetalert2';
 import { LookupService } from 'app/shared/services/lookup.service';
-import { CompanyVM, VendorAndCompanyForFinalSelectionVM } from 'app/shared/interfaces/vendor-company-final-selection.model';
+import {  VendorAndCompanyForFinalSelectionVM } from 'app/shared/interfaces/vendor-company-final-selection.model';
 import * as XLSX from 'xlsx';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { distinctUntilChanged, filter, finalize, pairwise, startWith, takeUntil } from 'rxjs/operators';
@@ -94,7 +94,7 @@ export class NewPurchaseRequestComponent implements OnInit {
 
   // ---------------
   finalVendors: VendorAndCompanyForFinalSelectionVM[] = [];
-  filteredCompanies = [];
+  filteredCompanies: any = null;
 
   vendorList: any[] = [];
   vendorCompanyList: any[] = [];
@@ -1210,7 +1210,7 @@ private exceptionModalOpen = false;
 
   onVendorChange(vendorId: string) {
     const vendor = this.finalVendors.find(v => v.vendorId === vendorId);
-    this.filteredCompanies = vendor ? vendor.companies : [];
+    this.filteredCompanies = vendor;
     // Only clear when ADDING (not editing)
     if (this.editingRowIndex === null) {
       this.itemForm.patchValue({ vendorCompanyId: null }, { emitEvent: false });

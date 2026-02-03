@@ -419,12 +419,23 @@
                             </div>
                           </div>
 
-                          <div *ngIf="isSelectingFinalVendor" class="form-grid__item">
+                          <!-- <div *ngIf="isSelectingFinalVendor" class="form-grid__item">
                             <div class="form-group mb-2">
                               <label>Vendor Company</label>
                               <select class="form-control custom-input" formControlName="vendorCompanyId" [compareWith]="compareIds">
                                 <option [ngValue]="null" disabled>Select Company</option>
                                 <option *ngFor="let c of filteredCompanies" [ngValue]="c.companyId">{{ c.companyName }}</option>
+                              </select>
+                            </div>
+                          </div> -->
+                          <div *ngIf="isSelectingFinalVendor" class="form-grid__item">
+                            <div class="form-group mb-2">
+                              <label>Vendor Company</label>
+                              <select class="form-control custom-input" formControlName="vendorCompanyId" [compareWith]="compareIds">
+                                <option [ngValue]="null" disabled>Select Company</option>
+                                <option *ngIf="filteredCompanies" [ngValue]="filteredCompanies.companyId">
+                                  {{ filteredCompanies.companyName }}
+                                </option>
                               </select>
                             </div>
                           </div>
