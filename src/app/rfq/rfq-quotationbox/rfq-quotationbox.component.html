@@ -126,10 +126,10 @@
         </ngx-datatable>
 
         <div *ngIf="itemsData.length > 0" class="d-flex mt-2 gap-footer">
-            <button class="btn btn-danger" (click)="rejectVendor()">Reject</button>
-            <button class="btn btn-primary" (click)="reviseVendor()">Revise</button>
+            <button class="btn btn-danger" (click)="rejectVendor()" [disabled]="isStatusInProgress">Reject</button>
+            <button class="btn btn-primary" (click)="reviseVendor()" [disabled]="isStatusInProgress">Revise</button>
             <span class="spacer"></span>
-            <button class="btn btn-primary">Submit</button>
+            <!-- <button class="btn btn-primary">Submit</button> -->
         </div>
 
     

@@ -17,6 +17,8 @@ import { NgxSpinnerService } from 'ngx-spinner';
 export class RfqQuotationboxComponent implements OnInit {
   @Input() data: any;
   @Input() viewMode: boolean = false;
+  @Input() isStatusInProgress: boolean = false;
+
   loading = false;
 
   rfqData: Array<{

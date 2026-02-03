@@ -54,7 +54,7 @@ export class NewPurchaseRequestComponent implements OnInit {
   isStatusDraft: boolean = false;
   isStatusInProgress: boolean = false;
   isSubmitter: boolean = false;
-
+  isMainApprover: boolean = false;
   pendingAttachment: any[] = [];
   attachmentList: any[] = [];
   numberOfAttachments = 0;
@@ -746,7 +746,7 @@ private exceptionModalOpen = false;
 
         const loggedInUserId = localStorage.getItem('userId');
         this.isSubmitter = requestData.submitterId === loggedInUserId;
-
+        this.isMainApprover = requestData.mainApproverId === loggedInUserId;
         this.isNewForm = false;
         this.currentRequestId = requestData.id;
         this.currentRequisitionNo = requestData.requisitionNo;
@@ -1175,16 +1175,17 @@ private exceptionModalOpen = false;
             .subscribe({
               next: res => {
                 this.loading = false;
-                if (res.message == "Approved") {
+                // if (res.message == "Approved") {
                   //this.dataLoaded = true;
+                  this.toastr.success(res.message);
                   this.cdr.detectChanges();
                   this.router.navigate(['/purchase-request']);
 
-                  this.toastr.success(res.message);
-                }
-                else {
-                  this.toastr.warning(res.message);
-                }
+                  // this.toastr.success(res.message);
+                //}
+                // else {
+                //   this.toastr.warning(res.message);
+                // }
               },
               error: err => {
                 this.toastr.warning('Something went Wrong', '');

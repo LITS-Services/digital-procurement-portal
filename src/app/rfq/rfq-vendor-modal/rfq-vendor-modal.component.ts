@@ -20,6 +20,8 @@ export class RfqVendorModalComponent implements OnInit {
   @Input() data: any;
   @Input() entityId: number | null;
   @Input() viewMode = false;
+  @Input() isStatusInProgress: boolean = false;
+  @Input() isStatusCompleted: boolean = false;
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
   @ViewChild('tableResponsive') tableResponsive: any;

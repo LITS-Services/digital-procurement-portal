@@ -199,11 +199,11 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadProcurementDashboardCounts();
-    this.loadPurchaseRequestsCounts();
-    this.loadQuotationRequestsCounts();
-    this.loadPurchaseOrdersCounts();
-    this.loadVendorCompaniesCounts();
-    this.loadEntitiesCounts();
+    //this.loadPurchaseRequestsCounts();
+    //this.loadQuotationRequestsCounts();
+    //this.loadPurchaseOrdersCounts();
+    //this.loadVendorCompaniesCounts();
+    //this.loadEntitiesCounts();
     this.initSpendChart();
     this.initSpendDonut();
     this.getMonthlySpending();

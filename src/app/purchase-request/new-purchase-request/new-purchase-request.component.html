@@ -70,15 +70,15 @@
 
             <!-- Approver buttons -->
             <ng-container *ngIf="viewMode && !isSubmitter">
-              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted" (click)="onAddRemarks('Approve')">
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || !isMainApprover" (click)="onAddRemarks('Approve')">
                 <i class="ft-check"></i><label class="ml-1 btn-label">Approve</label>
               </button>
 
-              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted" (click)="onAddRemarks('Reject')">
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || !isMainApprover" (click)="onAddRemarks('Reject')">
                 <i class="ft-x"></i><label class="ml-1 btn-label">Reject</label>
               </button>
 
-              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted" (click)="onAddRemarks('SendBack')">
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || !isMainApprover" (click)="onAddRemarks('SendBack')">
                 <i class="ft-arrow-left"></i><label class="ml-1 btn-label">Send Back</label>
               </button>
             </ng-container>

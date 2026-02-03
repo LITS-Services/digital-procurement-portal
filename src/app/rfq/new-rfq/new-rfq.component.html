@@ -163,7 +163,7 @@
          
           
             <button *ngIf="!isNewForm && (rfqTabs === 'details' || rfqTabs === 'items') && isSubmitter"
-              class="btn btn-sm cstm-ui-table-btn" [disabled]="newRfqForm.invalid || isStatusCompleted || !isSubmitter || viewMode"
+              class="btn btn-sm cstm-ui-table-btn" [disabled]="newRfqForm.invalid || isStatusCompleted  || isStatusInProgress || !isSubmitter || viewMode"
               (click)="submitForm()">
               <i class="ft-edit-2"></i><label class="ml-1">Update</label>
             </button>
@@ -544,11 +544,24 @@
         [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5"   [scrollbarH]="isMobile">
         <!-- Select -->
         <ngx-datatable-column *ngIf="purchaseRequestId" cellClass="datatable-checkbox-cell"
-              headerClass="datatable-checkbox-cell"  name="Select" [width]="60" [sortable]="false"
-          [canAutoResize]="false" [draggable]="false" [resizeable]="false">
+          headerClass="datatable-checkbox-cell" name="Select" [width]="60" [sortable]="false" [canAutoResize]="false"
+          [draggable]="false" [resizeable]="false">
+          <!-- <ng-template ngx-datatable-cell-template let-row="row">
+                    <div class="custom-control cstm-checkbox-form2 custom-checkbox">
+                      <input type="checkbox" [(ngModel)]="row.selected" />
+                    </div>
+                  </ng-template> -->
+          <!-- Header template with "Select All" -->
+          <ng-template ngx-datatable-header-template let-value="value">
+            <div class="custom-control cstm-checkbox-form2 custom-checkbox">
+              <input type="checkbox" [(ngModel)]="allSelected" (change)="toggleSelectAll()" />
+            </div>
+          </ng-template>
+        
+          <!-- Row template -->
           <ng-template ngx-datatable-cell-template let-row="row">
             <div class="custom-control cstm-checkbox-form2 custom-checkbox">
-              <input type="checkbox" [(ngModel)]="row.selected" />
+              <input type="checkbox" [(ngModel)]="row.selected" (change)="updateSelectAllState()" />
             </div>
           </ng-template>
         </ngx-datatable-column>
@@ -632,7 +645,7 @@
                 <div>
                 
                 
-                  <app-rfq-vendor-modal [data]="{quotationId: currentQuotationId}" [entityId]="passEntityId"></app-rfq-vendor-modal>
+                  <app-rfq-vendor-modal [data]="{quotationId: currentQuotationId}" [entityId]="passEntityId" [isStatusInProgress]="isStatusInProgress"  [isStatusCompleted]="isStatusCompleted"></app-rfq-vendor-modal>
                 </div>
   
        
@@ -697,6 +710,7 @@
       *ngSwitchCase="'quotation-box'"
       [data]="{ quotationId: currentQuotationId, rfqNo: newRfqForm.get('rfqNo')?.value }"
       [viewMode]="viewMode"
+      [isStatusInProgress]="isStatusInProgress"
       (allItemsFinalizedChange)="onAllItemsFinalizedChange($event)"
     ></app-rfq-quotationbox>
     

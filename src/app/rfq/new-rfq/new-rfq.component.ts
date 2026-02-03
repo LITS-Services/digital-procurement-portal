@@ -70,6 +70,7 @@ export class NewRfqComponent implements OnInit {
   hasUnusedItems: boolean = true;
 
   allItemsFinalized = false;
+  allSelected: boolean = false;
 
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
@@ -1117,7 +1118,7 @@ export class NewRfqComponent implements OnInit {
     });
 
     modalRef.componentInstance.viewMode = this.viewMode;
-
+    modalRef.componentInstance.isStatusInProgress = this.isStatusInProgress;
     modalRef.componentInstance.vendorId = row.vendorId ?? row.vendorID;
     modalRef.componentInstance.vendorName = row.vendorName ?? row.vendor;
     modalRef.componentInstance.vendorCompanyId = row.vendorCompanyId;
@@ -1134,47 +1135,6 @@ export class NewRfqComponent implements OnInit {
     this.toastr.error('Failed to save draft');
     console.error('Error saving draft:', err);
   }
-
-  // onSubmitForApproval() {
-  //   Swal.fire({
-  //     title: 'Submit for Approval?',
-  //     text: 'Are you sure you want to submit this quotation for approval?',
-  //     icon: 'question',
-  //     showCancelButton: true,
-  //     confirmButtonText: 'Yes, submit it',
-  //     cancelButtonText: 'Cancel',
-  //     confirmButtonColor: '#3085d6',
-  //     cancelButtonColor: '#d33'
-  //   }).then((result) => {
-  //     if (result.isConfirmed) {
-  //       this.rfqService.submitForApproval(this.currentQuotationId).subscribe({
-  //         next: (res) => {
-  //           if (
-  //             res?.errors
-  //           ) {
-  //             this.router.navigate(['/rfq']);
-  //             return;
-  //           }
-  //           Swal.fire({
-  //             icon: 'success',
-  //             title: 'Submitted!',
-  //             text: res.message || 'Quotation submitted for approval successfully.',
-  //             confirmButtonColor: '#3085d6',
-  //           });
-  //           this.router.navigate(['/rfq']);
-  //         },
-  //         error: (err) => {
-  //           console.error(err);
-  //           Swal.fire({
-  //             icon: 'error',
-  //             title: 'Error',
-  //             text: 'Failed to submit quotation for approval.'
-  //           });
-  //         }
-  //       });
-  //     }
-  //   });
-  // }
 
   onSubmitForApproval() {
     Swal.fire({
@@ -1323,4 +1283,12 @@ export class NewRfqComponent implements OnInit {
     });
   }
 
+  toggleSelectAll() {
+    this.newQuotationItemData.forEach(row => {
+      row.selected = this.allSelected;
+    });
+  }
+  updateSelectAllState() {
+    this.allSelected = this.newQuotationItemData.every(row => row.selected);
+  }
 }
