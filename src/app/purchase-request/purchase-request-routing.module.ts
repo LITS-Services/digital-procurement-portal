@@ -5,6 +5,7 @@ import { NewPurchaseRequestComponent } from './new-purchase-request/new-purchase
 import { PurchaseRequestApprovalComponent } from './purchase-request-approval/purchase-request-approval.component';
 import { AclGuard } from 'app/shared/permissions/acl.guard';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
+import { CanInitiatePRGuard } from 'app/shared/permissions/can-initiate-pr.guard';
 
 const routes: Routes = [
   {
@@ -19,7 +20,7 @@ const routes: Routes = [
   {
     path: 'new-purchase-request',
     component: NewPurchaseRequestComponent,
-    canActivate: [AclGuard],
+    canActivate: [AclGuard, CanInitiatePRGuard],
     data: {
       title: 'New Purchase Request',
       system: 'New Purchase Request',

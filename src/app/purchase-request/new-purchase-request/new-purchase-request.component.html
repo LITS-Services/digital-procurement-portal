@@ -47,7 +47,7 @@
               <button
                 *ngIf="!isNewForm && !isSelectingFinalVendor"
                 class="btn btn-sm cstm-ui-table-btn"
-                [disabled]="newPurchaseRequestForm.invalid || (isStatusCompleted && !isSelectingFinalVendor) || !isSubmitter"
+                [disabled]="newPurchaseRequestForm.invalid || (isStatusCompleted && !isSelectingFinalVendor) || !isSubmitter || isStatusInProgress"
                 (click)="submitForm()">
                 <i class="ft-edit-2"></i><label class="ml-1 btn-label">Update</label>
               </button>
@@ -69,7 +69,7 @@
             </ng-container>
 
             <!-- Approver buttons -->
-            <ng-container *ngIf="viewMode && !isSubmitter">
+            <ng-container *ngIf="viewMode && !isSubmitter && isMainApprover">
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || !isMainApprover" (click)="onAddRemarks('Approve')">
                 <i class="ft-check"></i><label class="ml-1 btn-label">Approve</label>
               </button>

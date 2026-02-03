@@ -316,7 +316,11 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
     this.dashboardService
       .getProcurementDashboardCounts(loggedInUser, entityId)
       .subscribe({
-        next: (data) => (this.procurementDashboardCounts = data),
+        next: (data) => 
+          {
+            this.procurementDashboardCounts = data
+            this.cdr.detectChanges();
+          },
         error: (err) => console.error(err),
       })
   }

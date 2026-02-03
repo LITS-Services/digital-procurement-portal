@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, from } from 'rxjs';
+import { Observable, from, map } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from 'environments/environment';
 
@@ -142,5 +142,9 @@ export class PurchaseRequestService {
 
   createInventoryTransfer(payload: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/create-inventory-transfer`, payload);
+  }
+
+  canInitiatePurchaseRequest(userId: string): Observable<boolean> {
+    return this.http.get<any>(`${this.baseUrl}/can-initiate-purchase-request`, { params: { userId } })
   }
 }
