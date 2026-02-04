@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize } from 'rxjs/operators';
 import { LookupService } from 'app/shared/services/lookup.service';
+import { th } from 'date-fns/locale';
 
 @Component({
   selector: 'app-employee',
@@ -34,6 +35,8 @@ export class EmployeeComponent implements OnInit {
   pageSize = 10;
   totalItems = 0;
   totalPages = 0;
+
+  loading: boolean = false;
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -431,10 +434,14 @@ export class EmployeeComponent implements OnInit {
         selectedRoleIds: selectedRole ? [selectedRole.id] : []
       };
 
+      this.loading = true;
+      this.spinner.show();
       this.companyService.ProcurmentuserUpdate(formValues.employeeId, updatePayload).subscribe({
         next: () => {
           this.router.navigate(['/employee-list']);
           this.cdr.detectChanges();
+          this.loading = false;
+          this.spinner.hide();
         },
         error: (err) => {
           this.toastr.error('Failed to update employee');
@@ -463,7 +470,8 @@ export class EmployeeComponent implements OnInit {
     };
 
     console.log('Create payload:', createPayload);
-
+    this.loading = true;
+    this.spinner.show();
     this.companyService.registerEmployee(createPayload).subscribe({
       next: () => {
         this.toastr.success('Employee registered successfully');
@@ -472,6 +480,8 @@ export class EmployeeComponent implements OnInit {
         this.companyForm.reset();
         this.companyFormSubmitted = false;
         this.cdr.detectChanges();
+        this.loading = false;
+        this.spinner.hide();
       },
       error: (err) => {
         this.toastr.error('Failed to register employee');
