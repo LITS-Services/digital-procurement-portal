@@ -139,7 +139,6 @@ export class EmployeeComponent implements OnInit {
       next: (res: any) => {
         // this.employees = res?.result || []; //  Fixed: use res.result
         this.employees = Array.isArray(res.result) ? res.result : res;
-        console.log("employees agaye ", this.employees);
         this.cdr.detectChanges();
 
       },
@@ -434,7 +433,6 @@ export class EmployeeComponent implements OnInit {
 
       this.companyService.ProcurmentuserUpdate(formValues.employeeId, updatePayload).subscribe({
         next: () => {
-          this.toastr.success('Employee updated successfully');
           this.router.navigate(['/employee-list']);
           this.cdr.detectChanges();
         },
