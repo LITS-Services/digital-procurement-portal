@@ -60,8 +60,9 @@ export class CompanyService {
   }
 
   //ProcurementUsers
-  getprocurementusers(entityId: number): Observable<any[]> {
+  getprocurementusers(userId: string, entityId: number): Observable<any[]> {
     let params = new HttpParams()
+    if (userId) params = params.set("userId", userId);
     if (entityId) params = params.set("entityId", entityId);
     return this.http.get<any[]>(`${environment.apiUrl}/ProcurementUsers/GetAll`, { params });
 
