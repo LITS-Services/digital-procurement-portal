@@ -318,7 +318,7 @@
 
                           <div>
                             <input #fileInput type="file" accept=".xlsx,.xls,.csv" class="d-none" (change)="onFileSelected($event)" />
-                            <button type="button" class="bulk-upload-btn btn" (click)="triggerFileUpload(fileInput)">
+                            <button type="button" class="bulk-upload-btn btn" (click)="triggerFileUpload(fileInput)" [disabled]="isSelectingFinalVendor">
                               <i class="fa-solid fa-arrow-up-from-bracket mr-1"></i>
                               Bulk Upload
                             </button>
@@ -463,7 +463,7 @@
                             <i class="fa fa-sync mr-1"></i> Refresh
                           </button>
 
-                          <button class="btn btn-primary" type="button" (click)="insertItem()" [disabled]="viewMode">
+                          <button class="btn btn-primary" type="button" (click)="insertItem()" [disabled]="viewMode || (isSelectingFinalVendor && editingRowIndex === null)">
                             <i class="ft-arrow-right mr-1"></i>
                             {{ editingRowIndex !== null ? 'Update' : 'Insert' }}
                           </button>

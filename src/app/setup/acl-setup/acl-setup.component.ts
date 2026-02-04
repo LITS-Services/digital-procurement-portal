@@ -32,6 +32,7 @@ export class AclSetupComponent implements OnInit {
   entitiesList: any[] = [];
   selectedRoleId: string | null = null;
   permissions: any[] = []; 
+  superAdminRoleId: string | null = null;
 
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
@@ -92,6 +93,12 @@ export class AclSetupComponent implements OnInit {
     this.lookupService.getProcurementRoles().subscribe({
       next: roles => {
         this.roles = roles || [];
+
+        const superAdmin = this.roles.find(r =>
+          r.description?.toLowerCase() === 'super admin'
+        );
+        this.superAdminRoleId = superAdmin?.stringId ?? null;
+
         if (!this.selectedRoleId && this.roles.length) {
           this.selectedRoleId = this.roles[0].stringId;
           this.setupTableColumns();
@@ -99,6 +106,11 @@ export class AclSetupComponent implements OnInit {
         }
       }
     });
+  }
+
+  get isSuperAdmin(): boolean {
+    return !!this.superAdminRoleId &&
+      this.selectedRoleId === this.superAdminRoleId;
   }
 
   onSelectRole(roleStringId: string) {
@@ -153,8 +165,13 @@ export class AclSetupComponent implements OnInit {
   }
 
   togglePermission(row: any, prop: string) {
+    if (this.isSuperAdmin) {
+      return;
+    }
+
     if(!this.permissionService.can(FORM_IDS.ACL, 'write'))
       return;
+
     if (prop === 'read') {
       row.read = !row.read;
       if (!row.read) {
@@ -207,6 +224,8 @@ export class AclSetupComponent implements OnInit {
   // }
 
   submitPermission(row: any) {
+    if (this.isSuperAdmin) return;
+    
     if(!this.permissionService.can(FORM_IDS.ACL, 'write'))
       return;
     const payload = {

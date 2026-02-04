@@ -165,3 +165,55 @@
     border-color: #bfdbfe !important;
     box-shadow: inset 0 0 0 1px #bfdbfe;
   }
+
+    .checkbox-disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+  
+    .checkbox-disabled .cbx {
+      pointer-events: none; // prevents clicking animation
+    }
+  
+    .checkbox-disabled svg path {
+      stroke: #9ca3af; // soft grey tick
+    }
+  
+    .checkbox-disabled label {
+      border-color: #cbd5e1;
+      background-color: #f1f5f9;
+    }
+
+    .finalized-alert {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: #e3f2fd;    // soft blue background
+  border-left: 5px solid #2196f3; // left accent
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  color: #0d47a1;               // primary text color
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #d0e7ff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .alert-icon {
+    font-size: 1.75rem;
+  }
+
+  .alert-text {
+    display: flex;
+    flex-direction: column;
+
+    p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #0b3c91;
+    }
+  }
+}

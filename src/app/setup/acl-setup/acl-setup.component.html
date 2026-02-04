@@ -35,6 +35,15 @@
 
             <!-- DATA TABLE -->
             <div  class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
+                <div *ngIf="isSuperAdmin" class="finalized-alert">
+                    <div class="alert-icon">
+                        <i class="fa fa-lock"></i>
+                    </div>
+                    <div class="alert-text">
+                        <p>Super Admin permissions are system-defined and cannot be modified.</p>
+                    </div>
+                </div>
+
             <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="aclList"
                 [columns]="[]" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="50"
                 [limit]="10"  [scrollbarH]="isMobile">
@@ -51,9 +60,9 @@
 
                         <!-- CHECKBOX COLUMN (Read / Write / Delete) -->
                         <ng-container *ngIf="col.type === 'checkbox'">
-                            <div class="checkbox-wrapper-12">
+                            <div class="checkbox-wrapper-12" [class.checkbox-disabled]="isSuperAdmin">
                                 <div class="cbx">
-                                    <input type="checkbox" [checked]="row[col.prop]"
+                                    <input type="checkbox" [checked]="row[col.prop]" [disabled]="isSuperAdmin"
                                         (change)="togglePermission(row, col.prop)" appPermission
                                         [appPermFormId]="FORM_IDS.ACL" [appPermDisable]="'write'" />
                                     <label></label>
