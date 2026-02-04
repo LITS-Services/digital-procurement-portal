@@ -18,7 +18,8 @@ export class RfqQuotationboxComponent implements OnInit {
   @Input() data: any;
   @Input() viewMode: boolean = false;
   @Input() isStatusInProgress: boolean = false;
-
+  @Input() isStatusCompleted: boolean = false;
+  @Input() isSubmitter: boolean = false;
   loading = false;
 
   rfqData: Array<{

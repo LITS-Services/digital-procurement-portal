@@ -1,6 +1,6 @@
 <div class="modal-body vendor-picker">
   <div class="d-flex justify-content-end mb-3">
-    <button class="btn btn-sm submit-approval-btn shadow-sm" [disabled]="viewMode || isStatusInProgress || isStatusCompleted" (click)="onSubmit()">
+    <button class="btn btn-sm submit-approval-btn shadow-sm" [disabled]="viewMode || isStatusInProgress || isStatusCompleted || !isSubmitter" (click)="onSubmit()">
      <i class="ft-check" style="color: #1161cc;"></i><label class="ml-1">Invite Selected Vendors</label>
     </button>
   </div>

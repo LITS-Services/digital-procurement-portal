@@ -175,15 +175,15 @@
             </button>
 
             <ng-container *ngIf="viewMode && !isSubmitter">
-            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter"
+            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
               (click)="onAddRemarks('Approve')">
               <i class="ft-check"></i><label class="ml-1">Approve</label>
             </button>
-            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter"
+            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
               (click)="onAddRemarks('Reject')">
               <i class="ft-x"></i><label class="ml-1">Reject</label>
             </button>
-            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter"
+            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
               (click)="onAddRemarks('SendBack')">
               <i class="ft-arrow-left"></i><label class="ml-1">Send Back</label>
             </button>
@@ -645,7 +645,7 @@
                 <div>
                 
                 
-                  <app-rfq-vendor-modal [data]="{quotationId: currentQuotationId}" [entityId]="passEntityId" [isStatusInProgress]="isStatusInProgress"  [isStatusCompleted]="isStatusCompleted"></app-rfq-vendor-modal>
+                  <app-rfq-vendor-modal [data]="{quotationId: currentQuotationId}" [entityId]="passEntityId" [isStatusInProgress]="isStatusInProgress" [isStatusCompleted]="isStatusCompleted" [isSubmitter]="isSubmitter"></app-rfq-vendor-modal>
                 </div>
   
        
@@ -711,6 +711,8 @@
       [data]="{ quotationId: currentQuotationId, rfqNo: newRfqForm.get('rfqNo')?.value }"
       [viewMode]="viewMode"
       [isStatusInProgress]="isStatusInProgress"
+      [isStatusCompleted]="isStatusCompleted"
+      [isSubmitter]="isSubmitter"
       (allItemsFinalizedChange)="onAllItemsFinalizedChange($event)"
     ></app-rfq-quotationbox>
     

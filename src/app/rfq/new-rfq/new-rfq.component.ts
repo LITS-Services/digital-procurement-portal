@@ -30,7 +30,7 @@ export class NewRfqComponent implements OnInit {
   isNewForm = true; // true = create, false = edit
   isFormDirty = false; // track if any field was touched
   isSubmitter: boolean = false;
-
+  isMainApprover: boolean = false;
   isStatusCompleted: boolean = false;
   isStatusInProgress: boolean = false;
   numberOfAttachments = 0;
@@ -600,6 +600,7 @@ export class NewRfqComponent implements OnInit {
 
         const loggedInUserId = localStorage.getItem('userId');
         this.isSubmitter = requestData.submitterId === loggedInUserId;
+        this.isMainApprover = requestData.mainApproverId === loggedInUserId;
         this.isNewForm = false;
         this.currentQuotationId = requestData.id;
         this.currentRfqNo = requestData.rfqNo;
@@ -1119,6 +1120,7 @@ export class NewRfqComponent implements OnInit {
 
     modalRef.componentInstance.viewMode = this.viewMode;
     modalRef.componentInstance.isStatusInProgress = this.isStatusInProgress;
+    modalRef.componentInstance.isSubmitter = this.isSubmitter;
     modalRef.componentInstance.vendorId = row.vendorId ?? row.vendorID;
     modalRef.componentInstance.vendorName = row.vendorName ?? row.vendor;
     modalRef.componentInstance.vendorCompanyId = row.vendorCompanyId;

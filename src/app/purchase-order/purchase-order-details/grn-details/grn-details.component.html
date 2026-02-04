@@ -1,4 +1,4 @@
-<!-- @if (isShipmentAvailable) { -->
+@if (poDetails?.shipmentDetailNo) {
 <div class="card cstm-ui-card mb-4" [formGroup]="form">
   <div class="card-body">
 
@@ -95,15 +95,15 @@
 
   </div>
 </div>
-<!-- } -->
+} 
 
-<!-- @else {
+@else {
   <div class="empty-state">
         <i class="fa fa-box-open empty-icon"></i>
         <h5 class="empty-message">Shipment Details aren't received yet, Unable to Submit GRN</h5>
         <p class="empty-submessage">Please check back later or contact the responsible team.</p>
     </div>
-} -->
+}
 
 <!-- Vendor Rating Modal -->
 <div class="rating-backdrop" *ngIf="showRatingModal">

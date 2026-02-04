@@ -44,6 +44,7 @@ export class GrnDetailsComponent implements OnInit {
 
 
   savingRating = false;
+  poDetails: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -88,14 +89,18 @@ export class GrnDetailsComponent implements OnInit {
       next: (grn) => {
         if (grn && grn.id) {
           this.grnId = grn.id;
-          this.isGrnSubmitted = true
+          this.isGrnSubmitted = true;
+          this.poDetails = grn;
           this.patchFormFromGRN(grn);
           this.form.disable({ emitEvent: false });
+          this.cdr.detectChanges();
         } else {
           // If no GRN exists, load from PO
           this.purchaseOrderService.getPurchaseOrderById(this.poId).subscribe({
             next: (po) => {
               if (po) this.patchFormFromPO(po);
+              this.poDetails = po;
+              this.cdr.detectChanges();
             },
             complete: () => this.spinner.hide()
           });

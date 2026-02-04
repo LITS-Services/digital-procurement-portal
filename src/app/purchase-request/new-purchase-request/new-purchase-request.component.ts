@@ -1315,8 +1315,8 @@ private exceptionModalOpen = false;
       'Order Quantity',
       'Amount',
       'Item Description',
-      'Final Vendor',
-      'Vendor Company',
+      // 'Final Vendor',
+      // 'Vendor Company',
       'Account',
       'Remarks'
     ];
@@ -1357,8 +1357,10 @@ private exceptionModalOpen = false;
         amount: Number(item['Unit Cost']) * Number(item['Order Quantity']),
         reqByDate: parsedDate,
         itemDescription: item['Item Description'] || '',
-        vendorUserId: this.getVendorIdByName(item['Final Vendor']) || null,
-        vendorCompanyId: this.getVendorCompanyIdByName(item['Vendor Company']) || null,
+        // vendorUserId: this.getVendorIdByName(item['Final Vendor']) || null,
+        // vendorCompanyId: this.getVendorCompanyIdByName(item['Vendor Company']) || null,
+        vendorUserId: null,
+        vendorCompanyId: null,
         accountId: this.getAccountIdByName(item['Account']) || null,
         remarks: item['Remarks'] || '',
         attachments: []
