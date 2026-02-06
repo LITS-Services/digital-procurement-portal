@@ -4,7 +4,9 @@ import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-dat
 import { AuthService } from 'app/shared/auth/auth.service';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PermissionService } from 'app/shared/permissions/permission.service';
-import { CompanyService } from 'app/shared/services/Company.services';
+import { CompanyService, UserQuery } from 'app/shared/services/Company.services';
+import { LookupService } from 'app/shared/services/lookup.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -26,6 +28,16 @@ export class EmployeeListComponent implements OnInit {
   isAllSelected = false;
 
   datatableVisible: boolean = true;
+  roles: any
+  showFilterBar = false;
+  selectedRoleLabel = 'All';
+  roleTouched: boolean = false;
+
+  query: UserQuery = {
+    userId: null,
+    entityId: null,
+    roleId: null
+  }
 
   constructor(
     private router: Router,
@@ -33,7 +45,9 @@ export class EmployeeListComponent implements OnInit {
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
     private permissionService: PermissionService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private lookupService: LookupService,
+    private spinner: NgxSpinnerService
   ) { }
 
   onAutoResize(): void {
@@ -48,6 +62,7 @@ export class EmployeeListComponent implements OnInit {
 
   ngOnInit(): void {
     this.getProcurementUsers();
+    this.loadRoles();
 
     // Table columns
     this.columns = [
@@ -65,14 +80,16 @@ export class EmployeeListComponent implements OnInit {
 
   // Fetch procurement users
   getProcurementUsers() {
-    this.loading = true;
     const loggedInUserId = localStorage.getItem('userId');
     const entityId = Number(localStorage.getItem('selectedCompanyId'));
-    this.companyService.getprocurementusers(loggedInUserId,entityId).subscribe({
+    this.query.entityId = entityId ? +entityId : null;
+    this.query.userId = loggedInUserId;
+    this.loading = true;
+    this.spinner.show();
+    this.companyService.getProcurementUsers(this.query).subscribe({
       next: (res: any[]) => {
         if (!res || res.length === 0) {
           this.tenderingData = [];
-          this.loading = false;
           return;
         }
 
@@ -90,10 +107,22 @@ export class EmployeeListComponent implements OnInit {
         }));
         this.cdr.detectChanges();
         this.loading = false;
+        this.spinner.hide();
       },
       error: (err) => {
         console.error('Error fetching users:', err);
         this.loading = false;
+      }
+    });
+  }
+
+  loadRoles() {
+    this.lookupService.getProcurementRoles().subscribe({
+      next: (data: any) => {
+        this.roles = data;
+      },
+      error: (err) => {
+        console.error('Error fetching Status:', err);
       }
     });
   }
@@ -155,7 +184,23 @@ export class EmployeeListComponent implements OnInit {
       this.toastr.info('Please select a single user to edit.');
     }
   }
+ 
+  toggleFilterBar() {
+    this.showFilterBar = !this.showFilterBar;
+  }
 
+  onRoleChange(role: any) {
+    if (role === 'All') {
+      this.selectedRoleLabel = "All"
+    }
+    else {
+      this.selectedRoleLabel = role?.description;
+    }
+    this.roleTouched = true;
+    this.query.roleId = role?.stringId;
+    this.getProcurementUsers();
+  }
+  
   private mapStatusKey(status: string): 'chip--success' | 'chip--pending' | 'chip--rejected' | 'chip--approved' {
     const s = status?.toLowerCase();
 

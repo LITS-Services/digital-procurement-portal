@@ -9,6 +9,12 @@ export interface VendorUserDropdown {
   $values: [];
 }
 
+export interface UserQuery {
+  userId: string | null,
+  entityId: number | null,
+  roleId: string | null
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -59,13 +65,17 @@ export class CompanyService {
     return this.http.put<any>(`${this.apiUrl}/update-procurement-company/${id}`, data);
   }
 
-  //ProcurementUsers
-  getprocurementusers(userId: string, entityId: number): Observable<any[]> {
-    let params = new HttpParams()
-    if (userId) params = params.set("userId", userId);
-    if (entityId) params = params.set("entityId", entityId);
-    return this.http.get<any[]>(`${environment.apiUrl}/ProcurementUsers/GetAll`, { params });
+  getProcurementUsers(q: {
+      userId: string | null,
+      entityId?: number | null,
+      roleId?: string | null
+    }): Observable<any> {
 
+    let params = new HttpParams()
+    if (q.userId) params = params.set("userId", q.userId);
+    if (q.entityId) params = params.set("entityId", q.entityId);
+    if (q.roleId) params = params.set("roleId", q.roleId);
+    return this.http.get<any>(`${environment.apiUrl}/ProcurementUsers/GetAll`, { params });
   }
 
   deleteprocurementusers(id: string): Observable<any> {

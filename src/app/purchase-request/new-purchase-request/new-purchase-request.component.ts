@@ -936,7 +936,7 @@ private exceptionModalOpen = false;
     };
 
     this.loading = true;
-
+    this.spinner.show();
     const request$ = this.purchaseRequestService.createPurchaseRequest({ purchaseRequest: payload, isDraft: true });
 
     request$.subscribe({
@@ -948,6 +948,7 @@ private exceptionModalOpen = false;
   private handleDraftSuccess() {
 
     this.loading = false;
+    this.spinner.hide();
     // this.toastr.success('Draft saved successfully');
     this.router.navigate(['/purchase-request']);
   }
@@ -1029,12 +1030,14 @@ private exceptionModalOpen = false;
     };
 
     if (this.currentRequestId) {
+      this.loading = true;
       this.spinner.show();
       this.purchaseRequestService.updatePurchaseRequest(this.currentRequestId, { purchaseRequest: payload })
       .pipe(finalize(() => this.spinner.hide()))
       .subscribe({
         next: res => {
           this.loading = false;
+          this.spinner.hide();
           this.router.navigate(['/purchase-request']);
         },
         error: err => {
@@ -1045,6 +1048,7 @@ private exceptionModalOpen = false;
       });
     }
     else {
+      this.loading = true;
       this.spinner.show();
       this.purchaseRequestService.createPurchaseRequest({ purchaseRequest: payload, isDraft: false })
       .pipe(finalize(() => this.spinner.hide()))
@@ -1054,7 +1058,7 @@ private exceptionModalOpen = false;
           // this.attachmentList.forEach(a => a.isNew = false);
           // this.numberOfAttachments = this.attachmentList.length;
           this.loading = false;
-
+          this.spinner.hide();
           this.router.navigate(['/purchase-request']);
         },
         error: err => {

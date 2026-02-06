@@ -6,6 +6,7 @@ import { EmailTemplateQuery, EmailTemplateService } from 'app/shared/services/Em
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PermissionService } from 'app/shared/permissions/permission.service';
 import Swal from 'sweetalert2';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-email-template-list',
@@ -52,7 +53,8 @@ export class EmailTemplateListComponent implements OnInit {
     private emailTemplateService: EmailTemplateService,
     private toastr: ToastrService,
     private cdr: ChangeDetectorRef,
-    private permissionService: PermissionService
+    private permissionService: PermissionService,
+    private spinner: NgxSpinnerService
   ) { }
 
   onAutoResize(): void {
@@ -85,6 +87,8 @@ export class EmailTemplateListComponent implements OnInit {
     this.query.workFlowType = this.activeFilter !== 'All' ? this.activeFilter : undefined;
     this.query.searchTerm = this.searchTerm;
 
+    this.loading = true;
+    this.spinner.show();
     this.emailTemplateService.getAllEmailTemplates(this.query).subscribe({
       next: (res: any) => {
         this.allEmailTemplates = res.result.map(item => ({
@@ -104,6 +108,7 @@ export class EmailTemplateListComponent implements OnInit {
         this.totalItems = res.totalItems;
 
         this.loading = false;
+        this.spinner.hide();
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -146,6 +151,11 @@ export class EmailTemplateListComponent implements OnInit {
   confirmDelete() {
     if (!this.permissionService.can(FORM_IDS.EMAIL_TEMPLATE_LIST, 'delete'))
       return;
+
+    if (this.chkBoxSelected.length === 0) {
+      this.toastr.info('Please select a record to delete.',);
+      return;
+    }
 
     if (!this.templateId) return;
 
@@ -202,7 +212,14 @@ export class EmailTemplateListComponent implements OnInit {
   editTemplate() {
     if (!this.permissionService.can(FORM_IDS.EMAIL_TEMPLATE_LIST, 'write'))
       return;
+    
+    if (this.chkBoxSelected.length === 0) {
+      this.toastr.info('Please select a record to update.',);
+      return;
+    }
+
     if (!this.templateId) return;
+
     this.router.navigate(['/setup/create-email-template'], { queryParams: { id: this.templateId } });
   }
 
