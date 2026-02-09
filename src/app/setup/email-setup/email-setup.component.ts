@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild, OnDestroy, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
@@ -8,7 +8,7 @@ import { EmailTemplateService } from 'app/shared/services/EmailTemplateService';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 
-declare var tinymce: any;
+
 
 @Component({
   selector: 'app-email-setup',
@@ -21,6 +21,8 @@ export class EmailSetupComponent implements OnInit, OnDestroy {
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
   @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
+  @ViewChild('emailInvitationEditor') emailInvitationEditor!: ElementRef;
+  lastEditorRange: Range | null = null;
   public chkBoxSelected = [];
   loading = false;
   public rows = [];
@@ -219,36 +221,56 @@ export class EmailSetupComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    tinymce.remove('#emailInvitationEditor');
+    // Cleanup if needed
   }
 
-  initTinyMCE(initialContent: string = '') {
-    setTimeout(() => {
-      tinymce.remove('#emailInvitationEditor'); // Ensure previous instance is removed
-      tinymce.init({
-        selector: '#emailInvitationEditor',
-        height: 300,
-        menubar: false,
-        branding: false,
-        plugins: [
-          'advlist autolink lists link image charmap preview anchor',
-          'searchreplace visualblocks code fullscreen insertdatetime media table',
-          'emoticons help wordcount autosave directionality visualchars codesample pagebreak quickbars nonbreaking template'
-        ],
-        toolbar: 'undo redo | blocks | bold italic underline strikethrough ',
-        content_style: `body { font-family:Helvetica,Arial,sans-serif; font-size:14px; padding:10px; }`,
-        setup: (editor: any) => {
-          editor.on('init', () => {
-            editor.setContent(initialContent);
-          });
-          editor.on('change', () => {
-            this.invitationForm.patchValue({ body: editor.getContent() });
-            this.invitationForm.get('body')?.markAsTouched();
-          });
-        }
-      });
-    }, 100);
+  executeCommand(command: string, value: string | null = null) {
+    document.execCommand(command, false, value || undefined);
+    this.onEditorInput();
+    this.cdr.detectChanges(); // Trigger UI update for button states
   }
+
+  isCommandActive(command: string): boolean {
+    try {
+      if (!this.emailInvitationEditor) return false;
+
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0) return false;
+
+      const range = selection.getRangeAt(0);
+      const commonAncestor = range.commonAncestorContainer;
+
+      // Check if selection is within the editor area
+      if (!this.emailInvitationEditor.nativeElement.contains(commonAncestor)) {
+        return false;
+      }
+
+      return document.queryCommandState(command);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  saveSelection() {
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      if (this.emailInvitationEditor.nativeElement.contains(range.commonAncestorContainer)) {
+        this.lastEditorRange = range.cloneRange();
+      }
+    }
+    this.cdr.detectChanges();
+  }
+
+  onEditorInput() {
+    if (this.emailInvitationEditor) {
+      const content = this.emailInvitationEditor.nativeElement.innerHTML;
+      this.invitationForm.patchValue({ body: content });
+      this.invitationForm.get('body')?.markAsTouched();
+    }
+  }
+
+
 
   CreatInvitations(content) {
     if (!this.permissionService.can(FORM_IDS.INVITATION, 'write'))
@@ -273,7 +295,11 @@ export class EmailSetupComponent implements OnInit, OnDestroy {
         });
         this.invitationForm.get('receiverEmail')?.enable();
         this.modalService.open(content, { size: 'lg', centered: true, backdrop: 'static', keyboard: false });
-        this.initTinyMCE(body);
+        setTimeout(() => {
+          if (this.emailInvitationEditor) {
+            this.emailInvitationEditor.nativeElement.innerHTML = body;
+          }
+        }, 100);
       },
       error: (err) => {
         console.error('Error fetching global template:', err);
@@ -304,14 +330,14 @@ export class EmailSetupComponent implements OnInit, OnDestroy {
     const formData = this.invitationForm.getRawValue();
     const receiverEmail = formData.receiverEmail;
 
-    // Fetch content from TinyMCE just in case
-    const tinyMceContent = tinymce.get('emailInvitationEditor')?.getContent() || formData.body;
+    // Get custom editor content
+    const contentBody = this.emailInvitationEditor?.nativeElement.innerHTML || formData.body;
 
     const userData = {
       submitterName: this.senderName,
       receiverEmail: receiverEmail,
       subject: formData.subject,
-      body: tinyMceContent,
+      body: contentBody,
       createdDate: new Date().toISOString()
     };
 
@@ -365,7 +391,11 @@ export class EmailSetupComponent implements OnInit, OnDestroy {
           });
           this.invitationForm.get('receiverEmail')?.disable();
           this.modalService.open(content, { size: 'lg', centered: true, backdrop: 'static', keyboard: false });
-          this.initTinyMCE(body);
+          setTimeout(() => {
+            if (this.emailInvitationEditor) {
+              this.emailInvitationEditor.nativeElement.innerHTML = body;
+            }
+          }, 100);
         },
         error: (err) => {
           console.error('Error fetching global template for resend:', err);
@@ -381,7 +411,10 @@ export class EmailSetupComponent implements OnInit, OnDestroy {
     // ✅ Clear selections when closing
     this.chkBoxSelected = [];
     this.enableDisableButtons();
-    tinymce.remove('#emailInvitationEditor');
+    // Clear content
+    if (this.emailInvitationEditor) {
+      this.emailInvitationEditor.nativeElement.innerHTML = '';
+    }
     this.modalService.dismissAll();
   }
 

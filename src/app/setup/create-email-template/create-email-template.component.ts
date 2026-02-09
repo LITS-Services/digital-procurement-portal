@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, AfterViewInit, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompanyService } from 'app/shared/services/Company.services';
@@ -11,7 +11,7 @@ interface DropdownItem {
   description: string;
 }
 
-declare var tinymce: any;
+
 
 @Component({
   selector: 'app-creat-email-template',
@@ -20,6 +20,7 @@ declare var tinymce: any;
   standalone: false
 })
 export class CreateEmailTemplateComponent implements OnInit, AfterViewInit {
+  @ViewChild('editorArea') editorArea!: ElementRef;
   invitationForm!: FormGroup;
   submitted = false;
   senderName: string = '';
@@ -39,6 +40,7 @@ export class CreateEmailTemplateComponent implements OnInit, AfterViewInit {
   placeholders: any[] = [];
   isEditMode = false;
   templateId: number | null = null;
+  lastEditorRange: Range | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -77,32 +79,55 @@ export class CreateEmailTemplateComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    setTimeout(() => {
-      tinymce.init({
-        selector: '#emailEditor',
-        height: 500,
-        menubar: true,
-        branding: false,
-        plugins: [
-          'advlist autolink lists link image charmap preview anchor',
-          'searchreplace visualblocks code fullscreen insertdatetime media table',
-          'emoticons help wordcount autosave directionality visualchars codesample pagebreak quickbars nonbreaking template'
-        ],
-        toolbar: 'undo redo | blocks | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table emoticons codesample | removeformat | ltr rtl | pagebreak | preview fullscreen | code help',
-        quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote',
-        contextmenu: 'link image table spellchecker',
-        autosave_ask_before_unload: true,
-        autosave_interval: '30s',
-        image_advtab: true,
-        content_style: `body { font-family:Helvetica,Arial,sans-serif; font-size:14px; padding:10px; }`,
-        setup: editor => {
-          editor.on('change', () => {
-            this.invitationForm.patchValue({ body: editor.getContent() });
-            this.invitationForm.get('body')?.markAsTouched();
-          });
-        }
-      });
-    }, 100);
+    // Custom editor initialization if needed
+  }
+
+  executeCommand(command: string, value: string | null = null) {
+    document.execCommand(command, false, value || undefined);
+    this.onEditorInput();
+    this.cdr.detectChanges(); // Trigger UI update for button states
+  }
+
+  isCommandActive(command: string): boolean {
+    try {
+      if (!this.editorArea) return false;
+
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0) return false;
+
+      const range = selection.getRangeAt(0);
+      const commonAncestor = range.commonAncestorContainer;
+
+      // Check if selection is within the editor area
+      if (!this.editorArea.nativeElement.contains(commonAncestor)) {
+        return false;
+      }
+
+      return document.queryCommandState(command);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  filteredPlaceholders: any[] = [];
+
+  filterTags(event: any) {
+    const query = event.target.value.toLowerCase();
+    if (!query) {
+      this.filteredPlaceholders = [...this.placeholders];
+      return;
+    }
+    this.filteredPlaceholders = this.placeholders.filter(ph =>
+      ph.description.toLowerCase().includes(query)
+    );
+  }
+
+  onEditorInput() {
+    if (this.editorArea) {
+      const content = this.editorArea.nativeElement.innerHTML;
+      this.invitationForm.patchValue({ body: content });
+      this.invitationForm.get('body')?.markAsTouched();
+    }
   }
 
   loadTemplate(id: number) {
@@ -130,8 +155,10 @@ export class CreateEmailTemplateComponent implements OnInit, AfterViewInit {
         if (res.workFlowTypeId) {
           this.loadPlaceholders(res.workFlowTypeId);
         }
-        
-        setTimeout(() => tinymce.get('emailEditor')?.setContent(res.body), 100);
+
+        if (this.editorArea) {
+          this.editorArea.nativeElement.innerHTML = res.body || '';
+        }
 
       },
       error: err => {
@@ -231,17 +258,72 @@ export class CreateEmailTemplateComponent implements OnInit, AfterViewInit {
   }
 
   insertPlaceholder(placeholder: string) {
-    const editor = tinymce.get('emailEditor');
-    if (editor) editor.execCommand('mceInsertContent', false, placeholder);
+    if (this.editorArea) {
+      const selection = window.getSelection();
+      let range: Range | null = null;
+
+      // 1. Determine the correct range to use
+      if (this.lastEditorRange && (!selection || selection.rangeCount === 0 || !this.editorArea.nativeElement.contains(selection.anchorNode))) {
+        // Use saved range if editor is not focused
+        range = this.lastEditorRange;
+      } else if (selection && selection.rangeCount > 0) {
+        // Use current selection if it's within the editor
+        const currentRange = selection.getRangeAt(0);
+        if (this.editorArea.nativeElement.contains(currentRange.commonAncestorContainer)) {
+          range = currentRange;
+        } else {
+          range = this.lastEditorRange;
+        }
+      }
+
+      // 2. Focus the editor cautiously
+      this.editorArea.nativeElement.focus();
+
+      // 3. Restore the range if we have one
+      if (range && selection) {
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        // 4. Perform the insertion
+        range.deleteContents();
+        const textNode = document.createTextNode(placeholder);
+        range.insertNode(textNode);
+
+        // 5. Move cursor after the inserted placeholder
+        range.setStartAfter(textNode);
+        range.setEndAfter(textNode);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        // 6. Persist the new range
+        this.lastEditorRange = range.cloneRange();
+      } else {
+        // Fallback: append if no range exists
+        this.editorArea.nativeElement.innerHTML += placeholder;
+      }
+      this.onEditorInput();
+      this.cdr.detectChanges();
+    }
+  }
+
+  saveSelection() {
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      if (this.editorArea.nativeElement.contains(range.commonAncestorContainer)) {
+        this.lastEditorRange = range.cloneRange();
+      }
+    }
+    this.cdr.detectChanges();
   }
 
   // ------------------ Form Submission ------------------
   saveEmailTemplate() {
     this.submitted = true;
 
-    // Get TinyMCE content
-    const tinyMceContent = tinymce.get('emailEditor')?.getContent() || '';
-    this.invitationForm.patchValue({ body: tinyMceContent });
+    // Get custom editor content
+    const content = this.editorArea?.nativeElement.innerHTML || '';
+    this.invitationForm.patchValue({ body: content });
 
     if (this.invitationForm.invalid) {
       this.toastr.warning('Please fill all required fields.', 'Warning');
@@ -330,9 +412,10 @@ export class CreateEmailTemplateComponent implements OnInit, AfterViewInit {
 
     this.submitted = false;
 
-    // Clear TinyMCE content
-    const editor = tinymce.get('emailEditor');
-    if (editor) editor.setContent('');
+    // Clear custom editor content
+    if (this.editorArea) {
+      this.editorArea.nativeElement.innerHTML = '';
+    }
   }
 
   get f() {

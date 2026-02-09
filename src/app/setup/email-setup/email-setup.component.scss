@@ -153,3 +153,126 @@
     min-width: auto !important;
   }
 }
+
+/* Premium Editor Container */
+.premium-editor-container {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  position: relative;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  overflow: hidden;
+
+  &.mini {
+    .premium-writing-area {
+      min-height: 250px;
+      padding: 15px 20px;
+    }
+
+    .floating-toolbar {
+      width: 97%;
+      top: 8px;
+      margin: 8px;
+      padding: 4px 12px;
+    }
+  }
+
+  &:focus-within {
+    border-color: #1E89B8;
+    box-shadow: 0 10px 15px -3px rgba(30, 137, 184, 0.1);
+  }
+
+  /* Floating Glass Toolbar */
+  .floating-toolbar {
+    position: sticky;
+    top: 10px;
+    z-index: 10;
+    margin: 10px;
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(14px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.05);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    .toolbar-group {
+      display: flex;
+      gap: 2px;
+    }
+
+    .tool-btn {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      cursor: pointer;
+
+      &:hover {
+        background: #ffffff;
+        color: #1E89B8;
+        border-color: #e2e8f0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      &.active {
+        background: #1E89B8;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(30, 137, 184, 0.2);
+      }
+
+      i {
+        font-size: 0.95rem;
+      }
+    }
+
+    .tool-divider {
+      width: 1px;
+      height: 16px;
+      background: rgba(0, 0, 0, 0.08);
+      margin: 0 6px;
+    }
+
+    .clear-btn:hover {
+      color: #ef4444;
+      background: #fef2f2;
+    }
+  }
+
+  /* Writing Area */
+  .premium-writing-area {
+    min-height: 300px;
+    padding: 15px 24px;
+    font-family: 'Poppins', 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #1e293b;
+    outline: none;
+
+    &[placeholder]:empty:before {
+      content: attr(placeholder);
+      color: #94a3b8;
+      font-style: italic;
+    }
+
+    p {
+      margin-bottom: 1rem;
+    }
+
+    ul,
+    ol {
+      padding-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+  }
+}

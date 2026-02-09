@@ -4,26 +4,26 @@
     <div>
       <div class="col-md-6 d-flex align-items-center cstm-action-bar">
         <!-- Back Button -->
-         <div>
-        <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
-          <i class="ft-arrow-left"></i>
-        </button>
+        <div>
+          <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+            <i class="ft-arrow-left"></i>
+          </button>
 
-        <span class="vl"></span>
+          <span class="vl"></span>
 
-        <!-- Reset Button -->
-        <button *ngIf="!isEditMode" type="button" class="btn btn-sm cstm-ui-table-btn ms-2" (click)="resetForm()">
-          <label class="ft-refresh-ccw"> Reset</label>
-        </button>
+          <!-- Reset Button -->
+          <button *ngIf="!isEditMode" type="button" class="btn btn-sm cstm-ui-table-btn ms-2" (click)="resetForm()">
+            <label class="ft-refresh-ccw"> Reset</label>
+          </button>
 
-        <!-- Save / Update Button -->
-        <button type="button" class="btn btn-sm cstm-ui-table-btn ms-2" (click)="saveEmailTemplate()">
-          <i class="ft-save"></i>
-          <label class="ml-1">
-            <span class="ms-1">{{ isEditMode ? 'Update' : 'Save' }}</span>
-          </label>
-        </button>
-      </div>
+          <!-- Save / Update Button -->
+          <button type="button" class="btn btn-sm cstm-ui-table-btn ms-2" (click)="saveEmailTemplate()">
+            <i class="ft-save"></i>
+            <label class="ml-1">
+              <span class="ms-1">{{ isEditMode ? 'Update' : 'Save' }}</span>
+            </label>
+          </button>
+        </div>
 
       </div>
     </div>
@@ -52,8 +52,7 @@
 
           <div ngbDropdown class="w-100">
             <button ngbDropdownToggle type="button"
-              class="form-control text-start d-flex justify-content-between align-items-center"
-              [disabled]="isEditMode"
+              class="form-control text-start d-flex justify-content-between align-items-center" [disabled]="isEditMode"
               [ngClass]="{ 'is-invalid': submitted && f['emailActionId'].errors }" style="cursor: pointer;">
               {{ selectedAction?.description || 'Select Action' }}
               <!-- <span class="dropdown-arrow">&#9662;</span> -->
@@ -77,8 +76,7 @@
 
           <div ngbDropdown class="w-100">
             <button ngbDropdownToggle type="button"
-              class="form-control text-start d-flex justify-content-between align-items-center"
-              [disabled]="isEditMode"
+              class="form-control text-start d-flex justify-content-between align-items-center" [disabled]="isEditMode"
               [ngClass]="{ 'is-invalid': submitted && f['procurementCompanyId'].errors }" style="cursor: pointer;">
               {{ selectedCompany?.description || 'Select Company' }}
               <!-- <span class="dropdown-arrow">&#9662;</span> -->
@@ -102,8 +100,7 @@
 
           <div ngbDropdown class="w-100">
             <button ngbDropdownToggle type="button"
-              class="form-control text-start d-flex justify-content-between align-items-center"
-              [disabled]="isEditMode"
+              class="form-control text-start d-flex justify-content-between align-items-center" [disabled]="isEditMode"
               [ngClass]="{ 'is-invalid': submitted && f['workFlowTypeId'].errors }" style="cursor: pointer;">
               {{ selectedType?.description || 'Select Type' }}
               <!-- <span class="dropdown-arrow">&#9662;</span> -->
@@ -121,42 +118,112 @@
           </div>
         </div>
 
-        <!-- ======================== Email Body & Placeholders ======================== -->
-        <div class="col-md-12 mb-3">
-          <label class="form-label">Body <span class="text-danger">*</span></label>
-          <div class="body-placeholder-wrapper">
+        <!-- ======================== Email Body & Placeholders Layout ======================== -->
+        <div class="col-md-12 mt-4">
+          <div class="modern-editor-layout">
 
-            <!-- Email Body -->
-            <div class="email-body">
-              <textarea id="emailEditor" name="content" rows="8" class="form-control"
-                placeholder="Write your message..." formControlName="body"
-                [ngClass]="{ 'is-invalid': submitted && f['body'].errors }"></textarea>
+            <!-- Main Editor Column -->
+            <div class="editor-column">
+              <label class="form-label mb-2 fw-semibold">Email Body <span class="text-danger">*</span></label>
+
+              <div class="premium-editor-container">
+                <!-- Floating Toolbar Island -->
+                <div class="floating-toolbar">
+                  <div class="toolbar-group">
+                    <button type="button" class="tool-btn" [class.active]="isCommandActive('bold')"
+                      (click)="executeCommand('bold')" title="Bold">
+                      <i class="ft-bold"></i>
+                    </button>
+                    <button type="button" class="tool-btn" [class.active]="isCommandActive('italic')"
+                      (click)="executeCommand('italic')" title="Italic">
+                      <i class="ft-italic"></i>
+                    </button>
+                    <button type="button" class="tool-btn" [class.active]="isCommandActive('underline')"
+                      (click)="executeCommand('underline')" title="Underline">
+                      <i class="ft-underline"></i>
+                    </button>
+                  </div>
+
+                  <div class="tool-divider"></div>
+
+                  <div class="toolbar-group">
+                    <button type="button" class="tool-btn" (click)="executeCommand('justifyLeft')" title="Align Left">
+                      <i class="ft-align-left"></i>
+                    </button>
+                    <button type="button" class="tool-btn" (click)="executeCommand('justifyCenter')"
+                      title="Align Center">
+                      <i class="ft-align-center"></i>
+                    </button>
+                    <button type="button" class="tool-btn" (click)="executeCommand('justifyRight')" title="Align Right">
+                      <i class="ft-align-right"></i>
+                    </button>
+                  </div>
+
+                  <div class="tool-divider"></div>
+
+                  <div class="toolbar-group">
+                    <button type="button" class="tool-btn" (click)="executeCommand('insertUnorderedList')"
+                      title="Bullet List">
+                      <i class="ft-list"></i>
+                    </button>
+                    <button type="button" class="tool-btn" (click)="executeCommand('insertOrderedList')"
+                      title="Ordered List">
+                      <i class="ft-grid"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Content Area -->
+                <div #editorArea contenteditable="true" class="premium-writing-area" (input)="onEditorInput()"
+                  (click)="saveSelection()" (keyup)="saveSelection()" (blur)="saveSelection()"
+                  [ngClass]="{ 'is-invalid': submitted && f['body'].errors }">
+                </div>
+              </div>
+
+              <div *ngIf="submitted && f['body'].errors" class="text-danger small mt-2">
+                Template body is required.
+              </div>
             </div>
 
-            <!-- Placeholder Panel -->
-            <div class="placeholder-panel-wrapper mt-2">
-              <label class="form-label">Placeholders</label>
-
-              <div *ngIf="placeholders.length > 0" class="placeholder-panel p-2 border rounded">
-                <span *ngFor="let ph of placeholders" class="placeholder-item badge bg-info text-white me-2 mb-2"
-                  (click)="insertPlaceholder(ph.description)" title="{{ ph.description }}">
-                  {{ ph.description }}
-                </span>
+            <!-- Placeholder Sidebar -->
+            <div class="placeholder-sidebar">
+              <div class="sidebar-header">
+                <div class="header-main">
+                  <i class="ft-zap shadow-icon pulse"></i>
+                  <span>Tags</span>
+                </div>
+                <!-- Search Box -->
+                <div class="sidebar-search mt-3">
+                  <i class="ft-search"></i>
+                  <input type="text" placeholder="Search tags..." (input)="filterTags($event)" class="tag-search-input">
+                </div>
               </div>
 
-              <div *ngIf="placeholders.length === 0 && selectedType" class="text-muted small">
-                No available placeholders for this type.
-              </div>
+              <div class="sidebar-content">
+                <div *ngIf="selectedType; else noTypeInfo">
+                  <div *ngIf="(filteredPlaceholders.length > 0 || placeholders.length > 0); else noPh" class="tag-grid">
+                    <div
+                      *ngFor="let ph of (filteredPlaceholders.length > 0 || tagSearchInput?.value ? filteredPlaceholders : placeholders)"
+                      class="modern-tag" (click)="insertPlaceholder(ph.description)" [title]="ph.description">
+                      <span class="tag-icon">#</span>
+                      {{ ph.description }}
+                    </div>
+                  </div>
+                </div>
 
-              <div *ngIf="!selectedType" class="text-muted small">
-                Select a Workflow Type to see available placeholders.
+                <ng-template #noTypeInfo>
+                  <div class="empty-sidebar-state">
+                    <i class="ft-layers"></i>
+                    <p>Select a type to view available tags</p>
+                  </div>
+                </ng-template>
+
+                <ng-template #noPh>
+                  <p class="text-muted small p-3">No tags available for this type.</p>
+                </ng-template>
               </div>
             </div>
 
-          </div>
-
-          <div *ngIf="submitted && f['body'].errors" class="invalid-feedback mt-1">
-            Body is required.
           </div>
         </div>
 

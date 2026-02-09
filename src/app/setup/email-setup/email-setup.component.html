@@ -152,12 +152,42 @@
       </div>
 
       <div class="form-group mb-0">
-        <label for="emailInvitationEditor">Body</label>
-        <div id="emailInvitationEditor" style="min-height: 300px; border: 1px solid #ced4da; border-radius: 0.25rem;">
+        <label class="form-label fw-semibold">Email Body</label>
+
+        <div class="premium-editor-container mini">
+          <!-- Floating Toolbar Island -->
+          <div class="floating-toolbar">
+            <div class="toolbar-group">
+              <button type="button" class="tool-btn" [class.active]="isCommandActive('bold')"
+                (click)="executeCommand('bold')" title="Bold">
+                <i class="ft-bold"></i>
+              </button>
+              <button type="button" class="tool-btn" [class.active]="isCommandActive('italic')"
+                (click)="executeCommand('italic')" title="Italic">
+                <i class="ft-italic"></i>
+              </button>
+              <button type="button" class="tool-btn" [class.active]="isCommandActive('underline')"
+                (click)="executeCommand('underline')" title="Underline">
+                <i class="ft-underline"></i>
+              </button>
+            </div>
+
+            <div class="tool-divider"></div>
+
+            <div class="toolbar-group">
+            </div>
+          </div>
+
+          <!-- Content Area -->
+          <div #emailInvitationEditor contenteditable="true" class="premium-writing-area" (input)="onEditorInput()"
+            (click)="saveSelection()" (keyup)="saveSelection()" (blur)="saveSelection()"
+            placeholder="Compose your invitation message...">
+          </div>
         </div>
+
         <input type="hidden" formControlName="body" />
-        <div *ngIf="submitted && f.body.errors" class="text-danger small mt-1">
-          <div *ngIf="f.body.errors.required">Body is required</div>
+        <div *ngIf="submitted && f.body.errors" class="text-danger small mt-2">
+          <div *ngIf="f.body.errors.required">Body is required.</div>
         </div>
       </div>
     </form>
