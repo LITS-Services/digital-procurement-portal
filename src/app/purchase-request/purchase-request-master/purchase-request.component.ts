@@ -86,7 +86,7 @@ export class PurchaseRequestComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadStatus();
-    this.loadPurchaseRequests();
+    //this.loadPurchaseRequests();
     this.cdr.detectChanges();
   }
 

@@ -68,7 +68,7 @@ export class EmailTemplateListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getAllEmailTemplates();
+    // this.getAllEmailTemplates();
 
     // Table Columns
     this.columns = [

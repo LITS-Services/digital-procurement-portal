@@ -94,9 +94,7 @@ export class RfqComponent implements OnInit {
       });
 
     this.loadStatus();
-
-    this.loadRfqs();
-
+    //this.loadRfqs();
   }
 
     onAutoResize(): void {

@@ -67,14 +67,14 @@ export class LogsComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
-    this.loadLogs();
+    // this.loadLogs();
   }
 
   initForm() {
     this.searchForm.get('searchTerm')?.valueChanges.subscribe(value => {
       this.searchTerm = value;
       this.currentPage = 1;
-      this.loadLogs();
+      //this.loadLogs();
     });
   }
 
@@ -92,7 +92,7 @@ export class LogsComponent implements OnInit {
       this.searchForm.patchValue({ searchTerm: '' });
       this.statusTouched = false;
       this.selectedStatusLabel = this.getFilterLabel();
-      this.loadLogs();
+      //this.loadLogs();
     }
   }
 

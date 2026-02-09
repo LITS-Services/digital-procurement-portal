@@ -72,7 +72,7 @@ export class CompanyListingComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getCompanyData();
+    //this.getCompanyData();
 
     // Define the table columns initially
     this.columns = [

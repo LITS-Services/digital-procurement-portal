@@ -62,7 +62,7 @@ export class PurchaseOrderListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadStatus();
-    this.loadPurchaseOrders();
+    // this.loadPurchaseOrders();
     this.cdr.detectChanges();
   }
 

@@ -56,7 +56,7 @@ export class GlobalConfigurationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadGlobalConfigs();
+    // this.loadGlobalConfigs();
     this.cdr.detectChanges();
   }
 
@@ -143,47 +143,6 @@ export class GlobalConfigurationComponent implements OnInit {
     // Check "Select All" toggle
     this.isAllSelected = this.globalConfigData.length === this.chkBoxSelected.length;
   }
-
-  // OPEN DELETE MODAL
-  // openDeleteModal(): void {
-  //   if (this.idsToDelete.length === 0) {
-  //     this.toastr.info('Please select at least one record to delete.');
-  //     return;
-  //   }
-
-  //   Swal.fire({
-  //     title: 'Are you sure?',
-  //     text: `You are about to delete ${this.idsToDelete.length} record(s). This action cannot be undone.`,
-  //     icon: 'warning',
-  //     showCancelButton: true,
-  //     confirmButtonText: 'Yes, delete',
-  //     cancelButtonText: 'Cancel',
-  //     confirmButtonColor: '#d33',
-  //     cancelButtonColor: '#3085d6',
-  //   }).then((result) => {
-  //     if (result.isConfirmed) {
-  //       this.confirmDelete();
-  //     }
-  //   });
-  // }
-
-  //  CONFIRM DELETION OF GLOBAL CONFIG
-  // confirmDelete(): void {
-  //   if (this.idsToDelete.length === 0) return;
-
-  //   this.globalConfigData.deleteQuotatioRequests(this.idsToDelete).subscribe({
-  //     next: () => {
-  //       Swal.fire('Deleted!', 'Selected record(s) have been deleted successfully.', 'success');
-  //       this.loadGlobalConfigs();
-  //       this.chkBoxSelected = [];
-  //       this.idsToDelete = [];
-  //     },
-  //     error: (err) => {
-  //       console.error('Delete failed:', err);
-  //       Swal.fire('Error', 'An error occurred while deleting records.', 'error');
-  //     }
-  //   });
-  // }
 
   onUpdate() {
     if(!this.permissionService.can(FORM_IDS.GLOBAL_CONFIGURATION, 'write'))

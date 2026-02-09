@@ -20,7 +20,7 @@ export class InventoryTransferListComponent implements OnInit {
   FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
-    @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
+  @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
   isStatusCompleted: boolean = false;
   hasRestrictedStatus: boolean = false;
   activeFilter: string = '';
@@ -73,7 +73,7 @@ export class InventoryTransferListComponent implements OnInit {
         this.loadPurchaseRequests();
       });
 
-    this.loadPurchaseRequests();
+    // this.loadPurchaseRequests();
     this.cdr.detectChanges();
   }
 
