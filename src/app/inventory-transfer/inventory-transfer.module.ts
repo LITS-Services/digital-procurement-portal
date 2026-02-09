@@ -7,7 +7,7 @@ import { PermissionDirective } from 'app/shared/permissions/permission.directive
 import { InventoryTransferListComponent } from './inventory-transfer-list/inventory-transfer-list.component';
 import { InventoryTransferForm } from './inventory-transfer-form/inventory-transfer-form';
 import { NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
 
 
@@ -25,7 +25,8 @@ import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-au
     DatatableAutoResizeDirective,
     PermissionDirective,
     NgbAccordionModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FormsModule
   ]
 })
 export class InventoryTransferModule { }

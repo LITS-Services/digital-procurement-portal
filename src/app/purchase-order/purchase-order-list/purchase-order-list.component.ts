@@ -1,10 +1,12 @@
 import { ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ColumnMode, SelectionType, NgxDatatableModule, DatatableComponent } from '@swimlane/ngx-datatable';
+import { ColumnMode, SelectionType, DatatableComponent } from '@swimlane/ngx-datatable';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PermissionService } from 'app/shared/permissions/permission.service';
+import { LookupService } from 'app/shared/services/lookup.service';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-purchase-order-list',
@@ -37,31 +39,41 @@ export class PurchaseOrderListComponent implements OnInit {
   totalItems = 0;
 
   datatableVisible: boolean = true;
+  showFilterBar = false;
+  selectedStatusLabel = 'All';
+  status: any
+  statuses: any[] = [];        
+  selectedStatus: string | null = null; 
+  statusTouched: boolean = false;
 
   constructor(private purchaseOrderService: PurchaseOrderService,
     public cdr: ChangeDetectorRef,
     private router: Router,
     private modalService: NgbModal,
     private route: ActivatedRoute,
-    private permissionService: PermissionService
-
+    private permissionService: PermissionService,
+    private lookupService: LookupService,
+    private spinner: NgxSpinnerService
   ) { }
 
-
   get isMobile(): boolean {
-  return window.innerWidth <= 1400;
+    return window.innerWidth <= 1400;
 }
 
-
   ngOnInit(): void {
+    this.loadStatus();
     this.loadPurchaseOrders();
+    this.cdr.detectChanges();
   }
 
   loadPurchaseOrders() {
     const userId = localStorage.getItem('userId');
     this.loading = true;
     const entityId = Number(localStorage.getItem('selectedCompanyId'));
-    this.purchaseOrderService.getAllPurchaseOrders(this.currentPage, this.pageSize, entityId, userId).subscribe({
+    
+    this.loading = true;
+    this.spinner.show();
+    this.purchaseOrderService.getAllPurchaseOrders(this.currentPage, this.pageSize, entityId, userId, this.selectedStatus).subscribe({
       next: (data: any) => {
 
         // Extract paginated data correctly
@@ -73,8 +85,8 @@ export class PurchaseOrderListComponent implements OnInit {
         // Capture pagination info
         this.totalPages = data.totalPages;
         this.totalItems = data.totalItems;
-
         this.loading = false;
+        this.spinner.hide();
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -88,6 +100,7 @@ export class PurchaseOrderListComponent implements OnInit {
     this.currentPage = (event.offset ?? 0) + 1;
     this.loadPurchaseOrders();
   }
+
   homePage() {
     this.router.navigate(['/dashboard/dashboard1']);
   }
@@ -176,5 +189,35 @@ export class PurchaseOrderListComponent implements OnInit {
 
     if (s === 'approved for payment' || s === 'approved' || s === 'new' || s === 'open')
     return 'chip--approved';
+  }
+
+  loadStatus() {
+    this.lookupService.getAllRequestStatus().subscribe({
+      next: (data: any) => {
+        this.statuses = data;
+      },
+      error: (err) => {
+        console.error('Error fetching Status:', err);
+      }
+    });
+  }
+
+  onStatusChange(status: any) {
+    if (status === 'All') {
+      this.selectedStatusLabel = 'All';
+      this.selectedStatus = null;
+    } else {
+      this.selectedStatusLabel = status.description;
+      this.selectedStatus = status.description;
+    }
+
+    this.statusTouched = true;
+    this.currentPage = 1;
+    this.loadPurchaseOrders();
+  }
+
+
+  toggleFilterBar() {
+    this.showFilterBar = !this.showFilterBar;
   }
 }
