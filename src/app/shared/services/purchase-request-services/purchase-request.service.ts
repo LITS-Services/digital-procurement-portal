@@ -18,7 +18,8 @@ export interface PRQuery {
   entityId: number | null,
   status: string | null,
   prNo: string | null,
-  forInventoryTransfer: boolean
+  forInventoryTransfer: boolean,
+  requisitionNo: string
 }
 
 export interface Dropdown {
@@ -55,7 +56,8 @@ export class PurchaseRequestService {
     entityId?: number | null,
     status?: string | null,
     prNo?: string | null,
-    forInventoryTransfer: boolean
+    forInventoryTransfer: boolean,
+    requisitionNo?: string
   }): Observable<any> {
 
 
@@ -68,6 +70,7 @@ export class PurchaseRequestService {
     if (q.prNo) params = params.set("prNo", q.prNo);
     if (q.userId) params = params.set("userId", q.userId);
     if (q.entityId) params = params.set("entityId", q.entityId);
+    if (q.requisitionNo) params = params.set("requisitionNo", q.requisitionNo);
     return this.http.get<any>(
       `${this.baseUrl}/get-all-purchase-requests`, { params }
     );

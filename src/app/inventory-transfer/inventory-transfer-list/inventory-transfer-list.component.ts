@@ -1,13 +1,13 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Router } from '@angular/router';
 import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PermissionService } from 'app/shared/permissions/permission.service';
 import { LookupService } from 'app/shared/services/lookup.service';
-import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { PRQuery, PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -45,26 +45,34 @@ export class InventoryTransferListComponent implements OnInit {
     userId: null,
     entityId: null,
     prNo: null,
-    forInventoryTransfer: true
+    forInventoryTransfer: true,
+    requisitionNo: null
   };
 
-  
+  searchText = '';
+  private searchChanged$ = new Subject<string>();
   datatableVisible: boolean = true;
-
+  showFilterBar = false;
 
   constructor(
     private router: Router,
-    private modalService: NgbModal,
     private purchaseRequestService: PurchaseRequestService,
-    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     private toastr: ToastrService,
     public lookupService: LookupService,
-    private purchaseOrderService: PurchaseOrderService,
-    private permissionService: PermissionService
+    private permissionService: PermissionService,
+    private spinner: NgxSpinnerService
   ) {}
 
   ngOnInit(): void {
+    this.searchChanged$
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe(text => {
+        this.query.requisitionNo = text?.trim() || null;
+        this.query.currentPage = 1;
+        this.loadPurchaseRequests();
+      });
+
     this.loadPurchaseRequests();
     this.cdr.detectChanges();
   }
@@ -77,6 +85,8 @@ export class InventoryTransferListComponent implements OnInit {
     this.loading = true;
     const entityId = localStorage.getItem('selectedCompanyId');
     this.query.entityId = entityId ? +entityId : null;
+
+    this.spinner.show();
     this.purchaseRequestService.getAllPurchaseRequests(this.query).subscribe({
       next: (data: any) => {
         this.purchaseRequestData = (data?.result || []).map((pr: any) => ({
@@ -89,6 +99,7 @@ export class InventoryTransferListComponent implements OnInit {
         this.totalItems = data.totalItems;
 
         this.loading = false;
+        this.spinner.hide();
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -303,5 +314,14 @@ export class InventoryTransferListComponent implements OnInit {
 
     if (s === 'approved for payment' || s === 'approved' || s === 'new' || s === 'awarded')
     return 'chip--approved';
+  }
+
+  onSearchChange(text: string) {
+    this.searchText = text;
+    this.searchChanged$.next(text);
+  }
+
+  toggleFilterBar() {
+    this.showFilterBar = !this.showFilterBar;
   }
 }

@@ -37,13 +37,26 @@
               </button> -->
 
             </div>
+            <div class="d-flex align-items-center">
+                            <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
+                                <i class="ft-sliders"></i><label class="ml-1 btn-label">Filter</label>
+                            </button>
+                        </div>
 
           </div>
 
         </div>
       </div>
 
-
+      <div *ngIf="showFilterBar" class="filter-bar">
+                <div class="d-flex align-items-center justify-content-between pl-3 pr-1 py-2 filter-wrapper">
+                    <div class="filter-search">
+                        <i class="ft-filter search-icon"></i>
+                        <input [ngModel]="searchText" (ngModelChange)="onSearchChange($event)" type="text"
+                            placeholder="Search by requisition no #" class="form-control form-control-sm search-input">
+                    </div>
+                </div>
+            </div>
 
       <div  class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
 
