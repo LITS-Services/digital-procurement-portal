@@ -391,6 +391,7 @@ export class PurchaseRequestComponent implements OnInit {
           requisitionNo: res.requisitionNo,
           exceptionPolicy: res.prExceptionPolicy
         };
+        modalRef.componentInstance.viewMode = true;
       },
       error: () => {
         this.toastr.error('Failed to load exception policy.');
