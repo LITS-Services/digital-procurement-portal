@@ -8,6 +8,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { finalize } from 'rxjs/operators';
 import { PermissionService } from 'app/shared/permissions/permission.service';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-pr-inventory-management',
@@ -35,7 +36,8 @@ export class PrInventoryManagementComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private modalService: NgbModal,
     private spinner: NgxSpinnerService,
-    private permissionService: PermissionService
+    private permissionService: PermissionService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -184,15 +186,17 @@ openAttachmentView(row: any): void {
         : null
       }))
     };
-
+    this.loading = true;
     this.spinner.show();
 
     this.purchaseRequestService.createInventoryTransfer(payload)
     .pipe(finalize(() => this.spinner.hide()))
     .subscribe({
       next: (res) => {
-        console.log('Inventory transfer created', res);
+        this.loading = false;
+        this.spinner.hide();
         this.activeModal.close(res);
+        this.router.navigate['/inventory-transfer'];
       },
       error: (err) => console.error(err)
     });
