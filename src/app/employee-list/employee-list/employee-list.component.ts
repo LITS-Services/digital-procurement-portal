@@ -74,9 +74,9 @@ export class EmployeeListComponent implements OnInit {
     ];
   }
 
-      get isMobile(): boolean {
-  return window.innerWidth <= 768;
-}
+  get isMobile(): boolean {
+    return window.innerWidth <= 768;
+  }
 
   // Fetch procurement users
   getProcurementUsers() {
@@ -88,30 +88,30 @@ export class EmployeeListComponent implements OnInit {
     this.spinner.show();
     this.companyService.getProcurementUsers(this.query).subscribe({
       next: (res: any[]) => {
-        if (!res || res.length === 0) {
-          this.tenderingData = [];
-          return;
+        this.tenderingData = [];
+
+        if (res && res.length > 0) {
+          this.tenderingData = res.map(u => ({
+            id: u.id,
+            fullName: u.fullName || '-',
+            userName: u.userName || '-',
+            email: u.email || '-',
+            phoneNumber: u.phoneNumber || 'N/A',
+            isDeleted: u.isDeleted,
+            profilePicture: u.profilePicture || '',
+            emailConfirmed: u.emailConfirmed || false,
+            status: u.isDeleted ? 'Inactive' : 'Active'
+          }));
         }
 
-        // Map the new response
-        this.tenderingData = res.map(u => ({
-          id: u.id,
-          fullName: u.fullName || '-',
-          userName: u.userName || '-',
-          email: u.email || '-',
-          phoneNumber: u.phoneNumber || 'N/A',
-          isDeleted: u.isDeleted,
-          profilePicture: u.profilePicture || '',    // New field
-          emailConfirmed: u.emailConfirmed || false, // New field
-          status: u.isDeleted ? 'Inactive' : 'Active'
-        }));
-        this.cdr.detectChanges();
         this.loading = false;
         this.spinner.hide();
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error fetching users:', err);
         this.loading = false;
+        this.spinner.hide();
       }
     });
   }
