@@ -1,7 +1,7 @@
 // src/app/firebase-messaging.service.ts
 import { Injectable } from '@angular/core';
 import { AngularFireMessaging } from '@angular/fire/compat/messaging';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, take } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'environments/environment';
 
@@ -18,16 +18,26 @@ export class FirebaseMessagingService {
   }
 
   requestPermission(userId: string) {
-    this.afMessaging.requestToken.subscribe(
-      token => {
-        debugger;
-        this.sendTokenToBackend(userId, token);
-        // Send this token to your backend to send push messages
+    (this.afMessaging.requestToken as any).pipe(take(1)).subscribe(
+      (token: string) => {
+        if (token) {
+          this.sendTokenToBackend(userId, token);
+        }
       },
       error => {
         console.error('Permission denied or error:', error);
       }
     );
+  }
+
+  deleteToken() {
+    (this.afMessaging.getToken as any).pipe(take(1)).subscribe((token: string) => {
+      if (token) {
+        this.afMessaging.deleteToken(token).subscribe(() => {
+          console.log('Token deleted');
+        });
+      }
+    });
   }
   private sendTokenToBackend(userId: string, token: string) {
     let baseUrl = `${environment.apiUrl}/Auth`;

@@ -60,20 +60,24 @@ export class AuthGuard implements CanActivate {
       switchMap(token => {
         if (!token) {
           // Store the attempted URL for redirect after login
-          if (state.url !== '/pages/login') {
-            sessionStorage.setItem('redirectUrl', state.url);
+          const redirectUrl = state.url !== '/pages/login' ? state.url : null;
+          this.auth.performLogout();
+          if (redirectUrl) {
+            sessionStorage.setItem('redirectUrl', redirectUrl);
           }
-          return of(this.router.createUrlTree(['/pages/login']));
+          return of(false); // Router handle navigation via performLogout
         }
 
         return this.checkRoleAccess(route, false);
       }),
       catchError((error) => {
         // Store the attempted URL for redirect after login
-        if (state.url !== '/pages/login') {
-          sessionStorage.setItem('redirectUrl', state.url);
+        const redirectUrl = state.url !== '/pages/login' ? state.url : null;
+        this.auth.performLogout();
+        if (redirectUrl) {
+          sessionStorage.setItem('redirectUrl', redirectUrl);
         }
-        return of(this.router.createUrlTree(['/pages/login']));
+        return of(false);
       }),
       tap(result => {
       })

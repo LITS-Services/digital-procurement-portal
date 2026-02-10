@@ -566,6 +566,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   logout(): void {
+    this.messagingService.deleteToken();
     this.authService.logout().subscribe({
       next: () => this.authService.performLogout(),
       error: () => this.authService.performLogout(),

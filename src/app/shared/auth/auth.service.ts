@@ -139,6 +139,7 @@ export class AuthService {
 
   performLogout(): void {
     localStorage.clear();
+    sessionStorage.clear();
     this.router.navigate(['/pages/login']);
   }
 
