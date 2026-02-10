@@ -1,7 +1,7 @@
 // src/app/firebase-messaging.service.ts
 import { Injectable } from '@angular/core';
 import { AngularFireMessaging } from '@angular/fire/compat/messaging';
-import { BehaviorSubject, take } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'environments/environment';
 
@@ -18,27 +18,41 @@ export class FirebaseMessagingService {
   }
 
   requestPermission(userId: string) {
-    (this.afMessaging.requestToken as any).pipe(take(1)).subscribe(
-      (token: string) => {
+    if (!userId) {
+      console.warn('FCM: Skip requestPermission because userId is null or empty');
+      return;
+    }
+    this.afMessaging.requestToken.subscribe(
+      token => {
+        // debugger;
         if (token) {
           this.sendTokenToBackend(userId, token);
+        } else {
+          console.warn('FCM: No token received from requestToken');
         }
+        // Send this token to your backend to send push messages
       },
       error => {
-        console.error('Permission denied or error:', error);
+        console.error('FCM: Permission denied or error:', error);
       }
     );
   }
 
   deleteToken() {
-    (this.afMessaging.getToken as any).pipe(take(1)).subscribe((token: string) => {
+    this.afMessaging.getToken.subscribe(token => {
       if (token) {
-        this.afMessaging.deleteToken(token).subscribe(() => {
-          console.log('Token deleted');
+        this.afMessaging.deleteToken(token).subscribe({
+          next: (deleted) => {
+            if (deleted) {
+              console.log('FCM: Token deleted successfully');
+            }
+          },
+          error: err => console.error('FCM: Error deleting token:', err)
         });
       }
     });
   }
+
   private sendTokenToBackend(userId: string, token: string) {
     let baseUrl = `${environment.apiUrl}/Auth`;
     const apiUrl = `${baseUrl}/register-procurement-fcm-token`; // Replace with your actual endpoint

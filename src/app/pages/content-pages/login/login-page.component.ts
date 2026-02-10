@@ -59,12 +59,16 @@ export class LoginPageComponent implements OnInit {
     if (token) {
       this.spinner.show();
       console.log("✅ Token found from Azure redirect:", token);
-      localStorage.setItem('token', token);
-      if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
-      if (email) localStorage.setItem('userEmail', email);
-      if (userId) localStorage.setItem('userId', userId);
-      if (username) localStorage.setItem('username', username);
 
+      const ssoData = {
+        token: token,
+        refreshToken: refreshToken,
+        email: email,
+        id: userId,
+        userName: username,
+      };
+
+      this.authService.setSSOSession(ssoData);
       localStorage.setItem('isAuthenticated', 'true');
 
       // ✅ load permissions immediately (same thing that happens on page refresh)
@@ -118,20 +122,7 @@ export class LoginPageComponent implements OnInit {
         this.spinner.hide();
 
         // Save token and user info
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('id', res.id || '');
-        localStorage.setItem('userId', res.userId || '');
-        localStorage.setItem('userName', res.userName || '');
-
-        // Save roles
-        const roles = res?.roles || [];
-        const role = roles.length > 0 ? roles[0] : '';
-        localStorage.setItem('role', role);
-
-        // Save companyIds
-        const companyIds = res?.companyIds?.$values || [];
-        
-        localStorage.setItem('companyIds', JSON.stringify(companyIds));
+        // Session is handled by authService._setSessionFromLogin
 
         this.router.navigate(['/dashboard/dashboard1']);
         this.cdr.detectChanges();

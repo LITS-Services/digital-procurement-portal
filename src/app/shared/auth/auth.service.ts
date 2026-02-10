@@ -5,6 +5,7 @@ import firebase from 'firebase/compat/app';
 import { Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { environment } from 'environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { FirebaseMessagingService } from 'app/firebase-messaging.service';
 import { AuthUtils } from './auth.util';
 import { catchError, finalize, map, tap } from 'rxjs/operators';
 import { PermissionService } from '../permissions/permission.service';
@@ -23,7 +24,8 @@ export class AuthService {
     public _firebaseAuth: AngularFireAuth,
     private router: Router,
     private http: HttpClient,
-    private permissionService: PermissionService
+    private permissionService: PermissionService,
+    private messagingService: FirebaseMessagingService
   ) {
     this.user = _firebaseAuth.authState as unknown as Observable<firebase.User | null>;
     this.user.subscribe(user => this.userDetails = user || null);
@@ -138,8 +140,8 @@ export class AuthService {
   }
 
   performLogout(): void {
+    this.messagingService.deleteToken();
     localStorage.clear();
-    sessionStorage.clear();
     this.router.navigate(['/pages/login']);
   }
 
@@ -239,7 +241,17 @@ export class AuthService {
       'refreshToken:',
       this.refreshToken ? this.refreshToken.slice(0, 12) + '...' : 'null';
 
-    if (res.userId) localStorage.setItem('userId', res.userId);
+    // Clear old identity if any
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('role');
+    localStorage.removeItem('roles');
+    localStorage.removeItem('companyIds');
+
+    const userId = res.userId || res.id || '';
+    if (userId) localStorage.setItem('userId', userId);
+
     if (res.userName) localStorage.setItem('userName', res.userName);
     if (res.email) localStorage.setItem('userEmail', res.email);
 

@@ -118,10 +118,10 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     // this.userId = localStorage.getItem("userId");
 
     //Firebase Cloud Messaging Initialization
-    const userId = localStorage.getItem("userId");
+    const userId = this.authService.getUserId();
 
-    this.messagingService.requestPermission(userId);
     if (userId) {
+      this.messagingService.requestPermission(userId);
       // this.loadUserProfile(this.userId);
       this.loadProcUserCompanies(userId);
     }
@@ -566,7 +566,6 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   logout(): void {
-    this.messagingService.deleteToken();
     this.authService.logout().subscribe({
       next: () => this.authService.performLogout(),
       error: () => this.authService.performLogout(),

@@ -12,7 +12,7 @@ import { PurchaseRequestRemarksComponent } from '../purchase-request-remarks/pur
 import { WorkflowServiceService } from 'app/shared/services/WorkflowService/workflow-service.service';
 import Swal from 'sweetalert2';
 import { LookupService } from 'app/shared/services/lookup.service';
-import {  VendorAndCompanyForFinalSelectionVM } from 'app/shared/interfaces/vendor-company-final-selection.model';
+import { VendorAndCompanyForFinalSelectionVM } from 'app/shared/interfaces/vendor-company-final-selection.model';
 import * as XLSX from 'xlsx';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { distinctUntilChanged, filter, finalize, pairwise, startWith, takeUntil } from 'rxjs/operators';
@@ -119,8 +119,8 @@ export class NewPurchaseRequestComponent implements OnInit {
 
   private destroy$ = new Subject<void>();
 
-showExceptionPolicyView = false;
-private exceptionModalOpen = false;
+  showExceptionPolicyView = false;
+  private exceptionModalOpen = false;
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
   @ViewChild('tableResponsive') tableResponsive: any;
@@ -245,7 +245,7 @@ private exceptionModalOpen = false;
         this.GetWorkflowMasterByTypeId(selectedId);
       }
     });
- 
+
 
     // this.newPurchaseRequestForm.get('exceptionPolicy')?.valueChanges.subscribe(checked => {
     //   if (checked) {
@@ -292,7 +292,7 @@ private exceptionModalOpen = false;
     }
   }
 
-    ngOnDestroy(): void {
+  ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -315,13 +315,13 @@ private exceptionModalOpen = false;
 
   private patchReceiverContactFromE164(e164: string | null | undefined): void {
     if (!e164) return;
-  
+
     try {
       const phone = this.phoneUtil.parseAndKeepRawInput(e164);
       const region = this.phoneUtil.getRegionCodeForNumber(phone) || 'PK';
-  
+
       this.selectedCountryISO = (CountryISO as any)[region] ?? CountryISO.Pakistan;
-  
+
       // build the object ngx-intl-tel-input understands
       const valueObj = {
         number: String(phone.getNationalNumber()),
@@ -331,7 +331,7 @@ private exceptionModalOpen = false;
         countryCode: region,
         dialCode: `+${phone.getCountryCode()}`
       };
-  
+
       this.newPurchaseRequestForm.get('receiverContact')?.setValue(valueObj, { emitEvent: false });
     } catch {
       this.newPurchaseRequestForm.get('receiverContact')?.setValue(e164, { emitEvent: false });
@@ -732,13 +732,13 @@ private exceptionModalOpen = false;
   }
 
   loadExistingRequest(id: number, generateRfq?: boolean, forInventoryTransfer?: boolean, selectFinalVendor?: boolean) {
- 
+
     this.spinner.show();
- 
+
     this.loading = true;
- 
+
     this.purchaseRequestService.getPurchaseRequestById(id, generateRfq, forInventoryTransfer, selectFinalVendor).subscribe({
- 
+
       next: async (data) => {
 
         // unwrap the Ardalis.Result<T> wrapper (if any)
@@ -964,6 +964,11 @@ private exceptionModalOpen = false;
       this.toastr.warning('Form is invalid');
       return;
     }
+
+    if (!this.newPurchaseItemData || this.newPurchaseItemData.length === 0) {
+      this.toastr.warning('Please add at least one item before saving.');
+      return;
+    }
     const entityId = localStorage.getItem('selectedCompanyId');
     const f = this.newPurchaseRequestForm.getRawValue();
     const submittedDateISO = f.submittedDate ? new Date(f.submittedDate).toISOString() : new Date().toISOString();
@@ -1033,40 +1038,40 @@ private exceptionModalOpen = false;
       this.loading = true;
       this.spinner.show();
       this.purchaseRequestService.updatePurchaseRequest(this.currentRequestId, { purchaseRequest: payload })
-      .pipe(finalize(() => this.spinner.hide()))
-      .subscribe({
-        next: res => {
-          this.loading = false;
-          this.spinner.hide();
-          this.router.navigate(['/purchase-request']);
-        },
-        error: err => {
-          console.error('Error updating Purchase Request:', err);
-          this.toastr.error('Something went wrong.', '');
-          this.loading = false;
-        }
-      });
+        .pipe(finalize(() => this.spinner.hide()))
+        .subscribe({
+          next: res => {
+            this.loading = false;
+            this.spinner.hide();
+            this.router.navigate(['/purchase-request']);
+          },
+          error: err => {
+            console.error('Error updating Purchase Request:', err);
+            this.toastr.error('Something went wrong.', '');
+            this.loading = false;
+          }
+        });
     }
     else {
       this.loading = true;
       this.spinner.show();
       this.purchaseRequestService.createPurchaseRequest({ purchaseRequest: payload, isDraft: false })
-      .pipe(finalize(() => this.spinner.hide()))
-      .subscribe({
-        next: res => {
-          console.log('Purchase Request Created:', res);
-          // this.attachmentList.forEach(a => a.isNew = false);
-          // this.numberOfAttachments = this.attachmentList.length;
-          this.loading = false;
-          this.spinner.hide();
-          this.router.navigate(['/purchase-request']);
-        },
-        error: err => {
-          console.error('Error creating Purchase Request:', err);
-          this.toastr.error('Something went wrong.');
-          this.loading = false;
-        }
-      });
+        .pipe(finalize(() => this.spinner.hide()))
+        .subscribe({
+          next: res => {
+            console.log('Purchase Request Created:', res);
+            // this.attachmentList.forEach(a => a.isNew = false);
+            // this.numberOfAttachments = this.attachmentList.length;
+            this.loading = false;
+            this.spinner.hide();
+            this.router.navigate(['/purchase-request']);
+          },
+          error: err => {
+            console.error('Error creating Purchase Request:', err);
+            this.toastr.error('Something went wrong.');
+            this.loading = false;
+          }
+        });
     }
   }
 
@@ -1180,12 +1185,12 @@ private exceptionModalOpen = false;
               next: res => {
                 this.loading = false;
                 // if (res.message == "Approved") {
-                  //this.dataLoaded = true;
-                  this.toastr.success(res.message);
-                  this.cdr.detectChanges();
-                  this.router.navigate(['/purchase-request']);
+                //this.dataLoaded = true;
+                this.toastr.success(res.message);
+                this.cdr.detectChanges();
+                this.router.navigate(['/purchase-request']);
 
-                  // this.toastr.success(res.message);
+                // this.toastr.success(res.message);
                 //}
                 // else {
                 //   this.toastr.warning(res.message);
@@ -1479,156 +1484,156 @@ private exceptionModalOpen = false;
   }
 
 
-async onExceptionPolicyToggle(e: Event): Promise<void> {
-  const input = e.target as HTMLInputElement;
-  const checked = !!input.checked;
+  async onExceptionPolicyToggle(e: Event): Promise<void> {
+    const input = e.target as HTMLInputElement;
+    const checked = !!input.checked;
 
-  const ctrl = this.newPurchaseRequestForm.get('exceptionPolicy');
-  if (!ctrl) return;
+    const ctrl = this.newPurchaseRequestForm.get('exceptionPolicy');
+    if (!ctrl) return;
 
-  // ✅ if modal already open, block
-  if (this.exceptionModalOpen || this.modalService.hasOpenModals()) {
-    // revert UI state to form value
-    input.checked = !!ctrl.value;
-    return;
-  }
+    // ✅ if modal already open, block
+    if (this.exceptionModalOpen || this.modalService.hasOpenModals()) {
+      // revert UI state to form value
+      input.checked = !!ctrl.value;
+      return;
+    }
 
-  // =========================
-  // ✅ CHECKED: open create modal
-  // =========================
-  if (checked) {
-    // set checkbox true immediately (so UI matches)
-    ctrl.setValue(true, { emitEvent: false });
+    // =========================
+    // ✅ CHECKED: open create modal
+    // =========================
+    if (checked) {
+      // set checkbox true immediately (so UI matches)
+      ctrl.setValue(true, { emitEvent: false });
 
-    // open modal next tick (prevents click-cycle issues)
-    setTimeout(() => this.openExceptionPolicyModal({ mode: 'create' }), 0);
-    return;
-  }
+      // open modal next tick (prevents click-cycle issues)
+      setTimeout(() => this.openExceptionPolicyModal({ mode: 'create' }), 0);
+      return;
+    }
 
-  // =========================
-  // ✅ UNCHECKED: confirm + clear
-  // =========================
-  // if nothing saved, just turn off
-  if (!this.exceptionPolicyData) {
-    ctrl.setValue(false, { emitEvent: false });
-    this.showExceptionPolicyView = false;
-    return;
-  }
+    // =========================
+    // ✅ UNCHECKED: confirm + clear
+    // =========================
+    // if nothing saved, just turn off
+    if (!this.exceptionPolicyData) {
+      ctrl.setValue(false, { emitEvent: false });
+      this.showExceptionPolicyView = false;
+      return;
+    }
 
-  const res = await Swal.fire({
-    title: 'Remove Exception Policy?',
-    text: 'If you uncheck, all exception policy information will be cleared and lost.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, remove it',
-    cancelButtonText: 'Cancel',
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-  });
-
-  if (res.isConfirmed) {
-    this.exceptionPolicyData = null;
-    this.showExceptionPolicyView = false;
-    ctrl.setValue(false, { emitEvent: false });
-  } else {
-    // revert back ON
-    ctrl.setValue(true, { emitEvent: false });
-    input.checked = true;
-    this.showExceptionPolicyView = true;
-  }
-}
-
-
-openExceptionPolicyModal(opts?: { mode: 'create' | 'view' }) {
-  if (this.exceptionModalOpen || this.modalService.hasOpenModals()) return;
-
-  const ctrl = this.newPurchaseRequestForm.get('exceptionPolicy');
-  if (!ctrl) return;
-
-  this.exceptionModalOpen = true;
-
-  const mode = opts?.mode ?? 'create';
-
-  const modalRef = this.modalService.open(PurchaseRequestExceptionPolicyComponent, {
-    backdrop: 'static',
-    size: 'lg',
-    centered: true,
-    keyboard: false
-  });
-
-  const f = this.newPurchaseRequestForm.getRawValue();
-  modalRef.componentInstance.viewMode = this.viewMode;
-  modalRef.componentInstance.data = {
-    requisitionNo: f.requisitionNo,
-    requesterName: f.receiverName,
-    subject: f.subject,
-    department: f.department,
-    mode,
-    existing: this.exceptionPolicyData
-  };
-
-  // prefill
-  // if (this.exceptionPolicyData) {
-  //   modalRef.componentInstance.exceptionPolicyForm?.patchValue(this.exceptionPolicyData, { emitEvent: false });
-  // } else {
-  //   modalRef.componentInstance.exceptionPolicyForm?.patchValue(
-  //     { requisitionNo: f.requisitionNo, subject: f.subject, department: f.department },
-  //     { emitEvent: false }
-  //   );
-  // }
-  if (this.exceptionPolicyData) {
-  modalRef.componentInstance.exceptionPolicyForm?.patchValue({
-    requisitionNo: this.exceptionPolicyData.requisitionNo,
-    requesterName: this.exceptionPolicyData.requesterName,
-    subject: this.exceptionPolicyData.subject,
-    department: this.exceptionPolicyData.department,
-    description: this.exceptionPolicyData.description,
-    estimatedValue: this.exceptionPolicyData.estimatedValue,
-    justification: this.exceptionPolicyData.justification,
-    waiveApproval: this.exceptionPolicyData.waiveApproval
-  }, { emitEvent: false });
-} else {
-  modalRef.componentInstance.exceptionPolicyForm?.patchValue({
-    //purchaseRequestId: this.currentRequestId,
-    requesterName: f.receiverName,
-    requisitionNo: f.requisitionNo,
-    subject: f.subject,
-    department: f.department
-  }, { emitEvent: false });
-}
-
-
-  modalRef.result
-    .then((result) => {
-      this.exceptionModalOpen = false;
-
-      if (result) {
-        // save
-        this.exceptionPolicyData = result;
-        this.showExceptionPolicyView = true;
-
-        ctrl.setValue(true, { emitEvent: false });
-        return;
-      }
-
-      // cancel: if nothing saved, uncheck
-      if (!this.exceptionPolicyData) {
-        ctrl.setValue(false, { emitEvent: false });
-        this.showExceptionPolicyView = false;
-      }
-    })
-    .catch(() => {
-      this.exceptionModalOpen = false;
-
-      if (!this.exceptionPolicyData) {
-        ctrl.setValue(false, { emitEvent: false });
-        this.showExceptionPolicyView = false;
-      }
+    const res = await Swal.fire({
+      title: 'Remove Exception Policy?',
+      text: 'If you uncheck, all exception policy information will be cleared and lost.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, remove it',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
     });
-}
 
-onViewExceptionPolicy(): void {
-  if (!this.exceptionPolicyData) return;
-  this.openExceptionPolicyModal({ mode: 'view' });
-}
+    if (res.isConfirmed) {
+      this.exceptionPolicyData = null;
+      this.showExceptionPolicyView = false;
+      ctrl.setValue(false, { emitEvent: false });
+    } else {
+      // revert back ON
+      ctrl.setValue(true, { emitEvent: false });
+      input.checked = true;
+      this.showExceptionPolicyView = true;
+    }
+  }
+
+
+  openExceptionPolicyModal(opts?: { mode: 'create' | 'view' }) {
+    if (this.exceptionModalOpen || this.modalService.hasOpenModals()) return;
+
+    const ctrl = this.newPurchaseRequestForm.get('exceptionPolicy');
+    if (!ctrl) return;
+
+    this.exceptionModalOpen = true;
+
+    const mode = opts?.mode ?? 'create';
+
+    const modalRef = this.modalService.open(PurchaseRequestExceptionPolicyComponent, {
+      backdrop: 'static',
+      size: 'lg',
+      centered: true,
+      keyboard: false
+    });
+
+    const f = this.newPurchaseRequestForm.getRawValue();
+    modalRef.componentInstance.viewMode = this.viewMode;
+    modalRef.componentInstance.data = {
+      requisitionNo: f.requisitionNo,
+      requesterName: f.receiverName,
+      subject: f.subject,
+      department: f.department,
+      mode,
+      existing: this.exceptionPolicyData
+    };
+
+    // prefill
+    // if (this.exceptionPolicyData) {
+    //   modalRef.componentInstance.exceptionPolicyForm?.patchValue(this.exceptionPolicyData, { emitEvent: false });
+    // } else {
+    //   modalRef.componentInstance.exceptionPolicyForm?.patchValue(
+    //     { requisitionNo: f.requisitionNo, subject: f.subject, department: f.department },
+    //     { emitEvent: false }
+    //   );
+    // }
+    if (this.exceptionPolicyData) {
+      modalRef.componentInstance.exceptionPolicyForm?.patchValue({
+        requisitionNo: this.exceptionPolicyData.requisitionNo,
+        requesterName: this.exceptionPolicyData.requesterName,
+        subject: this.exceptionPolicyData.subject,
+        department: this.exceptionPolicyData.department,
+        description: this.exceptionPolicyData.description,
+        estimatedValue: this.exceptionPolicyData.estimatedValue,
+        justification: this.exceptionPolicyData.justification,
+        waiveApproval: this.exceptionPolicyData.waiveApproval
+      }, { emitEvent: false });
+    } else {
+      modalRef.componentInstance.exceptionPolicyForm?.patchValue({
+        //purchaseRequestId: this.currentRequestId,
+        requesterName: f.receiverName,
+        requisitionNo: f.requisitionNo,
+        subject: f.subject,
+        department: f.department
+      }, { emitEvent: false });
+    }
+
+
+    modalRef.result
+      .then((result) => {
+        this.exceptionModalOpen = false;
+
+        if (result) {
+          // save
+          this.exceptionPolicyData = result;
+          this.showExceptionPolicyView = true;
+
+          ctrl.setValue(true, { emitEvent: false });
+          return;
+        }
+
+        // cancel: if nothing saved, uncheck
+        if (!this.exceptionPolicyData) {
+          ctrl.setValue(false, { emitEvent: false });
+          this.showExceptionPolicyView = false;
+        }
+      })
+      .catch(() => {
+        this.exceptionModalOpen = false;
+
+        if (!this.exceptionPolicyData) {
+          ctrl.setValue(false, { emitEvent: false });
+          this.showExceptionPolicyView = false;
+        }
+      });
+  }
+
+  onViewExceptionPolicy(): void {
+    if (!this.exceptionPolicyData) return;
+    this.openExceptionPolicyModal({ mode: 'view' });
+  }
 }
