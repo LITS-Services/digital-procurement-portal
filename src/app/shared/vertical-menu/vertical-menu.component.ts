@@ -27,8 +27,8 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('toggleIcon') toggleIcon: ElementRef;
   public menuItems: any[];
   level: number = 0;
-  logoUrl: string = 'assets/img/logos/mini-logo.svg';
-  expandedLogoUrl: string = 'assets/img/logos/Logo.svg';
+  logoUrl: string = 'assets/img/logos/hts-logo-white.png';
+  expandedLogoUrl: string = 'assets/img/logos/hts-logo-white.png';
   currentLogoUrl: string = this.logoUrl;
   public config: any = {};
   protected innerWidth: any;
@@ -58,12 +58,12 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   // }
   ngOnInit() {
     this.permissionService.permsSubject.subscribe(() => {
-        this.loadMenuItems();
+      this.loadMenuItems();
     });
 
     // Initial load
     this.loadMenuItems();
-}
+  }
 
 
   ngAfterViewInit() {
@@ -106,27 +106,27 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-navigateFromMiniMenu(item: any, dd: any) {
-  dd?.close();
+  navigateFromMiniMenu(item: any, dd: any) {
+    dd?.close();
 
-  if (item?.isExternalLink) {
-    window.open(item.path, '_blank');
-    return;
-  }
-
-  // if a submenu item was clicked that still has children, navigate to first child
-  if (item?.submenu?.length) {
-    const first = item.submenu[0];
-    if (first?.path) {
-      this.router.navigate([first.path]);
+    if (item?.isExternalLink) {
+      window.open(item.path, '_blank');
+      return;
     }
-    return;
-  }
 
-  if (item?.path) {
-    this.router.navigate([item.path]);
+    // if a submenu item was clicked that still has children, navigate to first child
+    if (item?.submenu?.length) {
+      const first = item.submenu[0];
+      if (first?.path) {
+        this.router.navigate([first.path]);
+      }
+      return;
+    }
+
+    if (item?.path) {
+      this.router.navigate([item.path]);
+    }
   }
-}
 
 
   loadLayout() {
@@ -135,15 +135,15 @@ navigateFromMiniMenu(item: any, dd: any) {
         this.menuItems = HROUTES;
       }
     } else if (this.config.layout.menuPosition === "Side") { // Vertical Menu
-      this.loadMenuItems(); 
+      this.loadMenuItems();
     }
 
     if (this.config.layout.sidebar.backgroundColor === 'white') {
-      this.logoUrl = 'assets/img/logos/mini-logo.svg';
+      this.logoUrl = 'assets/img/logos/hts-logo-white.png';
       this.expandedLogoUrl = 'assets/img/img/logos/Logo.svg';
     } else {
-      this.logoUrl = 'assets/img/logos/mini-logo.svg';
-      this.expandedLogoUrl = 'assets/img/logos/Logo.svg';
+      this.logoUrl = 'assets/img/logos/hts-logo-white.png';
+      this.expandedLogoUrl = 'assets/img/logos/hts-logo-white.png';
     }
 
     this.updateLogo();
@@ -201,12 +201,12 @@ navigateFromMiniMenu(item: any, dd: any) {
   //   this.menuItems = ROUTES.filter(item => this.permissionService.canRead(item.formTypeId));
   //   console.log('READ ACL: ',this.menuItems);
   // }
-private loadMenuItems() {
+  private loadMenuItems() {
     this.menuItems = filterNavByPerm(
-        ROUTES,
-        this.permissionService.canRead.bind(this.permissionService)
+      ROUTES,
+      this.permissionService.canRead.bind(this.permissionService)
     );
-}
+  }
 
 
 }

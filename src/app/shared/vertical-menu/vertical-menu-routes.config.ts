@@ -26,7 +26,7 @@ export const ROUTES: RouteInfo[] = [
 
   // { path: '/tendering', title: 'Tendering', icon: 'fa fa-handshake-o', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
   {
-    path: '/company', title: 'Vendor Companies', icon: 'fa fa-briefcase', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+    path: '/company', title: 'Sourcing Companies', icon: 'fa fa-briefcase', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
     formTypeId: FORM_IDS.VENDOR_COMPANIES
   },
   {
@@ -87,7 +87,7 @@ export const ROUTES: RouteInfo[] = [
         path: '/setup/email-templatelist', title: 'Email Template List', icon: 'fa fa-envelope-open-text submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         formTypeId: FORM_IDS.EMAIL_TEMPLATE_LIST
       },
-       {
+      {
         path: '/setup/bulk-vendor-onboarding', title: 'Bulk Company Onboarding', icon: 'fa fa-folder-plus submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         formTypeId: FORM_IDS.BULK_COMPANY_ONBOARDING
       },

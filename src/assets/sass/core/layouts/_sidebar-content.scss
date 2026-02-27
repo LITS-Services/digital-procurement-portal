@@ -145,7 +145,7 @@ body {
     &.sidebar-group-active {
       &:not(.open) {
         // border-right: solid 5px map-get($danger-color, base);
-         background: rgba(map-get($grey-color, lighten-2), 0.2);
+        background: rgba(map-get($grey-color, lighten-2), 0.2);
       }
     }
   }
@@ -229,9 +229,9 @@ body {
   }
 
   .logo-img {
-    width: 30px;
+    width: auto;
     display: inline-block;
-    max-height: 30px;
+    max-height: 50px;
     margin-right: 15px;
   }
 
@@ -276,7 +276,7 @@ body {
         }
 
         >a {
-                   background: rgba(map-get($grey-color, lighten-2), 0.2);
+          background: rgba(map-get($grey-color, lighten-2), 0.2);
 
         }
       }
@@ -286,7 +286,7 @@ body {
         overflow: hidden;
         line-height: $font-size-base * 2;
         margin: 0px 6px 6px 6px !important;
-       padding: 10px 0px 10px 8px;
+        padding: 10px 0px 10px 8px;
         background-color: transparent;
         color: $white;
         transition: all 300ms linear;
@@ -312,7 +312,7 @@ body {
       }
 
       &.active {
-        .menu-title{
+        .menu-title {
           font-weight: 500 !important;
         }
       }
@@ -352,7 +352,7 @@ body {
     }
 
 
-    .app-sidebar .navigation li.active > a > .menu-title {
+    .app-sidebar .navigation li.active>a>.menu-title {
       font-weight: 800;
     }
 
@@ -409,6 +409,7 @@ body {
     position: relative;
     padding: 0.5rem 0 0.5rem .95rem;
     z-index: 4;
+    margin-bottom: 25px;
 
     p {
       float: left;
@@ -471,7 +472,7 @@ body {
   }
 
   &[data-background-color="info"] {
-   background-image: linear-gradient(175deg, #116aef -24%, #114c7a 99%);
+    background-image: linear-gradient(175deg, #116aef -24%, #114c7a 99%);
   }
 
   &[data-background-color="success"] {
@@ -525,8 +526,9 @@ body {
 
 
 @media (min-width: 1921px) {
-  .app-sidebar .navigation li > a {
-    margin: 0 4px 6px 6px !important;   /* your custom margin here */
+  .app-sidebar .navigation li>a {
+    margin: 0 4px 6px 6px !important;
+    /* your custom margin here */
   }
 }
 
@@ -566,7 +568,7 @@ body {
     background-color: #F5F5F5;
   }
 
- .toggle-icon {
+  .toggle-icon {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -665,9 +667,9 @@ body {
 }
 
 @media (max-width: 576px) {
-    .main-panel {
-      margin-top: 54px !important;
-    }
+  .main-panel {
+    margin-top: 54px !important;
+  }
 }
 
 
@@ -723,6 +725,7 @@ body {
     transform: translate3d(-100%, 0, 0);
   }
 }
+
 .app-sidebar .dropdown-toggle::after {
   border-top: none;
 }

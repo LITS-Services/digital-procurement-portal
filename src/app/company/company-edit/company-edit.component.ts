@@ -486,7 +486,7 @@ export class CompanyEditComponent implements OnInit {
         this.isSubmitting = false;
         this.message =
           action === 'sendforapproval'
-            ? 'Vendor Company submitted for approval successfully.'
+            ? 'Sourcing Company submitted for approval successfully.'
             : `Company ${action} Successfully!`;
         // Prioritize local message to avoid backend messages that might contain user IDs or other details
         this.toastr.success(this.message);
