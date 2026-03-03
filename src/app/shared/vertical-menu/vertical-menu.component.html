@@ -5,24 +5,21 @@
       <div class="logo-img">
         <img [routerLink]="['/dashboard/dashboard1']"
           [src]="config?.layout?.sidebar?.collapsed ? logoUrl : expandedLogoUrl"
-          [style.width]="config?.layout?.sidebar?.collapsed ? '36px' : '180px'" style="transition: width 0.3s ease;
-    transition: width 0.3s;
-    width: 176px;
-    margin-bottom: 13px;" />
+          class="sidebar-logo" />
       </div>
-    </a>
-
-    <a class="nav-toggle d-none d-lg-none d-xl-block" id="sidebarToggle" href="javascript:;" (click)="toggleSidebar()">
-      <i #toggleIcon [ngClass]="{
-          'ft-chevron-right': config.layout.sidebar.collapsed,
-          'ft-chevron-left': !config.layout.sidebar.collapsed
-        }" class="toggle-icon"></i>
     </a>
 
     <a class="nav-close d-block d-lg-block d-xl-none" id="sidebarClose" href="javascript:;" (click)="CloseSidebar()">
       <i class="ft-x"></i>
     </a>
   </div>
+
+  <a class="nav-toggle d-none d-lg-none d-xl-block" id="sidebarToggle" href="javascript:;" (click)="toggleSidebar()"
+    [class.nav-toggle-collapsed]="config.layout.sidebar.collapsed">
+    <span class="toggle-icon">
+      <img [src]="config.layout.sidebar.collapsed ? 'assets/img/icons/Open.png' : 'assets/img/icons/Collaps.png'" />
+    </span>
+  </a>
 </div>
 <!-- Sidebar Header Ends -->
 

@@ -206,6 +206,10 @@ body {
     height: calc((var(--vh, 1vh) * 100) - 62px) !important;
     z-index: 4;
 
+    &.collapsed {
+      padding-top: 80px;
+    }
+
     // Perfect Scrollbar
     .ps {
       &__rail-y {
@@ -553,26 +557,81 @@ body {
 }
 
 .sidebar-header {
-  a.nav-toggle {
+  z-index: 1001;
+  position: relative;
+
+  .logo-img {
+    width: auto;
     display: inline-block;
+    max-height: 50px;
+    margin-right: 15px;
+
+    .sidebar-logo {
+      margin-left: 9px;
+      margin-top: 15px;
+      margin-bottom: 10px;
+      transition: width 0.3s ease;
+      width: 96px;
+
+      body.nav-collapsed & {
+        width: 36px;
+      }
+    }
+  }
+
+  a.nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: absolute;
-    width: 22px;
-    height: 22px;
-    line-height: 20px;
-    font-size: 18px;
-    text-align: center;
-    right: -15px;
-    top: 25px;
+    width: 32px;
+    height: 32px;
+    right: 15px;
+    top: 32px;
     border-radius: 6px;
-    color: #116AEF;
-    background-color: #F5F5F5;
+    background-color: transparent;
+    transition: all 0.3s cubic-bezier(0, 0, 0.2, 1);
+    z-index: 1100;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba($white, 0.1);
+    }
+
+    &.nav-toggle-collapsed {
+      background-color: transparent;
+      border-radius: 10px;
+      width: 56px;
+      height: 48px;
+      top: 100px;
+      right: 6px;
+
+      &:hover {
+        background-color: #fff;
+        .toggle-icon img {
+          filter: invert(34%) sepia(91%) saturate(2256%) hue-rotate(205deg) brightness(97%) contrast(92%);
+        }
+      }
+
+      .toggle-icon img {
+        filter: none;
+        width: 24px;
+        height: 24px;
+      }
+    }
   }
 
   .toggle-icon {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
     height: 100%;
+    img {
+      width: 24px;
+      height: 24px;
+      transition: all 0.3s ease;
+    }
   }
 
   a.nav-close {
