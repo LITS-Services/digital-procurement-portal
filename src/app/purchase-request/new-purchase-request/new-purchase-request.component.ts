@@ -163,7 +163,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       department: [''],
       designation: [''],
       businessUnit: [''],
-      partialDeliveryAcceptable: [false],
+      partialDeliveryAcceptable: [true],
       exceptionPolicy: [false],
       subject: [''],
       entityId: [null],
