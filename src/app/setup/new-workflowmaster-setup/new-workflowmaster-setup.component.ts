@@ -74,6 +74,7 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
       workflowName: ['', Validators.required],
       documentType: ['', Validators.required],
       status: [false],
+      enableBulkUpload: [false],
       usersList: [[]],
     });
 
@@ -363,6 +364,7 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
       workflowTypeId: f.documentType,
       workflowName: f.workflowName,
       isActive: f.status === true,
+      enableBulkUpload: f.enableBulkUpload,
       createdDate: new Date().toISOString(),
       workflowDetails: workflowDetails
     };
@@ -402,7 +404,8 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
         this.workflowsetupform.patchValue({
           workflowName: master.workflowName,
           documentType: master.workflowTypeId,
-          status: master.isActive
+          status: master.isActive,
+          enableBulkUpload: master.enableBulkUpload
         });
 
         // Detect Vendor Onboarding workflow
@@ -505,6 +508,7 @@ export class NewWorkflowmasterSetupComponent implements OnInit {
       workflowTypeId: f.documentType,
       workflowName: f.workflowName,
       isActive: f.status === true,
+      enableBulkUpload: f.enableBulkUpload,
       createdDate: new Date().toISOString(),
       workflowDetails: workflowDetails,
     };
