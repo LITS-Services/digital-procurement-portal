@@ -11,6 +11,8 @@ import { AclGuard } from 'app/shared/permissions/acl.guard';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { CreateEmailTemplateComponent } from './create-email-template/create-email-template.component';
 import { BulkVendorOnboardingComponent } from './bulk-vendor-onboarding/bulk-vendor-onboarding.component';
+import { IntegrationManagerListComponent } from './integration-manager-list/integration-manager-list.component';
+import { IntegrationManagerFormComponent } from './integration-manager-form/integration-manager-form.component';
 
 const routes: Routes = [
 
@@ -103,6 +105,26 @@ const routes: Routes = [
           title: 'ACL',
           formTypeId: FORM_IDS.ACL,
           action: 'read',
+        }
+      },
+      {
+        path: 'integration-manager',
+        component: IntegrationManagerListComponent,
+        canActivate: [AclGuard],
+        data: {
+          title: 'Integration Setup',
+          formTypeId: FORM_IDS.INTEGRATION_MANAGER,
+          action: 'read'
+        }
+      },
+      {
+        path: 'integration-manager/form',
+        component: IntegrationManagerFormComponent,
+        canActivate: [AclGuard],
+        data: {
+          title: 'Integration Form',
+          formTypeId: FORM_IDS.INTEGRATION_MANAGER,
+          action: 'read'
         }
       },
     ]

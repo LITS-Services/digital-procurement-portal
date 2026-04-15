@@ -84,6 +84,33 @@ export class SystemService {
     );
   }
 
+  createIntegrationManager(data: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/integration-manager`, data);
+  }
+
+  updateIntegrationManager(data: any): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/integration-manager`, data);
+  }
+
+  deleteIntegrationManager(id: number, modifiedBy: string): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/integration-manager`, {
+      params: {
+        id: id.toString(),
+        modifiedBy
+      }
+    });
+  }
+
+  getAllIntegrationManagers(currentPage: number, pageSize: number): Observable<any> {
+    return this.http.get<any>(
+      `${this.baseUrl}/integration-manager?currentPage=${currentPage}&pageSize=${pageSize}`
+    );
+  }
+
+  getIntegrationManagerById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/integration-manager/${id}`);
+  }
+
   // for downloading attachment from any source
   downloadAttachment(source: string, id: number): Observable<Blob> {
     return this.http.get(

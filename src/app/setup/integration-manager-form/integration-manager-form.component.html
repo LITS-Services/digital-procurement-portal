@@ -1,0 +1,93 @@
+<section>
+  <div class="row">
+    <div class="col-12">
+      <div class="row">
+        <div class="col-md-12" style="margin-top: -0.25rem;">
+          <h4 class="heading">{{ isEditMode ? 'Update Integration' : 'Create Integration' }}</h4>
+        </div>
+      </div>
+
+      <div class="card cstm-ui-card">
+        <div class="row">
+          <div class="col-md-6">
+            <button class="btn btn-lg mr-1" type="button" (click)="homePage()"><i class="ft-arrow-left"></i></button>
+            <span class="vl"></span>
+            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="integrationForm.invalid || loading" (click)="onSave()">
+              <i [ngClass]="isEditMode ? 'ft-edit-2' : 'ft-plus'"></i>
+              <label class="ml-1">{{ isEditMode ? 'Update' : 'Save' }}</label>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card integration-form-card">
+        <div class="card-body">
+          <form [formGroup]="integrationForm" (ngSubmit)="onSave()">
+            <div class="row gx-3">
+              <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="form-group mb-2">
+                  <label>Integration Name</label>
+                  <input type="text" formControlName="name" class="form-control custom-input"
+                    placeholder="e.g. ERP Sync Service" />
+                </div>
+              </div>
+
+              <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="form-group mb-2">
+                  <label>Code</label>
+                  <input type="text" formControlName="code" class="form-control custom-input"
+                    placeholder="e.g. ERP_SYNC" />
+                </div>
+              </div>
+
+          
+
+              <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="form-group mb-2">
+                  <label>Interval Type</label>
+                  <select formControlName="intervalType" class="form-control custom-input">
+                    <option [ngValue]="null" disabled>Select interval type</option>
+                    <option *ngFor="let intervalType of intervalTypeOptions" [value]="intervalType.value">
+                      {{ intervalType.label }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="form-group mb-2">
+                  <label>Interval</label>
+                  <input type="number" formControlName="interval" min="1" class="form-control custom-input"
+                    placeholder="e.g. 30" />
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="form-group mb-3">
+                  <label>Endpoint URL</label>
+                  <input type="text" formControlName="url" class="form-control custom-input"
+                    placeholder="e.g. https://api.example.com/sync" />
+                </div>
+              </div>
+
+              <div class="col-6 mt-2">
+                <div class="form-group mb-2">
+                  <!-- <label class="d-block">Status</label> -->
+                  <div class="status-row">
+                    <div class="status-meta">
+                      <div class="status-title">{{ integrationForm.get('isActive')?.value ? 'Active' : 'Inactive' }}</div>
+                      <div class="status-subtitle">Enable this integration to run on schedule</div>
+                    </div>
+                    <label class="switch">
+                      <input type="checkbox" id="integrationIsActive" formControlName="isActive">
+                      <span class="slider round"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

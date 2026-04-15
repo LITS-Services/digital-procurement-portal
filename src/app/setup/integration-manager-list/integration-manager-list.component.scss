@@ -1,0 +1,43 @@
+::ng-deep .ngx-datatable{
+  .sortable .sort-btn:before {
+      // font-family: data-table;
+      // content: "c";
+      display: none !important;
+  }
+  .sortable .sort-btn.datatable-icon-down:before {
+      // content: "f";
+      display: none !important;
+
+  }
+  .sortable .sort-btn.datatable-icon-up:before {
+      // content: "e";
+      display: none !important;
+  }
+}
+
+:host {
+  display: block;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.chip--success {
+  background: #ecfdf5;
+  border-color: #bbf7d0;
+  color: #047857;
+}
+
+.chip--rejected {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}

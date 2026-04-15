@@ -1,0 +1,82 @@
+<section>
+  <div class="row">
+    <div class="col-12">
+      <div class="row">
+        <div class="col-md-12" style="margin-top: -0.25rem;">
+          <h4 class="heading">Integrations</h4>
+        </div>
+      </div>
+
+      <div class="card cstm-ui-card">
+        <div class="row">
+          <div class="col-md-12 row">
+            <div class="col-md-8">
+              <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+                <i class="ft-arrow-left"></i>
+              </button>
+              <span class="vl"></span>
+
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onCreate()"
+                appPermission [appPermFormId]="FORM_IDS.INTEGRATION_MANAGER" [appPermDisable]="'write'">
+                <i class="ft-plus"></i><label class="ml-1">Create</label>
+              </button>
+
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onEdit()"
+                [disabled]="isEditButtonDisabled">
+                <i class="ft-edit"></i><label class="ml-1">Update</label>
+              </button>
+
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onDelete()"
+                [disabled]="isDeleteButtonDisabled">
+                <i class="ft-trash"></i><label class="ml-1">Delete</label>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      @if(datatableVisible){
+      <div class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
+        <ngx-datatable #datatable (autoResize)="onAutoResize()" class="bootstrap core-bootstrap" [rows]="rows"
+          [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'"
+          [limit]="pageSize" [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1"
+          (page)="onPageChange($event)" [scrollbarH]="isMobile" [loadingIndicator]="loading" [selected]="chkBoxSelected"
+          [swapColumns]="false" [selectionType]="SelectionType.checkbox" (sort)="onSort($event)"
+          (select)="customChkboxOnSelect($event)">
+
+          <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+            [resizeable]="false">
+            <ng-template ngx-datatable-header-template>
+            </ng-template>
+            <ng-template ngx-datatable-cell-template let-isSelected="isSelected"
+              let-onCheckboxChangeFn="onCheckboxChangeFn">
+              <div class="custom-control cstm-checkbox-form custom-checkbox">
+                <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+              </div>
+            </ng-template>
+          </ngx-datatable-column>
+
+          <ngx-datatable-column name="Sr. No." [maxWidth]="70" [resizeable]="false">
+            <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
+              <span>{{ (currentPage - 1) * pageSize + rowIndex + 1 }}</span>
+            </ng-template>
+          </ngx-datatable-column>
+
+          <ngx-datatable-column name="Name" prop="name" [minWidth]="180"></ngx-datatable-column>
+          <ngx-datatable-column name="Code" prop="code" [minWidth]="120"></ngx-datatable-column>
+          <ngx-datatable-column name="Endpoint URL" prop="url" [minWidth]="220"></ngx-datatable-column>
+          <ngx-datatable-column name="Interval Type" prop="intervalType" [minWidth]="120"></ngx-datatable-column>
+          <ngx-datatable-column name="Interval" prop="interval" [minWidth]="100"></ngx-datatable-column>
+          <ngx-datatable-column name="Active" prop="isActive" [minWidth]="100">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+              <span [ngClass]="getStatusClass(row?.isActive)">
+                {{ getStatusText(row?.isActive) }}
+              </span>
+            </ng-template>
+          </ngx-datatable-column>
+        </ngx-datatable>
+      </div>
+      }
+    </div>
+  </div>
+</section>

@@ -31,6 +31,8 @@ import { PermissionDirective } from 'app/shared/permissions/permission.directive
 import { CreateEmailTemplateComponent } from './create-email-template/create-email-template.component';
 import { BulkVendorOnboardingComponent } from './bulk-vendor-onboarding/bulk-vendor-onboarding.component';
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
+import { IntegrationManagerListComponent } from './integration-manager-list/integration-manager-list.component';
+import { IntegrationManagerFormComponent } from './integration-manager-form/integration-manager-form.component';
 
 
 
@@ -47,6 +49,8 @@ import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-au
     AclSetupComponent,
     VendorOnboardingReceiversComponent,
     BulkVendorOnboardingComponent,
+    IntegrationManagerListComponent,
+    IntegrationManagerFormComponent,
   ],
   imports: [
     CommonModule,

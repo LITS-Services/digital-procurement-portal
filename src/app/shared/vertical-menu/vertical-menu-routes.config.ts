@@ -91,6 +91,10 @@ export const ROUTES: RouteInfo[] = [
         path: '/setup/bulk-vendor-onboarding', title: 'Bulk Company Onboarding', icon: 'fa fa-folder-plus submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         formTypeId: FORM_IDS.BULK_COMPANY_ONBOARDING
       },
+      {
+        path: '/setup/integration-manager', title: 'Integrations', icon: 'fa fa-link submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        formTypeId: FORM_IDS.INTEGRATION_MANAGER
+      },
 
     ],
   },

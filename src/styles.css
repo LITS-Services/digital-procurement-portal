@@ -563,6 +563,7 @@ body.vertical-overlay-menu .sticky-toolbar.sticky {
 
   /* KEY: reserve gutter space so width never changes */
   scrollbar-gutter: stable;
+  padding-bottom: 48px !important;
 
   /* optional: prevents any accidental horizontal jump */
   overflow-x: hidden;
