@@ -11,6 +11,13 @@
   }
 }
 
+.readonly-disabled-look {
+  background-color: #e1e1e159;
+  color: #6c757d;
+  border-color: #ced4da;
+  cursor: not-allowed;
+}
+
 .status-text {
   font-size: 12px;
   font-weight: 600;

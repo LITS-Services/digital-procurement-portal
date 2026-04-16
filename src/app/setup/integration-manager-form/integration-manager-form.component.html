@@ -36,6 +36,8 @@
                 <div class="form-group mb-2">
                   <label>Code</label>
                   <input type="text" formControlName="code" class="form-control custom-input"
+                    [class.readonly-disabled-look]="isEditMode"
+                    [readonly]="isEditMode"
                     placeholder="e.g. ERP_SYNC" />
                 </div>
               </div>
