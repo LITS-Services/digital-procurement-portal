@@ -367,6 +367,8 @@ form label, .form-group label {
 
 .phone-field-wrapper {
   position: relative;
+  overflow: visible;
+  z-index: 20;
 }
 
 .phone-error {
@@ -441,7 +443,7 @@ form label, .form-group label {
 ///accordion css
 :host ::ng-deep .accordion {
   border-radius: 8px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* each panel container */
@@ -529,6 +531,8 @@ border-bottom: none !important;
   display: flex;
   align-items: center;
   width: 100%;
+  position: relative;
+  overflow: visible !important;
   height: 42px;       
   border-radius: 8px;
   border: 1px solid #D7D7D7;
@@ -546,7 +550,7 @@ border-bottom: none !important;
 
 
 :host ::ng-deep ngx-intl-tel-input .iti__flag-container {
-  position: static;           
+  position: relative;
   display: flex;
   align-items: center;
   height: 100%;
@@ -596,16 +600,49 @@ border-bottom: none !important;
 
 
 :host ::ng-deep ngx-intl-tel-input .iti__country-list {
-  max-height: 260px;          
+  max-height: 260px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
   -webkit-overflow-scrolling: touch;
+  z-index: 9999 !important;
 }
 
 :host ::ng-deep ngx-intl-tel-input .iti__country-container {
   width: 100% !important;            
-  margin-top: 6px !important;          
+  position: absolute !important;
+  top: calc(100% + 4px) !important;
+  left: 0 !important;
+  margin-top: 0 !important;          
+  z-index: 9999 !important;
 
 }
 
 :host ::ng-deep ngx-intl-tel-input .iti__dropdown-content {
   overflow: hidden !important;
+  max-height: 300px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.16);
+  background: #fff;
+}
+
+:host ::ng-deep ngx-intl-tel-input .iti__search-container {
+  display: block !important;
+  position: static;
+  z-index: auto;
+  padding: 8px 10px 6px;
+  background: #fff;
+}
+
+:host ::ng-deep ngx-intl-tel-input .iti__search-input {
+  display: block !important;
+  width: 100% !important;
+  position: static;
+  z-index: auto;
+  margin: 0;
+  border-radius: 8px;
+  background: #fff;
+  pointer-events: auto !important;
 }

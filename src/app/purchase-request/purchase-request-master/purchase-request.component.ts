@@ -42,6 +42,7 @@ export class PurchaseRequestComponent implements OnInit {
   isEditButtonDisabled = true;
   isDeleteButtonDisabled = true;
   isOpenButtonDisabled = true;
+  isSubmitForApprovalDisabled = true;
   isAllSelected = false;
   columns = [];
 
@@ -261,6 +262,9 @@ export class PurchaseRequestComponent implements OnInit {
     // Disable open button if no rows selected
     this.isOpenButtonDisabled = selectedCount === 0;
 
+    // Submit for approval requires exactly one selectable row.
+    this.isSubmitForApprovalDisabled = !this.canSubmitSelectedRow();
+
     // Check "Select All" toggle
     this.isAllSelected = this.purchaseRequestData.length === this.chkBoxSelected.length;
 
@@ -275,6 +279,71 @@ export class PurchaseRequestComponent implements OnInit {
     } else {
       this.hasRestrictedStatus = false;
     }
+  }
+
+  canSubmitSelectedRow(): boolean {
+    if (this.chkBoxSelected.length !== 1) return false;
+
+    const row = this.chkBoxSelected[0];
+    const status = this.normalizeStatus(row?.requestStatus);
+
+    // Allow submit only when selected row is in New status.
+    if (status !== 'new') return false;
+
+    const loggedInUserId = Number(localStorage.getItem('userId'));
+    if (row?.submitterId && !Number.isNaN(loggedInUserId) && Number(row.submitterId) !== loggedInUserId) {
+      return false;
+    }
+
+    return true;
+  }
+
+  private normalizeStatus(status: any): string {
+    return (status || '')
+      .toString()
+      .toLowerCase()
+      .replace(/[\s_-]/g, '');
+  }
+
+  onSubmitForApprovalFromList(): void {
+    if (!this.permissionService.can(FORM_IDS.PURCHASE_REQUEST, 'write')) return;
+
+    // Keep handler safe, but avoid warning-noise for blocked statuses.
+    if (!this.canSubmitSelectedRow()) {
+      return;
+    }
+
+    const row = this.chkBoxSelected[0];
+
+    Swal.fire({
+      title: 'Submit for Approval?',
+      text: 'Are you sure you want to submit this Purchase Request for approval?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, submit it',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.purchaseRequestService.submitForApproval(row.requestId).subscribe({
+          next: () => {
+            this.toastr.success('Purchase Request submitted for approval.');
+            this.chkBoxSelected = [];
+            this.idsToDelete = [];
+            this.enableDisableButtons();
+            this.loadPurchaseRequests();
+          },
+          error: () => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Failed!',
+              text: 'Failed to submit purchase request for approval.',
+            });
+          }
+        });
+      }
+    });
   }
 
   // OPEN DELETE MODAL

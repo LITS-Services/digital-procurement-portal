@@ -12,9 +12,51 @@
     <div class="row gx-2">
       <!-- File Upload Button -->
       <div *ngIf="!viewMode && !isStatusCompleted" class="col-12 form-group mt-3">
-        <!-- <label for="fileUpload">Choose files</label> -->
-        <input type="file" (change)="onFileSelected($event)" class="form-control1"
-          accept=".pdf, .doc, .docx, .xls, .csv" multiple>
+        <input
+          #fileInput
+          type="file"
+          (change)="onFileSelected($event)"
+          [attr.aria-label]="'Choose files'"
+          accept=".pdf,.doc,.docx,.xls,.xlsx,.csv"
+          multiple
+          hidden
+        />
+
+        <div
+          class="upload-dropzone"
+          role="button"
+          tabindex="0"
+          (click)="fileInput.click()"
+          (keydown.enter)="fileInput.click()"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+          [class.upload-dropzone--disabled]="viewMode || isStatusCompleted"
+        >
+          <div class="upload-dropzone__content">
+            <div class="upload-dropzone__icon">
+              <i class="ft-upload-cloud"></i>
+            </div>
+
+            <div class="upload-dropzone__text">
+              <div class="upload-dropzone__title">Drop files here</div>
+              <div class="upload-dropzone__subtitle">
+                or <span class="text-primary upload-dropzone__browse">Browse</span>
+                <span class="d-block">Accepted: PDF, DOC/DOCX, XLS/XLSX, CSV</span>
+              </div>
+            </div>
+
+            <div class="upload-dropzone__action">
+              <button
+                type="button"
+                class="btn btn-primary btn-sm"
+                (click)="fileInput.click(); $event.stopPropagation()"
+              >
+                Choose files
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Textarea for additional information -->

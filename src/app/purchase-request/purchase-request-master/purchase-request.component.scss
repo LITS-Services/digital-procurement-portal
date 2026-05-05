@@ -114,6 +114,18 @@
   text-align: left;
 }
 
+/* Keep disabled action labels readable inside popover */
+:host ::ng-deep .action-popover .popover-btn:disabled {
+  opacity: 1;
+  color: #6c757d;
+  cursor: not-allowed;
+}
+
+:host ::ng-deep .action-popover .popover-btn:disabled .popover-icon {
+  color: #6c757d;
+  background: #f3f4f6;
+}
+
 .chip {
   display: inline-flex;
   align-items: center;

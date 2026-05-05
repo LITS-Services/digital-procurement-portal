@@ -41,6 +41,12 @@
                 [appPermFormId]="FORM_IDS.PURCHASE_REQUEST" [appPermDisable]="'read'" (click)="onView()">
                 <i class="ft-eye"></i><label class="ml-1 btn-label">Review</label>
               </button>
+
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="!canSubmitSelectedRow()"
+                appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST" [appPermDisable]="'write'"
+                (click)="onSubmitForApprovalFromList()">
+                <i class="ft-check"></i><label class="ml-1 btn-label">Submit for Approval</label>
+              </button>
               <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="loadPurchaseRequests()"><label
                 class="ml-1 mt-1">All</label></button>
 
@@ -243,7 +249,7 @@
           class="btn btn-sm btn-primary"
           [ngbPopover]="actionToolbar"
           popoverClass="action-popover"
-          placement="bottom"
+          placement="auto bottom"
           container="body">
           <i class="ft-settings"></i>
         </button>
