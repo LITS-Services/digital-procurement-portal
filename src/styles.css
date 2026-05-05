@@ -39,7 +39,7 @@
 .btn-primary:not(:disabled):not(.disabled):active,
 .btn-primary:not(:disabled):not(.disabled).active,
 .show>.btn-primary.dropdown-toggle {
-  color: #fff;
+  color: #434141;
   background-color: #1E89B8;
   border-color: #1E89B8;
 }
@@ -1064,4 +1064,8 @@ body .dropdown-menu {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.btn:disabled, .btn.disabled, fieldset:disabled .btn{
+  color :var(--bs-body-color) !important;
 }

@@ -43,6 +43,13 @@
               </button>
             </ng-container>
 
+            <!-- Edit Draft Mode: keep both Update and Save as Draft -->
+            <ng-container *ngIf="!isNewForm && !viewMode && !isSelectingFinalVendor && isStatusDraft">
+              <button class="btn btn-sm cstm-ui-table-btn" (click)="saveAsDraftAndGoBack()">
+                <i class="ft-save"></i><label class="ml-1 btn-label">Save as Draft</label>
+              </button>
+            </ng-container>
+
             <!-- Update / Create PO -->
             <ng-container *ngIf="!viewMode">
               <button *ngIf="!isNewForm && !isSelectingFinalVendor" class="btn btn-sm cstm-ui-table-btn"
@@ -86,11 +93,11 @@
             </ng-container>
           </div>
 
-          <div class="col-md-6 col-6 text-end cstm-action-bar" style="margin-top: 0.3rem;">
+          <!-- <div class="col-md-6 col-6 text-end cstm-action-bar" style="margin-top: 0.3rem;">
             <button type="reset" class="btn btn-sm cstm-ui-table-btn mr-2">
               <i class="ft-printer"></i><label class="ml-1 btn-label">Print</label>
             </button>
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -206,11 +213,12 @@
 
               <div class="form-grid__item mb-2">
                 <div class="form-group mb-2 phone-field-wrapper">
-                  <label>Receiver Contact</label>
+                  <label>Receiver Contact <span class="text-danger">*</span></label>
                   <ngx-intl-tel-input class="vendor-phone" name="receiverContact" formControlName="receiverContact"
+                    (click)="focusReceiverCountrySearch()"
                     [cssClass]="'form-control custom-input'" [preferredCountries]="preferredCountries"
                     [enableAutoCountrySelect]="true" [searchCountryFlag]="true"
-                    [searchCountryField]="[SearchCountryField.All]" [selectFirstCountry]="true"
+                    [searchCountryField]="[SearchCountryField.All]" [selectFirstCountry]="false"
                     [separateDialCode]="true" [selectedCountryISO]="selectedCountryISO"
                     [numberFormat]="PhoneNumberFormat.International" [maxLength]="20">
                   </ngx-intl-tel-input>
@@ -270,10 +278,10 @@
                 </div>
               </div>
 
-              <div class="form-grid__item form-grid__item--full mb-1">
+              <!-- <div class="form-grid__item form-grid__item--full mb-1">
                 <label>Subject</label>
                 <input class="form-control custom-input" formControlName="subject" placeholder="Enter Subject" />
-              </div>
+              </div> -->
             </div>
 
             <!-- Receiving Address -->
@@ -383,6 +391,10 @@
                           </div>
                         </div>
 
+                        <div class="col-12 px-1">
+                          <label>Item Type <span class="text-danger">*</span></label>
+                        </div>
+
                         <div class="d-flex align-items-center pl-1">
                           <div class="mr-4">
                             <div class="form-check-inline">
@@ -415,7 +427,7 @@
                         <div class="form-grid w-100 px-1">
                           <div class="form-grid__item">
                             <div class="form-group mb-2">
-                              <label>Item</label>
+                              <label>Item <span class="text-danger">*</span></label>
                               <select class="form-control custom-input" formControlName="itemId">
                                 <option value="" disabled>Select Item</option>
                                 <option *ngFor="let item of itemList" [value]="item.id">{{ item.description }}</option>
@@ -436,12 +448,13 @@
 
                           <div class="form-grid__item">
                             <div class="form-group mb-2">
-                              <label>Order Quantity</label>
+                              <label>Order Quantity <span class="text-danger">*</span></label>
                               <input type="number" class="form-control custom-input" formControlName="orderQuantity"
                                 placeholder="Enter Order Quantity" />
                             </div>
                           </div>
 
+                          <!-- Unit Cost hidden: budget is entered manually; unitCost stays 0 in TS for API payloads.
                           <div class="form-grid__item">
                             <div class="form-group mb-2">
                               <label>Unit Cost</label>
@@ -449,12 +462,13 @@
                                 placeholder="Enter Unit Cost" />
                             </div>
                           </div>
+                          -->
 
                           <div class="form-grid__item">
                             <div class="form-group mb-2">
-                              <label>Budget Amount</label>
-                              <input type="number" readonly class="form-control custom-input"
-                                formControlName="amount" />
+                              <label>Budget Amount <span class="text-danger">*</span></label>
+                              <input type="number" class="form-control custom-input" formControlName="amount"
+                                placeholder="Enter Budget Amount" />
                             </div>
                           </div>
 
@@ -477,7 +491,9 @@
                         <div class="col-12">
                           <hr>
                         </div>
-                        <div class="col-12">
+
+                        <div class="">
+                        <div class="col-12" *ngIf="isSelectingFinalVendor">
                           <h6>Other</h6>
                         </div>
 
@@ -486,6 +502,7 @@
                             <div class="form-group mb-2">
                               <label>Final Vendor</label>
                               <select class="form-control custom-input" formControlName="vendorUserId"
+                                [disabled]="!selectedRow"
                                 (change)="onVendorChange($event.target.value)">
                                 <option [ngValue]="null" disabled>Select Final Vendor</option>
                                 <option *ngFor="let v of finalVendors" [value]="v.vendorId">{{ v.vendorName }}</option>
@@ -506,6 +523,7 @@
                             <div class="form-group mb-2">
                               <label>Sourcing Company</label>
                               <select class="form-control custom-input" formControlName="vendorCompanyId"
+                                [disabled]="!selectedRow"
                                 [compareWith]="compareIds">
                                 <option [ngValue]="null" disabled>Select Company</option>
                                 <option *ngIf="filteredCompanies" [ngValue]="filteredCompanies.companyId">
@@ -515,7 +533,7 @@
                             </div>
                           </div>
 
-                          <div class="form-grid__item">
+                          <!-- <div class="form-grid__item">
                             <div class="form-group mb-2">
                               <label>Account</label>
                               <select class="form-control custom-input" formControlName="accountId">
@@ -523,16 +541,17 @@
                                 <option *ngFor="let acc of accountList" [value]="acc.id">{{ acc.description }}</option>
                               </select>
                             </div>
-                          </div>
+                          </div> -->
 
-                          <div class="form-grid__item form-grid__item--span">
+                          <!-- <div class="form-grid__item form-grid__item--span">
                             <div class="form-group mb-2">
                               <label>Remarks</label>
-                              <input class="form-control custom-input" formControlName="remarks"
+                              <input style="width:32%" class="form-control custom-input" formControlName="remarks"
                                 placeholder="Enter Remarks" />
                             </div>
-                          </div>
+                          </div> -->
                         </div>
+                      </div>
 
                         <div class="d-flex align-items-center justify-content-end my-1" style="gap: 1em;">
                           <button type="button" class="btn btn-sm" (click)="clearItemForm()">
@@ -589,7 +608,13 @@
                   </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Amount" prop="amount" [width]="100">
+                <ngx-datatable-column name="Order Quantity" prop="orderQuantity" [width]="110">
+                  <ng-template let-row="row" ngx-datatable-cell-template>
+                    <span class="cell-ellipsis" container="body">{{ row.orderQuantity | number }}</span>
+                  </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="Budget Amount" prop="amount" [width]="100">
                   <ng-template let-row="row" ngx-datatable-cell-template>
                     <span class="cell-ellipsis" container="body">{{ row.amount | number }}</span>
                   </ng-template>
