@@ -63,11 +63,40 @@ export class PurchaseRequestAttachmentModalComponent implements OnInit {
 
   async onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-    if (!input.files || input.files.length === 0) return;
+    const files = input.files ? Array.from(input.files) : [];
+    if (files.length === 0) return;
 
-    const file = input.files[0];
-    await this.addAttachment(file);
+    // Add all selected files (multi-select).
+    for (const file of files) {
+      await this.addAttachment(file);
+    }
 
+    // Allow re-selecting the same file(s).
+    input.value = '';
+
+  }
+
+  onDragOver(event: DragEvent): void {
+    if (this.viewMode || this.isStatusCompleted) return;
+    event.preventDefault();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+  }
+
+  onDragLeave(event: DragEvent): void {
+    if (this.viewMode || this.isStatusCompleted) return;
+    event.preventDefault();
+  }
+
+  async onDrop(event: DragEvent): Promise<void> {
+    if (this.viewMode || this.isStatusCompleted) return;
+    event.preventDefault();
+
+    const files = event.dataTransfer?.files ? Array.from(event.dataTransfer.files) : [];
+    if (files.length === 0) return;
+
+    for (const file of files) {
+      await this.addAttachment(file);
+    }
   }
 
   uploadFiles() {

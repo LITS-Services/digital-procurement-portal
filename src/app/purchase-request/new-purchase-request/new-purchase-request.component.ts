@@ -43,7 +43,7 @@ export class NewPurchaseRequestComponent implements OnInit {
     CountryISO.UnitedKingdom
   ];
 
-  selectedCountryISO: CountryISO = CountryISO.Pakistan;
+  selectedCountryISO: CountryISO = CountryISO.UnitedArabEmirates;
   private phoneUtil = PhoneNumberUtil.getInstance();
 
   isNewForm = true; // true = create, false = edit
@@ -182,13 +182,14 @@ export class NewPurchaseRequestComponent implements OnInit {
     this.itemForm = this.fb.group({
       id: [null],
       requisitionNo: [''],
-      itemType: ['', Validators.required],
+      itemType: ['Inventory', Validators.required],
       itemId: [0],
       unitOfMeasurementId: [0],
       amount: [0],
+      // unitCost kept for API shape; UI removed — always 0 on save unless loaded from existing PR.
       unitCost: [0],
       orderQuantity: [0],
-      reqByDate: [null],
+      reqByDate: [this.toDateInputValue(new Date())],
       itemDescription: [''],
       vendorUserId: [null],
       vendorCompanyId: [null],
@@ -277,11 +278,6 @@ export class NewPurchaseRequestComponent implements OnInit {
     //   remarks: ['', Validators.required],
     //   attachments: this.fb.group({})
     // });
-
-    this.itemForm.valueChanges.subscribe(values => {
-      const total = (values.unitCost || 0) * (values.orderQuantity || 0);
-      this.itemForm.patchValue({ amount: total }, { emitEvent: false });
-    });
 
     this.itemForm.valueChanges.subscribe(() => {
       this.isFormDirty = true;
@@ -592,7 +588,31 @@ export class NewPurchaseRequestComponent implements OnInit {
     }
 
     const newItem = this.itemForm.value;
+    const itemId = Number(newItem.itemId);
+    const orderQuantity = Number(newItem.orderQuantity);
+    const amount = Number(newItem.amount);
+
+    if (!itemId || Number.isNaN(itemId) || itemId <= 0) {
+      this.itemForm.get('itemId')?.markAsTouched();
+      this.toastr.warning('Please select Item before adding item.');
+      return;
+    }
+
+    if (!newItem.orderQuantity || Number.isNaN(orderQuantity) || orderQuantity <= 0) {
+      this.itemForm.get('orderQuantity')?.markAsTouched();
+      this.toastr.warning('Please enter Order Quantity greater than 0 before adding item.');
+      return;
+    }
+
+    if (newItem.amount === null || newItem.amount === '' || Number.isNaN(amount) || amount <= 0) {
+      this.itemForm.get('amount')?.markAsTouched();
+      this.toastr.warning('Please enter Budget Amount greater than 0 before adding item.');
+      return;
+    }
+
+    // const derivedUnitCost = orderQuantity > 0 ? amount / orderQuantity : 0;
     const newItemId = Number(newItem.itemId);
+    const normalizedItem = { ...newItem, amount, unitCost: 0 };
 
     // Duplicate check — works for add and edit both
     const duplicate = this.newPurchaseItemData.some((item, index) =>
@@ -609,7 +629,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       const existing = this.newPurchaseItemData[this.editingRowIndex];
       const merged = {
         ...existing,
-        ...newItem,
+        ...normalizedItem,
         itemId: existing.itemId,
         attachments: existing?.attachments ?? []
       };
@@ -623,7 +643,7 @@ export class NewPurchaseRequestComponent implements OnInit {
     } else {
       //  Always append a new manual row (no duplicate restriction)
       const withEmptyAttachments = {
-        ...newItem,
+        ...normalizedItem,
         itemId: newItemId,
         attachments: newItem.attachments?.length ? newItem.attachments : []
       };
@@ -636,7 +656,9 @@ export class NewPurchaseRequestComponent implements OnInit {
     this.itemForm.reset({
       amount: 0,
       unitCost: 0,
-      orderQuantity: 0
+      orderQuantity: 0,
+      itemType: 'Inventory',
+      reqByDate: this.toDateInputValue(new Date())
     });
   }
 
@@ -682,8 +704,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       orderQuantity: Number(row.orderQuantity) || 0,
       unitCost: Number(row.unitCost) || 0,
       amount: Number(row.amount) || 0,
-      // reqByDate: row.reqByDate ? this.toDateInputValue(row.reqByDate) : '',
-      reqByDate: row.reqByDate ? this.toDateInputValue(row.reqByDate) : '', // <-- fixed
+      reqByDate: row.reqByDate ? this.toDateInputValue(row.reqByDate) : this.toDateInputValue(new Date()),
       itemDescription: row.itemDescription || '',
       vendorUserId: row.vendorUserId || null,
       vendorCompanyId: row.vendorCompanyId || null,
@@ -719,13 +740,26 @@ export class NewPurchaseRequestComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         const isEditingDeletedRow = this.editingRowIndex === rowIndex;
+        const deletedRow = this.newPurchaseItemData[rowIndex];
+        const isSelectedDeletedRow =
+          this.selectedRow && deletedRow && Number(this.selectedRow.itemId) === Number(deletedRow.itemId);
 
         this.newPurchaseItemData.splice(rowIndex, 1);
         this.newPurchaseItemData = [...this.newPurchaseItemData];
 
         if (isEditingDeletedRow) {
-          this.itemForm.reset();
+          this.itemForm.reset({
+            amount: 0,
+            unitCost: 0,
+            orderQuantity: 0,
+            itemType: 'Inventory',
+            reqByDate: this.toDateInputValue(new Date())
+          });
           this.editingRowIndex = null;
+        }
+
+        if (isSelectedDeletedRow) {
+          this.selectedRow = null;
         }
 
         this.toastr.success('Item deleted!', '');
@@ -1257,13 +1291,13 @@ export class NewPurchaseRequestComponent implements OnInit {
     this.itemForm.reset({
       id: null,
       requisitionNo: '',
-      itemType: '',
+      itemType: 'Inventory',
       itemId: 0,
       unitOfMeasurementId: 0,
       amount: 0,
       unitCost: 0,
       orderQuantity: 0,
-      reqByDate: null,
+      reqByDate: this.toDateInputValue(new Date()),
       itemDescription: '',
       vendorUserId: null,
       vendorCompanyId: null,
@@ -1273,6 +1307,7 @@ export class NewPurchaseRequestComponent implements OnInit {
     });
 
     this.editingRowIndex = null;
+    this.selectedRow = null;
 
     this.filteredCompanies = [];
 
@@ -1346,7 +1381,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       'Item Type',
       'Item',
       'U of M',
-      'Unit Cost',
+      // 'Unit Cost',
       'Order Quantity',
       'Amount',
       'Item Description',
@@ -1383,13 +1418,20 @@ export class NewPurchaseRequestComponent implements OnInit {
         else parsedDate = new Date(rawDate);
       }
 
+      const budgetAmount =
+        Number(item['Amount']) ||
+        Number(item['Budget Amount']) ||
+        0;
+
       return {
         itemType: item['Item Type'] || 'Inventory',
         itemId: this.getItemIdByName(item['Item']) || null,
         unitOfMeasurementId: this.getUOMIdByName(item['U of M']) || null,
-        unitCost: Number(item['Unit Cost']) || 0,
+        // unitCost: Number(item['Unit Cost']) || 0,
+        unitCost: 0,
         orderQuantity: Number(item['Order Quantity']) || 0,
-        amount: Number(item['Unit Cost']) * Number(item['Order Quantity']),
+        // amount: Number(item['Unit Cost']) * Number(item['Order Quantity']),
+        amount: budgetAmount,
         reqByDate: parsedDate,
         itemDescription: item['Item Description'] || '',
         // vendorUserId: this.getVendorIdByName(item['Final Vendor']) || null,
@@ -1661,5 +1703,17 @@ export class NewPurchaseRequestComponent implements OnInit {
   onViewExceptionPolicy(): void {
     if (!this.exceptionPolicyData) return;
     this.openExceptionPolicyModal({ mode: 'view' });
+  }
+
+  focusReceiverCountrySearch(): void {
+    setTimeout(() => {
+      const searchInput = document.querySelector(
+        'ngx-intl-tel-input .iti__search-input'
+      ) as HTMLInputElement | null;
+
+      if (searchInput) {
+        searchInput.focus();
+      }
+    }, 0);
   }
 }
