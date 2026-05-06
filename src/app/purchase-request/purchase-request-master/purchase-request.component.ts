@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, HostListener, NgZone, OnInit, ViewChild } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, DatatableComponent, id, SelectionType } from '@swimlane/ngx-datatable';
@@ -87,7 +88,7 @@ export class PurchaseRequestComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadStatus();
-    //this.loadPurchaseRequests();
+    this.loadPurchaseRequests();
     this.cdr.detectChanges();
   }
 
@@ -96,10 +97,15 @@ export class PurchaseRequestComponent implements OnInit {
 }
 
 
-  loadPurchaseRequests() {
+  loadPurchaseRequests(clearDatatableSelection = false) {
     this.loading = true;
-    const entityId = localStorage.getItem('selectedCompanyId');
-    this.query.entityId = entityId ? +entityId : null;
+    const lsEntity = localStorage.getItem('selectedCompanyId');
+    if (!lsEntity || lsEntity === 'All') {
+      this.query.entityId = null;
+    } else {
+      const parsed = Number(lsEntity);
+      this.query.entityId = Number.isFinite(parsed) ? parsed : null;
+    }
     this.purchaseRequestService.getAllPurchaseRequests(this.query).subscribe({
       next: (data: any) => {
         this.purchaseRequestData = (data?.result || []).map((pr: any) => ({
@@ -111,6 +117,10 @@ export class PurchaseRequestComponent implements OnInit {
         // Capture pagination info
         this.totalPages = data.totalPages;
         this.totalItems = data.totalItems;
+
+        if (clearDatatableSelection && this.datatable) {
+          this.datatable.selected = [];
+        }
 
         this.loading = false;
         this.cdr.detectChanges();
@@ -281,6 +291,7 @@ export class PurchaseRequestComponent implements OnInit {
     }
   }
 
+  /** Eligible row: exactly one selection, status New, submitter match. */
   canSubmitSelectedRow(): boolean {
     if (this.chkBoxSelected.length !== 1) return false;
 
@@ -298,6 +309,11 @@ export class PurchaseRequestComponent implements OnInit {
     return true;
   }
 
+  /** Use on the listing button (do not combine with appPermission — it strips [disabled]). */
+  canSubmitForApprovalFromListUi(): boolean {
+    return this.permissionService.can(FORM_IDS.PURCHASE_REQUEST, 'write') && this.canSubmitSelectedRow();
+  }
+
   private normalizeStatus(status: any): string {
     return (status || '')
       .toString()
@@ -306,10 +322,7 @@ export class PurchaseRequestComponent implements OnInit {
   }
 
   onSubmitForApprovalFromList(): void {
-    if (!this.permissionService.can(FORM_IDS.PURCHASE_REQUEST, 'write')) return;
-
-    // Keep handler safe, but avoid warning-noise for blocked statuses.
-    if (!this.canSubmitSelectedRow()) {
+    if (!this.canSubmitForApprovalFromListUi()) {
       return;
     }
 
@@ -325,25 +338,71 @@ export class PurchaseRequestComponent implements OnInit {
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
     }).then((result) => {
-      if (result.isConfirmed) {
-        this.purchaseRequestService.submitForApproval(row.requestId).subscribe({
-          next: () => {
-            this.toastr.success('Purchase Request submitted for approval.');
-            this.chkBoxSelected = [];
-            this.idsToDelete = [];
-            this.enableDisableButtons();
-            this.loadPurchaseRequests();
-          },
-          error: () => {
-            Swal.fire({
-              icon: 'error',
-              title: 'Failed!',
-              text: 'Failed to submit purchase request for approval.',
-            });
-          }
-        });
+      if (!result.isConfirmed) {
+        return;
       }
+
+      Swal.fire({
+        title: 'Submitting…',
+        text: 'Please wait while we submit your request.',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      this.purchaseRequestService.submitForApproval(row.requestId).subscribe({
+        next: () => {
+          Swal.close();
+          this.toastr.success('Purchase Request submitted for approval.');
+          this.afterSubmitForApprovalRefreshList();
+        },
+        error: (err: HttpErrorResponse) => {
+          Swal.close();
+          const detail = this.describeSubmitForApprovalError(err);
+          // Server sometimes returns an error HTTP status after the DB already updated; refresh so UI matches DB.
+          this.afterSubmitForApprovalRefreshList();
+          Swal.fire({
+            icon: 'warning',
+            title: 'Could not confirm response',
+            html: `${detail}<br/><br/>The list was refreshed — please verify the request status.`,
+          });
+        }
+      });
     });
+  }
+
+  private afterSubmitForApprovalRefreshList(): void {
+    this.chkBoxSelected = [];
+    this.idsToDelete = [];
+    this.enableDisableButtons();
+    this.query.status = null;
+    this.selectedStatusLabel = 'All';
+    this.statusTouched = false;
+    this.query.currentPage = 1;
+    this.loadPurchaseRequests(true);
+    this.cdr.detectChanges();
+  }
+
+  private describeSubmitForApprovalError(err: HttpErrorResponse): string {
+    const raw = err?.error;
+    if (typeof raw === 'string' && raw.trim()) {
+      return raw.trim();
+    }
+    if (raw && typeof raw === 'object') {
+      const envelope = raw as any;
+      if (Array.isArray(envelope.errors) && envelope.errors[0]) {
+        return String(envelope.errors[0]);
+      }
+      if (Array.isArray(envelope.validationErrors) && envelope.validationErrors.length) {
+        return envelope.validationErrors.join('\n');
+      }
+      if (envelope.message) {
+        return String(envelope.message);
+      }
+    }
+    return err?.message || 'The server did not return a clear success confirmation.';
   }
 
   // OPEN DELETE MODAL
