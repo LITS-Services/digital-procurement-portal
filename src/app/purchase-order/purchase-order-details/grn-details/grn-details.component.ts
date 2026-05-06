@@ -236,16 +236,11 @@ export class GrnDetailsComponent implements OnInit {
   }
 
   hoverStar(event: MouseEvent, index: number) {
-    const target = event.target as HTMLElement;
+    const target = event.currentTarget as HTMLElement;
     const rect = target.getBoundingClientRect();
     const offsetX = event.clientX - rect.left;
-
     this.hoverIndex = index;
-
-    this.hoverRating =
-      offsetX < rect.width / 2
-        ? index + 0.5
-        : index + 1;
+    this.hoverRating = offsetX < rect.width / 2 ? index + 0.5 : index + 1;
   }
 
   clearHover() {
@@ -258,11 +253,7 @@ export class GrnDetailsComponent implements OnInit {
   }
 
   getStarFill(index: number): 'fa-star' | 'fa-star-half-alt' | 'fa-star-o' {
-    // Use hoverRating if hovering, else selectedRating, else 0
-    const rating = this.hoverRating != null ? this.hoverRating :
-      this.selectedRating != null ? this.selectedRating :
-        0;
-
+    const rating = this.hoverRating ?? this.selectedRating ?? 0;
     if (rating >= index + 1) return 'fa-star';
     if (rating >= index + 0.5) return 'fa-star-half-alt';
     return 'fa-star-o';

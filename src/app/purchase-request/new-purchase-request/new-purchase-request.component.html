@@ -502,7 +502,7 @@
                             <div class="form-group mb-2">
                               <label>Final Vendor</label>
                               <select class="form-control custom-input" formControlName="vendorUserId"
-                                [disabled]="!selectedRow"
+                                [disabled]="editingRowIndex === null"
                                 (change)="onVendorChange($event.target.value)">
                                 <option [ngValue]="null" disabled>Select Final Vendor</option>
                                 <option *ngFor="let v of finalVendors" [value]="v.vendorId">{{ v.vendorName }}</option>
@@ -523,7 +523,7 @@
                             <div class="form-group mb-2">
                               <label>Sourcing Company</label>
                               <select class="form-control custom-input" formControlName="vendorCompanyId"
-                                [disabled]="!selectedRow"
+                                [disabled]="editingRowIndex === null"
                                 [compareWith]="compareIds">
                                 <option [ngValue]="null" disabled>Select Company</option>
                                 <option *ngIf="filteredCompanies" [ngValue]="filteredCompanies.companyId">

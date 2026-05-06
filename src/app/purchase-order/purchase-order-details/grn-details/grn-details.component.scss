@@ -252,12 +252,31 @@ input[disabled] {
 
 .star-container i {
   font-size: 32px;
-  color: #ffc107;
   transition: transform 0.15s ease;
 }
 
 .star-container:hover i {
   transform: scale(1.15);
+}
+
+.star-icon {
+  color: #d8dee8;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  line-height: 1;
+}
+
+.star-icon.fa-star,
+.star-icon.fa-star-half-alt {
+  color: #ffc107;
+  background: transparent;
+  border: none;
+}
+
+.star-icon.fa-star-o {
+  color: #d8dee8;
 }
 
 .rating-value {

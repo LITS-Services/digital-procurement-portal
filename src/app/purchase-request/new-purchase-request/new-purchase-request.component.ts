@@ -193,7 +193,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       itemDescription: [''],
       vendorUserId: [null],
       vendorCompanyId: [null],
-      accountId: [0],
+      accountId: [1],
       remarks: [''],
       attachments: this.fb.group([])
     });
@@ -220,12 +220,9 @@ export class NewPurchaseRequestComponent implements OnInit {
 
           // Disable all item form fields except vendor fields
           Object.keys(this.itemForm.controls).forEach(key => {
-            if (key !== 'vendorUserId' && key !== 'vendorCompanyId') {
-              this.itemForm.get(key)?.disable({ emitEvent: false });
-            } else {
-              this.itemForm.get(key)?.enable({ emitEvent: false });
-            }
+            this.itemForm.get(key)?.disable({ emitEvent: false });
           });
+          this.syncFinalVendorControlState();
         }
       }
 
@@ -587,7 +584,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       return;
     }
 
-    const newItem = this.itemForm.value;
+    const newItem = this.itemForm.getRawValue();
     const itemId = Number(newItem.itemId);
     const orderQuantity = Number(newItem.orderQuantity);
     const amount = Number(newItem.amount);
@@ -657,9 +654,11 @@ export class NewPurchaseRequestComponent implements OnInit {
       amount: 0,
       unitCost: 0,
       orderQuantity: 0,
+      accountId: 1,
       itemType: 'Inventory',
       reqByDate: this.toDateInputValue(new Date())
     });
+    this.syncFinalVendorControlState();
   }
 
   // Edit a row
@@ -708,10 +707,11 @@ export class NewPurchaseRequestComponent implements OnInit {
       itemDescription: row.itemDescription || '',
       vendorUserId: row.vendorUserId || null,
       vendorCompanyId: row.vendorCompanyId || null,
-      accountId: Number(row.accountId) || null,
+      accountId: Number(row.accountId) || 1,
       remarks: row.remarks || '',
       attachments: row.attachments || []
     });
+    this.syncFinalVendorControlState();
 
     // if vendor changes, refresh vendor company list
     if (row.vendorUserId) {
@@ -752,11 +752,13 @@ export class NewPurchaseRequestComponent implements OnInit {
             amount: 0,
             unitCost: 0,
             orderQuantity: 0,
+            accountId: 1,
             itemType: 'Inventory',
             reqByDate: this.toDateInputValue(new Date())
           });
           this.editingRowIndex = null;
         }
+        this.syncFinalVendorControlState();
 
         if (isSelectedDeletedRow) {
           this.selectedRow = null;
@@ -953,7 +955,7 @@ export class NewPurchaseRequestComponent implements OnInit {
         orderQuantity: item.orderQuantity || 0,
         reqByDate: item.reqByDate || new Date(),
         itemDescription: item.itemDescription || '',
-        accountId: Number(item.accountId) || 0,
+        accountId: Number(item.accountId) || 1,
         remarks: item.remarks || '',
         createdBy: item.createdBy || '',
         purchaseRequestId: item.purchaseRequestId || 0,
@@ -1052,7 +1054,7 @@ export class NewPurchaseRequestComponent implements OnInit {
         orderQuantity: item.orderQuantity || 0,
         reqByDate: item.reqByDate || new Date(),
         itemDescription: item.itemDescription || '',
-        accountId: Number(item.accountId) || null,
+        accountId: Number(item.accountId) || 1,
         remarks: item.remarks || '',
         createdBy: item.createdBy || '',
         // purchaseRequestId: item.purchaseRequestId || 0,
@@ -1301,7 +1303,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       itemDescription: '',
       vendorUserId: null,
       vendorCompanyId: null,
-      accountId: 0,
+      accountId: 1,
       remarks: '',
       attachments: []
     });
@@ -1310,9 +1312,26 @@ export class NewPurchaseRequestComponent implements OnInit {
     this.selectedRow = null;
 
     this.filteredCompanies = [];
+    this.syncFinalVendorControlState();
 
     this.itemForm.markAsPristine();
     this.itemForm.markAsUntouched();
+  }
+
+  private syncFinalVendorControlState(): void {
+    if (!this.isSelectingFinalVendor) return;
+
+    const canEditVendor = this.editingRowIndex !== null;
+    const vendorUserCtrl = this.itemForm.get('vendorUserId');
+    const vendorCompanyCtrl = this.itemForm.get('vendorCompanyId');
+
+    if (canEditVendor) {
+      vendorUserCtrl?.enable({ emitEvent: false });
+      vendorCompanyCtrl?.enable({ emitEvent: false });
+    } else {
+      vendorUserCtrl?.disable({ emitEvent: false });
+      vendorCompanyCtrl?.disable({ emitEvent: false });
+    }
   }
   triggerFileUpload(input: HTMLInputElement): void {
     input.click();
@@ -1438,7 +1457,7 @@ export class NewPurchaseRequestComponent implements OnInit {
         // vendorCompanyId: this.getVendorCompanyIdByName(item['Vendor Company']) || null,
         vendorUserId: null,
         vendorCompanyId: null,
-        accountId: this.getAccountIdByName(item['Account']) || null,
+        accountId: this.getAccountIdByName(item['Account']) || 1,
         remarks: item['Remarks'] || '',
         attachments: []
       };
