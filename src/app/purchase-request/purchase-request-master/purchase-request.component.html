@@ -45,8 +45,10 @@
               <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="syncLoading" (click)="onSyncNow()">
                 <i class="ft-refresh-cw"></i><label class="ml-1 btn-label">Sync Now</label>
               </button>
-              <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="!canSubmitSelectedRow()"
-                appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST" [appPermDisable]="'write'"
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="!canSubmitForApprovalFromListUi()"
+                [ngbTooltip]="!chkBoxSelected?.length ? 'Select one request with status New'
+                  : chkBoxSelected.length > 1 ? 'Select exactly one row'
+                  : null"
                 (click)="onSubmitForApprovalFromList()">
                 <i class="ft-check"></i><label class="ml-1 btn-label">Submit for Approval</label>
               </button>

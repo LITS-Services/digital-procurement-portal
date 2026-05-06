@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, from, map } from 'rxjs';
 import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { environment } from 'environments/environment';
-import { SKIP_TOAST } from 'app/shared/interceptor/response-handler.interceptor';
+import { SKIP_TOAST, withSkipToast } from 'app/shared/interceptor/response-handler.interceptor';
 
 export interface UploadedFile {
   name: string;
@@ -156,7 +156,11 @@ export class PurchaseRequestService {
   }
 
   submitForApproval(purchaseRequestId: number): Observable<any> {
-    return this.http.post(`${this.baseUrl}/submit-for-approval/${purchaseRequestId}`, {});
+    return this.http.post(
+      `${this.baseUrl}/submit-for-approval/${purchaseRequestId}`,
+      {},
+      { context: withSkipToast(), responseType: 'text' }
+    );
   }
 
   getVendorsAndCompanyForFinalSelection(procurementUserId: string) {

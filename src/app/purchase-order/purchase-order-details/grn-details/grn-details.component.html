@@ -126,14 +126,7 @@
           {{ hoverRating | number:'1.1-1' }}
         </span>
 
-        <!-- <i class="fa" [ngClass]="
-            (hoverRating || selectedRating) >= i + 1
-              ? 'fa-star'
-              : (hoverRating || selectedRating) >= i + 0.5
-              ? 'fa-star-half-alt'
-              : 'fa-star-o'
-          "></i> -->
-          <i class="fa" [ngClass]="getStarFill(i)"></i>
+          <i class="fa star-icon" [ngClass]="getStarFill(i)"></i>
 
 
       </div>
