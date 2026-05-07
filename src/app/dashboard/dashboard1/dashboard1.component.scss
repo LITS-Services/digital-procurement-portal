@@ -607,10 +607,19 @@ margin: 8px 0px;
 .stat-card__chips {
   margin-top: 6px;
   display: flex;
+  flex-wrap: nowrap;
   gap: 6px;
   width: 100%;
 }
 
+@media (max-width: 1439.98px) {
+  .stat-card__chips {
+    flex-wrap: wrap;
+    align-content: flex-start;
+    /* Match height of two stacked .metric-chip rows (+ 6px gap); keeps single-chip cards aligned with PR/RFQ/PO */
+    min-height: calc(2 * (4px + 4px + 14px) + 6px);
+  }
+}
 
 /* Each chip becomes a clean full-width pill row */
 .metric-chip {
