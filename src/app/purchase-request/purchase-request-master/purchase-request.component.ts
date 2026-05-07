@@ -12,6 +12,7 @@ import Swal from 'sweetalert2';
 import { CreatePurchaseOrderComponent } from 'app/purchase-order/create-purchase-order/create-purchase-order.component';
 import { LookupService } from 'app/shared/services/lookup.service';
 import { Subject, Subscription } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { PermissionService } from 'app/shared/permissions/permission.service';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
@@ -71,6 +72,9 @@ export class PurchaseRequestComponent implements OnInit {
   private searchChanged$ = new Subject<string>();
   datatableVisible:boolean = true;
 
+  /** Same rule as `CanInitiatePRGuard` / create route — users who cannot initiate must not see Submit for Approval. */
+  canInitiatePr = false;
+
   constructor(
     private router: Router,
     private modalService: NgbModal,
@@ -87,9 +91,41 @@ export class PurchaseRequestComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.loadCanInitiatePurchaseRequest();
     this.loadStatus();
     this.loadPurchaseRequests();
     this.cdr.detectChanges();
+  }
+
+  private loadCanInitiatePurchaseRequest(): void {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      this.canInitiatePr = false;
+      return;
+    }
+
+    this.purchaseRequestService
+      .canInitiatePurchaseRequest(userId)
+      .pipe(finalize(() => this.cdr.markForCheck()))
+      .subscribe({
+        next: (res) => {
+          this.canInitiatePr = PurchaseRequestComponent.parseBooleanApi(res);
+        },
+        error: () => {
+          this.canInitiatePr = false;
+        },
+      });
+  }
+
+  private static parseBooleanApi(res: unknown): boolean {
+    if (typeof res === 'boolean') return res;
+    if (res != null && typeof res === 'object') {
+      const o = res as Record<string, unknown>;
+      for (const key of ['value', 'result', 'data'] as const) {
+        if (typeof o[key] === 'boolean') return o[key] as boolean;
+      }
+    }
+    return false;
   }
 
   get isMobile(): boolean {
@@ -311,7 +347,17 @@ export class PurchaseRequestComponent implements OnInit {
 
   /** Use on the listing button (do not combine with appPermission — it strips [disabled]). */
   canSubmitForApprovalFromListUi(): boolean {
-    return this.permissionService.can(FORM_IDS.PURCHASE_REQUEST, 'write') && this.canSubmitSelectedRow();
+    return (
+      this.permissionService.can(FORM_IDS.PURCHASE_REQUEST, 'write') &&
+      this.canInitiatePr &&
+      this.canSubmitSelectedRow()
+    );
+  }
+
+  canShowSubmitForApprovalButton(): boolean {
+    return (
+      this.permissionService.can(FORM_IDS.PURCHASE_REQUEST, 'write') && this.canInitiatePr
+    );
   }
 
   private normalizeStatus(status: any): string {

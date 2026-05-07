@@ -154,13 +154,13 @@
               </div>
 
               <div class="form-grid__item mb-2">
-                <div class="form-group mb-2 phone-field-wrapper">
+                <div class="form-group mb-2 phone-field-wrapper" #receiverIntlWrap>
                   <label>Receiver Contact <span class="text-danger">*</span></label>
                   <ngx-intl-tel-input class="vendor-phone" name="receiverContact" formControlName="receiverContact"
                     (click)="focusReceiverCountrySearch()"
                     [cssClass]="'form-control custom-input'" [preferredCountries]="preferredCountries"
                     [enableAutoCountrySelect]="true" [searchCountryFlag]="true"
-                    [searchCountryField]="[SearchCountryField.All]" [selectFirstCountry]="false"
+                    [searchCountryField]="[SearchCountryField.Name]" [phoneValidation]="true" [selectFirstCountry]="false"
                     [separateDialCode]="true" [selectedCountryISO]="selectedCountryISO"
                     [numberFormat]="PhoneNumberFormat.International" [maxLength]="20">
                   </ngx-intl-tel-input>
