@@ -575,24 +575,24 @@
 
           <!-- Items Table -->
           <div class="col-12 p-0">
-            <div style="position: relative;">
+            <div class="items-table-wrap" style="position: relative;">
               <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="newPurchaseItemData"
-                [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5"
+                [columnMode]="'flex'" [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5"
                 [scrollbarH]="true" (activate)="selectRow($event.row)">
 
-                <ngx-datatable-column name="Sr. No." [width]="50">
+                <ngx-datatable-column name="Sr. No." [minWidth]="70" [flexGrow]="0.7">
                   <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
                     <span>{{ rowIndex + 1 }}</span>
                   </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Type" prop="itemType" [width]="70">
+                <ngx-datatable-column name="Type" prop="itemType" [minWidth]="100" [flexGrow]="1">
                   <ng-template let-row="row" ngx-datatable-cell-template>
                     <span class="cell-ellipsis" container="body">{{ row.itemType }}</span>
                   </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Item" [width]="180">
+                <ngx-datatable-column name="Item" [minWidth]="180" [flexGrow]="2">
                   <ng-template let-row="row" ngx-datatable-cell-template>
                     <span class="cell-ellipsis" [ngbTooltip]="getItemNameById(row.itemId)" container="body">
                       {{ getItemNameById(row.itemId) }}
@@ -600,7 +600,7 @@
                   </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Description" [width]="150" prop="itemDescription">
+                <ngx-datatable-column name="Description" [minWidth]="200" [flexGrow]="2" prop="itemDescription">
                   <ng-template let-row="row" ngx-datatable-cell-template>
                     <span class="cell-ellipsis" [ngbTooltip]="row.itemDescription" container="body">
                       {{ row.itemDescription }}
@@ -608,19 +608,19 @@
                   </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Order Quantity" prop="orderQuantity" [width]="110">
+                <ngx-datatable-column name="Order Quantity" prop="orderQuantity" [minWidth]="130" [flexGrow]="1">
                   <ng-template let-row="row" ngx-datatable-cell-template>
                     <span class="cell-ellipsis" container="body">{{ row.orderQuantity | number }}</span>
                   </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Budget Amount" prop="amount" [width]="100">
+                <ngx-datatable-column name="Budget Amount" prop="amount" [minWidth]="130" [flexGrow]="1">
                   <ng-template let-row="row" ngx-datatable-cell-template>
                     <span class="cell-ellipsis" container="body">{{ row.amount | number }}</span>
                   </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="State" [width]="150">
+                <ngx-datatable-column name="State" [minWidth]="150" [flexGrow]="1.3">
                   <ng-template let-row="row" ngx-datatable-cell-template>
                     <div class="badge badge-pill"
                       [ngClass]="{
@@ -634,19 +634,19 @@
                   </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column *ngIf="isSelectingFinalVendor" name="Final Vendor" [width]="120">
+                <ngx-datatable-column *ngIf="isSelectingFinalVendor" name="Final Vendor" [minWidth]="150" [flexGrow]="1.5">
                   <ng-template let-row="row" ngx-datatable-cell-template>
                     {{ getVendorNameById(row.vendorUserId) }}
                   </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Remarks" prop="remarks" [width]="100">
+                <ngx-datatable-column name="Remarks" prop="remarks" [minWidth]="130" [flexGrow]="1.2">
                   <ng-template let-row="row" ngx-datatable-cell-template>
                     <span class="cell-ellipsis" container="body">{{ row.remarks }}</span>
                   </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Attachments" [width]="120" [sortable]="false">
+                <ngx-datatable-column name="Attachments" [minWidth]="110" [maxWidth]="130" [flexGrow]="0.9" [sortable]="false">
                   <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
                     <a matTooltip="Attachment" class="row-action-attachment" (click)="openNewEntityModal(rowIndex)"
                       [ngClass]="{'disabled': actionType === 'View'}">
@@ -655,7 +655,7 @@
                   </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column *ngIf="!viewMode" name="Actions" [width]="100">
+                <ngx-datatable-column *ngIf="!viewMode" name="Actions" [minWidth]="110" [maxWidth]="130" [flexGrow]="0.9">
                   <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
                     <a matTooltip="Edit Item" (click)="editRow(row, rowIndex)"
                       [ngClass]="viewMode ? 'disabled' : 'row-action-edit'">
