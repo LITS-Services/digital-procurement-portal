@@ -43,7 +43,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     CountryISO.UnitedKingdom
   ];
 
-  selectedCountryISO: CountryISO = CountryISO.UnitedArabEmirates;
+  selectedCountryISO: CountryISO = CountryISO.Qatar;
   private phoneUtil = PhoneNumberUtil.getInstance();
   private readonly receiverContactValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     const value = control.value;
