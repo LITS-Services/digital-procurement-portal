@@ -168,7 +168,14 @@ form label, .form-group label {
   border-radius: 8px;
   background: #ffffff;
   box-shadow:none !important;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.items-table-wrap {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* HEADER */
@@ -223,6 +230,20 @@ form label, .form-group label {
 .ngx-datatable ::ng-deep .datatable-header-cell {
   padding: 0.75rem 1.25rem;
   border-bottom: 1px solid #e5e7eb;
+}
+
+/* Keep header/body content clipped within each column (prevents visual overlap on narrow screens). */
+.ngx-datatable ::ng-deep .datatable-header-cell,
+.ngx-datatable ::ng-deep .datatable-body-cell {
+  overflow: hidden;
+}
+
+.ngx-datatable ::ng-deep .datatable-header-cell-label {
+  display: block;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 
@@ -295,6 +316,22 @@ form label, .form-group label {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+@media (max-width: 1199.98px) {
+  .ngx-datatable ::ng-deep .datatable-header-cell {
+    padding: 0.55rem 0.6rem;
+  }
+
+  .ngx-datatable ::ng-deep .datatable-body .datatable-body-cell {
+    padding: 0.5rem 0.6rem;
+  }
+
+  .ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
+  .ngx-datatable ::ng-deep .datatable-header-inner .sort-btn {
+    font-size: 11px;
+    letter-spacing: 0.02em;
+  }
 }
 // i{
 //   font-size: 18px !important;

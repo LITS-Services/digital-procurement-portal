@@ -1070,12 +1070,14 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       : [];
 
     const payload = {
+      id: this.currentRequestId || null,
       requisitionNo: f.requisitionNo || '',
       submittedDate: f.submittedDate || null,
       deliveryLocation: f.deliveryLocation || '',
       receiverName: f.receiverName || '',
       receiverContact: this.normalizePhoneToString(f.receiverContact),
-      // status: 'Draft',
+      status: 'Draft',
+      requestStatus: 'Draft',
       department: f.department || '',
       designation: f.designation || '',
       businessUnit: f.businessUnit || '',
@@ -1092,7 +1094,14 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
     this.loading = true;
     this.spinner.show();
-    const request$ = this.purchaseRequestService.createPurchaseRequest({ purchaseRequest: payload, isDraft: true });
+
+    const request$ =
+      this.currentRequestId
+        ? this.purchaseRequestService.updatePurchaseRequest(this.currentRequestId, {
+          purchaseRequest: payload,
+          isDraft: true
+        })
+        : this.purchaseRequestService.createPurchaseRequest({ purchaseRequest: payload, isDraft: true });
 
     request$.subscribe({
       next: () => this.handleDraftSuccess(),
@@ -1110,6 +1119,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
   private handleDraftError(err: any) {
     this.loading = false;
+    this.spinner.hide();
     this.toastr.error('Failed to save draft');
     console.error('Error saving draft:', err);
   }
@@ -1169,12 +1179,14 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       : [];
 
     const payload = {
+      id: this.currentRequestId || null,
       requisitionNo: f.requisitionNo,
       submittedDate: f.submittedDate || null,
       deliveryLocation: f.deliveryLocation,
       receiverName: f.receiverName,
       receiverContact: this.normalizePhoneToString(f.receiverContact),
-      // status: f.status,
+      status: 'New',
+      requestStatus: 'New',
       department: f.department,
       designation: f.designation,
       businessUnit: f.businessUnit,
