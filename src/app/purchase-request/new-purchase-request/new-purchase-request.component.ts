@@ -1,5 +1,5 @@
-import { ChangeDetectorRef, Component, HostListener, NgZone, OnInit, ViewChild } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AbstractControl, FormGroup, FormBuilder, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbAccordionDirective, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, DatatableComponent, id, SelectionType } from '@swimlane/ngx-datatable';
@@ -29,7 +29,7 @@ import { PhoneNumberUtil, PhoneNumberFormat as LibPhoneNumberFormat } from 'goog
   standalone: false
 })
 
-export class NewPurchaseRequestComponent implements OnInit {
+export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDestroy {
   uploadedItems: any[] = [];
 
   // ngx-intl-tel-input config (used in template)
@@ -45,6 +45,21 @@ export class NewPurchaseRequestComponent implements OnInit {
 
   selectedCountryISO: CountryISO = CountryISO.UnitedArabEmirates;
   private phoneUtil = PhoneNumberUtil.getInstance();
+  private readonly receiverContactValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (!value) return null;
+
+    const phoneValue = this.normalizePhoneToString(value);
+    if (!phoneValue) return { invalidPhoneNumber: true };
+
+    try {
+      const parsedNumber = this.phoneUtil.parseAndKeepRawInput(phoneValue);
+      const isValid = this.phoneUtil.isValidNumber(parsedNumber);
+      return isValid ? null : { invalidPhoneNumber: true };
+    } catch {
+      return { invalidPhoneNumber: true };
+    }
+  };
 
   isNewForm = true; // true = create, false = edit
   isFormDirty = false; // track if any field was touched
@@ -126,6 +141,11 @@ export class NewPurchaseRequestComponent implements OnInit {
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
   @ViewChild('tableResponsive') tableResponsive: any;
+  @ViewChild('receiverIntlWrap', { read: ElementRef }) receiverIntlWrap?: ElementRef<HTMLElement>;
+
+  private receiverIntlMutationObserver?: MutationObserver;
+  private receiverIntlSearchUnlisten?: () => void;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -138,7 +158,8 @@ export class NewPurchaseRequestComponent implements OnInit {
     public cdr: ChangeDetectorRef,
     private spinner: NgxSpinnerService,
     private companyService: CompanyService,
-    private purchaseOrderService: PurchaseOrderService
+    private purchaseOrderService: PurchaseOrderService,
+    private renderer: Renderer2
 
   ) { }
 
@@ -161,7 +182,7 @@ export class NewPurchaseRequestComponent implements OnInit {
       status: [{ value: null, disabled: true }],
       deliveryLocation: [''],
       receiverName: [''],
-      receiverContact: ['', Validators.required],
+      receiverContact: ['', [Validators.required, this.receiverContactValidator]],
       department: [''],
       designation: [''],
       businessUnit: [''],
@@ -287,9 +308,107 @@ export class NewPurchaseRequestComponent implements OnInit {
     }
   }
 
+  ngAfterViewInit(): void {
+    this.setupReceiverIntlCountryListFilter();
+  }
+
   ngOnDestroy(): void {
+    this.receiverIntlMutationObserver?.disconnect();
+    this.receiverIntlSearchUnlisten?.();
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  /**
+   * ngx-intl-tel-input only scrolls to the first match; it does not filter the dropdown.
+   * We hide non-matching rows so unrelated countries (e.g. Uganda/Ukraine for "united s") disappear.
+   */
+  private setupReceiverIntlCountryListFilter(): void {
+    const root = this.receiverIntlWrap?.nativeElement;
+    if (!root || typeof MutationObserver === 'undefined') return;
+
+    const bindIfNeeded = (): void => {
+      const searchInput = root.querySelector<HTMLInputElement>('#country-search-box');
+      if (!searchInput || searchInput.dataset['receiverIntlFilter'] === '1') return;
+
+      this.receiverIntlSearchUnlisten?.();
+      searchInput.dataset['receiverIntlFilter'] = '1';
+
+      this.receiverIntlSearchUnlisten = this.renderer.listen(searchInput, 'input', () => {
+        this.applyReceiverIntlCountryRowFilter(root, searchInput.value);
+      });
+      this.applyReceiverIntlCountryRowFilter(root, searchInput.value);
+    };
+
+    this.receiverIntlMutationObserver?.disconnect();
+    this.receiverIntlMutationObserver = new MutationObserver(() => bindIfNeeded());
+    this.receiverIntlMutationObserver.observe(root, { childList: true, subtree: true });
+    bindIfNeeded();
+  }
+
+  private applyReceiverIntlCountryRowFilter(host: HTMLElement, raw: string): void {
+    const q = raw.trim().toLowerCase().replace(/\s+/g, ' ');
+    host.querySelectorAll<HTMLLIElement>('.iti__country-list li.iti__country').forEach(li => {
+      const nameText = (li.querySelector('.iti__country-name')?.textContent || '').trim().toLowerCase();
+      const dialDigits = (li.querySelector('.iti__dial-code')?.textContent || '')
+        .replace(/\D/g, '')
+        .toLowerCase();
+      const words = NewPurchaseRequestComponent.extractCountryLabelWords(nameText);
+      const tokens = q.split(/\s+/).filter(Boolean);
+      const show =
+        !q ||
+        tokens.length === 0 ||
+        tokens.every((tok) =>
+          NewPurchaseRequestComponent.receiverIntlTokenMatches(tok, words, dialDigits)
+        );
+      this.renderer.setStyle(li, 'display', show ? '' : 'none');
+    });
+
+    this.hideStandardRowWhenPreferredDuplicateVisible(host);
+  }
+
+  /**
+   * Preferred countries appear twice: once under `iti__preferred` and again in the full list.
+   * Hide the standard row when the preferred row for the same country is visible (search may hide preferred only).
+   */
+  private hideStandardRowWhenPreferredDuplicateVisible(host: HTMLElement): void {
+    const standards = host.querySelectorAll<HTMLLIElement>('li.iti__country.iti__standard');
+
+    host.querySelectorAll<HTMLLIElement>('li.iti__country.iti__preferred').forEach((pref) => {
+      const pid = pref.getAttribute('id');
+      if (!pid?.endsWith('-preferred')) return;
+
+      const baseId = pid.slice(0, -'-preferred'.length);
+      const standard = Array.from(standards).find((li) => li.getAttribute('id') === baseId);
+      if (!standard) return;
+
+      const prefHidden = pref.style.display === 'none';
+      if (!prefHidden) {
+        this.renderer.setStyle(standard, 'display', 'none');
+      }
+    });
+  }
+
+  /** English / Latin segments of the dropdown label — used only for filtering, not display. */
+  private static extractCountryLabelWords(nameLower: string): string[] {
+    return nameLower.match(/[a-z0-9]+/gi) ?? [];
+  }
+
+  /**
+   * Each search term matches only as a dial-code substring OR as a whole-word prefix/exact hit
+   * on the Latin name segments (never arbitrary substring — avoids unrelated countries).
+   */
+  private static receiverIntlTokenMatches(
+    token: string,
+    latinWords: string[],
+    dialDigits: string
+  ): boolean {
+    if (/^\d+$/.test(token)) {
+      return dialDigits.startsWith(token);
+    }
+
+    const t = token.toLowerCase();
+    return latinWords.some((w) => w === t || w.startsWith(t));
   }
 
   @HostListener('window:scroll', [])
@@ -1726,9 +1845,10 @@ export class NewPurchaseRequestComponent implements OnInit {
 
   focusReceiverCountrySearch(): void {
     setTimeout(() => {
-      const searchInput = document.querySelector(
-        'ngx-intl-tel-input .iti__search-input'
-      ) as HTMLInputElement | null;
+      const root = this.receiverIntlWrap?.nativeElement;
+      const searchInput =
+        root?.querySelector<HTMLInputElement>('#country-search-box') ??
+        document.querySelector<HTMLInputElement>('#country-search-box');
 
       if (searchInput) {
         searchInput.focus();
