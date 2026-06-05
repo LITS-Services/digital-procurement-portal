@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, HostListener, NgZone, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, NgZone, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, DatatableComponent, id, SelectionType } from '@swimlane/ngx-datatable';
@@ -28,6 +28,7 @@ import { ConfigService } from 'app/shared/services/config.service';
 export class PurchaseRequestComponent implements OnInit {
 
   @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
+  @ViewChild('syncModal') syncModal!: TemplateRef<any>;
   FORM_IDS = FORM_IDS;
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
@@ -68,6 +69,8 @@ export class PurchaseRequestComponent implements OnInit {
   searchText = '';
   private searchChanged$ = new Subject<string>();
   datatableVisible:boolean = true;
+  syncLoading = false;
+  syncMessage = '';
 
   constructor(
     private router: Router,
@@ -345,6 +348,24 @@ export class PurchaseRequestComponent implements OnInit {
 
     this.router.navigate(['/purchase-request/new-purchase-request'], {
       queryParams: { id: selectedId }, skipLocationChange: true
+    });
+  }
+
+  onSyncNow(): void {
+    if (this.syncLoading) return;
+
+    this.syncLoading = true;
+    this.purchaseRequestService.syncNow().subscribe({
+      next: () => {
+        this.syncMessage = 'Synchronization in progress.';
+        this.modalService.open(this.syncModal, { backdrop: 'static', centered: true });
+        this.syncLoading = false;
+      },
+      error: (err) => {
+        console.error('Sync failed:', err);
+        this.toastr.error('Sync failed. Please try again.');
+        this.syncLoading = false;
+      }
     });
   }
 

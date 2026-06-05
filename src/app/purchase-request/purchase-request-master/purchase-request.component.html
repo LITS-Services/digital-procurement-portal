@@ -41,6 +41,10 @@
                 [appPermFormId]="FORM_IDS.PURCHASE_REQUEST" [appPermDisable]="'read'" (click)="onView()">
                 <i class="ft-eye"></i><label class="ml-1 btn-label">Review</label>
               </button>
+
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="syncLoading" (click)="onSyncNow()">
+                <i class="ft-refresh-cw"></i><label class="ml-1 btn-label">Sync Now</label>
+              </button>
               <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="loadPurchaseRequests()"><label
                 class="ml-1 mt-1">All</label></button>
 
@@ -351,6 +355,20 @@
     </div>
   </div>
 </section>
+
+<!-- Sync Now Modal -->
+<ng-template #syncModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Sync</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <p>{{ syncMessage }}</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="modal.close()">OK</button>
+  </div>
+</ng-template>
 
 <!-- Delete Modal -->
 <!-- <ng-template #deleteModal let-c="close" let-d="dismiss">

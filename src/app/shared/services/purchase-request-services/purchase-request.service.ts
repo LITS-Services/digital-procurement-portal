@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, map } from 'rxjs';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { environment } from 'environments/environment';
+import { SKIP_TOAST } from 'app/shared/interceptor/response-handler.interceptor';
 
 export interface UploadedFile {
   name: string;
@@ -149,5 +150,12 @@ export class PurchaseRequestService {
 
   canInitiatePurchaseRequest(userId: string): Observable<boolean> {
     return this.http.get<any>(`${this.baseUrl}/can-initiate-purchase-request`, { params: { userId } })
+  }
+
+  syncNow(): Observable<string> {
+    return this.http.get(`${this.baseUrl}/sync`, {
+      responseType: 'text',
+      context: new HttpContext().set(SKIP_TOAST, true)
+    });
   }
 }
