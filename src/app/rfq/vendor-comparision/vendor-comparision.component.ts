@@ -77,6 +77,7 @@ export class VendorComparisionComponent implements OnInit {
             comment: bid.comment,
             biddingAmount: bid.biddingAmount,
             requestStatus: bid.requestStatus,
+            deliveryDate: bid.deliveryDate,
             vendorAttachments: bid.vendorAttachments || []
           }))
         }));
@@ -109,6 +110,7 @@ export class VendorComparisionComponent implements OnInit {
               comment: b.comment,
               biddingAmount: b.biddingAmount,
               requestStatus: b.requestStatus,
+              deliveryDate: b.deliveryDate,
               vendorAttachments: b.vendorAttachments || []
             });
           });
