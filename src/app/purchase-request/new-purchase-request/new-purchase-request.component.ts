@@ -51,6 +51,7 @@ export class NewPurchaseRequestComponent implements OnInit {
   currentRequisitionNo!: string;
 
   isStatusCompleted: boolean = false;
+  isStatusRejected: boolean = false;
   isStatusDraft: boolean = false;
   isStatusInProgress: boolean = false;
   isSubmitter: boolean = false;
@@ -87,6 +88,7 @@ export class NewPurchaseRequestComponent implements OnInit {
   public SelectionType = SelectionType;
   public ColumnMode = ColumnMode;
   currentRequestId: number | null = null;
+  itemStatusCountData: any = null;
 
   isSelectingFinalVendor: boolean = false;
   exceptionPolicyData: any = null;
@@ -743,6 +745,18 @@ export class NewPurchaseRequestComponent implements OnInit {
 
         // unwrap the Ardalis.Result<T> wrapper (if any)
         const requestData = data;
+        
+        if (id) {
+          this.purchaseRequestService.getPrItemStatusCount(id).subscribe({
+            next: (res) => {
+              this.itemStatusCountData = res;
+              this.cdr.detectChanges();
+            },
+            error: (err) => {
+              console.error('Failed to load PR Item Status Count:', err);
+            }
+          });
+        }
 
         const loggedInUserId = localStorage.getItem('userId');
         this.isSubmitter = requestData.submitterId === loggedInUserId;
@@ -768,6 +782,14 @@ export class NewPurchaseRequestComponent implements OnInit {
             this.cdr.detectChanges();
           } else {
             this.isStatusCompleted = false;
+            this.cdr.detectChanges();
+          }
+
+          if (requestData.requestStatus === 'Rejected') {
+            this.isStatusRejected = true;
+            this.cdr.detectChanges();
+          } else {
+            this.isStatusRejected = false;
             this.cdr.detectChanges();
           }
 
@@ -808,6 +830,9 @@ export class NewPurchaseRequestComponent implements OnInit {
             remarks: item.remarks,
             createdBy: item.createdBy,
             purchaseRequestId: item.purchaseRequestId,
+            isPoCreated: item.isPoCreated,
+            isRfqCreated: item.isRfqCreated,
+            isInventoryTransfer: item.isInventoryTransfer,
             attachments: (item.attachments || []).map((a: any) => ({
               id: a.id,
               content: a.content || '',

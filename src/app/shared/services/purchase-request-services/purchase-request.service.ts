@@ -158,4 +158,8 @@ export class PurchaseRequestService {
       context: new HttpContext().set(SKIP_TOAST, true)
     });
   }
+
+  getPrItemStatusCount(purchaseRequestId: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/${purchaseRequestId}/item-status-count`);
+  }
 }

@@ -609,3 +609,30 @@ border-bottom: none !important;
 :host ::ng-deep ngx-intl-tel-input .iti__dropdown-content {
   overflow: hidden !important;
 }
+
+/* --- Simple Item Status Cards Styles --- */
+.cstm-stat-card {
+  border: 1px solid #e7e7e7 !important;
+  border-radius: 8px;
+  transition: box-shadow 0.2s ease;
+}
+
+.cstm-stat-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+.border-primary-left { border-left: 4px solid #116AEF !important; }
+.border-info-left { border-left: 4px solid #00b4db !important; }
+.border-success-left { border-left: 4px solid #11998e !important; }
+.border-warning-left { border-left: 4px solid #f2994a !important; }
+
+.stat-icon-wrapper-simple {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-icon-wrapper-simple i {
+  font-size: 1.5rem;
+  opacity: 0.8;
+}
