@@ -52,9 +52,9 @@
               </button>
 
               <button *ngIf="isSelectingFinalVendor" class="btn btn-sm cstm-ui-table-btn"
-                (click)="createPO(selectedRow)">
+                (click)="requestPO(selectedRow)">
                 <i class="ft-plus"></i>
-                <label class="ml-1 btn-label">Create PO</label>
+                <label class="ml-1 btn-label">Request PO</label>
               </button>
             </ng-container>
 
@@ -599,12 +599,12 @@
                   <ng-template let-row="row" ngx-datatable-cell-template>
                     <div class="badge badge-pill"
                       [ngClass]="{
-                        'bg-light-secondary': !row.isPoCreated && !row.isRfqCreated && !row.isInventoryTransfer,
-                        'bg-light-success': row.isPoCreated,
+                        'bg-light-secondary': !row.isPoRequested && !row.isRfqCreated && !row.isInventoryTransfer,
+                        'bg-light-success': row.isPoRequested,
                         'bg-light-info': row.isRfqCreated,
                         'bg-light-warning': row.isInventoryTransfer
                       }">
-                      {{ row.isPoCreated ? 'PO Generated' : (row.isRfqCreated ? 'RFQ Generated' : (row.isInventoryTransfer ? 'Inv. Transfer Created' : 'Pending')) }}
+                      {{ row.isPoRequested ? 'PO Requested' : (row.isRfqCreated ? 'RFQ Generated' : (row.isInventoryTransfer ? 'Inv. Transfer Created' : 'Pending')) }}
                     </div>
                   </ng-template>
                 </ngx-datatable-column>

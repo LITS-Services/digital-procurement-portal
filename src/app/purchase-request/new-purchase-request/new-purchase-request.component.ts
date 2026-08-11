@@ -831,6 +831,7 @@ export class NewPurchaseRequestComponent implements OnInit {
             createdBy: item.createdBy,
             purchaseRequestId: item.purchaseRequestId,
             isPoCreated: item.isPoCreated,
+            isPoRequested: item.isPoRequested,
             isRfqCreated: item.isRfqCreated,
             isInventoryTransfer: item.isInventoryTransfer,
             attachments: (item.attachments || []).map((a: any) => ({
@@ -1460,9 +1461,9 @@ export class NewPurchaseRequestComponent implements OnInit {
     return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate());
   }
 
-  createPO(row: any) {
+  requestPO(row: any) {
     if (!this.newPurchaseItemData || this.newPurchaseItemData.length === 0) {
-      this.toastr.info('No items available to create Purchase Order.');
+      this.toastr.info('No items available for requesting Purchase Order.');
       return;
     }
 
@@ -1476,11 +1477,11 @@ export class NewPurchaseRequestComponent implements OnInit {
     }
 
     Swal.fire({
-      title: 'Create Purchase Order?',
-      text: 'This will generate PO(s) automatically for all items based on vendor assignment.',
+      title: 'Request Purchase Order?',
+      text: 'This will send a request for PO for all items based on vendor assignment.',
       icon: 'question',
       showCancelButton: true,
-      confirmButtonText: 'Yes, Create PO',
+      confirmButtonText: 'Yes, Request PO',
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
@@ -1494,10 +1495,10 @@ export class NewPurchaseRequestComponent implements OnInit {
           .pipe(finalize(() => this.spinner.hide()))
           .subscribe({
             next: () => {
-              this.router.navigate(['/purchase-order']);
+              this.router.navigate(['/purchase-request']);
             },
             error: () => {
-              this.toastr.error('Something went wrong while creating PO.');
+              this.toastr.error('Something went wrong while requesting PO.');
             }
           });
       }

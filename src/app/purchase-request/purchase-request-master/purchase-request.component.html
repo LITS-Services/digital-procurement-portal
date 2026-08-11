@@ -293,17 +293,17 @@
               </button>
             </ng-template>
 
-            <!-- Create Purchase Order -->
+            <!-- Request Purchase Order -->
             <button
               *ngIf="row.requestStatus === 'Completed' && row.isInventoryTransfer !== true; else selectVendorDisabled"
               class="btn popover-btn btn-sm m-1"
-              ngbTooltip="Create Purchase Order"
+              ngbTooltip="Request Purchase Order"
               (click)="selectFinalVendor(row)"
               appPermission
               [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
               [appPermDisable]="'write'">
               <span class="popover-icon"><i class="ft-shopping-cart"></i></span>
-              Create Purchase Order
+              Request Purchase Order
             </button>
 
             <ng-template #selectVendorDisabled>
@@ -311,8 +311,8 @@
                 class="btn popover-btn btn-sm m-1"
                 disabled
                 [ngbTooltip]="row.requestStatus !== 'Completed'
-                  ? 'Purchase Order can only be created when PR is Completed.'
-                  : 'Purchase Order cannot be created since Inventory Transfer is created.'">
+                  ? 'Purchase Order can only be requested when PR is Completed.'
+                  : 'Purchase Order cannot be requested since Inventory Transfer is created.'">
                 <span class="popover-icon"><i class="ft-shopping-cart" style="opacity: 0.5;"></i></span>
                 Create Purchase Order
               </button>
