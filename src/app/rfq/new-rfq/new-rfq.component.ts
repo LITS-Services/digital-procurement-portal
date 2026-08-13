@@ -453,13 +453,13 @@ export class NewRfqComponent implements OnInit {
     });
   }
 
-  createPO(row: any) {
+  requestPO(row: any) {
     Swal.fire({
-      title: 'Create Purchase Order?',
-      text: 'This will generate PO(s) automatically for all items based on vendor assignment.',
+      title: 'Request Purchase Order?',
+      text: 'This will request for PO automatically for all items based on vendor assignment.',
       icon: 'question',
       showCancelButton: true,
-      confirmButtonText: 'Yes, Create PO',
+      confirmButtonText: 'Yes, Request PO',
       cancelButtonText: 'Cancel',
     }).then((result) => {
       if (result.isConfirmed) {
@@ -469,7 +469,7 @@ export class NewRfqComponent implements OnInit {
           next: (res: any) => {
             this.loading = false;
             this.spinner.hide();
-            this.router.navigate(['/purchase-order']);
+            this.router.navigate(['/rfq']);
           },
           error: () => {
             this.toastr.error('Something went wrong while creating PO.');
