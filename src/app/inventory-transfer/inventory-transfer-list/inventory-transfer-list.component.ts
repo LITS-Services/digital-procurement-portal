@@ -87,7 +87,7 @@ export class InventoryTransferListComponent implements OnInit {
     this.query.entityId = entityId ? +entityId : null;
 
     this.spinner.show();
-    this.purchaseRequestService.getAllPurchaseRequests(this.query).subscribe({
+    this.purchaseRequestService.getAllInventoryTransfer(this.query).subscribe({
       next: (data: any) => {
         this.purchaseRequestData = (data?.result || []).map((pr: any) => ({
           ...pr,
@@ -103,7 +103,7 @@ export class InventoryTransferListComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error fetching requests:', err);
+        console.error('Error fetching inventory transfers:', err);
         this.loading = false;
       },
     });

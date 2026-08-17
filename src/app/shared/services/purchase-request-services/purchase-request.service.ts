@@ -77,6 +77,26 @@ export class PurchaseRequestService {
     );
   }
 
+  getAllInventoryTransfer(q: {
+    currentPage: number,
+    pageSize: number,
+    userId?: string | null,
+    entityId?: number | null,
+    requisitionNo?: string
+  }): Observable<any> {
+    let params = new HttpParams()
+      .set("currentPage", q.currentPage)
+      .set("pageSize", q.pageSize);
+
+    if (q.userId) params = params.set("userId", q.userId);
+    if (q.entityId) params = params.set("entityId", q.entityId);
+    if (q.requisitionNo) params = params.set("requisitionNo", q.requisitionNo);
+    
+    return this.http.get<any>(
+      `${this.baseUrl}/get-all-inventory-transfer`, { params }
+    );
+  }
+
   deletePurchaseRequest(ids: number[]): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/delete-request`, { ids });
   }
