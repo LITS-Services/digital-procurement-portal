@@ -83,6 +83,9 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   // new work
   itemList: any[] = [];
   unitsOfMeasurementList: any[] = [];
+  uomMasterList: any[] = [];
+  vatProdPostingGroups: any[] = [];
+  selectedUomLabel = '';
   accountList: any[] = [];
 
   vendorUsers: any[] = [];
@@ -121,7 +124,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
   addresses: any[] = [];
 
-  entities: Array<{ id: number; description: string }> = [];
+  entities: Array<{ id: number; description: string; stringId?: string }> = [];
   isEntityLocked = false;
   entityHint = '';
   isToolbarSticky = false;
@@ -219,9 +222,12 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       attachments: this.fb.group([])
     });
 
-    this.loadUnitsOfMeasurements();
     this.loadAccounts();
-    this.loadItems();
+    this.loadUnitsOfMeasurements();
+    this.itemForm.get('unitOfMeasurementId')?.disable({ emitEvent: false });
+    this.itemForm.get('itemId')?.valueChanges
+      .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe(itemId => this.onItemSelected(itemId));
     this.route.queryParamMap.subscribe(params => {
       const id = params.get('id');
       const mode = params.get('mode');
@@ -493,6 +499,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         else ctrl.enable({ emitEvent: false });
       }
       this.cdr.markForCheck();
+      this.loadItemsForSelectedEntity();
     };
 
     if (!this.entities?.length && userId) {
@@ -505,7 +512,11 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   private loadEntitiesForUser(userId: string, after?: () => void): void {
     this.lookupService.getProcCompaniesByProcUserId(userId).subscribe({
       next: (res: any[]) => {
-        this.entities = res || [];
+        this.entities = (res || []).map((e: any) => ({
+          id: e.id ?? e.Id,
+          description: e.description ?? e.Description,
+          stringId: e.stringId ?? e.StringId ?? null
+        }));
         after?.();
       },
       error: (err) => console.error('Error fetching entities:', err),
@@ -539,6 +550,121 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     });
   }
 
+  onEntityChanged(): void {
+    this.loadAddressOnEntityChanges();
+    this.resetItemAndUomSelection();
+    this.loadItemsForSelectedEntity();
+  }
+
+  private getSelectedEntityGuid(): string | null {
+    const entityId = Number(this.newPurchaseRequestForm.get('entityId')?.value);
+    if (!entityId) return null;
+    const match = this.entities?.find(e => Number(e.id) === entityId);
+    const guid = match?.stringId?.trim();
+    return guid || null;
+  }
+
+  loadItemsForSelectedEntity(): void {
+    const entityId = Number(this.newPurchaseRequestForm.get('entityId')?.value);
+    if (!entityId) {
+      this.itemList = [];
+      this.vatProdPostingGroups = [];
+      return;
+    }
+
+    const guid = this.getSelectedEntityGuid();
+    if (guid) {
+      this.fetchEntityLookups(guid);
+      return;
+    }
+
+    this.companyService.getProcurementCompanyById(entityId).subscribe({
+      next: (res) => {
+        const companyGuid = res?.companyGUID || res?.companyGuid || null;
+        if (companyGuid) {
+          const entity = this.entities?.find(e => Number(e.id) === entityId);
+          if (entity) entity.stringId = companyGuid;
+          this.fetchEntityLookups(companyGuid);
+        } else {
+          this.itemList = [];
+          this.vatProdPostingGroups = [];
+        }
+      },
+      error: () => {
+        this.itemList = [];
+        this.vatProdPostingGroups = [];
+      }
+    });
+  }
+
+  private fetchEntityLookups(entityGuid: string): void {
+    this.lookupService.getItemsByEntity(entityGuid).subscribe({
+      next: (res) => {
+        this.itemList = res ?? [];
+        this.cdr.markForCheck();
+      },
+      error: (err) => console.error('Failed to load items for entity:', err)
+    });
+
+    this.lookupService.getVatProdPostingGroups(entityGuid).subscribe({
+      next: (res) => {
+        this.vatProdPostingGroups = res ?? [];
+      },
+      error: (err) => console.error('Failed to load VAT prod posting groups:', err)
+    });
+  }
+
+  onItemSelected(itemId: any): void {
+    const id = Number(itemId);
+    if (!id || Number.isNaN(id) || id <= 0) {
+      this.unitsOfMeasurementList = [];
+      this.selectedUomLabel = '';
+      this.itemForm.get('unitOfMeasurementId')?.setValue(null, { emitEvent: false });
+      return;
+    }
+
+    this.lookupService.getUomByItem(id).subscribe({
+      next: (res) => {
+        this.unitsOfMeasurementList = res ?? [];
+        const symbol = this.unitsOfMeasurementList[0];
+        this.selectedUomLabel = symbol?.description || symbol?.stringId || '';
+        this.itemForm.get('unitOfMeasurementId')?.setValue(this.resolveUnitOfMeasurementId(symbol), { emitEvent: false });
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Failed to load UOM for item:', err);
+        this.unitsOfMeasurementList = [];
+        this.selectedUomLabel = '';
+        this.itemForm.get('unitOfMeasurementId')?.setValue(null, { emitEvent: false });
+      }
+    });
+  }
+
+  private resolveVatProdPostingGroup(): string | null {
+    const group = this.vatProdPostingGroups?.[0];
+    if (!group) return null;
+    const value = (group.stringId || group.description || '').toString().trim();
+    return value || null;
+  }
+
+  private resolveUomSymbol(item?: any): string | null {
+    const value = (
+      item?.unitOfMeasurementSymbol ||
+      item?.unitOfMeasurementCode ||
+      this.selectedUomLabel ||
+      ''
+    ).toString().trim();
+    return value || null;
+  }
+
+  private resetItemAndUomSelection(): void {
+    this.itemForm.patchValue({ itemId: 0, unitOfMeasurementId: 0 }, { emitEvent: false });
+    this.itemList = [];
+    this.unitsOfMeasurementList = [];
+    this.selectedUomLabel = '';
+    this.itemForm.get('unitOfMeasurementId')?.disable({ emitEvent: false });
+  }
+
   onAddressSelect(id: number) {
     const selected = this.addresses.find(a => a.id == id);
     if (!selected) return;
@@ -556,13 +682,27 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   loadUnitsOfMeasurements() {
     this.lookupService.getAllUnitsOfMeasurement().subscribe({
       next: (res) => {
-        this.unitsOfMeasurementList = res ?? [];
-        console.log('UoM dropdown data:', this.unitsOfMeasurementList);
+        this.uomMasterList = res ?? [];
       },
       error: (err) => {
         console.error('Failed to load UoM dropdown:', err);
       }
     });
+  }
+
+  private resolveUnitOfMeasurementId(symbol: any): number | null {
+    if (!symbol) return null;
+    const code = (symbol.description || symbol.stringId || '').toString().trim().toLowerCase();
+    const master = this.uomMasterList.find((u: any) => {
+      const desc = (u.description || '').toString().trim().toLowerCase();
+      const uomCode = (u.uomCode || u.code || '').toString().trim().toLowerCase();
+      return (code && (desc === code || uomCode === code)) || (symbol.id && Number(u.id) === Number(symbol.id));
+    });
+    if (master?.id) return Number(master.id);
+    if (symbol.id && this.uomMasterList.some((u: any) => Number(u.id) === Number(symbol.id))) {
+      return Number(symbol.id);
+    }
+    return null;
   }
 
   loadAccounts() {
@@ -634,7 +774,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   }
 
   getUomCodeById(id: number): string {
-    const found = this.unitsOfMeasurementList.find(u => u.id === id);
+    const found = this.uomMasterList.find(u => u.id === id) || this.unitsOfMeasurementList.find(u => u.id === id);
     return found ? found.description : '';
   }
 
@@ -747,6 +887,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         ...existing,
         ...normalizedItem,
         itemId: existing.itemId,
+        vatProdPostingGroup: existing.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
+        unitOfMeasurementSymbol: this.selectedUomLabel || this.resolveUomSymbol(normalizedItem) || this.resolveUomSymbol(existing),
         attachments: existing?.attachments ?? []
       };
 
@@ -761,6 +903,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       const withEmptyAttachments = {
         ...normalizedItem,
         itemId: newItemId,
+        vatProdPostingGroup: this.resolveVatProdPostingGroup(),
+        unitOfMeasurementSymbol: this.resolveUomSymbol(normalizedItem),
         attachments: newItem.attachments?.length ? newItem.attachments : []
       };
 
@@ -830,6 +974,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       remarks: row.remarks || '',
       attachments: row.attachments || []
     });
+    this.selectedUomLabel = this.resolveUomSymbol(row) || '';
     this.syncFinalVendorControlState();
 
     // if vendor changes, refresh vendor company list
@@ -977,12 +1122,14 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
             amount: item.amount,
             unitCost: item.unitCost,
             unitOfMeasurementId: item.unitOfMeasurementId,
+            unitOfMeasurementSymbol: this.resolveUomSymbol(item),
             orderQuantity: item.orderQuantity,
             reqByDate: this.toDateInputValue(item.reqByDate),
             vendorUserId: item.vendorUserId,
             vendorCompanyId: item.vendorCompanyId,
             accountId: item.accountId,
             remarks: item.remarks,
+            vatProdPostingGroup: item.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
             createdBy: item.createdBy,
             purchaseRequestId: item.purchaseRequestId,
             isPoCreated: item.isPoCreated,
@@ -1068,7 +1215,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         id: item.id || null,
         itemType: item.itemType || '',
         itemId: Number(item.itemId) || 0,
-        unitOfMeasurementId: Number(item.unitOfMeasurementId) || 0,
+        unitOfMeasurementId: Number(item.unitOfMeasurementId) || null,
         amount: item.amount || 0,
         unitCost: item.unitCost || 0,
         orderQuantity: item.orderQuantity || 0,
@@ -1080,6 +1227,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         purchaseRequestId: item.purchaseRequestId || 0,
         vendorUserId: item.vendorUserId || null,
         vendorCompanyId: item.vendorCompanyId || null,
+        vatProdPostingGroup: item.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
+        unitOfMeasurementSymbol: this.resolveUomSymbol(item),
         requisitionNo: f.requisitionNo,
         attachments: item.attachments?.map(att => ({
 
@@ -1189,6 +1338,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         // purchaseRequestId: item.purchaseRequestId || 0,
         vendorUserId: item.vendorUserId || null,
         vendorCompanyId: item.vendorCompanyId || null,
+        vatProdPostingGroup: item.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
+        unitOfMeasurementSymbol: this.resolveUomSymbol(item),
         requisitionNo: f.requisitionNo,
         attachments: item.attachments?.map(att => ({
 
@@ -1441,6 +1592,9 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
     this.editingRowIndex = null;
     this.selectedRow = null;
+    this.selectedUomLabel = '';
+    this.unitsOfMeasurementList = [];
+    this.itemForm.get('unitOfMeasurementId')?.disable({ emitEvent: false });
 
     this.filteredCompanies = [];
     this.syncFinalVendorControlState();
@@ -1590,6 +1744,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         vendorCompanyId: null,
         accountId: this.getAccountIdByName(item['Account']) || 1,
         remarks: item['Remarks'] || '',
+        vatProdPostingGroup: this.resolveVatProdPostingGroup(),
+        unitOfMeasurementSymbol: (item['U of M'] || '').toString().trim() || null,
         attachments: []
       };
     });
@@ -1618,7 +1774,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   }
 
   getUOMIdByName(name: string): number | null {
-    const uom = this.unitsOfMeasurementList.find(
+    const uom = this.uomMasterList.find(
       (x) => x.description?.trim().toLowerCase() === name?.trim().toLowerCase()
     );
     return uom ? uom.id : null;

@@ -40,6 +40,9 @@ export class NewRfqComponent implements OnInit {
   // new work
   itemList: any[] = [];
   unitsOfMeasurementList: any[] = [];
+  uomMasterList: any[] = [];
+  vatProdPostingGroups: any[] = [];
+  selectedUomLabel = '';
   accountList: any[] = [];
 
   newRfqForm: FormGroup;
@@ -94,7 +97,7 @@ export class NewRfqComponent implements OnInit {
   compareIds = (a: string | null, b: string | null) =>
     (a ?? '').toLowerCase() === (b ?? '').toLowerCase();
 
-  entities: Array<{ id: number; description: string }> = [];
+  entities: Array<{ id: number; description: string; stringId?: string }> = [];
   isEntityLocked = false;
   entityHint = '';
   isToolbarSticky = false;
@@ -135,9 +138,8 @@ export class NewRfqComponent implements OnInit {
     this.loadVendorUsers();
     // this.getWorkflowTypes();
 
-    this.loadUnitsOfMeasurements();
     this.loadAccounts();
-    this.loadItems();
+    this.loadUnitsOfMeasurements();
     this.route.queryParamMap.subscribe((params) => {
       const id = params.get('id');
       const mode = params.get('mode');
@@ -212,6 +214,7 @@ export class NewRfqComponent implements OnInit {
       vendorCompanyId: [null],
       quotationItemAttachments: this.fb.array([]),
     });
+    this.itemForm.get('unitOfMeasurementId')?.disable({ emitEvent: false });
     this.itemForm.valueChanges.subscribe((values) => {
       const total = (values.unitCost || 0) * (values.orderQuantity || 0);
       this.itemForm.patchValue({ amount: total }, { emitEvent: false });
@@ -319,6 +322,7 @@ export class NewRfqComponent implements OnInit {
         else ctrl.enable({ emitEvent: false });
       }
       this.cdr.markForCheck();
+      this.loadItemsForSelectedEntity();
     };
 
     if (!this.entities?.length && userId) {
@@ -372,7 +376,11 @@ export class NewRfqComponent implements OnInit {
   private loadEntitiesForUser(userId: string, after?: () => void): void {
     this.lookupService.getProcCompaniesByProcUserId(userId).subscribe({
       next: (res: any[]) => {
-        this.entities = res || [];
+        this.entities = (res || []).map((e: any) => ({
+          id: e.id ?? e.Id,
+          description: e.description ?? e.Description,
+          stringId: e.stringId ?? e.StringId ?? null,
+        }));
         after?.();
       },
       error: (err) => console.error('Error fetching entities:', err),
@@ -382,7 +390,7 @@ export class NewRfqComponent implements OnInit {
   loadUnitsOfMeasurements() {
     this.lookupService.getAllUnitsOfMeasurement().subscribe({
       next: (res) => {
-        this.unitsOfMeasurementList = res ?? [];
+        this.uomMasterList = res ?? [];
       },
       error: (err) => {
         console.error('Failed to load UoM dropdown:', err);
@@ -402,14 +410,136 @@ export class NewRfqComponent implements OnInit {
   }
 
   loadItems() {
-    this.lookupService.getAllItems().subscribe({
+    this.loadItemsForSelectedEntity();
+  }
+
+  onEntityChanged(): void {
+    this.resetItemAndUomSelection();
+    this.loadItemsForSelectedEntity();
+  }
+
+  private getSelectedEntityGuid(): string | null {
+    const entityId = Number(this.newRfqForm.get('entityId')?.value);
+    if (!entityId) return null;
+    const match = this.entities?.find((e) => Number(e.id) === entityId);
+    const guid = match?.stringId?.trim();
+    return guid || null;
+  }
+
+  loadItemsForSelectedEntity(): void {
+    const entityId = Number(this.newRfqForm.get('entityId')?.value);
+    if (!entityId) {
+      this.itemList = [];
+      this.vatProdPostingGroups = [];
+      return;
+    }
+
+    const guid = this.getSelectedEntityGuid();
+    if (guid) {
+      this.fetchEntityLookups(guid);
+      return;
+    }
+
+    this.companyService.getProcurementCompanyById(entityId).subscribe({
       next: (res) => {
-        this.itemList = res ?? [];
+        const companyGuid = res?.companyGUID || res?.companyGuid || null;
+        if (companyGuid) {
+          const entity = this.entities?.find((e) => Number(e.id) === entityId);
+          if (entity) entity.stringId = companyGuid;
+          this.fetchEntityLookups(companyGuid);
+        } else {
+          this.itemList = [];
+          this.vatProdPostingGroups = [];
+        }
       },
-      error: (err) => {
-        console.error('Failed to load items dropdown:', err);
+      error: () => {
+        this.itemList = [];
+        this.vatProdPostingGroups = [];
       },
     });
+  }
+
+  private fetchEntityLookups(entityGuid: string): void {
+    this.lookupService.getItemsByEntity(entityGuid).subscribe({
+      next: (res) => {
+        this.itemList = res ?? [];
+        this.cdr.markForCheck();
+      },
+      error: (err) => console.error('Failed to load items for entity:', err),
+    });
+
+    this.lookupService.getVatProdPostingGroups(entityGuid).subscribe({
+      next: (res) => {
+        this.vatProdPostingGroups = res ?? [];
+      },
+      error: (err) => console.error('Failed to load VAT prod posting groups:', err),
+    });
+  }
+
+  onItemSelected(itemId: any): void {
+    const id = Number(itemId);
+    if (!id || Number.isNaN(id) || id <= 0) {
+      this.unitsOfMeasurementList = [];
+      this.selectedUomLabel = '';
+      this.itemForm.get('unitOfMeasurementId')?.setValue(null, { emitEvent: false });
+      return;
+    }
+
+    this.lookupService.getUomByItem(id).subscribe({
+      next: (res) => {
+        this.unitsOfMeasurementList = res ?? [];
+        const symbol = this.unitsOfMeasurementList[0];
+        this.selectedUomLabel = symbol?.description || symbol?.stringId || '';
+        this.itemForm.get('unitOfMeasurementId')?.setValue(this.resolveUnitOfMeasurementId(symbol), { emitEvent: false });
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Failed to load UOM for item:', err);
+        this.unitsOfMeasurementList = [];
+        this.selectedUomLabel = '';
+        this.itemForm.get('unitOfMeasurementId')?.setValue(null, { emitEvent: false });
+      },
+    });
+  }
+
+  private resetItemAndUomSelection(): void {
+    this.itemForm.patchValue({ itemId: 0, unitOfMeasurementId: 0 }, { emitEvent: false });
+    this.itemList = [];
+    this.unitsOfMeasurementList = [];
+    this.selectedUomLabel = '';
+    this.itemForm.get('unitOfMeasurementId')?.disable({ emitEvent: false });
+  }
+
+  private resolveVatProdPostingGroup(): string | null {
+    const group = this.vatProdPostingGroups?.[0];
+    if (!group) return null;
+    const value = (group.stringId || group.description || '').toString().trim();
+    return value || null;
+  }
+
+  private resolveUomSymbol(item?: any): string | null {
+    const value = (
+      item?.unitOfMeasurementSymbol ||
+      item?.unitOfMeasurementCode ||
+      this.selectedUomLabel ||
+      ''
+    ).toString().trim();
+    return value || null;
+  }
+
+  private resolveUnitOfMeasurementId(symbol: any): number | null {
+    if (!symbol) return null;
+    const code = (symbol.description || symbol.stringId || '').toString().trim().toLowerCase();
+    const master = this.uomMasterList.find((u: any) => {
+      const desc = (u.description || '').toString().trim().toLowerCase();
+      const uomCode = (u.uomCode || u.code || '').toString().trim().toLowerCase();
+      return (code && (desc === code || uomCode === code)) || (symbol.id && Number(u.id) === Number(symbol.id));
+    });
+    if (master?.id) return Number(master.id);
+    if (symbol.id && this.uomMasterList.some((u: any) => Number(u.id) === Number(symbol.id))) {
+      return Number(symbol.id);
+    }
+    return null;
   }
 
   onVendorChange(vendorId: string) {
@@ -554,6 +684,8 @@ export class NewRfqComponent implements OnInit {
           itemDescription: item.itemDescription,
           accountId: item.accountId,
           remarks: item.remarks || '',
+          vatProdPostingGroup: item.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
+          unitOfMeasurementSymbol: item.unitOfMeasurementSymbol || item.unitOfMeasurementCode || null,
           createdBy: item.createdBy || 'current-user',
           quotationRequestId: 0,
           vendorUserId: null,
@@ -647,12 +779,14 @@ export class NewRfqComponent implements OnInit {
             amount: item.amount,
             unitCost: item.unitCost,
             unitOfMeasurementId: item.unitOfMeasurementId,
+            unitOfMeasurementSymbol: this.resolveUomSymbol(item),
             orderQuantity: item.orderQuantity,
             reqByDate: this.toDateInputValue(item.reqByDate),
             vendorUserId: item.vendorUserId,
             vendorCompanyId: item.vendorCompanyId,
             accountId: item.accountId,
             remarks: item.remarks,
+            vatProdPostingGroup: item.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
             quotationRequestId: item.quotationRequestId,
             // quotationItemAttachments: item.quotationItemAttachments?.$values?.map((a: any) => ({
             quotationItemAttachments: (item.quotationItemAttachments || []).map((a: any) => ({
@@ -706,7 +840,9 @@ export class NewRfqComponent implements OnInit {
       remarks: row.remarks,
       quotationItemAttachments: row.quotationItemAttachments,
     });
+    this.selectedUomLabel = this.resolveUomSymbol(row) || '';
     this.onVendorChange(row.vendorUserId);
+    this.onItemSelected(row.itemId);
 
     Promise.resolve().then(() => {
       this.itemForm.patchValue({ vendorCompanyId: row.vendorCompanyId }, { emitEvent: false });
@@ -775,6 +911,8 @@ export class NewRfqComponent implements OnInit {
         quotationRequestId: item.quotationRequestId || 0,
         vendorUserId: item.vendorUserId || null,
         vendorCompanyId: item.vendorCompanyId || null,
+        vatProdPostingGroup: item.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
+        unitOfMeasurementSymbol: this.resolveUomSymbol(item),
         quotationItemAttachments: item.quotationItemAttachments?.map((att) => ({
           id: att.id || null,
           content: att.content || '',
@@ -808,6 +946,8 @@ export class NewRfqComponent implements OnInit {
           quotationRequestId: item.quotationRequestId || 0,
           vendorUserId: item.vendorUserId || null,
           vendorCompanyId: item.vendorCompanyId || null,
+          vatProdPostingGroup: item.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
+          unitOfMeasurementSymbol: this.resolveUomSymbol(item),
           quotationItemAttachments: item.quotationItemAttachments?.map((att) => ({
             id: att.id || null,
             content: att.content || '',
@@ -930,7 +1070,7 @@ export class NewRfqComponent implements OnInit {
           rfqNo: f.rfqNo || '',
           itemType: item.itemType || '',
           itemId: Number(item.itemId) || 0,
-          unitOfMeasurementId: Number(item.unitOfMeasurementId) || 0,
+          unitOfMeasurementId: Number(item.unitOfMeasurementId) || null,
           amount: item.amount || 0,
           unitCost: item.unitCost || 0,
           orderQuantity: item.orderQuantity || 0,
@@ -942,6 +1082,8 @@ export class NewRfqComponent implements OnInit {
           quotationRequestId: item.quotationRequestId || 0,
           vendorUserId: item.vendorUserId || null,
           vendorCompanyId: item.vendorCompanyId || null,
+          vatProdPostingGroup: item.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
+          unitOfMeasurementSymbol: this.resolveUomSymbol(item),
           quotationItemAttachments: item.quotationItemAttachments?.map((att) => ({
             id: att.id || null,
             content: att.content || '',
@@ -999,7 +1141,7 @@ export class NewRfqComponent implements OnInit {
   }
 
   insertItem(): void {
-    const newItem = this.itemForm.value;
+    const newItem = this.itemForm.getRawValue();
     const newItemId = Number(newItem.itemId);
 
     // Duplicate check — works for add and edit both
@@ -1018,6 +1160,8 @@ export class NewRfqComponent implements OnInit {
         ...existing,
         ...newItem,
         itemId: newItemId,
+        vatProdPostingGroup: existing.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
+        unitOfMeasurementSymbol: this.selectedUomLabel || this.resolveUomSymbol(newItem) || this.resolveUomSymbol(existing),
         attachments: existing?.attachments ?? [],
       };
 
@@ -1033,6 +1177,8 @@ export class NewRfqComponent implements OnInit {
       const withEmptyAttachments = {
         ...newItem,
         itemId: newItemId,
+        vatProdPostingGroup: this.resolveVatProdPostingGroup(),
+        unitOfMeasurementSymbol: this.resolveUomSymbol(newItem),
         attachments: newItem.attachments?.length ? newItem.attachments : [],
       };
       this.newQuotationItemData = [...this.newQuotationItemData, withEmptyAttachments];
@@ -1043,7 +1189,12 @@ export class NewRfqComponent implements OnInit {
       amount: 0,
       unitCost: 0,
       orderQuantity: 1,
+      itemId: 0,
+      unitOfMeasurementId: 0,
     });
+    this.selectedUomLabel = '';
+    this.unitsOfMeasurementList = [];
+    this.itemForm.get('unitOfMeasurementId')?.disable({ emitEvent: false });
   }
 
   deleteRow(rowIndex: number): void {

@@ -233,7 +233,8 @@
                 </small>
               </label>
               
-                <select class="form-control custom-input" formControlName="entityId" [disabled]="isEntityLocked || viewMode">
+                <select class="form-control custom-input" formControlName="entityId" [disabled]="isEntityLocked || viewMode"
+                  (change)="onEntityChanged()">
                   <option [ngValue]="null">-- Select Entity --</option>
                   <option *ngFor="let e of entities" [ngValue]="e.id">
                     {{ e.description }}
@@ -426,9 +427,10 @@
                 <div class="col-md-6 col-12">
                   <div class="form-group mb-2">
                     <label>Item</label>
-                    <select class="form-control" formControlName="itemId">
-                      <option value="" disabled selected>Select Item</option>
-                      <option *ngFor="let item of itemList" [value]="item.id">
+                    <select class="form-control custom-input" formControlName="itemId"
+                      (change)="onItemSelected(itemForm.get('itemId')?.value)">
+                      <option [ngValue]="0" disabled>Select Item</option>
+                      <option *ngFor="let item of itemList" [ngValue]="item.id">
                         {{ item.description }}
                       </option>
                     </select>
@@ -438,12 +440,8 @@
                 <div class="col-md-6 col-12">
                   <div class="form-group mb-2">
                     <label>U of M</label>
-                    <select class="form-control custom-input" formControlName="unitOfMeasurementId">
-                      <option value="" disabled selected>Select UOM</option>
-                      <option *ngFor="let uom of unitsOfMeasurementList" [ngValue]="uom.id">
-                        {{ uom.description }}
-                      </option>
-                    </select>
+                    <input type="text" class="form-control custom-input" [value]="selectedUomLabel"
+                      placeholder="Select an item first" disabled>
                   </div>
                 </div>
               </div>

@@ -42,7 +42,8 @@ export class LoginPageComponent implements OnInit {
     const msg = sessionStorage.getItem('authFlash');
     if (msg) {
       sessionStorage.removeItem('authFlash');
-      this.toastr.warning(msg, 'Session expired', { timeOut: 10000 });
+      const title = msg.toLowerCase().includes('inactivity') ? 'Signed out' : 'Session expired';
+      this.toastr.warning(msg, title, { timeOut: 10000 });
     }
 
     // 🔹 Handle SSO callback redirect (token from Azure)
