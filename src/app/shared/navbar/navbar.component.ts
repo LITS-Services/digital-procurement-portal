@@ -566,10 +566,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   logout(): void {
-    this.authService.logout().subscribe({
-      next: () => this.authService.performLogout(),
-      error: () => this.authService.performLogout(),
-    });
+    this.authService.performLogout();
   }
 
   loadLayout() {

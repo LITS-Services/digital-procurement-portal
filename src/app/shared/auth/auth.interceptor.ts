@@ -3,7 +3,7 @@ import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse
 import { Observable, of, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
 import { catchError, switchMap } from 'rxjs/operators';
-import { attachBearerToken, isAuthExcludedUrl, withCookieAuthRequest } from './auth-http.utils';
+import { attachBearerToken, isAuthExcludedUrl, isAuthLogoutUrl, withCookieAuthRequest } from './auth-http.utils';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -26,7 +26,11 @@ export class AuthInterceptor implements HttpInterceptor {
         return next.handle(authReq).pipe(
           catchError((err) => {
             const isRefresh = req.url.includes('/Auth/Procurement-Refresh');
+            const isLogout = isAuthLogoutUrl(req.url);
             if (!skip && err instanceof HttpErrorResponse && err.status === 401) {
+              if (isLogout || this.auth.isLoggingOut || !this.auth.isAuthenticated()) {
+                return throwError(() => err);
+              }
               return this.auth.refreshAccessToken$().pipe(
                 switchMap((newToken) => {
                   if (!this.auth.isAuthenticated() && !newToken) {
@@ -39,15 +43,16 @@ export class AuthInterceptor implements HttpInterceptor {
                   return next.handle(retryReq);
                 }),
                 catchError((refreshErr) => {
-                  this.auth.performLogout('session-expired');
+                  if (this.auth.isAuthenticated() && !this.auth.isLoggingOut) {
+                    this.auth.performLogout('session-expired');
+                  }
                   return throwError(() => refreshErr);
                 })
               );
             }
 
             if (isRefresh && err instanceof HttpErrorResponse && err.status === 401) {
-              // A failed restore/refresh must not wipe a session that just logged in.
-              if (!this.auth.isAuthenticated()) {
+              if (this.auth.isAuthenticated() && !this.auth.isLoggingOut) {
                 sessionStorage.setItem('authFlash', 'Your session has expired. Please sign in again.');
               }
             }

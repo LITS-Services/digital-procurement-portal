@@ -174,6 +174,10 @@ export class AuthService {
     });
   }
 
+  get isLoggingOut(): boolean {
+    return this.loggingOut;
+  }
+
   isAuthenticated(): boolean {
     if (this.useCookieAuth()) {
       return localStorage.getItem('isAuthenticated') === 'true' && !!localStorage.getItem('userId');
@@ -405,6 +409,8 @@ export class AuthService {
       sessionStorage.setItem('authFlash', 'Your session has expired. Please sign in again.');
     } else if (reason === 'idle') {
       sessionStorage.setItem('authFlash', 'You were signed out due to inactivity.');
+    } else {
+      sessionStorage.removeItem('authFlash');
     }
     this.router.navigate(['/pages/login']);
   }

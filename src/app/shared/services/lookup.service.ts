@@ -13,8 +13,26 @@ export class LookupService {
     return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=item`);
   }
 
+  getItemsByEntity(entityGuid: string) {
+    return this.http.get<any[]>(`${this.baseUrl}/dropdowns`, {
+      params: { name: 'Item', id: entityGuid }
+    });
+  }
+
   getAllUnitsOfMeasurement() {
     return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=uom`);
+  }
+
+  getUomByItem(itemId: number | string) {
+    return this.http.get<any[]>(`${this.baseUrl}/dropdowns`, {
+      params: { name: 'unitofmeasuresymbol', parentId: String(itemId) }
+    });
+  }
+
+  getVatProdPostingGroups(entityGuid: string) {
+    return this.http.get<any[]>(`${this.baseUrl}/dropdowns`, {
+      params: { name: 'vatprodpostinggroups', id: entityGuid }
+    });
   }
 
   getAllAccounts() {

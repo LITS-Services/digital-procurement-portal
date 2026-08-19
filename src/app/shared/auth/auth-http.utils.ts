@@ -20,11 +20,21 @@ const AUTH_EXCLUDED_PATHS = [
   '/Auth/ProcurementResetPassword',
 ] as const;
 
+const AUTH_LOGOUT_PATHS = [
+  '/Auth/Procurementlogout',
+  '/Auth/Vendorlogout',
+] as const;
+
 const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
 export function isAuthExcludedUrl(url: string): boolean {
   const u = (url || '').toLowerCase();
   return AUTH_EXCLUDED_PATHS.some(path => u.includes(path.toLowerCase()));
+}
+
+export function isAuthLogoutUrl(url: string): boolean {
+  const u = (url || '').toLowerCase();
+  return AUTH_LOGOUT_PATHS.some(path => u.includes(path.toLowerCase()));
 }
 
 export function withAuthCredentials<T>(req: HttpRequest<T>): HttpRequest<T> {

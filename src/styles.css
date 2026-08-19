@@ -141,11 +141,15 @@ select.form-control {
   -webkit-appearance: none;
   -moz-appearance: none;
   background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23333' d='M0 0l5 6 5-6z'/></svg>");
-  background-position: right 4px center;
+  background-position: right 12px center;
   background-repeat: no-repeat;
   background-size: 10px 6px;
+  background-origin: padding-box;
 
-  padding: 9.5px 16px !important;
+  padding: 9.5px 32px 9.5px 16px !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 
@@ -361,15 +365,19 @@ textarea .custom-input {
 }
 
 select.custom-input {
-  padding: 10px 16px !important;
+  padding: 10px 32px 10px 16px !important;
   appearance: none;
   /* remove default select styling */
   -webkit-appearance: none;
   -moz-appearance: none;
   background-image: url("data:image/svg+xml;charset=US-ASCII,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='%23333' d='M0 0l5 6 5-6z'/></svg>");
-  background-position: right 4px center;
+  background-position: right 12px center;
   background-repeat: no-repeat;
   background-size: 10px 6px;
+  background-origin: padding-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 

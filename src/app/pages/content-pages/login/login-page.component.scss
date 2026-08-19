@@ -263,7 +263,11 @@
  
   .login-btn{ padding: 10px 0; }
  
-  img{width: 100px; height: 100px;}
+  .login-logo {
+    width: 31%;
+    height: auto;
+    object-fit: contain;
+  }
  
   .card{padding: 6px 12px; width: 480px;}
  

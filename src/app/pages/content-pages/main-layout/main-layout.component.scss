@@ -28,6 +28,13 @@
   background-repeat: no-repeat;
   z-index: 0;
 }
+.login-logo {
+  width: 31%;
+  height: auto;
+  object-fit: contain;
+  max-width: 100%;
+}
+
 .ms-logo{
   background-image: url('/assets/img/icons/ms-icon.png');
   height: 30px;
@@ -248,7 +255,11 @@
  
   .login-btn{ padding: 10px 0; }
  
-  img{width: 100px; height: 100px;}
+  .login-logo {
+    width: 31%;
+    height: auto;
+    object-fit: contain;
+  }
  
   .card{padding: 6px 12px; width: 480px;}
  
