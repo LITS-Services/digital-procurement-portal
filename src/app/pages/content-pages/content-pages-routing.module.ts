@@ -9,6 +9,7 @@ import { LoginPageComponent } from "./login/login-page.component";
 import { MaintenancePageComponent } from "./maintenance/maintenance-page.component";
 import { RegisterPageComponent } from "./register/register-page.component";
 import { MainLayoutComponent } from './main-layout/main-layout.component';
+import { GuestGuard } from 'app/shared/auth/guest.guard';
 
 
 const routes: Routes = [
@@ -75,11 +76,13 @@ const routes: Routes = [
       {
         path: 'login',
         component: LoginPageComponent,
+        canActivate: [GuestGuard],
         data: { title: 'Login Page' }
       },
       {
         path: 'forgotpassword',
         component: ForgotPasswordPageComponent,
+        canActivate: [GuestGuard],
         data: { title: 'Forgot Password Page' }
       },
       {

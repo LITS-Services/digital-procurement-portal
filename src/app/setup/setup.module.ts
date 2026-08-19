@@ -33,6 +33,7 @@ import { BulkVendorOnboardingComponent } from './bulk-vendor-onboarding/bulk-ven
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
 import { IntegrationManagerListComponent } from './integration-manager-list/integration-manager-list.component';
 import { IntegrationManagerFormComponent } from './integration-manager-form/integration-manager-form.component';
+import { TurnstileSetupComponent } from './turnstile-setup/turnstile-setup.component';
 
 
 
@@ -51,6 +52,7 @@ import { IntegrationManagerFormComponent } from './integration-manager-form/inte
     BulkVendorOnboardingComponent,
     IntegrationManagerListComponent,
     IntegrationManagerFormComponent,
+    TurnstileSetupComponent,
   ],
   imports: [
     CommonModule,

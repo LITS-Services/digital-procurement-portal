@@ -8,6 +8,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { LogsComponent } from './logs/logs.component';
 import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
+import { HasPermissionDirective } from 'app/shared/auth/has-permission.directive';
 import { NgbDropdownModule, NgbModalModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
 
@@ -29,7 +30,8 @@ import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-au
     NgbDropdownModule,
       NgbTooltipModule,
       DatatableAutoResizeDirective,
-    PermissionDirective
+    PermissionDirective,
+    HasPermissionDirective
 ]
 })
 export class ConfigurationModule { }

@@ -1,0 +1,18 @@
+{
+  "apiUrl": "https://localhost:7188/api",
+  "authUseCookies": false,
+  "sessionIdleMinutes": 20,
+  "accessTokenRefreshBufferSeconds": 5,
+  "httpTimeoutMs": 30000,
+  "turnstileEnabled": false,
+  "turnstileSiteKey": "",
+  "firebaseConfig": {
+    "apiKey": "YOUR_FIREBASE_API_KEY",
+    "authDomain": "YOUR_PROJECT.firebaseapp.com",
+    "projectId": "YOUR_PROJECT",
+    "storageBucket": "YOUR_PROJECT.firebasestorage.app",
+    "messagingSenderId": "",
+    "appId": "",
+    "measurementId": ""
+  }
+}

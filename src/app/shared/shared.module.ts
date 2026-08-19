@@ -35,6 +35,8 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { PurchaseRequestAccountBudgetLookupModalComponent } from './modals/purchase-request-account-budget-lookup-modal/purchase-request-account-budget-lookup-modal.component';
 import { PurchaseRequestExceptionPolicyComponent } from './modals/purchase-request-exception-policy/purchase-request-exception-policy.component';
 import { MatMenuModule } from '@angular/material/menu';
+import { HasPermissionDirective } from './auth/has-permission.directive';
+import { PermissionDirective } from './permissions/permission.directive';
 
 @NgModule({
     exports: [
@@ -50,6 +52,8 @@ import { MatMenuModule } from '@angular/material/menu';
         TopMenuDirective,
         NgbModule,
         TranslateModule,
+        HasPermissionDirective,
+        PermissionDirective,
     ],
     imports: [
         RouterModule,
@@ -65,7 +69,9 @@ import { MatMenuModule } from '@angular/material/menu';
         PipeModule,
         NgxDatatableModule,
         OverlayModule,
-        MatMenuModule
+        MatMenuModule,
+        HasPermissionDirective,
+        PermissionDirective,
     ],
     declarations: [
         FooterComponent,

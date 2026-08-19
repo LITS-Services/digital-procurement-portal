@@ -78,6 +78,21 @@ export class SystemService {
     
     return this.http.get<any>(url);
   }
+
+  getAllSecurityAuditLogs(currentPage: number, pageSize: number, filters?: any): Observable<any> {
+    let url = `${this.baseUrl}/get-all-security-audit-logs?currentPage=${currentPage}&pageSize=${pageSize}`;
+
+    if (filters) {
+      if (filters.search) {
+        url += `&search=${encodeURIComponent(filters.search)}`;
+      }
+      if (filters.eventType) {
+        url += `&EventType=${encodeURIComponent(filters.eventType)}`;
+      }
+    }
+
+    return this.http.get<any>(url);
+  }
   getAllGlobalConfigs(currentPage: number, pageSize: number): Observable<any> {
     return this.http.get<any>(
       `${this.baseUrl}/get-all-global-configs?currentPage=${currentPage}&pageSize=${pageSize}`

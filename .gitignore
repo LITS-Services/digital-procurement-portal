@@ -41,3 +41,9 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# Local / secret runtime overlays (never commit real keys)
+public/assets/config.local.json
+public/assets/config.secrets.json
+src/assets/config.local.json
+src/assets/config.secrets.json

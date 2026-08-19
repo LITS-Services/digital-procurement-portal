@@ -44,7 +44,7 @@ export class responseHandlerInterceptor implements HttpInterceptor {
     return next.handle(req).pipe(
       tap({
         next: (event) => {
-          if (skip) return;
+          if (skip || this.isQuietAuthUrl(req.url)) return;
 
           if (event instanceof HttpResponse) {
             const contentType = event.headers.get('Content-Type') || '';
@@ -73,7 +73,9 @@ export class responseHandlerInterceptor implements HttpInterceptor {
         error: (err: any) => {
         
           try {
-            if (skip || err?.status === 401) return;
+            if (skip || err?.status === 401 || err?.status === 429) return;
+            if (this.isQuietAuthUrl(req.url) || this.isQuietAuthUrl(err?.url)) return;
+            if (err?.status === 0) return;
 
             // Safe token-expired check
             const tokenMsg = (err as any)?.error?.[0]?.ErrorMessage as string | undefined;
@@ -115,14 +117,14 @@ export class responseHandlerInterceptor implements HttpInterceptor {
           if (!contentType.includes('application/json')) return event;
 
           const body = event.body as responseDTO | undefined;
+          const isSuccess = !!(body && ((body as any).isSuccess === true || (body as any).IsSuccess === true));
           if (
             body &&
             typeof body === 'object' &&
-            'isSuccess' in body &&
-            (body as any).isSuccess &&
-            'value' in body
+            isSuccess &&
+            ('value' in body || 'Value' in body)
           ) {
-            return event.clone({ body: (body as any).value });
+            return event.clone({ body: (body as any).value ?? (body as any).Value });
           }
         }
         return event;
@@ -138,5 +140,14 @@ export class responseHandlerInterceptor implements HttpInterceptor {
       return body.validationErrors.join('\n');
     }
     return '';
+  }
+
+  private isQuietAuthUrl(url: string): boolean {
+    const u = (url || '').toLowerCase();
+    return u.includes('captcha-config')
+      || u.includes('/auth/procurement-refresh')
+      || u.includes('/auth/vendor-refresh')
+      || u.includes('/auth/procurementlogin')
+      || u.includes('/auth/vendorlogin');
   }
 }

@@ -3,6 +3,7 @@ import { UntypedFormGroup, Validators, UntypedFormBuilder, FormArray, AbstractCo
 import { Router } from '@angular/router';
 import { MustMatch } from '../../../shared/directives/must-match.validator';
 import { AuthService } from 'app/shared/auth/auth.service';
+import { newPasswordValidators } from 'app/shared/auth/password.validators';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { ToastrService } from 'ngx-toastr';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -48,7 +49,7 @@ export class RegisterPageComponent implements OnInit {
       Username: ['', Validators.required],
       Fullname: [''],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, this.passwordComplexityValidator]],
+      password: ['', newPasswordValidators],
       confirmPassword: ['', Validators.required],
       role: ['User', Validators.required],
       companyIds: this.formBuilder.array([], Validators.required), // changed from companyGUIDs

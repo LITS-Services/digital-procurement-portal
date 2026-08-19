@@ -13,6 +13,7 @@ import { CreateEmailTemplateComponent } from './create-email-template/create-ema
 import { BulkVendorOnboardingComponent } from './bulk-vendor-onboarding/bulk-vendor-onboarding.component';
 import { IntegrationManagerListComponent } from './integration-manager-list/integration-manager-list.component';
 import { IntegrationManagerFormComponent } from './integration-manager-form/integration-manager-form.component';
+import { TurnstileSetupComponent } from './turnstile-setup/turnstile-setup.component';
 
 const routes: Routes = [
 
@@ -103,6 +104,16 @@ const routes: Routes = [
         canActivate: [AclGuard],
         data: {
           title: 'ACL',
+          formTypeId: FORM_IDS.ACL,
+          action: 'read',
+        }
+      },
+      {
+        path: 'turnstile',
+        component: TurnstileSetupComponent,
+        canActivate: [AclGuard],
+        data: {
+          title: 'Turnstile',
           formTypeId: FORM_IDS.ACL,
           action: 'read',
         }

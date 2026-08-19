@@ -35,6 +35,13 @@ export class AuthUtils {
   }
   
   // Additional helper methods
+  static isUtcExpiredOrNear(isoUtc: string | null | undefined, seconds = 5): boolean {
+    if (!isoUtc) return true;
+    const expiresMs = Date.parse(isoUtc);
+    if (Number.isNaN(expiresMs)) return true;
+    return expiresMs <= Date.now() + seconds * 1000;
+  }
+
   static decodeToken(token: string): any | null {
     return this._decode(token);
   }

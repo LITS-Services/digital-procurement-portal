@@ -28,6 +28,8 @@ import { AppComponent } from "./app.component";
 import { ContentLayoutComponent } from "./layouts/content/content-layout.component";
 import { FullLayoutComponent } from "./layouts/full/full-layout.component";
 import { AuthInterceptor } from './shared/auth/auth.interceptor';
+import { CsrfInterceptor } from './shared/auth/csrf.interceptor';
+import { HttpRetryTimeoutInterceptor } from './shared/auth/http-retry-timeout.interceptor';
 import { AuthService } from "./shared/auth/auth.service";
 import { AuthGuard } from "./shared/auth/auth-guard.service";
 import { WINDOW_PROVIDERS } from './shared/services/window.service';
@@ -89,7 +91,9 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     AuthService,
     AuthGuard,
     DragulaService,
-   { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: CsrfInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: HttpRetryTimeoutInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: responseHandlerInterceptor, multi: true }, 
     {
       provide: PERFECT_SCROLLBAR_CONFIG,
@@ -98,7 +102,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     {
       provide: APP_INITIALIZER,
       useFactory: permissionInitializer,
-      deps: [PermissionService],
+      deps: [PermissionService, AuthService],
       multi: true
     },
     WINDOW_PROVIDERS

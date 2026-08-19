@@ -1,16 +1,12 @@
 import { PermissionService } from "./permission.service";
+import { AuthService } from "../auth/auth.service";
+import { switchMap } from "rxjs/operators";
+import { of } from "rxjs";
 
-// export function permissionInitializer(perms: PermissionService) {
-//     return () => {
-//         perms.refreshForCurrentUser$().subscribe({
-//             next: () => console.log('Permissions loaded!'),
-//             error: err => console.warn('Permissions load failed!', err)
-//         });
-//         return Promise.resolve();
-//     };
-// }
-export function permissionInitializer(perms: PermissionService) {
+export function permissionInitializer(perms: PermissionService, auth: AuthService) {
     return () => {
-        return perms.refreshForCurrentUser$().toPromise();
+        return auth.restoreSession$().pipe(
+            switchMap(ok => ok ? perms.refreshForCurrentUser$() : of(void 0))
+        ).toPromise();
     };
 }

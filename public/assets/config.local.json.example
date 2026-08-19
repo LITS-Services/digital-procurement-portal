@@ -1,0 +1,8 @@
+{
+  "apiUrl": "https://localhost:7188/api",
+  "authUseCookies": false,
+  "sessionIdleMinutes": 20,
+  "accessTokenRefreshBufferSeconds": 5,
+  "turnstileEnabled": false,
+  "turnstileSiteKey": "YOUR_TURNSTILE_SITE_KEY"
+}

@@ -1,0 +1,9 @@
+{
+  "apiUrl": "http://192.168.7.105:8084/api",
+  "authUseCookies": false,
+  "sessionIdleMinutes": 20,
+  "accessTokenRefreshBufferSeconds": 5,
+  "httpTimeoutMs": 30000,
+  "turnstileEnabled": false,
+  "turnstileSiteKey": ""
+}

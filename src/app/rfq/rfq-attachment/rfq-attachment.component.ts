@@ -6,6 +6,7 @@ import { DatatableComponent } from '@swimlane/ngx-datatable';
 import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
 import { SystemService } from 'app/shared/services/system.service';
 import { ToastrService } from 'ngx-toastr';
+import { FileValidationService } from 'app/shared/auth/file-validation.service';
 
 @Component({
   selector: 'app-rfq-attachment',
@@ -36,6 +37,7 @@ export class RfqAttachmentComponent implements OnInit {
     public activeModal: NgbActiveModal, 
     private purchaseRequestService: PurchaseRequestService,
     private toastr: ToastrService,
+    private fileValidation: FileValidationService,
     private systemService: SystemService,
     private cdr: ChangeDetectorRef
   ) {
@@ -84,6 +86,12 @@ export class RfqAttachmentComponent implements OnInit {
 
   async addAttachment(file: File) {
     if (!file) return;
+
+    const check = this.fileValidation.validate(file, 'Quotation Item Attachment');
+    if (!check.valid) {
+      this.toastr.error(check.error || 'Invalid file.');
+      return;
+    }
 
     try {
       const base64 = await this.toBase64(file);

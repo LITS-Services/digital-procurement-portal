@@ -1,0 +1,54 @@
+<section>
+  <div class="row">
+    <div class="col-12">
+      <div class="row">
+        <div class="col-md-12" style="margin-top: -0.25rem;">
+          <h4 class="heading">Turnstile</h4>
+        </div>
+      </div>
+
+      <div class="card cstm-ui-card">
+        <div class="row">
+          <div class="col-md-6">
+            <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+              <i class="ft-arrow-left"></i>
+            </button>
+            <span class="vl"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card cstm-ui-card p-4">
+        <p class="mb-3 text-muted">
+          Enable Cloudflare Turnstile separately for each portal. Site and secret keys stay in configuration files, not in this screen.
+        </p>
+
+        <label class="d-flex align-items-center mb-3" [class.disabled]="loading || saving">
+          <input
+            type="checkbox"
+            class="mr-2"
+            [ngModel]="procurementEnabled"
+            (ngModelChange)="onToggleProcurement($event)"
+            [disabled]="loading || saving"
+            appPermission
+            [appPermFormId]="FORM_IDS.ACL"
+            [appPermDisable]="'write'" />
+          <span>Enable captcha on Procurement login</span>
+        </label>
+
+        <label class="d-flex align-items-center mb-0" [class.disabled]="loading || saving">
+          <input
+            type="checkbox"
+            class="mr-2"
+            [ngModel]="vendorEnabled"
+            (ngModelChange)="onToggleVendor($event)"
+            [disabled]="loading || saving"
+            appPermission
+            [appPermFormId]="FORM_IDS.ACL"
+            [appPermDisable]="'write'" />
+          <span>Enable captcha on Vendor login</span>
+        </label>
+      </div>
+    </div>
+  </div>
+</section>

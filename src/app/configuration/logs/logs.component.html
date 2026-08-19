@@ -12,6 +12,11 @@
             Audit Trails
           </a>
         </li>
+        <li class="nav-item" *ngIf="canViewSecurityAudit">
+          <a class="nav-link" [class.active]="selectedTab === 'security-audit'" (click)="selectTab('security-audit')">
+            Security Audit
+          </a>
+        </li>
       </ul>
 
 
@@ -42,7 +47,7 @@
     <div class="filter-search">
       <i class="ft-filter search-icon"></i>
       <input style="padding-left: 3.4em;" type="text" class="form-control border-left-0 cstm-ui-input"
-        placeholder="{{ selectedTab === 'exception' ? 'Search by Exception Type, Message...' : 'Search by Username, Table Name...' }}"
+        placeholder="{{ selectedTab === 'exception' ? 'Search by Exception Type, Message...' : selectedTab === 'security-audit' ? 'Search by Email, Event, IP...' : 'Search by Username, Table Name...' }}"
         [formControl]="searchForm.get('searchTerm')" />
     </div>
 
@@ -58,6 +63,16 @@
             <button class="dropdown-item" (click)="filterByStatus('UPDATE')">UPDATE</button>
             <button class="dropdown-item" (click)="filterByStatus('INSERT')">INSERT</button>
             <button class="dropdown-item" (click)="filterByStatus('DELETE')">DELETE</button>
+          </ng-container>
+          <ng-container *ngIf="selectedTab === 'security-audit'">
+            <button class="dropdown-item" (click)="filterByStatus('LOGIN_SUCCESS')">LOGIN_SUCCESS</button>
+            <button class="dropdown-item" (click)="filterByStatus('LOGIN_FAILED')">LOGIN_FAILED</button>
+            <button class="dropdown-item" (click)="filterByStatus('LOCKOUT')">LOCKOUT</button>
+            <button class="dropdown-item" (click)="filterByStatus('LOGOUT')">LOGOUT</button>
+            <button class="dropdown-item" (click)="filterByStatus('REFRESH')">REFRESH</button>
+            <button class="dropdown-item" (click)="filterByStatus('PASSWORD_CHANGE')">PASSWORD_CHANGE</button>
+            <button class="dropdown-item" (click)="filterByStatus('FORBIDDEN')">FORBIDDEN</button>
+            <button class="dropdown-item" (click)="filterByStatus('RATE_LIMITED')">RATE_LIMITED</button>
           </ng-container>
           <ng-container *ngIf="selectedTab === 'exception'">
             <button class="dropdown-item" (click)="filterByStatus('GET')">GET</button>
@@ -142,6 +157,30 @@
       </ngx-datatable-column>
       <ngx-datatable-column name="Is Entity Deleted" prop="isEntityDeleted"></ngx-datatable-column>
     </ngx-datatable>
+
+    <ngx-datatable autoResize *ngIf="selectedTab === 'security-audit'" class="bootstrap core-bootstrap" [rows]="logsData"
+      [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="pageSize"
+      [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
+      [scrollbarH]="true" [loadingIndicator]="loading" [selected]="chkBoxSelected"
+      [selectionType]="SelectionType.single" (rowClick)="onRowClick($event)" (activate)="onActivate($event)"
+      (clickType)="'single'" appPermission [appPermFormId]="FORM_IDS.LOGS" [appPermDisable]="'write'">
+
+      <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+        <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
+          <span>{{ ((currentPage - 1) * pageSize) + rowIndex + 1 }}</span>
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column name="TimeStamp" prop="timestamp">
+        <ng-template ngx-datatable-cell-template let-row="row">
+          {{ row.timestamp | date:'dd-MM-yyyy HH:mm a' }}
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column name="Event Type" prop="eventType"></ngx-datatable-column>
+      <ngx-datatable-column name="Outcome" prop="outcome"></ngx-datatable-column>
+      <ngx-datatable-column name="Email" prop="email"></ngx-datatable-column>
+      <ngx-datatable-column name="IP Address" prop="ipAddress"></ngx-datatable-column>
+      <ngx-datatable-column name="Resource" prop="resource"></ngx-datatable-column>
+    </ngx-datatable>
   </div>
 </div>
 
@@ -149,7 +188,7 @@
 <ng-template #logDetailModal let-modal>
   <div class="modal-header">
     <h5 class="modal-title">
-      {{ selectedTab === 'exception' ? 'Exception Log Details' : 'Audit Trail Details' }}
+      {{ selectedTab === 'exception' ? 'Exception Log Details' : selectedTab === 'security-audit' ? 'Security Audit Details' : 'Audit Trail Details' }}
     </h5>
     <button type="button" class="btn-close text-white" aria-label="Close" (click)="modal.dismiss('Cross click')">
     </button>
@@ -205,6 +244,37 @@
         <div class="mb-2">
           <label class="form-label">Changes</label>
           <textarea type="text" class="form-control" rows="3" [value]="selectedLog.changes" disabled></textarea>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="selectedTab === 'security-audit'">
+        <div class="mb-2">
+          <label class="form-label">Event Type</label>
+          <input type="text" class="form-control" [value]="selectedLog.eventType" disabled />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Outcome</label>
+          <input type="text" class="form-control" [value]="selectedLog.outcome" disabled />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Email</label>
+          <input type="text" class="form-control" [value]="selectedLog.email" disabled />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">IP Address</label>
+          <input type="text" class="form-control" [value]="selectedLog.ipAddress" disabled />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Resource</label>
+          <input type="text" class="form-control" [value]="selectedLog.resource" disabled />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Detail</label>
+          <textarea class="form-control" rows="3" [value]="selectedLog.detail" disabled></textarea>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Correlation Id</label>
+          <input type="text" class="form-control" [value]="selectedLog.correlationId" disabled />
         </div>
       </ng-container>
     </form>

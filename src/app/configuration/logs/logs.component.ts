@@ -4,11 +4,12 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ColumnMode, SelectionType } from '@swimlane/ngx-datatable';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PermissionService } from 'app/shared/permissions/permission.service';
+import { AuthService } from 'app/shared/auth/auth.service';
 import { SystemService } from 'app/shared/services/system.service';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
-type LogType = 'exception' | 'audit-trails';
+type LogType = 'exception' | 'audit-trails' | 'security-audit';
 
 @Component({
   selector: 'app-logs',
@@ -48,6 +49,7 @@ export class LogsComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private modalService: NgbModal,
     private permissionService: PermissionService,
+    private authService: AuthService,
     private fb: FormBuilder
   ) { 
     this.searchForm = this.fb.group({
@@ -78,8 +80,16 @@ export class LogsComponent implements OnInit {
     });
   }
 
+  get canViewSecurityAudit(): boolean {
+    return this.authService.hasRole('Admin')
+      || this.authService.hasRole('Super Admin')
+      || this.authService.hasPermission('security-audit.view');
+  }
+
   getFilterLabel(): string {
-    return this.selectedTab === 'exception' ? 'HTTP Method' : 'Action Type';
+    if (this.selectedTab === 'exception') return 'HTTP Method';
+    if (this.selectedTab === 'security-audit') return 'Event Type';
+    return 'Action Type';
   }
 
   selectTab(tab: LogType) {
@@ -112,6 +122,11 @@ export class LogsComponent implements OnInit {
         next: (data: any) => this.handleResponse(data),
         error: () => this.loading = false
       });
+    } else if (this.selectedTab === 'security-audit') {
+      this.systemService.getAllSecurityAuditLogs(this.currentPage, this.pageSize, filters).subscribe({
+        next: (data: any) => this.handleResponse(data),
+        error: () => this.loading = false
+      });
     }
   }
 
@@ -127,6 +142,8 @@ export class LogsComponent implements OnInit {
         filters.actionType = this.activeFilter;
       } else if (this.selectedTab === 'exception') {
         filters.httpMethod = this.activeFilter;
+      } else if (this.selectedTab === 'security-audit') {
+        filters.eventType = this.activeFilter;
       }
     }
 
@@ -209,6 +226,9 @@ export class LogsComponent implements OnInit {
     } else if (this.selectedTab === 'audit-trails') {
       excelData = this.prepareAuditTrailsForExcel();
       fileName = `Audit_Trails_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    } else if (this.selectedTab === 'security-audit') {
+      excelData = this.prepareSecurityAuditForExcel();
+      fileName = `Security_Audit_${new Date().toISOString().slice(0, 10)}.xlsx`;
     }
 
     // Create worksheet
@@ -247,6 +267,20 @@ export class LogsComponent implements OnInit {
       'Username': log.username || 'N/A',
       'Changes': log.changes || 'N/A',
       'Is Entity Deleted': log.isEntityDeleted || false
+    }));
+  }
+
+  private prepareSecurityAuditForExcel(): any[] {
+    return this.logsData.map((log, index) => ({
+      'Sr. No.': ((this.currentPage - 1) * this.pageSize) + index + 1,
+      'Timestamp': log.timestamp ? new Date(log.timestamp).toLocaleString() : 'N/A',
+      'Event Type': log.eventType || 'N/A',
+      'Outcome': log.outcome || 'N/A',
+      'Email': log.email || 'N/A',
+      'IP Address': log.ipAddress || 'N/A',
+      'Resource': log.resource || 'N/A',
+      'Detail': log.detail || 'N/A',
+      'Correlation Id': log.correlationId || 'N/A'
     }));
   }
 
@@ -293,6 +327,14 @@ export class LogsComponent implements OnInit {
         },
         error: () => this.loading = false
       });
+    } else if (this.selectedTab === 'security-audit') {
+      this.systemService.getAllSecurityAuditLogs(1, pageSize, filters).subscribe({
+        next: (data: any) => {
+          this.handleExportAllData(data?.result || [], 'Security_Audit');
+          this.loading = false;
+        },
+        error: () => this.loading = false
+      });
     }
   }
 
@@ -330,6 +372,18 @@ export class LogsComponent implements OnInit {
         'Changes': typeof log.changes === 'object' ? JSON.stringify(log.changes) : (log.changes || 'N/A'),
         'Is Entity Deleted': log.isEntityDeleted || false,
         'Entity ID': log.entityId || 'N/A'
+      }));
+    } else if (this.selectedTab === 'security-audit') {
+      excelData = data.map((log, index) => ({
+        'Sr. No.': index + 1,
+        'Timestamp': log.timestamp ? new Date(log.timestamp).toLocaleString() : 'N/A',
+        'Event Type': log.eventType || 'N/A',
+        'Outcome': log.outcome || 'N/A',
+        'Email': log.email || 'N/A',
+        'IP Address': log.ipAddress || 'N/A',
+        'Resource': log.resource || 'N/A',
+        'Detail': log.detail || 'N/A',
+        'Correlation Id': log.correlationId || 'N/A'
       }));
     }
 

@@ -72,6 +72,10 @@ export const ROUTES: RouteInfo[] = [
         formTypeId: FORM_IDS.ACL
       },
       {
+        path: '/setup/turnstile', title: 'Turnstile', icon: 'fa fa-lock submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        formTypeId: FORM_IDS.ACL
+      },
+      {
         path: '/setup/workflow', title: 'Workflow Setup', icon: 'ft-git-pull-request submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         formTypeId: FORM_IDS.WORKFLOW_SETUP
       },

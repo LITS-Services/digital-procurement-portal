@@ -269,3 +269,14 @@
 .form-group{
       margin-bottom: 1rem !important;
 }
+
+.turnstile-wrap,
+#turnstile-container {
+  width: 100%;
+}
+
+:host ::ng-deep #turnstile-container > div,
+:host ::ng-deep #turnstile-container iframe {
+  width: 100% !important;
+  max-width: 100%;
+}

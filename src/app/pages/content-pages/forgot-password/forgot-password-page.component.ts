@@ -2,7 +2,8 @@ import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from "@angular/router";
 import { ToastrService } from 'ngx-toastr';
-import { AuthService } from 'app/shared/auth/auth.service'; // make sure path is correct
+import { AuthService } from 'app/shared/auth/auth.service';
+import { newPasswordValidators } from 'app/shared/auth/password.validators';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { NgZone } from '@angular/core'; // Added NgZone for navigation safety
 import { NgOtpInputComponent, NgOtpInputConfig } from 'ng-otp-input';
@@ -57,7 +58,7 @@ export class ForgotPasswordPageComponent {
         // New password form
         this.newPasswordForm = this.fb.group(
             {
-                password: ['', [Validators.required, Validators.pattern(this.passwordPattern)]],
+                password: ['', newPasswordValidators],
                 confirmPassword: ['', [Validators.required]]
             },
             { validators: [this.passwordMatchValidator] }
