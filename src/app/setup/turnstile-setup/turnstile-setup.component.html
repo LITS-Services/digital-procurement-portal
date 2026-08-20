@@ -18,36 +18,40 @@
         </div>
       </div>
 
-      <div class="card cstm-ui-card p-4">
-        <p class="mb-3 text-muted">
-          Enable Cloudflare Turnstile separately for each portal. Site and secret keys stay in configuration files, not in this screen.
-        </p>
+      <div class="card turnstile-settings-card">
+        <div class="card-body">
+          <p class="mb-3 text-muted">
+            Enable Cloudflare Turnstile separately for each portal. Site and secret keys stay in configuration files, not in this screen.
+          </p>
 
-        <label class="d-flex align-items-center mb-3" [class.disabled]="loading || saving">
-          <input
-            type="checkbox"
-            class="mr-2"
-            [ngModel]="procurementEnabled"
-            (ngModelChange)="onToggleProcurement($event)"
-            [disabled]="loading || saving"
-            appPermission
-            [appPermFormId]="FORM_IDS.ACL"
-            [appPermDisable]="'write'" />
-          <span>Enable captcha on Procurement login</span>
-        </label>
+          <div class="turnstile-options">
+            <label class="d-flex align-items-center" [class.disabled]="loading || saving">
+              <input
+                type="checkbox"
+                class="mr-2"
+                [ngModel]="procurementEnabled"
+                (ngModelChange)="onToggleProcurement($event)"
+                [disabled]="loading || saving"
+                appPermission
+                [appPermFormId]="FORM_IDS.ACL"
+                [appPermDisable]="'write'" />
+              <span>Enable captcha on Procurement login</span>
+            </label>
 
-        <label class="d-flex align-items-center mb-0" [class.disabled]="loading || saving">
-          <input
-            type="checkbox"
-            class="mr-2"
-            [ngModel]="vendorEnabled"
-            (ngModelChange)="onToggleVendor($event)"
-            [disabled]="loading || saving"
-            appPermission
-            [appPermFormId]="FORM_IDS.ACL"
-            [appPermDisable]="'write'" />
-          <span>Enable captcha on Vendor login</span>
-        </label>
+            <label class="d-flex align-items-center" [class.disabled]="loading || saving">
+              <input
+                type="checkbox"
+                class="mr-2"
+                [ngModel]="vendorEnabled"
+                (ngModelChange)="onToggleVendor($event)"
+                [disabled]="loading || saving"
+                appPermission
+                [appPermFormId]="FORM_IDS.ACL"
+                [appPermDisable]="'write'" />
+              <span>Enable captcha on Vendor login</span>
+            </label>
+          </div>
+        </div>
       </div>
     </div>
   </div>
