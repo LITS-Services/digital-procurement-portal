@@ -107,12 +107,12 @@
               ]
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "buildTarget": "matngular:build",
+            "buildTarget": "matngular:build:development",
             "port": 4270
           },
           "configurations": {

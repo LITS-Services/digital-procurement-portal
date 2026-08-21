@@ -10,9 +10,18 @@ function isIpHostname(hostname: string): boolean {
   return /^\d{1,3}(\.\d{1,3}){3}$/.test(hostname);
 }
 
+function isLocalHostname(hostname: string): boolean {
+  return hostname === 'localhost' || hostname === '127.0.0.1';
+}
+
 function resolveConfigPath(): string {
-  if (environment.production && isIpHostname(window.location.hostname) && environment.configPathIp) {
-    return environment.configPathIp;
+  const hostname = window.location.hostname;
+  // Never load config.local.json on a deployed host, even if the bundle is a development build.
+  if (!isLocalHostname(hostname)) {
+    if (isIpHostname(hostname)) {
+      return environment.configPathIp || 'assets/config.ip.json';
+    }
+    return 'assets/config.json';
   }
   return environment.configPath;
 }
