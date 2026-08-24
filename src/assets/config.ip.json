@@ -1,5 +1,5 @@
 {
-  "apiUrl": "http://192.168.7.105:8084/api",
+  "apiUrl": "http://192.168.7.105:8085/api",
   "authUseCookies": false,
   "sessionIdleMinutes": 20,
   "accessTokenRefreshBufferSeconds": 5,

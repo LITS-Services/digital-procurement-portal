@@ -23,7 +23,7 @@ export const environment = {
   get apiUrl() {
     if (window.config?.apiUrl) return window.config.apiUrl;
     return isIpHostname(window.location.hostname)
-      ? 'http://192.168.7.105:8084/api'
+      ? 'http://192.168.7.105:8085/api'
       : 'https://procurement-portal.lits.services:8087/api';
   },
   get firebaseConfig() { return window.config?.firebaseConfig || FALLBACK_FIREBASE; },
