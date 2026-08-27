@@ -186,9 +186,35 @@
 
                   <select class="form-control custom-input filter-label" formControlName="entityId"
                     [disabled]="isEntityLocked || viewMode" (change)="onEntityChanged()">
-                    <option [ngValue]="null">-- Select Entity --</option>
+                    <option [ngValue]="null" disabled hidden>-- Select Entity --</option>
                     <option *ngFor="let e of entities" [ngValue]="e.id">
                       {{ e.description }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-grid__item">
+                <div class="form-group mb-2">
+                  <label>Dimension</label>
+                  <select class="form-control custom-input filter-label" formControlName="dimensionId"
+                    [disabled]="viewMode" (change)="onDimensionChanged()">
+                    <option [ngValue]="null" disabled hidden>-- Select Dimension --</option>
+                    <option *ngFor="let d of dimensionList" [ngValue]="d.id">
+                      {{ d.description }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-grid__item">
+                <div class="form-group mb-2">
+                  <label>Dimension Values</label>
+                  <select class="form-control custom-input filter-label" formControlName="dimensionValueId"
+                    [disabled]="viewMode || isDimensionValueLocked" (change)="onDimensionValueChanged()">
+                    <option [ngValue]="null" disabled hidden>-- Select Dimension Value --</option>
+                    <option *ngFor="let v of dimensionValueList" [ngValue]="v.id">
+                      {{ v.description }}
                     </option>
                   </select>
                 </div>
@@ -245,12 +271,6 @@
                   <label>Status</label>
                   <input type="text" formControlName="status" class="form-control" disabled />
                 </div>
-              </div>
-
-              <div class="form-grid__item mb-2">
-                <label>Department</label>
-                <input type="text" class="form-control custom-input" formControlName="department"
-                  placeholder="Enter Department">
               </div>
 
               <div class="form-grid__item d-flex align-items-center mb-2">

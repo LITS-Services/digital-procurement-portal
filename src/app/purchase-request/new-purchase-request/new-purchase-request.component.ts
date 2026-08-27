@@ -15,10 +15,10 @@ import { LookupService } from 'app/shared/services/lookup.service';
 import { VendorAndCompanyForFinalSelectionVM } from 'app/shared/interfaces/vendor-company-final-selection.model';
 import * as XLSX from 'xlsx';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { distinctUntilChanged, filter, finalize, pairwise, startWith, takeUntil } from 'rxjs/operators';
+import { catchError, distinctUntilChanged, filter, finalize, map, pairwise, startWith, takeUntil } from 'rxjs/operators';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { PurchaseRequestExceptionPolicyComponent } from 'app/shared/modals/purchase-request-exception-policy/purchase-request-exception-policy.component';
-import { Subject } from 'rxjs';
+import { forkJoin, of, Subject } from 'rxjs';
 import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
 import { PhoneNumberUtil, PhoneNumberFormat as LibPhoneNumberFormat } from 'google-libphonenumber';
 
@@ -86,6 +86,9 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   uomMasterList: any[] = [];
   vatProdPostingGroups: any[] = [];
   selectedUomLabel = '';
+  dimensionList: any[] = [];
+  dimensionValueList: any[] = [];
+  isDimensionValueLocked = false;
   accountList: any[] = [];
 
   vendorUsers: any[] = [];
@@ -193,6 +196,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       exceptionPolicy: [false],
       subject: [''],
       entityId: [null],
+      dimensionId: [null],
+      dimensionValueId: [null],
       addressId: [null, Validators.required],
       country: [{ value: '', disabled: true }],
       city: [{ value: '', disabled: true }],
@@ -500,6 +505,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       }
       this.cdr.markForCheck();
       this.loadItemsForSelectedEntity();
+      this.loadDimensionsForSelectedEntity(false);
     };
 
     if (!this.entities?.length && userId) {
@@ -554,6 +560,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     this.loadAddressOnEntityChanges();
     this.resetItemAndUomSelection();
     this.loadItemsForSelectedEntity();
+    this.loadDimensionsForSelectedEntity(true);
   }
 
   private getSelectedEntityGuid(): string | null {
@@ -663,6 +670,175 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     this.unitsOfMeasurementList = [];
     this.selectedUomLabel = '';
     this.itemForm.get('unitOfMeasurementId')?.disable({ emitEvent: false });
+  }
+
+  private mapDimensionDropdownItems(items: any[]): Array<{ id: number; description: string; stringId?: string }> {
+    return (items || []).map((item: any) => ({
+      id: Number(item.id ?? item.Id),
+      description: item.description ?? item.Description,
+      stringId: item.stringId ?? item.StringId ?? null
+    }));
+  }
+
+  private resetDimensionSelection(): void {
+    this.dimensionList = [];
+    this.resetDimensionValueSelection();
+    this.newPurchaseRequestForm.get('dimensionId')?.setValue(null, { emitEvent: false });
+  }
+
+  private resetDimensionValueSelection(): void {
+    this.dimensionValueList = [];
+    this.newPurchaseRequestForm.patchValue({
+      dimensionValueId: null,
+      department: ''
+    }, { emitEvent: false });
+    this.setDimensionValueControlState(false);
+  }
+
+  private setDimensionValueControlState(locked: boolean): void {
+    this.isDimensionValueLocked = locked;
+    const ctrl = this.newPurchaseRequestForm.get('dimensionValueId');
+    if (!ctrl) return;
+
+    const shouldDisable = locked || this.viewMode || this.isSelectingFinalVendor;
+    if (shouldDisable) {
+      ctrl.disable({ emitEvent: false });
+    } else {
+      ctrl.enable({ emitEvent: false });
+    }
+  }
+
+  private applyDimensionValues(values: any[], selectedDepartment?: string): void {
+    this.dimensionValueList = this.mapDimensionDropdownItems(values);
+    const ctrl = this.newPurchaseRequestForm.get('dimensionValueId');
+
+    if (this.dimensionValueList.length === 1) {
+      const only = this.dimensionValueList[0];
+      ctrl?.setValue(only.id, { emitEvent: false });
+      this.newPurchaseRequestForm.get('department')?.setValue(only.description || '', { emitEvent: false });
+      this.setDimensionValueControlState(true);
+      this.cdr.markForCheck();
+      return;
+    }
+
+    this.setDimensionValueControlState(false);
+
+    const match = selectedDepartment
+      ? this.dimensionValueList.find(value => this.dimensionValueMatches(value, selectedDepartment))
+      : null;
+
+    if (match) {
+      ctrl?.setValue(match.id, { emitEvent: false });
+      this.newPurchaseRequestForm.get('department')?.setValue(match.description || selectedDepartment, { emitEvent: false });
+    } else {
+      ctrl?.setValue(null, { emitEvent: false });
+      this.newPurchaseRequestForm.get('department')?.setValue('', { emitEvent: false });
+    }
+    this.cdr.markForCheck();
+  }
+
+  loadDimensionsForSelectedEntity(resetSelection = true): void {
+    const entityId = Number(this.newPurchaseRequestForm.get('entityId')?.value);
+    if (resetSelection) {
+      this.resetDimensionSelection();
+    } else {
+      this.dimensionList = [];
+      this.dimensionValueList = [];
+    }
+
+    if (!entityId) {
+      return;
+    }
+
+    this.lookupService.getDimensionsByEntity(entityId).subscribe({
+      next: (res) => {
+        this.dimensionList = this.mapDimensionDropdownItems(res);
+        if (!resetSelection) {
+          this.restoreSelectedDimension();
+        }
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Failed to load dimensions for entity:', err);
+        this.dimensionList = [];
+      }
+    });
+  }
+
+  private restoreSelectedDimension(): void {
+    const department = (this.newPurchaseRequestForm.get('department')?.value || '').toString().trim();
+    const currentDimensionId = Number(this.newPurchaseRequestForm.get('dimensionId')?.value);
+
+    const applyMatch = (dimensionId: number, values: any[]) => {
+      this.newPurchaseRequestForm.get('dimensionId')?.setValue(dimensionId, { emitEvent: false });
+      this.applyDimensionValues(values, department);
+    };
+
+    if (currentDimensionId && this.dimensionList.some(d => Number(d.id) === currentDimensionId)) {
+      this.lookupService.getDimensionValuesByDimension(currentDimensionId).subscribe({
+        next: (res) => applyMatch(currentDimensionId, res ?? []),
+        error: (err) => console.error('Failed to restore dimension values:', err)
+      });
+      return;
+    }
+
+    if (!department || !this.dimensionList.length) {
+      return;
+    }
+
+    forkJoin(
+      this.dimensionList.map(d =>
+        this.lookupService.getDimensionValuesByDimension(d.id).pipe(
+          map(values => ({ dimensionId: d.id, values: values ?? [] })),
+          catchError(() => of({ dimensionId: d.id, values: [] as any[] }))
+        )
+      )
+    ).pipe(takeUntil(this.destroy$)).subscribe(results => {
+      const match = results.find(result =>
+        (result.values || []).some(value => this.dimensionValueMatches(value, department))
+      );
+      if (!match) {
+        return;
+      }
+
+      applyMatch(match.dimensionId, match.values);
+    });
+  }
+
+  private dimensionValueMatches(value: any, department: string): boolean {
+    const target = department.trim().toLowerCase();
+    if (!target) return false;
+
+    return [
+      value?.description,
+      value?.Description,
+      value?.stringId,
+      value?.StringId
+    ].some(candidate => (candidate ?? '').toString().trim().toLowerCase() === target);
+  }
+
+  onDimensionChanged(): void {
+    this.resetDimensionValueSelection();
+
+    const dimensionId = Number(this.newPurchaseRequestForm.get('dimensionId')?.value);
+    if (!dimensionId || Number.isNaN(dimensionId)) {
+      return;
+    }
+
+    this.lookupService.getDimensionValuesByDimension(dimensionId).subscribe({
+      next: (res) => this.applyDimensionValues(res ?? []),
+      error: (err) => {
+        console.error('Failed to load dimension values:', err);
+        this.resetDimensionValueSelection();
+      }
+    });
+  }
+
+  onDimensionValueChanged(): void {
+    const valueId = Number(this.newPurchaseRequestForm.get('dimensionValueId')?.value);
+    const selected = this.dimensionValueList.find(v => Number(v.id) === valueId);
+    const label = selected?.description || '';
+    this.newPurchaseRequestForm.get('department')?.setValue(label, { emitEvent: false });
   }
 
   onAddressSelect(id: number) {

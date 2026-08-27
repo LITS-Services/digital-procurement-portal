@@ -243,7 +243,7 @@ export class PurchaseRequestComponent implements OnInit {
     const selectedId = this.chkBoxSelected[0].requestId;
 
     this.router.navigate(['/purchase-request/new-purchase-request'], {
-      queryParams: { id: selectedId, mode: 'view' }, skipLocationChange: true
+      queryParams: { id: selectedId, mode: 'view' }
     });
   }
 
@@ -521,7 +521,7 @@ export class PurchaseRequestComponent implements OnInit {
     console.log('Navigating to update ID:', selectedId);
 
     this.router.navigate(['/purchase-request/new-purchase-request'], {
-      queryParams: { id: selectedId }, skipLocationChange: true
+      queryParams: { id: selectedId }
     });
   }
 
@@ -673,9 +673,8 @@ export class PurchaseRequestComponent implements OnInit {
     this.router.navigate(['/purchase-request/new-purchase-request'], {
       queryParams: {
         id: row.requestId,
-        mode: 'selectVendor' 
-      },
-      skipLocationChange: true
+        mode: 'selectVendor'
+      }
     });
   }
 

@@ -29,6 +29,18 @@ export class LookupService {
     });
   }
 
+  getDimensionsByEntity(entityId: number | string) {
+    return this.http.get<any[]>(`${this.baseUrl}/dropdowns`, {
+      params: { name: 'dimensions', parentId: String(entityId) }
+    });
+  }
+
+  getDimensionValuesByDimension(dimensionId: number | string) {
+    return this.http.get<any[]>(`${this.baseUrl}/dropdowns`, {
+      params: { name: 'dimensionvalues', parentId: String(dimensionId) }
+    });
+  }
+
   getVatProdPostingGroups(entityGuid: string) {
     return this.http.get<any[]>(`${this.baseUrl}/dropdowns`, {
       params: { name: 'vatprodpostinggroups', id: entityGuid }
