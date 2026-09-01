@@ -1,10 +1,9 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { RfqService } from '../rfq.service';
 import { ToastrService } from 'ngx-toastr';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { finalize } from 'rxjs';
+import { catchError, finalize, forkJoin, of } from 'rxjs';
 
 @Component({
   selector: 'app-rfq-final-vendors',
@@ -12,109 +11,88 @@ import { finalize } from 'rxjs';
   styleUrls: ['./rfq-final-vendors.component.scss'],
   standalone: false
 })
-export class RfqFinalVendorsComponent implements OnInit {
+export class RfqFinalVendorsComponent implements OnChanges {
   @Output() allItemsFinalizedChange = new EventEmitter<boolean>();
   @Input() data: any;
   @Input() viewMode: boolean = false;
 
   itemsData: any[] = [];
   vendorData: any[] = [];
-  //selected: { [id: number]: { companyId: string; vendorUserId: string } | null } = {};
+  itemsWithTotals: any[] = [];
   selected: { [id: number]: any | null } = {};
   quotationRequestId: number | null = null;
 
   loadingAi = false;
   aiExplanation: string = '';
-  private pendingRequests = 0;
   loading = false;
+  allItemsFinalized = false;
 
-  constructor(private rfqService: RfqService,
+  constructor(
+    private rfqService: RfqService,
     private toastr: ToastrService,
     private cdr: ChangeDetectorRef,
-    private modalService: NgbModal,
-    private spinner: NgxSpinnerService
-
+    private modalService: NgbModal
   ) { }
 
-  ngOnInit(): void {
-  }
-
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['data'] && changes['data'].currentValue) {
-      this.quotationRequestId = this.data.quotationId;
-      this.pendingRequests = 2;
-      this.spinner.show();
-      this.loadItems(this.quotationRequestId);
-      this.loadBiddingVendors(this.quotationRequestId);
+    if (changes['data']?.currentValue) {
+      this.quotationRequestId = this.data?.quotationId ?? null;
+      this.loadData();
     }
   }
 
-  loadItems(quotationRequestId?: number) {
-    if (!quotationRequestId) return;
-
-    this.rfqService.getItemsQuotationById(quotationRequestId).subscribe({
-      next: (res: any) => {
-        this.itemsData = res.items || [];
-
-        // Initialize selected mapping
-        this.itemsData.forEach(item => {
-          this.selected[item.id] = null;
-        });
-        this.mapSelectedVendors();
-        this.cdr.detectChanges();
-        this.checkAndHideLoader();
-      },
-      error: (err) => {
-        console.error('Error fetching items', err);
-        this.checkAndHideLoader();
-      }
-    });
-  }
-
-  loadBiddingVendors(quotationRequestId?: number) {
-    if (!quotationRequestId) return;
-
-    this.rfqService.getBidSubmissionDetailsByQuotation(quotationRequestId).subscribe({
-      next: (res: any) => {
-        // Only vendors who actually submitted bids
-        this.vendorData = (res.vendors || []).filter(v => v.bids && v.bids.length > 0);
-        this.mapSelectedVendors();
-        this.cdr.detectChanges();
-        this.checkAndHideLoader();
-      },
-      error: (err) => {
-        console.error('Error fetching bidding vendors', err);
-        this.checkAndHideLoader();
-      }
-    });
-  }
-
-  private checkAndHideLoader() {
-    if (this.pendingRequests > 0) {
-      this.pendingRequests--;
-      if (this.pendingRequests === 0) {
-        this.spinner.hide();
-      }
+  private loadData(): void {
+    if (!this.quotationRequestId) {
+      this.resetData();
+      return;
     }
+
+    this.loading = true;
+
+    forkJoin({
+      items: this.rfqService.getItemsQuotationById(this.quotationRequestId).pipe(
+        catchError((err) => {
+          console.error('Error fetching items', err);
+          return of({ items: [] });
+        })
+      ),
+      vendors: this.rfqService.getBidSubmissionDetailsByQuotation(this.quotationRequestId).pipe(
+        catchError((err) => {
+          console.error('Error fetching bidding vendors', err);
+          return of({ vendors: [] });
+        })
+      )
+    }).pipe(
+      finalize(() => {
+        this.loading = false;
+        this.cdr.detectChanges();
+      })
+    ).subscribe(({ items, vendors }) => {
+      this.itemsData = items?.items || [];
+      this.vendorData = (vendors?.vendors || []).filter((v: any) => v.bids && v.bids.length > 0);
+
+      this.selected = {};
+      this.itemsData.forEach(item => {
+        this.selected[item.id] = null;
+      });
+
+      this.mapSelectedVendors();
+      this.updateItemsWithTotals();
+      this.updateFinalizationState();
+      this.cdr.detectChanges();
+    });
   }
-  // private mapSelectedVendors() {
-  //   if (!this.itemsData.length || !this.vendorData.length) return;
 
-  //   this.itemsData.forEach(item => {
-  //     const pre =
-  //       item.vendorCompanyId && (item.vendorUserId || item.vendorId)
-  //         ? this.vendorData.find(v =>
-  //           v.companyId === item.vendorCompanyId &&
-  //           v.vendorUserId === (item.vendorUserId ?? item.vendorId)
-  //         )
-  //         : null;
+  private resetData(): void {
+    this.itemsData = [];
+    this.vendorData = [];
+    this.selected = {};
+    this.itemsWithTotals = [];
+    this.updateFinalizationState();
+    this.loading = false;
+  }
 
-  //     this.selected[item.id] = pre ?? null;
-  //   });
-
-  //   this.cdr.detectChanges();
-  // }
-  private mapSelectedVendors() {
+  private mapSelectedVendors(): void {
     if (!this.itemsData.length || !this.vendorData.length) return;
 
     this.itemsData.forEach(item => {
@@ -123,12 +101,46 @@ export class RfqFinalVendorsComponent implements OnInit {
         v.vendorUserId === (item.vendorUserId ?? item.vendorId)
       );
 
-      this.selected[item.id] = vendor ?? null;  // <-- store the full vendor object
+      this.selected[item.id] = vendor ?? null;
     });
-
-    this.cdr.detectChanges();
   }
 
+  private updateItemsWithTotals(): void {
+    if (!this.itemsData.length) {
+      this.itemsWithTotals = [];
+      return;
+    }
+
+    const totalBudget = this.itemsData.reduce((sum, i) => sum + (i.amount || 0), 0);
+    const totalQuote = this.itemsData.reduce((sum, i) => {
+      const vendor = this.selected[i.id];
+      if (!vendor?.bids) return sum;
+
+      const bid = vendor.bids.find((b: any) => b.quotationItemId === i.id);
+      return sum + (bid?.biddingAmount || 0);
+    }, 0);
+
+    this.itemsWithTotals = [
+      ...this.itemsData,
+      {
+        id: -1,
+        itemName: 'Total',
+        amount: totalBudget,
+        quoteAmount: totalQuote,
+        difference: totalBudget - totalQuote
+      }
+    ];
+  }
+
+  private updateFinalizationState(): void {
+    const finalized = this.itemsData.length > 0 &&
+      this.itemsData.every(item => this.isItemFinalized(item));
+
+    if (finalized !== this.allItemsFinalized) {
+      this.allItemsFinalized = finalized;
+      this.allItemsFinalizedChange.emit(finalized);
+    }
+  }
 
   onSubmit() {
     const payload = this.itemsData
@@ -164,34 +176,15 @@ export class RfqFinalVendorsComponent implements OnInit {
     }).then(result => {
       if (!result.isConfirmed) return;
 
-      // Optional loading state
-      // Swal.fire({
-      //   title: 'Processing...',
-      //   text: 'Finalizing vendor selection',
-      //   allowOutsideClick: false,
-      //   didOpen: () => {
-      //     Swal.showLoading();
-      //   }
-      // });
-
       this.loading = true;
-      this.spinner.show();
       this.rfqService.postFinalVendors({ selectFinalVendorForQuotationItem: payload })
         .pipe(finalize(() => {
           this.loading = false;
-          this.spinner.hide();
           this.cdr.detectChanges();
         }))
         .subscribe({
           next: () => {
-            //   Swal.fire({
-            //   icon: 'success',
-            //   title: 'Vendors Finalized',
-            //   text: 'Selected vendor(s) have been successfully finalized.',
-            //   timer: 2000,
-            //   showConfirmButton: false
-            // });
-            this.loadItems(this.quotationRequestId);
+            this.loadData();
           },
           error: (e) => {
             Swal.fire({
@@ -209,35 +202,14 @@ export class RfqFinalVendorsComponent implements OnInit {
     const vendor = this.selected[itemId];
     if (!vendor?.bids) return null;
 
-    const bid = vendor.bids.find(b => b.quotationItemId === itemId);
+    const bid = vendor.bids.find((b: any) => b.quotationItemId === itemId);
     return bid?.biddingAmount ?? null;
   }
 
-  get itemsWithTotals() {
-    if (!this.itemsData.length) return [];
-
-    const totalBudget = this.itemsData.reduce((sum, i) => sum + (i.amount || 0), 0);
-
-    const totalQuote = this.itemsData.reduce((sum, i) => {
-      const vendor = this.selected[i.id];
-      if (!vendor?.bids) return sum;
-
-      const bid = vendor.bids.find((b: any) => b.quotationItemId === i.id);
-      return sum + (bid?.biddingAmount || 0);
-    }, 0);
-
-    const difference = totalBudget - totalQuote;
-
-    return [
-      ...this.itemsData,
-      {
-        id: -1,
-        itemName: 'Total',
-        amount: totalBudget,
-        quoteAmount: totalQuote,
-        difference
-      }
-    ];
+  onVendorSelectionChange(itemId: number, vendor: any): void {
+    this.selected[itemId] = vendor;
+    this.updateItemsWithTotals();
+    this.cdr.detectChanges();
   }
 
   askAi(modalRef: any) {
@@ -255,8 +227,6 @@ export class RfqFinalVendorsComponent implements OnInit {
       next: (res: any) => {
         this.aiExplanation = res.explanation || 'No explanation returned.';
         this.loadingAi = false;
-
-        // open modal after getting response
         this.modalService.open(modalRef, { size: 'sm', centered: true });
       },
       error: (err) => {
@@ -267,29 +237,11 @@ export class RfqFinalVendorsComponent implements OnInit {
     });
   }
 
-  // Item-level: is this item already finalized?
   isItemFinalized(item: any): boolean {
     return !!(item.vendorCompanyId && (item.vendorUserId || item.vendorId));
   }
 
-  // Global: are ALL items finalized?
-  get allItemsFinalized(): boolean {
-    // return (
-    //   this.itemsData.length > 0 &&
-    //   this.itemsData.every(item => this.isItemFinalized(item))
-    // );
-    const finalized = this.itemsData.length > 0 &&
-      this.itemsData.every(item => this.isItemFinalized(item));
-
-    // Emit to parent whenever checked
-    this.allItemsFinalizedChange.emit(finalized);
-
-    return finalized;
-  }
-
-  // Global: is ANY item still pending?
   get hasPendingItems(): boolean {
     return this.itemsData.some(item => !this.isItemFinalized(item));
   }
-
 }

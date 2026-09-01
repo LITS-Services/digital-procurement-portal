@@ -1,5 +1,10 @@
 <div class="modal-body card">
-  <div class="card-body cstm-body">
+  <div class="card-body cstm-body position-relative">
+    <div *ngIf="loading" class="final-vendors-loader">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
     <!-- <div class="mb-1">
       <button class="btn btn-sm ask-ai-button shadow-sm" (click)="askAi(aiModal)" [disabled]="loadingAi">
         {{ loadingAi ? 'Thinking...' : 'Ask AI' }}
@@ -22,7 +27,7 @@
         </span>
       </button>
 
-      <button class="btn btn-primary" [disabled]="viewMode || allItemsFinalized" (click)="onSubmit()">Submit Final Vendors</button>
+      <button class="btn btn-primary" [disabled]="loading || viewMode || allItemsFinalized" (click)="onSubmit()">Submit Final Vendors</button>
     </div>
     <!-- <div *ngIf="allItemsFinalized" class="alert alert-info mb-2">
   <i class="fa fa-lock me-1"></i>
@@ -83,9 +88,9 @@
       <ngx-datatable-column name="Final Vendor" [sortable]="false">
         <ng-template let-row="row" ngx-datatable-cell-template>
           <ng-container *ngIf="row.itemName !== 'Total'">
-            <select [disabled]="viewMode || allItemsFinalized || isItemFinalized(row)" class="form-control" 
+            <select [disabled]="loading || viewMode || allItemsFinalized || isItemFinalized(row)" class="form-control" 
                     [ngModel]="selected[row.id] || null"
-                    (ngModelChange)="selected[row.id] = $event" 
+                    (ngModelChange)="onVendorSelectionChange(row.id, $event)" 
                     [ngModelOptions]="{ standalone: true }">
               <option [ngValue]="null" disabled>Select Company</option>
               <option *ngFor="let v of vendorData" [ngValue]="v">{{ v.companyName }}</option>
