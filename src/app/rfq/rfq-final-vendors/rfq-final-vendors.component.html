@@ -16,7 +16,7 @@
         {{ loadingAi ? 'Thinking...' : 'Ask AI' }}
         <i class="ft-send"></i>
       </button> -->
-      <button class="btn btn-sm ask-ai-btn shadow-sm me-2" (click)="askAi(aiModal)" [disabled]="loadingAi">
+      <!-- <button class="btn btn-sm ask-ai-btn shadow-sm me-2" (click)="askAi(aiModal)" [disabled]="loadingAi">
       
         <span class="ai-icon">
           <img class="ai-loader" [class.spin]="loadingAi" src="assets/img/ai icon.svg" alt="AI" width="18" height="18" />
@@ -25,26 +25,27 @@
         <span class="ai-text">
           {{ loadingAi ? 'Thinking...' : 'AI Vendor Suggestion' }}
         </span>
-      </button>
+      </button> -->
 
-      <button class="btn btn-primary" [disabled]="loading || viewMode || allItemsFinalized" (click)="onSubmit()">Submit Final Vendors</button>
+      <button class="btn btn-primary" [disabled]="loading || viewMode || allItemsFinalized" (click)="onSubmit()">Submit
+        Final Vendors</button>
     </div>
     <!-- <div *ngIf="allItemsFinalized" class="alert alert-info mb-2">
   <i class="fa fa-lock me-1"></i>
   Vendors for all items have already been finalized.
 </div> -->
-<div *ngIf="allItemsFinalized" class="finalized-alert">
-  <div class="alert-icon">
-    <i class="fa fa-lock"></i>
-  </div>
-  <div class="alert-text">
-    <h5>All Vendors Finalized</h5>
-    <p>Vendors for all items have already been finalized. No further changes can be made.</p>
-  </div>
-</div>
+    <div *ngIf="allItemsFinalized" class="finalized-alert">
+      <div class="alert-icon">
+        <i class="fa fa-lock"></i>
+      </div>
+      <div class="alert-text">
+        <h5>All Vendors Finalized</h5>
+        <p>Vendors for all items have already been finalized. No further changes can be made.</p>
+      </div>
+    </div>
 
-    <ngx-datatable class="bootstrap core-bootstrap" [rows]="itemsWithTotals" [columnMode]="'force'" 
-                   [headerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" [footerHeight]="50">
+    <ngx-datatable class="bootstrap core-bootstrap" [rows]="itemsWithTotals" [columnMode]="'force'" [headerHeight]="50"
+      [rowHeight]="'auto'" [scrollbarH]="true" [footerHeight]="50">
 
       <!-- Sr. No. -->
       <ngx-datatable-column name="Sr. No." [width]="10" [sortable]="false">
@@ -73,7 +74,8 @@
       <ngx-datatable-column name="Quote Amount" [sortable]="false">
         <ng-template let-row="row" ngx-datatable-cell-template>
           <b *ngIf="row.itemName === 'Total'">{{ row.quoteAmount | number:'1.2-2' }}</b>
-          <span *ngIf="row.itemName !== 'Total'">{{ getQuoteAmount(row.id) !== null ? (getQuoteAmount(row.id) | number:'1.2-2') : '-' }}</span>
+          <span *ngIf="row.itemName !== 'Total'">{{ getQuoteAmount(row.id) !== null ? (getQuoteAmount(row.id) |
+            number:'1.2-2') : '-' }}</span>
         </ng-template>
       </ngx-datatable-column>
 
@@ -88,10 +90,9 @@
       <ngx-datatable-column name="Final Vendor" [sortable]="false">
         <ng-template let-row="row" ngx-datatable-cell-template>
           <ng-container *ngIf="row.itemName !== 'Total'">
-            <select [disabled]="loading || viewMode || allItemsFinalized || isItemFinalized(row)" class="form-control" 
-                    [ngModel]="selected[row.id] || null"
-                    (ngModelChange)="onVendorSelectionChange(row.id, $event)" 
-                    [ngModelOptions]="{ standalone: true }">
+            <select [disabled]="loading || viewMode || allItemsFinalized || isItemFinalized(row)" class="form-control"
+              [ngModel]="selected[row.id] || null" (ngModelChange)="onVendorSelectionChange(row.id, $event)"
+              [ngModelOptions]="{ standalone: true }">
               <option [ngValue]="null" disabled>Select Company</option>
               <option *ngFor="let v of vendorData" [ngValue]="v">{{ v.companyName }}</option>
             </select>
@@ -109,7 +110,7 @@
 </div>
 
 
-  <ng-template #aiModal let-modal>
+<ng-template #aiModal let-modal>
   <div class="modal-header">
     <h5 class="modal-title text-white">AI Recommendation</h5>
     <button type="button" class="btn-close" aria-label="Close text-white" (click)="modal.dismiss()"></button>

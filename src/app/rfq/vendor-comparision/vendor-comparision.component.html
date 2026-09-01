@@ -14,7 +14,7 @@
             {{ loadingAi ? 'Thinking...' : 'Ask AI' }}
             <i class="ft-send"></i>
           </button> -->
-      <button class="btn btn-sm ask-ai-btn shadow-sm" (click)="askAi(aiModal)" [disabled]="loadingAi">
+      <!-- <button class="btn btn-sm ask-ai-btn shadow-sm" (click)="askAi(aiModal)" [disabled]="loadingAi">
     
         <span class="ai-icon">
           <img class="ai-loader" [class.spin]="loadingAi" src="assets/img/ai icon.svg" alt="AI" width="18" height="18" />
@@ -23,7 +23,7 @@
         <span class="ai-text">
           {{ loadingAi ? 'Thinking...' : 'AI Vendor Suggestion' }}
         </span>
-      </button>
+      </button> -->
     </div>
 
     <!-- Filter: Item -->
@@ -41,7 +41,7 @@
         </div>
       </div>
     </div>
-  
+
     <!-- AI Explanation (optional, show after response) -->
     <!-- <div *ngIf="aiExplanation" class="alert alert-primary mt-2">
         <strong>AI Suggestion:</strong> {{ aiExplanation }}
@@ -63,7 +63,7 @@
         </div>
       </div>
     </div>
-  
+
     <!-- Filter: Amount Sort -->
     <div>
       <div class="dropdown filter-dropdown" ngbDropdown>
@@ -86,7 +86,7 @@
         </div>
       </div>
     </div>
-  
+
     <!-- Reset Button -->
     <div>
       <button class="btn btn-sm clear-btn" (click)="clearFilters()">
@@ -159,9 +159,9 @@
       No bid found for the selected filters.
     </div> -->
     <div class="empty-state">
-        <i class="fa fa-file-signature empty-icon"></i>
-        <h5 class="empty-message">No bid found for the selected filters</h5>
-        <p class="empty-submessage">Please check back later or contact the vendor.</p>
+      <i class="fa fa-file-signature empty-icon"></i>
+      <h5 class="empty-message">No bid found for the selected filters</h5>
+      <p class="empty-submessage">Please check back later or contact the vendor.</p>
     </div>
   </ng-template>
 
@@ -243,17 +243,17 @@
   </ng-template>
 
   <ng-template #aiModal let-modal>
-  <div class="modal-header">
-    <h5 class="modal-title text-white">AI Recommendation</h5>
-    <button type="button" class="btn-close" aria-label="Close text-white" (click)="modal.dismiss()"></button>
-  </div>
+    <div class="modal-header">
+      <h5 class="modal-title text-white">AI Recommendation</h5>
+      <button type="button" class="btn-close" aria-label="Close text-white" (click)="modal.dismiss()"></button>
+    </div>
 
-  <div class="modal-body">
-    <p *ngIf="loadingAi">AI is thinking, please wait...</p>
-    <p *ngIf="!loadingAi">{{ aiExplanation }}</p>
-  </div>
+    <div class="modal-body">
+      <p *ngIf="loadingAi">AI is thinking, please wait...</p>
+      <p *ngIf="!loadingAi">{{ aiExplanation }}</p>
+    </div>
 
-  <div class="modal-footer">
-    <button type="button" class="btn btn-secondary btn-sm" (click)="modal.close()">Close</button>
-  </div>
-</ng-template>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary btn-sm" (click)="modal.close()">Close</button>
+    </div>
+  </ng-template>
