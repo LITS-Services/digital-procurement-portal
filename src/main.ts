@@ -1,7 +1,6 @@
 import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
-import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
 import type { RuntimeConfig } from './environments/runtime-config';
 import { DEV_RUNTIME_CONFIG } from './environments/dev-runtime-config';
@@ -47,7 +46,7 @@ async function loadRuntimeConfig(): Promise<RuntimeConfig> {
   return base;
 }
 
-function bootstrapApp(): void {
+function bootstrapApp(AppModule: any): void {
   if (environment.production) {
     enableProdMode();
   }
@@ -55,14 +54,16 @@ function bootstrapApp(): void {
 }
 
 loadRuntimeConfig()
-  .then(config => {
+  .then(async config => {
     window.config = config;
-    bootstrapApp();
+    const { AppModule } = await import('./app/app.module');
+    bootstrapApp(AppModule);
   })
-  .catch(err => {
+  .catch(async err => {
     console.error('Could not load runtime config — using development defaults.', err);
     if (!environment.production) {
       window.config = DEV_RUNTIME_CONFIG;
     }
-    bootstrapApp();
+    const { AppModule } = await import('./app/app.module');
+    bootstrapApp(AppModule);
   });
