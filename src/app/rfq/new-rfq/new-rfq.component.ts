@@ -71,7 +71,7 @@ export class NewRfqComponent implements OnInit {
   // new work
   purchaseRequestId: number | null = null;
   hasUnusedItems: boolean = true;
-  isItemsFormCollapsed: boolean = false;
+  isItemsFormCollapsed: boolean = true;
 
   allItemsFinalized = false;
   allSelected: boolean = false;
@@ -824,6 +824,7 @@ export class NewRfqComponent implements OnInit {
 
   editRow(row: any, rowIndex: number) {
     this.editingRowIndex = rowIndex;
+    this.isItemsFormCollapsed = false;
     this.itemForm.patchValue({
       id: row.id,
       itemType: row.itemType,
