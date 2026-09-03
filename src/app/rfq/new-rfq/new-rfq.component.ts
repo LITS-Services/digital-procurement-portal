@@ -71,6 +71,7 @@ export class NewRfqComponent implements OnInit {
   // new work
   purchaseRequestId: number | null = null;
   hasUnusedItems: boolean = true;
+  isItemsFormCollapsed: boolean = false;
 
   allItemsFinalized = false;
   allSelected: boolean = false;
@@ -159,6 +160,7 @@ export class NewRfqComponent implements OnInit {
       } else if (prId) {
         // new work
         this.purchaseRequestId = +prId;
+        this.isItemsFormCollapsed = true;
         this.loadFromPurchaseRequest(+prId);
       }
     });
