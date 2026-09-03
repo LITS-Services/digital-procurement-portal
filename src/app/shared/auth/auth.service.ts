@@ -167,7 +167,6 @@ export class AuthService {
   performLogout(reason?: 'session-expired' | 'idle'): void {
     if (this.loggingOut) return;
     this.loggingOut = true;
-    this.messagingService.deleteToken();
     this.logout().pipe(catchError(() => of(null))).subscribe({
       complete: () => this.finishLogout(reason),
       error: () => this.finishLogout(reason),
@@ -334,6 +333,14 @@ export class AuthService {
     this.scheduleSessionExpiry(this.refreshExpiresAt);
     this.bumpIdleTimer();
     this._notifyAuthStateChange();
+
+    if (userId) {
+      try {
+        this.messagingService.requestPermission(userId);
+      } catch (err) {
+        console.error('FCM error:', err);
+      }
+    }
   }
 
   private _applySessionFromRefresh(res: any): void {

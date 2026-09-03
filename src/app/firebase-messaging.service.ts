@@ -22,20 +22,20 @@ export class FirebaseMessagingService {
       console.warn('FCM: Skip requestPermission because userId is null or empty');
       return;
     }
-    this.afMessaging.requestToken.subscribe(
-      token => {
-        // debugger;
+    this.afMessaging.requestToken.subscribe({
+      next: (token) => {
         if (token) {
           this.sendTokenToBackend(userId, token);
         } else {
           console.warn('FCM: No token received from requestToken');
         }
-        // Send this token to your backend to send push messages
       },
-      error => {
+      error: (error) => {
         console.error('FCM: Permission denied or error:', error);
+        // If the token is stale or invalid, delete it so the next attempt can get a fresh one.
+        this.deleteToken();
       }
-    );
+    });
   }
 
   deleteToken() {
