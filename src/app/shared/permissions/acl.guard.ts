@@ -1,6 +1,6 @@
 // acl.guard.ts
 import { Injectable } from '@angular/core';
-import { CanActivate, CanMatch, Route, UrlSegment, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { CanActivate, CanMatch, Route, UrlSegment, ActivatedRouteSnapshot, RouterStateSnapshot, Router, UrlTree } from '@angular/router';
 import { PermissionService } from './permission.service';
 
 type Action = 'read' | 'write' | 'delete';
@@ -9,22 +9,34 @@ type Action = 'read' | 'write' | 'delete';
 export class AclGuard implements CanActivate, CanMatch {
   constructor(private perms: PermissionService, private router: Router) {}
 
-  private check(formTypeId: number | string | undefined, action: Action = 'read'): boolean {
-    if (formTypeId === undefined || formTypeId === null) return true;    
-    const ok = this.perms.can(formTypeId, action);
-    if (!ok) this.router.navigate(['/error/500']);               
-    return ok;
+  private check(formTypeId: number | string | undefined, action: Action, currentUrl: string): boolean | UrlTree {
+    if (formTypeId === undefined || formTypeId === null) return true;
+    if (this.perms.can(formTypeId, action)) return true;
+
+    const landing = this.perms.getDefaultLandingPath();
+    const current = this.normalizeUrl(currentUrl);
+    if (current === this.normalizeUrl(landing)) {
+      return this.router.createUrlTree(['/pages/error']);
+    }
+    return this.router.createUrlTree([landing]);
   }
 
-  canActivate(route: ActivatedRouteSnapshot, _state: RouterStateSnapshot): boolean {
-    const formTypeId = route.data?.['formTypeId'] as number | string | undefined;
-    const action = (route.data?.['action'] as Action) ?? 'read';
-    return this.check(formTypeId, action);
+  private normalizeUrl(url: string): string {
+    const path = (url || '').split('?')[0].split('#')[0];
+    if (!path || path === '/') return '/';
+    return path.startsWith('/') ? path : `/${path}`;
   }
 
-  canMatch(route: Route, _segments: UrlSegment[]): boolean {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree {
     const formTypeId = route.data?.['formTypeId'] as number | string | undefined;
     const action = (route.data?.['action'] as Action) ?? 'read';
-    return this.check(formTypeId, action);
+    return this.check(formTypeId, action, state.url);
+  }
+
+  canMatch(route: Route, segments: UrlSegment[]): boolean | UrlTree {
+    const formTypeId = route.data?.['formTypeId'] as number | string | undefined;
+    const action = (route.data?.['action'] as Action) ?? 'read';
+    const currentUrl = '/' + segments.map(s => s.path).join('/');
+    return this.check(formTypeId, action, currentUrl);
   }
 }

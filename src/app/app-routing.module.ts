@@ -8,6 +8,7 @@ import { Full_ROUTES } from "./shared/routes/full-layout.routes";
 import { CONTENT_ROUTES } from "./shared/routes/content-layout.routes";
 
 import { AuthGuard } from './shared/auth/auth-guard.service';
+import { LandingRedirectGuard } from './shared/auth/landing-redirect.guard';
 import { VendorRegistrationFormComponent } from './vendor-registration-form/vendor-registration-form/vendor-registration-form.component';
 import { NewPurchaseRequestComponent } from './purchase-request/new-purchase-request/new-purchase-request.component';
 import { OtpComponent } from './pages/otp/otp.component';
@@ -21,8 +22,9 @@ const appRoutes: Routes = [
 
     {
     path: '',
-    redirectTo: 'dashboard/dashboard1',
     pathMatch: 'full',
+    component: FullLayoutComponent,
+    canActivate: [LandingRedirectGuard],
   },
   {
     path: 'new-purchase-request/:id',

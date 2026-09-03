@@ -108,13 +108,12 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.perms.refreshForCurrentUser$().subscribe({
         next: () => {
           this.spinner.hide();
-          this.router.navigate(['/dashboard/dashboard1'], { replaceUrl: true });
+          this.goToLanding(true);
           this.cdr.detectChanges();
         },
         error: () => {
-          // even if perms fail, still navigate (optional)
           this.spinner.hide();
-          this.router.navigate(['/dashboard/dashboard1'], { replaceUrl: true });
+          this.goToLanding(true);
           this.cdr.detectChanges();
         }
       });
@@ -225,7 +224,7 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
           this.cdr.detectChanges();
           return;
         }
-        this.router.navigate(['/dashboard/dashboard1']);
+        this.goToLanding();
         this.cdr.detectChanges();
       },
       (err: any) => {
@@ -288,5 +287,9 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   forgotpassword() {
     this.router.navigate(['forgotpassword'], { relativeTo: this.route.parent });
+  }
+
+  private goToLanding(replaceUrl = false): void {
+    this.router.navigate([this.perms.getDefaultLandingPath()], { replaceUrl });
   }
 }

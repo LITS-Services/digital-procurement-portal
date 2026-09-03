@@ -4,7 +4,7 @@ import { PermissionService } from '../permissions/permission.service';
 import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
-export class GuestGuard implements CanActivate {
+export class LandingRedirectGuard implements CanActivate {
   constructor(
     private auth: AuthService,
     private perms: PermissionService,
@@ -12,7 +12,9 @@ export class GuestGuard implements CanActivate {
   ) {}
 
   canActivate(): boolean | UrlTree {
-    if (!this.auth.isAuthenticated()) return true;
+    if (!this.auth.isAuthenticated()) {
+      return this.router.createUrlTree(['/pages/login']);
+    }
     return this.router.createUrlTree([this.perms.getDefaultLandingPath()]);
   }
 }

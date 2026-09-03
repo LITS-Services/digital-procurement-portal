@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { BehaviorSubject, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
+import { ROUTES } from '../vertical-menu/vertical-menu-routes.config';
+import { firstReadableNavPath } from './nav-perm';
 
 type Action = 'read' | 'write' | 'delete';
 
@@ -13,16 +15,30 @@ type Action = 'read' | 'write' | 'delete';
 export class PermissionService {
 
     constructor(private _httpClient: HttpClient) {
+        try {
+            const stored = JSON.parse(localStorage.getItem('auth') || '{}')?.rolePermissions;
+            if (Array.isArray(stored) && stored.length) {
+                this.setPermissions(stored);
+            }
+        } catch {
+            /* ignore corrupt session cache */
+        }
     }
     getPermissionsByUserId(id: string) {
         return this._httpClient.get<any>(`${environment.apiUrl}/Acl/get-permissions-by-user-id?id=${id}`);
     }
 
     private permsByForm = new Map<string, any>();
+    private permsList: any[] = [];
     setPermissions(perms: any[] | null | undefined): void {
         this.permsByForm.clear();
-        (perms ?? []).forEach(p => {
+        this.permsList = Array.isArray(perms) ? perms : [];
+        this.permsList.forEach(p => {
             this.permsByForm.set(String(p.formTypeId), p);
+            const route = this.normalizeRoute(p.formRoute ?? p.FormRoute ?? p.route ?? p.Route);
+            if (route) {
+                this.permsByForm.set(route, p);
+            }
         });
     }
 
@@ -81,7 +97,8 @@ export class PermissionService {
     }
 
     can(formId: number | string, action: Action): boolean {
-        const rp = this.permsByForm.get(String(formId));
+        const rp = this.permsByForm.get(String(formId))
+            ?? this.permsByForm.get(this.normalizeRoute(formId));
 
         if (!rp) {
             return false;
@@ -93,9 +110,30 @@ export class PermissionService {
         }
     }
 
+    private normalizeRoute(value: unknown): string {
+        if (value === undefined || value === null) return '';
+        const route = String(value).trim();
+        if (!route || /^\d+$/.test(route)) return '';
+        return route.startsWith('/') ? route : `/${route}`;
+    }
+
     canRead(formId: number | string) { return this.can(formId, 'read'); }
     canWrite(formId: number | string) { return this.can(formId, 'write'); }
     canDelete(formId: number | string) { return this.can(formId, 'delete'); }
+
+    /** First allowed app page after login: Dashboard if readable, else next sidebar form with read. */
+    getDefaultLandingPath(): string {
+        const fromMenu = firstReadableNavPath(ROUTES, id => this.canRead(id));
+        if (fromMenu) return fromMenu;
+
+        for (const p of this.permsList) {
+            if (!p?.read) continue;
+            const route = this.normalizeRoute(p.formRoute ?? p.FormRoute ?? p.route ?? p.Route);
+            if (route) return route;
+        }
+
+        return '/pages/error';
+    }
 
     // getAccessLevelId(formId: number | string): number | null {
     //     const rp = this.permsByForm.get(String(formId));

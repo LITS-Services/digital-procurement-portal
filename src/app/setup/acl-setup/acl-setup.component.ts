@@ -92,12 +92,15 @@ export class AclSetupComponent implements OnInit {
   fetchRoles() {
     this.lookupService.getProcurementRoles().subscribe({
       next: roles => {
-        this.roles = roles || [];
-
-        const superAdmin = this.roles.find(r =>
-          r.description?.toLowerCase() === 'super admin'
-        );
+        const allRoles = roles || [];
+        const superAdmin = allRoles.find(r => this.isSuperAdminRole(r));
         this.superAdminRoleId = superAdmin?.stringId ?? null;
+        this.roles = allRoles.filter(r => !this.isSuperAdminRole(r));
+
+        if (this.selectedRoleId && this.superAdminRoleId &&
+            String(this.selectedRoleId) === String(this.superAdminRoleId)) {
+          this.selectedRoleId = null;
+        }
 
         if (!this.selectedRoleId && this.roles.length) {
           this.selectedRoleId = this.roles[0].stringId;
@@ -108,9 +111,14 @@ export class AclSetupComponent implements OnInit {
     });
   }
 
+  private isSuperAdminRole(role: any): boolean {
+    const name = (role?.description ?? role?.name ?? '').toString().trim().toLowerCase();
+    return name === 'super admin' || name === 'superadmin';
+  }
+
   get isSuperAdmin(): boolean {
     return !!this.superAdminRoleId &&
-      this.selectedRoleId === this.superAdminRoleId;
+      String(this.selectedRoleId) === String(this.superAdminRoleId);
   }
 
   onSelectRole(roleStringId: string) {
@@ -237,6 +245,8 @@ export class AclSetupComponent implements OnInit {
         delete: row.delete,
       }
     };
-    this.aclService.submitPermissions(payload).subscribe();
+    this.aclService.submitPermissions(payload).subscribe({
+      next: () => this.permissionService.refreshForCurrentUser$().subscribe()
+    });
   }
 }

@@ -1,0 +1,106 @@
+<section>
+  <div class="row">
+    <div class="col-12">
+
+      <div class="row">
+        <div class="col-md-12" style="margin-top: -0.25rem;">
+          <h4 class="heading">Super ACL</h4>
+        </div>
+      </div>
+
+      <div class="card cstm-ui-card">
+        <div class="row">
+          <div class="col-md-6">
+            <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+              <i class="ft-arrow-left"></i>
+            </button>
+            <span class="vl"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card cstm-ui-card mb-2 p-2">
+        <div class="d-flex flex-wrap align-items-center gap-1">
+          <button type="button" class="role-trigger mr-1"
+            [ngClass]="{ 'role-active': statusFilter === '' }"
+            (click)="setStatusFilter('')">
+            All
+          </button>
+          <button type="button" class="role-trigger mr-1"
+            [ngClass]="{ 'role-active': statusFilter === 'active' }"
+            (click)="setStatusFilter('active')">
+            Active
+          </button>
+          <button type="button" class="role-trigger mr-1"
+            [ngClass]="{ 'role-active': statusFilter === 'inactive' }"
+            (click)="setStatusFilter('inactive')">
+            Inactive
+          </button>
+
+          <div class="super-acl-search ml-auto">
+            <i class="fa fa-search"></i>
+            <input type="text"
+              [(ngModel)]="search"
+              (ngModelChange)="onSearchChange()"
+              placeholder="Search form or route" />
+          </div>
+        </div>
+      </div>
+
+      <div class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
+        <div class="finalized-alert">
+          <div class="alert-icon">
+            <i class="fa fa-lock"></i>
+          </div>
+          <div class="alert-text">
+            <p>Deactivated forms are hidden from normal ACL and from menus until you activate them again.</p>
+          </div>
+        </div>
+
+        <ngx-datatable #datatable class="bootstrap core-bootstrap"
+          [rows]="formList"
+          [columns]="[]"
+          [columnMode]="'force'"
+          [headerHeight]="50"
+          [footerHeight]="50"
+          [rowHeight]="50"
+          [limit]="10"
+          [scrollbarH]="isMobile">
+
+          <ngx-datatable-column name="Form" prop="name" [flexGrow]="2" [minWidth]="220" [sortable]="false">
+            <ng-template ngx-datatable-cell-template let-row="row">
+              <div class="super-acl-form-name">{{ row.name }}</div>
+            </ng-template>
+          </ngx-datatable-column>
+
+          <ngx-datatable-column name="Path" prop="route" [flexGrow]="2" [minWidth]="240" [sortable]="false">
+            <ng-template ngx-datatable-cell-template let-row="row">
+              <div class="super-acl-form-route">{{ row.route }}</div>
+            </ng-template>
+          </ngx-datatable-column>
+
+          <ngx-datatable-column name="Active" prop="isActive" [flexGrow]="1" [minWidth]="120" [sortable]="false">
+            <ng-template ngx-datatable-cell-template let-row="row">
+              <label class="toggle-switch" (click)="$event.stopPropagation()">
+                <input type="checkbox"
+                  [checked]="row.isActive"
+                  [disabled]="isSaving(row)"
+                  (change)="toggleActive(row)" />
+                <span class="toggle-slider"></span>
+              </label>
+            </ng-template>
+          </ngx-datatable-column>
+
+          <ngx-datatable-column name="Status" prop="isActive" [flexGrow]="1" [minWidth]="120" [sortable]="false">
+            <ng-template ngx-datatable-cell-template let-row="row">
+              <span class="status-chip" [class.status-active]="row.isActive" [class.status-inactive]="!row.isActive">
+                {{ isSaving(row) ? 'Saving...' : (row.isActive ? 'Active' : 'Inactive') }}
+              </span>
+            </ng-template>
+          </ngx-datatable-column>
+
+        </ngx-datatable>
+      </div>
+    </div>
+  </div>
+</section>

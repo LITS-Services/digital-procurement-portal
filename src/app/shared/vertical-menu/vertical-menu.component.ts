@@ -106,6 +106,10 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
+  get landingPath(): string[] {
+    return [this.permissionService.getDefaultLandingPath()];
+  }
+
   navigateFromMiniMenu(item: any, dd: any) {
     dd?.close();
 
@@ -204,7 +208,8 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   private loadMenuItems() {
     this.menuItems = filterNavByPerm(
       ROUTES,
-      this.permissionService.canRead.bind(this.permissionService)
+      this.permissionService.canRead.bind(this.permissionService),
+      (roles) => roles.some(role => this.authService.hasRole(role))
     );
   }
 

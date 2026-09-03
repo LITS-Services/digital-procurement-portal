@@ -7,7 +7,9 @@ import { EmailTemplateListComponent } from './email-template-list/email-template
 import { VendorOnboardingSetupComponent } from './vendor-onboarding-setup/vendor-onboarding-setup.component';
 import { NewVendorOnboardingComponent } from './new-vendor-onboarding/new-vendor-onboarding.component';
 import { AclSetupComponent } from './acl-setup/acl-setup.component';
+import { SuperAclSetupComponent } from './super-acl-setup/super-acl-setup.component';
 import { AclGuard } from 'app/shared/permissions/acl.guard';
+import { AuthGuard } from 'app/shared/auth/auth-guard.service';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { CreateEmailTemplateComponent } from './create-email-template/create-email-template.component';
 import { BulkVendorOnboardingComponent } from './bulk-vendor-onboarding/bulk-vendor-onboarding.component';
@@ -109,12 +111,21 @@ const routes: Routes = [
         }
       },
       {
+        path: 'super-acl',
+        component: SuperAclSetupComponent,
+        canActivate: [AuthGuard],
+        data: {
+          title: 'Super ACL',
+          role: 'Super Admin',
+        }
+      },
+      {
         path: 'turnstile',
         component: TurnstileSetupComponent,
         canActivate: [AclGuard],
         data: {
           title: 'Turnstile',
-          formTypeId: FORM_IDS.ACL,
+          formTypeId: FORM_IDS.TURNSTILE,
           action: 'read',
         }
       },

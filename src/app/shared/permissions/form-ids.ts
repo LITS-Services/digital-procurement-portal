@@ -14,5 +14,7 @@ export const FORM_IDS = {
     EMAIL_TEMPLATE_LIST: 14,
     BULK_COMPANY_ONBOARDING: 15,
     INVENTORY_TRANSFER: 16,
-    INTEGRATION_MANAGER: 17
+    INTEGRATION_MANAGER: 17,
+    DASHBOARD: '/dashboard/dashboard1',
+    TURNSTILE: '/setup/turnstile'
 } as const;

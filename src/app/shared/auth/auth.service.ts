@@ -114,7 +114,7 @@ export class AuthService {
     return this.http.get<any[]>(`${environment.apiUrl}/Auth/get-email-logs`, HTTP_CREDENTIALS);
   }
 
-  initiateSSOLogin(returnUrl: string = '/dashboard/dashboard1'): Observable<any> {
+  initiateSSOLogin(returnUrl: string = '/'): Observable<any> {
     return this.http.get(`${this.baseUrl}/Auth/procurement-sso/login-url?returnUrl=${encodeURIComponent(returnUrl)}`, HTTP_CREDENTIALS);
   }
 
@@ -424,7 +424,7 @@ export class AuthService {
   }
 }
 
-const FORM_PREFIX_TO_ID: Record<string, number> = {
+const FORM_PREFIX_TO_ID: Record<string, number | string> = {
   'purchase-request': 1,
   'rfq': 2,
   'purchase-order': 3,
@@ -441,6 +441,8 @@ const FORM_PREFIX_TO_ID: Record<string, number> = {
   'bulk-company-onboarding': 15,
   'inventory-transfer': 16,
   'integration-manager': 17,
+  'dashboard': '/dashboard/dashboard1',
+  'turnstile': '/setup/turnstile',
   'security-audit': 9,
 };
 

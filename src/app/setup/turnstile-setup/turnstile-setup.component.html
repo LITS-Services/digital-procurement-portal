@@ -33,7 +33,7 @@
                 (ngModelChange)="onToggleProcurement($event)"
                 [disabled]="loading || saving"
                 appPermission
-                [appPermFormId]="FORM_IDS.ACL"
+                [appPermFormId]="FORM_IDS.TURNSTILE"
                 [appPermDisable]="'write'" />
               <span>Enable captcha on Procurement login</span>
             </label>
@@ -46,7 +46,7 @@
                 (ngModelChange)="onToggleVendor($event)"
                 [disabled]="loading || saving"
                 appPermission
-                [appPermFormId]="FORM_IDS.ACL"
+                [appPermFormId]="FORM_IDS.TURNSTILE"
                 [appPermDisable]="'write'" />
               <span>Enable captcha on Vendor login</span>
             </label>

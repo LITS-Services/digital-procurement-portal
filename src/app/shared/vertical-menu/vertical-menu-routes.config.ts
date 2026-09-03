@@ -1,11 +1,11 @@
-import { AclGuard } from '../permissions/acl.guard';
 import { FORM_IDS } from '../permissions/form-ids';
 import { RouteInfo } from './vertical-menu.metadata';
 
 // Sidebar menu Routes and data
 export const ROUTES: RouteInfo[] = [
   {
-    path: '/dashboard/dashboard1', title: 'Dashboard', icon: 'ft-grid', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: []
+    path: '/dashboard/dashboard1', title: 'Dashboard', icon: 'ft-grid', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+    formTypeId: FORM_IDS.DASHBOARD
   },
   {
     path: '/purchase-request', title: 'Purchase Request', icon: 'ft-file-plus', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
@@ -72,8 +72,12 @@ export const ROUTES: RouteInfo[] = [
         formTypeId: FORM_IDS.ACL
       },
       {
+        path: '/setup/super-acl', title: 'Super ACL', icon: 'fa fa-unlock-alt submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        roles: ['Super Admin']
+      },
+      {
         path: '/setup/turnstile', title: 'Turnstile', icon: 'fa fa-lock submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
-        formTypeId: FORM_IDS.ACL
+        formTypeId: FORM_IDS.TURNSTILE
       },
       {
         path: '/setup/workflow', title: 'Workflow Setup', icon: 'ft-git-pull-request submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],

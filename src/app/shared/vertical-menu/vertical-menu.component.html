@@ -3,7 +3,7 @@
   <div class="logo clearfix">
     <a class="logo-text float-left">
       <div class="logo-img">
-        <img [routerLink]="['/dashboard/dashboard1']"
+        <img [routerLink]="landingPath"
           [src]="config?.layout?.sidebar?.collapsed ? logoUrl : expandedLogoUrl"
           class="sidebar-logo" />
       </div>
@@ -30,9 +30,9 @@
 
       <!-- First level menu -->
       <li appSidebarlink *ngFor="let menuItem of menuItems; let i = index" [parent]="menuItem.title"
-        [path]="menuItem.path" level="{{ level + 1 }}" [hasSub]="menuItem.class.includes('has-sub')"
-        [ngClass]="{ 'has-sub': menuItem.class.includes('has-sub') }"
-        [routerLinkActive]="menuItem.submenu.length != 0 ? 'open' : 'active'"
+        [path]="menuItem.path" level="{{ level + 1 }}" [hasSub]="menuItem.submenu?.length > 0"
+        [ngClass]="{ 'has-sub': menuItem.submenu?.length > 0 }"
+        [routerLinkActive]="menuItem.submenu?.length ? 'open' : 'active'"
         [routerLinkActiveOptions]="{ exact: false }">
 
         <!-- ======================= -->

@@ -26,6 +26,7 @@ import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-r
 import { VendorOnboardingSetupComponent } from './vendor-onboarding-setup/vendor-onboarding-setup.component';
 import { NewVendorOnboardingComponent } from './new-vendor-onboarding/new-vendor-onboarding.component';
 import { AclSetupComponent } from './acl-setup/acl-setup.component';
+import { SuperAclSetupComponent } from './super-acl-setup/super-acl-setup.component';
 import { VendorOnboardingReceiversComponent } from './vendor-onboarding-receivers/vendor-onboarding-receivers.component';
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
 import { CreateEmailTemplateComponent } from './create-email-template/create-email-template.component';
@@ -48,6 +49,7 @@ import { TurnstileSetupComponent } from './turnstile-setup/turnstile-setup.compo
     VendorOnboardingSetupComponent,
     NewVendorOnboardingComponent,
     AclSetupComponent,
+    SuperAclSetupComponent,
     VendorOnboardingReceiversComponent,
     BulkVendorOnboardingComponent,
     IntegrationManagerListComponent,
