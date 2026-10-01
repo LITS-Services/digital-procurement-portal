@@ -16,5 +16,6 @@ export const FORM_IDS = {
     INVENTORY_TRANSFER: 16,
     INTEGRATION_MANAGER: 17,
     DASHBOARD: '/dashboard/dashboard1',
-    TURNSTILE: '/setup/turnstile'
+    TURNSTILE: '/setup/turnstile',
+    DATA_SOURCE: 20
 } as const;

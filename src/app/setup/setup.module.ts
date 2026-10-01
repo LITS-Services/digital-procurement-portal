@@ -35,6 +35,7 @@ import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-au
 import { IntegrationManagerListComponent } from './integration-manager-list/integration-manager-list.component';
 import { IntegrationManagerFormComponent } from './integration-manager-form/integration-manager-form.component';
 import { TurnstileSetupComponent } from './turnstile-setup/turnstile-setup.component';
+import { DataSourceSetupComponent } from './data-source-setup/data-source-setup.component';
 
 
 
@@ -55,6 +56,7 @@ import { TurnstileSetupComponent } from './turnstile-setup/turnstile-setup.compo
     IntegrationManagerListComponent,
     IntegrationManagerFormComponent,
     TurnstileSetupComponent,
+    DataSourceSetupComponent,
   ],
   imports: [
     CommonModule,

@@ -202,34 +202,11 @@ export class AclSetupComponent implements OnInit {
     }
 
     this.aclList = [...this.aclList];
+    this.cdr.detectChanges();
 
     // Submit the updated permission
     this.submitPermission(row);
   }
-
-  // onReadChange(row: any, e: any) {
-  //   row.read = e.target.checked;
-  //   if (!row.read) {
-  //     row.write = false;
-  //     row.delete = false;
-  //   }
-  //   this.submitPermission(row);
-  // }
-
-  // onWriteChange(row: any, e: any) {
-  //   row.write = e.target.checked;
-  //   if (row.write) row.read = true;
-  //   this.submitPermission(row);
-  // }
-
-  // onDeleteChange(row: any, e: any) {
-  //   row.delete = e.target.checked;
-  //   if (row.delete) {
-  //     row.read = true;
-  //     row.write = true;
-  //   }
-  //   this.submitPermission(row);
-  // }
 
   submitPermission(row: any) {
     if (this.isSuperAdmin) return;
@@ -246,7 +223,10 @@ export class AclSetupComponent implements OnInit {
       }
     };
     this.aclService.submitPermissions(payload).subscribe({
-      next: () => this.permissionService.refreshForCurrentUser$().subscribe()
+      next: () => this.permissionService.refreshForCurrentUser$().subscribe(),
+      error: () => {
+        this.toastr.error('Failed to update permission.');
+      }
     });
   }
 }

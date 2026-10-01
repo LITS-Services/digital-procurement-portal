@@ -43,6 +43,7 @@ import { environment } from '../environments/environment';
 import { AngularFireMessagingModule } from '@angular/fire/compat/messaging';
 import { permissionInitializer } from "./shared/permissions/permission.init";
 import { PermissionService } from "./shared/permissions/permission.service";
+import { DataSourceService } from "./shared/services/data-source.service";
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
@@ -102,7 +103,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     {
       provide: APP_INITIALIZER,
       useFactory: permissionInitializer,
-      deps: [PermissionService, AuthService],
+      deps: [PermissionService, AuthService, DataSourceService],
       multi: true
     },
     WINDOW_PROVIDERS

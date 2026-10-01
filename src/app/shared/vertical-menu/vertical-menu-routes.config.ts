@@ -80,6 +80,10 @@ export const ROUTES: RouteInfo[] = [
         formTypeId: FORM_IDS.TURNSTILE
       },
       {
+        path: '/setup/data-source', title: 'Data Source', icon: 'fa fa-database submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        formTypeId: FORM_IDS.DATA_SOURCE
+      },
+      {
         path: '/setup/workflow', title: 'Workflow Setup', icon: 'ft-git-pull-request submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         formTypeId: FORM_IDS.WORKFLOW_SETUP
       },

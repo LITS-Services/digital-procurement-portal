@@ -1,6 +1,6 @@
 import {
   Component, OnInit, ViewChild, OnDestroy,
-  ElementRef, AfterViewInit, ChangeDetectorRef, HostListener
+  ElementRef, AfterViewInit, ChangeDetectorRef, HostListener, NgZone
 } from "@angular/core";
 import { ROUTES } from './vertical-menu-routes.config';
 import { HROUTES } from '../horizontal-menu/navigation-routes.config';
@@ -34,6 +34,7 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   protected innerWidth: any;
   layoutSub: Subscription;
   configSub: Subscription;
+  permSub: Subscription;
   perfectScrollbarEnable = true;
   collapseSidebar = false;
   resizeTimeout;
@@ -46,19 +47,23 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private deviceService: DeviceDetectorService,
     private authService: AuthService,
-    private permissionService: PermissionService
+    private permissionService: PermissionService,
+    private ngZone: NgZone
   ) {
     this.config = this.configService.templateConf;
     this.innerWidth = window.innerWidth;
     this.isTouchDevice();
   }
 
-  // ngOnInit() {
-  //   this.loadMenuItems();
-  // }
   ngOnInit() {
-    this.permissionService.permsSubject.subscribe(() => {
-      this.loadMenuItems();
+    this.permSub = this.permissionService.permsSubject.subscribe(() => {
+      this.ngZone.run(() => {
+        this.loadMenuItems();
+        this.cdr.markForCheck();
+        if (!(this.cdr as any).destroyed) {
+          this.cdr.detectChanges();
+        }
+      });
     });
 
     // Initial load
@@ -189,6 +194,7 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     if (this.layoutSub) this.layoutSub.unsubscribe();
     if (this.configSub) this.configSub.unsubscribe();
+    if (this.permSub) this.permSub.unsubscribe();
   }
 
   // ===== Role-based Menu Filtering =====
@@ -211,6 +217,7 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
       this.permissionService.canRead.bind(this.permissionService),
       (roles) => roles.some(role => this.authService.hasRole(role))
     );
+    this.cdr.markForCheck();
   }
 
 

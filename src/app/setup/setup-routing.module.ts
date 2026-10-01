@@ -16,6 +16,7 @@ import { BulkVendorOnboardingComponent } from './bulk-vendor-onboarding/bulk-ven
 import { IntegrationManagerListComponent } from './integration-manager-list/integration-manager-list.component';
 import { IntegrationManagerFormComponent } from './integration-manager-form/integration-manager-form.component';
 import { TurnstileSetupComponent } from './turnstile-setup/turnstile-setup.component';
+import { DataSourceSetupComponent } from './data-source-setup/data-source-setup.component';
 
 const routes: Routes = [
 
@@ -126,6 +127,16 @@ const routes: Routes = [
         data: {
           title: 'Turnstile',
           formTypeId: FORM_IDS.TURNSTILE,
+          action: 'read',
+        }
+      },
+      {
+        path: 'data-source',
+        component: DataSourceSetupComponent,
+        canActivate: [AclGuard],
+        data: {
+          title: 'Data Source',
+          formTypeId: FORM_IDS.DATA_SOURCE,
           action: 'read',
         }
       },

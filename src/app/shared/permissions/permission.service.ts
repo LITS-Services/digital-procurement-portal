@@ -6,6 +6,8 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { ROUTES } from '../vertical-menu/vertical-menu-routes.config';
 import { firstReadableNavPath } from './nav-perm';
 
+import { DataSourceService } from '../services/data-source.service';
+
 type Action = 'read' | 'write' | 'delete';
 
 @Injectable({
@@ -14,7 +16,10 @@ type Action = 'read' | 'write' | 'delete';
 
 export class PermissionService {
 
-    constructor(private _httpClient: HttpClient) {
+    constructor(
+        private _httpClient: HttpClient,
+        private dataSource: DataSourceService
+    ) {
         try {
             const stored = JSON.parse(localStorage.getItem('auth') || '{}')?.rolePermissions;
             if (Array.isArray(stored) && stored.length) {
@@ -96,7 +101,27 @@ export class PermissionService {
             );
     }
 
+    isSuperAdmin(): boolean {
+        try {
+            const roles = JSON.parse(localStorage.getItem('roles') || '[]');
+            if (Array.isArray(roles) && roles.includes('Super Admin')) {
+                return true;
+            }
+        } catch {
+            /* ignore invalid json */
+        }
+        return false;
+    }
+
     can(formId: number | string, action: Action): boolean {
+        if (action !== 'read' && !this.dataSource.allowsCreate(formId)) {
+            return false;
+        }
+
+        if (this.isSuperAdmin()) {
+            return true;
+        }
+
         const rp = this.permsByForm.get(String(formId))
             ?? this.permsByForm.get(this.normalizeRoute(formId));
 
