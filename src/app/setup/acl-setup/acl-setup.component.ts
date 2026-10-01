@@ -25,6 +25,8 @@ export class AclSetupComponent implements OnInit {
   chkBoxSelected: any[] = [];
   idsToDelete: number[] = [];
   aclList: any[] = [];
+  allAclList: any[] = [];
+  search: string = '';
   aclData: any[] = [];
   columns: any[] = [];
   roles: any[] = [];
@@ -166,10 +168,27 @@ export class AclSetupComponent implements OnInit {
             };
           });
 
-          this.aclList = [...rows];
-          this.cdr.detectChanges();
+          this.allAclList = [...rows];
+          this.applyFilter();
         }
       });
+  }
+
+  onSearchChange(): void {
+    this.applyFilter();
+  }
+
+  applyFilter(): void {
+    const term = this.search.trim().toLowerCase();
+    if (!term) {
+      this.aclList = [...this.allAclList];
+    } else {
+      this.aclList = this.allAclList.filter(row =>
+        (row.formName || '').toLowerCase().includes(term) ||
+        (row.route || '').toLowerCase().includes(term)
+      );
+    }
+    this.cdr.detectChanges();
   }
 
   togglePermission(row: any, prop: string) {

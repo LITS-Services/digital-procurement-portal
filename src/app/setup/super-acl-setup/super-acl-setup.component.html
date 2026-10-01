@@ -19,25 +19,27 @@
         </div>
       </div>
 
-      <div class="card cstm-ui-card mb-2 p-2">
-        <div class="d-flex flex-wrap align-items-center gap-1">
-          <button type="button" class="role-trigger mr-1"
-            [ngClass]="{ 'role-active': statusFilter === '' }"
-            (click)="setStatusFilter('')">
-            All
-          </button>
-          <button type="button" class="role-trigger mr-1"
-            [ngClass]="{ 'role-active': statusFilter === 'active' }"
-            (click)="setStatusFilter('active')">
-            Active
-          </button>
-          <button type="button" class="role-trigger mr-1"
-            [ngClass]="{ 'role-active': statusFilter === 'inactive' }"
-            (click)="setStatusFilter('inactive')">
-            Inactive
-          </button>
+      <div class="card cstm-ui-card super-acl-toolbar-card mb-2">
+        <div class="d-flex flex-wrap align-items-center justify-content-between w-100 toolbar-row">
+          <div class="d-flex align-items-center flex-wrap role-group">
+            <button type="button" class="role-trigger"
+              [ngClass]="{ 'role-active': statusFilter === '' }"
+              (click)="setStatusFilter('')">
+              All
+            </button>
+            <button type="button" class="role-trigger"
+              [ngClass]="{ 'role-active': statusFilter === 'active' }"
+              (click)="setStatusFilter('active')">
+              Active
+            </button>
+            <button type="button" class="role-trigger"
+              [ngClass]="{ 'role-active': statusFilter === 'inactive' }"
+              (click)="setStatusFilter('inactive')">
+              Inactive
+            </button>
+          </div>
 
-          <div class="super-acl-search ml-auto">
+          <div class="super-acl-search">
             <i class="fa fa-search"></i>
             <input type="text"
               [(ngModel)]="search"

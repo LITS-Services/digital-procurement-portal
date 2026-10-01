@@ -1,5 +1,17 @@
+.super-acl-toolbar-card {
+  padding: 10px 18px !important;
+}
+
+.toolbar-row {
+  gap: 10px;
+}
+
+.role-group {
+  gap: 8px;
+}
+
 .role-trigger {
-  margin-left: 6px;
+  margin: 0;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -12,22 +24,25 @@
   font-size: 13px;
   font-weight: 500;
   color: #374151;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
 
 .role-trigger:hover {
   border-color: #60a5fa;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .role-active {
   background: #eff6ff !important;
   color: #2563eb !important;
   border-color: #bfdbfe !important;
+  box-shadow: inset 0 0 0 1px #bfdbfe;
 }
 
 .super-acl-search {
   position: relative;
-  min-width: 220px;
-  margin: 4px 6px;
+  min-width: 240px;
+  margin: 0 0 0 auto;
 
   i {
     position: absolute;
@@ -48,6 +63,13 @@
     font-size: 13px;
     color: #374151;
     background: #fff;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+    }
   }
 }
 
