@@ -36,7 +36,7 @@ License: You must have a valid license purchased only from themeforest(the above
     rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="assets/vendor/pace/themes/black/pace-theme-flash.css" />
   <!-- Google Maps API - Required for @angular/google-maps -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCERobClkCv1U4mDijGm1FShKva_nxsGJY"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCERobClkCv1U4mDijGm1FShKva_nxsGJY&loading=async" async defer></script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
   <style type="text/css">
     body {
@@ -48,42 +48,11 @@ License: You must have a valid license purchased only from themeforest(the above
       right: 19px;
       display: none;
     }
-
-    .page-loading {
-      position: fixed;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      right: 0;
-      overflow: hidden;
-      background: rgba(51, 51, 51, 1.00);
-      opacity: 0;
-      transition: opacity 1s ease-in-out;
-      z-index: -1;
-    }
-
-    .loading-icon {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 38px;
-      height: 38px;
-      margin-left: -19px;
-      margin-top: -19px;
-    }
-
-    app-root:empty~.page-loading {
-      opacity: 1;
-      z-index: 1;
-    }
   </style>
 </head>
 
 <body>
   <app-root></app-root>
-  <div class="page-loading">
-    <img src="assets/img/oval.svg" class="loading-icon" />
-  </div>
 </body>
 
 </html>
