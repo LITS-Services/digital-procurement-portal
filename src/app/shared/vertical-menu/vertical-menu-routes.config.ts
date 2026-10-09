@@ -107,7 +107,14 @@ export const ROUTES: RouteInfo[] = [
         path: '/setup/integration-manager', title: 'Integrations', icon: 'fa fa-link submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         formTypeId: FORM_IDS.INTEGRATION_MANAGER
       },
-
+      {
+        path: '/setup/department', title: 'Department', icon: 'fa fa-sitemap submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        formTypeId: FORM_IDS.ACL // Assuming same permission structure for now
+      },
+      {
+        path: '/setup/project', title: 'Project', icon: 'fa fa-project-diagram submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        formTypeId: FORM_IDS.ACL
+      },
     ],
   },
 

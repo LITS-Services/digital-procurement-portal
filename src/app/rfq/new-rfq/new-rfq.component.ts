@@ -327,7 +327,10 @@ export class NewRfqComponent implements OnInit {
       this.loadItemsForSelectedEntity();
     };
 
-    if (!this.entities?.length && userId) {
+    // If viewing existing RFQ and user doesn't have entities loaded, or RFQ entity not in user's list
+    if (rfqEntityId && (!this.entities?.length || !this.entities.some(e => e.id === rfqEntityId))) {
+      this.loadEntityDirectlyById(rfqEntityId, () => setUI());
+    } else if (!this.entities?.length && userId) {
       this.loadEntitiesForUser(userId, () => setUI());
     } else {
       setUI();
@@ -386,6 +389,33 @@ export class NewRfqComponent implements OnInit {
         after?.();
       },
       error: (err) => console.error('Error fetching entities:', err),
+    });
+  }
+
+  /**
+   * Load a specific entity by ID, bypassing user-entity linkage.
+   * Used when approver needs to view RFQ with entity they're not linked to.
+   */
+  private loadEntityDirectlyById(entityId: number, after?: () => void): void {
+    this.companyService.getProcurementCompanyById(entityId).subscribe({
+      next: (res) => {
+        const entity = {
+          id: res.id ?? entityId,
+          description: res.description ?? res.name ?? '',
+          stringId: res.companyGUID ?? res.companyGuid ?? null
+        };
+
+        // Add to entities list if not already present
+        if (!this.entities.some(e => e.id === entity.id)) {
+          this.entities = [...this.entities, entity];
+        }
+        
+        after?.();
+      },
+      error: (err) => {
+        console.error('Error fetching entity by ID:', err);
+        after?.();
+      }
     });
   }
 

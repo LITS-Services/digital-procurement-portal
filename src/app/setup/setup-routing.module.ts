@@ -17,6 +17,8 @@ import { IntegrationManagerListComponent } from './integration-manager-list/inte
 import { IntegrationManagerFormComponent } from './integration-manager-form/integration-manager-form.component';
 import { TurnstileSetupComponent } from './turnstile-setup/turnstile-setup.component';
 import { DataSourceSetupComponent } from './data-source-setup/data-source-setup.component';
+import { DepartmentSetup } from './department-setup/department-setup';
+import { ProjectSetup } from './project-setup/project-setup';
 
 const routes: Routes = [
 
@@ -158,6 +160,22 @@ const routes: Routes = [
           title: 'Integration Form',
           formTypeId: FORM_IDS.INTEGRATION_MANAGER,
           action: 'read'
+        }
+      },
+      {
+        path: 'department',
+        component: DepartmentSetup,
+        canActivate: [AuthGuard],
+        data: {
+          title: 'Department Setup'
+        }
+      },
+      {
+        path: 'project',
+        component: ProjectSetup,
+        canActivate: [AuthGuard],
+        data: {
+          title: 'Project Setup'
         }
       },
     ]
