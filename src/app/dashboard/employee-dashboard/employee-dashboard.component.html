@@ -177,9 +177,11 @@
                 <i class="ft ft-file-text font-large-2 text-muted mb-2 d-block"></i>
                 <h5 class="text-dark font-weight-medium mb-1">No purchase requests found</h5>
                 <p class="small text-muted mb-3">You haven't submitted any purchase requests yet.</p>
-                <button *ngIf="canCreatePR" class="btn btn-primary btn-sm" (click)="createNewPurchaseRequest()">
-                  <i class="ft ft-plus mr-1"></i> Create First Request
-                </button>
+                <div class="d-flex justify-content-center">
+                  <button *ngIf="canCreatePR" class="btn btn-primary btn-sm d-inline-flex align-items-center" (click)="createNewPurchaseRequest()">
+                    <i class="ft ft-plus mr-1"></i> Create First Request
+                  </button>
+                </div>
               </div>
 
               <!-- Table -->
@@ -276,17 +278,6 @@
                 </div>
               </div>
 
-              <!-- Quick Action Button -->
-              <div class="mt-4 pt-2 border-top">
-                <button *ngIf="canCreatePR" class="shortcut-btn btn w-100 text-left d-flex align-items-center justify-content-between mb-2" (click)="createNewPurchaseRequest()">
-                  <span><i class="ft ft-plus-circle mr-2 text-primary"></i> Create Purchase Request</span>
-                  <i class="ft ft-arrow-right text-muted"></i>
-                </button>
-                <button class="shortcut-btn btn w-100 text-left d-flex align-items-center justify-content-between" (click)="goToPurchaseRequests()">
-                  <span><i class="ft ft-list mr-2 text-primary"></i> View All Requests</span>
-                  <i class="ft ft-arrow-right text-muted"></i>
-                </button>
-              </div>
             </div>
           </div>
         </div>
