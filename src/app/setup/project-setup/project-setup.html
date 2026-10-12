@@ -1,0 +1,132 @@
+<section>
+  <div class="row">
+    <div class="col-12">
+      <div class="row">
+        <div class="col-md-12" style="margin-top: -0.25rem;">
+          <h4 class="heading">Project Setup</h4>
+        </div>
+      </div>
+
+      <div class="card cstm-ui-card">
+        <div>
+          <div class="d-flex justify-content-between align-items-center cstm-action-bar">
+            <div>
+              <button class="btn btn-lg mr-1" type="button" routerLink="/dashboard/dashboard1">
+                <i class="ft-arrow-left"></i>
+              </button>
+              <span class="vl"></span>
+
+              <button type="button" class="btn btn-sm cstm-ui-table-btn ml-2" (click)="openModal(formModal)">
+                <i class="ft-plus"></i>
+                <label class="ml-1">Create Project</label>
+              </button>
+
+              <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="deleteSelected()"
+                [disabled]="!selected.length">
+                <i class="ft-trash-2"></i>
+                <label class="ml-1">Delete</label>
+              </button> -->
+
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="editSelected(formModal)"
+                [disabled]="selected.length !== 1">
+                <i class="ft-edit"></i>
+                <label class="ml-1">Edit</label>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ngx-datatable class="bootstrap core-bootstrap" [rows]="projects" [columnMode]="'force'"
+        [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="pageSize"
+        [externalPaging]="true" [count]="totalItems" [offset]="currentPage - 1" (page)="onPageChange($event)"
+        [selected]="selected" [selectionType]="SelectionType.checkbox" (select)="onSelect($event)">
+        
+        <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
+          <ng-template ngx-datatable-cell-template let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
+            <div class="custom-control custom-checkbox cstm-checkbox-form">
+              <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        
+        <ngx-datatable-column name="Name" prop="name"></ngx-datatable-column>
+        <ngx-datatable-column name="Department Name" prop="departmentName"></ngx-datatable-column>
+        <ngx-datatable-column name="Activity Count" prop="activityCount"></ngx-datatable-column>
+        <ngx-datatable-column name="Description" prop="description"></ngx-datatable-column>
+      </ngx-datatable>
+    </div>
+  </div>
+
+  <ng-template #formModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title text-white">{{ isEdit ? 'Edit' : 'Create' }} Project</h5>
+      <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+      <form [formGroup]="projectForm">
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label>Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="name">
+          </div>
+          <div class="form-group col-md-6">
+            <label>Department <span class="text-danger">*</span></label>
+            <ng-select [items]="departments" bindLabel="name" bindValue="id" formControlName="departmentId">
+            </ng-select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea class="form-control" formControlName="description" rows="2"></textarea>
+        </div>
+
+        <div class="mt-4">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6>Project Activities</h6>
+            <button type="button" class="btn btn-sm btn-outline-primary" (click)="addActivity()">
+              <i class="ft-plus"></i> Add Activity
+            </button>
+          </div>
+          
+          <div formArrayName="projectActivities">
+            <div class="table-responsive">
+              <table class="table table-bordered table-sm">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Budget</th>
+                    <th>Allowed %</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let activity of activities.controls; let i=index" [formGroupName]="i">
+                    <td><input type="text" class="form-control form-control-sm" formControlName="name"></td>
+                    <td><input type="text" class="form-control form-control-sm" formControlName="description"></td>
+                    <td><input type="number" class="form-control form-control-sm" formControlName="budgetAmount"></td>
+                    <td><input type="number" class="form-control form-control-sm" formControlName="allowedPercentage"></td>
+                    <td class="text-center">
+                      <button type="button" class="btn btn-sm btn-danger" (click)="removeActivity(i)">
+                        <i class="ft-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="activities.length === 0">
+                    <td colspan="5" class="text-center">No activities added.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
+      <button type="button" class="btn btn-primary" (click)="save(modal)" [disabled]="projectForm.invalid">Save</button>
+    </div>
+  </ng-template>
+</section>

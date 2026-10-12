@@ -513,7 +513,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     this.applyEntity(null);
   }
 
-  private applyEntity(prId: number | null): void {
+  private applyEntity(prId: number | null, prEntityId?: number | null): void {
     const ctrl = this.newPurchaseRequestForm.get('entityId');
     if (!ctrl) return;
 
@@ -553,7 +553,10 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       this.loadDimensionsForSelectedEntity(false);
     };
 
-    if (!this.entities?.length && userId) {
+    // If viewing existing PR and user doesn't have entities loaded, or PR entity not in user's list
+    if (prEntityId && (!this.entities?.length || !this.entities.some(e => e.id === prEntityId))) {
+      this.loadEntityDirectlyById(prEntityId, () => setUI());
+    } else if (!this.entities?.length && userId) {
       this.loadEntitiesForUser(userId, () => setUI());
     } else {
       setUI();
@@ -571,6 +574,33 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         after?.();
       },
       error: (err) => console.error('Error fetching entities:', err),
+    });
+  }
+
+  /**
+   * Load a specific entity by ID, bypassing user-entity linkage.
+   * Used when approver needs to view PR with entity they're not linked to.
+   */
+  private loadEntityDirectlyById(entityId: number, after?: () => void): void {
+    this.companyService.getProcurementCompanyById(entityId).subscribe({
+      next: (res) => {
+        const entity = {
+          id: res.id ?? entityId,
+          description: res.description ?? res.name ?? '',
+          stringId: res.companyGUID ?? res.companyGuid ?? null
+        };
+
+        // Add to entities list if not already present
+        if (!this.entities.some(e => e.id === entity.id)) {
+          this.entities = [...this.entities, entity];
+        }
+        
+        after?.();
+      },
+      error: (err) => {
+        console.error('Error fetching entity by ID:', err);
+        after?.();
+      }
     });
   }
 
@@ -1660,7 +1690,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         this.showExceptionPolicyView = !!this.exceptionPolicyData && !!this.newPurchaseRequestForm.get('exceptionPolicy')?.value;
 
         const prEntityId = Number(requestData.entityId) || null;
-        this.applyEntity(prEntityId);
+        // Pass prEntityId twice: once as prId for control state, once for direct loading bypass
+        this.applyEntity(prEntityId, prEntityId);
 
         this.loading = false;
         this.spinner.hide();

@@ -1,0 +1,81 @@
+<section>
+  <div class="row">
+    <div class="col-12">
+      <div class="row">
+        <div class="col-md-12" style="margin-top: -0.25rem;">
+          <h4 class="heading">Department Setup</h4>
+        </div>
+      </div>
+
+      <div class="card cstm-ui-card">
+        <div>
+          <div class="d-flex justify-content-between align-items-center cstm-action-bar">
+            <div>
+              <button class="btn btn-lg mr-1" type="button" routerLink="/dashboard/dashboard1">
+                <i class="ft-arrow-left"></i>
+              </button>
+              <span class="vl"></span>
+
+              <button type="button" class="btn btn-sm cstm-ui-table-btn ml-2" (click)="openModal(formModal)">
+                <i class="ft-plus"></i>
+                <label class="ml-1">Create Department</label>
+              </button>
+
+              <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="deleteSelected()"
+                [disabled]="!selected.length">
+                <i class="ft-trash-2"></i>
+                <label class="ml-1">Delete</label>
+              </button> -->
+
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="editSelected(formModal)"
+                [disabled]="selected.length !== 1">
+                <i class="ft-edit"></i>
+                <label class="ml-1">Edit</label>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ngx-datatable class="bootstrap core-bootstrap" [rows]="departments" [columnMode]="'force'"
+        [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="pageSize"
+        [externalPaging]="true" [count]="totalItems" [offset]="currentPage - 1" (page)="onPageChange($event)"
+        [selected]="selected" [selectionType]="SelectionType.checkbox" (select)="onSelect($event)">
+        
+        <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
+          <ng-template ngx-datatable-cell-template let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
+            <div class="custom-control custom-checkbox cstm-checkbox-form">
+              <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
+        
+        <ngx-datatable-column name="Name" prop="name"></ngx-datatable-column>
+        <ngx-datatable-column name="Description" prop="description"></ngx-datatable-column>
+      </ngx-datatable>
+    </div>
+  </div>
+
+  <ng-template #formModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title text-white">{{ isEdit ? 'Edit' : 'Create' }} Department</h5>
+      <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="departmentForm">
+        <div class="form-group">
+          <label>Name <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" formControlName="name">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea class="form-control" formControlName="description"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
+      <button type="button" class="btn btn-primary" (click)="save(modal)" [disabled]="departmentForm.invalid">Save</button>
+    </div>
+  </ng-template>
+</section>
