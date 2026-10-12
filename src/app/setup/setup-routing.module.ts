@@ -135,11 +135,10 @@ const routes: Routes = [
       {
         path: 'data-source',
         component: DataSourceSetupComponent,
-        canActivate: [AclGuard],
+        canActivate: [AuthGuard],
         data: {
           title: 'Data Source',
-          formTypeId: FORM_IDS.DATA_SOURCE,
-          action: 'read',
+          role: 'Super Admin',
         }
       },
       {

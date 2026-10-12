@@ -10,6 +10,7 @@ import { MatchHeightModule } from "../shared/directives/match-height.directive";
 
 import { Dashboard1Component } from "./dashboard1/dashboard1.component";
 import { Dashboard2Component } from "./dashboard2/dashboard2.component";
+import { EmployeeDashboardComponent } from "./employee-dashboard/employee-dashboard.component";
 import { TranslateModule } from '@ngx-translate/core';
 
 
@@ -27,7 +28,8 @@ import { TranslateModule } from '@ngx-translate/core';
     exports: [],
     declarations: [
         Dashboard1Component,
-        Dashboard2Component
+        Dashboard2Component,
+        EmployeeDashboardComponent
     ],
     providers: [],
     schemas: [NO_ERRORS_SCHEMA]

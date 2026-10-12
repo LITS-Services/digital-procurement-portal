@@ -17,5 +17,6 @@ export const FORM_IDS = {
     INTEGRATION_MANAGER: 17,
     DASHBOARD: '/dashboard/dashboard1',
     TURNSTILE: '/setup/turnstile',
-    DATA_SOURCE: 20
+    DATA_SOURCE: '/setup/data-source',
+    EMPLOYEE_DASHBOARD: 20
 } as const;

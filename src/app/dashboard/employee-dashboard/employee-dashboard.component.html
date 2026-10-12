@@ -1,0 +1,297 @@
+<div class="dashboard-wrapper">
+  <!-- Top header -->
+  <div class="dashboard-header d-flex flex-wrap align-items-center justify-content-between">
+    <div>
+      <h2 class="dashboard-title">Employee Dashboard</h2>
+    </div>
+
+    <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
+      <button class="btn btn-outline-primary btn-sm d-flex align-items-center mr-2" (click)="loadData()" [disabled]="isLoadingCounts || isLoadingRequests">
+        <i class="ft ft-refresh-cw mr-1" [class.fa-spin]="isLoadingCounts || isLoadingRequests"></i> Refresh
+      </button>
+      <button *ngIf="canCreatePR" class="btn btn-primary btn-sm d-flex align-items-center" (click)="createNewPurchaseRequest()">
+        <i class="ft ft-plus mr-1"></i> New Purchase Request
+      </button>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="dashboard-main">
+
+      <!-- PR Metric Cards Row (Matches Main Dashboard Cards UI & 5-Col Grid) -->
+      <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 top-metrics-row mob-gap">
+        <!-- Card 1: Total Purchase Requests -->
+        <div class="col count-card">
+          <div class="stat-card stat-card--primary" (click)="goToPurchaseRequests()">
+            <div class="stat-card__label">
+              <span>Total Requests</span>
+              <span class="arrow-div"><i class="ft ft-arrow-up-right"></i></span>
+            </div>
+            <div class="stat-card__body">
+              <div class="stat-card__text">
+                <div class="stat-card__value">
+                  {{ counts.totalRequests || 0 }}
+                </div>
+              </div>
+              <div class="stat-card__icon">
+                <img src="/assets/img/icons/pr-icon.svg" alt="PR" />
+              </div>
+            </div>
+            <div class="stat-card__chips">
+              <span class="metric-chip">
+                New: <strong class="ml-1">{{ counts.newRequests }}</strong>
+              </span>
+              <span class="metric-chip metric-chip--muted">
+                In Progress: <strong class="ml-1">{{ counts.inProgressRequests }}</strong>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Draft / New -->
+        <div class="col count-card">
+          <div class="stat-card stat-card--amber" (click)="goToPurchaseRequests('New')">
+            <div class="stat-card__label">
+              <span>Draft / New</span>
+              <span class="arrow-div"><i class="ft ft-arrow-up-right"></i></span>
+            </div>
+            <div class="stat-card__body">
+              <div class="stat-card__text">
+                <div class="stat-card__value">
+                  {{ counts.newRequests || 0 }}
+                </div>
+              </div>
+              <div class="stat-card__icon">
+                <img src="/assets/img/icons/pr-icon.svg" alt="PR" />
+              </div>
+            </div>
+            <div class="stat-card__chips">
+              <span class="metric-chip metric-chip--amber">
+                Draft: <strong class="ml-1">{{ counts.newRequests }}</strong>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: In Progress -->
+        <div class="col count-card">
+          <div class="stat-card stat-card--indigo" (click)="goToPurchaseRequests('InProgress')">
+            <div class="stat-card__label">
+              <span>In Progress</span>
+              <span class="arrow-div"><i class="ft ft-arrow-up-right"></i></span>
+            </div>
+            <div class="stat-card__body">
+              <div class="stat-card__text">
+                <div class="stat-card__value">
+                  {{ counts.inProgressRequests || 0 }}
+                </div>
+              </div>
+              <div class="stat-card__icon">
+                <img src="/assets/img/icons/rfq-icon.svg" alt="In Progress" />
+              </div>
+            </div>
+            <div class="stat-card__chips">
+              <span class="metric-chip">
+                Under Review: <strong class="ml-1">{{ counts.inProgressRequests }}</strong>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: Approved / Completed -->
+        <div class="col count-card">
+          <div class="stat-card stat-card--emerald" (click)="goToPurchaseRequests('Completed')">
+            <div class="stat-card__label">
+              <span>Approved</span>
+              <span class="arrow-div"><i class="ft ft-arrow-up-right"></i></span>
+            </div>
+            <div class="stat-card__body">
+              <div class="stat-card__text">
+                <div class="stat-card__value">
+                  {{ counts.completedRequests || 0 }}
+                </div>
+              </div>
+              <div class="stat-card__icon">
+                <img src="/assets/img/icons/po-icon.svg" alt="Approved" />
+              </div>
+            </div>
+            <div class="stat-card__chips">
+              <span class="metric-chip metric-chip--success">
+                Completed: <strong class="ml-1">{{ counts.completedRequests }}</strong>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 5: Rejected / Returned -->
+        <div class="col count-card">
+          <div class="stat-card stat-card--rose" (click)="goToPurchaseRequests('Rejected')">
+            <div class="stat-card__label">
+              <span>Rejected / Returned</span>
+              <span class="arrow-div"><i class="ft ft-arrow-up-right"></i></span>
+            </div>
+            <div class="stat-card__body">
+              <div class="stat-card__text">
+                <div class="stat-card__value">
+                  {{ counts.rejectedRequests || 0 }}
+                </div>
+              </div>
+              <div class="stat-card__icon">
+                <img src="/assets/img/icons/company-icon.svg" alt="Rejected" />
+              </div>
+            </div>
+            <div class="stat-card__chips">
+              <span class="metric-chip metric-chip--danger">
+                Action Needed: <strong class="ml-1">{{ counts.rejectedRequests || 0 }}</strong>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Employee Recent Requests and Status Breakdown (Matches Main Dashboard Panels) -->
+      <div class="row align-items-stretch mt-2 mob-gap">
+        <!-- Left: Recent Purchase Requests Table -->
+        <div class="col-lg-8 col-12 mb-2">
+          <div class="panel-card h-100">
+            <div class="panel-card__header">
+              <div>
+                <h3 class="panel-card__title">My Recent Purchase Requests</h3>
+                <p class="panel-card__subtitle">Latest purchase requests created by you</p>
+              </div>
+              <div class="d-flex align-items-center">
+                <a class="panel-card__link cursor-pointer" (click)="goToPurchaseRequests()">
+                  View all <i class="ft ft-chevron-right ml-1"></i>
+                </a>
+              </div>
+            </div>
+
+            <div class="panel-card__body panel-card__body--flush panel-card__body--scroll">
+              <!-- Loading -->
+              <div *ngIf="isLoadingRequests" class="d-flex justify-content-center align-items-center py-5">
+                <div class="spinner-border text-primary" role="status"></div>
+              </div>
+
+              <!-- Empty -->
+              <div *ngIf="!isLoadingRequests && recentRequests.length === 0" class="text-center py-5 text-muted">
+                <i class="ft ft-file-text font-large-2 text-muted mb-2 d-block"></i>
+                <h5 class="text-dark font-weight-medium mb-1">No purchase requests found</h5>
+                <p class="small text-muted mb-3">You haven't submitted any purchase requests yet.</p>
+                <button *ngIf="canCreatePR" class="btn btn-primary btn-sm" (click)="createNewPurchaseRequest()">
+                  <i class="ft ft-plus mr-1"></i> Create First Request
+                </button>
+              </div>
+
+              <!-- Table -->
+              <table *ngIf="!isLoadingRequests && recentRequests.length > 0" class="table upcoming-table mb-0">
+                <thead>
+                  <tr>
+                    <th>Requisition No</th>
+                    <th>Entity</th>
+                    <th>Department</th>
+                    <th>Req Date</th>
+                    <th>Status</th>
+                    <th class="text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let pr of recentRequests" class="clickable-row" (click)="viewRequestDetails(pr)">
+                    <td class="font-weight-bold text-primary">
+                      {{ pr.requisitionNo || ('PR-' + pr.id) }}
+                    </td>
+                    <td>{{ pr.entityName || '—' }}</td>
+                    <td>{{ pr.department || '—' }}</td>
+                    <td>{{ (pr.requestDate || pr.createdDate) | date:'mediumDate' }}</td>
+                    <td>
+                      <span class="custom-badge" [ngClass]="getStatusClass(pr.requestStatus || pr.status)">
+                        {{ pr.requestStatus || pr.status || 'Pending' }}
+                      </span>
+                    </td>
+                    <td class="text-right">
+                      <button class="btn btn-sm btn-icon btn-light" (click)="$event.stopPropagation(); viewRequestDetails(pr)" title="View Details">
+                        <i class="ft ft-eye text-primary"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Status Breakdown & Shortcuts -->
+        <div class="col-lg-4 col-12 mb-2">
+          <div class="panel-card h-100">
+            <div class="panel-card__header panel-card__header--tight">
+              <div>
+                <h3 class="panel-card__title">Status Breakdown</h3>
+                <p class="panel-card__subtitle">Distribution across your requests</p>
+              </div>
+            </div>
+
+            <div class="panel-card__body">
+              <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                <span class="font-weight-medium">All Requisitions</span>
+                <span class="badge badge-light-primary font-medium-1 font-weight-bold">{{ counts.totalRequests }}</span>
+              </div>
+
+              <!-- Progress Bars -->
+              <div class="progress-item mb-3">
+                <div class="d-flex justify-content-between font-small-3 mb-1">
+                  <span><i class="fa fa-circle font-small-1 text-warning mr-1"></i> Draft / New</span>
+                  <span class="font-weight-bold">{{ counts.newRequests }} ({{ getNewPercentage() }}%)</span>
+                </div>
+                <div class="progress progress-sm">
+                  <div class="progress-bar bg-warning" role="progressbar" [style.width.%]="getNewPercentage()"></div>
+                </div>
+              </div>
+
+              <div class="progress-item mb-3">
+                <div class="d-flex justify-content-between font-small-3 mb-1">
+                  <span><i class="fa fa-circle font-small-1 text-primary mr-1"></i> In Progress</span>
+                  <span class="font-weight-bold">{{ counts.inProgressRequests }} ({{ getInProgressPercentage() }}%)</span>
+                </div>
+                <div class="progress progress-sm">
+                  <div class="progress-bar bg-primary" role="progressbar" [style.width.%]="getInProgressPercentage()"></div>
+                </div>
+              </div>
+
+              <div class="progress-item mb-3">
+                <div class="d-flex justify-content-between font-small-3 mb-1">
+                  <span><i class="fa fa-circle font-small-1 text-success mr-1"></i> Approved</span>
+                  <span class="font-weight-bold">{{ counts.completedRequests }} ({{ getCompletedPercentage() }}%)</span>
+                </div>
+                <div class="progress progress-sm">
+                  <div class="progress-bar bg-success" role="progressbar" [style.width.%]="getCompletedPercentage()"></div>
+                </div>
+              </div>
+
+              <div class="progress-item mb-4" *ngIf="(counts.rejectedRequests || 0) > 0">
+                <div class="d-flex justify-content-between font-small-3 mb-1">
+                  <span><i class="fa fa-circle font-small-1 text-danger mr-1"></i> Rejected / Return</span>
+                  <span class="font-weight-bold">{{ counts.rejectedRequests }} ({{ getRejectedPercentage() }}%)</span>
+                </div>
+                <div class="progress progress-sm">
+                  <div class="progress-bar bg-danger" role="progressbar" [style.width.%]="getRejectedPercentage()"></div>
+                </div>
+              </div>
+
+              <!-- Quick Action Button -->
+              <div class="mt-4 pt-2 border-top">
+                <button *ngIf="canCreatePR" class="shortcut-btn btn w-100 text-left d-flex align-items-center justify-content-between mb-2" (click)="createNewPurchaseRequest()">
+                  <span><i class="ft ft-plus-circle mr-2 text-primary"></i> Create Purchase Request</span>
+                  <i class="ft ft-arrow-right text-muted"></i>
+                </button>
+                <button class="shortcut-btn btn w-100 text-left d-flex align-items-center justify-content-between" (click)="goToPurchaseRequests()">
+                  <span><i class="ft ft-list mr-2 text-primary"></i> View All Requests</span>
+                  <i class="ft ft-arrow-right text-muted"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

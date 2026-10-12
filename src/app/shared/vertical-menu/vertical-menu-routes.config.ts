@@ -8,6 +8,10 @@ export const ROUTES: RouteInfo[] = [
     formTypeId: FORM_IDS.DASHBOARD
   },
   {
+    path: '/employee-dashboard', title: 'Employee Dashboard', icon: 'ft-bar-chart-2', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+    formTypeId: FORM_IDS.EMPLOYEE_DASHBOARD
+  },
+  {
     path: '/purchase-request', title: 'Purchase Request', icon: 'ft-file-plus', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
     formTypeId: FORM_IDS.PURCHASE_REQUEST
   },
@@ -81,7 +85,7 @@ export const ROUTES: RouteInfo[] = [
       },
       {
         path: '/setup/data-source', title: 'Data Source', icon: 'fa fa-database submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
-        formTypeId: FORM_IDS.DATA_SOURCE
+        roles: ['Super Admin']
       },
       {
         path: '/setup/workflow', title: 'Workflow Setup', icon: 'ft-git-pull-request submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],

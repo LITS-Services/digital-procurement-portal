@@ -5,6 +5,7 @@ import { BehaviorSubject, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { ROUTES } from '../vertical-menu/vertical-menu-routes.config';
 import { firstReadableNavPath } from './nav-perm';
+import { FORM_IDS } from './form-ids';
 
 import { DataSourceService } from '../services/data-source.service';
 
@@ -49,32 +50,6 @@ export class PermissionService {
 
     public permsSubject = new BehaviorSubject<void>(undefined);
 
-    // refreshForCurrentUser$() {
-    //     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-    //     const email = JSON.parse(localStorage.getItem('currentUser') || '{}')?.email as string | undefined;
-
-    //     //if (!isAuthenticated || !email) return of(void 0);
-    //     if (!isAuthenticated || !email) return this.permsSubject.asObservable();
-
-    //     return this._httpClient
-    //         .get<any[]>(`${environment.apiUrl}/Acl/get-permissions-by-email`, { params: { email } })
-    //         .pipe(
-    //             tap(perms => this.setPermissions(perms)),
-    //             tap(() => this.permsSubject.next()),
-    //             tap(perms => {
-    //                 const auth = JSON.parse(localStorage.getItem('auth') || '{}');
-    //                 localStorage.setItem('auth', JSON.stringify({ ...auth, rolePermissions: perms }));
-    //                 console.log("for refresh", perms);
-    //             }),
-    //             map(() => void 0),
-    //             // catchError(() => of(void 0))
-    //             catchError(err => {
-    //                 console.warn("Permissions load failed", err);
-    //                 return of(null); // still completes, but after a tick
-    //             })
-    //         );
-    // }
-
     refreshForCurrentUser$() {
         const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
         const id = localStorage.getItem('userId');
@@ -105,6 +80,18 @@ export class PermissionService {
         try {
             const roles = JSON.parse(localStorage.getItem('roles') || '[]');
             if (Array.isArray(roles) && roles.includes('Super Admin')) {
+                return true;
+            }
+        } catch {
+            /* ignore invalid json */
+        }
+        return false;
+    }
+
+    isEmployee(): boolean {
+        try {
+            const roles = JSON.parse(localStorage.getItem('roles') || '[]');
+            if (Array.isArray(roles) && roles.some(r => typeof r === 'string' && r.toLowerCase() === 'employee')) {
                 return true;
             }
         } catch {
@@ -148,6 +135,10 @@ export class PermissionService {
 
     /** First allowed app page after login: Dashboard if readable, else next sidebar form with read. */
     getDefaultLandingPath(): string {
+        if (this.isEmployee() && this.canRead(FORM_IDS.EMPLOYEE_DASHBOARD)) {
+            return '/employee-dashboard';
+        }
+
         const fromMenu = firstReadableNavPath(ROUTES, id => this.canRead(id));
         if (fromMenu) return fromMenu;
 

@@ -8,6 +8,10 @@ export const Full_ROUTES: Routes = [
     loadChildren: () => import('../../dashboard/dashboard.module').then(m => m.DashboardModule)
   },
   {
+    path: 'employee-dashboard',
+    loadChildren: () => import('../../dashboard/dashboard.module').then(m => m.DashboardModule)
+  },
+  {
     path: 'purchase-request',
     loadChildren: () => import('../../purchase-request/purchase-request.module').then(m => m.PurchaseRequestModule)
   },

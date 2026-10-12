@@ -1,0 +1,79 @@
+@import '../dashboard1/dashboard1.component.scss';
+
+/* Employee Dashboard custom enhancements matching Main Dashboard */
+.stat-card--rose {
+  // background: #ffffff;
+}
+
+.custom-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 999px;
+  text-transform: capitalize;
+
+  &.badge-new {
+    background-color: #fef3c7;
+    color: #b45309;
+  }
+
+  &.badge-in-progress {
+    background-color: #e0e7ff;
+    color: #4338ca;
+  }
+
+  &.badge-completed {
+    background-color: #ecfdf3;
+    color: #147437;
+  }
+
+  &.badge-rejected {
+    background-color: #fee2e2;
+    color: #b91c1c;
+  }
+
+  &.badge-default {
+    background-color: #f3f4f6;
+    color: #4b5563;
+  }
+}
+
+.clickable-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: #f8faff;
+  }
+}
+
+.progress-item {
+  .progress-sm {
+    height: 7px;
+    border-radius: 999px;
+    background-color: #f1f5f9;
+  }
+
+  .progress-bar {
+    border-radius: 999px;
+  }
+}
+
+.shortcut-btn {
+  padding: 11px 16px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 500;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #334155;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #eff6ff;
+    border-color: #bfdbfe;
+    color: #1d4ed8;
+    transform: translateX(3px);
+  }
+}
