@@ -99,6 +99,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   selectedActivityInfo: ProjectActivityItem | null = null;
   isBudgetExceeded = false;
   budgetExceededMessage = '';
+  budgetWarningType: 'none' | 'warning' | 'danger' = 'none';
 
   vendorUsers: any[] = [];
 
@@ -109,6 +110,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   itemForm: FormGroup;
 
   editingRowIndex: number | null = null; // Track row being edited
+  isPatchingRow = false;
 
   public chkBoxSelected = [];
   loading = false;
@@ -247,6 +249,10 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     this.itemForm.get('itemId')?.valueChanges
       .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe(itemId => this.onItemSelected(itemId));
+
+    this.itemForm.get('orderQuantity')?.valueChanges
+      .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe(() => this.recalculateBudgetAmount());
 
     this.newPurchaseRequestForm.get('department')?.valueChanges
       .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
@@ -677,7 +683,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   }
 
   private fetchEntityLookups(entityGuid: string): void {
-    this.lookupService.getItemsByEntity(entityGuid).subscribe({
+    this.purchaseRequestService.getItems(entityGuid).subscribe({
       next: (res) => {
         this.itemList = res ?? [];
         this.cdr.markForCheck();
@@ -702,6 +708,15 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       return;
     }
 
+    const selectedItem = this.itemList?.find(i => Number(i.id) === id);
+    if (selectedItem) {
+      const unitPrice = Number(selectedItem.unitPrice) || 0;
+      this.itemForm.patchValue({ unitCost: unitPrice }, { emitEvent: false });
+      if (!this.isPatchingRow) {
+        this.recalculateBudgetAmount();
+      }
+    }
+
     this.lookupService.getUomByItem(id).subscribe({
       next: (res) => {
         this.unitsOfMeasurementList = res ?? [];
@@ -717,6 +732,28 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         this.itemForm.get('unitOfMeasurementId')?.setValue(null, { emitEvent: false });
       }
     });
+  }
+
+  recalculateBudgetAmount(): void {
+    if (this.isPatchingRow) return;
+    const itemId = Number(this.itemForm.get('itemId')?.value);
+    if (!itemId) return;
+
+    const selectedItem = this.itemList?.find(i => Number(i.id) === itemId);
+    const unitPrice = selectedItem?.unitPrice != null
+      ? Number(selectedItem.unitPrice)
+      : (Number(this.itemForm.get('unitCost')?.value) || 0);
+
+    const qty = Number(this.itemForm.get('orderQuantity')?.value) || 0;
+    const totalAmount = qty * unitPrice;
+
+    this.itemForm.patchValue({
+      amount: totalAmount,
+      unitCost: unitPrice
+    }, { emitEvent: false });
+
+    this.checkBudgetLimit();
+    this.cdr.markForCheck();
   }
 
   private resolveVatProdPostingGroup(): string | null {
@@ -1009,6 +1046,18 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
           }))
         }));
         this.updateFilteredProjects();
+        if (this.newPurchaseItemData?.length) {
+          this.newPurchaseItemData.forEach((item: any) => {
+            if (item.projectActivityId) {
+              if (item.activityBudgetAmount == null) {
+                item.activityBudgetAmount = this.getActivityBudgetById(item.projectActivityId);
+              }
+              if (item.activityAllowedPercentage == null) {
+                item.activityAllowedPercentage = this.getActivityAllowedPercentageById(item.projectActivityId);
+              }
+            }
+          });
+        }
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -1058,8 +1107,54 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     } else {
       this.selectedActivityInfo = this.currentProjectActivities.find(a => Number(a.id) === currentActId) || null;
     }
+
+    if (projId) {
+      this.fetchActivityBudgetUtilizationForProject(projId);
+    }
+
     this.checkBudgetLimit();
     this.cdr.markForCheck();
+  }
+
+  fetchActivityBudgetUtilizationForProject(projId: number): void {
+    if (!projId) return;
+    const excludePrId = this.isNewForm ? null : (this.currentRequestId || null);
+    this.purchaseRequestService.getActivityBudgetUtilization({ projectId: projId, excludePurchaseRequestId: excludePrId }).subscribe({
+      next: (res: any) => {
+        const utilizations: any[] = res?.$values ?? res ?? [];
+        if (!Array.isArray(utilizations)) return;
+
+        utilizations.forEach((u: any) => {
+          const actId = Number(u.projectActivityId);
+          const utilised = Number(u.utilisedBudget) || 0;
+          const available = Number(u.availableBudget) || 0;
+
+          // Update in projectList
+          for (const proj of this.projectList) {
+            const found = (proj.projectActivities || []).find((a: any) => Number(a.id) === actId);
+            if (found) {
+              found.utilisedBudget = utilised;
+              found.availableBudget = available;
+            }
+          }
+          // Update in currentProjectActivities
+          const act = this.currentProjectActivities.find((a: any) => Number(a.id) === actId);
+          if (act) {
+            act.utilisedBudget = utilised;
+            act.availableBudget = available;
+          }
+          // Update in selectedActivityInfo
+          if (this.selectedActivityInfo && Number(this.selectedActivityInfo.id) === actId) {
+            this.selectedActivityInfo.utilisedBudget = utilised;
+            this.selectedActivityInfo.availableBudget = available;
+          }
+        });
+
+        this.checkBudgetLimit();
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Failed to fetch activity budget utilization:', err)
+    });
   }
 
   onProjectActivityChanged(): void {
@@ -1096,73 +1191,151 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       }
     }
 
-    if (!this.selectedActivityInfo) {
+    const budgetInfo = this.getActivityRemainingBudget();
+    if (!budgetInfo || budgetInfo.baseBudget <= 0) {
       this.isBudgetExceeded = false;
+      this.budgetWarningType = 'none';
       this.budgetExceededMessage = '';
       this.cdr.detectChanges();
       return;
     }
 
-    const currentAmount = Number(this.itemForm.get('amount')?.value) || 0;
-    const maxBudget = Number(this.selectedActivityInfo.budgetAmount) || 0;
-    const allowedPercentage = Number(this.selectedActivityInfo.allowedPercentage) || 0;
-
-    // Sum budget previously used in items table for this specific activity
-    const activityId = Number(this.selectedActivityInfo.id);
-    let previousUsedForActivity = 0;
-    if (activityId) {
-      this.newPurchaseItemData.forEach((item: any, idx: number) => {
-        if (idx !== this.editingRowIndex && Number(item.projectActivityId) === activityId) {
-          previousUsedForActivity += Number(item.amount) || 0;
-        }
-      });
-    }
-
-    const totalActivityBudget = previousUsedForActivity + currentAmount;
-    const remainingBudget = maxBudget - previousUsedForActivity;
-
-    // Over budget condition: Total entered budget for activity exceeds its Allocated Budget
-    const isOverBudget = maxBudget > 0 && totalActivityBudget > maxBudget;
-
-    if (isOverBudget) {
-      const formattedTotal = totalActivityBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      const formattedMax = maxBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      const formattedRemaining = Math.max(0, remainingBudget).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-      if (this.isWaiveAmountActive) {
-        // Waive Amount is active: allow insert, no error blocking
-        this.isBudgetExceeded = false;
-        this.budgetExceededMessage = `Allocated Budget limit exceeded for ${this.selectedActivityInfo.name} (Allocated: ${formattedMax}, Total: ${formattedTotal}), but Waive Amount is active under Exception Policy.`;
-      } else {
-        this.isBudgetExceeded = true;
-        this.budgetExceededMessage = `The entered budget exceeds the Allocated Budget for ${this.selectedActivityInfo.name}. (Allocated Budget: ${formattedMax}, Available: ${formattedRemaining}). Current Total: ${formattedTotal}`;
-      }
+    if (budgetInfo.status === 'exceeded') {
+      this.isBudgetExceeded = true;
+      this.budgetWarningType = 'danger';
+      const formattedTotal = budgetInfo.usedBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const formattedMax = budgetInfo.maxAllowedBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const formattedExceeded = budgetInfo.exceededBy.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      this.budgetExceededMessage = `You've exceeded the budget + allowed % (${budgetInfo.allowedPercentage}%) by ${formattedExceeded}. Total: ${formattedTotal}, Max Allowed: ${formattedMax}.`;
+    } else if (budgetInfo.status === 'exhausted') {
+      this.isBudgetExceeded = false;
+      this.budgetWarningType = 'warning';
+      this.budgetExceededMessage = "You've used all the budget including allowed amount. (Available: 0.00)";
+    } else if (budgetInfo.status === 'buffer') {
+      this.isBudgetExceeded = false;
+      this.budgetWarningType = 'warning';
+      const formattedAvail = budgetInfo.availableAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      this.budgetExceededMessage = `Allocated budget reached. Using allowed ${budgetInfo.allowedPercentage}% buffer. Available remaining: ${formattedAvail}.`;
     } else {
       this.isBudgetExceeded = false;
+      this.budgetWarningType = 'none';
       this.budgetExceededMessage = '';
     }
 
     this.cdr.detectChanges();
   }
 
-  getActivityRemainingBudget(): { usedBudget: number; remainingBudget: number } | null {
+  getActivityRemainingBudget(): {
+    baseBudget: number;
+    allowedPercentage: number;
+    allowedAmount: number;
+    maxAllowedBudget: number;
+    usedBudget: number;
+    availableAmount: number;
+    exceededBy: number;
+    status: 'normal' | 'buffer' | 'exhausted' | 'exceeded';
+  } | null {
     if (!this.selectedActivityInfo) return null;
     const currentActivityId = Number(this.selectedActivityInfo.id);
-    const maxBudget = Number(this.selectedActivityInfo.budgetAmount) || 0;
+    const baseBudget = Number(this.selectedActivityInfo.budgetAmount) || 0;
+    const allowedPercentage = Number(this.selectedActivityInfo.allowedPercentage) || 0;
+    const allowedAmount = baseBudget * (allowedPercentage / 100);
+    const maxAllowedBudget = baseBudget + allowedAmount;
 
-    let used = 0;
+    // Database utilised budget from existing PRs
+    const dbUtilised = Number(this.selectedActivityInfo.utilisedBudget) || 0;
+
+    let previousUsedInCurrentPr = 0;
     this.newPurchaseItemData.forEach((item: any, idx: number) => {
       if (idx !== this.editingRowIndex && Number(item.projectActivityId) === currentActivityId) {
-        used += Number(item.amount) || 0;
+        previousUsedInCurrentPr += Number(item.amount) || 0;
       }
     });
 
     const currentFormAmount = Number(this.itemForm.get('amount')?.value) || 0;
-    const totalUsed = used + currentFormAmount;
+    const totalUsed = dbUtilised + previousUsedInCurrentPr + currentFormAmount;
+
+    let status: 'normal' | 'buffer' | 'exhausted' | 'exceeded' = 'normal';
+    let availableAmount = 0;
+    let exceededBy = 0;
+
+    const baseDiff = Math.round((baseBudget - totalUsed) * 100) / 100;
+    const maxDiff = Math.round((maxAllowedBudget - totalUsed) * 100) / 100;
+
+    if (totalUsed < baseBudget) {
+      status = 'normal';
+      availableAmount = maxDiff;
+    } else if (totalUsed >= baseBudget && maxDiff > 0) {
+      status = 'buffer';
+      availableAmount = maxDiff;
+    } else if (maxDiff === 0) {
+      status = 'exhausted';
+      availableAmount = 0;
+    } else {
+      status = 'exceeded';
+      availableAmount = 0;
+      exceededBy = Math.round((totalUsed - maxAllowedBudget) * 100) / 100;
+    }
+
     return {
+      baseBudget,
+      allowedPercentage,
+      allowedAmount,
+      maxAllowedBudget,
       usedBudget: totalUsed,
-      remainingBudget: maxBudget - totalUsed
+      availableAmount,
+      exceededBy,
+      status
     };
+  }
+
+  getActivityById(id: any): ProjectActivityItem | null {
+    if (!id) return null;
+    const numId = Number(id);
+    for (const p of this.projectList) {
+      const act = (p.projectActivities || []).find(a => Number(a.id) === numId);
+      if (act) return act;
+    }
+    return null;
+  }
+
+  getActivityBudgetById(id: any): number | null {
+    const act = this.getActivityById(id);
+    return act?.budgetAmount != null ? Number(act.budgetAmount) : null;
+  }
+
+  getActivityAllowedPercentageById(id: any): number | null {
+    const act = this.getActivityById(id);
+    return act?.allowedPercentage != null ? Number(act.allowedPercentage) : null;
+  }
+
+  isRowExceededAllowed(row: any): boolean {
+    const actId = row.projectActivityId ? Number(row.projectActivityId) : null;
+    if (!actId) return false;
+
+    const baseBudget = row.activityBudgetAmount != null
+      ? Number(row.activityBudgetAmount)
+      : (this.getActivityBudgetById(actId) || 0);
+
+    if (baseBudget <= 0) return false;
+
+    const allowedPct = row.activityAllowedPercentage != null
+      ? Number(row.activityAllowedPercentage)
+      : (this.getActivityAllowedPercentageById(actId) || 0);
+
+    const maxAllowed = baseBudget + (baseBudget * (allowedPct / 100));
+
+    const act = this.getActivityById(actId);
+    const dbUtilised = act?.utilisedBudget != null ? Number(act.utilisedBudget) : 0;
+
+    let totalForActivity = dbUtilised;
+    for (const item of this.newPurchaseItemData) {
+      if (Number(item.projectActivityId) === actId) {
+        totalForActivity += Number(item.amount) || 0;
+      }
+    }
+
+    return (totalForActivity - maxAllowed) > 0.009;
   }
 
   getProjectNameById(id: any): string {
@@ -1306,29 +1479,6 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
   insertItem(): void {
     this.checkBudgetLimit();
-    if (this.isBudgetExceeded) {
-      this.toastr.warning(this.budgetExceededMessage || 'The quantity and Budget is max than the given limit.');
-      return;
-    }
-
-    if (this.selectedActivityInfo && !this.isWaiveAmountActive) {
-      const currentAmount = Number(this.itemForm.get('amount')?.value) || 0;
-      const maxBudget = Number(this.selectedActivityInfo.budgetAmount) || 0;
-      const activityId = Number(this.selectedActivityInfo.id);
-      let previousUsed = 0;
-      if (activityId) {
-        this.newPurchaseItemData.forEach((item: any, idx: number) => {
-          if (idx !== this.editingRowIndex && Number(item.projectActivityId) === activityId) {
-            previousUsed += Number(item.amount) || 0;
-          }
-        });
-      }
-      if (maxBudget > 0 && (previousUsed + currentAmount) > maxBudget) {
-        this.isBudgetExceeded = true;
-        this.toastr.warning(`Cannot insert item: Total budget (${(previousUsed + currentAmount).toLocaleString('en-US', { minimumFractionDigits: 2 })}) exceeds Allocated Budget (${maxBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })}).`);
-        return;
-      }
-    }
 
     if (this.itemForm.invalid) {
       this.itemForm.markAllAsTouched();
@@ -1375,14 +1525,25 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     const newItemId = Number(newItem.itemId);
     const projectId = this.itemForm.get('projectId')?.value ? Number(this.itemForm.get('projectId')?.value) : null;
     const projectActivityId = this.itemForm.get('projectActivityId')?.value ? Number(this.itemForm.get('projectActivityId')?.value) : null;
+    const selectedItem = this.itemList?.find(i => Number(i.id) === newItemId);
+    const unitCost = Number(newItem.unitCost) || Number(selectedItem?.unitPrice) || 0;
+    const activityBudget = this.selectedActivityInfo?.budgetAmount != null
+      ? Number(this.selectedActivityInfo.budgetAmount)
+      : this.getActivityBudgetById(projectActivityId);
+    const activityAllowedPct = this.selectedActivityInfo?.allowedPercentage != null
+      ? Number(this.selectedActivityInfo.allowedPercentage)
+      : this.getActivityAllowedPercentageById(projectActivityId);
+
     const normalizedItem = {
       ...newItem,
       amount,
-      unitCost: 0,
+      unitCost,
       projectId,
       projectActivityId,
       projectName: this.selectedProjectInfo?.name || this.getProjectNameById(projectId),
-      projectActivityName: this.selectedActivityInfo?.name || this.getActivityNameById(projectActivityId)
+      projectActivityName: this.selectedActivityInfo?.name || this.getActivityNameById(projectActivityId),
+      activityBudgetAmount: activityBudget,
+      activityAllowedPercentage: activityAllowedPct
     };
 
     // Duplicate check — works for add and edit both
@@ -1427,23 +1588,13 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       this.toastr.success('Item added successfully!');
     }
 
-    //  Reset form after add/update
-    this.itemForm.reset({
-      amount: 0,
-      unitCost: 0,
-      orderQuantity: 0,
-      accountId: 1,
-      itemType: 'Inventory',
-      projectId: projectId,
-      projectActivityId: projectActivityId,
-      reqByDate: this.toDateInputValue(new Date())
-    });
-    this.checkBudgetLimit();
-    this.syncFinalVendorControlState();
+    // Reset form after add/update
+    this.clearItemForm();
   }
 
   // Edit a row
   editRow(row: any, rowIndex: number) {
+    this.isPatchingRow = true;
     // mark which row is being edited
     this.editingRowIndex = rowIndex;
 
@@ -1458,6 +1609,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       } else {
         this.selectedActivityInfo = null;
       }
+      this.fetchActivityBudgetUtilizationForProject(projId);
     } else {
       this.selectedProjectInfo = null;
       this.currentProjectActivities = [];
@@ -1486,6 +1638,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     this.selectedUomLabel = this.resolveUomSymbol(row) || '';
     this.checkBudgetLimit();
     this.syncFinalVendorControlState();
+    this.isPatchingRow = false;
 
     // if vendor changes, refresh vendor company list
     if (row.vendorUserId) {
@@ -1657,6 +1810,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
             projectName: item.projectName || this.getProjectNameById(item.projectId),
             projectActivityId: item.projectActivityId || null,
             projectActivityName: item.projectActivityName || this.getActivityNameById(item.projectActivityId),
+            activityBudgetAmount: this.getActivityBudgetById(item.projectActivityId),
+            activityAllowedPercentage: this.getActivityAllowedPercentageById(item.projectActivityId),
             departmentId: item.departmentId || null,
             attachments: (item.attachments || []).map((a: any) => ({
               id: a.id,
@@ -1680,6 +1835,11 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         const prEntityId = Number(requestData.entityId) || null;
         // Pass prEntityId twice: once as prId for control state, once for direct loading bypass
         this.applyEntity(prEntityId, prEntityId);
+
+        const uniqueProjectIds = Array.from(new Set(
+          (this.newPurchaseItemData || []).map(i => Number(i.projectId)).filter(id => id > 0)
+        ));
+        uniqueProjectIds.forEach(pId => this.fetchActivityBudgetUtilizationForProject(pId));
 
         this.loading = false;
         this.spinner.hide();
@@ -2148,10 +2308,12 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     this.selectedActivityInfo = null;
     this.currentProjectActivities = [];
     this.isBudgetExceeded = false;
+    this.budgetWarningType = 'none';
     this.budgetExceededMessage = '';
 
     this.itemForm.markAsPristine();
     this.itemForm.markAsUntouched();
+    this.cdr.detectChanges();
   }
 
   private syncFinalVendorControlState(): void {

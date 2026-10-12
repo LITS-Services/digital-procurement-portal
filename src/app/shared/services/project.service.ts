@@ -10,6 +10,8 @@ export interface ProjectActivityItem {
   description?: string;
   budgetAmount: number;
   allowedPercentage: number;
+  utilisedBudget?: number;
+  availableBudget?: number;
 }
 
 export interface ProjectItem {

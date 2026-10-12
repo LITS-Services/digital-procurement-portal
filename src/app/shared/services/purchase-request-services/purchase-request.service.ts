@@ -186,4 +186,30 @@ export class PurchaseRequestService {
   getPrItemStatusCount(purchaseRequestId: number): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/${purchaseRequestId}/item-status-count`);
   }
+
+  getItems(entityGuid?: string | null): Observable<any[]> {
+    let params = new HttpParams();
+    if (entityGuid) {
+      params = params.set('entityGuid', entityGuid);
+    }
+    return this.http.get<any[]>(`${this.baseUrl}/get-items`, { params });
+  }
+
+  getActivityBudgetUtilization(params: {
+    projectActivityId?: number | null;
+    projectId?: number | null;
+    excludePurchaseRequestId?: number | null;
+  }): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params.projectActivityId != null && params.projectActivityId > 0) {
+      httpParams = httpParams.set('projectActivityId', params.projectActivityId.toString());
+    }
+    if (params.projectId != null && params.projectId > 0) {
+      httpParams = httpParams.set('projectId', params.projectId.toString());
+    }
+    if (params.excludePurchaseRequestId != null && params.excludePurchaseRequestId > 0) {
+      httpParams = httpParams.set('excludePurchaseRequestId', params.excludePurchaseRequestId.toString());
+    }
+    return this.http.get<any>(`${this.baseUrl}/get-activity-budget-utilization`, { params: httpParams });
+  }
 }
