@@ -37,84 +37,116 @@
         </div>
       </div>
 
-      <ngx-datatable class="bootstrap core-bootstrap" [rows]="projects" [columnMode]="'force'"
-        [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="pageSize"
-        [externalPaging]="true" [count]="totalItems" [offset]="currentPage - 1" (page)="onPageChange($event)"
-        [selected]="selected" [selectionType]="SelectionType.checkbox" (select)="onSelect($event)">
-        
-        <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
-          <ng-template ngx-datatable-cell-template let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
-            <div class="custom-control custom-checkbox cstm-checkbox-form">
-              <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
-            </div>
-          </ng-template>
-        </ngx-datatable-column>
-        
-        <ngx-datatable-column name="Name" prop="name"></ngx-datatable-column>
-        <ngx-datatable-column name="Department Name" prop="departmentName"></ngx-datatable-column>
-        <ngx-datatable-column name="Activity Count" prop="activityCount"></ngx-datatable-column>
-        <ngx-datatable-column name="Description" prop="description"></ngx-datatable-column>
-      </ngx-datatable>
+      <div class="pr-table-wrapper">
+        <ngx-datatable class="bootstrap core-bootstrap" [rows]="projects" [columnMode]="'force'"
+          [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="pageSize"
+          [externalPaging]="true" [count]="totalItems" [offset]="currentPage - 1" (page)="onPageChange($event)"
+          [selected]="selected" [selectionType]="SelectionType.checkbox" (select)="onSelect($event)">
+          
+          <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
+            <ng-template ngx-datatable-cell-template let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
+              <div class="custom-control custom-checkbox cstm-checkbox-form">
+                <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+              </div>
+            </ng-template>
+          </ngx-datatable-column>
+          
+          <ngx-datatable-column name="Name" prop="name"></ngx-datatable-column>
+          <ngx-datatable-column name="Department Name" prop="departmentName"></ngx-datatable-column>
+          <ngx-datatable-column name="Activity Count" prop="activityCount"></ngx-datatable-column>
+          <ngx-datatable-column name="Description" prop="description"></ngx-datatable-column>
+        </ngx-datatable>
+      </div>
     </div>
   </div>
 
   <ng-template #formModal let-modal>
-    <div class="modal-header">
-      <h5 class="modal-title text-white">{{ isEdit ? 'Edit' : 'Create' }} Project</h5>
-      <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="modal.dismiss()"></button>
+    <div class="modal-header d-flex align-items-center justify-content-between">
+      <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
+        <i class="ft-layers mr-2 text-white"></i> {{ isEdit ? 'Edit' : 'Create' }} Project
+      </h5>
+      <button type="button" class="modal-close-btn" aria-label="Close" (click)="modal.dismiss()">
+        <i class="ft-x"></i>
+      </button>
     </div>
-    <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+    <div class="modal-body" style="max-height: 72vh; overflow-y: auto;">
       <form [formGroup]="projectForm">
-        <div class="form-row">
-          <div class="form-group col-md-6">
-            <label>Name <span class="text-danger">*</span></label>
-            <input type="text" class="form-control" formControlName="name">
+        <div class="row gx-3">
+          <div class="form-group col-md-6 mb-3">
+            <label class="form-label font-weight-bold">Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control custom-input" formControlName="name" placeholder="Enter project name">
+            <div *ngIf="projectForm.get('name')?.invalid && (projectForm.get('name')?.touched || projectForm.get('name')?.dirty)" class="text-danger small mt-1">
+              Project name is required.
+            </div>
           </div>
-          <div class="form-group col-md-6">
-            <label>Department <span class="text-danger">*</span></label>
-            <ng-select [items]="departments" bindLabel="name" bindValue="id" formControlName="departmentId">
+          <div class="form-group col-md-6 mb-3">
+            <label class="form-label font-weight-bold">Department <span class="text-danger">*</span></label>
+            <ng-select class="custom-select-ui" [items]="departments" bindLabel="name" bindValue="id" formControlName="departmentId"
+              placeholder="Select department" [appendTo]="'body'" [clearable]="true">
             </ng-select>
+            <div *ngIf="projectForm.get('departmentId')?.invalid && (projectForm.get('departmentId')?.touched || projectForm.get('departmentId')?.dirty)" class="text-danger small mt-1">
+              Department is required.
+            </div>
           </div>
         </div>
-        <div class="form-group">
-          <label>Description</label>
-          <textarea class="form-control" formControlName="description" rows="2"></textarea>
+        <div class="form-group mb-3">
+          <label class="form-label font-weight-bold">Description</label>
+          <textarea class="form-control custom-input" formControlName="description" rows="2" placeholder="Enter project description (optional)"></textarea>
         </div>
 
         <div class="mt-4">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <h6>Project Activities</h6>
-            <button type="button" class="btn btn-sm btn-outline-primary" (click)="addActivity()">
-              <i class="ft-plus"></i> Add Activity
+          <div class="d-flex justify-content-between align-items-center mb-2 pt-2 border-top">
+            <div>
+              <h6 class="mb-0 font-weight-bold d-flex align-items-center" style="font-size: 14.5px; color: #116AEF;">
+                <i class="ft-list mr-1"></i> Project Activities
+                <span class="badge rounded-pill ml-2" *ngIf="activities.length" style="background: #eef4ff; color: #116aef; font-weight: 600; font-size: 11.5px; padding: 4px 8px;">
+                  {{ activities.length }}
+                </span>
+              </h6>
+              <small class="text-muted" style="font-size: 12px;">Define activities, budget allocations, and allowed percentage limits.</small>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center" (click)="addActivity()" style="border-radius: 6px; font-weight: 500; padding: 5px 12px; font-size: 13px;">
+              <i class="ft-plus mr-1"></i> Add Activity
             </button>
           </div>
           
           <div formArrayName="projectActivities">
-            <div class="table-responsive">
-              <table class="table table-bordered table-sm">
+            <div class="table-responsive pro-table-container">
+              <table class="table pro-table table-sm mb-0">
                 <thead>
                   <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Budget</th>
-                    <th>Allowed %</th>
-                    <th></th>
+                    <th style="min-width: 140px;">Name <span class="text-danger">*</span></th>
+                    <th style="min-width: 160px;">Description</th>
+                    <th style="width: 130px;">Budget</th>
+                    <th style="width: 110px;">Allowed %</th>
+                    <th style="width: 50px;" class="text-center">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let activity of activities.controls; let i=index" [formGroupName]="i">
-                    <td><input type="text" class="form-control form-control-sm" formControlName="name"></td>
-                    <td><input type="text" class="form-control form-control-sm" formControlName="description"></td>
-                    <td><input type="number" class="form-control form-control-sm" formControlName="budgetAmount"></td>
-                    <td><input type="number" class="form-control form-control-sm" formControlName="allowedPercentage"></td>
-                    <td class="text-center">
-                      <button type="button" class="btn btn-sm btn-danger" (click)="removeActivity(i)">
-                        <i class="ft-trash"></i>
+                    <td>
+                      <input type="text" class="form-control form-control-sm pro-table-input" formControlName="name" placeholder="Activity name">
+                    </td>
+                    <td>
+                      <input type="text" class="form-control form-control-sm pro-table-input" formControlName="description" placeholder="Description">
+                    </td>
+                    <td>
+                      <input type="number" class="form-control form-control-sm pro-table-input" formControlName="budgetAmount" placeholder="0" min="0">
+                    </td>
+                    <td>
+                      <input type="number" class="form-control form-control-sm pro-table-input" formControlName="allowedPercentage" placeholder="0" min="0" max="100">
+                    </td>
+                    <td class="text-center align-middle">
+                      <button type="button" class="btn-delete-row" (click)="removeActivity(i)" title="Remove activity">
+                        <i class="ft-trash-2"></i>
                       </button>
                     </td>
                   </tr>
                   <tr *ngIf="activities.length === 0">
-                    <td colspan="5" class="text-center">No activities added.</td>
+                    <td colspan="5" class="text-center py-4 text-muted">
+                      <i class="ft-layers font-large-1 d-block mb-1 text-muted" style="opacity: 0.45;"></i>
+                      <span style="font-size: 13px;">No activities added yet. Click <strong>+ Add Activity</strong> to define project activities.</span>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -125,8 +157,14 @@
       </form>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
-      <button type="button" class="btn btn-primary" (click)="save(modal)" [disabled]="projectForm.invalid">Save</button>
+      <button type="button" class="modal-btn-cancel" (click)="modal.dismiss()">
+        <i class="ft-x mr-1"></i> Cancel
+      </button>
+      <button type="button" class="modal-btn-save" (click)="save(modal)" [disabled]="projectForm.invalid || saving">
+        <i class="fa fa-spinner fa-spin mr-1" *ngIf="saving"></i>
+        <i class="fa fa-save mr-1" *ngIf="!saving"></i>
+        {{ isEdit ? 'Update' : 'Save' }}
+      </button>
     </div>
   </ng-template>
 </section>

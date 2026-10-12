@@ -37,45 +37,60 @@
         </div>
       </div>
 
-      <ngx-datatable class="bootstrap core-bootstrap" [rows]="departments" [columnMode]="'force'"
-        [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="pageSize"
-        [externalPaging]="true" [count]="totalItems" [offset]="currentPage - 1" (page)="onPageChange($event)"
-        [selected]="selected" [selectionType]="SelectionType.checkbox" (select)="onSelect($event)">
-        
-        <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
-          <ng-template ngx-datatable-cell-template let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
-            <div class="custom-control custom-checkbox cstm-checkbox-form">
-              <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
-            </div>
-          </ng-template>
-        </ngx-datatable-column>
-        
-        <ngx-datatable-column name="Name" prop="name"></ngx-datatable-column>
-        <ngx-datatable-column name="Description" prop="description"></ngx-datatable-column>
-      </ngx-datatable>
+      <div class="pr-table-wrapper">
+        <ngx-datatable class="bootstrap core-bootstrap" [rows]="departments" [columnMode]="'force'"
+          [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="pageSize"
+          [externalPaging]="true" [count]="totalItems" [offset]="currentPage - 1" (page)="onPageChange($event)"
+          [selected]="selected" [selectionType]="SelectionType.checkbox" (select)="onSelect($event)">
+          
+          <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
+            <ng-template ngx-datatable-cell-template let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
+              <div class="custom-control custom-checkbox cstm-checkbox-form">
+                <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+              </div>
+            </ng-template>
+          </ngx-datatable-column>
+          
+          <ngx-datatable-column name="Name" prop="name"></ngx-datatable-column>
+          <ngx-datatable-column name="Description" prop="description"></ngx-datatable-column>
+        </ngx-datatable>
+      </div>
     </div>
   </div>
 
   <ng-template #formModal let-modal>
-    <div class="modal-header">
-      <h5 class="modal-title text-white">{{ isEdit ? 'Edit' : 'Create' }} Department</h5>
-      <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="modal.dismiss()"></button>
+    <div class="modal-header d-flex align-items-center justify-content-between">
+      <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
+        <i class="ft-briefcase mr-2 text-white"></i> {{ isEdit ? 'Edit' : 'Create' }} Department
+      </h5>
+      <button type="button" class="modal-close-btn" aria-label="Close" (click)="modal.dismiss()">
+        <i class="ft-x"></i>
+      </button>
     </div>
     <div class="modal-body">
       <form [formGroup]="departmentForm">
-        <div class="form-group">
-          <label>Name <span class="text-danger">*</span></label>
-          <input type="text" class="form-control" formControlName="name">
+        <div class="form-group mb-3">
+          <label class="form-label font-weight-bold">Name <span class="text-danger">*</span></label>
+          <input type="text" class="form-control custom-input" formControlName="name" placeholder="Enter department name">
+          <div *ngIf="departmentForm.get('name')?.invalid && (departmentForm.get('name')?.touched || departmentForm.get('name')?.dirty)" class="text-danger small mt-1">
+            Department name is required.
+          </div>
         </div>
-        <div class="form-group">
-          <label>Description</label>
-          <textarea class="form-control" formControlName="description"></textarea>
+        <div class="form-group mb-2">
+          <label class="form-label font-weight-bold">Description</label>
+          <textarea class="form-control custom-input" formControlName="description" rows="3" placeholder="Enter department description (optional)"></textarea>
         </div>
       </form>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
-      <button type="button" class="btn btn-primary" (click)="save(modal)" [disabled]="departmentForm.invalid">Save</button>
+      <button type="button" class="modal-btn-cancel" (click)="modal.dismiss()">
+        <i class="ft-x mr-1"></i> Cancel
+      </button>
+      <button type="button" class="modal-btn-save" (click)="save(modal)" [disabled]="departmentForm.invalid || saving">
+        <i class="fa fa-spinner fa-spin mr-1" *ngIf="saving"></i>
+        <i class="fa fa-save mr-1" *ngIf="!saving"></i>
+        {{ isEdit ? 'Update' : 'Save' }}
+      </button>
     </div>
   </ng-template>
 </section>

@@ -20,6 +20,7 @@ export class DepartmentSetup implements OnInit {
   SelectionType = SelectionType;
   departmentForm: FormGroup;
   isEdit = false;
+  saving = false;
   
   currentPage = 1;
   pageSize = 10;
@@ -43,10 +44,15 @@ export class DepartmentSetup implements OnInit {
   }
 
   loadDepartments() {
-    this.departmentService.getAll(this.currentPage, this.pageSize).subscribe((res: any) => {
-      this.departments = res.result || [];
-      this.totalItems = res.totalItems || 0;
-      this.selected = [];
+    this.departmentService.getAll(this.currentPage, this.pageSize).subscribe({
+      next: (res: any) => {
+        this.departments = res.result || [];
+        this.totalItems = res.totalItems || 0;
+        this.selected = [];
+      },
+      error: () => {
+        this.toastr.error('Failed to load departments.');
+      }
     });
   }
 
@@ -65,7 +71,11 @@ export class DepartmentSetup implements OnInit {
   openModal(content: any) {
     this.isEdit = false;
     this.departmentForm.reset({ id: 0 });
-    this.modalService.open(content, { centered: true });
+    this.modalService.open(content, {
+      centered: true,
+      size: 'md',
+      windowClass: 'cstm-setup-modal dept-modal'
+    });
   }
 
   editSelected(content: any) {
@@ -73,15 +83,25 @@ export class DepartmentSetup implements OnInit {
       this.isEdit = true;
       const dept = this.selected[0];
       this.departmentForm.patchValue(dept);
-      this.modalService.open(content, { centered: true });
+      this.modalService.open(content, {
+        centered: true,
+        size: 'md',
+        windowClass: 'cstm-setup-modal dept-modal'
+      });
     }
   }
 
   deleteSelected() {
     if (this.selected.length > 0) {
       if (confirm('Are you sure you want to delete the selected department?')) {
-        this.departmentService.delete(this.selected[0].id).subscribe(() => {
-          this.loadDepartments();
+        this.departmentService.delete(this.selected[0].id).subscribe({
+          next: () => {
+            this.toastr.success('Department deleted successfully!');
+            this.loadDepartments();
+          },
+          error: (err: any) => {
+            this.toastr.error(err?.error?.message || 'Failed to delete department.');
+          }
         });
       }
     }
@@ -89,12 +109,21 @@ export class DepartmentSetup implements OnInit {
 
   save(modal: any) {
     if (this.departmentForm.valid) {
+      this.saving = true;
       const payload = this.departmentForm.value;
       const obs = this.isEdit ? this.departmentService.update(payload) : this.departmentService.create(payload);
       
-      obs.subscribe(() => {
-        modal.close();
-        this.loadDepartments();
+      obs.subscribe({
+        next: () => {
+          this.saving = false;
+          this.toastr.success(`Department ${this.isEdit ? 'updated' : 'created'} successfully!`);
+          modal.close();
+          this.loadDepartments();
+        },
+        error: (err: any) => {
+          this.saving = false;
+          this.toastr.error(err?.error?.message || `Failed to ${this.isEdit ? 'update' : 'create'} department.`);
+        }
       });
     }
   }

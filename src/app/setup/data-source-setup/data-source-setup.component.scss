@@ -131,21 +131,23 @@
 
     .modal-content {
       border-radius: 12px !important;
-      border: 1px solid rgba(0, 0, 0, 0.08) !important;
+      border: none !important;
+      outline: none !important;
       box-shadow: 0 16px 36px rgba(0, 0, 0, 0.16) !important;
-      overflow: visible !important;
+      overflow: hidden !important;
+      background: #ffffff !important;
     }
 
     .modal-header {
       background: linear-gradient(168deg, #116AEF 0%, #114C7A 100%) !important;
       color: #fff !important;
-      border-top-left-radius: 11px !important;
-      border-top-right-radius: 11px !important;
+      border-radius: 0 !important;
+      border: none !important;
+      margin: -1px -1px 0 -1px !important;
       padding: 1rem 1.25rem !important;
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
-      border-bottom: none !important;
 
       .modal-title {
         color: #fff !important;
