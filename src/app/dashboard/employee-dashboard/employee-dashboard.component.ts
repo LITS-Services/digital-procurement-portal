@@ -157,12 +157,12 @@ export class EmployeeDashboardComponent implements OnInit {
       this.toastr.warning('You do not have permission to create Purchase Requests.');
       return;
     }
-    this.router.navigate(['/new-purchase-request']);
+    this.router.navigate(['/purchase-request/new-purchase-request']);
   }
 
   viewRequestDetails(pr: RecentPR): void {
     if (pr && pr.id) {
-      this.router.navigate(['/new-purchase-request', pr.id]);
+      this.router.navigate(['/purchase-request/new-purchase-request'], { queryParams: { id: pr.id } });
     } else {
       this.goToPurchaseRequests();
     }

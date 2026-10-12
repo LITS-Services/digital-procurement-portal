@@ -103,7 +103,7 @@
                   {{ activities.length }}
                 </span>
               </h6>
-              <small class="text-muted" style="font-size: 12px;">Define activities, budget allocations, and allowed percentage limits.</small>
+              <small class="text-muted" style="font-size: 12px;">Define activities, budget allocations, and over budget percentage limits.</small>
             </div>
             <button type="button" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center" (click)="addActivity()" style="border-radius: 6px; font-weight: 500; padding: 5px 12px; font-size: 13px;">
               <i class="ft-plus mr-1"></i> Add Activity
@@ -118,7 +118,7 @@
                     <th style="min-width: 140px;">Name <span class="text-danger">*</span></th>
                     <th style="min-width: 160px;">Description</th>
                     <th style="width: 130px;">Budget</th>
-                    <th style="width: 110px;">Allowed %</th>
+                    <th style="width: 130px;">Over Budget %</th>
                     <th style="width: 50px;" class="text-center">Action</th>
                   </tr>
                 </thead>
@@ -132,15 +132,9 @@
                     </td>
                     <td>
                       <input type="number" class="form-control form-control-sm pro-table-input" formControlName="budgetAmount" placeholder="0" min="0" (input)="onBudgetInput($event, i)">
-                      <div *ngIf="activity.get('budgetAmount')?.invalid && (activity.get('budgetAmount')?.touched || activity.get('budgetAmount')?.dirty)" class="text-danger small mt-1">
-                        Budget must be 0 or greater.
-                      </div>
                     </td>
                     <td>
                       <input type="number" class="form-control form-control-sm pro-table-input" formControlName="allowedPercentage" placeholder="0" min="0" max="100" (input)="onPercentageInput($event, i)">
-                      <div *ngIf="activity.get('allowedPercentage')?.invalid && (activity.get('allowedPercentage')?.touched || activity.get('allowedPercentage')?.dirty)" class="text-danger small mt-1">
-                        Allowed % must be between 0 and 100.
-                      </div>
                     </td>
                     <td class="text-center align-middle">
                       <button type="button" class="btn-delete-row" (click)="removeActivity(i)" title="Remove activity">
