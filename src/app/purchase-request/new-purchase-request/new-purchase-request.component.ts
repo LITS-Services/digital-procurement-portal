@@ -13,6 +13,7 @@ import { WorkflowServiceService } from 'app/shared/services/WorkflowService/work
 import Swal from 'sweetalert2';
 import { LookupService } from 'app/shared/services/lookup.service';
 import { VendorAndCompanyForFinalSelectionVM } from 'app/shared/interfaces/vendor-company-final-selection.model';
+import { ProjectItem, ProjectActivityItem, ProjectService } from 'app/shared/services/project.service';
 import * as XLSX from 'xlsx';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { catchError, distinctUntilChanged, filter, finalize, map, pairwise, startWith, takeUntil } from 'rxjs/operators';
@@ -90,6 +91,14 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   dimensionValueList: any[] = [];
   isDimensionValueLocked = false;
   accountList: any[] = [];
+  departmentList: Array<{ id: number; name: string; description?: string }> = [];
+  projectList: ProjectItem[] = [];
+  filteredProjectList: ProjectItem[] = [];
+  currentProjectActivities: ProjectActivityItem[] = [];
+  selectedProjectInfo: ProjectItem | null = null;
+  selectedActivityInfo: ProjectActivityItem | null = null;
+  isBudgetExceeded = false;
+  budgetExceededMessage = '';
 
   vendorUsers: any[] = [];
 
@@ -165,6 +174,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     private spinner: NgxSpinnerService,
     private companyService: CompanyService,
     private purchaseOrderService: PurchaseOrderService,
+    private projectService: ProjectService,
     private renderer: Renderer2
 
   ) { }
@@ -189,7 +199,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       deliveryLocation: [''],
       receiverName: [''],
       receiverContact: ['', [Validators.required, this.receiverContactValidator]],
-      department: [''],
+      department: [null],
       designation: [''],
       businessUnit: [''],
       partialDeliveryAcceptable: [true],
@@ -212,6 +222,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       id: [null],
       requisitionNo: [''],
       itemType: ['Inventory', Validators.required],
+      projectId: [null],
+      projectActivityId: [null],
       itemId: [0],
       unitOfMeasurementId: [0],
       amount: [0],
@@ -228,11 +240,44 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     });
 
     this.loadAccounts();
+    this.loadDepartments();
+    this.loadProjects();
     this.loadUnitsOfMeasurements();
     this.itemForm.get('unitOfMeasurementId')?.disable({ emitEvent: false });
     this.itemForm.get('itemId')?.valueChanges
       .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe(itemId => this.onItemSelected(itemId));
+
+    this.newPurchaseRequestForm.get('department')?.valueChanges
+      .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe(() => this.updateFilteredProjects());
+
+    this.itemForm.get('projectId')?.valueChanges
+      .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe(projId => {
+        const numericId = projId ? Number(projId) : null;
+        this.selectedProjectInfo = this.projectList.find(p => Number(p.id) === numericId) || null;
+        this.currentProjectActivities = this.selectedProjectInfo?.projectActivities || [];
+        const currentActId = this.itemForm.get('projectActivityId')?.value ? Number(this.itemForm.get('projectActivityId')?.value) : null;
+        this.selectedActivityInfo = this.currentProjectActivities.find(a => Number(a.id) === currentActId) || null;
+        this.checkBudgetLimit();
+      });
+
+    this.itemForm.get('projectActivityId')?.valueChanges
+      .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe(actId => {
+        const numericId = actId ? Number(actId) : null;
+        this.selectedActivityInfo = this.currentProjectActivities.find(a => Number(a.id) === numericId) || null;
+        this.checkBudgetLimit();
+      });
+
+    this.itemForm.get('amount')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.checkBudgetLimit());
+
+    this.itemForm.get('orderQuantity')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.checkBudgetLimit());
     this.route.queryParamMap.subscribe(params => {
       const id = params.get('id');
       const mode = params.get('mode');
@@ -689,8 +734,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   private resetDimensionValueSelection(): void {
     this.dimensionValueList = [];
     this.newPurchaseRequestForm.patchValue({
-      dimensionValueId: null,
-      department: ''
+      dimensionValueId: null
     }, { emitEvent: false });
     this.setDimensionValueControlState(false);
   }
@@ -715,7 +759,6 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     if (this.dimensionValueList.length === 1) {
       const only = this.dimensionValueList[0];
       ctrl?.setValue(only.id, { emitEvent: false });
-      this.newPurchaseRequestForm.get('department')?.setValue(only.description || '', { emitEvent: false });
       this.setDimensionValueControlState(true);
       this.cdr.markForCheck();
       return;
@@ -729,10 +772,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
     if (match) {
       ctrl?.setValue(match.id, { emitEvent: false });
-      this.newPurchaseRequestForm.get('department')?.setValue(match.description || selectedDepartment, { emitEvent: false });
     } else {
       ctrl?.setValue(null, { emitEvent: false });
-      this.newPurchaseRequestForm.get('department')?.setValue('', { emitEvent: false });
     }
     this.cdr.markForCheck();
   }
@@ -835,10 +876,6 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   }
 
   onDimensionValueChanged(): void {
-    const valueId = Number(this.newPurchaseRequestForm.get('dimensionValueId')?.value);
-    const selected = this.dimensionValueList.find(v => Number(v.id) === valueId);
-    const label = selected?.description || '';
-    this.newPurchaseRequestForm.get('department')?.setValue(label, { emitEvent: false });
   }
 
   onAddressSelect(id: number) {
@@ -891,6 +928,243 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         console.error('Failed to load Account dropdown:', err);
       }
     });
+  }
+
+  loadDepartments(): void {
+    this.lookupService.getAllDepartments().subscribe({
+      next: (res: any) => {
+        const list = Array.isArray(res) ? res : (res?.value || []);
+        this.departmentList = list;
+        this.updateFilteredProjects();
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Failed to load departments:', err);
+        this.departmentList = [];
+      }
+    });
+  }
+
+  loadProjects(): void {
+    this.projectService.getAllProjects().subscribe({
+      next: (res: any) => {
+        const list = Array.isArray(res) ? res : (res?.value || []);
+        this.projectList = list;
+        this.updateFilteredProjects();
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Failed to load projects:', err);
+        this.projectList = [];
+      }
+    });
+  }
+
+  updateFilteredProjects(): void {
+    const currentDeptVal = this.newPurchaseRequestForm?.get('department')?.value;
+    if (!currentDeptVal || !this.departmentList?.length) {
+      this.filteredProjectList = [];
+    } else {
+      const matchedDept = this.departmentList.find(d =>
+        d.id === Number(currentDeptVal) ||
+        (d.name && currentDeptVal && d.name.trim().toLowerCase() === String(currentDeptVal).trim().toLowerCase())
+      );
+      if (matchedDept) {
+        this.filteredProjectList = this.projectList.filter(p => Number(p.departmentId) === Number(matchedDept.id));
+      } else {
+        this.filteredProjectList = this.projectList.filter(p => Number(p.departmentId) === Number(currentDeptVal));
+      }
+    }
+
+    const currentProjId = this.itemForm?.get('projectId')?.value;
+    if (currentProjId && !this.filteredProjectList.some(p => Number(p.id) === Number(currentProjId))) {
+      this.itemForm.patchValue({ projectId: null, projectActivityId: null }, { emitEvent: false });
+      this.currentProjectActivities = [];
+      this.selectedProjectInfo = null;
+      this.selectedActivityInfo = null;
+      this.checkBudgetLimit();
+    }
+    this.cdr.markForCheck();
+  }
+
+  onProjectChanged(): void {
+    const projId = Number(this.itemForm.get('projectId')?.value);
+    this.selectedProjectInfo = this.projectList.find(p => Number(p.id) === projId) || null;
+    this.currentProjectActivities = this.selectedProjectInfo?.projectActivities || [];
+
+    const currentActId = Number(this.itemForm.get('projectActivityId')?.value);
+    if (!this.currentProjectActivities.some(a => Number(a.id) === currentActId)) {
+      this.itemForm.patchValue({ projectActivityId: null }, { emitEvent: false });
+      this.selectedActivityInfo = null;
+    } else {
+      this.selectedActivityInfo = this.currentProjectActivities.find(a => Number(a.id) === currentActId) || null;
+    }
+    this.checkBudgetLimit();
+    this.cdr.markForCheck();
+  }
+
+  onProjectActivityChanged(): void {
+    const actId = Number(this.itemForm.get('projectActivityId')?.value);
+    this.selectedActivityInfo = this.currentProjectActivities.find(a => Number(a.id) === actId) || null;
+    this.checkBudgetLimit();
+    this.cdr.markForCheck();
+  }
+
+  get isWaiveAmountActive(): boolean {
+    const hasExceptionPolicy = !!this.newPurchaseRequestForm?.get('exceptionPolicy')?.value;
+    return hasExceptionPolicy && !!this.exceptionPolicyData?.waiveAmount;
+  }
+
+  get isInsertDisabled(): boolean {
+    if (this.viewMode) return true;
+    if (this.isSelectingFinalVendor && this.editingRowIndex === null) return true;
+    if (this.isBudgetExceeded) return true;
+
+    // When Waive Amount is active in Exception Policy, allow inserting beyond allocated budget
+    if (this.isWaiveAmountActive) {
+      return false;
+    }
+
+    if (this.selectedActivityInfo) {
+      const currentAmount = Number(this.itemForm.get('amount')?.value) || 0;
+      const maxBudget = Number(this.selectedActivityInfo.budgetAmount) || 0;
+      const activityId = Number(this.selectedActivityInfo.id);
+      let previousUsed = 0;
+      if (activityId) {
+        this.newPurchaseItemData.forEach((item: any, idx: number) => {
+          if (idx !== this.editingRowIndex && Number(item.projectActivityId) === activityId) {
+            previousUsed += Number(item.amount) || 0;
+          }
+        });
+      }
+      if (maxBudget > 0 && (previousUsed + currentAmount) > maxBudget) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  checkBudgetLimit(): void {
+    const actId = this.itemForm.get('projectActivityId')?.value ? Number(this.itemForm.get('projectActivityId')?.value) : null;
+    if (!this.selectedActivityInfo && actId) {
+      this.selectedActivityInfo = this.currentProjectActivities?.find(a => Number(a.id) === actId) || null;
+      if (!this.selectedActivityInfo) {
+        for (const p of this.projectList) {
+          const found = (p.projectActivities || []).find(a => Number(a.id) === actId);
+          if (found) {
+            this.selectedActivityInfo = found;
+            if (!this.selectedProjectInfo) this.selectedProjectInfo = p;
+            break;
+          }
+        }
+      }
+    }
+
+    if (!this.selectedActivityInfo) {
+      this.isBudgetExceeded = false;
+      this.budgetExceededMessage = '';
+      this.cdr.detectChanges();
+      return;
+    }
+
+    const currentAmount = Number(this.itemForm.get('amount')?.value) || 0;
+    const currentQuantity = Number(this.itemForm.get('orderQuantity')?.value) || 0;
+    const maxBudget = Number(this.selectedActivityInfo.budgetAmount) || 0;
+    const allowedPercentage = Number(this.selectedActivityInfo.allowedPercentage) || 0;
+
+    // Calculate sum of budget from all activities in this project
+    const totalProjectBudget = (this.selectedProjectInfo?.projectActivities || []).reduce(
+      (sum, a) => sum + (Number(a.budgetAmount) || 0),
+      0
+    );
+
+    // Sum budget previously used in items table for this specific activity
+    const activityId = Number(this.selectedActivityInfo.id);
+    let previousUsedForActivity = 0;
+    if (activityId) {
+      this.newPurchaseItemData.forEach((item: any, idx: number) => {
+        if (idx !== this.editingRowIndex && Number(item.projectActivityId) === activityId) {
+          previousUsedForActivity += Number(item.amount) || 0;
+        }
+      });
+    }
+
+    const totalActivityBudget = previousUsedForActivity + currentAmount;
+    const remainingBudget = maxBudget - previousUsedForActivity;
+
+    const currentActivityPercentage = totalProjectBudget > 0
+      ? (totalActivityBudget / totalProjectBudget) * 100
+      : 0;
+
+    const isOverBudget = maxBudget > 0 && totalActivityBudget > maxBudget;
+    const isOverPercentage = allowedPercentage > 0 && totalProjectBudget > 0 && currentActivityPercentage > (allowedPercentage + 0.01);
+
+    if (isOverBudget || isOverPercentage) {
+      const formattedTotal = totalActivityBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const formattedMax = maxBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const formattedRemaining = Math.max(0, remainingBudget).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+      if (this.isWaiveAmountActive) {
+        // Waive Amount is active: allow insert, no error blocking
+        this.isBudgetExceeded = false;
+        this.budgetExceededMessage = `Allocated Budget limit exceeded for ${this.selectedActivityInfo.name} (Allocated: ${formattedMax}, Total: ${formattedTotal}), but Waive Amount is active under Exception Policy.`;
+      } else {
+        this.isBudgetExceeded = true;
+        if (isOverBudget && isOverPercentage) {
+          this.budgetExceededMessage = `The entered budget exceeds both the Allocated Budget and Allowed Percentage for ${this.selectedActivityInfo.name}. (Allocated Budget: ${formattedMax}, Available: ${formattedRemaining}, Allowed: ${allowedPercentage}%). Current Total: ${formattedTotal}`;
+        } else if (isOverBudget) {
+          this.budgetExceededMessage = `The entered budget exceeds the Allocated Budget for ${this.selectedActivityInfo.name}. (Allocated Budget: ${formattedMax}, Available: ${formattedRemaining}). Current Total: ${formattedTotal}`;
+        } else {
+          this.budgetExceededMessage = `The entered budget exceeds the Allowed Percentage (${allowedPercentage}%) for ${this.selectedActivityInfo.name}. (Current Total: ${formattedTotal}, Project Budget: ${totalProjectBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })})`;
+        }
+      }
+    } else {
+      this.isBudgetExceeded = false;
+      this.budgetExceededMessage = '';
+    }
+
+    this.cdr.detectChanges();
+  }
+
+  getActivityRemainingBudget(): { usedBudget: number; remainingBudget: number } | null {
+    if (!this.selectedActivityInfo) return null;
+    const currentActivityId = Number(this.selectedActivityInfo.id);
+    const maxBudget = Number(this.selectedActivityInfo.budgetAmount) || 0;
+
+    let used = 0;
+    this.newPurchaseItemData.forEach((item: any, idx: number) => {
+      if (idx !== this.editingRowIndex && Number(item.projectActivityId) === currentActivityId) {
+        used += Number(item.amount) || 0;
+      }
+    });
+
+    const currentFormAmount = Number(this.itemForm.get('amount')?.value) || 0;
+    const totalUsed = used + currentFormAmount;
+    return {
+      usedBudget: totalUsed,
+      remainingBudget: maxBudget - totalUsed
+    };
+  }
+
+  getProjectNameById(id: any): string {
+    if (!id) return '';
+    const p = this.projectList.find(x => Number(x.id) === Number(id));
+    return p ? p.name : '';
+  }
+
+  getActivityNameById(id: any): string {
+    if (!id) return '';
+    for (const p of this.projectList) {
+      const act = (p.projectActivities || []).find(a => Number(a.id) === Number(id));
+      if (act) return act.name;
+    }
+    return '';
+  }
+
+  isDepartmentNotInList(val: string | null): boolean {
+    if (!val) return false;
+    return !this.departmentList.some(d => d.name === val);
   }
 
   loadItems() {
@@ -1013,6 +1287,31 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   // }
 
   insertItem(): void {
+    this.checkBudgetLimit();
+    if (this.isBudgetExceeded || this.isInsertDisabled) {
+      this.toastr.error(this.budgetExceededMessage || 'The quantity and Budget is max than the given limit.');
+      return;
+    }
+
+    if (this.selectedActivityInfo && !this.isWaiveAmountActive) {
+      const currentAmount = Number(this.itemForm.get('amount')?.value) || 0;
+      const maxBudget = Number(this.selectedActivityInfo.budgetAmount) || 0;
+      const activityId = Number(this.selectedActivityInfo.id);
+      let previousUsed = 0;
+      if (activityId) {
+        this.newPurchaseItemData.forEach((item: any, idx: number) => {
+          if (idx !== this.editingRowIndex && Number(item.projectActivityId) === activityId) {
+            previousUsed += Number(item.amount) || 0;
+          }
+        });
+      }
+      if (maxBudget > 0 && (previousUsed + currentAmount) > maxBudget) {
+        this.isBudgetExceeded = true;
+        this.toastr.error(`Cannot insert item: Total budget (${(previousUsed + currentAmount).toLocaleString('en-US', { minimumFractionDigits: 2 })}) exceeds Allocated Budget (${maxBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })}).`);
+        return;
+      }
+    }
+
     if (this.itemForm.invalid) {
       this.itemForm.markAllAsTouched();
       this.toastr.warning('Please fill all required fields before inserting.');
@@ -1023,6 +1322,18 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     const itemId = Number(newItem.itemId);
     const orderQuantity = Number(newItem.orderQuantity);
     const amount = Number(newItem.amount);
+
+    if (this.filteredProjectList.length > 0 && !this.itemForm.get('projectId')?.value) {
+      this.itemForm.get('projectId')?.markAsTouched();
+      this.toastr.warning('Please select a Project before adding item.');
+      return;
+    }
+
+    if (this.currentProjectActivities.length > 0 && !this.itemForm.get('projectActivityId')?.value) {
+      this.itemForm.get('projectActivityId')?.markAsTouched();
+      this.toastr.warning('Please select a Project Activity before adding item.');
+      return;
+    }
 
     if (!itemId || Number.isNaN(itemId) || itemId <= 0) {
       this.itemForm.get('itemId')?.markAsTouched();
@@ -1044,7 +1355,17 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
     // const derivedUnitCost = orderQuantity > 0 ? amount / orderQuantity : 0;
     const newItemId = Number(newItem.itemId);
-    const normalizedItem = { ...newItem, amount, unitCost: 0 };
+    const projectId = this.itemForm.get('projectId')?.value ? Number(this.itemForm.get('projectId')?.value) : null;
+    const projectActivityId = this.itemForm.get('projectActivityId')?.value ? Number(this.itemForm.get('projectActivityId')?.value) : null;
+    const normalizedItem = {
+      ...newItem,
+      amount,
+      unitCost: 0,
+      projectId,
+      projectActivityId,
+      projectName: this.selectedProjectInfo?.name || this.getProjectNameById(projectId),
+      projectActivityName: this.selectedActivityInfo?.name || this.getActivityNameById(projectActivityId)
+    };
 
     // Duplicate check — works for add and edit both
     const duplicate = this.newPurchaseItemData.some((item, index) =>
@@ -1095,48 +1416,42 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       orderQuantity: 0,
       accountId: 1,
       itemType: 'Inventory',
+      projectId: projectId,
+      projectActivityId: projectActivityId,
       reqByDate: this.toDateInputValue(new Date())
     });
+    this.checkBudgetLimit();
     this.syncFinalVendorControlState();
   }
 
   // Edit a row
-  // editRow(row: any, rowIndex: number) {
-  //   this.editingRowIndex = rowIndex;
-  //   this.itemForm.patchValue({
-  //     id: row.id,
-  //     itemType: row.itemType,
-  //     itemId: row.itemId,
-  //     unitOfMeasurementId: row.unitOfMeasurementId,
-  //     amount: row.amount,
-  //     unitCost: row.unitCost,
-  //     orderQuantity: row.orderQuantity,
-  //     reqByDate: this.toDateInputValue(row.reqByDate),
-  //     itemDescription: row.itemDescription,
-  //     vendorUserId: row.vendorUserId,
-  //     // vendorCompanyId: row.vendorCompanyId,
-  //     accountId: row.accountId,
-  //     remarks: row.remarks,
-  //     attachments: row.attachments
-  //   });
-
-  //   this.onVendorChange(row.vendorUserId);
-
-  //   Promise.resolve().then(() => {
-  //     this.itemForm.patchValue({ vendorCompanyId: row.vendorCompanyId }, { emitEvent: false });
-  //   });
-
-  //   // this.editingRowIndex = rowIndex;
-  // }
-
   editRow(row: any, rowIndex: number) {
     // mark which row is being edited
     this.editingRowIndex = rowIndex;
+
+    const projId = row.projectId ? Number(row.projectId) : null;
+    const actId = row.projectActivityId ? Number(row.projectActivityId) : null;
+
+    if (projId) {
+      this.selectedProjectInfo = this.projectList.find(p => Number(p.id) === projId) || null;
+      this.currentProjectActivities = this.selectedProjectInfo?.projectActivities || [];
+      if (actId) {
+        this.selectedActivityInfo = this.currentProjectActivities.find(a => Number(a.id) === actId) || null;
+      } else {
+        this.selectedActivityInfo = null;
+      }
+    } else {
+      this.selectedProjectInfo = null;
+      this.currentProjectActivities = [];
+      this.selectedActivityInfo = null;
+    }
 
     // patch form values from the selected row
     this.itemForm.patchValue({
       id: row.id || null,
       itemType: row.itemType || '',
+      projectId: projId,
+      projectActivityId: actId,
       itemId: Number(row.itemId) || null,
       unitOfMeasurementId: Number(row.unitOfMeasurementId) || null,
       orderQuantity: Number(row.orderQuantity) || 0,
@@ -1151,6 +1466,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       attachments: row.attachments || []
     });
     this.selectedUomLabel = this.resolveUomSymbol(row) || '';
+    this.checkBudgetLimit();
     this.syncFinalVendorControlState();
 
     // if vendor changes, refresh vendor company list
@@ -1194,10 +1510,16 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
             orderQuantity: 0,
             accountId: 1,
             itemType: 'Inventory',
+            projectId: null,
+            projectActivityId: null,
             reqByDate: this.toDateInputValue(new Date())
           });
+          this.selectedProjectInfo = null;
+          this.selectedActivityInfo = null;
+          this.currentProjectActivities = [];
           this.editingRowIndex = null;
         }
+        this.checkBudgetLimit();
         this.syncFinalVendorControlState();
 
         if (isSelectedDeletedRow) {
@@ -1243,6 +1565,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
         this.newPurchaseRequestForm.patchValue({
           ...requestData,
+          department: requestData.department || null,
           submittedDate: this.toDateInputValue(requestData.submittedDate)
         });
 
@@ -1312,6 +1635,11 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
             isPoRequested: item.isPoRequested,
             isRfqCreated: item.isRfqCreated,
             isInventoryTransfer: item.isInventoryTransfer,
+            projectId: item.projectId || null,
+            projectName: item.projectName || this.getProjectNameById(item.projectId),
+            projectActivityId: item.projectActivityId || null,
+            projectActivityName: item.projectActivityName || this.getActivityNameById(item.projectActivityId),
+            departmentId: item.departmentId || null,
             attachments: (item.attachments || []).map((a: any) => ({
               id: a.id,
               content: a.content || '',
@@ -1386,6 +1714,12 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       return;
     }
 
+    const matchedDraftDept = this.departmentList.find(d =>
+      d.id === Number(f.department) ||
+      (d.name && f.department && d.name.trim().toLowerCase() === String(f.department).trim().toLowerCase())
+    );
+    const draftDepartmentId = matchedDraftDept ? matchedDraftDept.id : (Number(f.department) || null);
+
     const purchaseItems = this.newPurchaseItemData?.length
       ? this.newPurchaseItemData.map(item => ({
         id: item.id || null,
@@ -1405,6 +1739,9 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         vendorCompanyId: item.vendorCompanyId || null,
         vatProdPostingGroup: item.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
         unitOfMeasurementSymbol: this.resolveUomSymbol(item),
+        projectId: item.projectId ? Number(item.projectId) : null,
+        projectActivityId: item.projectActivityId ? Number(item.projectActivityId) : null,
+        departmentId: item.departmentId ? Number(item.departmentId) : draftDepartmentId,
         requisitionNo: f.requisitionNo,
         attachments: item.attachments?.map(att => ({
 
@@ -1430,6 +1767,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       status: 'Draft',
       requestStatus: 'Draft',
       department: f.department || '',
+      departmentId: draftDepartmentId,
       designation: f.designation || '',
       businessUnit: f.businessUnit || '',
       partialDeliveryAcceptable: f.partialDeliveryAcceptable || false,
@@ -1497,6 +1835,12 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       return;
     }
 
+    const matchedSubmitDept = this.departmentList.find(d =>
+      d.id === Number(f.department) ||
+      (d.name && f.department && d.name.trim().toLowerCase() === String(f.department).trim().toLowerCase())
+    );
+    const submitDepartmentId = matchedSubmitDept ? matchedSubmitDept.id : (Number(f.department) || null);
+
     const purchaseItems = this.newPurchaseItemData?.length
       ? this.newPurchaseItemData.map(item => ({
         id: item.id || null,
@@ -1516,6 +1860,9 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         vendorCompanyId: item.vendorCompanyId || null,
         vatProdPostingGroup: item.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
         unitOfMeasurementSymbol: this.resolveUomSymbol(item),
+        projectId: item.projectId ? Number(item.projectId) : null,
+        projectActivityId: item.projectActivityId ? Number(item.projectActivityId) : null,
+        departmentId: item.departmentId ? Number(item.departmentId) : submitDepartmentId,
         requisitionNo: f.requisitionNo,
         attachments: item.attachments?.map(att => ({
 
@@ -1541,6 +1888,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       status: 'New',
       requestStatus: 'New',
       department: f.department,
+      departmentId: submitDepartmentId,
       designation: f.designation,
       businessUnit: f.businessUnit,
       partialDeliveryAcceptable: f.partialDeliveryAcceptable,
@@ -1752,6 +2100,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       id: null,
       requisitionNo: '',
       itemType: 'Inventory',
+      projectId: null,
+      projectActivityId: null,
       itemId: 0,
       unitOfMeasurementId: 0,
       amount: 0,
@@ -1774,6 +2124,12 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
     this.filteredCompanies = [];
     this.syncFinalVendorControlState();
+
+    this.selectedProjectInfo = null;
+    this.selectedActivityInfo = null;
+    this.currentProjectActivities = [];
+    this.isBudgetExceeded = false;
+    this.budgetExceededMessage = '';
 
     this.itemForm.markAsPristine();
     this.itemForm.markAsUntouched();
@@ -2085,11 +2441,13 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       this.exceptionPolicyData = null;
       this.showExceptionPolicyView = false;
       ctrl.setValue(false, { emitEvent: false });
+      this.checkBudgetLimit();
     } else {
       // revert back ON
       ctrl.setValue(true, { emitEvent: false });
       input.checked = true;
       this.showExceptionPolicyView = true;
+      this.checkBudgetLimit();
     }
   }
 
@@ -2122,15 +2480,6 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       existing: this.exceptionPolicyData
     };
 
-    // prefill
-    // if (this.exceptionPolicyData) {
-    //   modalRef.componentInstance.exceptionPolicyForm?.patchValue(this.exceptionPolicyData, { emitEvent: false });
-    // } else {
-    //   modalRef.componentInstance.exceptionPolicyForm?.patchValue(
-    //     { requisitionNo: f.requisitionNo, subject: f.subject, department: f.department },
-    //     { emitEvent: false }
-    //   );
-    // }
     if (this.exceptionPolicyData) {
       modalRef.componentInstance.exceptionPolicyForm?.patchValue({
         requisitionNo: this.exceptionPolicyData.requisitionNo,
@@ -2140,15 +2489,17 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         description: this.exceptionPolicyData.description,
         estimatedValue: this.exceptionPolicyData.estimatedValue,
         justification: this.exceptionPolicyData.justification,
-        waiveApproval: this.exceptionPolicyData.waiveApproval
+        waiveApproval: !!this.exceptionPolicyData.waiveApproval,
+        waiveAmount: !!this.exceptionPolicyData.waiveAmount
       }, { emitEvent: false });
     } else {
       modalRef.componentInstance.exceptionPolicyForm?.patchValue({
-        //purchaseRequestId: this.currentRequestId,
         requesterName: f.receiverName,
         requisitionNo: f.requisitionNo,
         subject: f.subject,
-        department: f.department
+        department: f.department,
+        waiveApproval: false,
+        waiveAmount: false
       }, { emitEvent: false });
     }
 
@@ -2163,6 +2514,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
           this.showExceptionPolicyView = true;
 
           ctrl.setValue(true, { emitEvent: false });
+          this.checkBudgetLimit();
           return;
         }
 
@@ -2171,6 +2523,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
           ctrl.setValue(false, { emitEvent: false });
           this.showExceptionPolicyView = false;
         }
+        this.checkBudgetLimit();
       })
       .catch(() => {
         this.exceptionModalOpen = false;
@@ -2179,6 +2532,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
           ctrl.setValue(false, { emitEvent: false });
           this.showExceptionPolicyView = false;
         }
+        this.checkBudgetLimit();
       });
   }
 

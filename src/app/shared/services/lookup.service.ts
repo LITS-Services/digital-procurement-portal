@@ -119,6 +119,14 @@ export class LookupService {
   getAllProcurementCompanies() {
     return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=procurement-companies`);
   }
+
+  getAllDepartments() {
+    return this.http.get<any>(`${environment.apiUrl}/Department/GetAll`);
+  }
+
+  getAllProjects() {
+    return this.http.get<any>(`${environment.apiUrl}/Project/GetAll`);
+  }
   // getAddress2ByEntity(entityId: number) {
   //   const url = `${this.baseUrl}/dropdowns`;
   //   const params = {

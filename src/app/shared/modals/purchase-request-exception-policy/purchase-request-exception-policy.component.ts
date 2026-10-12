@@ -36,6 +36,7 @@ export class PurchaseRequestExceptionPolicyComponent implements OnInit {
       estimatedValue: [null],
       justification: [''],
       waiveApproval: [false],
+      waiveAmount: [false],
     });
   }
 
@@ -51,16 +52,18 @@ export class PurchaseRequestExceptionPolicyComponent implements OnInit {
     });
 
     // Patch existing exception policy if present
-    if (this.data.exceptionPolicy) {
+    const policy = this.data.existing || this.data.exceptionPolicy;
+    if (policy) {
       this.exceptionPolicyForm.patchValue({
-        requisitionNo: this.data.exceptionPolicy.requisitionNo,
-        requesterName: this.data.exceptionPolicy.requesterName,
-        subject: this.data.exceptionPolicy.subject,
-        department: this.data.exceptionPolicy.department,
-        description: this.data.exceptionPolicy.description,
-        estimatedValue: this.data.exceptionPolicy.estimatedValue,
-        justification: this.data.exceptionPolicy.justification,
-        waiveApproval: this.data.exceptionPolicy.waiveApproval
+        requisitionNo: policy.requisitionNo,
+        requesterName: policy.requesterName,
+        subject: policy.subject,
+        department: policy.department,
+        description: policy.description,
+        estimatedValue: policy.estimatedValue,
+        justification: policy.justification,
+        waiveApproval: !!policy.waiveApproval,
+        waiveAmount: !!policy.waiveAmount
       });
     }
   }
