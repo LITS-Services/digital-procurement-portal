@@ -568,12 +568,7 @@
                             <div class="form-group mb-2">
                               <label>Order Quantity <span class="text-danger">*</span></label>
                               <input type="number" class="form-control custom-input" formControlName="orderQuantity"
-                                (input)="checkBudgetLimit()" (change)="checkBudgetLimit()" (keyup)="checkBudgetLimit()"
-                                [ngClass]="{ 'is-invalid border-danger': isBudgetExceeded }"
                                 placeholder="Enter Order Quantity" />
-                              <div *ngIf="isBudgetExceeded" class="text-danger small mt-1 font-weight-bold">
-                                <i class="ft-alert-circle mr-1"></i> Quantity & Budget limit exceeded
-                              </div>
                             </div>
                           </div>
 

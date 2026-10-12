@@ -275,9 +275,6 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.checkBudgetLimit());
 
-    this.itemForm.get('orderQuantity')?.valueChanges
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.checkBudgetLimit());
     this.route.queryParamMap.subscribe(params => {
       const id = params.get('id');
       const mode = params.get('mode');
@@ -1131,15 +1128,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     }
 
     const currentAmount = Number(this.itemForm.get('amount')?.value) || 0;
-    const currentQuantity = Number(this.itemForm.get('orderQuantity')?.value) || 0;
     const maxBudget = Number(this.selectedActivityInfo.budgetAmount) || 0;
     const allowedPercentage = Number(this.selectedActivityInfo.allowedPercentage) || 0;
-
-    // Calculate sum of budget from all activities in this project
-    const totalProjectBudget = (this.selectedProjectInfo?.projectActivities || []).reduce(
-      (sum, a) => sum + (Number(a.budgetAmount) || 0),
-      0
-    );
 
     // Sum budget previously used in items table for this specific activity
     const activityId = Number(this.selectedActivityInfo.id);
@@ -1155,14 +1145,10 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     const totalActivityBudget = previousUsedForActivity + currentAmount;
     const remainingBudget = maxBudget - previousUsedForActivity;
 
-    const currentActivityPercentage = totalProjectBudget > 0
-      ? (totalActivityBudget / totalProjectBudget) * 100
-      : 0;
-
+    // Over budget condition: Total entered budget for activity exceeds its Allocated Budget
     const isOverBudget = maxBudget > 0 && totalActivityBudget > maxBudget;
-    const isOverPercentage = allowedPercentage > 0 && totalProjectBudget > 0 && currentActivityPercentage > (allowedPercentage + 0.01);
 
-    if (isOverBudget || isOverPercentage) {
+    if (isOverBudget) {
       const formattedTotal = totalActivityBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       const formattedMax = maxBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       const formattedRemaining = Math.max(0, remainingBudget).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -1173,13 +1159,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         this.budgetExceededMessage = `Allocated Budget limit exceeded for ${this.selectedActivityInfo.name} (Allocated: ${formattedMax}, Total: ${formattedTotal}), but Waive Amount is active under Exception Policy.`;
       } else {
         this.isBudgetExceeded = true;
-        if (isOverBudget && isOverPercentage) {
-          this.budgetExceededMessage = `The entered budget exceeds both the Allocated Budget and Allowed Percentage for ${this.selectedActivityInfo.name}. (Allocated Budget: ${formattedMax}, Available: ${formattedRemaining}, Allowed: ${allowedPercentage}%). Current Total: ${formattedTotal}`;
-        } else if (isOverBudget) {
-          this.budgetExceededMessage = `The entered budget exceeds the Allocated Budget for ${this.selectedActivityInfo.name}. (Allocated Budget: ${formattedMax}, Available: ${formattedRemaining}). Current Total: ${formattedTotal}`;
-        } else {
-          this.budgetExceededMessage = `The entered budget exceeds the Allowed Percentage (${allowedPercentage}%) for ${this.selectedActivityInfo.name}. (Current Total: ${formattedTotal}, Project Budget: ${totalProjectBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })})`;
-        }
+        this.budgetExceededMessage = `The entered budget exceeds the Allocated Budget for ${this.selectedActivityInfo.name}. (Allocated Budget: ${formattedMax}, Available: ${formattedRemaining}). Current Total: ${formattedTotal}`;
       }
     } else {
       this.isBudgetExceeded = false;
