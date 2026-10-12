@@ -429,7 +429,7 @@
                         </div>
 
                         <div class="col-12 px-1 mb-2">
-                          <div class="row align-items-end gx-2">
+                          <div class="row align-items-center gx-2">
                             <!-- Item Type Radios -->
                             <div class="col-auto">
                               <label class="d-block mb-1 font-weight-bold">Item Type <span class="text-danger">*</span></label>
@@ -450,50 +450,19 @@
                                 </div>
                               </div>
                             </div>
-
-                            <!-- Project Dropdown -->
-                            <div class="col-md-4 col-sm-6">
-                              <div class="form-group mb-0">
-                                <label class="mb-1 font-weight-bold">
-                                  Project <span class="text-danger">*</span>
-                                  <small *ngIf="!newPurchaseRequestForm.get('department')?.value" class="text-warning ml-1">
-                                    (Select Department first)
-                                  </small>
-                                </label>
-                                <select class="form-control custom-input" formControlName="projectId"
-                                  (change)="onProjectChanged()">
-                                  <option [ngValue]="null" disabled selected>
-                                    {{ newPurchaseRequestForm.get('department')?.value ? '-- Select Project --' : '-- Select Department first --' }}
-                                  </option>
-                                  <option *ngFor="let proj of filteredProjectList" [ngValue]="proj.id">
-                                    {{ proj.name }}
-                                  </option>
-                                </select>
-                              </div>
-                            </div>
-
-                            <!-- Project Activity Dropdown -->
-                            <div class="col-md-4 col-sm-6">
-                              <div class="form-group mb-0">
-                                <label class="mb-1 font-weight-bold">
-                                  Project Activity <span class="text-danger">*</span>
-                                </label>
-                                <select class="form-control custom-input" formControlName="projectActivityId"
-                                  (change)="onProjectActivityChanged()"
-                                  [disabled]="!currentProjectActivities.length">
-                                  <option [ngValue]="null" disabled selected>
-                                    {{ currentProjectActivities.length ? '-- Select Activity --' : '-- Select Project first --' }}
-                                  </option>
-                                  <option *ngFor="let act of currentProjectActivities" [ngValue]="act.id">
-                                    {{ act.name }} (Budget: {{ act.budgetAmount | number }}, Allowed: {{ act.allowedPercentage }}%)
-                                  </option>
-                                </select>
-                              </div>
-                            </div>
                           </div>
+                        </div>
 
-                          <!-- Activity Budget Info Chip / Banner -->
-                          <div *ngIf="selectedActivityInfo" class="mt-2 p-2 rounded d-flex flex-wrap align-items-center justify-content-between"
+                        <div class="col-12">
+                          <hr>
+                        </div>
+                        <div class="col-12">
+                          <h6>Item Details</h6>
+                        </div>
+
+                        <!-- Activity Budget Info Chip / Banner (Shown above fields) -->
+                        <div class="col-12 px-1 mb-2" *ngIf="selectedActivityInfo">
+                          <div class="p-2 rounded d-flex flex-wrap align-items-center justify-content-between"
                             style="background: #eef4fc; border: 1px solid #c7ddfb; font-size: 0.85rem;">
                             <div>
                               <span class="font-weight-bold text-primary mr-3">
@@ -518,34 +487,40 @@
                           </div>
                         </div>
 
-                        <!-- Budget Exceeded Warning Alert Banner -->
-                        <div class="col-12 px-1 mb-2" *ngIf="isBudgetExceeded">
-                          <div class="alert alert-danger d-flex align-items-center mb-0 py-2 px-3 shadow-sm border-danger" role="alert" style="border-radius: 6px;">
-                            <i class="ft-alert-triangle mr-2 text-danger font-medium-3"></i>
-                            <div class="flex-grow-1">
-                              <strong>Warning:</strong> {{ budgetExceededMessage }}
+                        <div class="form-grid items-form-grid w-100 px-1">
+                          <!-- Project Dropdown -->
+                          <div class="form-grid__item">
+                            <div class="form-group mb-2">
+                              <label>Project <span class="text-danger">*</span></label>
+                              <select class="form-control custom-input" formControlName="projectId"
+                                (change)="onProjectChanged()">
+                                <option [ngValue]="null" disabled selected>
+                                  -- Select Project --
+                                </option>
+                                <option *ngFor="let proj of filteredProjectList" [ngValue]="proj.id">
+                                  {{ proj.name }}
+                                </option>
+                              </select>
                             </div>
                           </div>
-                        </div>
 
-                        <!-- Waive Amount Active Info Banner (when budget exceeded but allowed via Waive Amount) -->
-                        <div class="col-12 px-1 mb-2" *ngIf="!isBudgetExceeded && isWaiveAmountActive && budgetExceededMessage">
-                          <div class="alert alert-warning d-flex align-items-center mb-0 py-2 px-3 shadow-sm border-warning" role="alert" style="border-radius: 6px;">
-                            <i class="ft-info mr-2 text-warning font-medium-3"></i>
-                            <div class="flex-grow-1">
-                              <strong>Exception Policy:</strong> {{ budgetExceededMessage }}
+                          <!-- Project Activity Dropdown -->
+                          <div class="form-grid__item">
+                            <div class="form-group mb-2">
+                              <label>Project Activity <span class="text-danger">*</span></label>
+                              <select class="form-control custom-input" formControlName="projectActivityId"
+                                (change)="onProjectActivityChanged()"
+                                [disabled]="!currentProjectActivities.length">
+                                <option [ngValue]="null" disabled selected>
+                                  {{ currentProjectActivities.length ? '-- Select Activity --' : '-- Select Project first --' }}
+                                </option>
+                                <option *ngFor="let act of currentProjectActivities" [ngValue]="act.id">
+                                  {{ act.name }} (Budget: {{ act.budgetAmount | number }}, Allowed: {{ act.allowedPercentage }}%)
+                                </option>
+                              </select>
                             </div>
                           </div>
-                        </div>
 
-                        <div class="col-12">
-                          <hr>
-                        </div>
-                        <div class="col-12">
-                          <h6>Item Details</h6>
-                        </div>
-
-                        <div class="form-grid w-100 px-1">
                           <div class="form-grid__item">
                             <div class="form-group mb-2">
                               <label>Item <span class="text-danger">*</span></label>
@@ -572,21 +547,11 @@
                             </div>
                           </div>
 
-                          <!-- Unit Cost hidden: budget is entered manually; unitCost stays 0 in TS for API payloads.
-                          <div class="form-grid__item">
-                            <div class="form-group mb-2">
-                              <label>Unit Cost</label>
-                              <input type="number" class="form-control custom-input" formControlName="unitCost"
-                                placeholder="Enter Unit Cost" />
-                            </div>
-                          </div>
-                          -->
-
                           <div class="form-grid__item">
                             <div class="form-group mb-2">
                               <label>Budget Amount <span class="text-danger">*</span></label>
                               <input type="number" class="form-control custom-input" formControlName="amount"
-                                (input)="checkBudgetLimit()" (change)="checkBudgetLimit()" (keyup)="checkBudgetLimit()"
+                                (input)="checkBudgetLimit()" (change)="checkBudgetLimit()"
                                 [ngClass]="{ 'is-invalid border-danger': isBudgetExceeded }"
                                 placeholder="Enter Budget Amount" />
                               <div *ngIf="isBudgetExceeded" class="text-danger small mt-1 font-weight-bold">
@@ -602,10 +567,11 @@
                             </div>
                           </div>
 
-                          <div class="form-grid__item form-grid__item--span">
+                          <!-- Item Description on separate row -->
+                          <div class="form-grid__item form-grid__item--full">
                             <div class="form-group mb-2">
                               <label>Item Description</label>
-                              <textarea rows="1" class="form-control custom-input" formControlName="itemDescription"
+                              <textarea rows="2" class="form-control custom-input" formControlName="itemDescription"
                                 placeholder="Enter Item Description"></textarea>
                             </div>
                           </div>

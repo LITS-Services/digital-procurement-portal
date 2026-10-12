@@ -1077,30 +1077,6 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   get isInsertDisabled(): boolean {
     if (this.viewMode) return true;
     if (this.isSelectingFinalVendor && this.editingRowIndex === null) return true;
-    if (this.isBudgetExceeded) return true;
-
-    // When Waive Amount is active in Exception Policy, allow inserting beyond allocated budget
-    if (this.isWaiveAmountActive) {
-      return false;
-    }
-
-    if (this.selectedActivityInfo) {
-      const currentAmount = Number(this.itemForm.get('amount')?.value) || 0;
-      const maxBudget = Number(this.selectedActivityInfo.budgetAmount) || 0;
-      const activityId = Number(this.selectedActivityInfo.id);
-      let previousUsed = 0;
-      if (activityId) {
-        this.newPurchaseItemData.forEach((item: any, idx: number) => {
-          if (idx !== this.editingRowIndex && Number(item.projectActivityId) === activityId) {
-            previousUsed += Number(item.amount) || 0;
-          }
-        });
-      }
-      if (maxBudget > 0 && (previousUsed + currentAmount) > maxBudget) {
-        return true;
-      }
-    }
-
     return false;
   }
 
@@ -1330,8 +1306,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
   insertItem(): void {
     this.checkBudgetLimit();
-    if (this.isBudgetExceeded || this.isInsertDisabled) {
-      this.toastr.error(this.budgetExceededMessage || 'The quantity and Budget is max than the given limit.');
+    if (this.isBudgetExceeded) {
+      this.toastr.warning(this.budgetExceededMessage || 'The quantity and Budget is max than the given limit.');
       return;
     }
 
@@ -1349,7 +1325,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       }
       if (maxBudget > 0 && (previousUsed + currentAmount) > maxBudget) {
         this.isBudgetExceeded = true;
-        this.toastr.error(`Cannot insert item: Total budget (${(previousUsed + currentAmount).toLocaleString('en-US', { minimumFractionDigits: 2 })}) exceeds Allocated Budget (${maxBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })}).`);
+        this.toastr.warning(`Cannot insert item: Total budget (${(previousUsed + currentAmount).toLocaleString('en-US', { minimumFractionDigits: 2 })}) exceeds Allocated Budget (${maxBudget.toLocaleString('en-US', { minimumFractionDigits: 2 })}).`);
         return;
       }
     }

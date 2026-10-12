@@ -424,8 +424,39 @@ form label, .form-group label {
    576–992   → 2 cols (tablets)
    <576      → 1 col (mobile) */
 
+.items-form-grid {
+  --form-grid-cols: 4;
+
+  .form-group {
+    margin-bottom: 0.5rem;
+    display: flex;
+    flex-direction: column;
+
+    label {
+      margin-bottom: 8px !important;
+      min-height: 20px;
+      line-height: 20px;
+      font-weight: 400;
+      color: #262626 !important;
+      display: flex;
+      align-items: center;
+    }
+
+    .form-control,
+    .custom-input {
+      height: 38px;
+    }
+
+    textarea.custom-input {
+      height: auto;
+      min-height: 60px;
+    }
+  }
+}
+
 @media (min-width: 1600px) {
   .form-grid { --form-grid-cols: 5; }
+  .items-form-grid { --form-grid-cols: 4 !important; }
 }
 
 @media (min-width: 1300px) and (max-width: 1599.98px) {
@@ -709,4 +740,22 @@ border-bottom: none !important;
 .stat-icon-wrapper-simple i {
   font-size: 1.5rem;
   opacity: 0.8;
+}
+
+/* Fix budget amount number input validation icon cutting & stepper overlap */
+input[type="number"].custom-input {
+  -moz-appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+.custom-input.is-invalid,
+input[type="number"].custom-input.is-invalid {
+  background-position: right 0.75rem center !important;
+  background-size: 16px 16px !important;
+  padding-right: 2.25rem !important;
 }
