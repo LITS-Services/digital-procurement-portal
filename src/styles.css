@@ -479,20 +479,39 @@ body.modal-open {
 }
 
 /* Custom Setup Modals (Department, Project, Data Source, etc.) */
+.cstm-setup-modal .modal-dialog {
+  border: none !important;
+  outline: none !important;
+}
+
 .cstm-setup-modal .modal-content {
   border: none !important;
   outline: none !important;
   border-radius: 12px !important;
   overflow: hidden !important;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.16) !important;
-  background: #ffffff !important;
+  background: transparent !important;
 }
 
 .cstm-setup-modal .modal-header {
   border: none !important;
-  border-radius: 0 !important;
-  margin: -1px -1px 0 -1px !important;
+  outline: none !important;
+  margin: 0 !important;
+  border-top-left-radius: 12px !important;
+  border-top-right-radius: 12px !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
   background: linear-gradient(168deg, #116AEF 0%, #114C7A 100%) !important;
+}
+
+.cstm-setup-modal .modal-body {
+  background: #ffffff !important;
+}
+
+.cstm-setup-modal .modal-footer {
+  border-bottom-left-radius: 12px !important;
+  border-bottom-right-radius: 12px !important;
+  background: #fafbfc !important;
 }
 
 .cstm-setup-modal.dept-modal .modal-dialog {

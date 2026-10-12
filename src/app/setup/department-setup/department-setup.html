@@ -37,8 +37,8 @@
         </div>
       </div>
 
-      <div class="pr-table-wrapper">
-        <ngx-datatable class="bootstrap core-bootstrap" [rows]="departments" [columnMode]="'force'"
+      <div class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
+        <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="departments" [columnMode]="'force'"
           [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="pageSize"
           [externalPaging]="true" [count]="totalItems" [offset]="currentPage - 1" (page)="onPageChange($event)"
           [selected]="selected" [selectionType]="SelectionType.checkbox" (select)="onSelect($event)">

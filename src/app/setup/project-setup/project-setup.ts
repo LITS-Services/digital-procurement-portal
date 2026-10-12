@@ -1,22 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, NgZone, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgxDatatableModule, SelectionType } from '@swimlane/ngx-datatable';
+import { NgxDatatableModule, SelectionType, DatatableComponent } from '@swimlane/ngx-datatable';
 import { RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ProjectService } from '../../shared/services/project.service';
 import { DepartmentService } from '../../shared/services/department.service';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { DatatableAutoResizeDirective } from '../../shared/directives/dataTable-auto-resize.directive';
 
 @Component({
   selector: 'app-project-setup',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgxDatatableModule, NgbModule, RouterModule, NgSelectModule],
+  imports: [CommonModule, ReactiveFormsModule, NgxDatatableModule, NgbModule, RouterModule, NgSelectModule, DatatableAutoResizeDirective],
   templateUrl: './project-setup.html',
   styleUrls: ['./project-setup.scss']
 })
 export class ProjectSetup implements OnInit {
+  @ViewChild('datatable') datatable?: DatatableComponent;
+
   projects: any[] = [];
   departments: any[] = [];
   selected: any[] = [];
@@ -34,7 +37,9 @@ export class ProjectSetup implements OnInit {
     private departmentService: DepartmentService,
     private modalService: NgbModal,
     private fb: FormBuilder,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone
   ) {
     this.projectForm = this.fb.group({
       id: [0],
@@ -68,15 +73,47 @@ export class ProjectSetup implements OnInit {
     this.activities.removeAt(index);
   }
 
+  onPercentageInput(event: any, index: number) {
+    const input = event.target as HTMLInputElement;
+    let val = parseFloat(input.value);
+    if (isNaN(val)) return;
+    if (val > 100) {
+      val = 100;
+      input.value = '100';
+      this.activities.at(index).get('allowedPercentage')?.setValue(100);
+    } else if (val < 0) {
+      val = 0;
+      input.value = '0';
+      this.activities.at(index).get('allowedPercentage')?.setValue(0);
+    }
+  }
+
+  onBudgetInput(event: any, index: number) {
+    const input = event.target as HTMLInputElement;
+    let val = parseFloat(input.value);
+    if (isNaN(val)) return;
+    if (val < 0) {
+      val = 0;
+      input.value = '0';
+      this.activities.at(index).get('budgetAmount')?.setValue(0);
+    }
+  }
+
   loadProjects() {
     this.projectService.getAll(this.currentPage, this.pageSize).subscribe({
       next: (res: any) => {
-        this.projects = res.result || [];
-        this.totalItems = res.totalItems || 0;
-        this.selected = [];
+        this.ngZone.run(() => {
+          this.projects = [...(res.result || [])];
+          this.totalItems = res.totalItems || 0;
+          this.selected = [];
+          this.cdr.detectChanges();
+          this.datatable?.recalculate();
+        });
       },
       error: () => {
-        this.toastr.error('Failed to load projects.');
+        this.ngZone.run(() => {
+          this.cdr.detectChanges();
+        });
       }
     });
   }
@@ -92,16 +129,22 @@ export class ProjectSetup implements OnInit {
   loadDepartments() {
     this.departmentService.getAll(1, 1000).subscribe({
       next: (res: any) => {
-        this.departments = res.result || [];
+        this.ngZone.run(() => {
+          this.departments = [...(res.result || [])];
+          this.cdr.detectChanges();
+        });
       },
       error: () => {
-        this.toastr.error('Failed to load departments.');
+        this.ngZone.run(() => {
+          this.cdr.detectChanges();
+        });
       }
     });
   }
 
   onSelect({ selected }: any) {
     this.selected = [...selected];
+    this.cdr.detectChanges();
   }
 
   openModal(content: any) {
@@ -172,11 +215,15 @@ export class ProjectSetup implements OnInit {
       if (confirm('Are you sure you want to delete the selected project?')) {
         this.projectService.delete(this.selected[0].id).subscribe({
           next: () => {
-            this.toastr.success('Project deleted successfully!');
-            this.loadProjects();
+            this.ngZone.run(() => {
+              this.loadProjects();
+              this.cdr.detectChanges();
+            });
           },
-          error: (err: any) => {
-            this.toastr.error(err?.error?.message || 'Failed to delete project.');
+          error: () => {
+            this.ngZone.run(() => {
+              this.cdr.detectChanges();
+            });
           }
         });
       }
@@ -191,14 +238,18 @@ export class ProjectSetup implements OnInit {
       
       obs.subscribe({
         next: () => {
-          this.saving = false;
-          this.toastr.success(`Project ${this.isEdit ? 'updated' : 'created'} successfully!`);
-          modal.close();
-          this.loadProjects();
+          this.ngZone.run(() => {
+            this.saving = false;
+            modal.close();
+            this.loadProjects();
+            this.cdr.detectChanges();
+          });
         },
-        error: (err: any) => {
-          this.saving = false;
-          this.toastr.error(err?.error?.message || `Failed to ${this.isEdit ? 'update' : 'create'} project.`);
+        error: () => {
+          this.ngZone.run(() => {
+            this.saving = false;
+            this.cdr.detectChanges();
+          });
         }
       });
     }

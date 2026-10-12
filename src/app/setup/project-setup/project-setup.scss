@@ -4,6 +4,8 @@
     .modal-dialog {
       max-width: 840px !important;
       margin: 1.75rem auto;
+      border: none !important;
+      outline: none !important;
     }
 
     .modal-content {
@@ -12,15 +14,19 @@
       outline: none !important;
       box-shadow: 0 16px 36px rgba(0, 0, 0, 0.16) !important;
       overflow: hidden !important;
-      background: #ffffff !important;
+      background: transparent !important;
     }
 
     .modal-header {
       background: linear-gradient(168deg, #116AEF 0%, #114C7A 100%) !important;
       color: #ffffff !important;
-      border-radius: 0 !important;
+      border-top-left-radius: 12px !important;
+      border-top-right-radius: 12px !important;
+      border-bottom-left-radius: 0 !important;
+      border-bottom-right-radius: 0 !important;
       border: none !important;
-      margin: -1px -1px 0 -1px !important;
+      outline: none !important;
+      margin: 0 !important;
       padding: 1rem 1.35rem !important;
       display: flex !important;
       align-items: center !important;

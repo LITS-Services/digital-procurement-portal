@@ -175,23 +175,6 @@
 
               <div class="form-grid__item">
                 <div class="form-group mb-2">
-                  <label>Department</label>
-                  <select class="form-control custom-input filter-label" formControlName="department"
-                    [disabled]="viewMode">
-                    <option [ngValue]="null" disabled hidden>-- Select Department --</option>
-                    <option *ngIf="isDepartmentNotInList(newPurchaseRequestForm.get('department')?.value)"
-                      [ngValue]="newPurchaseRequestForm.get('department')?.value">
-                      {{ newPurchaseRequestForm.get('department')?.value }}
-                    </option>
-                    <option *ngFor="let d of departmentList" [ngValue]="d.name">
-                      {{ d.name }}
-                    </option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-grid__item">
-                <div class="form-group mb-2">
                   <label class="d-flex align-items-center mr-2 w-100" [ngbTooltip]="entityHint">
                     <span class="mr-2">Entity</span>
 
@@ -206,6 +189,23 @@
                     <option [ngValue]="null" disabled hidden>-- Select Entity --</option>
                     <option *ngFor="let e of entities" [ngValue]="e.id">
                       {{ e.description }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-grid__item">
+                <div class="form-group mb-2">
+                  <label>Department</label>
+                  <select class="form-control custom-input filter-label" formControlName="department"
+                    [disabled]="viewMode">
+                    <option [ngValue]="null" disabled hidden>-- Select Department --</option>
+                    <option *ngIf="isDepartmentNotInList(newPurchaseRequestForm.get('department')?.value)"
+                      [ngValue]="newPurchaseRequestForm.get('department')?.value">
+                      {{ newPurchaseRequestForm.get('department')?.value }}
+                    </option>
+                    <option *ngFor="let d of departmentList" [ngValue]="d.name">
+                      {{ d.name }}
                     </option>
                   </select>
                 </div>
