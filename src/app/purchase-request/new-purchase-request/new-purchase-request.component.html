@@ -199,7 +199,7 @@
                   <label>Department</label>
                   <select class="form-control custom-input filter-label" formControlName="department"
                     [disabled]="viewMode">
-                    <option [ngValue]="null" disabled hidden>-- Select Department --</option>
+                    <option [ngValue]="null" disabled selected>-- Select Department --</option>
                     <option *ngIf="isDepartmentNotInList(newPurchaseRequestForm.get('department')?.value)"
                       [ngValue]="newPurchaseRequestForm.get('department')?.value">
                       {{ newPurchaseRequestForm.get('department')?.value }}

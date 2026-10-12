@@ -18,7 +18,7 @@ export class DepartmentService {
   constructor(private http: HttpClient) { }
 
   getAllDepartments(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/GetAll`);
+    return this.http.get<any>(`${this.baseUrl}/GetAll?currentPage=1&pageSize=1000`);
   }
 
   getAll(currentPage: number = 1, pageSize: number = 10): Observable<any> {

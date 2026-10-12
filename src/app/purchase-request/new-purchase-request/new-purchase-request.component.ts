@@ -960,17 +960,33 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     });
   }
 
+  private extractList(res: any): any[] {
+    if (!res) return [];
+    if (Array.isArray(res)) return res;
+    if (Array.isArray(res?.value?.result)) return res.value.result;
+    if (Array.isArray(res?.value?.Result)) return res.value.Result;
+    if (Array.isArray(res?.value)) return res.value;
+    if (Array.isArray(res?.result)) return res.result;
+    if (Array.isArray(res?.Result)) return res.Result;
+    return [];
+  }
+
   loadDepartments(): void {
     this.lookupService.getAllDepartments().subscribe({
       next: (res: any) => {
-        const list = Array.isArray(res) ? res : (res?.value || []);
-        this.departmentList = list;
+        const raw = this.extractList(res);
+        this.departmentList = raw.map((d: any) => ({
+          id: Number(d.id ?? d.Id),
+          name: String(d.name ?? d.Name ?? '').trim(),
+          description: d.description ?? d.Description ?? ''
+        }));
         this.updateFilteredProjects();
-        this.cdr.markForCheck();
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Failed to load departments:', err);
         this.departmentList = [];
+        this.cdr.detectChanges();
       }
     });
   }
@@ -978,14 +994,30 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   loadProjects(): void {
     this.projectService.getAllProjects().subscribe({
       next: (res: any) => {
-        const list = Array.isArray(res) ? res : (res?.value || []);
-        this.projectList = list;
+        const raw = this.extractList(res);
+        this.projectList = raw.map((p: any) => ({
+          id: Number(p.id ?? p.Id),
+          departmentId: Number(p.departmentId ?? p.DepartmentId),
+          departmentName: p.departmentName ?? p.DepartmentName ?? '',
+          name: String(p.name ?? p.Name ?? '').trim(),
+          description: p.description ?? p.Description ?? '',
+          activityCount: p.activityCount ?? p.ActivityCount ?? 0,
+          projectActivities: (p.projectActivities || p.ProjectActivities || []).map((a: any) => ({
+            id: Number(a.id ?? a.Id),
+            projectId: Number(a.projectId ?? a.ProjectId ?? p.id ?? p.Id),
+            name: String(a.name ?? a.Name ?? '').trim(),
+            description: a.description ?? a.Description ?? '',
+            budgetAmount: Number(a.budgetAmount ?? a.BudgetAmount ?? 0),
+            allowedPercentage: Number(a.allowedPercentage ?? a.AllowedPercentage ?? 0)
+          }))
+        }));
         this.updateFilteredProjects();
-        this.cdr.markForCheck();
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Failed to load projects:', err);
         this.projectList = [];
+        this.cdr.detectChanges();
       }
     });
   }
@@ -995,15 +1027,15 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     if (!currentDeptVal || !this.departmentList?.length) {
       this.filteredProjectList = [];
     } else {
-      const matchedDept = this.departmentList.find(d =>
-        d.id === Number(currentDeptVal) ||
-        (d.name && currentDeptVal && d.name.trim().toLowerCase() === String(currentDeptVal).trim().toLowerCase())
-      );
-      if (matchedDept) {
-        this.filteredProjectList = this.projectList.filter(p => Number(p.departmentId) === Number(matchedDept.id));
-      } else {
-        this.filteredProjectList = this.projectList.filter(p => Number(p.departmentId) === Number(currentDeptVal));
-      }
+      const matchedDept = (this.departmentList || []).find(d => {
+        return d.id === Number(currentDeptVal) ||
+          (d.name && currentDeptVal && d.name.trim().toLowerCase() === String(currentDeptVal).trim().toLowerCase());
+      });
+
+      const targetDeptId = matchedDept ? matchedDept.id : Number(currentDeptVal);
+      this.filteredProjectList = (this.projectList || []).filter(p => {
+        return Number(p.departmentId) === Number(targetDeptId);
+      });
     }
 
     const currentProjId = this.itemForm?.get('projectId')?.value;
@@ -1014,7 +1046,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       this.selectedActivityInfo = null;
       this.checkBudgetLimit();
     }
-    this.cdr.markForCheck();
+    this.cdr.detectChanges();
   }
 
   onProjectChanged(): void {

@@ -121,11 +121,11 @@ export class LookupService {
   }
 
   getAllDepartments() {
-    return this.http.get<any>(`${environment.apiUrl}/Department/GetAll`);
+    return this.http.get<any>(`${environment.apiUrl}/Department/GetAll?currentPage=1&pageSize=1000`);
   }
 
   getAllProjects() {
-    return this.http.get<any>(`${environment.apiUrl}/Project/GetAll`);
+    return this.http.get<any>(`${environment.apiUrl}/Project/GetAll?currentPage=1&pageSize=1000`);
   }
   // getAddress2ByEntity(entityId: number) {
   //   const url = `${this.baseUrl}/dropdowns`;
