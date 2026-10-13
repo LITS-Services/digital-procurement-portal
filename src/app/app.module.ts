@@ -54,23 +54,24 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   declarations: [AppComponent, FullLayoutComponent, ContentLayoutComponent, OtpComponent ],
   imports: [
     ToastrModule.forRoot({
-      positionClass: 'toast-bottom-right', // or 'toast-top-center' etc.
-      timeOut: 444000,
-    
+      positionClass: 'toast-bottom-right',
+      timeOut: 5000,
       closeButton: true,
-      progressBar: true
+      progressBar: true,
+      preventDuplicates: true,
+      countDuplicates: false,
+      resetTimeoutOnDuplicate: true
     }),
     BrowserAnimationsModule,
     StoreModule.forRoot(fromApp.appReducer),
     AppRoutingModule,
     SharedModule,
-       BrowserModule,
+    BrowserModule,
     ReactiveFormsModule,
     HttpClientModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireMessagingModule,
     AngularFireAuthModule,
-    ToastrModule.forRoot(),
     NgbModule,
     NgxDatatableModule,
     NgxSpinnerModule,

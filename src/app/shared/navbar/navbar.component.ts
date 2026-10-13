@@ -125,16 +125,16 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       // this.loadUserProfile(this.userId);
       this.loadProcUserCompanies(userId);
     }
-    this.messagingService.currentMessage.subscribe((msg) => {
-      if (msg) {
-        this.toaster.success(
-          msg.notification?.title || "New Notification",
-          msg.notification?.body || ""
-        );
-        this.getNotification();
-        // You can show a toast or alert here
-      }
-    });
+    this.messagingService.currentMessage
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((msg) => {
+        if (msg) {
+          const title = msg.notification?.title || "New Notification";
+          const body = msg.notification?.body || "";
+          this.showPushNotificationToast(title, body);
+          this.getNotification();
+        }
+      });
     this.listItems = LISTITEMS;
     this.isSmallScreen = this.innerWidth < 1200;
 
@@ -184,7 +184,23 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
+  private lastNotificationKey = '';
+  private lastNotificationTime = 0;
+
+  private showPushNotificationToast(title: string, body: string): void {
+    const key = `${title}:::${body}`;
+    const now = Date.now();
+    // Suppress duplicate notifications arriving within 5 seconds
+    if (this.lastNotificationKey === key && (now - this.lastNotificationTime) < 5000) {
+      return;
+    }
+    this.lastNotificationKey = key;
+    this.lastNotificationTime = now;
+    this.toaster.success(body, title);
+  }
+
   ngOnDestroy() {
+    if (this.sub) this.sub.unsubscribe();
     if (this.layoutSub) this.layoutSub.unsubscribe();
     if (this.configSub) this.configSub.unsubscribe();
     this.destroy$.next();
