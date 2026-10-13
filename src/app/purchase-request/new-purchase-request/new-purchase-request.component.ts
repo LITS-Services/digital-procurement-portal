@@ -388,6 +388,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   }
 
   ngOnDestroy(): void {
+    this.panelPositionObserver?.disconnect();
+    this.panelResizeObserver?.disconnect();
     this.receiverIntlMutationObserver?.disconnect();
     this.receiverIntlSearchUnlisten?.();
     this.destroy$.next();
@@ -490,6 +492,9 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   onWindowScroll(): void {
     const threshold = 200; // adjust as you like
     this.isToolbarSticky = window.scrollY > threshold;
+    if (this.currentlyOpenSelect) {
+      this.adjustDropdownPosition(this.currentlyOpenSelect);
+    }
   }
 
   // onPanelChange(event: NgbPanelChangeEvent) {
@@ -2909,6 +2914,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
   @ViewChildren(NgSelectComponent) selectComponents?: QueryList<NgSelectComponent>;
   private currentlyOpenSelect: any = null;
+  private panelPositionObserver?: MutationObserver;
+  private panelResizeObserver?: ResizeObserver;
 
   @HostListener('document:mousedown', ['$event'])
   onDocumentMousedown(event: MouseEvent): void {
@@ -2934,6 +2941,74 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         } catch (e) {}
         this.currentlyOpenSelect = null;
       }
+    }
+  }
+
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    if (this.currentlyOpenSelect) {
+      this.adjustDropdownPosition(this.currentlyOpenSelect);
+    }
+  }
+
+  private adjustDropdownPosition(selectInstance?: any): void {
+    const select = selectInstance || this.currentlyOpenSelect;
+    if (!select) return;
+
+    const host = select.element || (select as any)?._elementRef?.nativeElement;
+    if (!host) return;
+
+    const panels = document.querySelectorAll('.ng-dropdown-panel');
+    if (!panels.length) return;
+    const panel = panels[panels.length - 1] as HTMLElement;
+    if (!panel) return;
+
+    const selectRect = host.getBoundingClientRect();
+    const panelHeight = panel.offsetHeight;
+    if (!panelHeight) return;
+
+    const isTop = panel.classList.contains('ng-select-top');
+
+    if (isTop) {
+      panel.style.position = 'fixed';
+      panel.style.top = `${Math.max(10, selectRect.top - panelHeight - 2)}px`;
+      panel.style.bottom = 'auto';
+      panel.style.left = `${selectRect.left}px`;
+      panel.style.width = `${selectRect.width}px`;
+    } else if (panel.classList.contains('ng-select-bottom')) {
+      panel.style.position = 'fixed';
+      panel.style.top = `${selectRect.bottom + 2}px`;
+      panel.style.bottom = 'auto';
+      panel.style.left = `${selectRect.left}px`;
+      panel.style.width = `${selectRect.width}px`;
+    }
+  }
+
+  private observePanel(panel: HTMLElement, selectInstance: any): void {
+    if (this.panelPositionObserver) {
+      this.panelPositionObserver.disconnect();
+    }
+    if (this.panelResizeObserver) {
+      this.panelResizeObserver.disconnect();
+    }
+
+    this.panelPositionObserver = new MutationObserver(() => {
+      if (panel.classList.contains('ng-select-top') && panel.style.bottom !== 'auto') {
+        this.adjustDropdownPosition(selectInstance);
+      }
+    });
+
+    this.panelPositionObserver.observe(panel, {
+      attributes: true,
+      attributeFilter: ['style', 'class']
+    });
+
+    if (typeof ResizeObserver !== 'undefined') {
+      this.panelResizeObserver = new ResizeObserver(() => {
+        this.adjustDropdownPosition(selectInstance);
+      });
+      this.panelResizeObserver.observe(panel);
     }
   }
 
@@ -2967,17 +3042,36 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     setTimeout(() => {
       const panels = document.querySelectorAll('.ng-dropdown-panel');
       if (panels.length) {
-        const lastPanel = panels[panels.length - 1];
+        const lastPanel = panels[panels.length - 1] as HTMLElement;
+        this.observePanel(lastPanel, openedSelect);
+        this.adjustDropdownPosition(openedSelect);
+
         const input = lastPanel.querySelector('.dropdown-search-input') as HTMLInputElement;
         if (input) {
           input.value = '';
           input.focus();
         }
       }
-    }, 60);
+    }, 0);
+
+    setTimeout(() => {
+      this.adjustDropdownPosition(openedSelect);
+    }, 40);
+
+    setTimeout(() => {
+      this.adjustDropdownPosition(openedSelect);
+    }, 120);
   }
 
   onDropdownClose(select: any): void {
+    if (this.panelPositionObserver) {
+      this.panelPositionObserver.disconnect();
+      this.panelPositionObserver = undefined;
+    }
+    if (this.panelResizeObserver) {
+      this.panelResizeObserver.disconnect();
+      this.panelResizeObserver = undefined;
+    }
     if (this.currentlyOpenSelect === select) {
       this.currentlyOpenSelect = null;
     }
