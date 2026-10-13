@@ -54,10 +54,10 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   declarations: [AppComponent, FullLayoutComponent, ContentLayoutComponent, OtpComponent ],
   imports: [
     ToastrModule.forRoot({
-      positionClass: 'toast-bottom-right',
+      positionClass: 'toast-top-right',
       timeOut: 5000,
-      closeButton: true,
-      progressBar: true,
+      closeButton: false,
+      progressBar: false,
       preventDuplicates: true,
       countDuplicates: false,
       resetTimeoutOnDuplicate: true

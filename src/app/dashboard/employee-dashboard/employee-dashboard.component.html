@@ -5,10 +5,7 @@
       <h2 class="dashboard-title">Employee Dashboard</h2>
     </div>
 
-    <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
-      <button class="btn btn-outline-primary btn-sm d-flex align-items-center mr-2" (click)="loadData()" [disabled]="isLoadingCounts || isLoadingRequests">
-        <i class="ft ft-refresh-cw mr-1" [class.fa-spin]="isLoadingCounts || isLoadingRequests"></i> Refresh
-      </button>
+    <div class="d-flex align-items-center mt-2 mt-md-0">
       <button *ngIf="canCreatePR" class="btn btn-primary btn-sm d-flex align-items-center" (click)="createNewPurchaseRequest()">
         <i class="ft ft-plus mr-1"></i> New Purchase Request
       </button>
@@ -233,7 +230,7 @@
 
         <!-- Right: Status Breakdown (Matches Recent Top Vendors column in Main Dashboard) -->
         <div class="col-lg-4 col-12 mb-2">
-          <div class="panel-card h-100">
+          <div class="panel-card h-100 d-flex flex-column">
             <div class="panel-card__header panel-card__header--tight">
               <div>
                 <h3 class="panel-card__title">Status Breakdown</h3>
@@ -241,45 +238,65 @@
               </div>
             </div>
 
-            <div class="panel-card__body">
+            <div class="panel-card__body d-flex flex-column justify-content-between flex-grow-1">
               <!-- Progress Bars -->
-              <div class="progress-item mb-3">
-                <div class="d-flex justify-content-between font-small-3 mb-1">
-                  <span><i class="fa fa-circle font-small-1 text-warning mr-1"></i> Draft / New</span>
-                  <span class="font-weight-bold">{{ counts.newRequests }} ({{ getNewPercentage() }}%)</span>
+              <div class="status-bars-group">
+                <div class="progress-item mb-3">
+                  <div class="d-flex justify-content-between font-small-3 mb-1">
+                    <span><i class="fa fa-circle font-small-1 text-warning mr-1"></i> Draft / New</span>
+                    <span class="font-weight-bold">{{ counts.newRequests }} ({{ getNewPercentage() }}%)</span>
+                  </div>
+                  <div class="progress progress-sm">
+                    <div class="progress-bar bg-warning" role="progressbar" [style.width.%]="getNewPercentage()"></div>
+                  </div>
                 </div>
-                <div class="progress progress-sm">
-                  <div class="progress-bar bg-warning" role="progressbar" [style.width.%]="getNewPercentage()"></div>
+
+                <div class="progress-item mb-3">
+                  <div class="d-flex justify-content-between font-small-3 mb-1">
+                    <span><i class="fa fa-circle font-small-1 text-primary mr-1"></i> In Progress</span>
+                    <span class="font-weight-bold">{{ counts.inProgressRequests }} ({{ getInProgressPercentage() }}%)</span>
+                  </div>
+                  <div class="progress progress-sm">
+                    <div class="progress-bar bg-primary" role="progressbar" [style.width.%]="getInProgressPercentage()"></div>
+                  </div>
+                </div>
+
+                <div class="progress-item mb-3">
+                  <div class="d-flex justify-content-between font-small-3 mb-1">
+                    <span><i class="fa fa-circle font-small-1 text-success mr-1"></i> Approved</span>
+                    <span class="font-weight-bold">{{ counts.completedRequests }} ({{ getCompletedPercentage() }}%)</span>
+                  </div>
+                  <div class="progress progress-sm">
+                    <div class="progress-bar bg-success" role="progressbar" [style.width.%]="getCompletedPercentage()"></div>
+                  </div>
+                </div>
+
+                <div class="progress-item mb-2">
+                  <div class="d-flex justify-content-between font-small-3 mb-1">
+                    <span><i class="fa fa-circle font-small-1 text-danger mr-1"></i> Rejected / Return</span>
+                    <span class="font-weight-bold">{{ counts.rejectedRequests || 0 }} ({{ getRejectedPercentage() }}%)</span>
+                  </div>
+                  <div class="progress progress-sm">
+                    <div class="progress-bar bg-danger" role="progressbar" [style.width.%]="getRejectedPercentage()"></div>
+                  </div>
                 </div>
               </div>
 
-              <div class="progress-item mb-3">
-                <div class="d-flex justify-content-between font-small-3 mb-1">
-                  <span><i class="fa fa-circle font-small-1 text-primary mr-1"></i> In Progress</span>
-                  <span class="font-weight-bold">{{ counts.inProgressRequests }} ({{ getInProgressPercentage() }}%)</span>
-                </div>
-                <div class="progress progress-sm">
-                  <div class="progress-bar bg-primary" role="progressbar" [style.width.%]="getInProgressPercentage()"></div>
-                </div>
-              </div>
-
-              <div class="progress-item mb-3">
-                <div class="d-flex justify-content-between font-small-3 mb-1">
-                  <span><i class="fa fa-circle font-small-1 text-success mr-1"></i> Approved</span>
-                  <span class="font-weight-bold">{{ counts.completedRequests }} ({{ getCompletedPercentage() }}%)</span>
-                </div>
-                <div class="progress progress-sm">
-                  <div class="progress-bar bg-success" role="progressbar" [style.width.%]="getCompletedPercentage()"></div>
-                </div>
-              </div>
-
-              <div class="progress-item mb-4" *ngIf="(counts.rejectedRequests || 0) > 0">
-                <div class="d-flex justify-content-between font-small-3 mb-1">
-                  <span><i class="fa fa-circle font-small-1 text-danger mr-1"></i> Rejected / Return</span>
-                  <span class="font-weight-bold">{{ counts.rejectedRequests }} ({{ getRejectedPercentage() }}%)</span>
-                </div>
-                <div class="progress progress-sm">
-                  <div class="progress-bar bg-danger" role="progressbar" [style.width.%]="getRejectedPercentage()"></div>
+              <!-- Quick Summary Stats at Bottom (Fills the space & balances with the chart height) -->
+              <div class="status-summary-footer mt-auto pt-3 border-top">
+                <div class="row no-gutters text-center">
+                  <div class="col-4 border-right pr-2">
+                    <div class="text-muted font-small-1 text-uppercase font-weight-bold mb-1">Total PRs</div>
+                    <div class="font-medium-1 font-weight-bold text-dark">{{ counts.totalRequests || 0 }}</div>
+                  </div>
+                  <div class="col-4 border-right px-2">
+                    <div class="text-muted font-small-1 text-uppercase font-weight-bold mb-1">In Review</div>
+                    <div class="font-medium-1 font-weight-bold text-primary">{{ counts.inProgressRequests || 0 }}</div>
+                  </div>
+                  <div class="col-4 pl-2">
+                    <div class="text-muted font-small-1 text-uppercase font-weight-bold mb-1">Approval</div>
+                    <div class="font-medium-1 font-weight-bold text-success">{{ getCompletedPercentage() }}%</div>
+                  </div>
                 </div>
               </div>
 

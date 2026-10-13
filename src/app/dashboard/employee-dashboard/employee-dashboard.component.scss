@@ -125,3 +125,34 @@
   }
 }
 
+.status-bars-group {
+  padding-top: 4px;
+
+  .progress-item {
+    margin-bottom: 16px;
+
+    .progress-sm {
+      height: 8px;
+      border-radius: 999px;
+      background-color: #f1f5f9;
+    }
+  }
+}
+
+.status-summary-footer {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+
+  .font-small-1 {
+    font-size: 11px;
+    letter-spacing: 0.4px;
+    color: #64748b;
+  }
+
+  .border-right {
+    border-right: 1px solid #e2e8f0 !important;
+  }
+}
+
+
