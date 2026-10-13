@@ -22,6 +22,7 @@ import { PurchaseRequestExceptionPolicyComponent } from 'app/shared/modals/purch
 import { forkJoin, of, Subject } from 'rxjs';
 import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
 import { PhoneNumberUtil, PhoneNumberFormat as LibPhoneNumberFormat } from 'google-libphonenumber';
+import { DataSourceService } from 'app/shared/services/data-source.service';
 
 @Component({
   selector: 'app-new-purchase-request',
@@ -177,9 +178,23 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     private companyService: CompanyService,
     private purchaseOrderService: PurchaseOrderService,
     private projectService: ProjectService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private dataSourceService: DataSourceService
 
   ) { }
+
+  /**
+   * True when the system is in BusinessCentral mode AND 'purchase-order' is in businessCentralForms.
+   * In this case the button shown in the form should be "+ Request PO" (existing behaviour).
+   * Otherwise the button should be "+ Create PO" and the direct creation flow is used.
+   */
+  get useRequestPOMode(): boolean {
+    const state = this.dataSourceService.currentState;
+    return (
+      state.mode === 'businessCentral' &&
+      state.businessCentralForms.includes('purchase-order')
+    );
+  }
 
   private normalizePhoneToString(value: any): string {
     if (!value) return '';
@@ -2577,6 +2592,19 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     return new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate());
   }
 
+  /**
+   * Dispatches to the correct PO flow based on data source configuration.
+   * - BC mode with 'purchase-order' in forms → requestPO (vendor selection / request flow)
+   * - Local mode or BC without 'purchase-order' → createPODirect (immediate creation)
+   */
+  onPOButtonClick(row: any): void {
+    if (this.useRequestPOMode) {
+      this.requestPO(row);
+    } else {
+      this.createPODirect(row);
+    }
+  }
+
   requestPO(row: any) {
     if (!this.newPurchaseItemData || this.newPurchaseItemData.length === 0) {
       this.toastr.info('No items available for requesting Purchase Order.');
@@ -2615,6 +2643,55 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
             },
             error: () => {
               this.toastr.error('Something went wrong while requesting PO.');
+            }
+          });
+      }
+    });
+  }
+
+  /**
+   * Creates PO(s) directly from the PR after vendor selection in the form.
+   * Used when the data source is local (or BC but 'purchase-order' not in BC forms).
+   * Mirrors requestPO validation but sends createDirectly=true so the API
+   * creates actual PurchaseOrder entities instead of just marking them as requested.
+   */
+  createPODirect(row: any): void {
+    if (!this.newPurchaseItemData || this.newPurchaseItemData.length === 0) {
+      this.toastr.info('No items available for creating Purchase Order.');
+      return;
+    }
+
+    const hasMissingVendor = this.newPurchaseItemData.some(item => !item.vendorUserId);
+    if (hasMissingVendor) {
+      this.toastr.info('Please select a vendor for all items.');
+      return;
+    }
+
+    Swal.fire({
+      title: 'Create Purchase Order?',
+      text: 'This will generate PO(s) for all items based on your vendor selection.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Create PO',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const vendorUpdates = this.newPurchaseItemData.map(item => ({
+          purchaseItemId: item.id,
+          vendorUserId: item.vendorUserId,
+          vendorCompanyId: item.vendorCompanyId
+        }));
+        this.spinner.show();
+        this.purchaseOrderService.createPurchaseOrderFromPR(this.currentRequestId, vendorUpdates, true)
+          .pipe(finalize(() => this.spinner.hide()))
+          .subscribe({
+            next: () => {
+              this.toastr.success('Purchase Order(s) created successfully.');
+              this.router.navigate(['/purchase-request']);
+            },
+            error: (err: any) => {
+              const msg = err?.error?.message || err?.error || 'Something went wrong while creating PO.';
+              this.toastr.error(typeof msg === 'string' ? msg : 'Something went wrong while creating PO.');
             }
           });
       }

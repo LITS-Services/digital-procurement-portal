@@ -300,17 +300,17 @@
               </button>
             </ng-template>
 
-            <!-- Request Purchase Order -->
+            <!-- Request / Create Purchase Order (conditional based on data source settings) -->
             <button
               *ngIf="row.requestStatus === 'Completed' && row.isInventoryTransfer !== true; else selectVendorDisabled"
               class="btn popover-btn btn-sm m-1"
-              ngbTooltip="Request Purchase Order"
-              (click)="selectFinalVendor(row)"
+              [ngbTooltip]="useRequestPOMode ? 'Request Purchase Order' : 'Create Purchase Order'"
+              (click)="onPurchaseOrderAction(row)"
               appPermission
               [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
               [appPermDisable]="'write'">
               <span class="popover-icon"><i class="ft-shopping-cart"></i></span>
-              Request Purchase Order
+              {{ useRequestPOMode ? 'Request Purchase Order' : 'Create Purchase Order' }}
             </button>
 
             <ng-template #selectVendorDisabled>
@@ -318,10 +318,10 @@
                 class="btn popover-btn btn-sm m-1"
                 disabled
                 [ngbTooltip]="row.requestStatus !== 'Completed'
-                  ? 'Purchase Order can only be requested when PR is Completed.'
-                  : 'Purchase Order cannot be requested since Inventory Transfer is created.'">
+                  ? (useRequestPOMode ? 'Purchase Order can only be requested when PR is Completed.' : 'Purchase Order can only be created when PR is Completed.')
+                  : (useRequestPOMode ? 'Purchase Order cannot be requested since Inventory Transfer is created.' : 'Purchase Order cannot be created since Inventory Transfer is created.')">
                 <span class="popover-icon"><i class="ft-shopping-cart" style="opacity: 0.5;"></i></span>
-                Create Purchase Order
+                {{ useRequestPOMode ? 'Request Purchase Order' : 'Create Purchase Order' }}
               </button>
             </ng-template>
 

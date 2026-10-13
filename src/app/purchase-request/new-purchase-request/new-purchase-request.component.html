@@ -59,9 +59,9 @@
               </button>
 
               <button *ngIf="isSelectingFinalVendor" class="btn btn-sm cstm-ui-table-btn"
-                (click)="requestPO(selectedRow)">
+                (click)="onPOButtonClick(selectedRow)">
                 <i class="ft-plus"></i>
-                <label class="ml-1 btn-label">Request PO</label>
+                <label class="ml-1 btn-label">{{ useRequestPOMode ? 'Request PO' : 'Create PO' }}</label>
               </button>
             </ng-container>
 

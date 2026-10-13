@@ -41,16 +41,21 @@ export class PurchaseOrderService {
   //   return this.http.post(`${this.baseUrl}/create-pr-purchase-order?purchaseRequestId=${purchaseRequestId}`, {});
   // }
 
-  createPurchaseOrderFromPR(purchaseRequestId: number, vendorUpdates: any[] = []) {
+  createPurchaseOrderFromPR(purchaseRequestId: number, vendorUpdates: any[] = [], createDirectly = false) {
     const payload = {
       purchaseRequestId,
-      vendorUpdates
+      vendorUpdates,
+      createDirectly
     };
     return this.http.post(`${this.baseUrl}/create-pr-purchase-order`, payload);
   }
 
-  createPurchaseOrderFromRFQ(quotationRequestId: number) {
-    return this.http.post(`${this.baseUrl}/create-rfq-purchase-order?quotationRequestId=${quotationRequestId}`, {});
+  createPurchaseOrderFromRFQ(quotationRequestId: number, createDirectly = false) {
+    const payload = {
+      quotationRequestId,
+      createDirectly
+    };
+    return this.http.post(`${this.baseUrl}/create-rfq-purchase-order`, payload);
   }
 
   getPurchaseOrderById(id: number) {

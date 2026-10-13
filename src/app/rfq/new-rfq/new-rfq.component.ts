@@ -19,6 +19,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
 import { PhoneNumberUtil, PhoneNumberFormat as LibPhoneNumberFormat } from 'google-libphonenumber';
 import { ProjectService, ProjectItem, ProjectActivityItem } from 'app/shared/services/project.service';
+import { DataSourceService } from 'app/shared/services/data-source.service';
 
 @Component({
   selector: 'app-new-rfq',
@@ -113,6 +114,20 @@ export class NewRfqComponent implements OnInit {
   isToolbarSticky = false;
   private lastScrollTop = 0;
 
+  /**
+   * Returns true when the system is in BusinessCentral mode AND 'purchase-order'
+   * is listed in businessCentralForms — meaning PO creation goes via the portal
+   * request flow (not a direct create). If local or BC without purchase-order,
+   * we use the direct Create PO flow.
+   */
+  get useRequestPOMode(): boolean {
+    const state = this.dataSourceService.currentState;
+    return (
+      state.mode === 'businessCentral' &&
+      state.businessCentralForms.includes('purchase-order')
+    );
+  }
+
   SearchCountryField = SearchCountryField;
   PhoneNumberFormat = PhoneNumberFormat;
   preferredCountries: CountryISO[] = [
@@ -142,7 +157,8 @@ export class NewRfqComponent implements OnInit {
     private purchaseRequestService: PurchaseRequestService,
     private purchaseOrderService: PurchaseOrderService,
     private spinner: NgxSpinnerService,
-    private projectService: ProjectService
+    private projectService: ProjectService,
+    private dataSourceService: DataSourceService
   ) {}
 
   ngOnInit(): void {
@@ -630,6 +646,19 @@ export class NewRfqComponent implements OnInit {
     });
   }
 
+  /**
+   * Dispatches to the correct PO flow based on data source configuration.
+   * - BC mode with 'purchase-order' in forms → requestPO (request flow)
+   * - Local mode or BC without 'purchase-order' → createPODirect (immediate creation)
+   */
+  onPOButtonClick(row: any): void {
+    if (this.useRequestPOMode) {
+      this.requestPO(row);
+    } else {
+      this.createPODirect(row);
+    }
+  }
+
   requestPO(row: any) {
     Swal.fire({
       title: 'Request Purchase Order?',
@@ -642,7 +671,39 @@ export class NewRfqComponent implements OnInit {
       if (result.isConfirmed) {
         this.loading = true;
         this.spinner.show();
-        this.purchaseOrderService.createPurchaseOrderFromRFQ(this.currentQuotationId).subscribe({
+        this.purchaseOrderService.createPurchaseOrderFromRFQ(this.currentQuotationId, false).subscribe({
+          next: (res: any) => {
+            this.loading = false;
+            this.spinner.hide();
+            this.router.navigate(['/rfq']);
+          },
+          error: () => {
+            this.toastr.error('Something went wrong while requesting PO.');
+          },
+        });
+      }
+    });
+  }
+
+  /**
+   * Creates PO(s) directly from the RFQ.
+   * Used when the data source is local (or BC but 'purchase-order' not in BC forms).
+   * Sends createDirectly=true so the API creates actual PurchaseOrder entities
+   * instead of just marking them as requested.
+   */
+  createPODirect(row: any) {
+    Swal.fire({
+      title: 'Create Purchase Order?',
+      text: 'This will generate PO(s) for all items based on vendor assignment.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Create PO',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.loading = true;
+        this.spinner.show();
+        this.purchaseOrderService.createPurchaseOrderFromRFQ(this.currentQuotationId, true).subscribe({
           next: (res: any) => {
             this.loading = false;
             this.spinner.hide();
