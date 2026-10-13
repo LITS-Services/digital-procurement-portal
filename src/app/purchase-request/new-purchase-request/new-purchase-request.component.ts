@@ -1206,7 +1206,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       const formattedTotal = budgetInfo.usedBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       const formattedMax = budgetInfo.maxAllowedBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       const formattedExceeded = budgetInfo.exceededBy.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      this.budgetExceededMessage = `You've exceeded the budget + allowed % (${budgetInfo.allowedPercentage}%) by ${formattedExceeded}. Total: ${formattedTotal}, Max Allowed: ${formattedMax}.`;
+      this.budgetExceededMessage = `You've exceeded the budget + budget tolerance% (${budgetInfo.allowedPercentage}%) by ${formattedExceeded}. Total: ${formattedTotal}, Max Allowed: ${formattedMax}.`;
     } else if (budgetInfo.status === 'exhausted') {
       this.isBudgetExceeded = false;
       this.budgetWarningType = 'warning';
@@ -1262,10 +1262,10 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     const baseDiff = Math.round((baseBudget - totalUsed) * 100) / 100;
     const maxDiff = Math.round((maxAllowedBudget - totalUsed) * 100) / 100;
 
-    if (totalUsed < baseBudget) {
+    if (totalUsed <= baseBudget) {
       status = 'normal';
       availableAmount = maxDiff;
-    } else if (totalUsed >= baseBudget && maxDiff > 0) {
+    } else if (totalUsed > baseBudget && maxDiff > 0) {
       status = 'buffer';
       availableAmount = maxDiff;
     } else if (maxDiff === 0) {
@@ -1336,6 +1336,48 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     }
 
     return (totalForActivity - maxAllowed) > 0.009;
+  }
+
+  calculateExceededBudgetAmounts(): void {
+    // Group items by activity
+    const activityGroups: { [key: number]: any[] } = {};
+
+    this.newPurchaseItemData.forEach((item, index) => {
+      if (item.projectActivityId) {
+        const actId = Number(item.projectActivityId);
+        if (!activityGroups[actId]) {
+          activityGroups[actId] = [];
+        }
+        activityGroups[actId].push({ ...item, originalIndex: index });
+      }
+    });
+
+    // Calculate exceeded amount for each item
+    Object.keys(activityGroups).forEach(actId => {
+      const activityItems = activityGroups[Number(actId)];
+      const act = this.getActivityById(Number(actId));
+
+      if (!act) return;
+
+      const budgetAmount = act.budgetAmount != null ? Number(act.budgetAmount) : 0;
+      const allowedPercentage = act.allowedPercentage != null ? Number(act.allowedPercentage) : 0;
+      const maxAllowed = budgetAmount + (budgetAmount * (allowedPercentage / 100));
+      const existingUtilised = act.utilisedBudget != null ? Number(act.utilisedBudget) : 0;
+
+      // Sort by index to maintain order
+      activityItems.sort((a, b) => a.originalIndex - b.originalIndex);
+
+      let runningTotal = existingUtilised;
+      activityItems.forEach(item => {
+        const amount = Number(item.amount) || 0;
+        const availableBefore = maxAllowed - runningTotal;
+        runningTotal += amount;
+
+        // Exceeded amount is how much THIS ITEM exceeds the available budget
+        const exceededAmount = Math.max(0, amount - availableBefore);
+        this.newPurchaseItemData[item.originalIndex].exceededBudgetAmount = exceededAmount > 0 ? exceededAmount : null;
+      });
+    });
   }
 
   getProjectNameById(id: any): string {
@@ -1572,6 +1614,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         idx === this.editingRowIndex ? merged : item
       );
 
+      this.calculateExceededBudgetAmounts();
       this.toastr.success('Item updated successfully!');
       this.editingRowIndex = null;
     } else {
@@ -1585,6 +1628,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       };
 
       this.newPurchaseItemData = [...this.newPurchaseItemData, withEmptyAttachments];
+      this.calculateExceededBudgetAmounts();
       this.toastr.success('Item added successfully!');
     }
 
@@ -1673,6 +1717,9 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
         this.newPurchaseItemData.splice(rowIndex, 1);
         this.newPurchaseItemData = [...this.newPurchaseItemData];
+
+        // Recalculate exceeded amounts after deletion
+        this.calculateExceededBudgetAmounts();
 
         if (isEditingDeletedRow) {
           this.itemForm.reset({
@@ -1812,6 +1859,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
             projectActivityName: item.projectActivityName || this.getActivityNameById(item.projectActivityId),
             activityBudgetAmount: this.getActivityBudgetById(item.projectActivityId),
             activityAllowedPercentage: this.getActivityAllowedPercentageById(item.projectActivityId),
+            exceededBudgetAmount: item.exceededBudgetAmount || null,
             departmentId: item.departmentId || null,
             attachments: (item.attachments || []).map((a: any) => ({
               id: a.id,
@@ -1840,6 +1888,12 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
           (this.newPurchaseItemData || []).map(i => Number(i.projectId)).filter(id => id > 0)
         ));
         uniqueProjectIds.forEach(pId => this.fetchActivityBudgetUtilizationForProject(pId));
+
+        // Don't recalculate exceeded amounts for existing PRs - use stored values from DB
+        // Only recalculate when in create mode or when user modifies items
+        if (this.isNewForm) {
+          this.calculateExceededBudgetAmounts();
+        }
 
         this.loading = false;
         this.spinner.hide();
@@ -2042,6 +2096,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         projectId: item.projectId ? Number(item.projectId) : null,
         projectActivityId: item.projectActivityId ? Number(item.projectActivityId) : null,
         departmentId: item.departmentId ? Number(item.departmentId) : submitDepartmentId,
+        exceededBudgetAmount: item.exceededBudgetAmount || null,
         requisitionNo: f.requisitionNo,
         attachments: item.attachments?.map(att => ({
 

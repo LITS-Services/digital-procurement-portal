@@ -479,7 +479,7 @@
                                 Utilised: <strong class="text-dark">{{ selectedActivityInfo.utilisedBudget | number:'1.2-2' }}</strong>
                               </span>
                               <span class="mr-3 text-muted">
-                                Allowed %: <strong class="text-dark">{{ selectedActivityInfo.allowedPercentage }}%</strong>
+                                Budget Tolerance %: <strong class="text-dark">{{ selectedActivityInfo.allowedPercentage }}%</strong>
                               </span>
                               <span class="mr-3 text-muted" *ngIf="selectedActivityInfo.allowedPercentage">
                                 Max Allowed: <strong class="text-dark">{{ (selectedActivityInfo.budgetAmount * (1 + selectedActivityInfo.allowedPercentage / 100)) | number:'1.2-2' }}</strong>
@@ -738,22 +738,6 @@
                   </ng-template>
                 </ngx-datatable-column>
 
-                <ngx-datatable-column name="Activity Budget" [minWidth]="130" [flexGrow]="1.1">
-                  <ng-template let-row="row" ngx-datatable-cell-template>
-                    <span class="cell-ellipsis" container="body">
-                      {{ (row.activityBudgetAmount ?? getActivityBudgetById(row.projectActivityId)) | number:'1.2-2' }}
-                    </span>
-                  </ng-template>
-                </ngx-datatable-column>
-
-                <ngx-datatable-column name="Allowed %" [minWidth]="100" [flexGrow]="0.9">
-                  <ng-template let-row="row" ngx-datatable-cell-template>
-                    <span class="cell-ellipsis" container="body">
-                      {{ (row.activityAllowedPercentage ?? getActivityAllowedPercentageById(row.projectActivityId)) != null ? ((row.activityAllowedPercentage ?? getActivityAllowedPercentageById(row.projectActivityId)) + '%') : '-' }}
-                    </span>
-                  </ng-template>
-                </ngx-datatable-column>
-
                 <ngx-datatable-column name="Order Quantity" prop="orderQuantity" [minWidth]="130" [flexGrow]="1">
                   <ng-template let-row="row" ngx-datatable-cell-template>
                     <span class="cell-ellipsis" container="body">{{ row.orderQuantity | number }}</span>
@@ -764,9 +748,9 @@
                   <ng-template let-row="row" ngx-datatable-cell-template>
                     <div class="d-flex align-items-center">
                       <span class="cell-ellipsis mr-1">{{ row.amount | number:'1.2-2' }}</span>
-                      <span *ngIf="isRowExceededAllowed(row)" class="badge badge-pill bg-light-danger text-danger ml-1"
+                      <span *ngIf="row.exceededBudgetAmount && row.exceededBudgetAmount > 0" class="badge badge-pill bg-light-danger text-danger ml-1"
                         style="font-size: 0.72rem; padding: 2px 7px;"
-                        [ngbTooltip]="'Exceeded allocated budget + allowed %'">
+                        [ngbTooltip]="'Exceeded by ' + (row.exceededBudgetAmount | number:'1.2-2')">
                         Exceeded
                       </span>
                     </div>
