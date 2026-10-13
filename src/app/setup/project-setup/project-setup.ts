@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, NgZone, ViewChild } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, NgZone, ViewChild, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -19,6 +19,7 @@ import { DatatableAutoResizeDirective } from '../../shared/directives/dataTable-
 })
 export class ProjectSetup implements OnInit {
   @ViewChild('datatable') datatable?: DatatableComponent;
+  @ViewChild('logsModal') logsModal?: TemplateRef<any>;
 
   projects: any[] = [];
   departments: any[] = [];
@@ -27,6 +28,10 @@ export class ProjectSetup implements OnInit {
   projectForm: FormGroup;
   isEdit = false;
   saving = false;
+
+  projectLogs: any[] = [];
+  loadingLogs = false;
+  currentProject: any = null;
 
   currentPage = 1;
   pageSize = 10;
@@ -235,7 +240,7 @@ export class ProjectSetup implements OnInit {
       this.saving = true;
       const payload = this.projectForm.value;
       const obs = this.isEdit ? this.projectService.update(payload) : this.projectService.create(payload);
-      
+
       obs.subscribe({
         next: () => {
           this.ngZone.run(() => {
@@ -253,5 +258,46 @@ export class ProjectSetup implements OnInit {
         }
       });
     }
+  }
+
+  viewLogs(project: any) {
+    console.log('viewLogs called for project:', project);
+    this.currentProject = project;
+    this.loadingLogs = true;
+    this.projectLogs = [];
+    this.projectService.getLogs(project.id).subscribe({
+      next: (res: any) => {
+        console.log('API response:', res);
+        this.ngZone.run(() => {
+          // Handle both array response and wrapped response
+          this.projectLogs = Array.isArray(res) ? res : (res.value || res.result || []);
+          console.log('projectLogs set to:', this.projectLogs);
+          this.loadingLogs = false;
+          this.openLogsModal();
+          this.cdr.detectChanges();
+        });
+      },
+      error: (err) => {
+        console.error('Error fetching logs:', err);
+        this.ngZone.run(() => {
+          this.loadingLogs = false;
+          this.projectLogs = [];
+          this.openLogsModal();
+          this.cdr.detectChanges();
+        });
+      }
+    });
+  }
+
+  openLogsModal() {
+    console.log('openLogsModal called, logsModal:', this.logsModal);
+    console.log('projectLogs length:', this.projectLogs.length);
+    console.log('loadingLogs:', this.loadingLogs);
+    const modalRef = this.modalService.open(this.logsModal, {
+      size: 'lg',
+      centered: true,
+      windowClass: 'cstm-setup-modal logs-modal'
+    });
+    console.log('Modal opened:', modalRef);
   }
 }

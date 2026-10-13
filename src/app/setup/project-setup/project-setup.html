@@ -55,6 +55,13 @@
           <ngx-datatable-column name="Department Name" prop="departmentName"></ngx-datatable-column>
           <ngx-datatable-column name="Activity Count" prop="activityCount"></ngx-datatable-column>
           <ngx-datatable-column name="Description" prop="description"></ngx-datatable-column>
+          <ngx-datatable-column name="Actions" [width]="80" [sortable]="false" [canAutoResize]="false">
+            <ng-template ngx-datatable-cell-template let-row="row">
+              <button type="button" class="btn btn-sm btn-icon" (click)="viewLogs(row)" title="View Logs">
+                <i class="ft-eye"></i>
+              </button>
+            </ng-template>
+          </ngx-datatable-column>
         </ngx-datatable>
       </div>
     </div>
@@ -73,19 +80,19 @@
       <form [formGroup]="projectForm">
         <div class="row gx-3">
           <div class="form-group col-md-6 mb-3">
-            <label class="form-label font-weight-bold">Name <span class="text-danger">*</span></label>
-            <input type="text" class="form-control custom-input" formControlName="name" placeholder="Enter project name">
-            <div *ngIf="projectForm.get('name')?.invalid && (projectForm.get('name')?.touched || projectForm.get('name')?.dirty)" class="text-danger small mt-1">
-              Project name is required.
-            </div>
-          </div>
-          <div class="form-group col-md-6 mb-3">
             <label class="form-label font-weight-bold">Department <span class="text-danger">*</span></label>
             <ng-select class="custom-select-ui" [items]="departments" bindLabel="name" bindValue="id" formControlName="departmentId"
               placeholder="Select department" [appendTo]="'body'" [clearable]="true">
             </ng-select>
             <div *ngIf="projectForm.get('departmentId')?.invalid && (projectForm.get('departmentId')?.touched || projectForm.get('departmentId')?.dirty)" class="text-danger small mt-1">
               Department is required.
+            </div>
+          </div>
+          <div class="form-group col-md-6 mb-3">
+            <label class="form-label font-weight-bold">Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control custom-input" formControlName="name" placeholder="Enter project name">
+            <div *ngIf="projectForm.get('name')?.invalid && (projectForm.get('name')?.touched || projectForm.get('name')?.dirty)" class="text-danger small mt-1">
+              Project name is required.
             </div>
           </div>
         </div>
@@ -164,6 +171,83 @@
         <i class="fa fa-spinner fa-spin mr-1" *ngIf="saving"></i>
         <i class="fa fa-save mr-1" *ngIf="!saving"></i>
         {{ isEdit ? 'Update' : 'Save' }}
+      </button>
+    </div>
+  </ng-template>
+
+  <ng-template #logsModal let-modal>
+    <div class="modal-header d-flex align-items-center justify-content-between">
+      <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
+        <i class="ft-file-text mr-2 text-white"></i> Project Activity Logs
+        <span *ngIf="currentProject" class="ml-2 badge badge-light" style="font-size: 12px;">{{ currentProject.name }}</span>
+      </h5>
+      <button type="button" class="modal-close-btn" aria-label="Close" (click)="modal.dismiss()">
+        <i class="ft-x"></i>
+      </button>
+    </div>
+    <div class="modal-body" style="max-height: 72vh; overflow-y: auto;">
+      <div *ngIf="loadingLogs" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        <p class="mt-2 text-muted">Loading logs...</p>
+      </div>
+
+      <div *ngIf="!loadingLogs && projectLogs.length === 0" class="text-center py-5">
+        <i class="ft-file-text font-large-1 d-block mb-2 text-muted" style="opacity: 0.45;"></i>
+        <p class="text-muted mb-0">No logs found for this project.</p>
+      </div>
+
+      <div *ngIf="!loadingLogs && projectLogs.length > 0" class="table-responsive">
+        <table class="table table-sm table-bordered">
+          <thead class="thead-light">
+            <tr>
+              <th style="width: 150px;">Date & Time</th>
+              <th style="width: 100px;">Entity</th>
+              <th style="width: 80px;">Action</th>
+              <th>Description</th>
+              <th style="width: 200px;">Old Values</th>
+              <th style="width: 200px;">New Values</th>
+              <th style="width: 100px;">User</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let log of projectLogs">
+              <td>
+                <small>{{ log.createdDate | date:'short' }}</small>
+              </td>
+              <td>
+                <span class="badge badge-info">{{ log.entityType }}</span>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="{
+                  'badge-success': log.action === 'Create',
+                  'badge-warning': log.action === 'Update',
+                  'badge-danger': log.action === 'Delete'
+                }">{{ log.action }}</span>
+              </td>
+              <td>
+                <small>{{ log.description }}</small>
+              </td>
+              <td>
+                <small *ngIf="log.oldValues" style="word-break: break-all; white-space: pre-wrap;">{{ log.oldValues }}</small>
+                <small *ngIf="!log.oldValues" class="text-muted">-</small>
+              </td>
+              <td>
+                <small *ngIf="log.newValues" style="word-break: break-all; white-space: pre-wrap;">{{ log.newValues }}</small>
+                <small *ngIf="!log.newValues" class="text-muted">-</small>
+              </td>
+              <td>
+                <small>{{ log.createdBy || 'System' }}</small>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="modal-btn-cancel" (click)="modal.dismiss()">
+        <i class="ft-x mr-1"></i> Close
       </button>
     </div>
   </ng-template>

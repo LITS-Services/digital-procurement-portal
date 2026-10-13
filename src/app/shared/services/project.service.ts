@@ -93,4 +93,8 @@ export class ProjectService {
     if (createdBy) params = params.set('createdBy', createdBy);
     return this.http.get<any>(`${this.baseUrl}/ConsumedAmounts/${projectId}`, { params });
   }
+
+  getLogs(projectId: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/Logs/${projectId}`);
+  }
 }
