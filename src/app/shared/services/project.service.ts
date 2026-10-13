@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
@@ -22,6 +22,27 @@ export interface ProjectItem {
   description?: string;
   activityCount?: number;
   projectActivities?: ProjectActivityItem[];
+}
+
+export interface ProjectBudgetConsumptionVM {
+  id: number;
+  prno: string;
+  purchaseRequestId: number;
+  requisitionNo: string;
+  subject?: string;
+  createdBy?: string;
+  requestDate?: string;
+  projectId: number;
+  projectName: string;
+  projectDescription?: string;
+  activityId?: number;
+  activityName?: string;
+  activityBudgetAmount?: number;
+  departmentId?: number;
+  departmentName?: string;
+  itemId?: number;
+  consumedAmount: number;
+  createdDate: string;
 }
 
 @Injectable({
@@ -58,5 +79,18 @@ export class ProjectService {
 
   delete(id: number): Observable<any> {
     return this.http.delete<any>(`${this.baseUrl}/Delete/${id}`);
+  }
+
+  getConsumedAmounts(createdBy?: string, projectId?: number): Observable<any> {
+    let params = new HttpParams();
+    if (createdBy) params = params.set('createdBy', createdBy);
+    if (projectId) params = params.set('projectId', projectId.toString());
+    return this.http.get<any>(`${this.baseUrl}/ConsumedAmounts`, { params });
+  }
+
+  getConsumedAmountsByProject(projectId: number, createdBy?: string): Observable<any> {
+    let params = new HttpParams();
+    if (createdBy) params = params.set('createdBy', createdBy);
+    return this.http.get<any>(`${this.baseUrl}/ConsumedAmounts/${projectId}`, { params });
   }
 }

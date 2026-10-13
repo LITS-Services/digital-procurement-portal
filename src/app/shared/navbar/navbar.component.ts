@@ -143,6 +143,9 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       this.companyService.getprocurementusersbyid(userId).subscribe({
         next: (res: any) => {
           if (res) {
+            if (res.email) {
+              localStorage.setItem('userEmail', res.email);
+            }
             this.username = res.fullName || this.authService.getUserName();
             if (res.profilePicture && res.profilePicture !== 'string') {
               if (typeof res.profilePicture === 'string' && !res.profilePicture.startsWith('data:image')) {

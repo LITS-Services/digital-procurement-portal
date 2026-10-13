@@ -215,7 +215,17 @@ export class AuthService {
   }
 
   getUserEmail(): string | null {
-    return localStorage.getItem('userEmail');
+    const stored = localStorage.getItem('userEmail');
+    if (stored && stored.trim() && stored.trim() !== 'null' && stored.trim() !== 'undefined') {
+      return stored.trim();
+    }
+    const token = this.accessToken || this.tokenStorage.getAccessToken();
+    const emailFromToken = extractEmailFromJwt(token);
+    if (emailFromToken) {
+      localStorage.setItem('userEmail', emailFromToken);
+      return emailFromToken;
+    }
+    return null;
   }
 
   getCompanyIds(): string[] {
@@ -311,7 +321,10 @@ export class AuthService {
     if (userId) localStorage.setItem('userId', userId);
     const userName = res.userName || res.UserName;
     if (userName) localStorage.setItem('userName', userName);
-    const email = res.email || res.Email;
+    let email = res.email || res.Email;
+    if (!email && token) {
+      email = extractEmailFromJwt(token);
+    }
     if (email) localStorage.setItem('userEmail', email);
 
     const roles = res.roles || res.Roles || [];
@@ -357,7 +370,11 @@ export class AuthService {
 
     if (res?.userId) localStorage.setItem('userId', res.userId);
     if (res?.userName) localStorage.setItem('userName', res.userName);
-    if (res?.email) localStorage.setItem('userEmail', res.email);
+    let email = res?.email || res?.Email;
+    if (!email && (res?.token || this.tokenStorage.getAccessToken())) {
+      email = extractEmailFromJwt(res?.token || this.tokenStorage.getAccessToken());
+    }
+    if (email) localStorage.setItem('userEmail', email);
 
     if (res?.roles) {
       const role = Array.isArray(res.roles) && res.roles.length > 0 ? res.roles[0] : '';
@@ -468,4 +485,29 @@ function authToken(res: any): string {
 
 function authRefreshToken(res: any): string {
   return (res?.refreshToken || res?.RefreshToken || '').toString();
+}
+
+function extractEmailFromJwt(token?: string | null): string | null {
+  if (!token || typeof token !== 'string') return null;
+  try {
+    const parts = token.split('.');
+    if (parts.length < 2) return null;
+    const base64Url = parts[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    const payload = JSON.parse(jsonPayload);
+    const email = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress']
+      || payload['email']
+      || payload['Email']
+      || payload['upn']
+      || (typeof payload['unique_name'] === 'string' && payload['unique_name'].includes('@') ? payload['unique_name'] : null);
+    return email && typeof email === 'string' ? email.trim() : null;
+  } catch {
+    return null;
+  }
 }

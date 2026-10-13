@@ -14,9 +14,12 @@ import { EmployeeDashboardComponent } from "./employee-dashboard/employee-dashbo
 import { TranslateModule } from '@ngx-translate/core';
 
 
+import { FormsModule } from '@angular/forms';
+
 @NgModule({
     imports: [
         CommonModule,
+        FormsModule,
         DashboardRoutingModule,
         // ChartistModule, // Incompatible with Angular 21
         NgbModule,

@@ -149,10 +149,148 @@
         </div>
       </div>
 
-      <!-- Employee Recent Requests and Status Breakdown (Matches Main Dashboard Panels) -->
+      <!-- Row 2: Project Consumed Amount Chart + Status Breakdown (Matches Main Dashboard Structure) -->
       <div class="row align-items-stretch mt-2 mob-gap">
-        <!-- Left: Recent Purchase Requests Table -->
+        <!-- Left: Project Consumed Amount Chart Card (Matches RFQ Pipeline in Main Dashboard) -->
         <div class="col-lg-8 col-12 mb-2">
+          <div class="panel-card h-100">
+            <div class="panel-card__header">
+              <div>
+                <h3 class="panel-card__title">Project Consumed Amount</h3>
+                <p class="panel-card__subtitle">
+                  {{ filterMode === 'all' ? 'All Projects' : selectedProjectName }} &bull; Total Consumed: <strong>AED {{ totalConsumedAmount | number:'1.2-2' }}</strong>
+                  <span *ngIf="totalBudgetAmount > 0" class="text-muted ml-1">
+                    / Budget: AED {{ totalBudgetAmount | number:'1.2-2' }} ({{ utilizationPercentage }}%)
+                  </span>
+                </p>
+              </div>
+
+              <!-- Filter Tabs ALWAYS in the same top-right position -->
+              <div class="segmented-toggle flex-shrink-0">
+                <button class="segmented-toggle__btn"
+                  [ngClass]="{ 'segmented-toggle__btn--active': filterMode === 'all' }"
+                  (click)="setFilterMode('all')">
+                  All Projects
+                </button>
+                <button class="segmented-toggle__btn"
+                  [ngClass]="{ 'segmented-toggle__btn--active': filterMode === 'project' }"
+                  (click)="setFilterMode('project')">
+                  Project Wise
+                </button>
+              </div>
+            </div>
+
+            <!-- 2nd Row: Project Dropdown when Project Wise is active -->
+            <div *ngIf="filterMode === 'project'" class="project-sub-row">
+              <div class="project-select-wrap">
+                <select class="form-control custom-input project-filter-select"
+                  [(ngModel)]="selectedProjectId"
+                  (change)="onProjectSelectChange($event)">
+                  <option [ngValue]="null" disabled>-- Select Project --</option>
+                  <option *ngFor="let p of projectOptions" [ngValue]="p.id">
+                    {{ p.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="panel-card__body">
+              <!-- Loading Spinner -->
+              <div *ngIf="isLoadingChart" class="d-flex justify-content-center align-items-center" style="min-height:280px">
+                <div class="spinner-border text-primary" role="status"></div>
+              </div>
+
+              <!-- Empty State -->
+              <div *ngIf="!isLoadingChart && (!consumptionRows || consumptionRows.length === 0)"
+                class="d-flex flex-column justify-content-center align-items-center text-center py-5" style="min-height:280px">
+                <div class="empty-chart-icon mb-2">
+                  <i class="ft ft-bar-chart-2 font-large-1 text-muted"></i>
+                </div>
+                <h6 class="text-dark font-weight-medium mb-1">No Consumed Amount Records</h6>
+                <p class="small text-muted mb-0">No budget consumption data found for {{ filterMode === 'all' ? 'any projects' : selectedProjectName }}.</p>
+              </div>
+
+              <!-- Apex Chart -->
+              <div *ngIf="!isLoadingChart && consumptionRows && consumptionRows.length > 0 && isChartReady" id="line-area" class="lineArea">
+                <apx-chart class="apx-chart"
+                  [series]="consumedChartOptions.series"
+                  [chart]="consumedChartOptions.chart"
+                  [xaxis]="consumedChartOptions.xaxis"
+                  [yaxis]="consumedChartOptions.yaxis"
+                  [stroke]="consumedChartOptions.stroke"
+                  [dataLabels]="consumedChartOptions.dataLabels"
+                  [fill]="consumedChartOptions.fill"
+                  [grid]="consumedChartOptions.grid"
+                  [tooltip]="consumedChartOptions.tooltip"
+                  [theme]="consumedChartOptions.theme"
+                  [markers]="consumedChartOptions.markers"
+                  [legend]="consumedChartOptions.legend">
+                </apx-chart>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Status Breakdown (Matches Recent Top Vendors column in Main Dashboard) -->
+        <div class="col-lg-4 col-12 mb-2">
+          <div class="panel-card h-100">
+            <div class="panel-card__header panel-card__header--tight">
+              <div>
+                <h3 class="panel-card__title">Status Breakdown</h3>
+                <p class="panel-card__subtitle">Distribution across your requests</p>
+              </div>
+            </div>
+
+            <div class="panel-card__body">
+              <!-- Progress Bars -->
+              <div class="progress-item mb-3">
+                <div class="d-flex justify-content-between font-small-3 mb-1">
+                  <span><i class="fa fa-circle font-small-1 text-warning mr-1"></i> Draft / New</span>
+                  <span class="font-weight-bold">{{ counts.newRequests }} ({{ getNewPercentage() }}%)</span>
+                </div>
+                <div class="progress progress-sm">
+                  <div class="progress-bar bg-warning" role="progressbar" [style.width.%]="getNewPercentage()"></div>
+                </div>
+              </div>
+
+              <div class="progress-item mb-3">
+                <div class="d-flex justify-content-between font-small-3 mb-1">
+                  <span><i class="fa fa-circle font-small-1 text-primary mr-1"></i> In Progress</span>
+                  <span class="font-weight-bold">{{ counts.inProgressRequests }} ({{ getInProgressPercentage() }}%)</span>
+                </div>
+                <div class="progress progress-sm">
+                  <div class="progress-bar bg-primary" role="progressbar" [style.width.%]="getInProgressPercentage()"></div>
+                </div>
+              </div>
+
+              <div class="progress-item mb-3">
+                <div class="d-flex justify-content-between font-small-3 mb-1">
+                  <span><i class="fa fa-circle font-small-1 text-success mr-1"></i> Approved</span>
+                  <span class="font-weight-bold">{{ counts.completedRequests }} ({{ getCompletedPercentage() }}%)</span>
+                </div>
+                <div class="progress progress-sm">
+                  <div class="progress-bar bg-success" role="progressbar" [style.width.%]="getCompletedPercentage()"></div>
+                </div>
+              </div>
+
+              <div class="progress-item mb-4" *ngIf="(counts.rejectedRequests || 0) > 0">
+                <div class="d-flex justify-content-between font-small-3 mb-1">
+                  <span><i class="fa fa-circle font-small-1 text-danger mr-1"></i> Rejected / Return</span>
+                  <span class="font-weight-bold">{{ counts.rejectedRequests }} ({{ getRejectedPercentage() }}%)</span>
+                </div>
+                <div class="progress progress-sm">
+                  <div class="progress-bar bg-danger" role="progressbar" [style.width.%]="getRejectedPercentage()"></div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: Recent Purchase Requests Table (Full-Width Panel) -->
+      <div class="row align-items-stretch mt-2 mob-gap">
+        <div class="col-12 mb-2">
           <div class="panel-card h-100">
             <div class="panel-card__header">
               <div>
@@ -217,67 +355,6 @@
                   </tr>
                 </tbody>
               </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right: Status Breakdown & Shortcuts -->
-        <div class="col-lg-4 col-12 mb-2">
-          <div class="panel-card h-100">
-            <div class="panel-card__header panel-card__header--tight">
-              <div>
-                <h3 class="panel-card__title">Status Breakdown</h3>
-                <p class="panel-card__subtitle">Distribution across your requests</p>
-              </div>
-            </div>
-
-            <div class="panel-card__body">
-              <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
-                <span class="font-weight-medium">All Requisitions</span>
-                <span class="badge badge-light-primary font-medium-1 font-weight-bold">{{ counts.totalRequests }}</span>
-              </div>
-
-              <!-- Progress Bars -->
-              <div class="progress-item mb-3">
-                <div class="d-flex justify-content-between font-small-3 mb-1">
-                  <span><i class="fa fa-circle font-small-1 text-warning mr-1"></i> Draft / New</span>
-                  <span class="font-weight-bold">{{ counts.newRequests }} ({{ getNewPercentage() }}%)</span>
-                </div>
-                <div class="progress progress-sm">
-                  <div class="progress-bar bg-warning" role="progressbar" [style.width.%]="getNewPercentage()"></div>
-                </div>
-              </div>
-
-              <div class="progress-item mb-3">
-                <div class="d-flex justify-content-between font-small-3 mb-1">
-                  <span><i class="fa fa-circle font-small-1 text-primary mr-1"></i> In Progress</span>
-                  <span class="font-weight-bold">{{ counts.inProgressRequests }} ({{ getInProgressPercentage() }}%)</span>
-                </div>
-                <div class="progress progress-sm">
-                  <div class="progress-bar bg-primary" role="progressbar" [style.width.%]="getInProgressPercentage()"></div>
-                </div>
-              </div>
-
-              <div class="progress-item mb-3">
-                <div class="d-flex justify-content-between font-small-3 mb-1">
-                  <span><i class="fa fa-circle font-small-1 text-success mr-1"></i> Approved</span>
-                  <span class="font-weight-bold">{{ counts.completedRequests }} ({{ getCompletedPercentage() }}%)</span>
-                </div>
-                <div class="progress progress-sm">
-                  <div class="progress-bar bg-success" role="progressbar" [style.width.%]="getCompletedPercentage()"></div>
-                </div>
-              </div>
-
-              <div class="progress-item mb-4" *ngIf="(counts.rejectedRequests || 0) > 0">
-                <div class="d-flex justify-content-between font-small-3 mb-1">
-                  <span><i class="fa fa-circle font-small-1 text-danger mr-1"></i> Rejected / Return</span>
-                  <span class="font-weight-bold">{{ counts.rejectedRequests }} ({{ getRejectedPercentage() }}%)</span>
-                </div>
-                <div class="progress progress-sm">
-                  <div class="progress-bar bg-danger" role="progressbar" [style.width.%]="getRejectedPercentage()"></div>
-                </div>
-              </div>
-
             </div>
           </div>
         </div>
