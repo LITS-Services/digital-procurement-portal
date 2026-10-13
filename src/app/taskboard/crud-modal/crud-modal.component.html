@@ -1,7 +1,9 @@
-<div class="modal-header">
-  <h4 class="modal-title"> {{ id != 0 ? 'Update Task' : 'Create Task'}} </h4>
-  <button type="button" class="btn-close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
-    x
+<div class="modal-header d-flex align-items-center justify-content-between">
+  <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
+    <i class="ft-edit-2 mr-2 text-white"></i> {{ id != 0 ? 'Update Task' : 'Create Task'}}
+  </h5>
+  <button type="button" class="modal-close-btn" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+    <i class="ft-x"></i>
   </button>
 </div>
 <form [formGroup]="myForm" (ngSubmit)="submitForm()">
@@ -45,8 +47,11 @@
     </div>
   </div>
   <div class="modal-footer taskboard-modal-footer">
-    <button class="btn btn-primary btn-save">
-      {{ id != 0 ? 'Update' : 'Create'}}
+    <button type="button" class="modal-btn-cancel" (click)="activeModal.dismiss('Cancel click')">
+      <i class="ft-x mr-1"></i> Cancel
+    </button>
+    <button type="submit" class="modal-btn-save">
+      <i class="fa fa-save mr-1"></i> {{ id != 0 ? 'Update' : 'Create'}}
     </button>
   </div>
 </form>

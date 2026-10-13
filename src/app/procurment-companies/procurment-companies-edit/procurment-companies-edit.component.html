@@ -198,12 +198,12 @@
 
 <!-- Address Modal -->
 <ng-template #addressModal let-modal>
-  <div class="modal-header">
-    <h5 class="modal-title text-white">
-      {{ selectedAddressIndex !== null ? 'Edit Address' : 'Add Address' }}
+  <div class="modal-header d-flex align-items-center justify-content-between">
+    <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
+      <i class="ft-map-pin mr-2 text-white"></i> {{ selectedAddressIndex !== null ? 'Edit Address' : 'Add Address' }}
     </h5>
-    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()">
-     
+    <button type="button" class="modal-close-btn" aria-label="Close" (click)="modal.dismiss()">
+      <i class="ft-x"></i>
     </button>
   </div>
 
@@ -237,7 +237,11 @@
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-secondary btn-sm" (click)="modal.dismiss()">Close</button>
-    <button type="button" class="btn btn-primary btn-sm" (click)="saveAddress(modal)">Save</button>
+    <button type="button" class="modal-btn-cancel" (click)="modal.dismiss()">
+      <i class="ft-x mr-1"></i> Cancel
+    </button>
+    <button type="button" class="modal-btn-save" (click)="saveAddress(modal)">
+      <i class="fa fa-save mr-1"></i> Save
+    </button>
   </div>
 </ng-template>

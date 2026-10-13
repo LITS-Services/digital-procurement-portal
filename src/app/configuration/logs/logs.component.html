@@ -186,11 +186,12 @@
 
 <!-- Modal template - Keep original structure -->
 <ng-template #logDetailModal let-modal>
-  <div class="modal-header">
-    <h5 class="modal-title">
-      {{ selectedTab === 'exception' ? 'Exception Log Details' : selectedTab === 'security-audit' ? 'Security Audit Details' : 'Audit Trail Details' }}
+  <div class="modal-header d-flex align-items-center justify-content-between">
+    <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
+      <i class="ft-file-text mr-2 text-white"></i> {{ selectedTab === 'exception' ? 'Exception Log Details' : selectedTab === 'security-audit' ? 'Security Audit Details' : 'Audit Trail Details' }}
     </h5>
-    <button type="button" class="btn-close text-white" aria-label="Close" (click)="modal.dismiss('Cross click')">
+    <button type="button" class="modal-close-btn" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <i class="ft-x"></i>
     </button>
   </div>
 
@@ -281,6 +282,8 @@
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" (click)="modal.close()">Close</button>
+    <button type="button" class="modal-btn-cancel" (click)="modal.close()">
+      <i class="ft-x mr-1"></i> Close
+    </button>
   </div>
 </ng-template>

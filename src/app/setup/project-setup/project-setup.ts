@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, NgZone, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, NgZone, ViewChild, TemplateRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -135,7 +135,8 @@ export class ProjectSetup implements OnInit {
     this.departmentService.getAll(1, 1000).subscribe({
       next: (res: any) => {
         this.ngZone.run(() => {
-          this.departments = [...(res.result || [])];
+          const list = res?.result ?? res?.$values ?? (Array.isArray(res) ? res : []);
+          this.departments = [...list];
           this.cdr.detectChanges();
         });
       },
@@ -156,6 +157,9 @@ export class ProjectSetup implements OnInit {
     this.isEdit = false;
     this.projectForm.reset({ id: 0, departmentId: null, name: '', description: '' });
     this.activities.clear();
+    if (!this.departments || this.departments.length === 0) {
+      this.loadDepartments();
+    }
     this.modalService.open(content, {
       size: 'lg',
       centered: true,
@@ -190,6 +194,10 @@ export class ProjectSetup implements OnInit {
       });
       
       this.populateActivities(proj.projectActivities || []);
+
+      if (!this.departments || this.departments.length === 0) {
+        this.loadDepartments();
+      }
 
       if (proj.id && (!proj.projectActivities || proj.projectActivities.length === 0)) {
         this.projectService.getById(proj.id).subscribe({
@@ -299,5 +307,62 @@ export class ProjectSetup implements OnInit {
       windowClass: 'cstm-setup-modal logs-modal'
     });
     console.log('Modal opened:', modalRef);
+  }
+
+  private currentlyOpenSelect: any = null;
+
+  @HostListener('document:mousedown', ['$event'])
+  onDocumentMousedown(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target) return;
+
+    if (target.closest('.ng-dropdown-panel')) {
+      return;
+    }
+
+    const clickedSelect = target.closest('ng-select');
+
+    if (this.currentlyOpenSelect) {
+      const currentHost = this.currentlyOpenSelect?.element || (this.currentlyOpenSelect as any)?._elementRef?.nativeElement;
+      if (!clickedSelect || (currentHost && clickedSelect !== currentHost)) {
+        try {
+          this.currentlyOpenSelect.close();
+          if (typeof this.currentlyOpenSelect.detectChanges === 'function') {
+            this.currentlyOpenSelect.detectChanges();
+          }
+        } catch (e) {}
+        this.currentlyOpenSelect = null;
+      }
+    }
+  }
+
+  onDropdownOpen(openedSelect?: any): void {
+    if (this.currentlyOpenSelect && this.currentlyOpenSelect !== openedSelect) {
+      try {
+        this.currentlyOpenSelect.close();
+        if (typeof this.currentlyOpenSelect.detectChanges === 'function') {
+          this.currentlyOpenSelect.detectChanges();
+        }
+      } catch (e) {}
+    }
+    this.currentlyOpenSelect = openedSelect;
+
+    setTimeout(() => {
+      const panels = document.querySelectorAll('.ng-dropdown-panel');
+      if (panels.length) {
+        const lastPanel = panels[panels.length - 1];
+        const input = lastPanel.querySelector('.dropdown-search-input') as HTMLInputElement;
+        if (input) {
+          input.value = '';
+          input.focus();
+        }
+      }
+    }, 60);
+  }
+
+  onDropdownClose(select: any): void {
+    if (this.currentlyOpenSelect === select) {
+      this.currentlyOpenSelect = null;
+    }
   }
 }

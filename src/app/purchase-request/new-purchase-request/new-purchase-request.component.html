@@ -184,56 +184,83 @@
                     </small>
                   </label>
 
-                  <select class="form-control custom-input filter-label" formControlName="entityId"
-                    [disabled]="isEntityLocked || viewMode" (change)="onEntityChanged()">
-                    <option [ngValue]="null" disabled hidden>-- Select Entity --</option>
-                    <option *ngFor="let e of entities" [ngValue]="e.id">
-                      {{ e.description }}
-                    </option>
-                  </select>
+                  <ng-select #entitySelect class="custom-select-ui filter-label" formControlName="entityId"
+                    [items]="entities" bindLabel="description" bindValue="id"
+                    [searchable]="false" [clearable]="true" [appendTo]="'body'"
+                    placeholder="-- Select Entity --"
+                    (open)="onDropdownOpen(entitySelect)" (close)="onDropdownClose(entitySelect)"
+                    (change)="onEntityChanged()" (clear)="onEntityChanged()"
+                    [readonly]="isEntityLocked || viewMode">
+                    <ng-template ng-header-tmp>
+                      <div class="dropdown-search-wrapper">
+                        <i class="ft-search dropdown-search-icon"></i>
+                        <input #entitySearch type="text" class="dropdown-search-input" placeholder="Search entity..."
+                          (input)="entitySelect.filter(entitySearch.value)" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                      </div>
+                    </ng-template>
+                  </ng-select>
                 </div>
               </div>
 
               <div class="form-grid__item">
                 <div class="form-group mb-2">
                   <label>Department</label>
-                  <select class="form-control custom-input filter-label" formControlName="department"
-                    [disabled]="viewMode">
-                    <option [ngValue]="null" disabled selected>-- Select Department --</option>
-                    <option *ngIf="isDepartmentNotInList(newPurchaseRequestForm.get('department')?.value)"
-                      [ngValue]="newPurchaseRequestForm.get('department')?.value">
-                      {{ newPurchaseRequestForm.get('department')?.value }}
-                    </option>
-                    <option *ngFor="let d of departmentList" [ngValue]="d.name">
-                      {{ d.name }}
-                    </option>
-                  </select>
+                  <ng-select #deptSelect class="custom-select-ui filter-label" formControlName="department"
+                    [items]="displayedDepartmentList" bindLabel="name" bindValue="name"
+                    [searchable]="false" [clearable]="true" [appendTo]="'body'"
+                    placeholder="-- Select Department --"
+                    (open)="onDropdownOpen(deptSelect)" (close)="onDropdownClose(deptSelect)"
+                    [readonly]="viewMode">
+                    <ng-template ng-header-tmp>
+                      <div class="dropdown-search-wrapper">
+                        <i class="ft-search dropdown-search-icon"></i>
+                        <input #deptSearch type="text" class="dropdown-search-input" placeholder="Search department..."
+                          (input)="deptSelect.filter(deptSearch.value)" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                      </div>
+                    </ng-template>
+                  </ng-select>
                 </div>
               </div>
 
               <div class="form-grid__item">
                 <div class="form-group mb-2">
                   <label>Dimension</label>
-                  <select class="form-control custom-input filter-label" formControlName="dimensionId"
-                    [disabled]="viewMode" (change)="onDimensionChanged()">
-                    <option [ngValue]="null" disabled hidden>-- Select Dimension --</option>
-                    <option *ngFor="let d of dimensionList" [ngValue]="d.id">
-                      {{ d.description }}
-                    </option>
-                  </select>
+                  <ng-select #dimSelect class="custom-select-ui filter-label" formControlName="dimensionId"
+                    [items]="dimensionList" bindLabel="description" bindValue="id"
+                    [searchable]="false" [clearable]="true" [appendTo]="'body'"
+                    placeholder="-- Select Dimension --"
+                    (open)="onDropdownOpen(dimSelect)" (close)="onDropdownClose(dimSelect)"
+                    (change)="onDimensionChanged()" (clear)="onDimensionChanged()"
+                    [readonly]="viewMode">
+                    <ng-template ng-header-tmp>
+                      <div class="dropdown-search-wrapper">
+                        <i class="ft-search dropdown-search-icon"></i>
+                        <input #dimSearch type="text" class="dropdown-search-input" placeholder="Search dimension..."
+                          (input)="dimSelect.filter(dimSearch.value)" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                      </div>
+                    </ng-template>
+                  </ng-select>
                 </div>
               </div>
 
               <div class="form-grid__item">
                 <div class="form-group mb-2">
                   <label>Dimension Values</label>
-                  <select class="form-control custom-input filter-label" formControlName="dimensionValueId"
-                    [disabled]="viewMode || isDimensionValueLocked" (change)="onDimensionValueChanged()">
-                    <option [ngValue]="null" disabled hidden>-- Select Dimension Value --</option>
-                    <option *ngFor="let v of dimensionValueList" [ngValue]="v.id">
-                      {{ v.description }}
-                    </option>
-                  </select>
+                  <ng-select #dimValSelect class="custom-select-ui filter-label" formControlName="dimensionValueId"
+                    [items]="dimensionValueList" bindLabel="description" bindValue="id"
+                    [searchable]="false" [clearable]="true" [appendTo]="'body'"
+                    placeholder="-- Select Dimension Value --"
+                    (open)="onDropdownOpen(dimValSelect)" (close)="onDropdownClose(dimValSelect)"
+                    (change)="onDimensionValueChanged()" (clear)="onDimensionValueChanged()"
+                    [readonly]="viewMode || isDimensionValueLocked">
+                    <ng-template ng-header-tmp>
+                      <div class="dropdown-search-wrapper">
+                        <i class="ft-search dropdown-search-icon"></i>
+                        <input #dimValSearch type="text" class="dropdown-search-input" placeholder="Search dimension value..."
+                          (input)="dimValSelect.filter(dimValSearch.value)" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                      </div>
+                    </ng-template>
+                  </ng-select>
                 </div>
               </div>
 
@@ -344,11 +371,21 @@
                         <div class="form-grid w-100">
                           <div class="form-grid__item">
                             <label>Address Code<span class="text-danger">*</span></label>
-                            <select class="form-control" formControlName="addressId"
-                              (change)="onAddressSelect($event.target.value)">
-                              <option value="">Select Address</option>
-                              <option *ngFor="let add of addresses" [value]="add.id">{{ add.addressCode }}</option>
-                            </select>
+                            <ng-select #addressSelect class="custom-select-ui" formControlName="addressId"
+                              [items]="addresses" bindLabel="addressCode" bindValue="id"
+                              [searchable]="false" [clearable]="true" [appendTo]="'body'"
+                              placeholder="Select Address"
+                              (open)="onDropdownOpen(addressSelect)" (close)="onDropdownClose(addressSelect)"
+                              (change)="onAddressSelect($event ? $event.id : null)" (clear)="onAddressSelect(null)"
+                              [readonly]="viewMode">
+                              <ng-template ng-header-tmp>
+                                <div class="dropdown-search-wrapper">
+                                  <i class="ft-search dropdown-search-icon"></i>
+                                  <input #addressSearch type="text" class="dropdown-search-input" placeholder="Search address code..."
+                                    (input)="addressSelect.filter(addressSearch.value)" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                                </div>
+                              </ng-template>
+                            </ng-select>
                           </div>
 
                           <div class="form-grid__item">
@@ -513,15 +550,21 @@
                           <div class="form-grid__item">
                             <div class="form-group mb-2">
                               <label>Project <span class="text-danger">*</span></label>
-                              <select class="form-control custom-input" formControlName="projectId"
-                                (change)="onProjectChanged()">
-                                <option [ngValue]="null" disabled selected>
-                                   -- Select Project --
-                                </option>
-                                <option *ngFor="let proj of filteredProjectList" [ngValue]="proj.id">
-                                  {{ proj.name }}
-                                </option>
-                              </select>
+                              <ng-select #projectSelect class="custom-select-ui" formControlName="projectId"
+                                [items]="filteredProjectList" bindLabel="name" bindValue="id"
+                                [searchable]="false" [clearable]="true" [appendTo]="'body'"
+                                placeholder="-- Select Project --"
+                                (open)="onDropdownOpen(projectSelect)" (close)="onDropdownClose(projectSelect)"
+                                (change)="onProjectChanged()" (clear)="onProjectChanged()"
+                                [readonly]="viewMode">
+                                <ng-template ng-header-tmp>
+                                  <div class="dropdown-search-wrapper">
+                                    <i class="ft-search dropdown-search-icon"></i>
+                                    <input #projectSearch type="text" class="dropdown-search-input" placeholder="Search project..."
+                                      (input)="projectSelect.filter(projectSearch.value)" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                                  </div>
+                                </ng-template>
+                              </ng-select>
                             </div>
                           </div>
 
@@ -529,26 +572,47 @@
                           <div class="form-grid__item">
                             <div class="form-group mb-2">
                               <label>Project Activity <span class="text-danger">*</span></label>
-                              <select class="form-control custom-input" formControlName="projectActivityId"
-                                (change)="onProjectActivityChanged()"
-                                [disabled]="!currentProjectActivities.length">
-                                <option [ngValue]="null" disabled selected>
-                                  {{ currentProjectActivities.length ? '-- Select Activity --' : '-- Select Project first --' }}
-                                </option>
-                                <option *ngFor="let act of currentProjectActivities" [ngValue]="act.id">
-                                  {{ act.name }} (Available: {{ (act.availableBudget != null ? act.availableBudget : act.budgetAmount) | number:'1.2-2' }}, Budget: {{ act.budgetAmount | number:'1.2-2' }}, Allowed: {{ act.allowedPercentage }}%)
-                                </option>
-                              </select>
+                              <ng-select #activitySelect class="custom-select-ui" formControlName="projectActivityId"
+                                [items]="currentProjectActivities" bindLabel="name" bindValue="id"
+                                [searchable]="false" [clearable]="true" [appendTo]="'body'"
+                                [placeholder]="currentProjectActivities.length ? '-- Select Activity --' : '-- Select Project first --'"
+                                (open)="onDropdownOpen(activitySelect)" (close)="onDropdownClose(activitySelect)"
+                                (change)="onProjectActivityChanged()" (clear)="onProjectActivityChanged()"
+                                [readonly]="viewMode || !currentProjectActivities.length">
+                                <ng-template ng-header-tmp>
+                                  <div class="dropdown-search-wrapper">
+                                    <i class="ft-search dropdown-search-icon"></i>
+                                    <input #actSearch type="text" class="dropdown-search-input" placeholder="Search project activity..."
+                                      (input)="activitySelect.filter(actSearch.value)" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                                  </div>
+                                </ng-template>
+                                <ng-template ng-label-tmp let-item="item">
+                                  <span>{{ item.name }} (Available: {{ (item.availableBudget != null ? item.availableBudget : item.budgetAmount) | number:'1.2-2' }}, Budget: {{ item.budgetAmount | number:'1.2-2' }}, Allowed: {{ item.allowedPercentage }}%)</span>
+                                </ng-template>
+                                <ng-template ng-option-tmp let-item="item">
+                                  <span>{{ item.name }} (Available: {{ (item.availableBudget != null ? item.availableBudget : item.budgetAmount) | number:'1.2-2' }}, Budget: {{ item.budgetAmount | number:'1.2-2' }}, Allowed: {{ item.allowedPercentage }}%)</span>
+                                </ng-template>
+                              </ng-select>
                             </div>
                           </div>
 
                           <div class="form-grid__item">
                             <div class="form-group mb-2">
                               <label>Item <span class="text-danger">*</span></label>
-                              <select class="form-control custom-input" formControlName="itemId">
-                                <option [ngValue]="0" disabled>Select Item</option>
-                                <option *ngFor="let item of itemList" [ngValue]="item.id">{{ item.description }}</option>
-                              </select>
+                              <ng-select #itemSelect class="custom-select-ui" formControlName="itemId"
+                                [items]="itemList" bindLabel="description" bindValue="id"
+                                [searchable]="false" [clearable]="true" [appendTo]="'body'"
+                                placeholder="Select Item"
+                                (open)="onDropdownOpen(itemSelect)" (close)="onDropdownClose(itemSelect)"
+                                [readonly]="viewMode">
+                                <ng-template ng-header-tmp>
+                                  <div class="dropdown-search-wrapper">
+                                    <i class="ft-search dropdown-search-icon"></i>
+                                    <input #itemSearch type="text" class="dropdown-search-input" placeholder="Search item..."
+                                      (input)="itemSelect.filter(itemSearch.value)" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                                  </div>
+                                </ng-template>
+                              </ng-select>
                             </div>
                           </div>
 
@@ -615,35 +679,41 @@
                           <div *ngIf="isSelectingFinalVendor" class="form-grid__item">
                             <div class="form-group mb-2">
                               <label>Final Vendor</label>
-                              <select class="form-control custom-input" formControlName="vendorUserId"
-                                [disabled]="editingRowIndex === null"
-                                (change)="onVendorChange($event.target.value)">
-                                <option [ngValue]="null" disabled>Select Final Vendor</option>
-                                <option *ngFor="let v of finalVendors" [value]="v.vendorId">{{ v.vendorName }}</option>
-                              </select>
+                              <ng-select #vendorSelect class="custom-select-ui" formControlName="vendorUserId"
+                                [items]="finalVendors" bindLabel="vendorName" bindValue="vendorId"
+                                [searchable]="false" [clearable]="true" [appendTo]="'body'"
+                                placeholder="Select Final Vendor"
+                                (open)="onDropdownOpen(vendorSelect)" (close)="onDropdownClose(vendorSelect)"
+                                (change)="onVendorChange($event ? $event.vendorId : null)" (clear)="onVendorChange(null)"
+                                [readonly]="editingRowIndex === null">
+                                <ng-template ng-header-tmp>
+                                  <div class="dropdown-search-wrapper">
+                                    <i class="ft-search dropdown-search-icon"></i>
+                                    <input #vendorSearch type="text" class="dropdown-search-input" placeholder="Search final vendor..."
+                                      (input)="vendorSelect.filter(vendorSearch.value)" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                                  </div>
+                                </ng-template>
+                              </ng-select>
                             </div>
                           </div>
 
-                          <!-- <div *ngIf="isSelectingFinalVendor" class="form-grid__item">
-                            <div class="form-group mb-2">
-                              <label>Vendor Company</label>
-                              <select class="form-control custom-input" formControlName="vendorCompanyId" [compareWith]="compareIds">
-                                <option [ngValue]="null" disabled>Select Company</option>
-                                <option *ngFor="let c of filteredCompanies" [ngValue]="c.companyId">{{ c.companyName }}</option>
-                              </select>
-                            </div>
-                          </div> -->
                           <div *ngIf="isSelectingFinalVendor" class="form-grid__item">
                             <div class="form-group mb-2">
                               <label>Sourcing Company</label>
-                              <select class="form-control custom-input" formControlName="vendorCompanyId"
-                                [disabled]="editingRowIndex === null"
-                                [compareWith]="compareIds">
-                                <option [ngValue]="null" disabled>Select Company</option>
-                                <option *ngIf="filteredCompanies" [ngValue]="filteredCompanies.companyId">
-                                  {{ filteredCompanies.companyName }}
-                                </option>
-                              </select>
+                              <ng-select #companySelect class="custom-select-ui" formControlName="vendorCompanyId"
+                                [items]="filteredCompanies ? [filteredCompanies] : []" bindLabel="companyName" bindValue="companyId"
+                                [searchable]="false" [clearable]="true" [appendTo]="'body'"
+                                placeholder="Select Company"
+                                (open)="onDropdownOpen(companySelect)" (close)="onDropdownClose(companySelect)"
+                                [readonly]="editingRowIndex === null">
+                                <ng-template ng-header-tmp>
+                                  <div class="dropdown-search-wrapper">
+                                    <i class="ft-search dropdown-search-icon"></i>
+                                    <input #companySearch type="text" class="dropdown-search-input" placeholder="Search sourcing company..."
+                                      (input)="companySelect.filter(companySearch.value)" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                                  </div>
+                                </ng-template>
+                              </ng-select>
                             </div>
                           </div>
 
