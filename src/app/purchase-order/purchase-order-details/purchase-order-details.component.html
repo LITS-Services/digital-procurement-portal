@@ -92,6 +92,11 @@
                         </div>
 
                         <div class="col-lg-4 col-md-6 mb-3">
+                            <label>Department</label>
+                            <input class="form-control custom-input" [value]="poDetails?.department || '-'" disabled>
+                        </div>
+
+                        <div class="col-lg-4 col-md-6 mb-3">
                             <label>Vendor</label>
                             <input class="form-control custom-input" [value]="poDetails?.vendorCompanyName" disabled>
                         </div>
@@ -127,6 +132,8 @@
                                     <tr>
                                         <th>Item</th>
                                         <th>Description</th>
+                                        <th>Project</th>
+                                        <th>Activity</th>
                                         <th class="text-end">Quantity</th>
                                         <th class="text-end">Amount</th>
                                     </tr>
@@ -135,6 +142,8 @@
                                     <tr *ngFor="let item of poDetails?.items">
                                         <td>{{ item.itemName }}</td>
                                         <td>{{ item.itemDescription }}</td>
+                                        <td>{{ item.projectName || '-' }}</td>
+                                        <td>{{ item.projectActivityName || '-' }}</td>
                                         <td class="text-end">{{ item.quantity }}</td>
                                         <td class="text-end fw-semibold">{{ item.amount | number:'1.2-2' }}</td>
                                     </tr>

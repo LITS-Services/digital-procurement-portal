@@ -220,6 +220,14 @@
                 </div>
               </div>
 
+              <!-- Department Name (Create mode only – auto-filled from PR) -->
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6" *ngIf="isNewForm && departmentName">
+                <div class="form-group mb-2">
+                  <label>Department</label>
+                  <input type="text" formControlName="departmentName" class="form-control custom-input" disabled />
+                </div>
+              </div>
+
                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
               <label class="d-flex align-items-center mr-2 w-100" [ngbTooltip]="entityHint">
@@ -523,6 +531,29 @@
                   <option value="" disabled selected>Select Account</option>
                   <option *ngFor="let acc of accountList" [value]="acc.id">
                     {{ acc.description }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- Project (filtered by PR department) -->
+              <div class="form-group mb-2" *ngIf="filteredProjectList.length > 0">
+                <label>Project</label>
+                <select class="form-control custom-input" formControlName="projectId"
+                  (change)="onProjectChangedRfq()">
+                  <option [ngValue]="null">-- None --</option>
+                  <option *ngFor="let proj of filteredProjectList" [ngValue]="proj.id">
+                    {{ proj.name }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- Project Activity (filtered by selected project) -->
+              <div class="form-group mb-2" *ngIf="currentProjectActivities.length > 0">
+                <label>Project Activity</label>
+                <select class="form-control custom-input" formControlName="projectActivityId">
+                  <option [ngValue]="null">-- None --</option>
+                  <option *ngFor="let act of currentProjectActivities" [ngValue]="act.id">
+                    {{ act.name }}
                   </option>
                 </select>
               </div>

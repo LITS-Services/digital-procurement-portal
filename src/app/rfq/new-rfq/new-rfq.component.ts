@@ -18,6 +18,7 @@ import { PurchaseOrderService } from 'app/shared/services/purchase-order.service
 import { NgxSpinnerService } from 'ngx-spinner';
 import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
 import { PhoneNumberUtil, PhoneNumberFormat as LibPhoneNumberFormat } from 'google-libphonenumber';
+import { ProjectService, ProjectItem, ProjectActivityItem } from 'app/shared/services/project.service';
 
 @Component({
   selector: 'app-new-rfq',
@@ -67,6 +68,14 @@ export class NewRfqComponent implements OnInit {
   itemType: string = 'Inventory'; // Default selection
   viewMode = false;
   currentQuotationId: number | null = null;
+
+  // Department / Project / Activity (item-level)
+  departmentId: number | null = null;       // loaded from PR header
+  departmentName: string = '';               // display name for Create mode
+  projectList: ProjectItem[] = [];
+  filteredProjectList: ProjectItem[] = [];
+  currentProjectActivities: ProjectActivityItem[] = [];
+  selectedProjectInfo: ProjectItem | null = null;
 
   // new work
   purchaseRequestId: number | null = null;
@@ -132,7 +141,8 @@ export class NewRfqComponent implements OnInit {
     public cdr: ChangeDetectorRef,
     private purchaseRequestService: PurchaseRequestService,
     private purchaseOrderService: PurchaseOrderService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private projectService: ProjectService
   ) {}
 
   ngOnInit(): void {
@@ -141,6 +151,7 @@ export class NewRfqComponent implements OnInit {
 
     this.loadAccounts();
     this.loadUnitsOfMeasurements();
+    this.loadProjects();
     this.route.queryParamMap.subscribe((params) => {
       const id = params.get('id');
       const mode = params.get('mode');
@@ -169,6 +180,7 @@ export class NewRfqComponent implements OnInit {
     this.newRfqForm = this.fb.group({
       rfqNo: [{ value: '', disabled: true }],
       purchaseRequestNo: [{ value: '', disabled: true }],
+      departmentName: [{ value: '', disabled: true }],
       status: [{ value: '', disabled: true }],
       owner: [{ value: '', disabled: true }],
       date: [null],
@@ -214,6 +226,9 @@ export class NewRfqComponent implements OnInit {
       quotationRequestId: [0],
       vendorUserId: [null],
       vendorCompanyId: [null],
+      departmentId: [null],
+      projectId: [null],
+      projectActivityId: [null],
       quotationItemAttachments: this.fb.array([]),
     });
     this.itemForm.get('unitOfMeasurementId')?.disable({ emitEvent: false });
@@ -673,14 +688,21 @@ export class NewRfqComponent implements OnInit {
       next: async (pr) => {
         if (!pr) return;
 
+        // Capture department from PR header
+        this.departmentId = Number(pr.departmentId) || null;
+        this.departmentName = pr.departmentName || pr.department || '';
+
         //  Patch header-level fields
         this.newRfqForm.patchValue({
           purchaseRequestId: pr.id,
           purchaseRequestNo: pr.requisitionNo,
           deliveryLocation: pr.deliveryLocation,
-          // date: pr.submittedDate || new Date(),
           date: this.toDateInputValue(pr.submittedDate),
+          departmentName: this.departmentName,
         }, { emitEvent: false });
+
+        // Filter projects for this department
+        this.updateFilteredProjectsForRfq();
 
         await this.resetPhoneInput();
         setTimeout(() =>  this.patchReceiverContactFromE164(pr.receiverContact), 0);
@@ -693,7 +715,7 @@ export class NewRfqComponent implements OnInit {
         // Map PR items → RFQ items, only include items not already used
         const unusedItems = pr.purchaseItems?.filter((item: any) => !item.usedInRfq) || [];
 
-        this.hasUnusedItems = unusedItems.length > 0; // <--- flag
+        this.hasUnusedItems = unusedItems.length > 0;
 
         if (!this.hasUnusedItems) {
           this.toastr.info('No items available. Cannot generate a new RFQ.');
@@ -704,7 +726,7 @@ export class NewRfqComponent implements OnInit {
         //  Map PR items → RFQ items
         this.newQuotationItemData = pr.purchaseItems?.map((item: any) => ({
           id: null,
-          purchaseItemId: item.id, // NEW: Keep track of the PR line item ID
+          purchaseItemId: item.id,
           rfqNo: '',
           itemType: item.itemType,
           itemId: item.itemId,
@@ -722,6 +744,10 @@ export class NewRfqComponent implements OnInit {
           quotationRequestId: 0,
           vendorUserId: null,
           vendorCompanyId: null,
+          // Carry department/project/activity from the PR item
+          departmentId: item.departmentId || this.departmentId || null,
+          projectId: item.projectId || null,
+          projectActivityId: item.projectActivityId || null,
 
           quotationItemAttachments:
             item.attachments?.map((a: any) => ({
@@ -739,14 +765,13 @@ export class NewRfqComponent implements OnInit {
               quotationItemId: a.quotationItemId || 0,
             })) || [],
         }));
-        //  Refresh datatable
 
         this.newQuotationItemData = [...this.newQuotationItemData];
-           this.spinner.hide();
+        this.spinner.hide();
         this.cdr.detectChanges();
       },
       error: (err) => {
-           this.spinner.hide();
+        this.spinner.hide();
         this.cdr.detectChanges();
         console.error('Error loading PR', err);
       },
@@ -799,6 +824,14 @@ export class NewRfqComponent implements OnInit {
           }
         }
 
+        // Capture department from header
+        if (requestData.departmentId) {
+          this.departmentId = Number(requestData.departmentId);
+          this.departmentName = requestData.departmentName || '';
+          this.newRfqForm.patchValue({ departmentName: this.departmentName }, { emitEvent: false });
+          this.updateFilteredProjectsForRfq();
+        }
+
         if (requestData.quotationItems) {
           const itemList = requestData.quotationItems || [];
 
@@ -820,7 +853,9 @@ export class NewRfqComponent implements OnInit {
             remarks: item.remarks,
             vatProdPostingGroup: item.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
             quotationRequestId: item.quotationRequestId,
-            // quotationItemAttachments: item.quotationItemAttachments?.$values?.map((a: any) => ({
+            departmentId: item.departmentId || null,
+            projectId: item.projectId || null,
+            projectActivityId: item.projectActivityId || null,
             quotationItemAttachments: (item.quotationItemAttachments || []).map((a: any) => ({
               id: a.id,
               content: a.content,
@@ -863,19 +898,21 @@ export class NewRfqComponent implements OnInit {
       amount: row.amount,
       unitCost: row.unitCost,
       orderQuantity: row.orderQuantity,
-      // reqByDate: row.reqByDate ? new Date(row.reqByDate) : null,
       reqByDate: this.toDateInputValue(row.reqByDate),
-
       itemDescription: row.itemDescription,
       vendorUserId: row.vendorUserId,
-
       accountId: row.accountId,
       remarks: row.remarks,
       quotationItemAttachments: row.quotationItemAttachments,
+      departmentId: row.departmentId || this.departmentId || null,
+      projectId: row.projectId || null,
+      projectActivityId: row.projectActivityId || null,
     });
     this.selectedUomLabel = this.resolveUomSymbol(row) || '';
     this.onVendorChange(row.vendorUserId);
     this.onItemSelected(row.itemId);
+    // Restore project activities for the selected project
+    this.onProjectChangedRfq();
 
     Promise.resolve().then(() => {
       this.itemForm.patchValue({ vendorCompanyId: row.vendorCompanyId }, { emitEvent: false });
@@ -946,6 +983,9 @@ export class NewRfqComponent implements OnInit {
         vendorCompanyId: item.vendorCompanyId || null,
         vatProdPostingGroup: item.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
         unitOfMeasurementSymbol: this.resolveUomSymbol(item),
+        departmentId: item.departmentId || this.departmentId || null,
+        projectId: item.projectId || null,
+        projectActivityId: item.projectActivityId || null,
         quotationItemAttachments: item.quotationItemAttachments?.map((att) => ({
           id: att.id || null,
           content: att.content || '',
@@ -981,6 +1021,9 @@ export class NewRfqComponent implements OnInit {
           vendorCompanyId: item.vendorCompanyId || null,
           vatProdPostingGroup: item.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
           unitOfMeasurementSymbol: this.resolveUomSymbol(item),
+          departmentId: item.departmentId || this.departmentId || null,
+          projectId: item.projectId || null,
+          projectActivityId: item.projectActivityId || null,
           quotationItemAttachments: item.quotationItemAttachments?.map((att) => ({
             id: att.id || null,
             content: att.content || '',
@@ -1117,6 +1160,9 @@ export class NewRfqComponent implements OnInit {
           vendorCompanyId: item.vendorCompanyId || null,
           vatProdPostingGroup: item.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
           unitOfMeasurementSymbol: this.resolveUomSymbol(item),
+          departmentId: item.departmentId || this.departmentId || null,
+          projectId: item.projectId || null,
+          projectActivityId: item.projectActivityId || null,
           quotationItemAttachments: item.quotationItemAttachments?.map((att) => ({
             id: att.id || null,
             content: att.content || '',
@@ -1224,9 +1270,14 @@ export class NewRfqComponent implements OnInit {
       orderQuantity: 1,
       itemId: 0,
       unitOfMeasurementId: 0,
+      departmentId: this.departmentId || null,
+      projectId: null,
+      projectActivityId: null,
     });
     this.selectedUomLabel = '';
     this.unitsOfMeasurementList = [];
+    this.currentProjectActivities = [];
+    this.selectedProjectInfo = null;
     this.itemForm.get('unitOfMeasurementId')?.disable({ emitEvent: false });
   }
 
@@ -1412,6 +1463,95 @@ export class NewRfqComponent implements OnInit {
   onAllItemsFinalizedChange(finalized: boolean) {
     this.allItemsFinalized = finalized;
   }
+
+  // ── Department / Project / Activity helpers ──────────────────────────────
+
+  loadProjects(): void {
+    this.projectService.getAllProjects().subscribe({
+      next: (res: any) => {
+        const raw = this.extractList(res);
+        this.projectList = raw.map((p: any) => ({
+          id: Number(p.id ?? p.Id),
+          departmentId: Number(p.departmentId ?? p.DepartmentId),
+          departmentName: p.departmentName ?? p.DepartmentName ?? '',
+          name: String(p.name ?? p.Name ?? '').trim(),
+          description: p.description ?? p.Description ?? '',
+          projectActivities: (p.projectActivities || p.ProjectActivities || []).map((a: any) => ({
+            id: Number(a.id ?? a.Id),
+            projectId: Number(a.projectId ?? a.ProjectId ?? p.id ?? p.Id),
+            name: String(a.name ?? a.Name ?? '').trim(),
+            description: a.description ?? a.Description ?? '',
+            budgetAmount: Number(a.budgetAmount ?? a.BudgetAmount ?? 0),
+            allowedPercentage: Number(a.allowedPercentage ?? a.AllowedPercentage ?? 0),
+          }))
+        }));
+        this.updateFilteredProjectsForRfq();
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Failed to load projects:', err);
+        this.projectList = [];
+      }
+    });
+  }
+
+  private extractList(res: any): any[] {
+    if (!res) return [];
+    if (Array.isArray(res)) return res;
+    if (Array.isArray(res?.value?.result)) return res.value.result;
+    if (Array.isArray(res?.value?.Result)) return res.value.Result;
+    if (Array.isArray(res?.value)) return res.value;
+    if (Array.isArray(res?.result)) return res.result;
+    if (Array.isArray(res?.Result)) return res.Result;
+    return [];
+  }
+
+  updateFilteredProjectsForRfq(): void {
+    if (!this.departmentId) {
+      this.filteredProjectList = [];
+      return;
+    }
+    this.filteredProjectList = (this.projectList || []).filter(
+      (p) => Number(p.departmentId) === Number(this.departmentId)
+    );
+    // Clear project/activity selection if the current project doesn't belong
+    const currentProjId = this.itemForm?.get('projectId')?.value;
+    if (currentProjId && !this.filteredProjectList.some(p => Number(p.id) === Number(currentProjId))) {
+      this.itemForm?.patchValue({ projectId: null, projectActivityId: null }, { emitEvent: false });
+      this.currentProjectActivities = [];
+      this.selectedProjectInfo = null;
+    }
+    this.cdr.detectChanges();
+  }
+
+  onProjectChangedRfq(): void {
+    const projId = Number(this.itemForm.get('projectId')?.value);
+    this.selectedProjectInfo = this.projectList.find(p => Number(p.id) === projId) || null;
+    this.currentProjectActivities = this.selectedProjectInfo?.projectActivities || [];
+    // Reset activity if not valid for new project
+    const currentActId = Number(this.itemForm.get('projectActivityId')?.value);
+    if (!this.currentProjectActivities.some(a => Number(a.id) === currentActId)) {
+      this.itemForm.patchValue({ projectActivityId: null }, { emitEvent: false });
+    }
+    this.cdr.markForCheck();
+  }
+
+  getProjectNameById(id: any): string {
+    if (!id) return '';
+    const p = this.projectList.find(x => Number(x.id) === Number(id));
+    return p ? p.name : '';
+  }
+
+  getActivityNameById(id: any): string {
+    if (!id) return '';
+    for (const p of this.projectList) {
+      const act = (p.projectActivities || []).find((a: any) => Number(a.id) === Number(id));
+      if (act) return act.name;
+    }
+    return '';
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
 
   private normalizePhoneToString(value: any): string {
     if (!value) return '';
