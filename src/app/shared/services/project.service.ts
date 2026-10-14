@@ -3,6 +3,12 @@ import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 
+export interface ProjectActivityUser {
+  id: string;
+  userName?: string;
+  fullName?: string;
+}
+
 export interface ProjectActivityItem {
   id: number;
   projectId: number;
@@ -12,6 +18,8 @@ export interface ProjectActivityItem {
   allowedPercentage: number;
   utilisedBudget?: number;
   availableBudget?: number;
+  userIds?: string;
+  users?: ProjectActivityUser[];
   isException?: boolean;
 }
 

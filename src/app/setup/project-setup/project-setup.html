@@ -39,18 +39,20 @@
 
       <div class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
         <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="projects" [columnMode]="'force'"
-          [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="pageSize"
-          [externalPaging]="true" [count]="totalItems" [offset]="currentPage - 1" (page)="onPageChange($event)"
-          [selected]="selected" [selectionType]="SelectionType.checkbox" (select)="onSelect($event)">
-          
-          <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
-            <ng-template ngx-datatable-cell-template let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
+          [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="pageSize" [externalPaging]="true"
+          [count]="totalItems" [offset]="currentPage - 1" (page)="onPageChange($event)" [selected]="selected"
+          [selectionType]="SelectionType.checkbox" (select)="onSelect($event)">
+
+          <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+            [resizeable]="false">
+            <ng-template ngx-datatable-cell-template let-isSelected="isSelected"
+              let-onCheckboxChangeFn="onCheckboxChangeFn">
               <div class="custom-control custom-checkbox cstm-checkbox-form">
                 <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
               </div>
             </ng-template>
           </ngx-datatable-column>
-          
+
           <ngx-datatable-column name="Name" prop="name"></ngx-datatable-column>
           <ngx-datatable-column name="Department Name" prop="departmentName"></ngx-datatable-column>
           <ngx-datatable-column name="Activity Count" prop="activityCount"></ngx-datatable-column>
@@ -81,32 +83,39 @@
         <div class="row gx-3">
           <div class="form-group col-md-6 mb-3">
             <label class="form-label font-weight-bold">Department <span class="text-danger">*</span></label>
-            <ng-select #deptSelect class="custom-select-ui" [items]="departments" bindLabel="name" bindValue="id" formControlName="departmentId"
-              placeholder="Select department" [appendTo]="'body'" [clearable]="true" [searchable]="false"
-              (open)="onDropdownOpen(deptSelect)" (close)="onDropdownClose(deptSelect)">
+            <ng-select #deptSelect class="custom-select-ui" [items]="departments" bindLabel="name" bindValue="id"
+              formControlName="departmentId" placeholder="Select department" [appendTo]="'body'" [clearable]="true"
+              [searchable]="false" (open)="onDropdownOpen(deptSelect)" (close)="onDropdownClose(deptSelect)">
               <ng-template ng-header-tmp>
                 <div class="dropdown-search-wrapper">
                   <i class="ft-search dropdown-search-icon"></i>
                   <input #deptSearch type="text" class="dropdown-search-input" placeholder="Search department..."
-                    (input)="deptSelect.filter(deptSearch.value)" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                    (input)="deptSelect.filter(deptSearch.value)" (click)="$event.stopPropagation()"
+                    (keydown)="$event.stopPropagation()">
                 </div>
               </ng-template>
             </ng-select>
-            <div *ngIf="projectForm.get('departmentId')?.invalid && (projectForm.get('departmentId')?.touched || projectForm.get('departmentId')?.dirty)" class="text-danger small mt-1">
+            <div
+              *ngIf="projectForm.get('departmentId')?.invalid && (projectForm.get('departmentId')?.touched || projectForm.get('departmentId')?.dirty)"
+              class="text-danger small mt-1">
               Department is required.
             </div>
           </div>
           <div class="form-group col-md-6 mb-3">
             <label class="form-label font-weight-bold">Name <span class="text-danger">*</span></label>
-            <input type="text" class="form-control custom-input" formControlName="name" placeholder="Enter project name">
-            <div *ngIf="projectForm.get('name')?.invalid && (projectForm.get('name')?.touched || projectForm.get('name')?.dirty)" class="text-danger small mt-1">
+            <input type="text" class="form-control custom-input" formControlName="name"
+              placeholder="Enter project name">
+            <div
+              *ngIf="projectForm.get('name')?.invalid && (projectForm.get('name')?.touched || projectForm.get('name')?.dirty)"
+              class="text-danger small mt-1">
               Project name is required.
             </div>
           </div>
         </div>
         <div class="form-group mb-3">
           <label class="form-label font-weight-bold">Description</label>
-          <textarea class="form-control custom-input" formControlName="description" rows="2" placeholder="Enter project description (optional)"></textarea>
+          <textarea class="form-control custom-input" formControlName="description" rows="2"
+            placeholder="Enter project description (optional)"></textarea>
         </div>
 
         <div class="mt-4">
@@ -114,53 +123,94 @@
             <div>
               <h6 class="mb-0 font-weight-bold d-flex align-items-center" style="font-size: 14.5px; color: #116AEF;">
                 <i class="ft-list mr-1"></i> Project Activities
-                <span class="badge rounded-pill ml-2" *ngIf="activities.length" style="background: #eef4ff; color: #116aef; font-weight: 600; font-size: 11.5px; padding: 4px 8px;">
+                <span class="badge rounded-pill ml-2" *ngIf="activities.length"
+                  style="background: #eef4ff; color: #116aef; font-weight: 600; font-size: 11.5px; padding: 4px 8px;">
                   {{ activities.length }}
                 </span>
               </h6>
-              <small class="text-muted" style="font-size: 12px;">Define activities, budget allocations, and over budget percentage limits.</small>
+              <small class="text-muted" style="font-size: 12px;">Define activities, budget allocations, and over budget
+                percentage limits.</small>
             </div>
-            <button type="button" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center" (click)="addActivity()" style="border-radius: 6px; font-weight: 500; padding: 5px 12px; font-size: 13px;">
+            <button type="button" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center"
+              (click)="addActivity()" style="border-radius: 6px; font-weight: 500; padding: 5px 12px; font-size: 13px;">
               <i class="ft-plus mr-1"></i> Add Activity
             </button>
           </div>
-          
+
           <div formArrayName="projectActivities">
             <div class="table-responsive pro-table-container">
               <table class="table pro-table table-sm mb-0">
                 <thead>
                   <tr>
-                    <th style="min-width: 140px;">Name <span class="text-danger">*</span></th>
-                    <th style="min-width: 160px;">Description</th>
-                    <th style="width: 130px;">Budget</th>
-                    <th style="width: 130px;">Over Budget %</th>
-                    <th style="width: 50px;" class="text-center">Action</th>
+                    <th style="min-width: 130px;">Name <span class="text-danger">*</span></th>
+                    <th style="min-width: 135px;">Description</th>
+                    <th style="width: 100px;">Budget</th>
+                    <th style="width: 105px;">Over Budget %</th>
+                    <th style="width: 85px;" class="text-center">Mark Exception</th>
+                    <th style="width: 105px;" class="text-center">Assigned to</th>
+                    <th style="width: 95px; min-width: 95px;" class="text-center">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let activity of activities.controls; let i=index" [formGroupName]="i">
                     <td>
-                      <input type="text" class="form-control form-control-sm pro-table-input" formControlName="name" placeholder="Activity name">
+                      <input type="text" class="form-control form-control-sm pro-table-input" formControlName="name"
+                        placeholder="Activity name">
                     </td>
                     <td>
-                      <input type="text" class="form-control form-control-sm pro-table-input" formControlName="description" placeholder="Description">
+                      <input type="text" class="form-control form-control-sm pro-table-input"
+                        formControlName="description" placeholder="Description"
+                        [ngbTooltip]="activity.get('description')?.value"
+                        [disableTooltip]="!activity.get('description')?.value"
+                        container="body">
                     </td>
                     <td>
-                      <input type="number" class="form-control form-control-sm pro-table-input" formControlName="budgetAmount" placeholder="0" min="0" (input)="onBudgetInput($event, i)">
+                      <input type="number" class="form-control form-control-sm pro-table-input"
+                        formControlName="budgetAmount" placeholder="0" min="0" (input)="onBudgetInput($event, i)">
                     </td>
                     <td>
-                      <input type="number" class="form-control form-control-sm pro-table-input" formControlName="allowedPercentage" placeholder="0" min="0" max="100" (input)="onPercentageInput($event, i)">
+                      <input type="number" class="form-control form-control-sm pro-table-input"
+                        formControlName="allowedPercentage" placeholder="0" min="0" max="100"
+                        (input)="onPercentageInput($event, i)">
                     </td>
                     <td class="text-center align-middle">
-                      <button type="button" class="btn-delete-row" (click)="removeActivity(i)" title="Remove activity">
-                        <i class="ft-trash-2"></i>
-                      </button>
+                      <div class="exception-radio-wrapper" (click)="toggleException(i)">
+                        <input type="radio" class="exception-radio" name="activityExceptionRadio"
+                          [id]="'exceptionRadio_' + i" [checked]="isActivityException(i)"
+                          (click)="$event.preventDefault(); $event.stopPropagation(); toggleException(i)">
+                      </div>
+                    </td>
+                    <td class="text-center align-middle">
+                      <span class="badge assigned-user-pill"
+                        [ngClass]="getActivityAssignedUsersCount(i) > 0 ? 'badge-assigned' : 'badge-unassigned'"
+                        (click)="openAssignUsersModal(i, assignUsersModal)">
+                        <i class="ft-users mr-1"></i>
+                        {{ getActivityAssignedUsersCount(i) }} {{ getActivityAssignedUsersCount(i) === 1 ? 'User' :
+                        'Users' }}
+                      </span>
+                    </td>
+                    <td class="text-center align-middle" style="width: 95px; min-width: 95px; padding-right: 12px;">
+                      <div class="d-inline-flex align-items-center justify-content-center" style="gap: 6px; white-space: nowrap;">
+                        <button type="button" class="btn-assign-user position-relative"
+                          (click)="openAssignUsersModal(i, assignUsersModal)" ngbTooltip="Assign Users"
+                          container="body">
+                          <i class="ft-plus"></i>
+                          <span *ngIf="getActivityAssignedUsersCount(i) > 0" class="btn-user-badge">
+                            {{ getActivityAssignedUsersCount(i) }}
+                          </span>
+                        </button>
+                        <button type="button" class="btn-delete-row" (click)="removeActivity(i)"
+                          ngbTooltip="Remove Activity" container="body">
+                          <i class="ft-trash-2"></i>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                   <tr *ngIf="activities.length === 0">
-                    <td colspan="5" class="text-center py-4 text-muted">
+                    <td colspan="7" class="text-center py-4 text-muted">
                       <i class="ft-layers font-large-1 d-block mb-1 text-muted" style="opacity: 0.45;"></i>
-                      <span style="font-size: 13px;">No activities added yet. Click <strong>+ Add Activity</strong> to define project activities.</span>
+                      <span style="font-size: 13px;">No activities added yet. Click <strong>+ Add Activity</strong> to
+                        define project activities.</span>
                     </td>
                   </tr>
                 </tbody>
@@ -187,7 +237,8 @@
     <div class="modal-header d-flex align-items-center justify-content-between">
       <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
         <i class="ft-file-text mr-2 text-white"></i> Project Activity Logs
-        <span *ngIf="currentProject" class="ml-2 badge badge-light" style="font-size: 12px;">{{ currentProject.name }}</span>
+        <span *ngIf="currentProject" class="ml-2 badge badge-light" style="font-size: 12px;">{{ currentProject.name
+          }}</span>
       </h5>
       <button type="button" class="modal-close-btn" aria-label="Close" (click)="modal.dismiss()">
         <i class="ft-x"></i>
@@ -236,11 +287,10 @@
 
           <!-- Old & New Values Side-by-Side -->
           <div class="log-values-grid"
-               *ngIf="(parseJsonValues(log.oldValues).length > 0) || (parseJsonValues(log.newValues).length > 0)">
+            *ngIf="(parseJsonValues(log.oldValues).length > 0) || (parseJsonValues(log.newValues).length > 0)">
 
             <!-- Old Values -->
-            <div class="log-values-panel log-values-old"
-                 *ngIf="parseJsonValues(log.oldValues).length > 0">
+            <div class="log-values-panel log-values-old" *ngIf="parseJsonValues(log.oldValues).length > 0">
               <div class="log-values-panel-header">
                 <i class="ft-arrow-left-circle"></i> Old Values
               </div>
@@ -254,13 +304,13 @@
 
             <!-- Arrow divider -->
             <div class="log-values-arrow"
-                 *ngIf="parseJsonValues(log.oldValues).length > 0 && parseJsonValues(log.newValues).length > 0">
+              *ngIf="parseJsonValues(log.oldValues).length > 0 && parseJsonValues(log.newValues).length > 0">
               <i class="ft-arrow-right"></i>
             </div>
 
             <!-- New Values (side-by-side when both exist) -->
             <div class="log-values-panel log-values-new"
-                 *ngIf="parseJsonValues(log.newValues).length > 0 && parseJsonValues(log.oldValues).length > 0">
+              *ngIf="parseJsonValues(log.newValues).length > 0 && parseJsonValues(log.oldValues).length > 0">
               <div class="log-values-panel-header">
                 <i class="ft-arrow-right-circle"></i> New Values
               </div>
@@ -274,7 +324,7 @@
 
             <!-- New Values full-width (only new values exist, e.g. Create) -->
             <div class="log-values-panel log-values-new log-values-full"
-                 *ngIf="parseJsonValues(log.oldValues).length === 0 && parseJsonValues(log.newValues).length > 0">
+              *ngIf="parseJsonValues(log.oldValues).length === 0 && parseJsonValues(log.newValues).length > 0">
               <div class="log-values-panel-header">
                 <i class="ft-arrow-right-circle"></i> New Values
               </div>
@@ -289,7 +339,7 @@
 
           <!-- No values fallback -->
           <div class="log-no-values"
-               *ngIf="parseJsonValues(log.oldValues).length === 0 && parseJsonValues(log.newValues).length === 0">
+            *ngIf="parseJsonValues(log.oldValues).length === 0 && parseJsonValues(log.newValues).length === 0">
             <i class="ft-info"></i> No value details recorded.
           </div>
         </div>
@@ -299,6 +349,144 @@
       <button type="button" class="modal-btn-cancel" (click)="modal.dismiss()">
         <i class="ft-x mr-1"></i> Close
       </button>
+    </div>
+  </ng-template>
+
+  <!-- Assign Users Modal (Focused Single Activity Layout) -->
+  <ng-template #assignUsersModal let-modal>
+    <div class="modal-header d-flex align-items-center justify-content-between">
+      <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
+        <i class="ft-user-check mr-2 text-white"></i> Assign Users to Activity
+      </h5>
+      <button type="button" class="modal-close-btn" aria-label="Close" (click)="modal.dismiss()">
+        <i class="ft-x"></i>
+      </button>
+    </div>
+
+    <div class="modal-body p-3">
+      <!-- Activity Heading Card with Name & Budget -->
+      <div class="assign-activity-banner d-flex align-items-center justify-content-between mb-3">
+        <div class="d-flex align-items-center">
+          <div class="banner-icon-box mr-2">
+            <i class="ft-layers"></i>
+          </div>
+          <div>
+            <div class="banner-title">
+              {{ getCurrentActivityName() }}
+            </div>
+            <div class="banner-meta">
+              Budget: <strong>{{ getCurrentActivityBudget() | currency:'USD':'symbol':'1.0-2' }}</strong>
+              <span class="mx-2">•</span>
+              Over Budget Limit: <strong>{{ getCurrentActivityAllowedPercentage() }}%</strong>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex align-items-center">
+          <span class="banner-badge">
+            <i class="ft-users mr-1"></i>
+            {{ getCurrentActivityAssignedUserIds().length }} Selected
+          </span>
+        </div>
+      </div>
+
+      <!-- Search Users -->
+      <div class="assign-search-box mb-2">
+        <i class="ft-search assign-search-icon"></i>
+        <input type="text" class="form-control assign-search-input" [(ngModel)]="userSearchTerm"
+          placeholder="Search user by name, email or role...">
+        <button *ngIf="userSearchTerm" type="button" class="btn-clear-search" (click)="userSearchTerm = ''">
+          <i class="ft-x"></i>
+        </button>
+      </div>
+
+      <!-- Users Table Container -->
+      <div class="assign-users-table-container">
+        <div *ngIf="loadingUsers" class="text-center py-5">
+          <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+          <span class="ml-2 text-muted" style="font-size: 13px;">Loading users...</span>
+        </div>
+
+        <table *ngIf="!loadingUsers" class="table assign-users-table table-sm mb-0">
+          <thead>
+            <tr>
+              <th style="width: 40%;">User Name</th>
+              <th style="width: 44%;">Email / Role</th>
+              <th class="col-select" style="width: 16%;">
+                <div class="d-flex align-items-center" style="gap: 6px;">
+                  <input type="checkbox" class="cstm-table-checkbox" id="selectAllUsersCheck"
+                    [checked]="isAllUsersSelectedForCurrentActivity()" (change)="toggleSelectAllUsers()">
+                  <label class="select-all-label" for="selectAllUsersCheck">
+                    Select All
+                  </label>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of getFilteredUsers(); let uIdx = index"
+              [class.table-active-row]="isUserAssignedToCurrentActivity(user.id)"
+              (click)="toggleUserAssignment(user.id)" style="cursor: pointer;">
+              <td style="width: 40%;">
+                <div class="d-flex align-items-center">
+                  <div class="user-avatar-circle mr-2 flex-shrink-0">
+                    {{ getUserInitials(user.fullName || user.userName) }}
+                  </div>
+                  <div class="text-truncate" style="min-width: 0;">
+                    <div class="font-weight-bold text-dark text-truncate" style="font-size: 13px;">
+                      {{ user.fullName || user.userName }}
+                    </div>
+                    <small class="text-muted d-block text-truncate" style="font-size: 11px;">
+                      {{ user.userName }}
+                    </small>
+                  </div>
+                </div>
+              </td>
+              <td style="width: 44%;">
+                <div class="text-truncate" style="min-width: 0;">
+                  <div class="text-dark text-truncate" style="font-size: 12.5px;" [ngbTooltip]="user.email"
+                    container="body">
+                    {{ user.email || '-' }}
+                  </div>
+                  <span *ngIf="user.role && user.role !== '-'" class="badge badge-light-secondary text-truncate"
+                    style="font-size: 10.5px; padding: 2px 6px; max-width: 100%;">
+                    {{ user.role }}
+                  </span>
+                </div>
+              </td>
+              <td class="col-select" style="width: 16%;">
+                <div class="d-flex align-items-center" style="height: 100%;">
+                  <input type="checkbox" class="cstm-table-checkbox" [id]="'userCheck_' + uIdx + '_' + user.id"
+                    [checked]="isUserAssignedToCurrentActivity(user.id)" (click)="$event.stopPropagation()"
+                    (change)="toggleUserAssignment(user.id)">
+                </div>
+              </td>
+            </tr>
+
+            <tr *ngIf="getFilteredUsers().length === 0">
+              <td colspan="3" class="text-center py-4 text-muted">
+                <i class="ft-user-x font-medium-3 d-block mb-1 opacity-50"></i>
+                <span style="font-size: 12.5px;">No users found</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="modal-footer d-flex align-items-center justify-content-between">
+      <div class="text-muted" style="font-size: 12.5px;">
+        <i class="ft-info mr-1 text-primary"></i>
+        <span><strong>{{ getCurrentActivityAssignedUserIds().length }}</strong> user(s) assigned to <strong>{{
+            getCurrentActivityName() }}</strong></span>
+      </div>
+      <div class="d-flex align-items-center" style="gap: 10px;">
+        <button type="button" class="modal-btn-cancel" (click)="modal.dismiss()">
+          <i class="ft-x mr-1"></i> Close
+        </button>
+        <button type="button" class="modal-btn-save" (click)="modal.close()">
+          <i class="ft-check mr-1"></i> Done
+        </button>
+      </div>
     </div>
   </ng-template>
 </section>

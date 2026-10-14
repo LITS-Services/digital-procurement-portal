@@ -1,25 +1,27 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone, ViewChild, TemplateRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
-import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
+import { NgbModal, NgbModalRef, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxDatatableModule, SelectionType, DatatableComponent } from '@swimlane/ngx-datatable';
 import { RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ProjectService } from '../../shared/services/project.service';
 import { DepartmentService } from '../../shared/services/department.service';
+import { CompanyService } from '../../shared/services/Company.services';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { DatatableAutoResizeDirective } from '../../shared/directives/dataTable-auto-resize.directive';
 
 @Component({
   selector: 'app-project-setup',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgxDatatableModule, NgbModule, RouterModule, NgSelectModule, DatatableAutoResizeDirective],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, NgxDatatableModule, NgbModule, RouterModule, NgSelectModule, DatatableAutoResizeDirective],
   templateUrl: './project-setup.html',
   styleUrls: ['./project-setup.scss']
 })
 export class ProjectSetup implements OnInit, OnDestroy {
   @ViewChild('datatable') datatable?: DatatableComponent;
   @ViewChild('logsModal') logsModal?: TemplateRef<any>;
+  @ViewChild('assignUsersModal') assignUsersModal?: TemplateRef<any>;
 
   projects: any[] = [];
   departments: any[] = [];
@@ -33,6 +35,14 @@ export class ProjectSetup implements OnInit, OnDestroy {
   loadingLogs = false;
   currentProject: any = null;
 
+  // Assign Users state
+  assignModalRef?: NgbModalRef;
+  currentAssignActivityIndex: number = 0;
+  usersList: any[] = [];
+  loadingUsers = false;
+  userSearchTerm = '';
+  activitySearchTerm = '';
+
   currentPage = 1;
   pageSize = 10;
   totalItems = 0;
@@ -40,6 +50,7 @@ export class ProjectSetup implements OnInit, OnDestroy {
   constructor(
     private projectService: ProjectService,
     private departmentService: DepartmentService,
+    private companyService: CompanyService,
     private modalService: NgbModal,
     private fb: FormBuilder,
     private toastr: ToastrService,
@@ -70,12 +81,19 @@ export class ProjectSetup implements OnInit, OnDestroy {
       name: ['', Validators.required],
       description: [''],
       budgetAmount: [0, [Validators.required, Validators.min(0)]],
-      allowedPercentage: [0, [Validators.required, Validators.min(0), Validators.max(100)]]
+      allowedPercentage: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
+      assignedUserIds: [[]],
+      userIds: [''],
+      assignedUsers: [[]],
+      isException: [false]
     }));
   }
 
   removeActivity(index: number) {
     this.activities.removeAt(index);
+    if (this.currentAssignActivityIndex >= this.activities.length) {
+      this.currentAssignActivityIndex = Math.max(0, this.activities.length - 1);
+    }
   }
 
   onPercentageInput(event: any, index: number) {
@@ -157,6 +175,7 @@ export class ProjectSetup implements OnInit, OnDestroy {
     this.isEdit = false;
     this.projectForm.reset({ id: 0, departmentId: null, name: '', description: '' });
     this.activities.clear();
+    this.loadUsers();
     if (!this.departments || this.departments.length === 0) {
       this.loadDepartments();
     }
@@ -171,12 +190,53 @@ export class ProjectSetup implements OnInit, OnDestroy {
     this.activities.clear();
     if (activitiesList && activitiesList.length > 0) {
       activitiesList.forEach((act: any) => {
+        let assignedUserIds: string[] = [];
+        const rawUserIds = act.userIds ?? act.UserIds;
+        if (typeof rawUserIds === 'string' && rawUserIds.trim()) {
+          assignedUserIds = rawUserIds.split(',')
+            .map((id: string) => id.trim())
+            .filter((id: string) => !!id);
+        } else if (Array.isArray(rawUserIds)) {
+          assignedUserIds = rawUserIds.map((id: any) => String(id));
+        } else if (Array.isArray(act.assignedUserIds)) {
+          assignedUserIds = act.assignedUserIds.map((id: any) => String(id));
+        } else if (Array.isArray(act.users) && act.users.length > 0) {
+          assignedUserIds = act.users.map((u: any) => String(u.id || u.userId || u));
+        } else if (Array.isArray(act.Users) && act.Users.length > 0) {
+          assignedUserIds = act.Users.map((u: any) => String(u.id || u.userId || u));
+        } else if (Array.isArray(act.assignedUsers)) {
+          assignedUserIds = act.assignedUsers.map((u: any) => String(u.id || u.userId || u));
+        }
+
+        const returnedUsers = act.users || act.Users || act.assignedUsers || [];
+        if (Array.isArray(returnedUsers) && returnedUsers.length > 0) {
+          returnedUsers.forEach((u: any) => {
+            const uId = String(u.id || u.userId || '');
+            if (uId && !this.usersList.some(item => String(item.id) === uId)) {
+              this.usersList.push({
+                id: uId,
+                userName: u.userName || u.username || '-',
+                fullName: u.fullName || u.name || u.userName || '-',
+                email: u.email || '-',
+                role: u.roleName || u.role || '-'
+              });
+            }
+          });
+        }
+
+        const rawExc = act.isException ?? act.IsException;
+        const isException = rawExc === true || rawExc === 1 || rawExc === 'true' || rawExc === '1';
+
         this.activities.push(this.fb.group({
-          id: [act.id || 0],
-          name: [act.name, Validators.required],
-          description: [act.description || ''],
-          budgetAmount: [act.budgetAmount ?? 0, [Validators.required, Validators.min(0)]],
-          allowedPercentage: [act.allowedPercentage ?? 0, [Validators.required, Validators.min(0), Validators.max(100)]]
+          id: [act.id ?? act.Id ?? 0],
+          name: [act.name ?? act.Name ?? '', Validators.required],
+          description: [act.description ?? act.Description ?? ''],
+          budgetAmount: [act.budgetAmount ?? act.BudgetAmount ?? 0, [Validators.required, Validators.min(0)]],
+          allowedPercentage: [act.allowedPercentage ?? act.AllowedPercentage ?? 0, [Validators.required, Validators.min(0), Validators.max(100)]],
+          assignedUserIds: [assignedUserIds],
+          userIds: [assignedUserIds.join(',')],
+          assignedUsers: [returnedUsers],
+          isException: [isException]
         }));
       });
     }
@@ -195,22 +255,39 @@ export class ProjectSetup implements OnInit, OnDestroy {
       
       this.populateActivities(proj.projectActivities || []);
 
+      this.loadUsers();
       if (!this.departments || this.departments.length === 0) {
         this.loadDepartments();
       }
 
-      if (proj.id && (!proj.projectActivities || proj.projectActivities.length === 0)) {
+      if (proj.id) {
         this.projectService.getById(proj.id).subscribe({
           next: (res: any) => {
-            const fullProj = res?.result;
-            if (fullProj) {
-              if (fullProj.departmentId && !this.projectForm.get('departmentId')?.value) {
-                this.projectForm.patchValue({ departmentId: fullProj.departmentId });
+            this.ngZone.run(() => {
+              const fullProj = res?.value ?? res?.result ?? res?.data ?? res;
+              if (fullProj) {
+                const deptId = fullProj.departmentId ?? fullProj.DepartmentId;
+                if (deptId) {
+                  this.projectForm.patchValue({ departmentId: deptId });
+                }
+                const name = fullProj.name ?? fullProj.Name;
+                if (name) {
+                  this.projectForm.patchValue({ name: name });
+                }
+                const desc = fullProj.description ?? fullProj.Description;
+                if (desc !== undefined) {
+                  this.projectForm.patchValue({ description: desc });
+                }
+                const acts = fullProj.projectActivities ?? fullProj.ProjectActivities;
+                if (acts && Array.isArray(acts) && acts.length > 0) {
+                  this.populateActivities(acts);
+                }
               }
-              if (fullProj.projectActivities && fullProj.projectActivities.length > 0 && this.activities.length === 0) {
-                this.populateActivities(fullProj.projectActivities);
-              }
-            }
+              this.cdr.detectChanges();
+            });
+          },
+          error: (err) => {
+            console.error('Error loading full project by ID:', err);
           }
         });
       }
@@ -246,7 +323,38 @@ export class ProjectSetup implements OnInit, OnDestroy {
   save(modal: any) {
     if (this.projectForm.valid) {
       this.saving = true;
-      const payload = this.projectForm.value;
+      const rawVal = this.projectForm.value;
+      const payload = {
+        ...rawVal,
+        projectActivities: (rawVal.projectActivities || []).map((act: any) => {
+          let userIdsArr: string[] = [];
+          if (Array.isArray(act.assignedUserIds)) {
+            userIdsArr = act.assignedUserIds.map((id: any) => String(id));
+          } else if (Array.isArray(act.userIds)) {
+            userIdsArr = act.userIds.map((id: any) => String(id));
+          } else if (typeof act.userIds === 'string' && act.userIds.trim()) {
+            userIdsArr = act.userIds.split(',').map((s: string) => s.trim()).filter((s: string) => !!s);
+          }
+          const userIdsStr = userIdsArr.join(',');
+          const assignedUsers = this.usersList.filter(u => userIdsArr.includes(String(u.id)));
+          const isException = !!act.isException;
+
+          return {
+            ...act,
+            id: Number(act.id) || 0,
+            name: act.name,
+            description: act.description || '',
+            budgetAmount: Number(act.budgetAmount) || 0,
+            allowedPercentage: Number(act.allowedPercentage) || 0,
+            userIds: userIdsStr,
+            UserIds: userIdsStr,
+            isException: isException,
+            IsException: isException,
+            assignedUserIds: userIdsArr,
+            assignedUsers: assignedUsers
+          };
+        })
+      };
       const obs = this.isEdit ? this.projectService.update(payload) : this.projectService.create(payload);
 
       obs.subscribe({
@@ -266,6 +374,267 @@ export class ProjectSetup implements OnInit, OnDestroy {
         }
       });
     }
+  }
+
+  openAssignUsersModal(index: number, content: TemplateRef<any>) {
+    this.currentAssignActivityIndex = index;
+    this.userSearchTerm = '';
+    this.activitySearchTerm = '';
+    this.loadUsers();
+
+    // Hide background project modal while Assign Users modal is active
+    document.body.classList.add('assign-modal-open');
+
+    this.assignModalRef = this.modalService.open(content, {
+      size: 'lg',
+      centered: true,
+      backdrop: 'static',
+      windowClass: 'cstm-setup-modal assign-users-modal',
+      backdropClass: 'assign-users-backdrop'
+    });
+
+    const cleanup = () => {
+      document.body.classList.remove('assign-modal-open');
+      this.cdr.detectChanges();
+    };
+
+    this.assignModalRef.result.then(cleanup, cleanup);
+  }
+
+  loadUsers(): void {
+    if (this.usersList.length > 0) return;
+    this.loadingUsers = true;
+    const loggedInUserId = localStorage.getItem('userId');
+    const entityId = Number(localStorage.getItem('selectedCompanyId')) || null;
+
+    this.companyService.getProcurementUsers({
+      userId: loggedInUserId,
+      entityId: entityId
+    }).subscribe({
+      next: (res: any) => {
+        this.ngZone.run(() => {
+          const raw = res?.result || res?.value || res?.$values || (Array.isArray(res) ? res : []);
+          if (raw && raw.length > 0) {
+            this.usersList = raw.map((u: any) => ({
+              id: String(u.id || u.userId || u.guid || ''),
+              userName: u.userName || u.username || u.name || '-',
+              fullName: u.fullName || u.name || u.userName || '-',
+              email: u.email || '-',
+              role: u.roleName || u.role || u.userType || '-'
+            }));
+          } else {
+            this.usersList = this.getFallbackUsers();
+          }
+          this.loadingUsers = false;
+          this.cdr.detectChanges();
+        });
+      },
+      error: (err) => {
+        console.error('Error loading users:', err);
+        this.ngZone.run(() => {
+          this.loadingUsers = false;
+          if (this.usersList.length === 0) {
+            this.usersList = this.getFallbackUsers();
+          }
+          this.cdr.detectChanges();
+        });
+      }
+    });
+  }
+
+  private getFallbackUsers(): any[] {
+    return [
+      { id: '1', userName: 'smansoori', fullName: 'Saeed Ahmed Al Mansoori', email: 'saeed.mansoori@company.ae', role: 'Project Manager' },
+      { id: '2', userName: 'knuaimi', fullName: 'Khalid Rashid Al Nuaimi', email: 'khalid.nuaimi@company.ae', role: 'Procurement Specialist' },
+      { id: '3', userName: 'mhashimi', fullName: 'Mohammed Al Hashimi', email: 'mohammed.hashimi@company.ae', role: 'Senior Buyer' },
+      { id: '4', userName: 'fzahra', fullName: 'Fatima Al Zahra', email: 'fatima.zahra@company.ae', role: 'Finance Officer' },
+      { id: '5', userName: 'aali', fullName: 'Ahmed Al Ali', email: 'ahmed.ali@company.ae', role: 'Operations Lead' },
+      { id: '6', userName: 'azaabi', fullName: 'Abdullah Al Zaabi', email: 'abdullah.zaabi@company.ae', role: 'Approver' }
+    ];
+  }
+
+  getCurrentActivityGroup(): FormGroup | null {
+    if (this.currentAssignActivityIndex >= 0 && this.currentAssignActivityIndex < this.activities.length) {
+      return this.activities.at(this.currentAssignActivityIndex) as FormGroup;
+    }
+    return null;
+  }
+
+  getCurrentActivityName(): string {
+    const group = this.getCurrentActivityGroup();
+    if (!group) return '';
+    const name = group.get('name')?.value;
+    return name && name.trim() ? name.trim() : `Activity ${this.currentAssignActivityIndex + 1}`;
+  }
+
+  getCurrentActivityBudget(): number {
+    const group = this.getCurrentActivityGroup();
+    return group ? (Number(group.get('budgetAmount')?.value) || 0) : 0;
+  }
+
+  getCurrentActivityAllowedPercentage(): number {
+    const group = this.getCurrentActivityGroup();
+    return group ? (Number(group.get('allowedPercentage')?.value) || 0) : 0;
+  }
+
+  isActivityException(index: number): boolean {
+    if (index < 0 || index >= this.activities.length) return false;
+    const val = this.activities.at(index).get('isException')?.value;
+    return val === true || val === 1 || val === 'true' || val === '1';
+  }
+
+  toggleException(index: number): void {
+    if (index < 0 || index >= this.activities.length) return;
+    const isCurrentlyChecked = this.isActivityException(index);
+    const newVal = !isCurrentlyChecked;
+
+    this.activities.controls.forEach((ctrl, i) => {
+      ctrl.get('isException')?.setValue(i === index ? newVal : false);
+      ctrl.markAsDirty();
+    });
+    this.cdr.detectChanges();
+  }
+
+  getCurrentActivityAssignedUserIds(): string[] {
+    const group = this.getCurrentActivityGroup();
+    if (!group) return [];
+    const val = group.get('assignedUserIds')?.value;
+    return Array.isArray(val) ? val.map((v: any) => String(v)) : [];
+  }
+
+  isUserAssignedToCurrentActivity(userId: string): boolean {
+    const assigned = this.getCurrentActivityAssignedUserIds();
+    return assigned.includes(String(userId));
+  }
+
+  toggleUserAssignment(userId: string): void {
+    const group = this.getCurrentActivityGroup();
+    if (!group) return;
+    const strId = String(userId);
+    let assigned = [...this.getCurrentActivityAssignedUserIds()];
+    const idx = assigned.indexOf(strId);
+    if (idx > -1) {
+      assigned.splice(idx, 1);
+    } else {
+      assigned.push(strId);
+    }
+    group.get('assignedUserIds')?.setValue(assigned);
+    group.get('userIds')?.setValue(assigned);
+    const assignedUsersObj = this.usersList.filter(u => assigned.includes(String(u.id)));
+    group.get('assignedUsers')?.setValue(assignedUsersObj);
+    group.markAsDirty();
+    this.cdr.detectChanges();
+  }
+
+  isAllUsersSelectedForCurrentActivity(): boolean {
+    const filtered = this.getFilteredUsers();
+    if (filtered.length === 0) return false;
+    const assigned = this.getCurrentActivityAssignedUserIds();
+    return filtered.every(u => assigned.includes(String(u.id)));
+  }
+
+  toggleSelectAllUsers(): void {
+    const group = this.getCurrentActivityGroup();
+    if (!group) return;
+    const filtered = this.getFilteredUsers();
+    if (filtered.length === 0) return;
+
+    const allSelected = this.isAllUsersSelectedForCurrentActivity();
+    let assigned = [...this.getCurrentActivityAssignedUserIds()];
+
+    if (allSelected) {
+      const filteredIds = filtered.map(u => String(u.id));
+      assigned = assigned.filter(id => !filteredIds.includes(id));
+    } else {
+      filtered.forEach(u => {
+        const strId = String(u.id);
+        if (!assigned.includes(strId)) {
+          assigned.push(strId);
+        }
+      });
+    }
+
+    group.get('assignedUserIds')?.setValue(assigned);
+    group.get('userIds')?.setValue(assigned);
+    const assignedUsersObj = this.usersList.filter(u => assigned.includes(String(u.id)));
+    group.get('assignedUsers')?.setValue(assignedUsersObj);
+    group.markAsDirty();
+    this.cdr.detectChanges();
+  }
+
+  selectActivityForAssignment(index: number): void {
+    this.currentAssignActivityIndex = index;
+    this.cdr.detectChanges();
+  }
+
+  getActivityAssignedUsersCount(index: number): number {
+    return this.getActivityAssignedUserIds(index).length;
+  }
+
+  getActivityAssignedUserIds(index: number): string[] {
+    if (index >= 0 && index < this.activities.length) {
+      const group = this.activities.at(index) as FormGroup;
+      const val = group?.get('assignedUserIds')?.value;
+      return Array.isArray(val) ? val.map((v: any) => String(v)) : [];
+    }
+    return [];
+  }
+
+  getAssignedUserNamesTooltip(index: number): string {
+    const userIds = this.getActivityAssignedUserIds(index);
+    if (!userIds || userIds.length === 0) {
+      return 'No users assigned. Click to assign.';
+    }
+    const group = this.activities.at(index) as FormGroup;
+    const assignedUsersObj: any[] = group?.get('assignedUsers')?.value || [];
+
+    const names: string[] = [];
+    userIds.forEach(id => {
+      const u = this.usersList.find(x => String(x.id) === String(id)) ||
+                assignedUsersObj.find(x => String(x.id || x.userId) === String(id));
+      if (u) {
+        names.push(u.fullName || u.userName || id);
+      }
+    });
+
+    if (names.length > 0) {
+      return names.join(', ');
+    }
+    return `${userIds.length} user(s) assigned. Click to view.`;
+  }
+
+  getFilteredUsers(): any[] {
+    if (!this.userSearchTerm || !this.userSearchTerm.trim()) {
+      return this.usersList;
+    }
+    const term = this.userSearchTerm.toLowerCase().trim();
+    return this.usersList.filter(u =>
+      (u.fullName && u.fullName.toLowerCase().includes(term)) ||
+      (u.userName && u.userName.toLowerCase().includes(term)) ||
+      (u.email && u.email.toLowerCase().includes(term)) ||
+      (u.role && u.role.toLowerCase().includes(term))
+    );
+  }
+
+  getFilteredActivities(): { index: number; group: FormGroup }[] {
+    const result: { index: number; group: FormGroup }[] = [];
+    this.activities.controls.forEach((ctrl, i) => {
+      const group = ctrl as FormGroup;
+      const name = group.get('name')?.value || '';
+      if (!this.activitySearchTerm || !this.activitySearchTerm.trim() || name.toLowerCase().includes(this.activitySearchTerm.toLowerCase().trim())) {
+        result.push({ index: i, group });
+      }
+    });
+    return result;
+  }
+
+  getUserInitials(name: string): string {
+    if (!name) return 'U';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return parts[0].slice(0, 2).toUpperCase();
   }
 
   viewLogs(project: any) {
@@ -332,6 +701,7 @@ export class ProjectSetup implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    document.body.classList.remove('assign-modal-open');
     this.panelPositionObserver?.disconnect();
     this.panelResizeObserver?.disconnect();
   }
