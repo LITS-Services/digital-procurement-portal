@@ -289,12 +289,34 @@ export class ProjectSetup implements OnInit {
     });
   }
 
+  parseJsonValues(json: string | null | undefined): { key: string; value: string }[] {
+    if (!json) return [];
+    try {
+      const obj = JSON.parse(json);
+      if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) return [];
+      return Object.entries(obj).map(([key, value]) => ({
+        key: this.formatKey(key),
+        value: value === null || value === undefined ? '—' : String(value)
+      }));
+    } catch {
+      return [{ key: 'Value', value: json }];
+    }
+  }
+
+  formatKey(key: string): string {
+    // Convert camelCase / PascalCase to "Title Case With Spaces"
+    return key
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, s => s.toUpperCase())
+      .trim();
+  }
+
   openLogsModal() {
     console.log('openLogsModal called, logsModal:', this.logsModal);
     console.log('projectLogs length:', this.projectLogs.length);
     console.log('loadingLogs:', this.loadingLogs);
     const modalRef = this.modalService.open(this.logsModal, {
-      size: 'lg',
+      size: 'xl',
       centered: true,
       windowClass: 'cstm-setup-modal logs-modal'
     });
