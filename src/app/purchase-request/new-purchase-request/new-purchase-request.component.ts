@@ -270,10 +270,6 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe(() => this.recalculateBudgetAmount());
 
-    this.newPurchaseRequestForm.get('department')?.valueChanges
-      .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
-      .subscribe(() => this.updateFilteredProjects());
-
     this.itemForm.get('projectId')?.valueChanges
       .pipe(distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe(projId => {
@@ -1062,7 +1058,6 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
           name: String(d.name ?? d.Name ?? '').trim(),
           description: d.description ?? d.Description ?? ''
         }));
-        this.updateFilteredProjects();
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -1074,7 +1069,15 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   }
 
   loadProjects(): void {
-    this.projectService.getAllProjects().subscribe({
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      console.error('User ID not found in localStorage');
+      this.projectList = [];
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.projectService.getProjectsByUserId(userId).subscribe({
       next: (res: any) => {
         const raw = this.extractList(res);
         this.projectList = raw.map((p: any) => ({
@@ -1094,7 +1097,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
             isException: !!(a.isException ?? a.IsException ?? false)
           }))
         }));
-        this.updateFilteredProjects();
+        this.filteredProjectList = this.projectList;
         if (this.newPurchaseItemData?.length) {
           this.newPurchaseItemData.forEach((item: any) => {
             if (item.projectActivityId) {
@@ -1115,33 +1118,6 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         this.cdr.detectChanges();
       }
     });
-  }
-
-  updateFilteredProjects(): void {
-    const currentDeptVal = this.newPurchaseRequestForm?.get('department')?.value;
-    if (!currentDeptVal || !this.departmentList?.length) {
-      this.filteredProjectList = [];
-    } else {
-      const matchedDept = (this.departmentList || []).find(d => {
-        return d.id === Number(currentDeptVal) ||
-          (d.name && currentDeptVal && d.name.trim().toLowerCase() === String(currentDeptVal).trim().toLowerCase());
-      });
-
-      const targetDeptId = matchedDept ? matchedDept.id : Number(currentDeptVal);
-      this.filteredProjectList = (this.projectList || []).filter(p => {
-        return Number(p.departmentId) === Number(targetDeptId);
-      });
-    }
-
-    const currentProjId = this.itemForm?.get('projectId')?.value;
-    if (currentProjId && !this.filteredProjectList.some(p => Number(p.id) === Number(currentProjId))) {
-      this.itemForm.patchValue({ projectId: null, projectActivityId: null }, { emitEvent: false });
-      this.currentProjectActivities = [];
-      this.selectedProjectInfo = null;
-      this.selectedActivityInfo = null;
-      this.checkBudgetLimit();
-    }
-    this.cdr.detectChanges();
   }
 
   onProjectChanged(): void {

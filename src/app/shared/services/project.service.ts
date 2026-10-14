@@ -58,6 +58,10 @@ export class ProjectService {
     return this.http.get<any>(`${this.baseUrl}/GetAll?currentPage=1&pageSize=1000`);
   }
 
+  getProjectsByUserId(userId: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/GetByUserId?userId=${userId}&currentPage=1&pageSize=1000`);
+  }
+
   getAll(currentPage: number = 1, pageSize: number = 10): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/GetAll?currentPage=${currentPage}&pageSize=${pageSize}`);
   }
