@@ -1,6 +1,9 @@
-<div class="modal-header">
-    <h4 class="modal-title text-white">Assign to Me - {{ companyName }}</h4>
-    <button type="button" class="btn-close" aria-label="Close" (click)="closeDialog()">
+<div class="modal-header d-flex align-items-center justify-content-between">
+    <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
+        <i class="ft-user-check mr-2 text-white"></i> Assign to Me - {{ companyName }}
+    </h5>
+    <button type="button" class="modal-close-btn" aria-label="Close" (click)="closeDialog()">
+        <i class="ft-x"></i>
     </button>
 </div>
 
@@ -66,5 +69,7 @@
 </div>
 
 <div class="modal-footer">
-    <button class="btn btn-secondary" (click)="closeDialog()" [disabled]="loading">Close</button>
+    <button type="button" class="modal-btn-cancel" (click)="closeDialog()" [disabled]="loading">
+        <i class="ft-x mr-1"></i> Close
+    </button>
 </div>

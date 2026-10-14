@@ -111,9 +111,13 @@
 
 
 <ng-template #aiModal let-modal>
-  <div class="modal-header">
-    <h5 class="modal-title text-white">AI Recommendation</h5>
-    <button type="button" class="btn-close" aria-label="Close text-white" (click)="modal.dismiss()"></button>
+  <div class="modal-header d-flex align-items-center justify-content-between">
+    <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
+      <i class="ft-cpu mr-2 text-white"></i> AI Recommendation
+    </h5>
+    <button type="button" class="modal-close-btn" aria-label="Close" (click)="modal.dismiss()">
+      <i class="ft-x"></i>
+    </button>
   </div>
 
   <div class="modal-body">
@@ -122,6 +126,8 @@
   </div>
 
   <div class="modal-footer">
-    <button type="button" class="btn btn-secondary btn-sm" (click)="modal.close()">Close</button>
+    <button type="button" class="modal-btn-cancel" (click)="modal.close()">
+      <i class="ft-x mr-1"></i> Close
+    </button>
   </div>
 </ng-template>

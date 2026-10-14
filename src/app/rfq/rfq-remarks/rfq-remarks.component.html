@@ -1,6 +1,10 @@
-<div class="modal-header bg-primary text-white">
-  <h4 class="modal-title">Remarks Details - {{ action }}</h4>
-  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+<div class="modal-header d-flex align-items-center justify-content-between">
+  <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
+    <i class="ft-message-square mr-2 text-white"></i> Remarks Details - {{ action }}
+  </h5>
+  <button type="button" class="modal-close-btn" aria-label="Close" (click)="cancel()">
+    <i class="ft-x"></i>
+  </button>
 </div>
 
 <div class="modal-body">
@@ -8,6 +12,10 @@
 </div>
 
 <div class="modal-footer">
-  <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
-  <button class="btn btn-primary" (click)="saveRemarks()">{{ action }}</button>
+  <button type="button" class="modal-btn-cancel" (click)="cancel()">
+    <i class="ft-x mr-1"></i> Cancel
+  </button>
+  <button type="button" class="modal-btn-save" (click)="saveRemarks()">
+    <i class="fa fa-save mr-1"></i> {{ action }}
+  </button>
 </div>

@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit, QueryList, Renderer2, ViewChild, ViewChildren } from '@angular/core';
 import { AbstractControl, FormGroup, FormBuilder, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbAccordionDirective, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -23,6 +23,7 @@ import { forkJoin, of, Subject } from 'rxjs';
 import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
 import { PhoneNumberUtil, PhoneNumberFormat as LibPhoneNumberFormat } from 'google-libphonenumber';
 import { DataSourceService } from 'app/shared/services/data-source.service';
+import { NgSelectComponent } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-new-purchase-request',
@@ -241,7 +242,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       itemType: ['Inventory', Validators.required],
       projectId: [null],
       projectActivityId: [null],
-      itemId: [0],
+      itemId: [null],
       unitOfMeasurementId: [0],
       amount: [0],
       // unitCost kept for API shape; UI removed — always 0 on save unless loaded from existing PR.
@@ -387,6 +388,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   }
 
   ngOnDestroy(): void {
+    this.panelPositionObserver?.disconnect();
+    this.panelResizeObserver?.disconnect();
     this.receiverIntlMutationObserver?.disconnect();
     this.receiverIntlSearchUnlisten?.();
     this.destroy$.next();
@@ -489,6 +492,9 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   onWindowScroll(): void {
     const threshold = 200; // adjust as you like
     this.isToolbarSticky = window.scrollY > threshold;
+    if (this.currentlyOpenSelect) {
+      this.adjustDropdownPosition(this.currentlyOpenSelect);
+    }
   }
 
   // onPanelChange(event: NgbPanelChangeEvent) {
@@ -650,6 +656,19 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   }
 
   onEntityChanged(): void {
+    const entityId = this.newPurchaseRequestForm.get('entityId')?.value;
+    if (!entityId) {
+      this.addresses = [];
+      this.newPurchaseRequestForm.patchValue({
+        addressId: null,
+        country: '',
+        city: '',
+        region: '',
+        address: '',
+        address2: '',
+        postCode: ''
+      }, { emitEvent: false });
+    }
     this.loadAddressOnEntityChanges();
     this.resetItemAndUomSelection();
     this.loadItemsForSelectedEntity();
@@ -957,8 +976,19 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   onDimensionValueChanged(): void {
   }
 
-  onAddressSelect(id: number) {
-    const selected = this.addresses.find(a => a.id == id);
+  onAddressSelect(id: any) {
+    if (!id) {
+      this.newPurchaseRequestForm.patchValue({
+        country: '',
+        city: '',
+        region: '',
+        address: '',
+        address2: '',
+        postCode: ''
+      });
+      return;
+    }
+    const selected = this.addresses?.find(a => a.id == id);
     if (!selected) return;
 
     this.newPurchaseRequestForm.patchValue({
@@ -1017,6 +1047,9 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     if (Array.isArray(res?.value)) return res.value;
     if (Array.isArray(res?.result)) return res.result;
     if (Array.isArray(res?.Result)) return res.Result;
+    if (Array.isArray(res?.$values)) return res.$values;
+    if (Array.isArray(res?.result?.$values)) return res.result.$values;
+    if (Array.isArray(res?.value?.$values)) return res.value.$values;
     return [];
   }
 
@@ -1413,6 +1446,14 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   isDepartmentNotInList(val: string | null): boolean {
     if (!val) return false;
     return !this.departmentList.some(d => d.name === val);
+  }
+
+  get displayedDepartmentList(): Array<{ id: number; name: string; description?: string }> {
+    const val = this.newPurchaseRequestForm?.get('department')?.value;
+    if (val && !this.departmentList?.some(d => d.name === val)) {
+      return [{ id: -1, name: val, description: '' }, ...(this.departmentList || [])];
+    }
+    return this.departmentList || [];
   }
 
   loadItems() {
@@ -2334,14 +2375,18 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       });
   }
 
-  onVendorChange(vendorId: string) {
+  onVendorChange(vendorId: string | null) {
+    if (!vendorId) {
+      this.filteredCompanies = null;
+      this.itemForm.patchValue({ vendorCompanyId: null }, { emitEvent: false });
+      return;
+    }
     const vendor = this.finalVendors.find(v => v.vendorId === vendorId);
-    this.filteredCompanies = vendor;
+    this.filteredCompanies = vendor || null;
     // Only clear when ADDING (not editing)
     if (this.editingRowIndex === null) {
       this.itemForm.patchValue({ vendorCompanyId: null }, { emitEvent: false });
     }
-    // this.itemForm.patchValue({ vendorCompanyId: null });
   }
 
   clearItemForm(): void {
@@ -2351,7 +2396,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       itemType: 'Inventory',
       projectId: null,
       projectActivityId: null,
-      itemId: 0,
+      itemId: null,
       unitOfMeasurementId: 0,
       amount: 0,
       unitCost: 0,
@@ -2865,5 +2910,170 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         searchInput.focus();
       }
     }, 0);
+  }
+
+  @ViewChildren(NgSelectComponent) selectComponents?: QueryList<NgSelectComponent>;
+  private currentlyOpenSelect: any = null;
+  private panelPositionObserver?: MutationObserver;
+  private panelResizeObserver?: ResizeObserver;
+
+  @HostListener('document:mousedown', ['$event'])
+  onDocumentMousedown(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target) return;
+
+    // If click is inside an open dropdown panel, keep it open (e.g. search input, options scroll)
+    if (target.closest('.ng-dropdown-panel')) {
+      return;
+    }
+
+    const clickedSelect = target.closest('ng-select');
+
+    if (this.currentlyOpenSelect) {
+      const currentHost = this.currentlyOpenSelect?.element || (this.currentlyOpenSelect as any)?._elementRef?.nativeElement;
+      // If clicked completely outside or on a different ng-select, close the currently open one immediately
+      if (!clickedSelect || (currentHost && clickedSelect !== currentHost)) {
+        try {
+          this.currentlyOpenSelect.close();
+          if (typeof this.currentlyOpenSelect.detectChanges === 'function') {
+            this.currentlyOpenSelect.detectChanges();
+          }
+        } catch (e) {}
+        this.currentlyOpenSelect = null;
+      }
+    }
+  }
+
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    if (this.currentlyOpenSelect) {
+      this.adjustDropdownPosition(this.currentlyOpenSelect);
+    }
+  }
+
+  private adjustDropdownPosition(selectInstance?: any): void {
+    const select = selectInstance || this.currentlyOpenSelect;
+    if (!select) return;
+
+    const host = select.element || (select as any)?._elementRef?.nativeElement;
+    if (!host) return;
+
+    const panels = document.querySelectorAll('.ng-dropdown-panel');
+    if (!panels.length) return;
+    const panel = panels[panels.length - 1] as HTMLElement;
+    if (!panel) return;
+
+    const selectRect = host.getBoundingClientRect();
+    const panelHeight = panel.offsetHeight;
+    if (!panelHeight) return;
+
+    const isTop = panel.classList.contains('ng-select-top');
+
+    if (isTop) {
+      panel.style.position = 'fixed';
+      panel.style.top = `${Math.max(10, selectRect.top - panelHeight - 2)}px`;
+      panel.style.bottom = 'auto';
+      panel.style.left = `${selectRect.left}px`;
+      panel.style.width = `${selectRect.width}px`;
+    } else if (panel.classList.contains('ng-select-bottom')) {
+      panel.style.position = 'fixed';
+      panel.style.top = `${selectRect.bottom + 2}px`;
+      panel.style.bottom = 'auto';
+      panel.style.left = `${selectRect.left}px`;
+      panel.style.width = `${selectRect.width}px`;
+    }
+  }
+
+  private observePanel(panel: HTMLElement, selectInstance: any): void {
+    if (this.panelPositionObserver) {
+      this.panelPositionObserver.disconnect();
+    }
+    if (this.panelResizeObserver) {
+      this.panelResizeObserver.disconnect();
+    }
+
+    this.panelPositionObserver = new MutationObserver(() => {
+      if (panel.classList.contains('ng-select-top') && panel.style.bottom !== 'auto') {
+        this.adjustDropdownPosition(selectInstance);
+      }
+    });
+
+    this.panelPositionObserver.observe(panel, {
+      attributes: true,
+      attributeFilter: ['style', 'class']
+    });
+
+    if (typeof ResizeObserver !== 'undefined') {
+      this.panelResizeObserver = new ResizeObserver(() => {
+        this.adjustDropdownPosition(selectInstance);
+      });
+      this.panelResizeObserver.observe(panel);
+    }
+  }
+
+  onDropdownOpen(openedSelect?: any): void {
+    // 1. Close previously open select instance immediately
+    if (this.currentlyOpenSelect && this.currentlyOpenSelect !== openedSelect) {
+      try {
+        this.currentlyOpenSelect.close();
+        if (typeof this.currentlyOpenSelect.detectChanges === 'function') {
+          this.currentlyOpenSelect.detectChanges();
+        }
+      } catch (e) {}
+    }
+
+    // 2. Also close all other selects in the ViewChildren list
+    if (this.selectComponents) {
+      this.selectComponents.forEach((select) => {
+        if (select !== openedSelect && select.isOpen) {
+          try {
+            select.close();
+            if (typeof select.detectChanges === 'function') {
+              select.detectChanges();
+            }
+          } catch (e) {}
+        }
+      });
+    }
+
+    this.currentlyOpenSelect = openedSelect;
+
+    setTimeout(() => {
+      const panels = document.querySelectorAll('.ng-dropdown-panel');
+      if (panels.length) {
+        const lastPanel = panels[panels.length - 1] as HTMLElement;
+        this.observePanel(lastPanel, openedSelect);
+        this.adjustDropdownPosition(openedSelect);
+
+        const input = lastPanel.querySelector('.dropdown-search-input') as HTMLInputElement;
+        if (input) {
+          input.value = '';
+          input.focus();
+        }
+      }
+    }, 0);
+
+    setTimeout(() => {
+      this.adjustDropdownPosition(openedSelect);
+    }, 40);
+
+    setTimeout(() => {
+      this.adjustDropdownPosition(openedSelect);
+    }, 120);
+  }
+
+  onDropdownClose(select: any): void {
+    if (this.panelPositionObserver) {
+      this.panelPositionObserver.disconnect();
+      this.panelPositionObserver = undefined;
+    }
+    if (this.panelResizeObserver) {
+      this.panelResizeObserver.disconnect();
+      this.panelResizeObserver = undefined;
+    }
+    if (this.currentlyOpenSelect === select) {
+      this.currentlyOpenSelect = null;
+    }
   }
 }

@@ -81,8 +81,16 @@
         <div class="row gx-3">
           <div class="form-group col-md-6 mb-3">
             <label class="form-label font-weight-bold">Department <span class="text-danger">*</span></label>
-            <ng-select class="custom-select-ui" [items]="departments" bindLabel="name" bindValue="id" formControlName="departmentId"
-              placeholder="Select department" [appendTo]="'body'" [clearable]="true">
+            <ng-select #deptSelect class="custom-select-ui" [items]="departments" bindLabel="name" bindValue="id" formControlName="departmentId"
+              placeholder="Select department" [appendTo]="'body'" [clearable]="true" [searchable]="false"
+              (open)="onDropdownOpen(deptSelect)" (close)="onDropdownClose(deptSelect)">
+              <ng-template ng-header-tmp>
+                <div class="dropdown-search-wrapper">
+                  <i class="ft-search dropdown-search-icon"></i>
+                  <input #deptSearch type="text" class="dropdown-search-input" placeholder="Search department..."
+                    (input)="deptSelect.filter(deptSearch.value)" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                </div>
+              </ng-template>
             </ng-select>
             <div *ngIf="projectForm.get('departmentId')?.invalid && (projectForm.get('departmentId')?.touched || projectForm.get('departmentId')?.dirty)" class="text-danger small mt-1">
               Department is required.

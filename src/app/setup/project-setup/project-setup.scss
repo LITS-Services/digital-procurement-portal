@@ -548,6 +548,11 @@
 
         .ng-value-container {
           padding-left: 4px !important;
+
+          .ng-input > input {
+            font-size: 14px !important;
+            color: #2B2F33 !important;
+          }
         }
 
         .ng-placeholder {

@@ -8,10 +8,12 @@
     </div>
   </div>
   <ng-template #modalContent let-close="close">
-    <div class="modal-header">
-      <h5 class="modal-title">{{ modalData?.action }}</h5>
-      <button type="button" class="close" (click)="close()">
-        <span aria-hidden="true">&times;</span>
+    <div class="modal-header d-flex align-items-center justify-content-between">
+      <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
+        <i class="ft-calendar mr-2 text-white"></i> {{ modalData?.action }}
+      </h5>
+      <button type="button" class="modal-close-btn" aria-label="Close" (click)="close()">
+        <i class="ft-x"></i>
       </button>
     </div>
     <div class="modal-body">
@@ -65,7 +67,9 @@
       </form>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-outline-secondary" (click)="close()">OK</button>
+      <button type="button" class="modal-btn-cancel" (click)="close()">
+        <i class="ft-x mr-1"></i> Close
+      </button>
     </div>
   </ng-template>
 
