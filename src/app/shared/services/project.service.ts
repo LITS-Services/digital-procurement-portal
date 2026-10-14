@@ -12,6 +12,7 @@ export interface ProjectActivityItem {
   allowedPercentage: number;
   utilisedBudget?: number;
   availableBudget?: number;
+  isException?: boolean;
 }
 
 export interface ProjectItem {

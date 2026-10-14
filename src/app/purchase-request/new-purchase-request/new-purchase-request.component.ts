@@ -1090,7 +1090,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
             name: String(a.name ?? a.Name ?? '').trim(),
             description: a.description ?? a.Description ?? '',
             budgetAmount: Number(a.budgetAmount ?? a.BudgetAmount ?? 0),
-            allowedPercentage: Number(a.allowedPercentage ?? a.AllowedPercentage ?? 0)
+            allowedPercentage: Number(a.allowedPercentage ?? a.AllowedPercentage ?? 0),
+            isException: !!(a.isException ?? a.IsException ?? false)
           }))
         }));
         this.updateFilteredProjects();
@@ -1643,6 +1644,41 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       activityBudgetAmount: activityBudget,
       activityAllowedPercentage: activityAllowedPct
     };
+
+    // ── Exception-activity budget gate ─────────────────────────────────────
+    // If the selected activity is NOT an exception activity and the budget
+    // status is 'exceeded' (i.e. beyond budget + tolerance %), block insert.
+    if (
+      this.selectedActivityInfo &&
+      !this.selectedActivityInfo.isException &&
+      this.budgetWarningType === 'danger'
+    ) {
+      const budgetInfo = this.getActivityRemainingBudget();
+      const exceeded = budgetInfo?.exceededBy?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) ?? '0.00';
+      const maxAllowed = budgetInfo?.maxAllowedBudget?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) ?? '0.00';
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Budget Limit Exceeded',
+        html: `
+          <p>You are not allowed to insert this item because the budget for activity
+          <strong>"${this.selectedActivityInfo.name}"</strong> has been exceeded.</p>
+          <p>
+            Max allowed: <strong>${maxAllowed}</strong>&nbsp;|&nbsp;
+            Exceeded by: <strong style="color:#dc3545;">${exceeded}</strong>
+          </p>
+          <hr/>
+          <p class="mb-0 text-muted" style="font-size:0.9rem;">
+            To proceed, please either:<br/>
+            &bull; Select a <strong>Project Activity</strong> that has <em>Is Exception</em> set to <strong>Yes</strong>, or<br/>
+            &bull; Ask an administrator to add an <strong>Exception Activity</strong> to this project.
+          </p>`,
+        confirmButtonText: 'OK, I understand',
+        confirmButtonColor: '#dc3545'
+      });
+      return;
+    }
+    // ── End exception-activity budget gate ─────────────────────────────────
 
     // Duplicate check — works for add and edit both
     const duplicate = this.newPurchaseItemData.some((item, index) =>

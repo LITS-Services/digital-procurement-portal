@@ -587,12 +587,38 @@
                                   </div>
                                 </ng-template>
                                 <ng-template ng-label-tmp let-item="item">
-                                  <span>{{ item.name }} (Available: {{ (item.availableBudget != null ? item.availableBudget : item.budgetAmount) | number:'1.2-2' }}, Budget: {{ item.budgetAmount | number:'1.2-2' }}, Allowed: {{ item.allowedPercentage }}%)</span>
+                                  <span>
+                                    {{ item.name }}
+                                    <span *ngIf="item.isException" class="badge badge-success ml-1" style="font-size:0.7rem;vertical-align:middle;">Exception</span>
+                                    <span class="ml-1 text-muted">(Avail: {{ (item.availableBudget != null ? item.availableBudget : item.budgetAmount) | number:'1.2-2' }}, Budget: {{ item.budgetAmount | number:'1.2-2' }}, Allowed: {{ item.allowedPercentage }}%)</span>
+                                  </span>
                                 </ng-template>
                                 <ng-template ng-option-tmp let-item="item">
-                                  <span>{{ item.name }} (Available: {{ (item.availableBudget != null ? item.availableBudget : item.budgetAmount) | number:'1.2-2' }}, Budget: {{ item.budgetAmount | number:'1.2-2' }}, Allowed: {{ item.allowedPercentage }}%)</span>
+                                  <div class="d-flex align-items-center justify-content-between">
+                                    <span>
+                                      {{ item.name }}
+                                      <span *ngIf="item.isException" class="badge badge-success ml-1" style="font-size:0.7rem;">Exception</span>
+                                    </span>
+                                    <small class="text-muted ml-2">
+                                      Avail: {{ (item.availableBudget != null ? item.availableBudget : item.budgetAmount) | number:'1.2-2' }} &bull;
+                                      Budget: {{ item.budgetAmount | number:'1.2-2' }} &bull;
+                                      Allowed: {{ item.allowedPercentage }}%
+                                    </small>
+                                  </div>
                                 </ng-template>
                               </ng-select>
+
+                              <!-- Exception activity hint when budget exceeded on non-exception activity -->
+                              <div *ngIf="selectedActivityInfo && !selectedActivityInfo.isException && budgetWarningType === 'danger'"
+                                class="mt-1 px-2 py-1 rounded small d-flex align-items-start"
+                                style="background-color:#fff3cd;border:1px solid #ffc107;color:#856404;">
+                                <i class="ft-alert-triangle mr-2 mt-1" style="flex-shrink:0;"></i>
+                                <span>
+                                  This activity is <strong>not an Exception activity</strong>. Inserting items that exceed the budget is not allowed.
+                                  Please select an activity marked <span class="badge badge-success" style="font-size:0.7rem;">Exception</span> from the dropdown above,
+                                  or ask an administrator to add an Exception Activity to this project.
+                                </span>
+                              </div>
                             </div>
                           </div>
 
