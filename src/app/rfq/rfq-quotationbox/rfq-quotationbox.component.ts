@@ -51,6 +51,7 @@ export class RfqQuotationboxComponent implements OnInit {
 
   selectedOfferFilterLabel = 'All';
   offerFilterKey = 'all';
+  searchTerm: string = '';
   private allVendors: any[] = [];
   constructor(
     private router: Router,
@@ -140,6 +141,40 @@ selectVendor(vendor: any) {
     this.applyOfferFilterAndSort();
   }
 
+  onSearchChange(term: string) {
+    this.searchTerm = term;
+    this.applyOfferFilterAndSort();
+  }
+
+  clearSearch() {
+    this.searchTerm = '';
+    this.applyOfferFilterAndSort();
+  }
+
+  getInitials(name: string): string {
+    if (!name) return 'V';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  }
+
+  getStatusBadgeClass(status: string): string {
+    if (!status) return 'badge-light-secondary';
+    const s = status.toLowerCase();
+    if (s.includes('approved') || s.includes('submitted') || s.includes('accepted') || s.includes('complete')) {
+      return 'badge-light-success';
+    }
+    if (s.includes('reject')) {
+      return 'badge-light-danger';
+    }
+    if (s.includes('revis') || s.includes('pending') || s.includes('progress')) {
+      return 'badge-light-warning';
+    }
+    return 'badge-light-primary';
+  }
+
 private applyOfferFilterAndSort() {
   let list = this.allVendors;  
 
@@ -149,6 +184,13 @@ private applyOfferFilterAndSort() {
     list = list.filter(v => !v.hasOffers);
   }
 
+  if (this.searchTerm && this.searchTerm.trim()) {
+    const term = this.searchTerm.trim().toLowerCase();
+    list = list.filter(v =>
+      (v.vendorName && v.vendorName.toLowerCase().includes(term)) ||
+      (v.companyName && v.companyName.toLowerCase().includes(term))
+    );
+  }
 
   this.rfqData = [...list].sort((a, b) => Number(b.hasOffers) - Number(a.hasOffers));
 
@@ -200,7 +242,7 @@ private applyOfferFilterAndSort() {
           next: () => {
             this.loading = false;
             this.spinner.hide();
-       ``   },
+          },
           error: () => {
           }
         });
