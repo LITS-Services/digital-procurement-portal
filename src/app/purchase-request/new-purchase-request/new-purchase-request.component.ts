@@ -1632,25 +1632,93 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       const budgetInfo = this.getActivityRemainingBudget();
       const exceeded = budgetInfo?.exceededBy?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) ?? '0.00';
       const maxAllowed = budgetInfo?.maxAllowedBudget?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) ?? '0.00';
+      const tolerance = budgetInfo?.allowedPercentage ?? this.selectedActivityInfo.allowedPercentage ?? 0;
+      const activityName = this.selectedActivityInfo.name || 'Selected Activity';
+      const actionText = this.editingRowIndex !== null ? 'update' : 'insert';
 
       Swal.fire({
-        icon: 'error',
-        title: 'Budget Limit Exceeded',
         html: `
-          <p>You are not allowed to insert this item because the budget for activity
-          <strong>"${this.selectedActivityInfo.name}"</strong> has been exceeded.</p>
-          <p>
-            Max allowed: <strong>${maxAllowed}</strong>&nbsp;|&nbsp;
-            Exceeded by: <strong style="color:#dc3545;">${exceeded}</strong>
-          </p>
-          <hr/>
-          <p class="mb-0 text-muted" style="font-size:0.9rem;">
-            To proceed, please either:<br/>
-            &bull; Select a <strong>Project Activity</strong> that has <em>Is Exception</em> set to <strong>Yes</strong>, or<br/>
-            &bull; Ask an administrator to add an <strong>Exception Activity</strong> to this project.
-          </p>`,
+          <div class="modern-budget-modal">
+            <!-- Modern Icon Header with soft ambient ring -->
+            <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+              <div style="position: relative; width: 68px; height: 68px; display: flex; align-items: center; justify-content: center;">
+                <div style="position: absolute; inset: 0; border-radius: 50%; background: #fee2e2; opacity: 0.6; transform: scale(1.15);"></div>
+                <div style="position: relative; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border: 2px solid #fecaca; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(220, 38, 38, 0.18);">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Title & Subtitle -->
+            <h4 style="font-size: 1.3rem; font-weight: 700; color: #1e293b; margin: 0 0 8px 0; letter-spacing: -0.01em;">
+              Budget Limit Exceeded
+            </h4>
+            <p style="font-size: 0.88rem; color: #64748b; line-height: 1.5; margin: 0 auto 18px auto; max-width: 410px;">
+              You cannot ${actionText} this item because the budget for activity
+              <strong style="color: #0f172a; background: #f1f5f9; padding: 2px 8px; border-radius: 6px; border: 1px solid #e2e8f0; display: inline-block;">
+                ${activityName}
+              </strong>
+              has been exceeded.
+            </p>
+
+            <!-- Financial Metrics Split Cards -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; text-align: left;">
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px;">
+                <div style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px; margin-bottom: 4px;">
+                  Max Allowed Budget
+                </div>
+                <div style="font-size: 1.18rem; font-weight: 700; color: #1e293b; line-height: 1.2;">
+                  ${maxAllowed}
+                </div>
+                <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 3px;">
+                  Includes ${tolerance}% tolerance
+                </div>
+              </div>
+
+              <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 12px 14px;">
+                <div style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #b91c1c; letter-spacing: 0.5px; margin-bottom: 4px;">
+                  Exceeded By
+                </div>
+                <div style="font-size: 1.18rem; font-weight: 700; color: #dc2626; line-height: 1.2;">
+                  +${exceeded}
+                </div>
+                <div style="font-size: 0.72rem; color: #ef4444; margin-top: 3px;">
+                  Over allowed limit
+                </div>
+              </div>
+            </div>
+
+            <!-- Resolution Guidance Box -->
+            <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 12px 14px; text-align: left;">
+              <div style="font-size: 0.76rem; font-weight: 700; text-transform: uppercase; color: #92400e; letter-spacing: 0.5px; margin-bottom: 8px; display: flex; align-items: center;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.3" style="margin-right: 6px; flex-shrink: 0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                How to Proceed
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; align-items: flex-start; font-size: 0.83rem; color: #78350f; line-height: 1.45;">
+                  <span style="display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; border-radius: 50%; background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; font-weight: 700; font-size: 0.7rem; margin-right: 8px; margin-top: 1px; flex-shrink: 0;">1</span>
+                  <span>Select a Project Activity marked <span style="background: #10b981; color: #ffffff; padding: 1px 7px; border-radius: 999px; font-size: 0.72rem; font-weight: 600; display: inline-block; vertical-align: middle;">Exception</span> from the Project Activity dropdown.</span>
+                </div>
+                <div style="display: flex; align-items: flex-start; font-size: 0.83rem; color: #78350f; line-height: 1.45;">
+                  <span style="display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; border-radius: 50%; background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; font-weight: 700; font-size: 0.7rem; margin-right: 8px; margin-top: 1px; flex-shrink: 0;">2</span>
+                  <span>Or ask a project administrator to mark an Exception Activity for this project.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
         confirmButtonText: 'OK, I understand',
-        confirmButtonColor: '#dc3545'
+        buttonsStyling: false,
+        showCloseButton: true,
+        customClass: {
+          popup: 'modern-budget-limit-popup',
+          confirmButton: 'modern-budget-confirm-btn'
+        },
+        width: 500
       });
       return;
     }

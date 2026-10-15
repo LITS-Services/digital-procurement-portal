@@ -543,6 +543,18 @@
                             <i [ngClass]="budgetWarningType === 'danger' ? 'ft-alert-circle mr-2' : 'ft-alert-triangle mr-2'"></i>
                             <span>{{ budgetExceededMessage }}</span>
                           </div>
+
+                          <!-- Exception activity hint when budget exceeded on non-exception activity -->
+                          <div *ngIf="selectedActivityInfo && !selectedActivityInfo.isException && budgetWarningType === 'danger'"
+                            class="mt-1 px-2 py-1 rounded small d-flex align-items-center"
+                            style="background-color:#fff3cd;border:1px solid #ffc107;color:#856404;">
+                            <i class="ft-alert-triangle mr-2" style="flex-shrink:0;"></i>
+                            <span>
+                              This activity is <strong>not an Exception activity</strong>. Inserting items that exceed the budget is not allowed.
+                              Please select an activity marked <span class="badge badge-success" style="font-size:0.7rem;">Exception</span> from the Project Activity dropdown,
+                              or ask an administrator to add an Exception Activity to this project.
+                            </span>
+                          </div>
                         </div>
 
                         <div class="form-grid items-form-grid w-100 px-1">
@@ -607,18 +619,6 @@
                                   </div>
                                 </ng-template>
                               </ng-select>
-
-                              <!-- Exception activity hint when budget exceeded on non-exception activity -->
-                              <div *ngIf="selectedActivityInfo && !selectedActivityInfo.isException && budgetWarningType === 'danger'"
-                                class="mt-1 px-2 py-1 rounded small d-flex align-items-start"
-                                style="background-color:#fff3cd;border:1px solid #ffc107;color:#856404;">
-                                <i class="ft-alert-triangle mr-2 mt-1" style="flex-shrink:0;"></i>
-                                <span>
-                                  This activity is <strong>not an Exception activity</strong>. Inserting items that exceed the budget is not allowed.
-                                  Please select an activity marked <span class="badge badge-success" style="font-size:0.7rem;">Exception</span> from the dropdown above,
-                                  or ask an administrator to add an Exception Activity to this project.
-                                </span>
-                              </div>
                             </div>
                           </div>
 
