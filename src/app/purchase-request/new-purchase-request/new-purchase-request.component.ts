@@ -223,7 +223,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       partialDeliveryAcceptable: [true],
       exceptionPolicy: [false],
       subject: [''],
-      entityId: [null],
+      entityId: [null, Validators.required],
       dimensionId: [null],
       dimensionValueId: [null],
       addressId: [null, Validators.required],
@@ -2205,7 +2205,12 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
   submitForm() {
     if (!this.newPurchaseRequestForm.valid) {
-      this.toastr.warning('Form is invalid');
+      this.newPurchaseRequestForm.markAllAsTouched();
+      if (this.newPurchaseRequestForm.get('entityId')?.hasError('required')) {
+        this.toastr.warning('Please select an Entity.');
+      } else {
+        this.toastr.warning('Form is invalid');
+      }
       return;
     }
 

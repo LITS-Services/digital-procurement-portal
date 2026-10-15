@@ -176,7 +176,7 @@
               <div class="form-grid__item">
                 <div class="form-group mb-2">
                   <label class="d-flex align-items-center mr-2 w-100" [ngbTooltip]="entityHint">
-                    <span class="mr-2">Entity</span>
+                    <span class="mr-2">Entity <span class="text-danger">*</span></span>
 
                     <small *ngIf="isEntityLocked && entityHint" class="hint-ellipsis ml-auto text-muted">
                       <i class="ft-info mr-1"></i>
@@ -199,6 +199,11 @@
                       </div>
                     </ng-template>
                   </ng-select>
+
+                  <div *ngIf="newPurchaseRequestForm.get('entityId')?.invalid && (newPurchaseRequestForm.get('entityId')?.touched || newPurchaseRequestForm.get('entityId')?.dirty)"
+                    class="text-danger small mt-1 font-weight-bold">
+                    <i class="ft-alert-circle mr-1"></i> Entity is required
+                  </div>
                 </div>
               </div>
 
