@@ -101,7 +101,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   selectedActivityInfo: ProjectActivityItem | null = null;
   isBudgetExceeded = false;
   budgetExceededMessage = '';
-  budgetWarningType: 'none' | 'warning' | 'danger' = 'none';
+  budgetWarningType: 'none' | 'warning' | 'danger' | 'orange' = 'none';
 
   vendorUsers: any[] = [];
 
@@ -1212,18 +1212,22 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
   checkBudgetLimit(): void {
     const actId = this.itemForm.get('projectActivityId')?.value ? Number(this.itemForm.get('projectActivityId')?.value) : null;
-    if (!this.selectedActivityInfo && actId) {
-      this.selectedActivityInfo = this.currentProjectActivities?.find(a => Number(a.id) === actId) || null;
-      if (!this.selectedActivityInfo) {
-        for (const p of this.projectList) {
-          const found = (p.projectActivities || []).find(a => Number(a.id) === actId);
-          if (found) {
-            this.selectedActivityInfo = found;
-            if (!this.selectedProjectInfo) this.selectedProjectInfo = p;
-            break;
+    if (actId) {
+      if (!this.selectedActivityInfo || Number(this.selectedActivityInfo.id) !== actId) {
+        this.selectedActivityInfo = this.currentProjectActivities?.find(a => Number(a.id) === actId) || null;
+        if (!this.selectedActivityInfo) {
+          for (const p of this.projectList) {
+            const found = (p.projectActivities || []).find(a => Number(a.id) === actId);
+            if (found) {
+              this.selectedActivityInfo = found;
+              if (!this.selectedProjectInfo) this.selectedProjectInfo = p;
+              break;
+            }
           }
         }
       }
+    } else {
+      this.selectedActivityInfo = null;
     }
 
     const budgetInfo = this.getActivityRemainingBudget();
@@ -1236,12 +1240,19 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     }
 
     if (budgetInfo.status === 'exceeded') {
-      this.isBudgetExceeded = true;
-      this.budgetWarningType = 'danger';
-      const formattedTotal = budgetInfo.usedBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      const formattedMax = budgetInfo.maxAllowedBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      const formattedExceeded = budgetInfo.exceededBy.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      this.budgetExceededMessage = `You've exceeded the budget + budget tolerance% (${budgetInfo.allowedPercentage}%) by ${formattedExceeded}. Total: ${formattedTotal}, Max Allowed: ${formattedMax}.`;
+      const isException = !!this.selectedActivityInfo?.isException;
+      if (isException) {
+        this.isBudgetExceeded = false;
+        this.budgetWarningType = 'orange';
+        this.budgetExceededMessage = '';
+      } else {
+        this.isBudgetExceeded = true;
+        this.budgetWarningType = 'danger';
+        const formattedTotal = budgetInfo.usedBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const formattedMax = budgetInfo.maxAllowedBudget.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const formattedExceeded = budgetInfo.exceededBy.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        this.budgetExceededMessage = `You've exceeded the budget + budget tolerance% (${budgetInfo.allowedPercentage}%) by ${formattedExceeded}. Total: ${formattedTotal}, Max Allowed: ${formattedMax}.`;
+      }
     } else if (budgetInfo.status === 'exhausted') {
       this.isBudgetExceeded = false;
       this.budgetWarningType = 'warning';

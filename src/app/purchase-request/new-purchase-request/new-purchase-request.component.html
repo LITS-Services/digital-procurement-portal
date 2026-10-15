@@ -501,12 +501,14 @@
                         <div class="col-12 px-1 mb-2" *ngIf="selectedActivityInfo">
                           <div class="p-2 rounded d-flex flex-wrap align-items-center justify-content-between"
                             [ngStyle]="{
-                              'background': budgetWarningType === 'danger' ? '#fdf2f2' : (budgetWarningType === 'warning' ? '#fffbeb' : '#eef4fc'),
-                              'border': budgetWarningType === 'danger' ? '1px solid #f8b4b4' : (budgetWarningType === 'warning' ? '1px solid #fde68a' : '1px solid #c7ddfb'),
+                              'background': budgetWarningType === 'danger' ? '#fdf2f2' : (budgetWarningType === 'orange' ? '#fff7ed' : (budgetWarningType === 'warning' ? '#fffbeb' : '#eef4fc')),
+                              'border': budgetWarningType === 'danger' ? '1px solid #f8b4b4' : (budgetWarningType === 'orange' ? '1px solid #fb923c' : (budgetWarningType === 'warning' ? '1px solid #fde68a' : '1px solid #c7ddfb')),
                               'font-size': '0.85rem'
                             }">
                             <div>
-                              <span class="font-weight-bold text-primary mr-3">
+                              <span class="font-weight-bold mr-3"
+                                [ngClass]="budgetWarningType === 'orange' ? '' : 'text-primary'"
+                                [ngStyle]="budgetWarningType === 'orange' ? {'color': '#c2410c'} : {}">
                                 <i class="ft-info mr-1"></i> Activity: {{ selectedActivityInfo.name }}
                               </span>
                               <span class="mr-3 text-muted">
@@ -533,10 +535,11 @@
                             </div>
                             <div *ngIf="getActivityRemainingBudget() as remaining">
                               <span [ngClass]="{
-                                'text-danger font-weight-bold': remaining.status === 'exceeded',
+                                'text-danger font-weight-bold': remaining.status === 'exceeded' && budgetWarningType !== 'orange',
+                                'font-weight-bold': remaining.status === 'exceeded' && budgetWarningType === 'orange',
                                 'text-warning font-weight-bold': remaining.status === 'exhausted' || remaining.status === 'buffer',
                                 'text-success font-weight-bold': remaining.status === 'normal'
-                              }">
+                              }" [ngStyle]="budgetWarningType === 'orange' ? {'color': '#c2410c'} : {}">
                                 <i [ngClass]="remaining.status === 'exceeded' ? 'ft-alert-circle mr-1' : (remaining.status === 'exhausted' || remaining.status === 'buffer' ? 'ft-alert-triangle mr-1' : 'ft-pie-chart mr-1')"></i>
                                 Available: {{ remaining.availableAmount | number:'1.2-2' }} (Used: {{ remaining.usedBudget | number:'1.2-2' }})
                               </span>
@@ -544,7 +547,7 @@
                           </div>
 
                           <!-- Warning/Danger message below activity chip -->
-                          <div *ngIf="budgetExceededMessage" class="mt-1 px-2 py-1 rounded small font-weight-bold d-flex align-items-center"
+                          <div *ngIf="budgetExceededMessage && (!selectedActivityInfo || !selectedActivityInfo.isException)" class="mt-1 px-2 py-1 rounded small font-weight-bold d-flex align-items-center"
                             [ngStyle]="budgetWarningType === 'warning' ? {'color': '#b78103', 'background-color': '#fffbeb', 'border': '1px solid #fde68a'} : {'color': '#721c24', 'background-color': '#f8d7da', 'border': '1px solid #f5c6cb'}">
                             <i [ngClass]="budgetWarningType === 'danger' ? 'ft-alert-circle mr-2' : 'ft-alert-triangle mr-2'"></i>
                             <span>{{ budgetExceededMessage }}</span>
