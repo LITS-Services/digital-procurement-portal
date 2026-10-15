@@ -375,7 +375,7 @@
               {{ getCurrentActivityName() }}
             </div>
             <div class="banner-meta">
-              Budget: <strong>{{ getCurrentActivityBudget() | currency:'USD':'symbol':'1.0-2' }}</strong>
+              Budget: <strong>{{ getCurrentActivityBudget() | number:'1.0-2' }}</strong>
               <span class="mx-2">•</span>
               Over Budget Limit: <strong>{{ getCurrentActivityAllowedPercentage() }}%</strong>
             </div>
