@@ -39,6 +39,7 @@ export class ProjectSetup implements OnInit, OnDestroy {
   assignModalRef?: NgbModalRef;
   currentAssignActivityIndex: number = 0;
   usersList: any[] = [];
+  modalUsersList: any[] = [];
   loadingUsers = false;
   userSearchTerm = '';
   activitySearchTerm = '';
@@ -381,6 +382,7 @@ export class ProjectSetup implements OnInit, OnDestroy {
     this.userSearchTerm = '';
     this.activitySearchTerm = '';
     this.loadUsers();
+    this.prepareUsersForModal();
 
     // Hide background project modal while Assign Users modal is active
     document.body.classList.add('assign-modal-open');
@@ -402,7 +404,10 @@ export class ProjectSetup implements OnInit, OnDestroy {
   }
 
   loadUsers(): void {
-    if (this.usersList.length > 0) return;
+    if (this.usersList.length > 0) {
+      this.prepareUsersForModal();
+      return;
+    }
     this.loadingUsers = true;
     const loggedInUserId = localStorage.getItem('userId');
     const entityId = Number(localStorage.getItem('selectedCompanyId')) || null;
@@ -425,6 +430,7 @@ export class ProjectSetup implements OnInit, OnDestroy {
           } else {
             this.usersList = this.getFallbackUsers();
           }
+          this.prepareUsersForModal();
           this.loadingUsers = false;
           this.cdr.detectChanges();
         });
@@ -436,6 +442,7 @@ export class ProjectSetup implements OnInit, OnDestroy {
           if (this.usersList.length === 0) {
             this.usersList = this.getFallbackUsers();
           }
+          this.prepareUsersForModal();
           this.cdr.detectChanges();
         });
       }
@@ -564,6 +571,7 @@ export class ProjectSetup implements OnInit, OnDestroy {
 
   selectActivityForAssignment(index: number): void {
     this.currentAssignActivityIndex = index;
+    this.prepareUsersForModal();
     this.cdr.detectChanges();
   }
 
@@ -603,17 +611,36 @@ export class ProjectSetup implements OnInit, OnDestroy {
     return `${userIds.length} user(s) assigned. Click to view.`;
   }
 
+  prepareUsersForModal(): void {
+    if (!this.usersList || this.usersList.length === 0) {
+      this.modalUsersList = [];
+      return;
+    }
+    const assignedIds = new Set(this.getCurrentActivityAssignedUserIds());
+    this.modalUsersList = [...this.usersList].sort((a, b) => {
+      const aSelected = assignedIds.has(String(a.id));
+      const bSelected = assignedIds.has(String(b.id));
+      if (aSelected === bSelected) return 0;
+      return aSelected ? -1 : 1;
+    });
+  }
+
   getFilteredUsers(): any[] {
+    const list = this.modalUsersList && this.modalUsersList.length > 0 ? this.modalUsersList : this.usersList;
     if (!this.userSearchTerm || !this.userSearchTerm.trim()) {
-      return this.usersList;
+      return list;
     }
     const term = this.userSearchTerm.toLowerCase().trim();
-    return this.usersList.filter(u =>
+    return list.filter(u =>
       (u.fullName && u.fullName.toLowerCase().includes(term)) ||
       (u.userName && u.userName.toLowerCase().includes(term)) ||
       (u.email && u.email.toLowerCase().includes(term)) ||
       (u.role && u.role.toLowerCase().includes(term))
     );
+  }
+
+  trackByUserId(index: number, user: any): any {
+    return user ? user.id : index;
   }
 
   getFilteredActivities(): { index: number; group: FormGroup }[] {

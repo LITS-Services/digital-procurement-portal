@@ -423,7 +423,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let user of getFilteredUsers(); let uIdx = index"
+            <tr *ngFor="let user of getFilteredUsers(); let uIdx = index; trackBy: trackByUserId"
               [class.table-active-row]="isUserAssignedToCurrentActivity(user.id)"
               (click)="toggleUserAssignment(user.id)" style="cursor: pointer;">
               <td style="width: 40%;">
