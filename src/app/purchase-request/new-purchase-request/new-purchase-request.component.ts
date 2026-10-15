@@ -1094,7 +1094,9 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
             description: a.description ?? a.Description ?? '',
             budgetAmount: Number(a.budgetAmount ?? a.BudgetAmount ?? 0),
             allowedPercentage: Number(a.allowedPercentage ?? a.AllowedPercentage ?? 0),
-            isException: !!(a.isException ?? a.IsException ?? false)
+            isException: !!(a.isException ?? a.IsException ?? false),
+            reservedAmount: a.reservedAmount ?? a.ReservedAmount ?? null,
+            consumedAmount: a.consumedAmount ?? a.ConsumedAmount ?? null
           }))
         }));
         this.filteredProjectList = this.projectList;
@@ -1153,6 +1155,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
           const actId = Number(u.projectActivityId);
           const utilised = Number(u.utilisedBudget) || 0;
           const available = Number(u.availableBudget) || 0;
+          const reserved = u.reservedAmount ?? u.ReservedAmount ?? null;
+          const consumed = u.consumedAmount ?? u.ConsumedAmount ?? null;
 
           // Update in projectList
           for (const proj of this.projectList) {
@@ -1160,6 +1164,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
             if (found) {
               found.utilisedBudget = utilised;
               found.availableBudget = available;
+              found.reservedAmount = reserved;
+              found.consumedAmount = consumed;
             }
           }
           // Update in currentProjectActivities
@@ -1167,11 +1173,15 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
           if (act) {
             act.utilisedBudget = utilised;
             act.availableBudget = available;
+            act.reservedAmount = reserved;
+            act.consumedAmount = consumed;
           }
           // Update in selectedActivityInfo
           if (this.selectedActivityInfo && Number(this.selectedActivityInfo.id) === actId) {
             this.selectedActivityInfo.utilisedBudget = utilised;
             this.selectedActivityInfo.availableBudget = available;
+            this.selectedActivityInfo.reservedAmount = reserved;
+            this.selectedActivityInfo.consumedAmount = consumed;
           }
         });
 

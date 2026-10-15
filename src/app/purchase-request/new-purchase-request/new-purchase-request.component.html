@@ -521,6 +521,12 @@
                               <span class="mr-3 text-muted" *ngIf="selectedActivityInfo.allowedPercentage">
                                 Max Allowed: <strong class="text-dark">{{ (selectedActivityInfo.budgetAmount * (1 + selectedActivityInfo.allowedPercentage / 100)) | number:'1.2-2' }}</strong>
                               </span>
+                              <span class="mr-3 text-muted" *ngIf="selectedActivityInfo.reservedAmount != null">
+                                Reserved Amount: <strong class="text-dark">{{ selectedActivityInfo.reservedAmount | number:'1.2-2' }}</strong>
+                              </span>
+                              <span class="mr-3 text-muted" *ngIf="selectedActivityInfo.consumedAmount != null">
+                                Consumed Amount: <strong class="text-dark">{{ selectedActivityInfo.consumedAmount | number:'1.2-2' }}</strong>
+                              </span>
                               <span *ngIf="isWaiveAmountActive" class="badge badge-success text-white py-1 px-2 mr-2" style="font-size: 0.75rem;">
                                 <i class="ft-check mr-1"></i> Waive Amount Active
                               </span>

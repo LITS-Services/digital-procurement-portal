@@ -18,6 +18,8 @@ export interface ProjectActivityItem {
   allowedPercentage: number;
   utilisedBudget?: number;
   availableBudget?: number;
+  reservedAmount?: number | null;
+  consumedAmount?: number | null;
   userIds?: string;
   users?: ProjectActivityUser[];
   isException?: boolean;
