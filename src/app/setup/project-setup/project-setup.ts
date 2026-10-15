@@ -688,6 +688,30 @@ export class ProjectSetup implements OnInit, OnDestroy {
       .trim();
   }
 
+  getLogUserName(log: any): string {
+    // Check for username in various possible fields
+    if (log.createdByUserName || log.CreatedByUserName) {
+      return log.createdByUserName || log.CreatedByUserName;
+    }
+    if (log.userName || log.UserName) {
+      return log.userName || log.UserName;
+    }
+    if (log.username || log.Username) {
+      return log.username || log.Username;
+    }
+    if (log.user?.userName || log.user?.UserName) {
+      return log.user?.userName || log.user?.UserName;
+    }
+    if (log.user?.username || log.user?.Username) {
+      return log.user?.username || log.user?.Username;
+    }
+    if (log.user?.fullName || log.user?.FullName) {
+      return log.user?.fullName || log.user?.FullName;
+    }
+    // Fallback to createdBy if no username found
+    return log.createdBy || log.CreatedBy || 'System';
+  }
+
   openLogsModal() {
     console.log('openLogsModal called, logsModal:', this.logsModal);
     console.log('projectLogs length:', this.projectLogs.length);

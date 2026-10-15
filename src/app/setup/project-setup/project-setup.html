@@ -277,7 +277,7 @@
             </div>
             <div class="log-meta-right">
               <i class="ft-user log-user-icon"></i>
-              <span class="log-user">{{ log.createdBy || 'System' }}</span>
+              <span class="log-user">{{ getLogUserName(log) }}</span>
               <span class="log-date">
                 <i class="ft-clock"></i>
                 {{ log.createdDate | date:'MMM d, y, h:mm a' }}
