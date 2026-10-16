@@ -1,23 +1,22 @@
 <div class="row">
   <div class="col-12">
     <div class="d-flex justify-content-between align-items-center">
-      <ul class="nav nav-tabs custom-tabs">
-        <li class="nav-item">
-          <a class="nav-link" [class.active]="selectedTab === 'exception'" (click)="selectTab('exception')">
-            Exception Logs <!-- Keep original name -->
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" [class.active]="selectedTab === 'audit-trails'" (click)="selectTab('audit-trails')">
-            Audit Trails
-          </a>
-        </li>
-        <li class="nav-item" *ngIf="canViewSecurityAudit">
-          <a class="nav-link" [class.active]="selectedTab === 'security-audit'" (click)="selectTab('security-audit')">
-            Security Audit
-          </a>
-        </li>
-      </ul>
+      <div class="custom-tabs">
+        <nav>
+          <button type="button" (click)="selectTab('exception')"
+            [ngClass]="{ 'tab-current': selectedTab === 'exception' }" class="custom-style-tab">
+            <span>EXCEPTION LOGS</span>
+          </button>
+          <button type="button" (click)="selectTab('audit-trails')"
+            [ngClass]="{ 'tab-current': selectedTab === 'audit-trails' }" class="custom-style-tab">
+            <span>AUDIT TRAILS</span>
+          </button>
+          <button type="button" *ngIf="canViewSecurityAudit" (click)="selectTab('security-audit')"
+            [ngClass]="{ 'tab-current': selectedTab === 'security-audit' }" class="custom-style-tab">
+            <span>SECURITY AUDIT</span>
+          </button>
+        </nav>
+      </div>
 
 
       
@@ -28,7 +27,7 @@
                 [disabled]="loading || logsData.length === 0"
                 title="Export to Excel">
           <i class="ft-download"></i>
-          <label class="ml-1">Export Excel</label>
+          <label class="ml-1 mb-0">Export Excel</label>
         </button>
         
         <!-- Filter Button

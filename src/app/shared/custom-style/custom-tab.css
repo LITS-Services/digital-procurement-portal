@@ -17,12 +17,14 @@
   padding: 1em 3.5em 1em 1.8em;
   border-radius: 10px 10px 0 0;
   transition: color 0.2s ease;
+  white-space: nowrap;
 }
 
 /* Text layer */
 .custom-tabs .custom-style-tab span {
   position: relative;
   z-index: 2;
+  white-space: nowrap;
 }
 .custom-tabs .custom-style-tab::after {
   position: absolute;

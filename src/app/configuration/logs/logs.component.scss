@@ -63,29 +63,10 @@
   overflow-y: auto !important;
   /* optional: to make it scroll if content overflows */
 }
-
-.custom-tabs .nav-link {
-  border: 1px solid #dee2e6;
-  /* border */
-  border-radius: 10px 10px 0 0;
-  /* top-left & top-right curved */
-  margin-right: 5px;
-  /* spacing between tabs */
-  color: #495057;
-  background-color: #f8f9fa;
+.custom-tabs .custom-style-tab {
+  white-space: nowrap;
+  min-width: 170px;
 }
-
-.custom-tabs .nav-link.active {
-  background-color: #ffffff;
-  border-color: #dee2e6 #dee2e6 #fff;
-  /* remove bottom border for active tab to blend with table */
-  color: #000;
-}
-
-.custom-tabs .nav-item:last-child .nav-link {
-  margin-right: 0;
-}
-
 input[disabled],
 textarea[disabled] {
   background-color: #f8f9fa !important;
