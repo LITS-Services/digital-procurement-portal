@@ -1286,10 +1286,11 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     const currentActivityId = Number(this.selectedActivityInfo.id);
     const baseBudget = Number(this.selectedActivityInfo.budgetAmount) || 0;
     const consumedAmount = Number(this.selectedActivityInfo.consumedAmount) || 0;
+    const reservedAmount = Number(this.selectedActivityInfo.reservedAmount) || 0;
     const allowedPercentage = Number(this.selectedActivityInfo.allowedPercentage) || 0;
     const allowedAmount = baseBudget * (allowedPercentage / 100);
     const maxAllowedBudget = baseBudget + allowedAmount;
-    const availableBudget = maxAllowedBudget - consumedAmount;
+    const availableBudget = maxAllowedBudget - consumedAmount - reservedAmount;
 
     // Database utilised budget from existing PRs
     const dbUtilised = Number(this.selectedActivityInfo.utilisedBudget) || 0;
