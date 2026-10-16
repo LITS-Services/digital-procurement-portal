@@ -4,6 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { id } from 'date-fns/locale';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-purchase-order-details',
@@ -32,7 +34,8 @@ export class PurchaseOrderDetailsComponent implements OnInit {
     private purchaseOrderService: PurchaseOrderService,
     public cdr: ChangeDetectorRef,
     private router: Router,
-    public spinner: NgxSpinnerService
+    public spinner: NgxSpinnerService,
+    private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -47,22 +50,31 @@ export class PurchaseOrderDetailsComponent implements OnInit {
   }
 
 getPurchaseOrderDetails(id: number) {
+  this.loading = true;
   this.spinner.show();
 
-  this.purchaseOrderService.getPurchaseOrderById(id).subscribe({
-    next: (res) => {
-      this.poDetails = res;
-      this.loading = false;
-      this.cdr.detectChanges();
-    },
-    error: (err) => {
-      this.loading = false;
-      console.error('PO Load Error', err);
-    },
-    complete: () => {
-      this.spinner.hide();
-    }
-  });
+  this.purchaseOrderService.getPurchaseOrderById(id)
+    .pipe(
+      finalize(() => {
+        this.loading = false;
+        this.spinner.hide();
+        this.cdr.detectChanges();
+      })
+    )
+    .subscribe({
+      next: (res) => {
+        this.poDetails = res;
+      },
+      error: (err) => {
+        console.error('PO Load Error', err);
+        const errorMsg =
+          err?.error?.message ||
+          (Array.isArray(err?.error?.errors) && err.error.errors[0]) ||
+          err?.statusText ||
+          'Failed to load purchase order details.';
+        this.toastr.error(errorMsg);
+      }
+    });
 }
 
   toggleItems() {

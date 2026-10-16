@@ -7,6 +7,8 @@ import { PermissionService } from 'app/shared/permissions/permission.service';
 import { LookupService } from 'app/shared/services/lookup.service';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-purchase-order-list',
@@ -53,12 +55,13 @@ export class PurchaseOrderListComponent implements OnInit {
     private route: ActivatedRoute,
     private permissionService: PermissionService,
     private lookupService: LookupService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private toastr: ToastrService
   ) { }
 
   get isMobile(): boolean {
     return window.innerWidth <= 1400;
-}
+  }
 
   ngOnInit(): void {
     this.loadStatus();
@@ -68,32 +71,41 @@ export class PurchaseOrderListComponent implements OnInit {
 
   loadPurchaseOrders() {
     const userId = localStorage.getItem('userId');
-    this.loading = true;
     const entityId = Number(localStorage.getItem('selectedCompanyId'));
     
     this.loading = true;
     this.spinner.show();
-    this.purchaseOrderService.getAllPurchaseOrders(this.currentPage, this.pageSize, entityId, userId, this.selectedStatus).subscribe({
-      next: (data: any) => {
+    this.purchaseOrderService.getAllPurchaseOrders(this.currentPage, this.pageSize, entityId, userId, this.selectedStatus)
+      .pipe(
+        finalize(() => {
+          this.loading = false;
+          this.spinner.hide();
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
+        next: (data: any) => {
+          // Extract paginated data correctly
+          this.purchaseOrderData = (data?.result || []).map((r: any) => ({
+            ...r,
+            statusClass: `chip ${this.mapStatusKey(r.requestStatus || r.status)}`
+          }));
 
-        // Extract paginated data correctly
-        this.purchaseOrderData = (data?.result || []).map((r: any) => ({
-        ...r,
-        statusClass: `chip ${this.mapStatusKey(r.requestStatus || r.status)}`
-      }));;
-
-        // Capture pagination info
-        this.totalPages = data.totalPages;
-        this.totalItems = data.totalItems;
-        this.loading = false;
-        this.spinner.hide();
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error fetching Purchase Orders:', err);
-        this.loading = false;
-      }
-    });
+          // Capture pagination info
+          this.totalPages = data.totalPages;
+          this.totalItems = data.totalItems;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Error fetching Purchase Orders:', err);
+          const errorMsg =
+            err?.error?.message ||
+            (Array.isArray(err?.error?.errors) && err.error.errors[0]) ||
+            err?.statusText ||
+            'Failed to load purchase orders. Please try again.';
+          this.toastr.error(errorMsg);
+        }
+      });
   }
 
   onPageChange(event: any) {
