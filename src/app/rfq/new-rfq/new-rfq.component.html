@@ -609,6 +609,20 @@
         <!-- Type -->
         <ngx-datatable-column name="Type" prop="itemType">
         </ngx-datatable-column>
+
+        <!-- Project -->
+        <ngx-datatable-column name="Project" prop="ProjectName">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <span>{{ row.ProjectName || row.projectName || getProjectNameById(row.projectId) }}</span>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Project Activity -->
+        <ngx-datatable-column name="Project Activity" prop="ActivityName">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <span>{{ row.ActivityName || row.activityName || getActivityNameById(row.projectActivityId) }}</span>
+          </ng-template>
+        </ngx-datatable-column>
     
         <!-- Item -->
         <ngx-datatable-column name="Item">

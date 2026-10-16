@@ -809,6 +809,10 @@ export class NewRfqComponent implements OnInit {
           departmentId: item.departmentId || this.departmentId || null,
           projectId: item.projectId || null,
           projectActivityId: item.projectActivityId || null,
+          ProjectName: item.ProjectName || item.projectName || this.getProjectNameById(item.projectId),
+          projectName: item.projectName || item.ProjectName || this.getProjectNameById(item.projectId),
+          ActivityName: item.ActivityName || item.activityName || item.projectActivityName || this.getActivityNameById(item.projectActivityId),
+          activityName: item.activityName || item.ActivityName || item.projectActivityName || this.getActivityNameById(item.projectActivityId),
 
           quotationItemAttachments:
             item.attachments?.map((a: any) => ({
@@ -917,6 +921,10 @@ export class NewRfqComponent implements OnInit {
             departmentId: item.departmentId || null,
             projectId: item.projectId || null,
             projectActivityId: item.projectActivityId || null,
+            ProjectName: item.ProjectName || item.projectName || this.getProjectNameById(item.projectId),
+            projectName: item.projectName || item.ProjectName || this.getProjectNameById(item.projectId),
+            ActivityName: item.ActivityName || item.activityName || item.projectActivityName || this.getActivityNameById(item.projectActivityId),
+            activityName: item.activityName || item.ActivityName || item.projectActivityName || this.getActivityNameById(item.projectActivityId),
             quotationItemAttachments: (item.quotationItemAttachments || []).map((a: any) => ({
               id: a.id,
               content: a.content,
@@ -1294,12 +1302,23 @@ export class NewRfqComponent implements OnInit {
       return;
     }
 
+    const projId = newItem.projectId ? Number(newItem.projectId) : null;
+    const actId = newItem.projectActivityId ? Number(newItem.projectActivityId) : null;
+    const projName = this.selectedProjectInfo?.name || this.getProjectNameById(projId);
+    const actName = this.getActivityNameById(actId);
+
     if (this.editingRowIndex !== null) {
       const existing = this.newQuotationItemData[this.editingRowIndex];
       const merged = {
         ...existing,
         ...newItem,
         itemId: newItemId,
+        projectId: projId,
+        projectActivityId: actId,
+        ProjectName: projName,
+        projectName: projName,
+        ActivityName: actName,
+        activityName: actName,
         vatProdPostingGroup: existing.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
         unitOfMeasurementSymbol: this.selectedUomLabel || this.resolveUomSymbol(newItem) || this.resolveUomSymbol(existing),
         attachments: existing?.attachments ?? [],
@@ -1317,6 +1336,12 @@ export class NewRfqComponent implements OnInit {
       const withEmptyAttachments = {
         ...newItem,
         itemId: newItemId,
+        projectId: projId,
+        projectActivityId: actId,
+        ProjectName: projName,
+        projectName: projName,
+        ActivityName: actName,
+        activityName: actName,
         vatProdPostingGroup: this.resolveVatProdPostingGroup(),
         unitOfMeasurementSymbol: this.resolveUomSymbol(newItem),
         attachments: newItem.attachments?.length ? newItem.attachments : [],
@@ -1547,6 +1572,15 @@ export class NewRfqComponent implements OnInit {
           }))
         }));
         this.updateFilteredProjectsForRfq();
+        if (this.newQuotationItemData?.length) {
+          this.newQuotationItemData = this.newQuotationItemData.map((item: any) => ({
+            ...item,
+            ProjectName: item.ProjectName || item.projectName || this.getProjectNameById(item.projectId),
+            projectName: item.projectName || item.ProjectName || this.getProjectNameById(item.projectId),
+            ActivityName: item.ActivityName || item.activityName || item.projectActivityName || this.getActivityNameById(item.projectActivityId),
+            activityName: item.activityName || item.ActivityName || item.projectActivityName || this.getActivityNameById(item.projectActivityId),
+          }));
+        }
         this.cdr.detectChanges();
       },
       error: (err) => {
