@@ -220,8 +220,8 @@
                 </div>
               </div>
 
-              <!-- Department Name (Create mode only – auto-filled from PR) -->
-              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6" *ngIf="isNewForm && departmentName">
+              <!-- Department Name -->
+              <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
                   <label>Department</label>
                   <input type="text" formControlName="departmentName" class="form-control custom-input" disabled />
@@ -535,23 +535,24 @@
                 </select>
               </div>
 
-              <!-- Project (filtered by PR department) -->
-              <div class="form-group mb-2" *ngIf="filteredProjectList.length > 0">
+              <!-- Project -->
+              <div class="form-group mb-2">
                 <label>Project</label>
                 <select class="form-control custom-input" formControlName="projectId"
-                  (change)="onProjectChangedRfq()">
-                  <option [ngValue]="null">-- None --</option>
+                  (change)="onProjectChangedRfq()" [disabled]="viewMode">
+                  <option [ngValue]="null">-- Select Project --</option>
                   <option *ngFor="let proj of filteredProjectList" [ngValue]="proj.id">
                     {{ proj.name }}
                   </option>
                 </select>
               </div>
 
-              <!-- Project Activity (filtered by selected project) -->
-              <div class="form-group mb-2" *ngIf="currentProjectActivities.length > 0">
+              <!-- Project Activity -->
+              <div class="form-group mb-2">
                 <label>Project Activity</label>
-                <select class="form-control custom-input" formControlName="projectActivityId">
-                  <option [ngValue]="null">-- None --</option>
+                <select class="form-control custom-input" formControlName="projectActivityId"
+                  [disabled]="viewMode || !currentProjectActivities.length">
+                  <option [ngValue]="null">{{ currentProjectActivities.length ? '-- Select Activity --' : '-- Select Project first --' }}</option>
                   <option *ngFor="let act of currentProjectActivities" [ngValue]="act.id">
                     {{ act.name }}
                   </option>

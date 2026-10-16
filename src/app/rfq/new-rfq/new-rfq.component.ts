@@ -75,6 +75,7 @@ export class NewRfqComponent implements OnInit {
   departmentName: string = '';               // display name for Create mode
   projectList: ProjectItem[] = [];
   filteredProjectList: ProjectItem[] = [];
+  allProjectsList: ProjectItem[] = [];
   currentProjectActivities: ProjectActivityItem[] = [];
   selectedProjectInfo: ProjectItem | null = null;
 
@@ -889,13 +890,30 @@ export class NewRfqComponent implements OnInit {
           }
         }
 
-        // Capture department from header
-        if (requestData.departmentId) {
-          this.departmentId = Number(requestData.departmentId);
-          this.departmentName = requestData.departmentName || '';
+        // Capture department from header or quotation data
+        this.departmentId = Number(requestData.departmentId) || null;
+        this.departmentName = requestData.departmentName || requestData.DepartmentName || requestData.department || '';
+        if (this.departmentName) {
           this.newRfqForm.patchValue({ departmentName: this.departmentName }, { emitEvent: false });
-          this.updateFilteredProjectsForRfq();
         }
+
+        const linkedPrId = requestData.purchaseRequestId || this.purchaseRequestId;
+        if (!this.departmentName && linkedPrId) {
+          this.purchaseRequestService.getPurchaseRequestById(linkedPrId).subscribe({
+            next: (prRes: any) => {
+              const pr = prRes?.value || prRes;
+              if (pr) {
+                if (!this.departmentId) {
+                  this.departmentId = Number(pr.departmentId) || null;
+                }
+                this.departmentName = pr.departmentName || pr.department || '';
+                this.newRfqForm.patchValue({ departmentName: this.departmentName }, { emitEvent: false });
+                this.cdr.detectChanges();
+              }
+            }
+          });
+        }
+        this.updateFilteredProjectsForRfq();
 
         if (requestData.quotationItems) {
           const itemList = requestData.quotationItems || [];
@@ -1553,10 +1571,52 @@ export class NewRfqComponent implements OnInit {
   // ── Department / Project / Activity helpers ──────────────────────────────
 
   loadProjects(): void {
-    this.projectService.getAllProjects().subscribe({
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      console.error('User ID not found in localStorage');
+      this.projectList = [];
+      this.filteredProjectList = [];
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.projectService.getProjectsByUserId(userId).subscribe({
       next: (res: any) => {
         const raw = this.extractList(res);
         this.projectList = raw.map((p: any) => ({
+          id: Number(p.id ?? p.Id),
+          departmentId: Number(p.departmentId ?? p.DepartmentId),
+          departmentName: p.departmentName ?? p.DepartmentName ?? '',
+          name: String(p.name ?? p.Name ?? '').trim(),
+          description: p.description ?? p.Description ?? '',
+          activityCount: p.activityCount ?? p.ActivityCount ?? 0,
+          projectActivities: (p.projectActivities || p.ProjectActivities || []).map((a: any) => ({
+            id: Number(a.id ?? a.Id),
+            projectId: Number(a.projectId ?? a.ProjectId ?? p.id ?? p.Id),
+            name: String(a.name ?? a.Name ?? '').trim(),
+            description: a.description ?? a.Description ?? '',
+            budgetAmount: Number(a.budgetAmount ?? a.BudgetAmount ?? 0),
+            allowedPercentage: Number(a.allowedPercentage ?? a.AllowedPercentage ?? 0),
+            isException: !!(a.isException ?? a.IsException ?? false),
+          }))
+        }));
+        this.filteredProjectList = this.projectList;
+        this.refreshItemProjectNames();
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Failed to load projects by user:', err);
+        this.projectList = [];
+        this.filteredProjectList = [];
+        this.cdr.detectChanges();
+      }
+    });
+
+    // Also fetch all projects for name lookups in the grid (e.g. for PR items from other projects)
+    this.projectService.getAllProjects().subscribe({
+      next: (res: any) => {
+        const raw = this.extractList(res);
+        this.allProjectsList = raw.map((p: any) => ({
           id: Number(p.id ?? p.Id),
           departmentId: Number(p.departmentId ?? p.DepartmentId),
           departmentName: p.departmentName ?? p.DepartmentName ?? '',
@@ -1567,26 +1627,12 @@ export class NewRfqComponent implements OnInit {
             projectId: Number(a.projectId ?? a.ProjectId ?? p.id ?? p.Id),
             name: String(a.name ?? a.Name ?? '').trim(),
             description: a.description ?? a.Description ?? '',
-            budgetAmount: Number(a.budgetAmount ?? a.BudgetAmount ?? 0),
-            allowedPercentage: Number(a.allowedPercentage ?? a.AllowedPercentage ?? 0),
           }))
         }));
-        this.updateFilteredProjectsForRfq();
-        if (this.newQuotationItemData?.length) {
-          this.newQuotationItemData = this.newQuotationItemData.map((item: any) => ({
-            ...item,
-            ProjectName: item.ProjectName || item.projectName || this.getProjectNameById(item.projectId),
-            projectName: item.projectName || item.ProjectName || this.getProjectNameById(item.projectId),
-            ActivityName: item.ActivityName || item.activityName || item.projectActivityName || this.getActivityNameById(item.projectActivityId),
-            activityName: item.activityName || item.ActivityName || item.projectActivityName || this.getActivityNameById(item.projectActivityId),
-          }));
-        }
+        this.refreshItemProjectNames();
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.error('Failed to load projects:', err);
-        this.projectList = [];
-      }
+      error: () => {}
     });
   }
 
@@ -1602,13 +1648,7 @@ export class NewRfqComponent implements OnInit {
   }
 
   updateFilteredProjectsForRfq(): void {
-    if (!this.departmentId) {
-      this.filteredProjectList = [];
-      return;
-    }
-    this.filteredProjectList = (this.projectList || []).filter(
-      (p) => Number(p.departmentId) === Number(this.departmentId)
-    );
+    this.filteredProjectList = this.projectList || [];
     // Clear project/activity selection if the current project doesn't belong
     const currentProjId = this.itemForm?.get('projectId')?.value;
     if (currentProjId && !this.filteredProjectList.some(p => Number(p.id) === Number(currentProjId))) {
@@ -1621,7 +1661,7 @@ export class NewRfqComponent implements OnInit {
 
   onProjectChangedRfq(): void {
     const projId = Number(this.itemForm.get('projectId')?.value);
-    this.selectedProjectInfo = this.projectList.find(p => Number(p.id) === projId) || null;
+    this.selectedProjectInfo = this.projectList.find(p => Number(p.id) === projId) || this.allProjectsList.find(p => Number(p.id) === projId) || null;
     this.currentProjectActivities = this.selectedProjectInfo?.projectActivities || [];
     // Reset activity if not valid for new project
     const currentActId = Number(this.itemForm.get('projectActivityId')?.value);
@@ -1633,17 +1673,35 @@ export class NewRfqComponent implements OnInit {
 
   getProjectNameById(id: any): string {
     if (!id) return '';
-    const p = this.projectList.find(x => Number(x.id) === Number(id));
+    const numId = Number(id);
+    const p = this.projectList.find(x => Number(x.id) === numId) || this.allProjectsList.find(x => Number(x.id) === numId);
     return p ? p.name : '';
   }
 
   getActivityNameById(id: any): string {
     if (!id) return '';
+    const numId = Number(id);
     for (const p of this.projectList) {
-      const act = (p.projectActivities || []).find((a: any) => Number(a.id) === Number(id));
+      const act = (p.projectActivities || []).find((a: any) => Number(a.id) === numId);
+      if (act) return act.name;
+    }
+    for (const p of this.allProjectsList) {
+      const act = (p.projectActivities || []).find((a: any) => Number(a.id) === numId);
       if (act) return act.name;
     }
     return '';
+  }
+
+  private refreshItemProjectNames(): void {
+    if (this.newQuotationItemData?.length) {
+      this.newQuotationItemData = this.newQuotationItemData.map((item: any) => ({
+        ...item,
+        ProjectName: item.ProjectName || item.projectName || this.getProjectNameById(item.projectId),
+        projectName: item.projectName || item.ProjectName || this.getProjectNameById(item.projectId),
+        ActivityName: item.ActivityName || item.activityName || item.projectActivityName || this.getActivityNameById(item.projectActivityId),
+        activityName: item.activityName || item.ActivityName || item.projectActivityName || this.getActivityNameById(item.projectActivityId),
+      }));
+    }
   }
 
   // ─────────────────────────────────────────────────────────────────────────
