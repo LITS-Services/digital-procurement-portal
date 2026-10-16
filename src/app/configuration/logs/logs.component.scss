@@ -61,12 +61,39 @@
   height: 400px !important;
   /* or any height you want */
   overflow-y: auto !important;
-  /* optional: to make it scroll if content overflows */
 }
+
+/* Balanced tabs specifically for logs screen */
+.custom-tabs {
+  width: auto !important;
+  max-width: fit-content !important;
+}
+
+.custom-tabs nav {
+  min-width: auto !important;
+  width: auto !important;
+}
+
 .custom-tabs .custom-style-tab {
-  white-space: nowrap;
-  min-width: 170px;
+  white-space: nowrap !important;
+  min-width: 150px !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  padding: 0.6em 2.0em 0.6em 1.5em !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
 }
+
+.custom-tabs .custom-style-tab span {
+  white-space: nowrap !important;
+  font-size: 0.75rem !important;
+  line-height: 1 !important;
+}
+
 input[disabled],
 textarea[disabled] {
   background-color: #f8f9fa !important;
@@ -91,13 +118,38 @@ textarea[disabled] {
   /* makes close button visible on dark header */
 }
 
-.excel-btn{
-  height: 30px;
-  margin-bottom: 6px;
+.excel-btn {
+  height: 32px;
+  margin-bottom: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #e7ffeb7a;
   color: #126619;
   border: 1px solid #aae0b0;
+  border-radius: 6px;
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #d4f7da;
+    color: #0d4a13;
+    border-color: #8cd694;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #e7ffeb7a !important;
+    color: #126619 !important;
+    border-color: #aae0b0 !important;
+  }
+
+  label {
+    cursor: pointer;
+    margin-bottom: 0;
+  }
 }

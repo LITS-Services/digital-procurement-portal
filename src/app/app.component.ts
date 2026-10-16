@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
@@ -30,6 +30,24 @@ export class AppComponent implements OnInit, OnDestroy {
         }
     }
 
+    @HostListener('wheel', ['$event'])
+    onWindowWheel(event: WheelEvent) {
+        const target = event.target as HTMLElement;
+        const customTabs = target?.closest('.custom-tabs') as HTMLElement;
+        if (customTabs && customTabs.scrollWidth > customTabs.clientWidth) {
+            if (Math.abs(event.deltaY) > Math.abs(event.deltaX)) {
+                customTabs.scrollLeft += event.deltaY;
+            }
+        }
+    }
 
+    @HostListener('click', ['$event'])
+    onWindowClick(event: MouseEvent) {
+        const target = event.target as HTMLElement;
+        const tabBtn = target?.closest('.custom-tabs .custom-style-tab') as HTMLElement;
+        if (tabBtn) {
+            tabBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+        }
+    }
 
 }

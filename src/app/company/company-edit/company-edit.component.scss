@@ -1,6 +1,3 @@
-.ngx-datatable .datatable-header-inner {
-    background-color: #1E89B8 !important;
-}
 
 
 .accordion-section ::ng-deep .accordion .card .card-header button {
@@ -13,6 +10,66 @@
     color: #115ec3 !important;
     // background: linear-gradient(168deg, #116AEF 0%, #114C7A 100%); 
     background: #fff !important;
+}
+
+/* Auto-adjusting tabs for Company Review (no scroll, all 9 tabs visible) */
+.custom-tabs {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+
+  nav {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  .custom-style-tab {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
+    width: auto !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    padding: 6px 14px 6px 10px !important;
+    font-size: clamp(10px, 0.74vw, 12px) !important;
+    font-weight: 600 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    white-space: normal !important;
+    line-height: 1.2 !important;
+
+    span {
+      white-space: normal !important;
+      display: block !important;
+      text-align: center !important;
+      line-height: 1.2 !important;
+      font-size: inherit !important;
+    }
+  }
+}
+
+@media (max-width: 1400px) {
+  .custom-tabs .custom-style-tab {
+    padding: 5px 12px 5px 8px !important;
+    font-size: 11px !important;
+  }
+}
+
+@media (max-width: 1200px) {
+  .custom-tabs .custom-style-tab {
+    padding: 4px 10px 4px 6px !important;
+    font-size: 10px !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .custom-tabs .custom-style-tab {
+    padding: 4px 8px 4px 5px !important;
+    font-size: 9.5px !important;
+  }
 }
 
 .accordion-section ::ng-deep .accordion .card .card-header {

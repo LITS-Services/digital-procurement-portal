@@ -1,6 +1,39 @@
+/* Container for custom tabs */
+.custom-tabs {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+  padding-bottom: 2px;
+}
+
+/* Modern thin scrollbar */
+.custom-tabs::-webkit-scrollbar {
+  height: 4px;
+}
+
+.custom-tabs::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-tabs::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.custom-tabs::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
 .custom-tabs nav {
   display: flex;
   justify-content: flex-start;
+  min-width: 100%;
+  width: max-content;
 }
 
 /* Base tab styling */
@@ -26,6 +59,7 @@
   z-index: 2;
   white-space: nowrap;
 }
+
 .custom-tabs .custom-style-tab::after {
   position: absolute;
   top: 0;
@@ -50,10 +84,9 @@
 
 .custom-tabs .custom-style-tab:hover::after,
 .custom-tabs .custom-style-tab:focus::after {
-  background: #4188f2;
+  background: #cfe2ff;
   box-shadow: none;
 }
-
 
 .custom-tabs .custom-style-tab.tab-current {
   color: #fff;
@@ -68,10 +101,6 @@
 .custom-tabs .custom-style-tab,
 .custom-tabs .custom-style-tab::after {
   transition: all 0.3s ease;
-}
-
-.custom-tabs .custom-style-tab:hover::after {
-    background: #cfe2ff;
 }
 
 .custom-tabs .custom-style-tab.disabled,
@@ -103,7 +132,7 @@
     white-space: nowrap !important;
   }
 
-  .bids-tab{
+  .bids-tab {
     row-gap: 8px !important;
   }
 }
