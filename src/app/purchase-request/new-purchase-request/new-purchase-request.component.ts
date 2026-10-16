@@ -1231,7 +1231,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     }
 
     const budgetInfo = this.getActivityRemainingBudget();
-    if (!budgetInfo || budgetInfo.baseBudget <= 0) {
+    if (!budgetInfo || budgetInfo.availableFinalAmount <= 0) {
       this.isBudgetExceeded = false;
       this.budgetWarningType = 'none';
       this.budgetExceededMessage = '';
@@ -1279,14 +1279,17 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     usedBudget: number;
     availableAmount: number;
     exceededBy: number;
+    availableFinalAmount: number;
     status: 'normal' | 'buffer' | 'exhausted' | 'exceeded';
   } | null {
     if (!this.selectedActivityInfo) return null;
     const currentActivityId = Number(this.selectedActivityInfo.id);
     const baseBudget = Number(this.selectedActivityInfo.budgetAmount) || 0;
+    const consumedAmount = Number(this.selectedActivityInfo.consumedAmount) || 0;
     const allowedPercentage = Number(this.selectedActivityInfo.allowedPercentage) || 0;
     const allowedAmount = baseBudget * (allowedPercentage / 100);
     const maxAllowedBudget = baseBudget + allowedAmount;
+    const availableBudget = maxAllowedBudget - consumedAmount;
 
     // Database utilised budget from existing PRs
     const dbUtilised = Number(this.selectedActivityInfo.utilisedBudget) || 0;
@@ -1299,28 +1302,25 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     });
 
     const currentFormAmount = Number(this.itemForm.get('amount')?.value) || 0;
-    const totalUsed = dbUtilised + previousUsedInCurrentPr + currentFormAmount;
+    // Current request utilized budget for this activity (other items in table + current item form amount)
+    const currentPrAmount = previousUsedInCurrentPr + currentFormAmount;
 
     let status: 'normal' | 'buffer' | 'exhausted' | 'exceeded' = 'normal';
     let availableAmount = 0;
     let exceededBy = 0;
 
-    const baseDiff = Math.round((baseBudget - totalUsed) * 100) / 100;
-    const maxDiff = Math.round((maxAllowedBudget - totalUsed) * 100) / 100;
+    const remainingAvailable = Math.round((availableBudget - currentPrAmount) * 100) / 100;
 
-    if (totalUsed <= baseBudget) {
+    if (currentPrAmount < availableBudget) {
       status = 'normal';
-      availableAmount = maxDiff;
-    } else if (totalUsed > baseBudget && maxDiff > 0) {
-      status = 'buffer';
-      availableAmount = maxDiff;
-    } else if (maxDiff === 0) {
+      availableAmount = remainingAvailable;
+    } else if (currentPrAmount === availableBudget) {
       status = 'exhausted';
       availableAmount = 0;
     } else {
       status = 'exceeded';
       availableAmount = 0;
-      exceededBy = Math.round((totalUsed - maxAllowedBudget) * 100) / 100;
+      exceededBy = Math.round((currentPrAmount - availableBudget) * 100) / 100;
     }
 
     return {
@@ -1328,9 +1328,10 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       allowedPercentage,
       allowedAmount,
       maxAllowedBudget,
-      usedBudget: totalUsed,
+      usedBudget: consumedAmount + currentPrAmount,
       availableAmount,
       exceededBy,
+      availableFinalAmount: availableBudget,
       status
     };
   }

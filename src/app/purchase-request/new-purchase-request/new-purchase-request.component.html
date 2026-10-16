@@ -519,9 +519,9 @@
                               <span class="mr-3 text-muted">
                                 Total Budget: <strong class="text-dark">{{ selectedActivityInfo.budgetAmount | number:'1.2-2' }}</strong>
                               </span>
-                              <span class="mr-3 text-muted" *ngIf="selectedActivityInfo.utilisedBudget != null">
+                              <!-- <span class="mr-3 text-muted" *ngIf="selectedActivityInfo.utilisedBudget != null">
                                 Utilised: <strong class="text-dark">{{ selectedActivityInfo.utilisedBudget | number:'1.2-2' }}</strong>
-                              </span>
+                              </span> -->
                               <span class="mr-3 text-muted">
                                 Budget Tolerance %: <strong class="text-dark">{{ selectedActivityInfo.allowedPercentage }}%</strong>
                               </span>
@@ -532,7 +532,7 @@
                                 Reserved Amount: <strong class="text-dark">{{ selectedActivityInfo.reservedAmount | number:'1.2-2' }}</strong>
                               </span>
                               <span class="mr-3 text-muted" *ngIf="selectedActivityInfo.consumedAmount != null">
-                                Consumed Amount: <strong class="text-dark">{{ selectedActivityInfo.consumedAmount | number:'1.2-2' }}</strong>
+                                Utilised Amount: <strong class="text-dark">{{ selectedActivityInfo.consumedAmount | number:'1.2-2' }}</strong>
                               </span>
                               <span *ngIf="isWaiveAmountActive" class="badge badge-success text-white py-1 px-2 mr-2" style="font-size: 0.75rem;">
                                 <i class="ft-check mr-1"></i> Waive Amount Active
@@ -546,7 +546,7 @@
                                 'text-success font-weight-bold': remaining.status === 'normal'
                               }" [ngStyle]="budgetWarningType === 'orange' ? {'color': '#c2410c'} : {}">
                                 <i [ngClass]="remaining.status === 'exceeded' ? 'ft-alert-circle mr-1' : (remaining.status === 'exhausted' || remaining.status === 'buffer' ? 'ft-alert-triangle mr-1' : 'ft-pie-chart mr-1')"></i>
-                                Available: {{ remaining.availableAmount | number:'1.2-2' }} (Used: {{ remaining.usedBudget | number:'1.2-2' }})
+                                Available: {{ remaining.availableFinalAmount | number:'1.2-2' }} (Used: {{ selectedActivityInfo.consumedAmount | number:'1.2-2' }})
                               </span>
                             </div>
                           </div>
@@ -616,7 +616,7 @@
                                   <span>
                                     {{ item.name }}
                                     <span *ngIf="item.isException" class="badge badge-success ml-1" style="font-size:0.7rem;vertical-align:middle;">Exception</span>
-                                    <span class="ml-1 text-muted">(Avail: {{ (item.availableBudget != null ? item.availableBudget : item.budgetAmount) | number:'1.2-2' }}, Budget: {{ item.budgetAmount | number:'1.2-2' }}, Allowed: {{ item.allowedPercentage }}%)</span>
+                                    <!-- <span class="ml-1 text-muted">(Avail: {{ (item.availableBudget != null ? item.availableBudget : item.budgetAmount) | number:'1.2-2' }}, Budget: {{ item.budgetAmount | number:'1.2-2' }}, Allowed: {{ item.allowedPercentage }}%)</span> -->
                                   </span>
                                 </ng-template>
                                 <ng-template ng-option-tmp let-item="item">
@@ -625,11 +625,11 @@
                                       {{ item.name }}
                                       <span *ngIf="item.isException" class="badge badge-success ml-1" style="font-size:0.7rem;">Exception</span>
                                     </span>
-                                    <small class="text-muted ml-2">
+                                    <!-- <small class="text-muted ml-2">
                                       Avail: {{ (item.availableBudget != null ? item.availableBudget : item.budgetAmount) | number:'1.2-2' }} &bull;
                                       Budget: {{ item.budgetAmount | number:'1.2-2' }} &bull;
                                       Allowed: {{ item.allowedPercentage }}%
-                                    </small>
+                                    </small> -->
                                   </div>
                                 </ng-template>
                               </ng-select>
