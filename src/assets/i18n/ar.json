@@ -1106,5 +1106,11 @@
     "EMPTY_MESSAGE": "لا توجد بيانات للعرض",
     "TOTAL_MESSAGE": "إجمالي",
     "SELECTED_MESSAGE": "محدد"
-  }
+  },
+  "Form": "النموذج",
+  "Read": "قراءة",
+  "Write": "كتابة",
+  "Delete": "حذف",
+  "Request for Quotation": "طلب عرض الأسعار",
+  "Vendor Companies": "شركات التوريد"
 }

@@ -325,17 +325,28 @@ form label, .form-group label {
 
 :host ::ng-deep ngx-intl-tel-input {
   display: block;
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+:host ::ng-deep ngx-intl-tel-input * {
+  box-sizing: border-box;
 }
 
 :host ::ng-deep ngx-intl-tel-input .iti {
   display: flex;
   align-items: center;
   width: 100%;
+  position: relative;
+  overflow: visible !important;
   height: 42px;       
   border-radius: 8px;
   border: 1px solid #D7D7D7;
   background-color: #ffffff;
   padding-right: 12px;
+  padding-left: 0;
+  direction: ltr !important;
+  text-align: left !important;
 }
 
 :host ::ng-deep ngx-intl-tel-input .iti input:disabled {
@@ -346,30 +357,33 @@ form label, .form-group label {
   background-color: #f5f5f5 !important;
 }
 
-
 :host ::ng-deep ngx-intl-tel-input .iti__flag-container {
-  position: static;           
+  position: relative;
   display: flex;
   align-items: center;
   height: 100%;
   padding: 0 10px;
-  border-right: 1px solid #e0e3e8;
+  border-right: 1px solid #e0e3e8 !important;
+  border-left: none !important;
   margin: 0;
+  direction: ltr !important;
 }
-
 
 :host ::ng-deep ngx-intl-tel-input .iti__selected-flag {
   margin: 0;
   display: flex;
-    align-items: center;
-    width: 100% !important;
+  align-items: center;
+  width: 100% !important;
+  direction: ltr !important;
 }
 
-
-
+:host ::ng-deep ngx-intl-tel-input .selected-dial-code,
 :host ::ng-deep ngx-intl-tel-input .iti__selected-dial-code {
   margin-left: 6px;
+  margin-right: 0 !important;
   font-size: 14px;
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
 }
 
 :host ::ng-deep ngx-intl-tel-input .iti input {
@@ -381,6 +395,8 @@ form label, .form-group label {
   box-shadow: none;
   padding: 10px !important;
   font-size: 14px;
+  direction: ltr !important;
+  text-align: left !important;
 }
 
 :host ::ng-deep ngx-intl-tel-input .iti__divider {
@@ -396,18 +412,49 @@ form label, .form-group label {
   box-shadow: none;
 }
 
-
 :host ::ng-deep ngx-intl-tel-input .iti__country-list {
-  max-height: 260px;          
+  max-height: 260px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
   -webkit-overflow-scrolling: touch;
+  z-index: 9999 !important;
+  direction: ltr !important;
+  text-align: left !important;
 }
 
-:host ::ng-deep ngx-intl-tel-input .iti__country-container {
-  width: 100% !important;            
-  margin-top: 6px !important;          
+:host ::ng-deep ngx-intl-tel-input .iti__country-list li.iti__country {
+  direction: ltr !important;
+  text-align: left !important;
 
+  .iti__dial-code {
+    direction: ltr !important;
+    unicode-bidi: isolate !important;
+  }
+}
+
+:host ::ng-deep ngx-intl-tel-input .iti__country-container,
+:host ::ng-deep ngx-intl-tel-input .dropdown-menu.iti__dropdown-content {
+  position: absolute !important;
+  top: calc(100% + 4px) !important;
+  left: 0 !important;
+  right: auto !important;
+  margin-top: 0 !important;          
+  z-index: 9999 !important;
+  direction: ltr !important;
+  text-align: left !important;
 }
 
 :host ::ng-deep ngx-intl-tel-input .iti__dropdown-content {
   overflow: hidden !important;
+  max-height: 300px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.16);
+  background: #fff;
+  direction: ltr !important;
+  text-align: left !important;
+  left: 0 !important;
+  right: auto !important;
 }

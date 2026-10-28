@@ -1577,3 +1577,50 @@ app-content-layout #login {
   color: #116AEF !important;
   display: inline-block !important;
 }
+
+
+/* ACL Setup table column alignment in LTR: align checkboxes and headers to the LEFT */
+html[dir="ltr"] .acl-datatable .datatable-header-cell.acl-checkbox-col,
+html[dir="ltr"] .acl-datatable .datatable-body-cell.acl-checkbox-col,
+html.ltr .acl-datatable .datatable-header-cell.acl-checkbox-col,
+html.ltr .acl-datatable .datatable-body-cell.acl-checkbox-col,
+body.ltr .acl-datatable .datatable-header-cell.acl-checkbox-col,
+body.ltr .acl-datatable .datatable-body-cell.acl-checkbox-col {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+html[dir="ltr"] .acl-datatable .datatable-header-cell.acl-checkbox-col .datatable-header-cell-template-wrap,
+html[dir="ltr"] .acl-datatable .datatable-header-cell.acl-checkbox-col .datatable-header-cell-wrapper,
+html[dir="ltr"] .acl-datatable .datatable-header-cell.acl-checkbox-col .datatable-header-cell-label,
+html[dir="ltr"] .acl-datatable .datatable-header-cell.acl-checkbox-col .acl-header-title,
+html.ltr .acl-datatable .datatable-header-cell.acl-checkbox-col .datatable-header-cell-template-wrap,
+html.ltr .acl-datatable .datatable-header-cell.acl-checkbox-col .datatable-header-cell-wrapper,
+html.ltr .acl-datatable .datatable-header-cell.acl-checkbox-col .datatable-header-cell-label,
+html.ltr .acl-datatable .datatable-header-cell.acl-checkbox-col .acl-header-title,
+body.ltr .acl-datatable .datatable-header-cell.acl-checkbox-col .datatable-header-cell-template-wrap,
+body.ltr .acl-datatable .datatable-header-cell.acl-checkbox-col .datatable-header-cell-wrapper,
+body.ltr .acl-datatable .datatable-header-cell.acl-checkbox-col .datatable-header-cell-label,
+body.ltr .acl-datatable .datatable-header-cell.acl-checkbox-col .acl-header-title {
+  direction: ltr !important;
+  text-align: left !important;
+  justify-content: flex-start !important;
+}
+
+html[dir="ltr"] .acl-datatable .datatable-body-cell.acl-checkbox-col .datatable-body-cell-label,
+html.ltr .acl-datatable .datatable-body-cell.acl-checkbox-col .datatable-body-cell-label,
+body.ltr .acl-datatable .datatable-body-cell.acl-checkbox-col .datatable-body-cell-label {
+  display: flex !important;
+  direction: ltr !important;
+  text-align: left !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+html[dir="ltr"] .acl-datatable .datatable-body-cell.acl-checkbox-col .checkbox-wrapper-12,
+html.ltr .acl-datatable .datatable-body-cell.acl-checkbox-col .checkbox-wrapper-12,
+body.ltr .acl-datatable .datatable-body-cell.acl-checkbox-col .checkbox-wrapper-12 {
+  margin: 0 !important;
+}

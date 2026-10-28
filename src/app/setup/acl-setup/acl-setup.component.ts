@@ -1,4 +1,6 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ColumnMode, DatatableComponent, SelectionType } from '@swimlane/ngx-datatable';
@@ -19,7 +21,8 @@ import { finalize } from 'rxjs/operators';
   standalone: false,
   styleUrls: ['./acl-setup.component.scss']
 })
-export class AclSetupComponent implements OnInit {
+export class AclSetupComponent implements OnInit, OnDestroy {
+  private translateSub?: Subscription;
    @ViewChild('datatable', { static: false }) datatable!: DatatableComponent;
   FORM_IDS = FORM_IDS;
   chkBoxSelected: any[] = [];
@@ -51,7 +54,8 @@ export class AclSetupComponent implements OnInit {
     private WorkflowServiceService: WorkflowServiceService,
     private lookupService: LookupService,
     private aclService: AclService,
-    private permissionService: PermissionService
+    private permissionService: PermissionService,
+    private translate: TranslateService
   ) {}
 
   onAutoResize(): void {
@@ -65,7 +69,17 @@ export class AclSetupComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.setupTableColumns();
     this.fetchRoles();
+
+    this.translateSub = this.translate.onLangChange.subscribe(() => {
+      this.setupTableColumns();
+      this.cdr.markForCheck();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.translateSub?.unsubscribe();
   }
 
   get isMobile(): boolean {

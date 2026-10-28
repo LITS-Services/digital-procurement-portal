@@ -1105,5 +1105,11 @@
     "EMPTY_MESSAGE": "No data to display",
     "TOTAL_MESSAGE": "total",
     "SELECTED_MESSAGE": "selected"
-  }
+  },
+  "Form": "Form",
+  "Read": "Read",
+  "Write": "Write",
+  "Delete": "Delete",
+  "Request for Quotation": "Request for Quotation",
+  "Vendor Companies": "Vendor Companies"
 }

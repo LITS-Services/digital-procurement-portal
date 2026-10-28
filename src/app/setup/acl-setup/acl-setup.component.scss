@@ -28,10 +28,12 @@
   }
 
   .checkbox-wrapper-12 .cbx {
+    position: relative;
     width: 24px;
     height: 24px;
-    top: calc(50vh - 12px);
-    left: calc(50vw - 12px);
+    top: 0;
+    left: 0;
+    margin: 0;
   }
 
   .checkbox-wrapper-12 .cbx input {
@@ -260,6 +262,123 @@
       margin: 0;
       font-size: 0.9rem;
       color: #0b3c91;
+    }
+  }
+}
+
+
+:host ::ng-deep {
+  .acl-datatable {
+    .datatable-header-cell,
+    .datatable-body-cell {
+      padding: 0.75rem !important;
+    }
+
+    .datatable-header-cell.acl-checkbox-col,
+    .datatable-body-cell.acl-checkbox-col {
+      .datatable-header-cell-template-wrap,
+      .datatable-header-cell-wrapper,
+      .datatable-header-cell-label,
+      .acl-header-title {
+        display: flex !important;
+        align-items: center !important;
+        width: 100% !important;
+      }
+
+      .datatable-body-cell-label {
+        display: flex !important;
+        align-items: center !important;
+        width: 100% !important;
+        height: 100% !important;
+      }
+    }
+
+    .datatable-header-cell.acl-text-col,
+    .datatable-body-cell.acl-text-col {
+      .datatable-body-cell-label {
+        display: flex !important;
+        align-items: center !important;
+        height: 100% !important;
+      }
+    }
+
+    .checkbox-wrapper-12 {
+      position: relative;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      width: 24px;
+      height: 24px;
+      margin: 0 !important;
+    }
+
+    .checkbox-wrapper-12 .cbx {
+      position: relative;
+      width: 24px;
+      height: 24px;
+      top: 0;
+      left: 0;
+      margin: 0 !important;
+    }
+  }
+}
+
+:host-context([dir="rtl"]) ::ng-deep .acl-datatable,
+:host-context(.rtl) ::ng-deep .acl-datatable,
+:host-context(html[dir="rtl"]) ::ng-deep .acl-datatable,
+:host-context(body.rtl) ::ng-deep .acl-datatable {
+  .datatable-header-cell.acl-checkbox-col,
+  .datatable-body-cell.acl-checkbox-col {
+    direction: rtl !important;
+    text-align: right !important;
+
+    .datatable-header-cell-template-wrap,
+    .datatable-header-cell-wrapper,
+    .datatable-header-cell-label,
+    .acl-header-title {
+      direction: rtl !important;
+      text-align: right !important;
+      justify-content: flex-start !important;
+    }
+
+    .datatable-body-cell-label {
+      direction: rtl !important;
+      text-align: right !important;
+      justify-content: flex-start !important;
+    }
+
+    .checkbox-wrapper-12 {
+      margin: 0 !important;
+    }
+  }
+}
+
+:host-context([dir="ltr"]) ::ng-deep .acl-datatable,
+:host-context(.ltr) ::ng-deep .acl-datatable,
+:host-context(html[dir="ltr"]) ::ng-deep .acl-datatable,
+:host-context(body.ltr) ::ng-deep .acl-datatable {
+  .datatable-header-cell.acl-checkbox-col,
+  .datatable-body-cell.acl-checkbox-col {
+    direction: ltr !important;
+    text-align: left !important;
+
+    .datatable-header-cell-template-wrap,
+    .datatable-header-cell-wrapper,
+    .datatable-header-cell-label,
+    .acl-header-title {
+      direction: ltr !important;
+      text-align: left !important;
+      justify-content: flex-start !important;
+    }
+
+    .datatable-body-cell-label {
+      direction: ltr !important;
+      text-align: left !important;
+      justify-content: flex-start !important;
+    }
+
+    .checkbox-wrapper-12 {
+      margin: 0 !important;
     }
   }
 }

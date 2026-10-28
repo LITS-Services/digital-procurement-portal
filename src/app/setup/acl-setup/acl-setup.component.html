@@ -43,19 +43,30 @@
 
 
             <!-- DATA TABLE -->
-            <div  class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
-            <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="aclList"
+            <div class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
+            <ngx-datatable #datatable class="bootstrap core-bootstrap acl-datatable" [rows]="aclList"
                 [columns]="[]" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="50"
-                [limit]="10"  [scrollbarH]="isMobile">
+                [limit]="10" [scrollbarH]="isMobile">
 
                 <!-- Loop dynamically generated columns: Form Name / Read / Write / Delete -->
-                <ngx-datatable-column *ngFor="let col of columns" [flexGrow]="1" sortable="false" [name]="(col.nameKey ? (col.nameKey | translate) : (col.name | translate))" [prop]="col.prop" [minWidth]="col.minWidth">
+                <ngx-datatable-column *ngFor="let col of columns"
+                    [flexGrow]="col.flexGrow || 1"
+                    [headerClass]="col.headerClass || ''"
+                    [cellClass]="col.cellClass || ''"
+                    sortable="false"
+                    [name]="(col.nameKey ? (col.nameKey | translate) : (col.name | translate))"
+                    [prop]="col.prop"
+                    [minWidth]="col.minWidth">
+
+                    <ng-template ngx-datatable-header-template let-column="column">
+                        <span class="acl-header-title">{{ (col.nameKey ? (col.nameKey | translate) : (col.name | translate)) }}</span>
+                    </ng-template>
 
                     <ng-template ngx-datatable-cell-template let-row="row">
 
                         <!-- TEXT COLUMN (Form Name) -->
                         <ng-container *ngIf="col.type === 'text'">
-                            {{ row[col.prop] }}
+                            <span class="acl-form-name">{{ row[col.prop] | translate }}</span>
                         </ng-container>
 
                         <!-- CHECKBOX COLUMN (Read / Write / Delete) -->
@@ -71,21 +82,7 @@
                                     </svg>
                                 </div>
 
-                                <!-- Gooey Filter -->
-                                <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
-                                    <defs>
-                                        <filter id="goo-12">
-                                            <fegaussianblur in="SourceGraphic" stdDeviation="4" result="blur">
-                                            </fegaussianblur>
-                                            <fecolormatrix in="blur" mode="matrix" values="1 0 0 0 0  
-                                                        0 1 0 0 0  
-                                                        0 0 1 0 0  
-                                                        0 0 0 22 -7" result="goo-12"></fecolormatrix>
-                                            <feblend in="SourceGraphic" in2="goo-12"></feblend>
-                                        </filter>
-                                    </defs>
-                                </svg>
-                            </div>
+                                </div>
                         </ng-container>
                     </ng-template>
                 </ngx-datatable-column>
@@ -93,4 +90,15 @@
             </div>
         </div>
     </div>
+
+            <!-- Single Gooey Filter Definition for Checkboxes -->
+            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="display: none; position: absolute; width: 0; height: 0;">
+                <defs>
+                    <filter id="goo-12">
+                        <fegaussianblur in="SourceGraphic" stdDeviation="4" result="blur"></fegaussianblur>
+                        <fecolormatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -7" result="goo-12"></fecolormatrix>
+                        <feblend in="SourceGraphic" in2="goo-12"></feblend>
+                    </filter>
+                </defs>
+            </svg>
 </section>
