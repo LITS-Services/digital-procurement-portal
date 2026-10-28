@@ -1,3 +1,4 @@
+import { ToastrService } from 'ngx-toastr';
 import { Injectable, inject, signal, computed, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
@@ -125,6 +126,15 @@ export class LanguageService {
       document.body.setAttribute('data-textdirection', dir);
       document.body.classList.toggle('rtl', dir === 'rtl');
       document.body.classList.toggle('ltr', dir === 'ltr');
+    }
+
+    try {
+      const toastr = this.injector.get(ToastrService, null, { optional: true });
+      if (toastr?.toastrConfig) {
+        toastr.toastrConfig.positionClass = dir === 'rtl' ? 'toast-top-left' : 'toast-top-right';
+      }
+    } catch {
+      /* ignore */
     }
   }
 }

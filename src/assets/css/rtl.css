@@ -1167,3 +1167,87 @@ html.rtl .user-profile-menu .dropdown-item,
 body.rtl .user-profile-menu .dropdown-item {
   text-align: right !important;
 }
+
+
+/* --------------------------------------------------------------------------
+   7. TOASTR NOTIFICATIONS (MIRRORED TO TOP LEFT IN RTL)
+   -------------------------------------------------------------------------- */
+html[dir="rtl"] #toast-container.toast-top-right,
+html.rtl #toast-container.toast-top-right,
+body[dir="rtl"] #toast-container.toast-top-right,
+body.rtl #toast-container.toast-top-right,
+[dir="rtl"] #toast-container.toast-top-right,
+html[dir="rtl"] .toast-container.toast-top-right,
+html.rtl .toast-container.toast-top-right,
+body[dir="rtl"] .toast-container.toast-top-right,
+body.rtl .toast-container.toast-top-right,
+[dir="rtl"] .toast-container.toast-top-right {
+  right: auto !important;
+  left: 12px !important;
+}
+
+html[dir="rtl"] #toast-container.toast-bottom-right,
+html.rtl #toast-container.toast-bottom-right,
+body[dir="rtl"] #toast-container.toast-bottom-right,
+body.rtl #toast-container.toast-bottom-right,
+[dir="rtl"] #toast-container.toast-bottom-right,
+html[dir="rtl"] .toast-container.toast-bottom-right,
+html.rtl .toast-container.toast-bottom-right,
+body[dir="rtl"] .toast-container.toast-bottom-right,
+body.rtl .toast-container.toast-bottom-right,
+[dir="rtl"] .toast-container.toast-bottom-right {
+  right: auto !important;
+  left: 12px !important;
+}
+
+/* Toast Card Content & Icon Mirroring */
+html[dir="rtl"] #toast-container .ngx-toastr,
+html.rtl #toast-container .ngx-toastr,
+body[dir="rtl"] #toast-container .ngx-toastr,
+body.rtl #toast-container .ngx-toastr,
+[dir="rtl"] #toast-container .ngx-toastr,
+html[dir="rtl"] .toast-container .ngx-toastr,
+html.rtl .toast-container .ngx-toastr,
+body[dir="rtl"] .toast-container .ngx-toastr,
+body.rtl .toast-container .ngx-toastr,
+[dir="rtl"] .toast-container .ngx-toastr {
+  direction: rtl !important;
+  text-align: right !important;
+  padding: 15px 50px 15px 15px !important;
+  background-position: calc(100% - 15px) center !important;
+}
+
+html[dir="rtl"] #toast-container .toast-title,
+html.rtl #toast-container .toast-title,
+body[dir="rtl"] #toast-container .toast-title,
+body.rtl #toast-container .toast-title,
+[dir="rtl"] #toast-container .toast-title {
+  text-align: right !important;
+}
+
+html[dir="rtl"] #toast-container .toast-message,
+html.rtl #toast-container .toast-message,
+body[dir="rtl"] #toast-container .toast-message,
+body.rtl #toast-container .toast-message,
+[dir="rtl"] #toast-container .toast-message {
+  text-align: right !important;
+}
+
+html[dir="rtl"] #toast-container .toast-close-button,
+html.rtl #toast-container .toast-close-button,
+body[dir="rtl"] #toast-container .toast-close-button,
+body.rtl #toast-container .toast-close-button,
+[dir="rtl"] #toast-container .toast-close-button {
+  float: left !important;
+  right: auto !important;
+  left: -0.3em !important;
+}
+
+html[dir="rtl"] #toast-container .toast-progress,
+html.rtl #toast-container .toast-progress,
+body[dir="rtl"] #toast-container .toast-progress,
+body.rtl #toast-container .toast-progress,
+[dir="rtl"] #toast-container .toast-progress {
+  left: auto !important;
+  right: 0 !important;
+}
