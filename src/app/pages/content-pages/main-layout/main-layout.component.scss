@@ -281,71 +281,141 @@
   position: absolute;
   top: 1.25rem;
   right: 1.5rem;
-  z-index: 10;
+  z-index: 100;
+
+  .auth-lang-dropdown-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 14px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    color: #1f2937;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #ffffff;
+      border-color: #60a5fa;
+      color: #116AEF;
+      box-shadow: 0 4px 14px rgba(17, 106, 239, 0.15);
+
+      .auth-lang-globe-icon {
+        color: #116AEF;
+      }
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #116AEF;
+      box-shadow: 0 0 0 3px rgba(17, 106, 239, 0.18);
+    }
+
+    &::after {
+      display: none !important;
+    }
+
+    .auth-lang-globe-icon {
+      font-size: 16px;
+      color: #116AEF;
+      transition: color 0.2s ease;
+    }
+
+    .auth-lang-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1f2937;
+      letter-spacing: 0.01em;
+    }
+
+    .auth-lang-chevron-icon {
+      font-size: 11px;
+      color: #94a3b8;
+      transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.2s ease;
+
+      &.rotate {
+        transform: rotate(180deg);
+        color: #116AEF;
+      }
+    }
+  }
+
+  .auth-lang-dropdown-menu {
+    min-width: 150px;
+    padding: 0.4rem;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: #ffffff;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    margin-top: 6px !important;
+
+    .auth-lang-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: #334155;
+      transition: all 0.15s ease;
+
+      .auth-lang-name {
+        color: #1e293b;
+      }
+
+      .auth-lang-check-icon {
+        font-size: 14px;
+        color: #116AEF;
+        font-weight: bold;
+      }
+
+      &:hover {
+        background: #f0f7ff !important;
+        color: #116AEF !important;
+
+        .auth-lang-name {
+          color: #116AEF !important;
+        }
+
+        .auth-lang-check-icon {
+          color: #116AEF !important;
+        }
+      }
+
+      &.active {
+        background: #edf5ff !important;
+        color: #116AEF !important;
+        font-weight: 600;
+
+        .auth-lang-name {
+          color: #116AEF !important;
+          font-weight: 600;
+        }
+
+        .auth-lang-check-icon {
+          color: #116AEF !important;
+          display: inline-block !important;
+        }
+      }
+    }
+  }
 }
 
 :host-context([dir="rtl"]) .auth-lang-switcher,
 :host-context(html.rtl) .auth-lang-switcher {
   right: auto;
   left: 1.5rem;
-}
-
-.auth-lang-pill {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  width: 7.75rem;
-  height: 2.125rem;
-  padding: 3px;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  direction: ltr;
-  box-sizing: border-box;
-}
-
-.auth-lang-glider {
-  position: absolute;
-  top: 3px;
-  bottom: 3px;
-  left: 3px;
-  width: calc(50% - 3px);
-  border-radius: 9999px;
-  background: linear-gradient(135deg, #116AEF 0%, #0170a0 100%);
-  box-shadow: 0 2px 6px rgba(17, 106, 239, 0.35);
-  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
-  pointer-events: none;
-  z-index: 1;
-
-  &.is-ar {
-    transform: translateX(100%);
-  }
-}
-
-.auth-lang-btn {
-  position: relative;
-  z-index: 2;
-  flex: 1 1 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  border: none;
-  background: transparent;
-  padding: 0 0.3rem;
-  border-radius: 9999px;
-  cursor: pointer;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #4b5563;
-  transition: color 180ms ease;
-
-  &.active {
-    color: #ffffff;
-    font-weight: 700;
-  }
 }
 
 :host-context([dir="rtl"]) #login::before,

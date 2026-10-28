@@ -1520,3 +1520,60 @@ app-content-layout #login {
   width: 100% !important;
   max-width: 100% !important;
 }
+
+/* ==========================================================================
+   DROPDOWN ITEM ACTIVE & FOCUS OVERRIDES
+   Prevent default bootstrap blue background on danger items and profile items
+   ========================================================================== */
+.dropdown-item.text-danger {
+  color: #ef4444 !important;
+}
+
+.dropdown-item.text-danger i {
+  color: inherit !important;
+}
+
+.dropdown-item.text-danger:hover,
+.dropdown-item.text-danger:focus {
+  background-color: #fef2f2 !important;
+  color: #dc2626 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.dropdown-item.text-danger:active,
+.dropdown-item.text-danger:focus:active {
+  background-color: #fee2e2 !important;
+  color: #b91c1c !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.user-profile-menu .dropdown-item:active {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+.user-profile-menu .dropdown-item.text-danger:active {
+  background-color: #fee2e2 !important;
+  color: #b91c1c !important;
+}
+
+/* Active state for language switcher items (both navbar and login/auth page) */
+.lang-dropdown-menu .lang-item.active,
+.auth-lang-dropdown-menu .auth-lang-item.active {
+  background-color: #edf5ff !important;
+  color: #116AEF !important;
+}
+
+.lang-dropdown-menu .lang-item.active .lang-name,
+.auth-lang-dropdown-menu .auth-lang-item.active .auth-lang-name {
+  color: #116AEF !important;
+  font-weight: 600 !important;
+}
+
+.lang-dropdown-menu .lang-item.active .lang-check-icon,
+.auth-lang-dropdown-menu .auth-lang-item.active .auth-lang-check-icon {
+  color: #116AEF !important;
+  display: inline-block !important;
+}

@@ -1,4 +1,5 @@
-<nav class="navbar navbar-expand-lg navbar-light header-navbar {{transparentBGClass}}"  [class.nav-scrolled]="isScrolled" [ngClass]="{'navbar-brand-center': menuPosition === 'Top', 'navbar-static': menuPosition === 'Side' &&
+<nav class="navbar navbar-expand-lg navbar-light header-navbar {{transparentBGClass}}" [class.nav-scrolled]="isScrolled"
+  [ngClass]="{'navbar-brand-center': menuPosition === 'Top', 'navbar-static': menuPosition === 'Side' &&
   config?.layout.navbar.type === 'Static' , 'navbar-sticky': menuPosition === 'Side' &&
   config?.layout.navbar.type === 'Fixed', 'fixed-top': isSmallScreen && menuPosition === 'Top'}">
   <div class="container-fluid navbar-wrapper">
@@ -12,30 +13,27 @@
           <a class="nav-link apptogglefullscreen" id="navbar-fullscreen" href="javascript:;" appToggleFullscreen
             (click)="ToggleClass()"><i class=" {{toggleClass}} font-medium-3"></i></a>
         </li> -->
-      <li   class="nav-item entity-switcher"
-  ngbDropdown
-  #entityDd="ngbDropdown"
-  [display]="'dynamic'"
-  [placement]="'bottom-start'"
-  (openChange)="entityOpen = $event">
-        <button class="entity-trigger" ngbDropdownToggle [title]="'NAV.SWITCH_ENTITY' | translate">
-          <!-- label first -->
-          <span class="entity-label text-truncate">{{ selectedCompany?.description || ('NAV.SELECT_ENTITY' | translate) }}</span>
-      
-          <!-- sync icon after text -->
-          <span class="sync-icon" [class.rotate]="entityOpen">
-            <i class="ft-refresh-cw"></i>
-          </span>
-        </button>
-      
-        <div class="dropdown-menu dropdown-menu-right entity-menu" ngbDropdownMenu>
-          <button class="dropdown-item entity-item" *ngFor="let c of companies" [class.active]="c.id === selectedCompanyId"
-            (click)="selectCompany(c, entityDd)">
-            <span class="text-truncate">{{ c.description }}</span>
-            <i *ngIf="c.id === selectedCompanyId" class="ft-check ms-2 text-primary"></i>
+        <li class="nav-item entity-switcher" ngbDropdown #entityDd="ngbDropdown" [display]="'dynamic'"
+          [placement]="'bottom-start'" (openChange)="entityOpen = $event">
+          <button class="entity-trigger" ngbDropdownToggle [title]="'NAV.SWITCH_ENTITY' | translate">
+            <!-- label first -->
+            <span class="entity-label text-truncate">{{ (selectedCompany?.id === 'All' ? ('NAV.ALL_ENTITIES' |
+              translate) : selectedCompany?.description) || ('NAV.SELECT_ENTITY' | translate) }}</span>
+
+            <!-- sync icon after text -->
+            <span class="sync-icon" [class.rotate]="entityOpen">
+              <i class="ft-refresh-cw"></i>
+            </span>
           </button>
-        </div>
-      </li>
+
+          <div class="dropdown-menu dropdown-menu-right entity-menu" ngbDropdownMenu>
+            <button class="dropdown-item entity-item" *ngFor="let c of companies"
+              [class.active]="c.id === selectedCompanyId" (click)="selectCompany(c, entityDd)">
+              <span class="text-truncate">{{ c.id === 'All' ? ('NAV.ALL_ENTITIES' | translate) : c.description }}</span>
+              <i *ngIf="c.id === selectedCompanyId" class="ft-check ms-2 text-primary"></i>
+            </button>
+          </div>
+        </li>
         <!-- <li>
           <select class="form-control custom-input" style="min-width: 220px; height: 40px; font-size: 14px;"
             [(ngModel)]="selectedCompanyId" (change)="onCompanyChange($event)">
@@ -60,72 +58,85 @@
       <div class="collapse navbar-collapse d-block" id="navbarSupportedContent">
         <ul class="navbar-nav">
 
-          <div class="search-bar-container"  #searchRoot>
+          <div class="search-bar-container" #searchRoot>
             <div class="search-input-wrapper">
               <i class="ft-search search-icon"></i>
               <input type="text" class="custom-input search-input" [formControl]="searchCtrl" (focus)="openPanel()"
                 (keydown)="onKeyDown($event)" [placeholder]="'NAV.SEARCH_PLACEHOLDER' | translate" />
             </div>
 
-          <div class="search-panel" *ngIf="panelOpen" (click)="$event.stopPropagation()">
-            <div class="search-panel__header">
-              <div class="search-panel__title">{{ 'NAV.SEARCH_TITLE' | translate }}</div>
-          
-              <div class="search-panel__shortcuts">
-                <span class="kbd">↑↓</span>
-                <span class="txt">{{ 'NAV.TO_NAVIGATE' | translate }}</span>
-                <span class="kbd">Enter</span>
-                <span class="txt">{{ 'NAV.TO_OPEN' | translate }}</span>
+            <div class="search-panel" *ngIf="panelOpen" (click)="$event.stopPropagation()">
+              <div class="search-panel__header">
+                <div class="search-panel__title">{{ 'NAV.SEARCH_TITLE' | translate }}</div>
+
+                <div class="search-panel__shortcuts">
+                  <span class="kbd">↑↓</span>
+                  <span class="txt">{{ 'NAV.TO_NAVIGATE' | translate }}</span>
+                  <span class="kbd">Enter</span>
+                  <span class="txt">{{ 'NAV.TO_OPEN' | translate }}</span>
+                </div>
               </div>
-            </div>
-          
-            <div class="panel-body">
-              <div *ngIf="loading" class="loading">{{ 'COMMON.LOADING' | translate }}</div>
-          
-              <ng-container *ngIf="!loading">
-                <div *ngIf="results?.length; else emptyState">
-                  <div class="result-item" *ngFor="let r of results; let i = index; trackBy: trackById"
-                    [class.active]="i === activeIndex" (mouseenter)="activeIndex = i" (click)="selectResult(r)">
-             
-                    <div class="result-main">
-                      <div class="result-badge">
-                        {{ getBadgeLabel(r?.message) }}
-                      </div>
-          
-                      <div class="result-text">
-                      <div class="title text-ellipsis" [innerHTML]="highlightText(r?.message, searchCtrl.value || '')">
-                      </div>
-                        <div class="subtitle text-ellipsis">
-                          {{ 'NAV.DETAILS_CLICK' | translate }}
+
+              <div class="panel-body">
+                <div *ngIf="loading" class="loading">{{ 'COMMON.LOADING' | translate }}</div>
+
+                <ng-container *ngIf="!loading">
+                  <div *ngIf="results?.length; else emptyState">
+                    <div class="result-item" *ngFor="let r of results; let i = index; trackBy: trackById"
+                      [class.active]="i === activeIndex" (mouseenter)="activeIndex = i" (click)="selectResult(r)">
+
+                      <div class="result-main">
+                        <div class="result-badge">
+                          {{ getBadgeLabel(r?.message) }}
+                        </div>
+
+                        <div class="result-text">
+                          <div class="title text-ellipsis"
+                            [innerHTML]="highlightText(r?.message, searchCtrl.value || '')">
+                          </div>
+                          <div class="subtitle text-ellipsis">
+                            {{ 'NAV.DETAILS_CLICK' | translate }}
+                          </div>
                         </div>
                       </div>
-                    </div>
-          
-                    <div class="result-arrow">
-                      <i class="ft-chevron-right"></i>
+
+                      <div class="result-arrow">
+                        <i class="ft-chevron-right"></i>
+                      </div>
                     </div>
                   </div>
-                </div>
-          
-                <ng-template #emptyState>
-                  <div class="empty">{{ 'COMMON.NO_RESULTS' | translate }}</div>
-                </ng-template>
-              </ng-container>
+
+                  <ng-template #emptyState>
+                    <div class="empty">{{ 'COMMON.NO_RESULTS' | translate }}</div>
+                  </ng-template>
+                </ng-container>
+              </div>
             </div>
-          </div>
-            
+
             <div class="icon-buttons">
               <!-- <button class="icon-btn">
                  <i class="ft-moon"></i>
                 </button> -->
-              <div class="lang-switch-wrapper">
-                <button type="button" class="icon-btn lang-toggle-btn"
-                  [disabled]="isSwitchingLanguage"
-                  (click)="switchLanguage(currentLang === 'en' ? 'ar' : 'en')"
-                  [title]="currentLang === 'en' ? 'Switch to العربية' : 'Switch to English'">
-                  <i class="ft-globe font-medium-1 me-1"></i>
-                  <span class="lang-code-text">{{ currentLang === 'en' ? 'العربية' : 'EN' }}</span>
+              <div class="lang-dropdown-wrapper" ngbDropdown [display]="'dynamic'" (openChange)="langOpen = $event">
+                <button type="button" class="icon-btn lang-dropdown-toggle" ngbDropdownToggle
+                  [disabled]="isSwitchingLanguage" [title]="'SETTINGS.LANGUAGE' | translate">
+                  <i class="ft-globe lang-globe-icon"></i>
+                  <span class="lang-code-text">{{ currentLang === 'ar' ? 'العربية' : 'English' }}</span>
+                  <i class="ft-chevron-down lang-chevron-icon" [class.rotate]="langOpen"></i>
                 </button>
+
+                <div class="dropdown-menu dropdown-menu-right lang-dropdown-menu" ngbDropdownMenu>
+                  <button type="button" class="dropdown-item lang-item" [class.active]="currentLang === 'en'"
+                    [disabled]="isSwitchingLanguage" (click)="switchLanguage('en')">
+                    <span class="lang-name">English</span>
+                    <i *ngIf="currentLang === 'en'" class="ft-check lang-check-icon"></i>
+                  </button>
+                  <button type="button" class="dropdown-item lang-item" [class.active]="currentLang === 'ar'"
+                    [disabled]="isSwitchingLanguage" (click)="switchLanguage('ar')">
+                    <span class="lang-name">العربية</span>
+                    <i *ngIf="currentLang === 'ar'" class="ft-check lang-check-icon"></i>
+                  </button>
+                </div>
               </div>
 
               <div class="notification-wrapper" #notifRoot>
@@ -134,7 +145,7 @@
                   <i class="ft-bell"></i>
                   <span class="dot" *ngIf="unreadCount > 0">{{unreadCount}}</span>
                 </button>
-                
+
                 <div class="notif-panel" *ngIf="notifOpen" [class.show]="notifOpen" (click)="$event.stopPropagation()">
                   <div class="panel-header">
                     <div class="panel-row">
@@ -167,36 +178,39 @@
                   </div>
 
                   <div class="panel-footer">
-                              <button class="btn btn-markasread" (click)="markAllAsRead()"><i class="ft ft-check ml-2"></i>{{ 'NAV.MARK_ALL_AS_READ' | translate }}</button>
-                              <button class="btn btn-clearall" (click)="clearAllNotification()"><i class="ft ft-trash-2 ml-2"></i>{{ 'NAV.CLEAR_ALL' | translate }}</button>
+                    <button class="btn btn-markasread" (click)="markAllAsRead()"><i class="ft ft-check ml-2"></i>{{
+                      'NAV.MARK_ALL_AS_READ' | translate }}</button>
+                    <button class="btn btn-clearall" (click)="clearAllNotification()"><i
+                        class="ft ft-trash-2 ml-2"></i>{{ 'NAV.CLEAR_ALL' | translate }}</button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <li class="dropdown nav-item me-1" placement="bottom-left" display="static" ngbDropdown [ngClass]="{ 'user-loading': isUserLoading }">
+          <li class="dropdown nav-item me-1" placement="bottom-left" display="static" ngbDropdown
+            [ngClass]="{ 'user-loading': isUserLoading }">
             <a class="nav-link dropdown-toggle user-dropdown d-flex align-items-end" id="dropdownBasic2"
               href="javascript:;" data-toggle="dropdown" ngbDropdownToggle>
               <div class="user d-md-flex d-none me-2">
-                <span class="text-end user-text">{{username}}</span><span
-                  class="text-end text-muted font-small-3">{{ 'NAV.AVAILABLE' | translate }}</span>
+                <span class="text-end user-text">{{username}}</span><span class="text-end text-muted font-small-3">{{
+                  'NAV.AVAILABLE' | translate }}</span>
               </div>
               <!-- <img class="avatar" [src]="profilePicture || 'assets/img/profile/user.png'" alt="avatar" height="35"
                 width="35" /> -->
-                
-                  <div class="profile-wrapper">
-                    <img class="profile-avatar" [src]="profilePicture || 'assets/img/profile/user.png'" alt="avatar">
-                  
-                    <div class="profile-pill">
-                      <i class="ft-chevron-down pill-icon"></i>
-                    </div>
-                  </div>
+
+              <div class="profile-wrapper">
+                <img class="profile-avatar" [src]="profilePicture || 'assets/img/profile/user.png'" alt="avatar">
+
+                <div class="profile-pill">
+                  <i class="ft-chevron-down pill-icon"></i>
+                </div>
+              </div>
             </a>
-            <div class="dropdown-menu text-left dropdown-menu-right m-0 pb-0" aria-labelledby="dropdownBasic2"
+            <div class="dropdown-menu dropdown-menu-right user-profile-menu m-0" aria-labelledby="dropdownBasic2"
               ngbDropdownMenu>
 
-              <a class="dropdown-item" routerLink="/pages/profile">
+              <a class="dropdown-item user-profile-item" routerLink="/pages/profile">
                 <div class="d-flex align-items-center">
                   <i class="ft-edit me-2"></i><span>{{ 'PROFILE.VIEW_PROFILE' | translate }}</span>
                 </div>
@@ -204,24 +218,7 @@
 
               <div class="dropdown-divider"></div>
 
-              <div class="profile-menu-lang-row px-3 py-2">
-                <div class="d-flex align-items-center text-muted font-small-3 mb-1">
-                  <i class="ft-globe me-2"></i>
-                  <span>{{ 'SETTINGS.LANGUAGE' | translate }}</span>
-                </div>
-                <div class="profile-lang-switch">
-                  <span class="profile-lang-glider" [class.is-ar]="currentLang === 'ar'"></span>
-                  <button type="button" class="profile-lang-option" [class.is-active]="currentLang === 'en'" [disabled]="isSwitchingLanguage" (click)="switchLanguage('en'); $event.stopPropagation()">
-                    <span class="profile-lang-label profile-lang-label-en">EN</span>
-                  </button>
-                  <button type="button" class="profile-lang-option" [class.is-active]="currentLang === 'ar'" [disabled]="isSwitchingLanguage" (click)="switchLanguage('ar'); $event.stopPropagation()">
-                    <span class="profile-lang-label profile-lang-label-ar">العربية</span>
-                  </button>
-                </div>
-              </div>
-
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item text-danger" (click)="logout()">
+              <a class="dropdown-item user-profile-item text-danger logout-item" (click)="logout()">
                 <div class="d-flex align-items-center">
                   <i class="ft-power me-2"></i>
                   <span>{{ 'AUTH.LOGOUT' | translate }}</span>

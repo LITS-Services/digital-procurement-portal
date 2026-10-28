@@ -1017,9 +1017,23 @@ html.rtl .ngx-datatable .datatable-body-cell {
   text-align: right !important;
 }
 
+html[dir="rtl"] .ngx-datatable .datatable-footer .page-count,
+html.rtl .ngx-datatable .datatable-footer .page-count {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: embed !important;
+}
+
 html[dir="rtl"] .ngx-datatable .datatable-footer .datatable-pager,
 html.rtl .ngx-datatable .datatable-footer .datatable-pager {
+  direction: ltr !important;
   text-align: left !important;
+}
+
+html[dir="rtl"] footer.footer p.copyright,
+html.rtl footer.footer p.copyright {
+  direction: rtl !important;
+  text-align: center !important;
 }
 
 /* --------------------------------------------------------------------------
@@ -1090,4 +1104,66 @@ html.rtl .ft-arrow-right {
 html[dir="rtl"] .ft-arrow-left,
 html.rtl .ft-arrow-left {
   transform: scaleX(-1);
+}
+
+/* Language Dropdown in Header (RTL Mode) */
+html[dir="rtl"] .lang-dropdown-wrapper .lang-dropdown-toggle,
+html.rtl .lang-dropdown-wrapper .lang-dropdown-toggle,
+body.rtl .lang-dropdown-wrapper .lang-dropdown-toggle {
+  direction: rtl;
+  text-align: right;
+}
+
+html[dir="rtl"] .lang-dropdown-menu,
+html.rtl .lang-dropdown-menu,
+body.rtl .lang-dropdown-menu {
+  direction: rtl !important;
+  text-align: right !important;
+  left: 0 !important;
+  right: auto !important;
+}
+
+html[dir="rtl"] .lang-dropdown-menu .lang-item,
+html.rtl .lang-dropdown-menu .lang-item,
+body.rtl .lang-dropdown-menu .lang-item {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+/* Auth / Login Language Dropdown in RTL Mode */
+html[dir="rtl"] .auth-lang-switcher,
+html.rtl .auth-lang-switcher,
+body.rtl .auth-lang-switcher {
+  right: auto !important;
+  left: 1.5rem !important;
+}
+
+html[dir="rtl"] .auth-lang-dropdown-menu,
+html.rtl .auth-lang-dropdown-menu,
+body.rtl .auth-lang-dropdown-menu {
+  direction: rtl !important;
+  text-align: right !important;
+  left: 0 !important;
+  right: auto !important;
+}
+
+html[dir="rtl"] .auth-lang-dropdown-menu .auth-lang-item,
+html.rtl .auth-lang-dropdown-menu .auth-lang-item,
+body.rtl .auth-lang-dropdown-menu .auth-lang-item {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+
+/* User Profile Menu RTL adjustments */
+html[dir="rtl"] .user-profile-menu,
+html.rtl .user-profile-menu,
+body.rtl .user-profile-menu {
+  text-align: right !important;
+}
+
+html[dir="rtl"] .user-profile-menu .dropdown-item,
+html.rtl .user-profile-menu .dropdown-item,
+body.rtl .user-profile-menu .dropdown-item {
+  text-align: right !important;
 }

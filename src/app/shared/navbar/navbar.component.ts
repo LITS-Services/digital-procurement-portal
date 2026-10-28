@@ -79,6 +79,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   selectedCompany?: { id: string | number; description: string };
   entityOpen = false;
+  langOpen = false;
   private destroy$ = new Subject<void>();
 
   isScrolled = false;

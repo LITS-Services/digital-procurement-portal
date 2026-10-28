@@ -1,12 +1,11 @@
 <!--Footer Starts-->
 <footer class="footer">
   <p class="copyright clearfix m-0">
-    Copyright &copy; {{currentDate | date: 'yyyy'}} 
-     RFQ Management.
-     Powered by
+    {{ 'FOOTER.COPYRIGHT' | translate }} &copy; {{currentDate | date: 'yyyy'}} 
+    {{ 'FOOTER.PORTAL_NAME' | translate }}.
+    {{ 'FOOTER.POWERED_BY' | translate }}
     <a id="pixinventLink"
-      href="https://www.lits.services/" target="_blank" style="color: #1E89B8;">LITS Services</a>
-    <span class="d-none d-sm-inline-block">. All rights reserved.</span>
+      href="https://www.lits.services/" target="_blank" style="color: #1E89B8;">LITS Services</a>.
+    <span class="d-none d-sm-inline-block">{{ 'FOOTER.ALL_RIGHTS_RESERVED' | translate }}</span>
   </p>
 </footer>
-

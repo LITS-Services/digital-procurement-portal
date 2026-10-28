@@ -474,7 +474,8 @@
     "DETAILS_CLICK": "انقر لفتح التفاصيل",
     "PURCHASE_REQUEST": "طلب الشراء",
     "TO_NAVIGATE": "للتنقل",
-    "TO_OPEN": "لفتح"
+    "TO_OPEN": "لفتح",
+    "ALL_ENTITIES": "جميع الكيانات"
   },
   "LANGUAGE": {
     "ENGLISH": "English",
@@ -1094,5 +1095,16 @@
     "SMALL": "صغير",
     "MEDIUM": "متوسط",
     "LARGE": "كبير"
+  },
+  "FOOTER": {
+    "COPYRIGHT": "حقوق النشر",
+    "PORTAL_NAME": "إدارة طلبات عروض الأسعار",
+    "POWERED_BY": "مشغل بواسطة",
+    "ALL_RIGHTS_RESERVED": "جميع الحقوق محفوظة."
+  },
+  "DATATABLE": {
+    "EMPTY_MESSAGE": "لا توجد بيانات للعرض",
+    "TOTAL_MESSAGE": "إجمالي",
+    "SELECTED_MESSAGE": "محدد"
   }
 }

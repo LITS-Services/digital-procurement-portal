@@ -1,13 +1,23 @@
 <!--Login Page Starts-->
 <section id="login">
-    <div class="auth-lang-switcher">
-        <div class="auth-lang-pill" role="group" aria-label="Language selection">
-            <span class="auth-lang-glider" [class.is-ar]="currentLang === 'ar'"></span>
-            <button type="button" class="auth-lang-btn" [class.active]="currentLang === 'en'" (click)="switchLanguage('en')">
-                <span>EN</span>
+    <div class="auth-lang-switcher" ngbDropdown [display]="'dynamic'" (openChange)="langOpen = $event">
+        <button type="button" class="auth-lang-dropdown-toggle" ngbDropdownToggle
+            [title]="'SETTINGS.LANGUAGE' | translate">
+            <i class="ft-globe auth-lang-globe-icon"></i>
+            <span class="auth-lang-text">{{ currentLang === 'ar' ? 'العربية' : 'English' }}</span>
+            <i class="ft-chevron-down auth-lang-chevron-icon" [class.rotate]="langOpen"></i>
+        </button>
+
+        <div class="dropdown-menu dropdown-menu-right auth-lang-dropdown-menu" ngbDropdownMenu>
+            <button type="button" class="dropdown-item auth-lang-item" [class.active]="currentLang === 'en'"
+                (click)="switchLanguage('en')">
+                <span class="auth-lang-name">English</span>
+                <i *ngIf="currentLang === 'en'" class="ft-check auth-lang-check-icon"></i>
             </button>
-            <button type="button" class="auth-lang-btn" [class.active]="currentLang === 'ar'" (click)="switchLanguage('ar')">
-                <span>العربية</span>
+            <button type="button" class="dropdown-item auth-lang-item" [class.active]="currentLang === 'ar'"
+                (click)="switchLanguage('ar')">
+                <span class="auth-lang-name">العربية</span>
+                <i *ngIf="currentLang === 'ar'" class="ft-check auth-lang-check-icon"></i>
             </button>
         </div>
     </div>

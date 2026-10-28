@@ -14,9 +14,6 @@
       }
       .dropdown-item {
           width: 100%;
-          &:active {
-              background-color: $primary !important;
-          }
       }
       // Multi-level dropdown
       .dropdown-submenu {

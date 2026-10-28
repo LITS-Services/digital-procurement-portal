@@ -9,6 +9,7 @@ import { AppLanguage } from '../../../core/language/language.types';
   standalone: false
 })
 export class MainLayoutComponent implements OnInit {
+  langOpen = false;
 
   constructor(public languageService: LanguageService) { }
 

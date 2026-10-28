@@ -473,7 +473,8 @@
     "DETAILS_CLICK": "Click to open details",
     "PURCHASE_REQUEST": "Purchase Request",
     "TO_NAVIGATE": "to navigate",
-    "TO_OPEN": "to open"
+    "TO_OPEN": "to open",
+    "ALL_ENTITIES": "All Entities"
   },
   "LANGUAGE": {
     "ENGLISH": "English",
@@ -1093,5 +1094,16 @@
     "SMALL": "Small",
     "MEDIUM": "Medium",
     "LARGE": "Large"
+  },
+  "FOOTER": {
+    "COPYRIGHT": "Copyright",
+    "PORTAL_NAME": "RFQ Management",
+    "POWERED_BY": "Powered by",
+    "ALL_RIGHTS_RESERVED": "All rights reserved."
+  },
+  "DATATABLE": {
+    "EMPTY_MESSAGE": "No data to display",
+    "TOTAL_MESSAGE": "total",
+    "SELECTED_MESSAGE": "selected"
   }
 }
