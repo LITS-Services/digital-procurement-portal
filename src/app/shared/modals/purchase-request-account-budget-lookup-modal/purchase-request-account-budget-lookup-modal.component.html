@@ -1,6 +1,6 @@
 <div class="modal-header d-flex align-items-center justify-content-between">
   <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
-    <i class="ft-dollar-sign mr-2 text-white"></i> Account Budget Lookup
+    <i class="ft-dollar-sign mr-2 text-white"></i> {{ 'COMMON.ACCOUNT_BUDGET_LOOKUP' | translate }}
   </h5>
   <button type="button" class="modal-close-btn" aria-label="Close" (click)="closeDialog()">
     <i class="ft-x"></i>
@@ -10,27 +10,27 @@
     <ngx-datatable class="bootstrap core-bootstrap" [rows]="accountBudgetLookup" [columnMode]="'standard'"
     [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="15" [scrollbarH]="true">
 
-     <ngx-datatable-column name="Sr. No." [width]="100">
+     <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="100">
                     <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
                         <span>{{rowIndex + 1}}</span>
                     </ng-template>
                 </ngx-datatable-column>
-    <ngx-datatable-column name="Account Code" prop="accountCode" [width]="150">
+    <ngx-datatable-column [name]="'COMMON.ACCOUNT_CODE' | translate" prop="accountCode" [width]="150">
     </ngx-datatable-column>
-    <ngx-datatable-column name="Account Description" prop="accountDescription" [width]="250">
+    <ngx-datatable-column [name]="'COMMON.ACCOUNT_DESCRIPTION' | translate" prop="accountDescription" [width]="250">
     </ngx-datatable-column>
-    <ngx-datatable-column name="Budget Amount" [width]="150" prop="budgetAmount">
+    <ngx-datatable-column [name]="'COMMON.BUDGET_AMOUNT' | translate" [width]="150" prop="budgetAmount">
     </ngx-datatable-column>
-    <ngx-datatable-column name="Actual Amount" [width]="150" prop="actualAmount">
+    <ngx-datatable-column [name]="'COMMON.ACTUAL_AMOUNT' | translate" [width]="150" prop="actualAmount">
     </ngx-datatable-column>
-    <ngx-datatable-column name="Committed Amount" [width]="150" prop="committedAmount">
+    <ngx-datatable-column [name]="'COMMON.COMMITTED_AMOUNT' | translate" [width]="150" prop="committedAmount">
     </ngx-datatable-column>
-    <ngx-datatable-column name="Balance" [width]="150" prop="Balance">
+    <ngx-datatable-column [name]="'COMMON.BALANCE' | translate" [width]="150" prop="Balance">
     </ngx-datatable-column>
   </ngx-datatable>
 </div>
 <div class="modal-footer">
   <button type="button" class="modal-btn-cancel" (click)="closeDialog()">
-    <i class="ft-x mr-1"></i> Close
+    <i class="ft-x mr-1"></i> {{ 'COMMON.CLOSE' | translate }}
   </button>
 </div>

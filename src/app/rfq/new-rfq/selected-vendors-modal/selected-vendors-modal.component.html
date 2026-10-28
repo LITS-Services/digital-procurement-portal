@@ -27,7 +27,7 @@
             <div class="text">{{ msg.comments }}</div>
             <!-- Show Seen if other party has seen -->
     <div *ngIf="msg.seenByType && msg.createdByType !== msg.seenByType" class="seen-badge text-muted small mt-1">
-      Seen
+      {{ 'RFQ_MODULE.SEEN' | translate }}
     </div>
           </div>
         </div>
@@ -37,7 +37,7 @@
     <!-- Template for no comments -->
     <ng-template #noComments>
       <div class="no-comments">
-        <p class="text-muted text-center">No comments from vendors or procurement at the moment. </p>
+        <p class="text-muted text-center">{{ 'RFQ_MODULE.NO_COMMENTS_YET' | translate }}</p>
       </div>
     </ng-template>
   </div>
@@ -54,7 +54,7 @@
 
 <form [formGroup]="form" (ngSubmit)="insert()" class="mt-2 gap-2 d-flex align-items-center">
   <div class="col-md-10">
-    <textarea id="vendorComment" class="form-control" rows="1" placeholder="Write a comment for this vendor..."
+    <textarea id="vendorComment" class="form-control" rows="1" [placeholder]="'RFQ_MODULE.WRITE_COMMENT_PLACEHOLDER' | translate"
       formControlName="comment" [readonly]="viewMode" (keydown)="onTyping()" (keydown.enter)="onEnterPress($event)"></textarea>
     <!-- <div class="text-danger mt-1" *ngIf="form.controls.comment.touched && form.controls.comment.invalid">
       Comment is required.
@@ -64,7 +64,7 @@
   <div>
     <button type="submit" class="btn btn-primary" [disabled]="form.invalid || viewMode">
       <i class="fa fa-paper-plane mr-1"></i>
-      Send
+      {{ 'COMMON.SEND' | translate }}
     </button>
   </div>
 </form>

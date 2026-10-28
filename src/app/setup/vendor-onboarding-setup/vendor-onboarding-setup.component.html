@@ -5,7 +5,7 @@
       <!-- Header -->
       <div class="row">
         <div class="col-md-12" style="margin-top: -0.25rem;">
-          <h4 class="heading">Company Onboarding Setup</h4>
+          <h4 class="heading">{{ 'SETUP_MODULE.VENDOR_ONBOARDING_SETUP' | translate }}</h4>
         </div>
       </div>
 
@@ -17,20 +17,20 @@
               <i class="ft-arrow-left"></i>
             </button>
             <span class="vl"></span>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new workflow" appPermission
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" [ngbTooltip]="'SETUP_MODULE.CREATE_WORKFLOW_TOOLTIP' | translate" appPermission
               [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING" [appPermDisable]="'write'" (click)="NewVendorOnboarding()">
-              <i class="ft-plus"></i><label class="ml-1">Create</label>
+              <i class="ft-plus"></i><label class="ml-1">{{ 'COMMON.CREATE' | translate }}</label>
             </button>
             <button type="button" class="btn btn-sm cstm-ui-table-btn" appPermission
               [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING" [appPermDisable]="'write'" (click)="onUpdate()">
-              <i class="ft-edit"></i><label class="ml-1">Edit</label>
+              <i class="ft-edit"></i><label class="ml-1">{{ 'COMMON.EDIT' | translate }}</label>
             </button>
             <button type="button" class="btn btn-sm cstm-ui-table-btn" appPermission
               [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING" [appPermDisable]="'delete'" (click)="openDeleteModal()">
-              <i class="ft-trash"></i><label class="ml-1">Delete</label>
+              <i class="ft-trash"></i><label class="ml-1">{{ 'COMMON.DELETE' | translate }}</label>
             </button>
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="refreshData()">
-              <i class="ft-refresh-cw"></i><label class="ml-1">Refresh</label>
+              <i class="ft-refresh-cw"></i><label class="ml-1">{{ 'COMMON.REFRESH' | translate }}</label>
             </button>
           </div>
         </div>
@@ -60,70 +60,36 @@
           </ngx-datatable-column>
 
           <!-- Sr. No -->
-          <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+          <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="50" [resizeable]="false">
             <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
               <span>{{ rowIndex + 1 }}</span>
             </ng-template>
           </ngx-datatable-column>
 
           <!-- Setup Name -->
-          <ngx-datatable-column name="Setup Name" prop="setupName" [flexGrow]="1" [minWidth]="100">
+          <ngx-datatable-column [name]="'SETUP_MODULE.SETUP_NAME' | translate" prop="setupName" [flexGrow]="1" [minWidth]="100">
             <ng-template ngx-datatable-cell-template let-value="value">
               <span>{{ value || 'N/A' }}</span>
             </ng-template>
           </ngx-datatable-column>
 
-
-          <!-- Entity Name -->
-          <!-- <ngx-datatable-column name="Entity">
-          <ng-template let-row="row" ngx-datatable-cell-template>
-            {{ getEntityName(row.entityId) }}
-          </ng-template>
-        </ngx-datatable-column> -->
-
-          <!-- Entity -->
-          <!-- <ngx-datatable-column name="Entity" prop="entityId">
-          <ng-template ngx-datatable-cell-template let-value="value">
-            <span>{{ value || 'N/A' }}</span>
-          </ng-template>
-        </ngx-datatable-column> -->
-
-          <!-- Role -->
-          <!-- <ngx-datatable-column name="Role" prop="roles">
-          <ng-template ngx-datatable-cell-template let-value="value">
-            <span>{{ value || 'N/A' }}</span>
-          </ng-template>
-        </ngx-datatable-column> -->
-
-          <!-- Initiator -->
-          <!-- <ngx-datatable-column name="Initiator" prop="initiators">
-          <ng-template ngx-datatable-cell-template let-value="value">
-            <span>{{ value || 'N/A' }}</span>
-          </ng-template>
-        </ngx-datatable-column> -->
-
           <!-- Description -->
-          <ngx-datatable-column name="Description" prop="description" [flexGrow]="2" [minWidth]="350">
+          <ngx-datatable-column [name]="'COMMON.DESCRIPTION' | translate" prop="description" [flexGrow]="2" [minWidth]="350">
             <ng-template ngx-datatable-cell-template let-value="value">
               <span [ngbTooltip]="value">{{ value }}</span>
             </ng-template>
           </ngx-datatable-column>
 
           <!-- Status -->
-          <ngx-datatable-column name="Status" prop="status" [flexGrow]="1" [minWidth]="120">
-            <!-- <ng-template ngx-datatable-cell-template let-row="row">
-              <span [class]="row.status ? 'badge badge-success' : 'badge badge-danger'">
-                {{ row.status ? 'Active' : 'Inactive' }}
-              </span>
-            </ng-template> -->
+          <ngx-datatable-column [name]="'COMMON.STATUS' | translate" prop="status" [flexGrow]="1" [minWidth]="120">
             <ng-template ngx-datatable-cell-template let-row="row">
               <span [ngClass]="row.statusClass">
-                {{ row.status ? 'Active' : 'In Active' }}
+                {{ row.status | statusTranslate }}
               </span>
             </ng-template>
           </ngx-datatable-column>
 
-          <ngx-datatable-column name="Receivers" prop="Receivers" [flexGrow]="1" [minWidth]="100" [maxWidth]="150">
+          <ngx-datatable-column [name]="'SETUP_MODULE.RECEIVERS' | translate" prop="Receivers" [flexGrow]="1" [minWidth]="100" [maxWidth]="150">
             <ng-template let-row="row" ngx-datatable-cell-template>
               <button class="btn btn-primary btn-sm position-relative" (click)="openReceiversModal(row)">
                 <i class="ft-users"></i>
@@ -143,14 +109,14 @@
 <ng-template #deleteModal let-c="close" let-d="dismiss">
   <div class="modal-header d-flex align-items-center justify-content-between">
     <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
-      <i class="ft-trash-2 mr-2 text-white"></i> Delete Confirmation
+      <i class="ft-trash-2 mr-2 text-white"></i> {{ 'COMMON.DELETE_CONFIRMATION' | translate }}
     </h5>
     <button type="button" class="modal-close-btn" aria-label="Close" (click)="d('Cross click')">
       <i class="ft-x"></i>
     </button>
   </div>
   <div class="modal-body">
-    <p>Are you sure you want to delete the following vendor onboarding setup(s)?</p>
+    <p>{{ 'SETUP_MODULE.DELETE_VENDOR_ONBOARDING_CONFIRM' | translate }}</p>
     <ul class="list-group">
       <li class="list-group-item" *ngFor="let name of getSelectedSetupNames()">
         {{ name }}
@@ -159,10 +125,10 @@
   </div>
   <div class="modal-footer">
     <button type="button" class="modal-btn-cancel" (click)="c('Cancel click')">
-      <i class="ft-x mr-1"></i> Cancel
+      <i class="ft-x mr-1"></i> {{ 'COMMON.CANCEL' | translate }}
     </button>
     <button type="button" class="btn btn-danger d-inline-flex align-items-center" style="height: 38px; border-radius: 8px; padding: 0 1.25rem; font-size: 13.5px; font-weight: 600;" (click)="deleteSelectedSetups()">
-      <i class="ft-trash-2 mr-1"></i> Delete
+      <i class="ft-trash-2 mr-1"></i> {{ 'COMMON.DELETE' | translate }}
     </button>
   </div>
 </ng-template>

@@ -15,6 +15,7 @@ import { AuthService } from 'app/shared/auth/auth.service';
 import { PermissionService } from "../permissions/permission.service";
 import { filterNavByPerm } from "../permissions/nav-perm";
 import { MatMenuTrigger } from "@angular/material/menu";
+import { LanguageService } from "app/core/language/language.service";
 
 @Component({
   selector: "app-sidebar",
@@ -35,6 +36,7 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
   layoutSub: Subscription;
   configSub: Subscription;
   permSub: Subscription;
+  langSub: Subscription;
   perfectScrollbarEnable = true;
   collapseSidebar = false;
   resizeTimeout;
@@ -48,7 +50,8 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     private deviceService: DeviceDetectorService,
     private authService: AuthService,
     private permissionService: PermissionService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    public languageService: LanguageService
   ) {
     this.config = this.configService.templateConf;
     this.innerWidth = window.innerWidth;
@@ -68,6 +71,16 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Initial load
     this.loadMenuItems();
+
+    if (this.languageService?.languageChanges$) {
+      this.langSub = this.languageService.languageChanges$.subscribe(() => {
+        this.loadMenuItems();
+        this.cdr.markForCheck();
+        if (!(this.cdr as any).destroyed) {
+          this.cdr.detectChanges();
+        }
+      });
+    }
   }
 
 
@@ -109,6 +122,23 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
         tooltip.parentNode.removeChild(tooltip);
       }
     });
+  }
+
+  
+  get isRtl(): boolean {
+    return (
+      this.languageService?.current() === 'ar' ||
+      (typeof document !== 'undefined' &&
+        (document.documentElement.dir === 'rtl' ||
+          document.body?.classList.contains('rtl') ||
+          document.documentElement.getAttribute('data-lang') === 'ar'))
+    );
+  }
+
+  get tooltipPlacement(): string | string[] {
+    return this.isRtl
+      ? ['left', 'left-top', 'left-bottom']
+      : ['right', 'right-top', 'right-bottom'];
   }
 
   get landingPath(): string[] {
@@ -195,6 +225,7 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.layoutSub) this.layoutSub.unsubscribe();
     if (this.configSub) this.configSub.unsubscribe();
     if (this.permSub) this.permSub.unsubscribe();
+    if (this.langSub) this.langSub.unsubscribe();
   }
 
   // ===== Role-based Menu Filtering =====

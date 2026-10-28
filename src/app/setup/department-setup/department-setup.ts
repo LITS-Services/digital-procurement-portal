@@ -7,11 +7,12 @@ import { RouterModule } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { DepartmentService } from '../../shared/services/department.service';
 import { DatatableAutoResizeDirective } from '../../shared/directives/dataTable-auto-resize.directive';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-department-setup',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgxDatatableModule, NgbModule, RouterModule, DatatableAutoResizeDirective],
+  imports: [CommonModule, ReactiveFormsModule, NgxDatatableModule, NgbModule, RouterModule, DatatableAutoResizeDirective, TranslateModule],
   templateUrl: './department-setup.html',
   styleUrls: ['./department-setup.scss']
 })

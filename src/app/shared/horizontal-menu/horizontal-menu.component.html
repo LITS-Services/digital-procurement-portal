@@ -58,13 +58,13 @@
                   [routerLink]="[menuSubsubItem.path]"
                   *ngIf="!menuSubsubItem.isExternalLink; else externalSubSubLinkBlock">
                   <i [ngClass]="[menuSubsubItem.icon]"></i>
-                  <span class="">{{menuSubsubItem.title}}</span>
+                  <span class="">{{ menuSubsubItem.title | translate }}</span>
                 </a>
                 <ng-template #externalSubSubLinkBlock>
                   <a data-toggle="dropdown" [ngClass]="'dropdown-item d-flex align-items-center'"
                     [href]="[menuSubsubItem.path]" target="_blank">
                     <i [ngClass]="[menuSubsubItem.icon]"></i>
-                    <span class="">{{menuSubsubItem.title}}</span>
+                    <span class="">{{ menuSubsubItem.title | translate }}</span>
                   </a>
                 </ng-template>
               </li>

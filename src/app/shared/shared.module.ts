@@ -52,6 +52,7 @@ import { PermissionDirective } from './permissions/permission.directive';
         TopMenuDirective,
         NgbModule,
         TranslateModule,
+        PipeModule,
         HasPermissionDirective,
         PermissionDirective,
     ],

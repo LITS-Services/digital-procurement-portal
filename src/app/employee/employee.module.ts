@@ -17,6 +17,7 @@ import { TagInputModule } from 'ngx-chips';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { TranslateModule } from '@ngx-translate/core';
 
 
 @NgModule({
@@ -44,6 +45,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
         NgbDatepickerModule,
         ToastrModule.forRoot(),
         NgxSpinnerModule,
+        TranslateModule
   ],
   schemas: [NO_ERRORS_SCHEMA]
 })

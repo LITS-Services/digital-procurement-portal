@@ -53,18 +53,18 @@
         <a class="collapsed-has-sub"
           *ngIf="menuItem.submenu.length > 0 && !menuItem.isExternalLink && config.layout.sidebar.collapsed"
           [matMenuTriggerFor]="collapsedMenu" (click)="$event.preventDefault(); $event.stopPropagation();"
-          [ngbTooltip]="menuItem.title | translate" triggers="mouseenter:mouseleave" container="body" placement="right"
+          [ngbTooltip]="menuItem.title | translate" triggers="mouseenter:mouseleave" container="body" [placement]="tooltipPlacement"
           tooltipClass="sidebar-collapsed-tooltip">
           <i [ngClass]="[menuItem.icon]"></i>
           <span class="submenu-dot"></span>
         </a>
 
         <!-- COLLAPSED SIDEBAR: menu -->
-        <mat-menu #collapsedMenu="matMenu" xPosition="after" yPosition="below" overlapTrigger="true"
+        <mat-menu #collapsedMenu="matMenu" [xPosition]="isRtl ? 'before' : 'after'" yPosition="below" overlapTrigger="true"
           class="sidebar-collapsed-menu">
           <button mat-menu-item *ngFor="let menuSubItem of menuItem.submenu" [routerLink]="menuSubItem.path">
             <i [ngClass]="[menuSubItem.icon]"></i>
-            <span class="ml-2">{{ menuSubItem.title | translate }}</span>
+            <span [class.ml-2]="!isRtl" [class.mr-2]="isRtl">{{ menuSubItem.title | translate }}</span>
           </button>
         </mat-menu>
 
@@ -74,7 +74,7 @@
         <a appSidebarAnchorToggle routerLink="{{ menuItem.path }}"
           *ngIf="menuItem.submenu.length === 0 && !menuItem.isExternalLink"
           [ngbTooltip]="config?.layout?.sidebar?.collapsed ? (menuItem.title | translate) : null"
-          triggers="mouseenter:mouseleave" container="body" placement="right" tooltipClass="sidebar-collapsed-tooltip">
+          triggers="mouseenter:mouseleave" container="body" [placement]="tooltipPlacement" tooltipClass="sidebar-collapsed-tooltip">
           <i [ngClass]="[menuItem.icon]"></i>
 
           <span class="menu-title" *ngIf="!config.layout.sidebar.collapsed">
@@ -90,7 +90,9 @@
         <!-- ======================= -->
         <!-- CASE 3: EXTERNAL LINK   -->
         <!-- ======================= -->
-        <a [href]="[menuItem.path]" target="_blank" *ngIf="menuItem.isExternalLink">
+        <a [href]="[menuItem.path]" target="_blank" *ngIf="menuItem.isExternalLink"
+          [ngbTooltip]="config?.layout?.sidebar?.collapsed ? (menuItem.title | translate) : null"
+          triggers="mouseenter:mouseleave" container="body" [placement]="tooltipPlacement" tooltipClass="sidebar-collapsed-tooltip">
           <i [ngClass]="[menuItem.icon]"></i>
           <span class="menu-title" *ngIf="!config.layout.sidebar.collapsed">
             {{ menuItem.title | translate }}

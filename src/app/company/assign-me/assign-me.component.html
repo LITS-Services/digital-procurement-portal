@@ -1,6 +1,6 @@
 <div class="modal-header d-flex align-items-center justify-content-between">
     <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
-        <i class="ft-user-check mr-2 text-white"></i> Assign to Me - {{ companyName }}
+        <i class="ft-user-check mr-2 text-white"></i> {{ 'COMPANY_MODULE.ASSIGN_TO_ME_TITLE' | translate }} - {{ companyName }}
     </h5>
     <button type="button" class="modal-close-btn" aria-label="Close" (click)="closeDialog()">
         <i class="ft-x"></i>
@@ -11,27 +11,23 @@
 
     <!-- Already Assigned to ME Message -->
     <div *ngIf="isAssigned && isAssignedToMe" class="alert alert-info border-info">
-        <strong>Already Assigned!</strong><br>
-        This company is already assigned to you.
-        <br><br>
-        <!-- <div class="mt-2">
-            <button class="btn btn-primary" (click)="closeDialog()">OK</button>
-        </div> -->
+        <strong>{{ 'COMMON.ALREADY_ASSIGNED' | translate }}</strong><br>
+        {{ 'COMPANY_MODULE.ALREADY_ASSIGNED_YOU' | translate }}
     </div>
 
     <!-- Already Assigned to SOMEONE ELSE Message -->
     <div *ngIf="isAssigned && !isAssignedToMe && !showRemarks" class="alert border-warning">
-        <strong>Already Assigned!</strong><br>
-        This company is already assigned to:
+        <strong>{{ 'COMMON.ALREADY_ASSIGNED' | translate }}</strong><br>
+        {{ 'COMPANY_MODULE.ALREADY_ASSIGNED_TO' | translate }}
         <b>{{ assignedUserName }}</b>
         <br>
-        <span *ngIf="assignedUserRemarks">Remarks: {{ assignedUserRemarks }}</span>
+        <span *ngIf="assignedUserRemarks">{{ 'COMMON.REMARKS' | translate }}: {{ assignedUserRemarks }}</span>
         <br><br>
-        Do you still want to assign it to yourself?
+        {{ 'COMPANY_MODULE.DO_YOU_STILL_WANT' | translate }}
 
         <div class="mt-2">
-            <button class="btn btn-sm btn-danger mr-2" (click)="yesProceed()">Yes</button>
-            <button class="btn btn-sm btn-secondary" (click)="closeDialog()">No</button>
+            <button class="btn btn-sm btn-danger mr-2" (click)="yesProceed()">{{ 'COMMON.YES' | translate }}</button>
+            <button class="btn btn-sm btn-secondary" (click)="closeDialog()">{{ 'COMMON.NO' | translate }}</button>
         </div>
     </div>
 
@@ -40,14 +36,14 @@
         <!-- Remarks Section -->
         <div *ngIf="showRemarks">
             <div class="col-lg-12 mb-2">
-                <label>Remarks <span class="text-danger">*</span></label>
-                <textarea class="form-control custom-input" formControlName="remarks" placeholder="Enter remarks..."
+                <label>{{ 'COMMON.REMARKS' | translate }} <span class="text-danger">*</span></label>
+                <textarea class="form-control custom-input" formControlName="remarks" [placeholder]="'COMMON.ENTER_REMARKS' | translate"
                     rows="4" required>
                 </textarea>
 
                 <div *ngIf="assignMeForm.get('remarks')?.invalid && assignMeForm.get('remarks')?.touched"
                     class="text-danger small mt-1">
-                    Remarks are required
+                    {{ 'COMPANY_MODULE.REMARKS_REQUIRED' | translate }}
                 </div>
             </div>
 
@@ -59,7 +55,7 @@
             <!-- Assign Button -->
             <div class="col-lg-12 mt-2">
                 <button type="submit" class="btn btn-primary" [disabled]="assignMeForm.invalid || loading">
-                    {{ loading ? 'Assigning...' : 'Assign to Me' }}
+                    {{ loading ? ('COMMON.ASSIGNING' | translate) : ('COMMON.ASSIGN_TO_ME' | translate) }}
                     <span *ngIf="loading" class="spinner-border spinner-border-sm ml-2"></span>
                 </button>
             </div>
@@ -70,6 +66,6 @@
 
 <div class="modal-footer">
     <button type="button" class="modal-btn-cancel" (click)="closeDialog()" [disabled]="loading">
-        <i class="ft-x mr-1"></i> Close
+        <i class="ft-x mr-1"></i> {{ 'COMMON.CLOSE' | translate }}
     </button>
 </div>

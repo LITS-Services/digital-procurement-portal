@@ -6,7 +6,7 @@
             <div class="row">
                 <div class="col-md-12" style="margin-top: -0.25rem;">
                     <h4 class="heading">
-                        {{ mode === 'Edit' ? 'Edit Company Onboarding Setup' : 'Create Company Onboarding Setup' }}
+                        {{ (mode === 'Edit' ? 'SETUP_MODULE.EDIT_VENDOR_ONBOARDING_SETUP' : 'SETUP_MODULE.CREATE_VENDOR_ONBOARDING_SETUP') | translate }}
                     </h4>
                 </div>
             </div>
@@ -23,13 +23,13 @@
                         <button type="submit" class="btn btn-sm cstm-ui-table-btn ml-2"
                             [disabled]="vendorOnboardingForm.invalid || receiverRows.length === 0"
                             *ngIf="mode !== 'Edit'" (click)="submitForm()">
-                            <i class="ft-plus"></i><label class="ml-1 mb-0 pointer">Save</label>
+                            <i class="ft-plus"></i><label class="ml-1 mb-0 pointer">{{ 'COMMON.SAVE' | translate }}</label>
                         </button>
 
                         <button type="button" class="btn btn-sm cstm-ui-table-btn ml-2"
                             [disabled]="vendorOnboardingForm.invalid || receiverRows.length === 0"
                             *ngIf="mode === 'Edit'" (click)="updateForm()">
-                            <i class="ft-edit"></i><label class="ml-1 mb-0 pointer">Update</label>
+                            <i class="ft-edit"></i><label class="ml-1 mb-0 pointer">{{ 'COMMON.UPDATE' | translate }}</label>
                         </button>
                     </div>
                 </div>
@@ -40,7 +40,7 @@
                 <div class="card-header">
                     <h5 class="card-title mb-0">
                         <i class="ft-user-plus mr-1"></i>
-                        Add Users from Different Entities and Roles
+                        {{ 'SETUP_MODULE.ADD_USERS_ENTITIES_ROLES' | translate }}
                     </h5>
                 </div>
                 <div class="card-body">
@@ -49,20 +49,20 @@
 
                             <!-- Row 1: Setup and Receivers -->
                             <div class="col-lg-4 mb-2">
-                                <label class="form-label mb-1">Setup Name</label>
+                                <label class="form-label mb-1">{{ 'SETUP_MODULE.SETUP_NAME' | translate }}</label>
                                 <input type="text" class="form-control custom-input py-1" formControlName="SetupName"
-                                    placeholder="Setup name" required>
+                                    [placeholder]="'SETUP_MODULE.SETUP_NAME' | translate" required>
                                 <div *ngIf="vendorOnboardingForm.get('SetupName')?.invalid && vendorOnboardingForm.get('SetupName')?.touched"
                                     class="text-danger xsmall mt-1">
-                                    Required
+                                    {{ 'COMMON.REQUIRED' | translate }}
                                 </div>
                             </div>
 
                             <div class="col-lg-6 mb-2">
-                                <label class="form-label mb-1">Select Receivers</label>
+                                <label class="form-label mb-1">{{ 'SETUP_MODULE.SELECT_RECEIVERS' | translate }}</label>
                                 <ng-select class="custom-style compact-select" [items]="filteredReceivers"
                                     bindLabel="userName" bindValue="userId" [multiple]="true" [searchable]="true"
-                                    placeholder="Select user(s)" formControlName="Receivers">
+                                    [placeholder]="'SETUP_MODULE.SELECT_USERS' | translate" formControlName="Receivers">
                                 </ng-select>
                             </div>
 
@@ -71,18 +71,18 @@
                                 <button type="button" class="btn btn-block user-add-btn h-34px mb-0"
                                     [disabled]="!isAddButtonEnabled" (click)="addReceiversToTable()">
                                     <i class="ft-user-plus mr-1"></i>
-                                    Add
+                                    {{ 'COMMON.ADD' | translate }}
                                 </button>
                             </div>
 
                             <!-- Row 2: Description and Status -->
                             <div class="col-lg-10 mb-2">
-                                <label class="form-label mb-1">Description</label>
+                                <label class="form-label mb-1">{{ 'COMMON.DESCRIPTION' | translate }}</label>
                                 <textarea class="form-control custom-input py-1" rows="1"
-                                    placeholder="Enter description" formControlName="Description"></textarea>
+                                    [placeholder]="'COMMON.DESCRIPTION' | translate" formControlName="Description"></textarea>
                                 <div *ngIf="vendorOnboardingForm.get('Description')?.invalid && vendorOnboardingForm.get('Description')?.touched"
                                     class="text-danger xsmall mt-1">
-                                    Required
+                                    {{ 'COMMON.REQUIRED' | translate }}
                                 </div>
                             </div>
 
@@ -90,7 +90,7 @@
                                 <div class="custom-slide-toggle d-flex align-items-center">
                                     <input type="checkbox" id="status" formControlName="status">
                                     <label for="status" class="toggle-label mb-0"></label>
-                                    <span class="status-text ml-2">Active</span>
+                                    <span class="status-text ml-2">{{ 'COMMON.ACTIVE' | translate }}</span>
                                 </div>
                             </div>
 
@@ -104,7 +104,7 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0">
                         <i class="ft-users mr-1"></i>
-                        Selected Request Receivers
+                        {{ 'SETUP_MODULE.SELECTED_RECEIVERS' | translate }}
                     </h5>
                     <span class="badge badge-primary">{{ receiverRows.length }} user(s)</span>
                 </div>
@@ -115,28 +115,28 @@
                             [limit]="10" [selectionType]="SelectionType.single" [scrollbarH]="false">
 
                             <!-- User Name Column -->
-                            <ngx-datatable-column name="User Name" prop="userName" [minWidth]="150">
+                            <ngx-datatable-column [name]="'CONFIG_MODULE.USERNAME' | translate" prop="userName" [minWidth]="150">
                                 <ng-template let-value="value" ngx-datatable-cell-template>
                                     <span class="font-weight-bold">{{ value || 'N/A' }}</span>
                                 </ng-template>
                             </ngx-datatable-column>
 
                             <!-- Email Column -->
-                            <ngx-datatable-column name="Email" prop="email" [minWidth]="200">
+                            <ngx-datatable-column [name]="'COMMON.EMAIL' | translate" prop="email" [minWidth]="200">
                                 <ng-template let-value="value" ngx-datatable-cell-template>
                                     {{ value || 'N/A' }}
                                 </ng-template>
                             </ngx-datatable-column>
 
                             <!-- Role Column -->
-                            <ngx-datatable-column name="Role" prop="roleName" [minWidth]="100">
+                            <ngx-datatable-column [name]="'COMMON.ROLE' | translate" prop="roleName" [minWidth]="100">
                                 <ng-template let-value="value" ngx-datatable-cell-template>
                                     <span class="badge badge-info">{{ value || 'N/A' }}</span>
                                 </ng-template>
                             </ngx-datatable-column>
 
                             <!-- Actions Column -->
-                            <ngx-datatable-column name="Actions" [width]="80" [sortable]="false"
+                            <ngx-datatable-column [name]="'COMMON.ACTIONS' | translate" [width]="80" [sortable]="false"
                                 [canAutoResize]="false">
                                 <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                                     <button class="btn btn-sm btn-outline-danger" (click)="removeReceiver(row.id)"
@@ -157,7 +157,7 @@
                     <div class="mb-3">
                         <i class="ft-users text-muted" style="font-size: 64px; opacity: 0.3;"></i>
                     </div>
-                    <h5 class="text-muted">No Receivers Added Yet</h5>
+                    <h5 class="text-muted">{{ 'SETUP_MODULE.NO_RECEIVERS_ADDED' | translate }}</h5>
                     <p class="text-muted small">Select users from the form above and click "Add Users" to populate this
                         list.</p>
                 </div>

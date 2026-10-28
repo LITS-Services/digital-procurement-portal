@@ -12,59 +12,54 @@
   <div class="card-body">
 
     <div class="d-flex justify-content-end align-items-end mb-3">
-    <button class="btn btn-primary btn-large" (click)="downloadInvoice(invoiceDetails.id, invoiceDetails.invoiceNo)" ngbTooltip="View/Download Invoice">
+    <button class="btn btn-primary btn-large" (click)="downloadInvoice(invoiceDetails.id, invoiceDetails.invoiceNo)" [ngbTooltip]="'PO_MODULE.VIEW_DOWNLOAD_INVOICE' | translate">
       <i class="fa-regular fa-file-pdf"></i>
     </button>
   </div>
 
     <div class="row">
       <div class="col-lg-4 col-md-6 mb-3">
-        <label>Invoice No</label>
+        <label>{{ 'PO_MODULE.INVOICE_NO' | translate }}</label>
         <input class="form-control form-control-sm" [value]="invoiceDetails?.invoiceNo" disabled>
       </div>
 
       <div class="col-lg-4 col-md-6 mb-3">
-        <label>PO No</label>
+        <label>{{ 'PO_MODULE.PO_NO' | translate }}</label>
         <input class="form-control form-control-sm" [value]="invoiceDetails?.purchaseOrderNo" disabled>
       </div>
 
       <div class="col-lg-4 col-md-6 mb-3">
-        <label>Vendor</label>
+        <label>{{ 'COMMON.VENDOR' | translate }}</label>
         <input class="form-control form-control-sm" [value]="invoiceDetails?.vendorName" disabled>
       </div>
 
       <div class="col-lg-4 col-md-6 mb-3">
-        <label>Invoice Date</label>
+        <label>{{ 'PO_MODULE.INVOICE_DATE' | translate }}</label>
         <input class="form-control form-control-sm" [value]="invoiceDetails?.invoiceDate | date:'yyyy-MM-dd'" disabled>
       </div>
 
       <div class="col-lg-4 col-md-6 mb-3">
-        <label>GRN No</label>
+        <label>{{ 'PO_MODULE.GRN_NO' | translate }}</label>
         <input class="form-control form-control-sm" [value]="invoiceDetails?.grNumber" disabled>
       </div>
 
-      <!-- <div class="col-lg-4 col-md-6 mb-3">
-          <label>Delivery Challan No</label>
-          <input class="form-control form-control-sm" [value]="invoiceDetails?.deliveryChallan" disabled>
-        </div> -->
-
       <div class="col-lg-4 col-md-6 mb-3">
-        <label>Payment Terms</label>
+        <label>{{ 'PO_MODULE.PAYMENT_TERMS' | translate }}</label>
         <input class="form-control form-control-sm" [value]="invoiceDetails?.paymentTerms" disabled>
       </div>
 
       <div class="col-lg-4 col-md-6 mb-3">
-        <label>Due Date</label>
+        <label>{{ 'PO_MODULE.DUE_DATE' | translate }}</label>
         <input class="form-control form-control-sm" [value]="invoiceDetails?.dueDate | date:'yyyy-MM-dd'" disabled>
       </div>
 
       <div class="col-lg-4 col-md-6 mb-3">
-        <label>Status</label>
-        <input class="form-control form-control-sm" [value]="invoiceDetails?.requestStatus" disabled>
+        <label>{{ 'COMMON.STATUS' | translate }}</label>
+        <input class="form-control form-control-sm" [value]="invoiceDetails?.requestStatus | statusTranslate" disabled>
       </div>
 
       <div class="col-lg-8 col-md-6 mb-3">
-        <label>Remarks</label>
+        <label>{{ 'COMMON.REMARKS' | translate }}</label>
         <textarea class="form-control form-control-sm" disabled rows="2">{{ invoiceDetails?.remarks }}</textarea>
       </div>
     </div>
@@ -73,7 +68,7 @@
 
 <!-- Items Section -->
 <h5 class="heading mb-3 fw-bold" (click)="toggleItems()" style="cursor: pointer;">
-  Items
+  {{ 'COMMON.ITEMS' | translate }}
   <i class="fa" [ngClass]="itemsExpanded ? 'fa-chevron-down' : 'fa-chevron-up'" style="font-size: 12px;"></i>
 </h5>
 
@@ -85,17 +80,15 @@
         <table class="table table-sm pro-table mb-0">
           <thead>
             <tr>
-              <th>Item</th>
-              <th class="text-center">Total Qty</th>
-              <!-- <th class="text-end">Unit Price</th> -->
-              <th class="text-end">Total Amount</th>
+              <th>{{ 'COMMON.ITEM' | translate }}</th>
+              <th class="text-center">{{ 'PO_MODULE.TOTAL_QTY' | translate }}</th>
+              <th class="text-end">{{ 'COMMON.TOTAL_AMOUNT' | translate }}</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let item of invoiceDetails?.invoiceItems">
               <td>{{ item.itemName }}</td>
               <td class="text-center">{{ item.totalQuantity }}</td>
-              <!-- <td class="text-end">{{ item.price | number:'1.2-2' }}</td> -->
               <td class="text-end fw-bold">{{ item.totalAmount | number:'1.2-2' }}</td>
             </tr>
           </tbody>
@@ -109,8 +102,8 @@
 @else {
   <div class="empty-state">
     <i class="fa fa-receipt empty-icon"></i>
-    <h5 class="empty-message">Invoice has not been sent for payment yet</h5>
-    <p class="empty-submessage">Please check back later or contact the responsible team.</p>
+    <h5 class="empty-message">{{ 'PO_MODULE.NO_INVOICE_YET' | translate }}</h5>
+    <p class="empty-submessage">{{ 'RFQ_MODULE.CHECK_BACK_LATER' | translate }}</p>
   </div>
 }
 

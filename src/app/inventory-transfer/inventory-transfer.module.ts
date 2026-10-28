@@ -1,3 +1,4 @@
+import { PipeModule } from 'app/shared/pipes/pipe.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InventoryTransferRoutingModule } from './inventory-transfer-routing.module';
@@ -9,8 +10,7 @@ import { InventoryTransferForm } from './inventory-transfer-form/inventory-trans
 import { NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
-
-
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
@@ -18,6 +18,7 @@ import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-au
     InventoryTransferForm
   ],
   imports: [
+    PipeModule,
     CommonModule,
     InventoryTransferRoutingModule,
     NgxDatatableModule,
@@ -26,7 +27,8 @@ import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-au
     PermissionDirective,
     NgbAccordionModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    TranslateModule
   ]
 })
 export class InventoryTransferModule { }

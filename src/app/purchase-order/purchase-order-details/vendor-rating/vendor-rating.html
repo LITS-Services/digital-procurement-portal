@@ -6,30 +6,14 @@
 
       <!-- Total Reviews -->
       <div class="summary-item">
-        <div class="label fw-bold text-muted">Total Reviews</div>
+        <div class="label fw-bold text-muted">{{ 'PO_MODULE.TOTAL_REVIEWS' | translate }}</div>
         <div class="number display-5 fw-bold">{{ totalCount }}</div>
       </div>
 
       <div class="vertical-divider"></div>
 
-      <!-- Average Rating -->
-      <!-- <div class="summary-item">
-        <div class="label fw-bold text-muted">Average Rating</div>
-        <div class="d-flex align-items-center justify-content-center">
-          <div class="number display-5 fw-bold me-2">{{ avgRating.toFixed(1) }}</div>
-          <div class="avg-rating-stars">
-            <ng-container *ngFor="let star of [1,2,3,4,5]; let i = index">
-              <i class="fa" [ngClass]="{
-                  'fa-star text-warning': getStarFill(i + 1) === 100,
-                  'fa-star-half-alt text-warning': getStarFill(i + 1) > 0 && getStarFill(i + 1) < 100,
-                  'fa-star-o text-muted': getStarFill(i + 1) === 0
-                }"></i>
-            </ng-container>
-          </div>
-        </div>
-      </div> -->
       <div class="summary-item">
-  <div class="label fw-bold text-muted">Average Rating</div>
+  <div class="label fw-bold text-muted">{{ 'PO_MODULE.AVG_RATING' | translate }}</div>
   <div class="rating-value-wrapper text-center">
     <span class="number fw-bold">{{ avgRating.toFixed(1) }}</span>
     <span class="avg-rating-stars">

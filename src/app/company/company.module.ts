@@ -25,7 +25,7 @@ import { CompanySetupHistoryComponent } from './company-setup-history/company-se
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
 import { RatingComponent } from 'app/components/bootstrap/rating/rating.component';
 import { VendorRating } from 'app/purchase-order/purchase-order-details/vendor-rating/vendor-rating';
-
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
@@ -58,7 +58,8 @@ import { VendorRating } from 'app/purchase-order/purchase-order-details/vendor-r
     ToastrModule.forRoot(),
     NgxSpinnerModule,
     AutoResizeDatatableDirective,
-    DatatableAutoResizeDirective
+    DatatableAutoResizeDirective,
+    TranslateModule
   ],
   schemas: [NO_ERRORS_SCHEMA]
 })

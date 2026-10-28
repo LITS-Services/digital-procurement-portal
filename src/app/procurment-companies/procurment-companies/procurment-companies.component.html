@@ -5,7 +5,7 @@
       <!-- Header -->
       <div class="row">
         <div class="col-md-12" style="margin-top: -0.25rem;">
-          <h4 class="heading">Entities</h4>
+          <h4 class="heading">{{ 'ENTITIES_MODULE.ENTITIES' | translate }}</h4>
         </div>
       </div>
 
@@ -20,24 +20,24 @@
             <span class="vl"></span>
 
             <!-- Create -->
-            <button type="button" ngbTooltip="Create new Procurement Company" class="btn btn-sm  cstm-ui-table-btn"
+            <button type="button" [ngbTooltip]="'COMMON.CREATE' | translate" class="btn btn-sm  cstm-ui-table-btn"
               (click)="openEmpDetails()" appPermission [appPermFormId]="FORM_IDS.ENTITIES" [appPermDisable]="'write'">
               <i class="ft-plus"></i>
-              <label class="ml-1 btn-label">Create</label>
+              <label class="ml-1 btn-label">{{ 'COMMON.CREATE' | translate }}</label>
             </button>
 
             <!-- Update -->
             <button type="button" class="btn btn-sm  cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
               (click)="editSelectedRow()" appPermission [appPermFormId]="FORM_IDS.ENTITIES" [appPermDisable]="'write'">
               <i class="ft-edit"></i>
-              <label class="ml-1 btn-label">Edit</label>
+              <label class="ml-1 btn-label">{{ 'COMMON.EDIT' | translate }}</label>
             </button>
 
             <!-- Delete -->
             <button type="button" class="btn btn-sm  cstm-ui-table-btn" [disabled]="isDeleteButtonDisabled"
               (click)="openDeleteModal()" appPermission [appPermFormId]="FORM_IDS.ENTITIES" [appPermDisable]="'delete'">
               <i class="ft-trash"></i>
-              <label class="ml-1 btn-label">Delete</label>
+              <label class="ml-1 btn-label">{{ 'COMMON.DELETE' | translate }}</label>
             </button>
           </div>
         </div>
@@ -67,7 +67,7 @@
           <!-- ID -->
 
           <!-- Name -->
-          <ngx-datatable-column name="Name" prop="name" [flexGrow]="1" [minWidth]="140"
+          <ngx-datatable-column [name]="'COMMON.NAME' | translate" prop="name" [flexGrow]="1" [minWidth]="140"
             [sortable]="false"></ngx-datatable-column>
 
           <!-- Status -->
@@ -79,17 +79,17 @@
             </span>
           </ng-template>
         </ngx-datatable-column> -->
-          <ngx-datatable-column name="Status" [flexGrow]="1" [minWidth]="120" [sortable]="false">
+          <ngx-datatable-column [name]="'COMMON.STATUS' | translate" [flexGrow]="1" [minWidth]="120" [sortable]="false">
             <ng-template ngx-datatable-cell-template let-row="row">
               <span [ngClass]="row.statusClass">
-                {{ row.status }}
+                {{ row.status | statusTranslate }}
               </span>
             </ng-template>
           </ngx-datatable-column>
 
 
           <!-- Logo -->
-          <ngx-datatable-column name="Logo" prop="logo" [flexGrow]="1" [minWidth]="120" [maxWidth]="140"
+          <ngx-datatable-column [name]="'COMMON.LOGO' | translate" prop="logo" [flexGrow]="1" [minWidth]="120" [maxWidth]="140"
             [sortable]="false">
             <ng-template ngx-datatable-cell-template let-row="row">
               <img *ngIf="row.logo" [src]="row.logo" alt="Logo" width="36" height="36" />

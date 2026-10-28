@@ -4,76 +4,68 @@
          @if (shipmentDetails?.shipmentDetailNo) {
         <div class="card cstm-ui-card mb-4">
             <div class="card-body">
-                <!-- <h5 class="fw-bold mb-3">Shipment Details</h5> -->
-
                 <div class="row">
                     <div class="col-lg-4 col-md-6 mb-3">
-                        <label>Shipment No</label>
+                        <label>{{ 'PO_MODULE.SHIPMENT_NO' | translate }}</label>
                         <input class="form-control custom-input" [value]="shipmentDetails?.shipmentDetailNo" disabled>
                     </div>
 
                     <div class="col-lg-4 col-md-6 mb-3">
-                        <label>Vendor Name</label>
+                        <label>{{ 'COMMON.VENDOR' | translate }}</label>
                         <input class="form-control custom-input" [value]="shipmentDetails?.vendorName || '-'" disabled>
                     </div>
 
                     <div class="col-lg-4 col-md-6 mb-3">
-                        <label>Status</label>
+                        <label>{{ 'COMMON.STATUS' | translate }}</label>
                         <input class="form-control custom-input" [value]="shipmentDetails?.requestStatus || '-'"
                             disabled>
                     </div>
 
                     <div class="col-lg-4 col-md-6 mb-3">
-                        <label>Shipment Date</label>
+                        <label>{{ 'PO_MODULE.SHIPMENT_DATE' | translate }}</label>
                         <input class="form-control custom-input"
                             [value]="shipmentDetails?.shipmentDate | date:'yyyy-MM-dd'" disabled>
                     </div>
 
-                    <!-- <div class="col-lg-4 col-md-6 mb-3">
-                        <label>Delivery Date</label>
-                        <input class="form-control custom-input"
-                            [value]="shipmentDetails?.deliveryDate | date:'yyyy-MM-dd'" disabled>
-                    </div> -->
-
                     <div class="col-lg-4 col-md-6 mb-3">
-                        <label>Ship To Name</label>
+                        <label>{{ 'PO_MODULE.SHIP_TO_NAME' | translate }}</label>
                         <input class="form-control custom-input" [value]="shipmentDetails?.shipToName || '-'" disabled>
                     </div>
 
                     <div class="col-lg-4 col-md-6 mb-3">
-                        <label>Country</label>
+                        <label>{{ 'COMMON.COUNTRY' | translate }}</label>
                         <input class="form-control custom-input" [value]="shipmentDetails?.country || '-'" disabled>
                     </div>
 
                     <div class="col-lg-4 col-md-6 mb-3">
-                        <label>City</label>
+                        <label>{{ 'COMMON.CITY' | translate }}</label>
                         <input class="form-control custom-input" [value]="shipmentDetails?.city || '-'" disabled>
                     </div>
 
                     <div class="col-lg-4 col-md-6 mb-3">
-                        <label>Region</label>
+                        <label>{{ 'COMMON.REGION' | translate }}</label>
                         <input class="form-control custom-input" [value]="shipmentDetails?.region || '-'" disabled>
                     </div>
 
                     <div class="col-12 mb-3">
-                        <label>Ship To Address</label>
+                        <label>{{ 'PO_MODULE.SHIP_TO_ADDRESS' | translate }}</label>
                         <textarea rows="2" class="form-control custom-input"
                             [value]="shipmentDetails?.shipToAddress || '-'" disabled></textarea>
                     </div>
 
                     <div class="col-12 mb-3">
-                        <label>Ship To Address 2</label>
+                        <label>{{ 'PO_MODULE.SHIP_TO_ADDRESS_2' | translate }}</label>
                         <textarea rows="2" class="form-control custom-input"
                             [value]="shipmentDetails?.shipToAddress2 || '-'" disabled></textarea>
                     </div>
 
                     <div class="col-lg-4 col-md-6 mb-3">
-                        <label>Post Code</label>
+                        <label>{{ 'COMMON.POST_CODE' | translate }}</label>
                         <input class="form-control custom-input" [value]="shipmentDetails?.postCode || '-'" disabled>
                     </div>
 
                     <div class="col-12">
-                        <label>Notes</label>
+                        <label>{{ 'PO_MODULE.NOTES' | translate }}</label>
                         <textarea rows="2" class="form-control custom-input" [value]="shipmentDetails?.notes || '-'"
                             disabled></textarea>
                     </div>
@@ -82,7 +74,7 @@
         </div>
             <!-- Items Section -->
             <h5 class="heading mb-3 fw-bold" (click)="toggleItems()" style="cursor: pointer;">
-                Items
+                {{ 'COMMON.ITEMS' | translate }}
                 <i class="fa" [ngClass]="itemsExpanded ? 'fa-chevron-down' : 'fa-chevron-up'"
                     style="font-size: 12px;"></i>
             </h5>
@@ -95,10 +87,10 @@
                             <table class="table table-sm pro-table mb-0">
                                 <thead>
                                     <tr>
-                                        <th>Item</th>
-                                        <th>Ordered Qty</th>
-                                        <th>Shipping Qty</th>
-                                        <th class="text-end">Delivery Date</th>
+                                        <th>{{ 'COMMON.ITEM' | translate }}</th>
+                                        <th>{{ 'PO_MODULE.ORDERED_QTY' | translate }}</th>
+                                        <th>{{ 'PO_MODULE.SHIPPING_QTY' | translate }}</th>
+                                        <th class="text-end">{{ 'COMMON.DELIVERY_DATE' | translate }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -120,7 +112,7 @@
     @else {
     <div class="empty-state">
         <i class="fa fa-shipping-fast empty-icon"></i>
-        <h5 class="empty-message">The vendor has not submitted shipment details yet</h5>
-        <p class="empty-submessage">Please check back later or contact the responsible team.</p>
+        <h5 class="empty-message">{{ 'PO_MODULE.NO_SHIPMENT_YET' | translate }}</h5>
+        <p class="empty-submessage">{{ 'RFQ_MODULE.CHECK_BACK_LATER' | translate }}</p>
     </div>
     }

@@ -2,7 +2,7 @@
 
   <!-- Header & Action Bar -->
   <div class="profile-header mb-4">
-    <h4 class="heading mb-4">User Profile</h4>
+    <h4 class="heading mb-4">{{ 'PROFILE.USER_PROFILE' | translate }}</h4>
 
     <div class="card cstm-ui-card">
       <div class="row">
@@ -27,19 +27,19 @@
           <img [src]="profileImage" class="user-profile-image" alt="User Profile Image" height="220" width="220"
             style="object-fit: cover;">
 
-          <label for="profileImageUpload" class="camera-overlay" title="Change Profile Picture">
+          <label for="profileImageUpload" class="camera-overlay" [title]="'PROFILE.CHANGE_PICTURE' | translate">
             <i class="ft-camera"></i>
           </label>
           <input type="file" id="profileImageUpload" (change)="onProfileImageChange($event)" accept="image/*" hidden>
         </div>
 
         <div class="user-summary text-center">
-          <h3 class="user-name">{{ userForm.get('fullName')?.value || 'User Name' }}</h3>
+          <h3 class="user-name">{{ userForm.get('fullName')?.value || ('COMMON.USER_NAME' | translate) }}</h3>
           <p class="user-email">{{ userForm.get('email')?.value || 'email@example.com' }}</p>
 
           <div class="role-badge mt-2">
             <i class="ft-shield"></i>
-            {{ userForm.get('roles')?.value[0]?.name || 'Member' }}
+            {{ userForm.get('roles')?.value[0]?.name || ('COMMON.ROLE' | translate) }}
           </div>
         </div>
 
@@ -54,10 +54,10 @@
         <div class="modern-tabs">
           <div class="tabs-header">
             <button class="tab-btn" [class.active]="activeTab === 'details'" (click)="activeTab = 'details'">
-              <i class="ft-user"></i> Personal Details
+              <i class="ft-user"></i> {{ 'PROFILE.PERSONAL_DETAILS' | translate }}
             </button>
             <button class="tab-btn" [class.active]="activeTab === 'password'" (click)="activeTab = 'password'">
-              <i class="ft-lock"></i> Security & Password
+              <i class="ft-lock"></i> {{ 'PROFILE.SECURITY_PASSWORD' | translate }}
             </button>
           </div>
 
@@ -68,32 +68,32 @@
               <div class="row info-grid">
                 <div class="col-md-6 mb-3">
                   <div class="info-item">
-                    <div class="label">Username</div>
+                    <div class="label">{{ 'AUTH.USERNAME' | translate }}</div>
                     <div class="value">{{ userForm.get('userName')?.value || '—' }}</div>
                   </div>
                 </div>
                 <div class="col-md-6 mb-3">
                   <div class="info-item">
-                    <div class="label">Full Name</div>
+                    <div class="label">{{ 'COMMON.FULL_NAME' | translate }}</div>
                     <div class="value">{{ userForm.get('fullName')?.value || '—' }}</div>
                   </div>
                 </div>
                 <div class="col-md-12 mb-3">
                   <div class="info-item">
-                    <div class="label">Email Address</div>
+                    <div class="label">{{ 'COMMON.EMAIL' | translate }}</div>
                     <div class="value text-primary font-weight-bold">{{ userForm.get('email')?.value || '—' }}</div>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="info-item">
-                    <div class="label">Assigned Role</div>
+                    <div class="label">{{ 'PROFILE.ASSIGNED_ROLE' | translate }}</div>
                     <div class="value">{{ userForm.get('roles')?.value[0]?.name || '—' }}</div>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="info-item">
-                    <div class="label">Contact Number</div>
-                    <div class="value">{{ userForm.get('phoneNumber')?.value || 'Not provided' }}</div>
+                    <div class="label">{{ 'PROFILE.CONTACT_NUMBER' | translate }}</div>
+                    <div class="value">{{ userForm.get('phoneNumber')?.value || '—' }}</div>
                   </div>
                 </div>
               </div>
@@ -105,30 +105,30 @@
 
                 <div class="row">
                   <div class="col-md-12">
-                    <label class="form-label"><i class="ft-unlock"></i> Current Password</label>
+                    <label class="form-label"><i class="ft-unlock"></i> {{ 'PROFILE.CURRENT_PASSWORD' | translate }}</label>
                     <div class="password-wrapper">
                       <input [type]="hideOldPassword ? 'password' : 'text'" formControlName="oldPassword"
-                        placeholder="Verify your current password">
+                        [placeholder]="'PROFILE.CURRENT_PASSWORD' | translate">
                       <i class="eye-icon" [ngClass]="hideOldPassword ? 'ft-eye-off' : 'ft-eye'"
                         (click)="togglePasswordVisibility('oldPassword')"></i>
                     </div>
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label"><i class="ft-lock"></i> New Password</label>
+                    <label class="form-label"><i class="ft-lock"></i> {{ 'PROFILE.NEW_PASSWORD' | translate }}</label>
                     <div class="password-wrapper">
                       <input [type]="hidePassword ? 'password' : 'text'" formControlName="newPassword"
-                        placeholder="At least 6 characters">
+                        [placeholder]="'PROFILE.NEW_PASSWORD' | translate">
                       <i class="eye-icon" [ngClass]="hidePassword ? 'ft-eye-off' : 'ft-eye'"
                         (click)="togglePasswordVisibility('password')"></i>
                     </div>
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label"><i class="ft-shield"></i> Confirm New Password</label>
+                    <label class="form-label"><i class="ft-shield"></i> {{ 'PROFILE.CONFIRM_NEW_PASSWORD' | translate }}</label>
                     <div class="password-wrapper">
                       <input [type]="hideConfirmPassword ? 'password' : 'text'" formControlName="confirmPassword"
-                        placeholder="Re-type your new password">
+                        [placeholder]="'PROFILE.CONFIRM_NEW_PASSWORD' | translate">
                       <i class="eye-icon" [ngClass]="hideConfirmPassword ? 'ft-eye-off' : 'ft-eye'"
                         (click)="togglePasswordVisibility('confirmPassword')"></i>
                     </div>
@@ -151,10 +151,10 @@
 
                 <div class="d-flex justify-content-end gap-3 mt-4">
                   <button type="button" class="btn btn-modern btn-outline" (click)="activeTab = 'details'">
-                    Cancel
+                    {{ 'COMMON.CANCEL' | translate }}
                   </button>
                   <button type="submit" class="btn btn-modern btn-primary" [disabled]="resetPasswordForm.invalid">
-                    {{ resetPasswordForm.invalid ? 'Complete Form' : 'Change Password' }}
+                    {{ resetPasswordForm.invalid ? ('COMMON.REQUIRED' | translate) : ('PROFILE.CHANGE_PASSWORD' | translate) }}
                   </button>
                 </div>
               </form>

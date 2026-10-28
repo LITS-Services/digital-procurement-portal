@@ -5,7 +5,7 @@
             <!-- Header -->
             <div class="row">
                 <div class="col-md-12" style="margin-top: -0.25rem;">
-                    <h4 class="heading">ACL Setup</h4>
+                    <h4 class="heading">{{ 'SETUP_MODULE.ACL_SETUP' | translate }}</h4>
                 </div>
             </div>
 
@@ -36,7 +36,7 @@
                         <input type="text"
                             [(ngModel)]="search"
                             (ngModelChange)="onSearchChange()"
-                            placeholder="Search form or route" />
+                            [placeholder]="'SETUP_MODULE.SEARCH_FORM_ROUTE' | translate" />
                     </div>
                 </div>
             </div>
@@ -49,7 +49,7 @@
                 [limit]="10"  [scrollbarH]="isMobile">
 
                 <!-- Loop dynamically generated columns: Form Name / Read / Write / Delete -->
-                <ngx-datatable-column *ngFor="let col of columns" [flexGrow]="1" sortable="false" [name]="col.name" [prop]="col.prop" [minWidth]="col.minWidth">
+                <ngx-datatable-column *ngFor="let col of columns" [flexGrow]="1" sortable="false" [name]="(col.nameKey ? (col.nameKey | translate) : (col.name | translate))" [prop]="col.prop" [minWidth]="col.minWidth">
 
                     <ng-template ngx-datatable-cell-template let-row="row">
 

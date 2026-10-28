@@ -5,7 +5,7 @@
       <!-- Header -->
       <div class="row">
         <div class="col-md-12" style="margin-top: -0.25rem;">
-          <h4 class="heading">Inventory Transfer</h4>
+          <h4 class="heading">{{ 'INV_TRANSFER_MODULE.TITLE' | translate }}</h4>
         </div>
       </div>
 
@@ -21,27 +21,12 @@
 
               <span class="vl"></span>
 
-              <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new Purchase Request">
-                <i class="ft-plus"></i><label class="ml-1 mt-1 btn-label">Create</label>
-              </button>
-              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()">
-                <i class="ft-edit"></i><label class="ml-1 mt-1 btn-label">Update</label>
-              </button>
-
-              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()">
-                <i class="ft-trash"></i><label class="ml-1 mt-1 btn-label">Delete</label>
-              </button>
-
-              <button type="button" class="btn btn-sm cstm-ui-table-btn">
-                <i class="ft-eye"></i><label class="ml-1 mt-1 btn-label">View</label>
-              </button> -->
-
             </div>
             <div class="d-flex align-items-center">
-                            <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
-                                <i class="ft-sliders"></i><label class="ml-1 btn-label">Filter</label>
-                            </button>
-                        </div>
+              <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
+                <i class="ft-sliders"></i><label class="ml-1 btn-label">{{ 'COMMON.FILTER' | translate }}</label>
+              </button>
+            </div>
 
           </div>
 
@@ -49,14 +34,14 @@
       </div>
 
       <div *ngIf="showFilterBar" class="filter-bar">
-                <div class="d-flex align-items-center justify-content-between pl-3 pr-1 py-2 filter-wrapper">
-                    <div class="filter-search">
-                        <i class="ft-filter search-icon"></i>
-                        <input [ngModel]="searchText" (ngModelChange)="onSearchChange($event)" type="text"
-                            placeholder="Search by requisition no #" class="form-control form-control-sm search-input">
-                    </div>
-                </div>
-            </div>
+        <div class="d-flex align-items-center justify-content-between pl-3 pr-1 py-2 filter-wrapper">
+          <div class="filter-search">
+            <i class="ft-filter search-icon"></i>
+            <input [ngModel]="searchText" (ngModelChange)="onSearchChange($event)" type="text"
+              [placeholder]="'COMMON.SEARCH_REQ_NO' | translate" class="form-control form-control-sm search-input">
+          </div>
+        </div>
+      </div>
 
       <div  class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
 
@@ -68,45 +53,45 @@
 
 
         <!-- Sr. No -->
-        <ngx-datatable-column name="Sr. No." [width]="60" [canAutoResize]="false" [resizeable]="false" [sortable]="false">
+        <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="60" [canAutoResize]="false" [resizeable]="false" [sortable]="false">
           <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
             <span>{{ rowIndex + 1 }}</span>
           </ng-template>
         </ngx-datatable-column>
         
-         <ngx-datatable-column name="Requisition No." prop="requisitionNo"  [flexGrow]="1" [minWidth]="140" [sortable]="false">
+         <ngx-datatable-column [name]="'COMMON.REQUISITION_NO' | translate" prop="requisitionNo"  [flexGrow]="1" [minWidth]="140" [sortable]="false">
                 <ng-template ngx-datatable-cell-template let-row="row">
                     <a href="javascript:void(0)" (click)="openPR(row)">
                         {{ row.requisitionNo }}
                     </a>
                 </ng-template>
             </ngx-datatable-column>
-        <ngx-datatable-column name="Status" prop="requestStatus"  [flexGrow]="1" [minWidth]="100" [sortable]="false">
+        <ngx-datatable-column [name]="'COMMON.STATUS' | translate" prop="requestStatus"  [flexGrow]="1" [minWidth]="100" [sortable]="false">
           <ng-template ngx-datatable-cell-template let-row="row">
             <span [ngClass]="row.statusClass">
-              {{ row.requestStatus }}
+              {{ row.requestStatus | statusTranslate }}
             </span>
           </ng-template>
         </ngx-datatable-column>
-        <ngx-datatable-column name="Date" prop="submittedDate" [flexGrow]="1" [minWidth]="100" [sortable]="false">
+        <ngx-datatable-column [name]="'COMMON.DATE' | translate" prop="submittedDate" [flexGrow]="1" [minWidth]="100" [sortable]="false">
           <ng-template let-row="row" ngx-datatable-cell-template>
             {{ row.submittedDate | date:'yyyy-MM-dd' }}
           </ng-template>
         </ngx-datatable-column> 
-        <ngx-datatable-column name="Entity" prop="entityName" [flexGrow]="2" [minWidth]="300" [sortable]="false"></ngx-datatable-column>
-        <ngx-datatable-column name="Department" prop="department" [flexGrow]="1" [minWidth]="140" [sortable]="false"></ngx-datatable-column>
+        <ngx-datatable-column [name]="'COMMON.ENTITY' | translate" prop="entityName" [flexGrow]="2" [minWidth]="300" [sortable]="false"></ngx-datatable-column>
+        <ngx-datatable-column [name]="'COMMON.DEPARTMENT' | translate" prop="department" [flexGrow]="1" [minWidth]="140" [sortable]="false"></ngx-datatable-column>
 
         <ngx-datatable-row-detail [rowHeight]="'auto'" #myDetailRow>
           <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
             <div class="p-2">
-              <h6>Items for Request #{{ row.requestId }}</h6>
+              <h6>{{ 'INV_TRANSFER_MODULE.ITEMS_FOR_REQUEST' | translate }} #{{ row.requestId }}</h6>
               <table class="table table-sm table-bordered mb-0">
                 <thead>
                   <tr>
-                    <th>Item Description</th>
-                    <th>Vendor</th>
-                    <th>Account</th>
-                    <th>Amount</th>
+                    <th>{{ 'COMMON.DESCRIPTION' | translate }}</th>
+                    <th>{{ 'COMMON.VENDOR' | translate }}</th>
+                    <th>{{ 'COMMON.ACCOUNT' | translate }}</th>
+                    <th>{{ 'COMMON.TOTAL_AMOUNT' | translate }}</th>
                   </tr>
                 </thead>
                 <tbody>

@@ -1,6 +1,6 @@
 <div class="modal-header d-flex align-items-center justify-content-between">
   <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
-    <i class="ft-file-text mr-2 text-white"></i> Create Purchase Order
+    <i class="ft-file-text mr-2 text-white"></i> {{ 'PO_MODULE.CREATE_PURCHASE_ORDER' | translate }}
   </h5>
   <button type="button" class="modal-close-btn" aria-label="Close" (click)="activeModal.dismiss()">
     <i class="ft-x"></i>
@@ -10,42 +10,42 @@
 <div class="modal-body">
   <ngx-datatable class="bootstrap core-bootstrap" [rows]="items" [columnMode]="'force'" [headerHeight]="50"
     [footerHeight]="50" [rowHeight]="50" [limit]="10">
-    <ngx-datatable-column name="Select">
+    <ngx-datatable-column [name]="'COMMON.SELECT' | translate">
       <ng-template let-row="row" ngx-datatable-cell-template>
         <input type="checkbox" [disabled]="!row.isEligibleForPO"
           (change)="toggleSelection(row.itemId, $event.target.checked)" />
       </ng-template>
     </ngx-datatable-column>
 
-    <ngx-datatable-column name="Item Name" prop="itemName"></ngx-datatable-column>
-    <ngx-datatable-column name="Description" prop="itemDescription"></ngx-datatable-column>
-    <ngx-datatable-column name="Amount">
+    <ngx-datatable-column [name]="'COMMON.ITEM_NAME' | translate" prop="itemName"></ngx-datatable-column>
+    <ngx-datatable-column [name]="'COMMON.DESCRIPTION' | translate" prop="itemDescription"></ngx-datatable-column>
+    <ngx-datatable-column [name]="'COMMON.TOTAL_AMOUNT' | translate">
       <ng-template let-row="row" ngx-datatable-cell-template>
         {{ row.amount | number: '1.2-2' }}
       </ng-template>
     </ngx-datatable-column>
-    <ngx-datatable-column name="RFQ No" prop="rfqNo">
+    <ngx-datatable-column [name]="'COMMON.RFQ_NO' | translate" prop="rfqNo">
       <ng-template let-row="row" ngx-datatable-cell-template>
         {{ row.rfqNo || '-' }}
       </ng-template>
     </ngx-datatable-column>
-    <ngx-datatable-column name="RFQ Status" prop="rfqStatus">
+    <ngx-datatable-column [name]="'COMMON.STATUS' | translate" prop="rfqStatus">
       <ng-template let-row="row" ngx-datatable-cell-template>
-        {{ row.rfqStatus || '-' }}
+        {{ (row.rfqStatus | statusTranslate) || '-' }}
       </ng-template>
     </ngx-datatable-column>
   </ngx-datatable>
 
   <div *ngIf="loading" class="text-center mt-3">
-    <span class="spinner-border spinner-border-sm"></span> Loading...
+    <span class="spinner-border spinner-border-sm"></span> {{ 'COMMON.LOADING' | translate }}
   </div>
 </div>
 
 <div class="modal-footer">
   <button type="button" class="modal-btn-cancel" (click)="activeModal.dismiss()">
-    <i class="ft-x mr-1"></i> Cancel
+    <i class="ft-x mr-1"></i> {{ 'COMMON.CANCEL' | translate }}
   </button>
   <button type="button" class="modal-btn-save" [disabled]="loading" (click)="createPurchaseOrder()">
-    <i class="fa fa-plus mr-1"></i> Create
+    <i class="fa fa-plus mr-1"></i> {{ 'COMMON.CREATE' | translate }}
   </button>
 </div>

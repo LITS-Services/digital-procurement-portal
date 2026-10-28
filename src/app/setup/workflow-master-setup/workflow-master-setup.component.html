@@ -5,7 +5,7 @@
       <!-- Header -->
       <div class="row">
         <div class="col-md-12" style="margin-top: -0.25rem;">
-          <h4 class="heading">Work Flow Setup</h4>
+          <h4 class="heading">{{ 'SETUP_MODULE.WORKFLOW_SETUP' | translate }}</h4>
         </div>
       </div>
 
@@ -17,18 +17,18 @@
               <i class="ft-arrow-left"></i>
             </button>
             <span class="vl"></span>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new workflow"
+            <button type="button" class="btn btn-sm cstm-ui-table-btn" [ngbTooltip]="'SETUP_MODULE.CREATE_WORKFLOW_TOOLTIP' | translate"
               (click)="setupnewWorkflow()" appPermission [appPermFormId]="FORM_IDS.WORKFLOW_SETUP"
               [appPermDisable]="'write'">
-              <i class="ft-plus"></i><label class="ml-1">Create</label>
+              <i class="ft-plus"></i><label class="ml-1">{{ 'COMMON.CREATE' | translate }}</label>
             </button>
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()" appPermission
               [appPermFormId]="FORM_IDS.WORKFLOW_SETUP" [appPermDisable]="'write'">
-              <i class="ft-edit"></i><label class="ml-1">Edit</label>
+              <i class="ft-edit"></i><label class="ml-1">{{ 'COMMON.EDIT' | translate }}</label>
             </button>
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()" appPermission
               [appPermFormId]="FORM_IDS.WORKFLOW_SETUP" [appPermDisable]="'delete'">
-              <i class="ft-trash"></i><label class="ml-1">Delete</label>
+              <i class="ft-trash"></i><label class="ml-1">{{ 'COMMON.DELETE' | translate }}</label>
             </button>
           </div>
         </div>
@@ -58,17 +58,17 @@
           </ngx-datatable-column>
 
           <!-- Sr. No -->
-          <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+          <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="50" [resizeable]="false">
             <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
               <span>{{ rowIndex + 1 }}</span>
             </ng-template>
           </ngx-datatable-column>
 
           <!-- Request Info -->
-          <ngx-datatable-column name="Name" prop="workflowName" [flexGrow]="1" [minWidth]="140"></ngx-datatable-column>
-          <ngx-datatable-column name="Document" prop="workflowType" [flexGrow]="1"
+          <ngx-datatable-column [name]="'COMMON.NAME' | translate" prop="workflowName" [flexGrow]="1" [minWidth]="140"></ngx-datatable-column>
+          <ngx-datatable-column [name]="'SETUP_MODULE.DOCUMENT' | translate" prop="workflowType" [flexGrow]="1"
             [minWidth]="160"></ngx-datatable-column>
-          <ngx-datatable-column name="Status" prop="isActive" [flexGrow]="1" [minWidth]="120">
+          <ngx-datatable-column [name]="'COMMON.STATUS' | translate" prop="isActive" [flexGrow]="1" [minWidth]="120">
             <!-- <ng-template ngx-datatable-cell-template let-row="row">
             <span>
               {{ row.isActive ? 'Active' : 'In Active' }}
@@ -76,12 +76,12 @@
           </ng-template> -->
             <ng-template ngx-datatable-cell-template let-row="row">
               <span [ngClass]="row.statusClass">
-                {{ row.isActive ? 'Active' : 'In Active' }}
+                {{ row.isActive | statusTranslate }}
               </span>
             </ng-template>
           </ngx-datatable-column>
 
-          <ngx-datatable-column name="Approver" prop="createdDate" [flexGrow]="1" [minWidth]="100" [maxWidth]="120">
+          <ngx-datatable-column [name]="'SETUP_MODULE.APPROVER' | translate" prop="createdDate" [flexGrow]="1" [minWidth]="100" [maxWidth]="120">
             <ng-template let-row="row" ngx-datatable-cell-template>
               <button class="btn btn-primary btn-sm position-relative" (click)="openApproverModal(row)">
                 <i class="ft-user-check"></i>

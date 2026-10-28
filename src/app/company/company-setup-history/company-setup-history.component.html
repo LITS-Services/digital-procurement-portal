@@ -19,23 +19,23 @@
     </div> -->
 
     <!-- Show table if history exists -->
-     @if (approvalHistory.length > 0) {
+      @if (approvalHistory.length > 0) {
     <ngx-datatable *ngIf="approvalHistory.length > 0" class="bootstrap core-bootstrap" [rows]="approvalHistory"
         [columnMode]="'force'" [headerHeight]="50" [footerHeight]="40" [rowHeight]="50" [limit]="5">
 
-        <ngx-datatable-column name="Users" prop="approverName">
+        <ngx-datatable-column [name]="'COMMON.USERS' | translate" prop="approverName">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 {{ row.approverName || 'N/A' }}
             </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="Remarks" prop="remarks">
+        <ngx-datatable-column [name]="'COMMON.REMARKS' | translate" prop="remarks">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 {{ row.remarks || 'No remarks' }}
             </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="Date" prop="createdDate">
+        <ngx-datatable-column [name]="'COMMON.DATE' | translate" prop="createdDate">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 {{ row.createdDate | date:'yyyy-MM-dd' }}
             </ng-template>
@@ -46,8 +46,8 @@
        @else {
     <div class="empty-state">
         <i class="fa fa-history empty-icon"></i>
-        <h5 class="empty-message">No setup history found</h5>
-        <p class="empty-submessage">Please check back later or contact the responsible team.</p>
+        <h5 class="empty-message">{{ 'COMPANY_MODULE.NO_SETUP_HISTORY' | translate }}</h5>
+        <p class="empty-submessage">{{ 'RFQ_MODULE.CHECK_BACK_LATER' | translate }}</p>
     </div>
     }
 

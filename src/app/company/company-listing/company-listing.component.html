@@ -5,7 +5,7 @@
       <!-- Header -->
       <div class="row">
         <div class="col-md-12" style="margin-top: -0.25rem;">
-          <h4 class="heading">Sourcing Companies</h4>
+          <h4 class="heading">{{ 'COMPANY_MODULE.SOURCING_COMPANIES' | translate }}</h4>
         </div>
       </div>
 
@@ -23,13 +23,13 @@
               <button type="button" class="btn btn-sm cstm-ui-table-btn ml-2" [disabled]="isEditButtonDisabled"
                 (click)="editSelectedRow()">
                 <i class="ft-edit"></i>
-                <label class="ml-1">Company Review</label>
+                <label class="ml-1">{{ 'COMPANY_MODULE.COMPANY_REVIEW' | translate }}</label>
               </button>
 
             </div>
             <div class="d-flex align-items-center">
               <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
-                <i class="ft-sliders"></i><label class="ml-1 btn-label">Filter</label>
+                <i class="ft-sliders"></i><label class="ml-1 btn-label">{{ 'COMMON.FILTER' | translate }}</label>
               </button>
             </div>
           </div>
@@ -42,24 +42,24 @@
             <i class="ft-filter search-icon"></i>
 
             <input style="padding-left: 3.4em;" type="text" class="form-control border-left-0 cstm-ui-input"
-              placeholder="Search by Entity or Company..." [(ngModel)]="searchTerm"
+              [placeholder]="'COMMON.SEARCH_ENTITY_COMPANY' | translate" [(ngModel)]="searchTerm"
               (ngModelChange)="applySearchFilter()" />
 
           </div>
 
           <div class="d-flex filter-btns-div">
-            <div class="dropdown filter-dropdown" ngbDropdown [ngbTooltip]="statusTouched ? 'Status' : null">
+            <div class="dropdown filter-dropdown" ngbDropdown [ngbTooltip]="statusTouched ? ('COMMON.STATUS' | translate) : null">
               <button class="btn btn-sm filter-btn dropdown-toggle" ngbDropdownToggle>
-                <span class="filter-label">{{ !statusTouched ? "Status" : selectedStatusLabel }} </span>
+                <span class="filter-label">{{ !statusTouched ? ('COMMON.STATUS' | translate) : (selectedStatusLabel | statusTranslate) }} </span>
                 <i class="ft-chevron-down"></i>
               </button>
               <div class="dropdown-menu" ngbDropdownMenu>
-                <button class="dropdown-item" (click)="filterByStatus('All')">All</button>
-                <button class="dropdown-item" (click)="filterByStatus('InProgress')">InProgress</button>
-                <button class="dropdown-item" (click)="filterByStatus('SendBack')">SendBack</button>
-                <button class="dropdown-item" (click)="filterByStatus('New')">New</button>
-                <button class="dropdown-item" (click)="filterByStatus('Rejected')">Rejected</button>
-                <button class="dropdown-item" (click)="filterByStatus('Onboarded')">Onboarded</button>
+                <button class="dropdown-item" (click)="filterByStatus('All')">{{ 'COMMON.ALL' | translate }}</button>
+                <button class="dropdown-item" (click)="filterByStatus('InProgress')">{{ 'COMMON.IN_PROGRESS' | translate }}</button>
+                <button class="dropdown-item" (click)="filterByStatus('SendBack')">{{ 'COMMON.SENDBACK' | translate }}</button>
+                <button class="dropdown-item" (click)="filterByStatus('New')">{{ 'COMMON.NEW' | translate }}</button>
+                <button class="dropdown-item" (click)="filterByStatus('Rejected')">{{ 'COMMON.REJECTED' | translate }}</button>
+                <button class="dropdown-item" (click)="filterByStatus('Onboarded')">{{ 'COMMON.ONBOARDED' | translate }}</button>
               </div>
             </div>
 
@@ -71,7 +71,7 @@
       <!-- Table Content -->
       <div class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
         <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="rows" [columnMode]="'force'"
-          [headerHeight]="50" [footerHeight]="50" [columns]="columns" [rowHeight]="'auto'" [limit]="pageSize"
+          [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="pageSize"
           [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1" (page)="onPageChange($event)"
           [scrollbarH]="isMobile" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
           [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
@@ -80,9 +80,6 @@
           <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
             [resizeable]="false">
             <ng-template ngx-datatable-header-template>
-              <!-- <div class="custom-control cstm-checkbox-form">
-                <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
-              </div> -->
             </ng-template>
             <ng-template ngx-datatable-cell-template let-isSelected="isSelected"
               let-onCheckboxChangeFn="onCheckboxChangeFn">
@@ -93,7 +90,7 @@
           </ngx-datatable-column>
 
           <!-- Sr No Column -->
-          <ngx-datatable-column name="Sr. No." [flexGrow]="1" [minWidth]="60" [maxWidth]="60" [resizeable]="false">
+          <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [flexGrow]="1" [minWidth]="60" [maxWidth]="60" [resizeable]="false">
             <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
               <span>{{ rowIndex + 1 }}</span>
             </ng-template>
@@ -101,7 +98,7 @@
 
 
           <!-- Company Name Column -->
-          <ngx-datatable-column name="Company" prop="name" [flexGrow]="2" [minWidth]="140">
+          <ngx-datatable-column [name]="'COMMON.COMPANY' | translate" prop="name" [flexGrow]="2" [minWidth]="140">
             <ng-template let-row="row" ngx-datatable-cell-template>
               <span>{{ row.name }}</span>
             </ng-template>
@@ -109,27 +106,18 @@
 
 
           <!-- Conditionally Display Status Column -->
-          <ngx-datatable-column *ngIf="showStatusColumn" name="Status" prop="companyStatus" [flexGrow]="1"
+          <ngx-datatable-column *ngIf="showStatusColumn" [name]="'COMMON.STATUS' | translate" prop="companyStatus" [flexGrow]="1"
             [minWidth]="140">
 
             <ng-template ngx-datatable-cell-template let-row="row" let-value="value">
               <span class="status-pill" [ngClass]="getStatusClass(value)">
-                {{ value }}
+                {{ value | statusTranslate }}
               </span>
             </ng-template>
           </ngx-datatable-column>
 
-          <!-- City -->
-          <!-- <ngx-datatable-column name="City" prop="city" [width]="120"></ngx-datatable-column> -->
-
-          <!-- Vendor Type -->
-          <!-- <ngx-datatable-column name="Vendor Type" prop="vendorType" [width]="120"></ngx-datatable-column> -->
-
-          <!-- Currency -->
-          <!-- <ngx-datatable-column name="Currency" prop="primaryCurrency" [width]="100"></ngx-datatable-column> -->
-
           <!-- Action Column -->
-          <ngx-datatable-column name="Action" [flexGrow]="1" [minWidth]="70" [maxWidth]="180" prop="action"
+          <ngx-datatable-column [name]="'COMMON.ACTION' | translate" [flexGrow]="1" [minWidth]="70" [maxWidth]="180" prop="action"
             [sortable]="false">
             <ng-template let-row="row" ngx-datatable-cell-template>
               <button type="button" class="btn btn-sm btn-primary" [ngbPopover]="actionToolbar"
@@ -140,20 +128,10 @@
               <!-- Popover Template -->
               <ng-template #actionToolbar>
                 <div class="d-flex justify-content-around flex-column">
-                  <!-- <button class="btn popover-btn btn-sm m-1" ngbTooltip="Approval History"
-                  (click)="openApprovalHistoryModal(row)">
-                  <span class="popover-icon"><i class="ft-list"></i></span>
-                  Approval History
-                </button>
-                <button class="btn popover-btn btn-sm m-1" ngbTooltip="Approval History"
-                  (click)="AssigenedHistory(row)">
-                  <span class="popover-icon"><i class="ft-list"></i></span>
-                  Setup History
-                </button> -->
-                  <button class="btn popover-btn btn-sm m-1" ngbTooltip="Assign to me " (click)="openAssignMeModal(row)"
+                  <button class="btn popover-btn btn-sm m-1" [ngbTooltip]="'COMMON.ASSIGN_TO_ME' | translate" (click)="openAssignMeModal(row)"
                     *ngIf="row.showAssignMe">
                     <span class="popover-icon"><i class="ft-user-plus"></i></span>
-                    Assign to me
+                    {{ 'COMMON.ASSIGN_TO_ME' | translate }}
                   </button>
                 </div>
               </ng-template>

@@ -3,7 +3,7 @@
     <div class="col-12">
       <div class="row">
         <div class="col-md-12" style="margin-top: -0.25rem;">
-          <h4 class="heading">Project Setup</h4>
+          <h4 class="heading">{{ 'SETUP_MODULE.PROJECT_SETUP' | translate }}</h4>
         </div>
       </div>
 
@@ -18,7 +18,7 @@
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn ml-2" (click)="openModal(formModal)">
                 <i class="ft-plus"></i>
-                <label class="ml-1">Create Project</label>
+                <label class="ml-1">{{ 'SETUP_MODULE.CREATE_PROJECT' | translate }}</label>
               </button>
 
               <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="deleteSelected()"
@@ -30,7 +30,7 @@
               <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="editSelected(formModal)"
                 [disabled]="selected.length !== 1">
                 <i class="ft-edit"></i>
-                <label class="ml-1">Edit</label>
+                <label class="ml-1">{{ 'COMMON.EDIT' | translate }}</label>
               </button>
             </div>
           </div>
@@ -53,13 +53,13 @@
             </ng-template>
           </ngx-datatable-column>
 
-          <ngx-datatable-column name="Name" prop="name"></ngx-datatable-column>
-          <ngx-datatable-column name="Department Name" prop="departmentName"></ngx-datatable-column>
-          <ngx-datatable-column name="Activity Count" prop="activityCount"></ngx-datatable-column>
-          <ngx-datatable-column name="Description" prop="description"></ngx-datatable-column>
-          <ngx-datatable-column name="Actions" [width]="80" [sortable]="false" [canAutoResize]="false">
+          <ngx-datatable-column [name]="'COMMON.NAME' | translate" prop="name"></ngx-datatable-column>
+          <ngx-datatable-column [name]="'SETUP_MODULE.DEPARTMENT_NAME' | translate" prop="departmentName"></ngx-datatable-column>
+          <ngx-datatable-column [name]="'SETUP_MODULE.ACTIVITY_COUNT' | translate" prop="activityCount"></ngx-datatable-column>
+          <ngx-datatable-column [name]="'COMMON.DESCRIPTION' | translate" prop="description"></ngx-datatable-column>
+          <ngx-datatable-column [name]="'COMMON.ACTIONS' | translate" [width]="80" [sortable]="false" [canAutoResize]="false">
             <ng-template ngx-datatable-cell-template let-row="row">
-              <button type="button" class="btn btn-sm btn-icon" (click)="viewLogs(row)" title="View Logs">
+              <button type="button" class="btn btn-sm btn-icon" (click)="viewLogs(row)" [title]="'SETUP_MODULE.VIEW_LOGS' | translate">
                 <i class="ft-eye"></i>
               </button>
             </ng-template>
@@ -72,7 +72,7 @@
   <ng-template #formModal let-modal>
     <div class="modal-header d-flex align-items-center justify-content-between">
       <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
-        <i class="ft-layers mr-2 text-white"></i> {{ isEdit ? 'Edit' : 'Create' }} Project
+        <i class="ft-layers mr-2 text-white"></i> {{ (isEdit ? 'COMMON.EDIT' : 'COMMON.CREATE') | translate }} {{ 'SETUP_MODULE.PROJECT' | translate }}
       </h5>
       <button type="button" class="modal-close-btn" aria-label="Close" (click)="modal.dismiss()">
         <i class="ft-x"></i>
@@ -82,14 +82,14 @@
       <form [formGroup]="projectForm">
         <div class="row gx-3">
           <div class="form-group col-md-6 mb-3">
-            <label class="form-label font-weight-bold">Department <span class="text-danger">*</span></label>
+            <label class="form-label font-weight-bold">{{ 'SETUP_MODULE.DEPARTMENT' | translate }} <span class="text-danger">*</span></label>
             <ng-select #deptSelect class="custom-select-ui" [items]="departments" bindLabel="name" bindValue="id"
-              formControlName="departmentId" placeholder="Select department" [appendTo]="'body'" [clearable]="true"
+              formControlName="departmentId" [placeholder]="'SETUP_MODULE.SELECT_DEPARTMENT' | translate" [appendTo]="'body'" [clearable]="true"
               [searchable]="false" (open)="onDropdownOpen(deptSelect)" (close)="onDropdownClose(deptSelect)">
               <ng-template ng-header-tmp>
                 <div class="dropdown-search-wrapper">
                   <i class="ft-search dropdown-search-icon"></i>
-                  <input #deptSearch type="text" class="dropdown-search-input" placeholder="Search department..."
+                  <input #deptSearch type="text" class="dropdown-search-input" [placeholder]="'SETUP_MODULE.SEARCH_FORM_ROUTE' | translate"
                     (input)="deptSelect.filter(deptSearch.value)" (click)="$event.stopPropagation()"
                     (keydown)="$event.stopPropagation()">
                 </div>
@@ -98,31 +98,31 @@
             <div
               *ngIf="projectForm.get('departmentId')?.invalid && (projectForm.get('departmentId')?.touched || projectForm.get('departmentId')?.dirty)"
               class="text-danger small mt-1">
-              Department is required.
+              {{ 'SETUP_MODULE.DEPARTMENT_REQUIRED' | translate }}
             </div>
           </div>
           <div class="form-group col-md-6 mb-3">
-            <label class="form-label font-weight-bold">Name <span class="text-danger">*</span></label>
+            <label class="form-label font-weight-bold">{{ 'COMMON.NAME' | translate }} <span class="text-danger">*</span></label>
             <input type="text" class="form-control custom-input" formControlName="name"
-              placeholder="Enter project name">
+              [placeholder]="'SETUP_MODULE.ENTER_PROJECT_NAME' | translate">
             <div
               *ngIf="projectForm.get('name')?.invalid && (projectForm.get('name')?.touched || projectForm.get('name')?.dirty)"
               class="text-danger small mt-1">
-              Project name is required.
+              {{ 'SETUP_MODULE.PROJECT_NAME_REQUIRED' | translate }}
             </div>
           </div>
         </div>
         <div class="form-group mb-3">
-          <label class="form-label font-weight-bold">Description</label>
+          <label class="form-label font-weight-bold">{{ 'COMMON.DESCRIPTION' | translate }}</label>
           <textarea class="form-control custom-input" formControlName="description" rows="2"
-            placeholder="Enter project description (optional)"></textarea>
+            [placeholder]="'COMMON.DESCRIPTION' | translate"></textarea>
         </div>
 
         <div class="mt-4">
           <div class="d-flex justify-content-between align-items-center mb-2 pt-2 border-top">
             <div>
               <h6 class="mb-0 font-weight-bold d-flex align-items-center" style="font-size: 14.5px; color: #116AEF;">
-                <i class="ft-list mr-1"></i> Project Activities
+                <i class="ft-list mr-1"></i> {{ 'SETUP_MODULE.PROJECT_ACTIVITIES' | translate }}
                 <span class="badge rounded-pill ml-2" *ngIf="activities.length"
                   style="background: #eef4ff; color: #116aef; font-weight: 600; font-size: 11.5px; padding: 4px 8px;">
                   {{ activities.length }}
@@ -133,7 +133,7 @@
             </div>
             <button type="button" class="btn btn-sm btn-outline-primary d-inline-flex align-items-center"
               (click)="addActivity()" style="border-radius: 6px; font-weight: 500; padding: 5px 12px; font-size: 13px;">
-              <i class="ft-plus mr-1"></i> Add Activity
+              <i class="ft-plus mr-1"></i> {{ 'SETUP_MODULE.ADD_ACTIVITY' | translate }}
             </button>
           </div>
 
@@ -142,24 +142,24 @@
               <table class="table pro-table table-sm mb-0">
                 <thead>
                   <tr>
-                    <th style="min-width: 130px;">Name <span class="text-danger">*</span></th>
-                    <th style="min-width: 135px;">Description</th>
-                    <th style="width: 100px;">Budget</th>
-                    <th style="width: 105px;">Over Budget %</th>
-                    <th style="width: 85px;" class="text-center">Mark Exception</th>
-                    <th style="width: 105px;" class="text-center">Assigned to</th>
-                    <th style="width: 95px; min-width: 95px;" class="text-center">Action</th>
+                    <th style="min-width: 130px;">{{ 'COMMON.NAME' | translate }} <span class="text-danger">*</span></th>
+                    <th style="min-width: 135px;">{{ 'COMMON.DESCRIPTION' | translate }}</th>
+                    <th style="width: 100px;">{{ 'DASHBOARD_MODULE.BUDGET' | translate }}</th>
+                    <th style="width: 105px;">{{ 'SETUP_MODULE.OVER_BUDGET_PCT' | translate }}</th>
+                    <th style="width: 85px;" class="text-center">{{ 'SETUP_MODULE.MARK_EXCEPTION' | translate }}</th>
+                    <th style="width: 105px;" class="text-center">{{ 'SETUP_MODULE.ASSIGNED_TO' | translate }}</th>
+                    <th style="width: 95px; min-width: 95px;" class="text-center">{{ 'COMMON.ACTIONS' | translate }}</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr *ngFor="let activity of activities.controls; let i=index" [formGroupName]="i">
                     <td>
                       <input type="text" class="form-control form-control-sm pro-table-input" formControlName="name"
-                        placeholder="Activity name">
+                        [placeholder]="'SETUP_MODULE.ACTIVITY_NAME' | translate">
                     </td>
                     <td>
                       <input type="text" class="form-control form-control-sm pro-table-input"
-                        formControlName="description" placeholder="Description"
+                        formControlName="description" [placeholder]="'COMMON.DESCRIPTION' | translate"
                         [ngbTooltip]="activity.get('description')?.value"
                         [disableTooltip]="!activity.get('description')?.value"
                         container="body">
@@ -192,7 +192,7 @@
                     <td class="text-center align-middle" style="width: 95px; min-width: 95px; padding-right: 12px;">
                       <div class="d-inline-flex align-items-center justify-content-center" style="gap: 6px; white-space: nowrap;">
                         <button type="button" class="btn-assign-user position-relative"
-                          (click)="openAssignUsersModal(i, assignUsersModal)" ngbTooltip="Assign Users"
+                          (click)="openAssignUsersModal(i, assignUsersModal)" [ngbTooltip]="'SETUP_MODULE.ASSIGN_USERS' | translate"
                           container="body">
                           <i class="ft-plus"></i>
                           <span *ngIf="getActivityAssignedUsersCount(i) > 0" class="btn-user-badge">
@@ -200,7 +200,7 @@
                           </span>
                         </button>
                         <button type="button" class="btn-delete-row" (click)="removeActivity(i)"
-                          ngbTooltip="Remove Activity" container="body">
+                          [ngbTooltip]="'SETUP_MODULE.REMOVE_ACTIVITY' | translate" container="body">
                           <i class="ft-trash-2"></i>
                         </button>
                       </div>
@@ -223,12 +223,12 @@
     </div>
     <div class="modal-footer">
       <button type="button" class="modal-btn-cancel" (click)="modal.dismiss()">
-        <i class="ft-x mr-1"></i> Cancel
+        <i class="ft-x mr-1"></i> {{ 'COMMON.CANCEL' | translate }}
       </button>
       <button type="button" class="modal-btn-save" (click)="save(modal)" [disabled]="projectForm.invalid || saving">
         <i class="fa fa-spinner fa-spin mr-1" *ngIf="saving"></i>
         <i class="fa fa-save mr-1" *ngIf="!saving"></i>
-        {{ isEdit ? 'Update' : 'Save' }}
+        {{ (isEdit ? 'COMMON.UPDATE' : 'COMMON.SAVE') | translate }}
       </button>
     </div>
   </ng-template>
@@ -236,7 +236,7 @@
   <ng-template #logsModal let-modal>
     <div class="modal-header d-flex align-items-center justify-content-between">
       <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
-        <i class="ft-file-text mr-2 text-white"></i> Project Activity Logs
+        <i class="ft-file-text mr-2 text-white"></i> {{ 'SETUP_MODULE.PROJECT_ACTIVITY_LOGS' | translate }}
         <span *ngIf="currentProject" class="ml-2 badge badge-light" style="font-size: 12px;">{{ currentProject.name
           }}</span>
       </h5>
@@ -247,14 +247,14 @@
     <div class="modal-body" style="max-height: 72vh; overflow-y: auto;">
       <div *ngIf="loadingLogs" class="text-center py-5">
         <div class="spinner-border text-primary" role="status">
-          <span class="sr-only">Loading...</span>
+          <span class="sr-only">{{ 'COMMON.LOADING' | translate }}</span>
         </div>
-        <p class="mt-2 text-muted">Loading logs...</p>
+        <p class="mt-2 text-muted">{{ 'COMMON.LOADING' | translate }}</p>
       </div>
 
       <div *ngIf="!loadingLogs && projectLogs.length === 0" class="text-center py-5">
         <i class="ft-file-text font-large-1 d-block mb-2 text-muted" style="opacity: 0.45;"></i>
-        <p class="text-muted mb-0">No logs found for this project.</p>
+        <p class="text-muted mb-0">{{ 'SETUP_MODULE.NO_LOGS_FOUND_PROJECT' | translate }}</p>
       </div>
 
       <div *ngIf="!loadingLogs && projectLogs.length > 0" class="logs-list">
@@ -292,7 +292,7 @@
             <!-- Old Values -->
             <div class="log-values-panel log-values-old" *ngIf="parseJsonValues(log.oldValues).length > 0">
               <div class="log-values-panel-header">
-                <i class="ft-arrow-left-circle"></i> Old Values
+                <i class="ft-arrow-left-circle"></i> {{ 'SETUP_MODULE.OLD_VALUES' | translate }}
               </div>
               <div class="log-kv-list">
                 <div class="log-kv-row" *ngFor="let kv of parseJsonValues(log.oldValues)">
@@ -312,7 +312,7 @@
             <div class="log-values-panel log-values-new"
               *ngIf="parseJsonValues(log.newValues).length > 0 && parseJsonValues(log.oldValues).length > 0">
               <div class="log-values-panel-header">
-                <i class="ft-arrow-right-circle"></i> New Values
+                <i class="ft-arrow-right-circle"></i> {{ 'SETUP_MODULE.NEW_VALUES' | translate }}
               </div>
               <div class="log-kv-list">
                 <div class="log-kv-row" *ngFor="let kv of parseJsonValues(log.newValues)">
@@ -326,7 +326,7 @@
             <div class="log-values-panel log-values-new log-values-full"
               *ngIf="parseJsonValues(log.oldValues).length === 0 && parseJsonValues(log.newValues).length > 0">
               <div class="log-values-panel-header">
-                <i class="ft-arrow-right-circle"></i> New Values
+                <i class="ft-arrow-right-circle"></i> {{ 'SETUP_MODULE.NEW_VALUES' | translate }}
               </div>
               <div class="log-kv-list">
                 <div class="log-kv-row" *ngFor="let kv of parseJsonValues(log.newValues)">
@@ -340,14 +340,14 @@
           <!-- No values fallback -->
           <div class="log-no-values"
             *ngIf="parseJsonValues(log.oldValues).length === 0 && parseJsonValues(log.newValues).length === 0">
-            <i class="ft-info"></i> No value details recorded.
+            <i class="ft-info"></i> {{ 'SETUP_MODULE.NO_VALUE_DETAILS' | translate }}
           </div>
         </div>
       </div>
     </div>
     <div class="modal-footer">
       <button type="button" class="modal-btn-cancel" (click)="modal.dismiss()">
-        <i class="ft-x mr-1"></i> Close
+        <i class="ft-x mr-1"></i> {{ 'COMMON.CLOSE' | translate }}
       </button>
     </div>
   </ng-template>
@@ -356,7 +356,7 @@
   <ng-template #assignUsersModal let-modal>
     <div class="modal-header d-flex align-items-center justify-content-between">
       <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
-        <i class="ft-user-check mr-2 text-white"></i> Assign Users to Activity
+        <i class="ft-user-check mr-2 text-white"></i> {{ 'SETUP_MODULE.ASSIGN_USERS_ACTIVITY' | translate }}
       </h5>
       <button type="button" class="modal-close-btn" aria-label="Close" (click)="modal.dismiss()">
         <i class="ft-x"></i>
@@ -375,16 +375,16 @@
               {{ getCurrentActivityName() }}
             </div>
             <div class="banner-meta">
-              Budget: <strong>{{ getCurrentActivityBudget() | number:'1.0-2' }}</strong>
+              {{ 'DASHBOARD_MODULE.BUDGET' | translate }}: <strong>{{ getCurrentActivityBudget() | number:'1.0-2' }}</strong>
               <span class="mx-2">•</span>
-              Over Budget Limit: <strong>{{ getCurrentActivityAllowedPercentage() }}%</strong>
+              {{ 'SETUP_MODULE.OVER_BUDGET_LIMIT' | translate }}: <strong>{{ getCurrentActivityAllowedPercentage() }}%</strong>
             </div>
           </div>
         </div>
         <div class="d-flex align-items-center">
           <span class="banner-badge">
             <i class="ft-users mr-1"></i>
-            {{ getCurrentActivityAssignedUserIds().length }} Selected
+            {{ getCurrentActivityAssignedUserIds().length }} {{ 'SETUP_MODULE.SELECTED' | translate }}
           </span>
         </div>
       </div>
@@ -393,7 +393,7 @@
       <div class="assign-search-box mb-2">
         <i class="ft-search assign-search-icon"></i>
         <input type="text" class="form-control assign-search-input" [(ngModel)]="userSearchTerm"
-          placeholder="Search user by name, email or role...">
+          [placeholder]="'SETUP_MODULE.SEARCH_USER' | translate">
         <button *ngIf="userSearchTerm" type="button" class="btn-clear-search" (click)="userSearchTerm = ''">
           <i class="ft-x"></i>
         </button>
@@ -403,20 +403,20 @@
       <div class="assign-users-table-container">
         <div *ngIf="loadingUsers" class="text-center py-5">
           <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-          <span class="ml-2 text-muted" style="font-size: 13px;">Loading users...</span>
+          <span class="ml-2 text-muted" style="font-size: 13px;">{{ 'COMMON.LOADING' | translate }}</span>
         </div>
 
         <table *ngIf="!loadingUsers" class="table assign-users-table table-sm mb-0">
           <thead>
             <tr>
-              <th style="width: 40%;">User Name</th>
-              <th style="width: 44%;">Email / Role</th>
+              <th style="width: 40%;">{{ 'CONFIG_MODULE.USERNAME' | translate }}</th>
+              <th style="width: 44%;">{{ 'SETUP_MODULE.EMAIL_ROLE' | translate }}</th>
               <th class="col-select" style="width: 16%;">
                 <div class="d-flex align-items-center" style="gap: 6px;">
                   <input type="checkbox" class="cstm-table-checkbox" id="selectAllUsersCheck"
                     [checked]="isAllUsersSelectedForCurrentActivity()" (change)="toggleSelectAllUsers()">
                   <label class="select-all-label" for="selectAllUsersCheck">
-                    Select All
+                    {{ 'SETUP_MODULE.SELECT_ALL' | translate }}
                   </label>
                 </div>
               </th>
@@ -465,7 +465,7 @@
             <tr *ngIf="getFilteredUsers().length === 0">
               <td colspan="3" class="text-center py-4 text-muted">
                 <i class="ft-user-x font-medium-3 d-block mb-1 opacity-50"></i>
-                <span style="font-size: 12.5px;">No users found</span>
+                <span style="font-size: 12.5px;">{{ 'SETUP_MODULE.NO_USERS_FOUND' | translate }}</span>
               </td>
             </tr>
           </tbody>
@@ -476,15 +476,15 @@
     <div class="modal-footer d-flex align-items-center justify-content-between">
       <div class="text-muted" style="font-size: 12.5px;">
         <i class="ft-info mr-1 text-primary"></i>
-        <span><strong>{{ getCurrentActivityAssignedUserIds().length }}</strong> user(s) assigned to <strong>{{
+        <span><strong>{{ getCurrentActivityAssignedUserIds().length }}</strong> {{ 'SETUP_MODULE.USERS_ASSIGNED_TO' | translate }} <strong>{{
             getCurrentActivityName() }}</strong></span>
       </div>
       <div class="d-flex align-items-center" style="gap: 10px;">
         <button type="button" class="modal-btn-cancel" (click)="modal.dismiss()">
-          <i class="ft-x mr-1"></i> Close
+          <i class="ft-x mr-1"></i> {{ 'COMMON.CLOSE' | translate }}
         </button>
         <button type="button" class="modal-btn-save" (click)="modal.close()">
-          <i class="ft-check mr-1"></i> Done
+          <i class="ft-check mr-1"></i> {{ 'COMMON.DONE' | translate }}
         </button>
       </div>
     </div>

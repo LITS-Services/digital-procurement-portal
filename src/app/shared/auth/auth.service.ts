@@ -13,6 +13,7 @@ import { TokenStorageService } from './token-storage.service';
 import { SessionIdleService } from './session-idle.service';
 import { procurementWebLoginHeaders } from './procurement-client.headers';
 import { withSkipToast } from '../interceptor/response-handler.interceptor';
+import { LanguageService } from 'app/core/language/language.service';
 
 const HTTP_CREDENTIALS = { withCredentials: true } as const;
 
@@ -139,10 +140,11 @@ export class AuthService {
     return this.http.post(`${environment.apiUrl}/ProcurementUsers/ChangePassword/`, payload, HTTP_CREDENTIALS);
   }
 
-  signinUser(username: string, password: string, turnstileToken?: string | null): Observable<any> {
+  signinUser(username: string, password: string, turnstileToken?: string | null, language?: string | null): Observable<any> {
+    const selectedLang = language || sessionStorage.getItem('login_selected_lang') || this.getUserLanguage();
     return this.http.post<any>(
       `${this.baseUrl}/Auth/ProcurementLogin`,
-      { username, password, turnstileToken: turnstileToken || null },
+      { username, password, turnstileToken: turnstileToken || null, language: selectedLang },
       { ...HTTP_CREDENTIALS, headers: procurementWebLoginHeaders() }
     ).pipe(
       tap((res) => {
@@ -230,6 +232,17 @@ export class AuthService {
 
   getCompanyIds(): string[] {
     return JSON.parse(localStorage.getItem('companyIds') || '[]');
+  }
+
+  getUserLanguage(): string {
+    return localStorage.getItem('language') || localStorage.getItem('procurement_locale') || 'en';
+  }
+
+  applyAuthResult(res: any): void {
+    const auth = unwrapAuthPayload(res);
+    if (auth) {
+      this._applySessionFromRefresh(auth);
+    }
   }
 
   restoreSession$(): Observable<boolean> {
@@ -342,6 +355,31 @@ export class AuthService {
       localStorage.setItem('auth', JSON.stringify({ ...auth, rolePermissions }));
     }
 
+    const explicitLoginLang = sessionStorage.getItem('login_selected_lang');
+    let effectiveLang: string;
+    let shouldPersist = false;
+    if (explicitLoginLang && (explicitLoginLang === 'ar' || explicitLoginLang === 'en')) {
+      effectiveLang = explicitLoginLang;
+      shouldPersist = true;
+    } else {
+      const rawLang = res.language || res.Language || extractLanguageFromJwt(token);
+      if (rawLang && (rawLang.toString().trim().toLowerCase() === 'ar' || rawLang.toString().trim().toLowerCase() === 'en')) {
+        effectiveLang = rawLang.toString().trim().toLowerCase();
+      } else {
+        effectiveLang = this.getUserLanguage();
+      }
+    }
+    sessionStorage.removeItem('login_selected_lang');
+
+    localStorage.setItem('language', effectiveLang);
+    localStorage.setItem('procurement_locale', effectiveLang);
+    try {
+      const langService = this.injector.get(LanguageService);
+      langService.setLanguage(effectiveLang as any, shouldPersist);
+    } catch {
+      /* optional */
+    }
+
     localStorage.setItem('isAuthenticated', 'true');
     this.scheduleSessionExpiry(this.refreshExpiresAt);
     this.bumpIdleTimer();
@@ -392,6 +430,22 @@ export class AuthService {
       localStorage.setItem('auth', JSON.stringify({ ...auth, rolePermissions: res.rolePermissions }));
     }
 
+    const refToken = res?.token || this.tokenStorage.getAccessToken();
+    const rawRefLang = res?.language || res?.Language || extractLanguageFromJwt(refToken);
+    if (rawRefLang) {
+      const effectiveLang = (rawRefLang ?? '').toString().trim().toLowerCase() === 'ar' ? 'ar' : 'en';
+      localStorage.setItem('language', effectiveLang);
+      localStorage.setItem('procurement_locale', effectiveLang);
+      try {
+        const langService = this.injector.get(LanguageService);
+        if (langService.current() !== effectiveLang) {
+          langService.setLanguage(effectiveLang as any, false);
+        }
+      } catch {
+        /* optional */
+      }
+    }
+
     if (res?.userId || res?.token || this.useCookieAuth()) {
       localStorage.setItem('isAuthenticated', 'true');
     }
@@ -427,7 +481,13 @@ export class AuthService {
     this.tokenStorage.clear();
     this.accessExpiresAt = null;
     this.refreshExpiresAt = null;
+    const currentLocale = localStorage.getItem('procurement_locale') || localStorage.getItem('language');
     localStorage.clear();
+    sessionStorage.removeItem('login_selected_lang');
+    if (currentLocale) {
+      localStorage.setItem('procurement_locale', currentLocale);
+      localStorage.setItem('language', currentLocale);
+    }
     this.loggingOut = false;
     if (reason === 'session-expired') {
       sessionStorage.setItem('authFlash', 'Your session has expired. Please sign in again.');
@@ -435,6 +495,33 @@ export class AuthService {
       sessionStorage.setItem('authFlash', 'You were signed out due to inactivity.');
     } else {
       sessionStorage.removeItem('authFlash');
+    }
+
+    if (typeof document !== 'undefined' && document.body) {
+      const leftoverClasses = [
+        "vertical-layout",
+        "vertical-menu",
+        "vertical-overlay-menu",
+        "horizontal-layout",
+        "horizontal-menu",
+        "horizontal-menu-padding",
+        "sidebar-lg",
+        "sidebar-sm",
+        "sidebar-md",
+        "menu-expanded",
+        "navbar-static",
+        "navbar-sticky",
+        "menu-open",
+        "menu-hide",
+        "nav-collapsed",
+        "fixed-navbar",
+        "navbar-scrolled",
+        "page-scrolled",
+        "overflow-hidden"
+      ];
+      leftoverClasses.forEach(cls => document.body.classList.remove(cls));
+      document.body.removeAttribute("data-menu");
+      document.body.classList.add("blank-page", "auth-page");
     }
     this.router.navigate(['/pages/login']);
   }
@@ -507,6 +594,27 @@ function extractEmailFromJwt(token?: string | null): string | null {
       || payload['upn']
       || (typeof payload['unique_name'] === 'string' && payload['unique_name'].includes('@') ? payload['unique_name'] : null);
     return email && typeof email === 'string' ? email.trim() : null;
+  } catch {
+    return null;
+  }
+}
+
+function extractLanguageFromJwt(token?: string | null): string | null {
+  if (!token || typeof token !== 'string') return null;
+  try {
+    const parts = token.split('.');
+    if (parts.length < 2) return null;
+    const base64Url = parts[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    const payload = JSON.parse(jsonPayload);
+    const lang = payload['language'] || payload['Language'];
+    return lang && typeof lang === 'string' ? lang.trim().toLowerCase() : null;
   } catch {
     return null;
   }

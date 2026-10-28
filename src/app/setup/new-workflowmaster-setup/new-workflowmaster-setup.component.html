@@ -6,7 +6,7 @@
       <div class="row">
         <div class="col-md-12" style="margin-top: -0.25rem;">
           <h4 class="heading">
-            {{ mode === 'Edit' ? 'Edit Workflow Setup' : 'Create Workflow Setup' }}
+            {{ (mode === 'Edit' ? 'SETUP_MODULE.EDIT_WORKFLOW' : 'SETUP_MODULE.CREATE_WORKFLOW') | translate }}
           </h4>
         </div>
       </div>
@@ -20,14 +20,14 @@
             <span class="vl"></span>
             <button type="submit" class="btn btn-sm cstm-ui-table-btn" [disabled]="workflowsetupform.invalid"
               *ngIf="mode !== 'Edit'" (click)="submitForm()">
-              <i class="ft-plus"></i><label class="ml-1">Save</label>
+              <i class="ft-plus"></i><label class="ml-1">{{ 'COMMON.SAVE' | translate }}</label>
             </button>
             <button [disabled]="mode !== 'Edit'" type="reset" class="btn btn-sm cstm-ui-table-btn"
               (click)="updateForm()">
-              <i class="ft-edit"></i><label class="ml-1">{{ mode === 'Edit' ? 'Update' : 'Edit' }}</label>
+              <i class="ft-edit"></i><label class="ml-1">{{ (mode === 'Edit' ? 'COMMON.UPDATE' : 'COMMON.EDIT') | translate }}</label>
             </button>
             <button [disabled]="mode !== 'Edit'" type="reset" class="btn btn-sm cstm-ui-table-btn">
-              <i class="ft-trash"></i><label class="ml-1">Delete</label>
+              <i class="ft-trash"></i><label class="ml-1">{{ 'COMMON.DELETE' | translate }}</label>
             </button>
           </div>
         </div>
@@ -40,15 +40,15 @@
 
               <!-- Basic Fields -->
               <div class="col-lg-4 mb-2">
-                <label>Workflow Name</label>
+                <label>{{ 'SETUP_MODULE.WORKFLOW_NAME' | translate }}</label>
                 <input type="text" class="form-control custom-input" formControlName="workflowName"
-                  placeholder="Workflow Name" required>
+                  [placeholder]="'SETUP_MODULE.WORKFLOW_NAME' | translate" required>
               </div>
 
               <div class="col-lg-4 mb-2">
-                <label>Document Type</label>
+                <label>{{ 'SETUP_MODULE.DOCUMENT_TYPE' | translate }}</label>
                 <select class="form-control custom-input" formControlName="documentType">
-                  <option value="" disabled>Select Type</option>
+                  <option value="" disabled>{{ 'CONFIG_MODULE.SELECT_TYPE' | translate }}</option>
                   <option *ngFor="let wf of workflowTypes" [value]="wf.id">{{ wf.typeName }}</option>
                 </select>
               </div>
@@ -56,12 +56,12 @@
               <!-- Workflow Initiator(s) -->
               <div class="col-lg-4 mb-2">
                 <div class="form-group mb-2">
-                  <label>{{ isVendorOnboarding ? 'Select Entity' : 'Workflow Initiator(s)' }}</label>
+                  <label>{{ (isVendorOnboarding ? 'SETUP_MODULE.SELECT_ENTITY' : 'SETUP_MODULE.WORKFLOW_INITIATORS') | translate }}</label>
 
                   <ng-select class="custom-style" [items]="isVendorOnboarding ? entitiesList : usersList"
                     [bindLabel]="isVendorOnboarding ? 'name' : 'userName'" bindValue="id"
                     [multiple]="!isVendorOnboarding" [closeOnSelect]="isVendorOnboarding" [searchable]="true"
-                    placeholder="{{ isVendorOnboarding ? 'Select Entity' : 'Select Users' }}"
+                    [placeholder]="(isVendorOnboarding ? 'SETUP_MODULE.SELECT_ENTITY' : 'SETUP_MODULE.SELECT_USERS') | translate"
                     formControlName="usersList" (change)="isVendorOnboarding ? onEntitySelected($event?.id) : null">
                   </ng-select>
 
@@ -75,9 +75,9 @@
               <div class="col-lg-4 mb-3">
                 <div class="custom-control custom-switch">
                   <input type="checkbox" class="custom-control-input me-1" id="status" formControlName="status">
-                  <label class="custom-control-label" for="status">Status</label>
+                  <label class="custom-control-label" for="status">{{ 'COMMON.STATUS' | translate }}</label>
                   <input type="checkbox" class="custom-control-input ms-1 me-1" id="enableBulkUpload" formControlName="enableBulkUpload">
-                  <label class="custom-control-label" for="enableBulkUpload">Enable for Bulk Upload</label>
+                  <label class="custom-control-label" for="enableBulkUpload">{{ 'SETUP_MODULE.ENABLE_BULK_UPLOAD' | translate }}</label>
                 </div>
               </div>
             </div>
@@ -91,7 +91,7 @@
                   <div class="row">
                     <div class="col-md-12 d-flex justify-content-between align-items-center">
                       <span class="panel-icon">
-                        <label class="text-white px-1 mb-1">Add Approver</label>
+                        <label class="text-white px-1 mb-1">{{ 'SETUP_MODULE.ADD_APPROVER' | translate }}</label>
                       </span>
 
                       <!-- your icon (bootstrap adds its own arrow too unless you hide it via css) -->
@@ -110,7 +110,7 @@
 
                         <button type="button" class="btn w-auto btn-primary position-absolute"
                           style="top: 0; right: 0; z-index: 10;     margin-right: 21px" (click)="addApprover()">
-                          <i class="ft-pocket mr-1"></i> Add
+                          <i class="ft-pocket mr-1"></i> {{ 'COMMON.ADD' | translate }}
                         </button>
 
                         <div class="col-12 mt-5">
@@ -118,9 +118,9 @@
 
                         <div class="col-lg-6 col-md-5 col-sm-5 col-xs-6">
                           <div class="form-group mb-2">
-                            <label>Approver</label>
+                            <label>{{ 'SETUP_MODULE.APPROVER' | translate }}</label>
                             <select class="form-control custom-input" formControlName="approverList">
-                              <option value="" disabled>Select Approver</option>
+                              <option value="" disabled>{{ 'SETUP_MODULE.SELECT_APPROVER' | translate }}</option>
                               <option *ngFor="let approver of approverList" [value]="approver.id">
                                 {{ approver.userName }}
                               </option>
@@ -131,33 +131,33 @@
                         <!-- Amount From & To: hide for Vendor Company Onboarding -->
                         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
                           <div class="form-group mb-2">
-                            <label>Amount From</label>
-                            <input type="number" placeholder="Enter Amount" class="form-control custom-input"
+                            <label>{{ 'SETUP_MODULE.AMOUNT_FROM' | translate }}</label>
+                            <input type="number" [placeholder]="'SETUP_MODULE.ENTER_AMOUNT' | translate" class="form-control custom-input"
                               formControlName="amountFrom" [disabled]="hideConditionalFields" />
                           </div>
                         </div>
 
                         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6">
                           <div class="form-group mb-2">
-                            <label>Amount To</label>
-                            <input type="number" placeholder="Enter Amount" class="form-control custom-input"
+                            <label>{{ 'SETUP_MODULE.AMOUNT_TO' | translate }}</label>
+                            <input type="number" [placeholder]="'SETUP_MODULE.ENTER_AMOUNT' | translate" class="form-control custom-input"
                               formControlName="amountTo" [disabled]="hideConditionalFields" />
                           </div>
                         </div>
 
                         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6">
                           <div class="form-group mb-2">
-                            <label>Approver Level</label>
-                            <input type="number" placeholder="Enter Level" class="form-control custom-input"
+                            <label>{{ 'SETUP_MODULE.APPROVER_LEVEL' | translate }}</label>
+                            <input type="number" [placeholder]="'SETUP_MODULE.ENTER_LEVEL' | translate" class="form-control custom-input"
                               formControlName="approverLevel" />
                           </div>
                         </div>
 
                         <div class="col-lg-6 col-md-5 col-sm-5 col-xs-6">
                           <div class="form-group mb-2">
-                            <label>Proxy Approver</label>
+                            <label>{{ 'SETUP_MODULE.PROXY_APPROVER' | translate }}</label>
                             <select class="form-control custom-input" formControlName="proxyApproverId">
-                              <option value="" disabled>Select Proxy Approver</option>
+                              <option value="" disabled>{{ 'SETUP_MODULE.SELECT_PROXY_APPROVER' | translate }}</option>
                               <option *ngFor="let approver of approverList" [value]="approver.id">
                                 {{ approver.userName }}
                               </option>
@@ -167,8 +167,8 @@
 
                         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-6">
                           <div class="form-group mb-2">
-                            <label>Grace Days</label>
-                            <input type="number" placeholder="Enter Grace Days" class="form-control custom-input"
+                            <label>{{ 'SETUP_MODULE.GRACE_DAYS' | translate }}</label>
+                            <input type="number" [placeholder]="'SETUP_MODULE.ENTER_GRACE_DAYS' | translate" class="form-control custom-input"
                               formControlName="graceDays" />
                           </div>
                         </div>
@@ -179,7 +179,7 @@
                             <div class="custom-control custom-switch">
                               <input type="checkbox" class="custom-control-input me-1" id="canApprove"
                                 formControlName="canApprove" />
-                              <label class="custom-control-label" for="canApprove">Approve</label>
+                              <label class="custom-control-label" for="canApprove">{{ 'SETUP_MODULE.CAN_APPROVE' | translate }}</label>
                             </div>
                           </div>
 
@@ -187,7 +187,7 @@
                             <div class="custom-control custom-switch">
                               <input type="checkbox" class="custom-control-input me-1" id="canReject"
                                 formControlName="canReject" />
-                              <label class="custom-control-label" for="canReject">Can Reject</label>
+                              <label class="custom-control-label" for="canReject">{{ 'SETUP_MODULE.CAN_REJECT' | translate }}</label>
                             </div>
                           </div>
 
@@ -195,7 +195,7 @@
                             <div class="custom-control custom-switch">
                               <input type="checkbox" class="custom-control-input me-1" id="canSendBack"
                                 formControlName="canSendBack" />
-                              <label class="custom-control-label" for="canSendBack">Send Back</label>
+                              <label class="custom-control-label" for="canSendBack">{{ 'SETUP_MODULE.CAN_SEND_BACK' | translate }}</label>
                             </div>
                           </div>
 
@@ -203,7 +203,7 @@
                             <div class="custom-control custom-switch">
                               <input type="checkbox" class="custom-control-input me-1" id="canSubmit"
                                 formControlName="canSubmit" />
-                              <label class="custom-control-label" for="canSubmit">Submit</label>
+                              <label class="custom-control-label" for="canSubmit">{{ 'SETUP_MODULE.CAN_SUBMIT' | translate }}</label>
                             </div>
                           </div>
 
@@ -211,7 +211,7 @@
                             <div class="custom-control custom-switch">
                               <input type="checkbox" class="custom-control-input me-1" id="isApprovalCompulsory"
                                 formControlName="isApprovalCompulsory" />
-                              <label class="custom-control-label" for="isApprovalCompulsory">Is Compulsory</label>
+                              <label class="custom-control-label" for="isApprovalCompulsory">{{ 'SETUP_MODULE.IS_COMPULSORY' | translate }}</label>
                             </div>
                           </div>
                         </div>
@@ -232,32 +232,32 @@
             <div style="position: relative;">
               <ngx-datatable class="bootstrap core-bootstrap" [rows]="newApproverData" [columnMode]="'force'"
                 [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
-                <ngx-datatable-column name="Sr. No." [width]="50">
+                <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="50">
                   <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
                     <span>{{rowIndex + 1}}</span>
                   </ng-template>
                 </ngx-datatable-column>
-                <ngx-datatable-column name="Approver" prop="approverName" [width]="70"></ngx-datatable-column>
-                <ngx-datatable-column name="Level" prop="approverLevel" [width]="70"></ngx-datatable-column>
+                <ngx-datatable-column [name]="'SETUP_MODULE.APPROVER' | translate" prop="approverName" [width]="70"></ngx-datatable-column>
+                <ngx-datatable-column [name]="'SETUP_MODULE.LEVEL' | translate" prop="approverLevel" [width]="70"></ngx-datatable-column>
 
                 <!-- Hide Amount From/To in table for Vendor Company Onboarding -->
-                <ngx-datatable-column name="Amount From" prop="amountFrom" [width]="70"
+                <ngx-datatable-column [name]="'SETUP_MODULE.AMOUNT_FROM' | translate" prop="amountFrom" [width]="70"
                   *ngIf="!hideConditionalFields"></ngx-datatable-column>
-                <ngx-datatable-column name="Amount To" prop="amountTo" [width]="70"
+                <ngx-datatable-column [name]="'SETUP_MODULE.AMOUNT_TO' | translate" prop="amountTo" [width]="70"
                   *ngIf="!hideConditionalFields"></ngx-datatable-column>
 
-                <ngx-datatable-column name="Proxy Approver" prop="proxyApproverName"
+                <ngx-datatable-column [name]="'SETUP_MODULE.PROXY_APPROVER' | translate" prop="proxyApproverName"
                   [width]="70"></ngx-datatable-column>
-                <ngx-datatable-column name="Grace Days" prop="graceDays" [width]="70"></ngx-datatable-column>
+                <ngx-datatable-column [name]="'SETUP_MODULE.GRACE_DAYS' | translate" prop="graceDays" [width]="70"></ngx-datatable-column>
 
-                <ngx-datatable-column name="Approve" prop="canApprove" [width]="70"></ngx-datatable-column>
-                <ngx-datatable-column name="Reject" prop="canReject" [width]="70"></ngx-datatable-column>
-                <ngx-datatable-column name="Send Back" prop="canSendBack" [width]="70"></ngx-datatable-column>
-                <ngx-datatable-column name="Submit" prop="canSubmit" [width]="70"></ngx-datatable-column>
-                <ngx-datatable-column name="IsCompulsory" prop="isApprovalCompulsory"
+                <ngx-datatable-column [name]="'SETUP_MODULE.CAN_APPROVE' | translate" prop="canApprove" [width]="70"></ngx-datatable-column>
+                <ngx-datatable-column [name]="'SETUP_MODULE.CAN_REJECT' | translate" prop="canReject" [width]="70"></ngx-datatable-column>
+                <ngx-datatable-column [name]="'SETUP_MODULE.CAN_SEND_BACK' | translate" prop="canSendBack" [width]="70"></ngx-datatable-column>
+                <ngx-datatable-column [name]="'SETUP_MODULE.CAN_SUBMIT' | translate" prop="canSubmit" [width]="70"></ngx-datatable-column>
+                <ngx-datatable-column [name]="'SETUP_MODULE.IS_COMPULSORY' | translate" prop="isApprovalCompulsory"
                   [width]="70"></ngx-datatable-column>
 
-                <ngx-datatable-column name="Actions" [width]="70">
+                <ngx-datatable-column [name]="'COMMON.ACTIONS' | translate" [width]="70">
                   <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
                     <a matTooltip="Edit Approver" style="cursor: pointer; color: #d1d4d7;"
                       (click)="editRow(row, rowIndex)" [ngClass]="{'disabled': actionType === 'View'}">
@@ -284,7 +284,7 @@
 
   <ng-template #loadingTemplate>
     <div class="loading-spinner">
-      Loading...
+      {{ 'COMMON.LOADING' | translate }}
     </div>
   </ng-template>
 

@@ -1,6 +1,6 @@
 <div class="modal-header d-flex align-items-center justify-content-between">
   <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
-    <i class="ft-paperclip mr-2 text-white"></i> Attachment
+    <i class="ft-paperclip mr-2 text-white"></i> {{ 'COMMON.ATTACHMENT' | translate }}
   </h5>
   <button type="button" class="modal-close-btn" aria-label="Close" (click)="closeDialog()">
     <i class="ft-x"></i>
@@ -8,7 +8,7 @@
 </div>
 <div class="modal-body">
   <div class="col-12">
-    <h5 *ngIf="!viewMode && !isStatusCompleted" class="heading-upload">Upload Files</h5>
+    <h5 *ngIf="!viewMode && !isStatusCompleted" class="heading-upload">{{ 'COMMON.UPLOAD_FILES' | translate }}</h5>
   </div>
   <!-- Your form fields and content -->
   <form [formGroup]="AttachmentForm">
@@ -19,7 +19,7 @@
           #fileInput
           type="file"
           (change)="onFileSelected($event)"
-          [attr.aria-label]="'Choose files'"
+          [attr.aria-label]="'COMMON.CHOOSE_FILES' | translate"
           accept=".pdf,.doc,.docx,.xls,.xlsx,.csv"
           multiple
           hidden
@@ -42,10 +42,10 @@
             </div>
 
             <div class="upload-dropzone__text">
-              <div class="upload-dropzone__title">Drop files here</div>
+              <div class="upload-dropzone__title">{{ 'COMMON.DROP_FILES_HERE' | translate }}</div>
               <div class="upload-dropzone__subtitle">
-                or <span class="text-primary upload-dropzone__browse">Browse</span>
-                <span class="d-block">Accepted: PDF, DOC/DOCX, XLS/XLSX, CSV</span>
+                {{ 'COMMON.OR_BROWSE' | translate }}
+                <span class="d-block">{{ 'COMMON.ACCEPTED_FORMATS' | translate }}</span>
               </div>
             </div>
 
@@ -55,7 +55,7 @@
                 class="btn btn-primary btn-sm"
                 (click)="fileInput.click(); $event.stopPropagation()"
               >
-                Choose files
+                {{ 'COMMON.CHOOSE_FILES' | translate }}
               </button>
             </div>
           </div>
@@ -72,26 +72,26 @@
         <ngx-datatable class="bootstrap core-bootstrap" [rows]="uploadedFiles" [columnMode]="'standard'"
           [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5">
 
-          <ngx-datatable-column name="Sr. No.">
+          <ngx-datatable-column [name]="'COMMON.SR_NO' | translate">
             <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
               <span>{{rowIndex + 1}}</span>
             </ng-template>
           </ngx-datatable-column>
-          <ngx-datatable-column name="Type" prop="contentType"  [width]="420">
+          <ngx-datatable-column [name]="'COMMON.ITEM_TYPE' | translate" prop="contentType"  [width]="420">
           </ngx-datatable-column>
-          <ngx-datatable-column name="File" prop="fileName">
+          <ngx-datatable-column [name]="'COMMON.FILE_NAME' | translate" prop="fileName">
           </ngx-datatable-column>
           <!-- <ngx-datatable-column name="Remarks" [width]="150" prop="remarks">
           </ngx-datatable-column> -->
-          <ngx-datatable-column name="Actions">
+          <ngx-datatable-column [name]="'COMMON.ACTIONS' | translate">
             <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex">
 
-              <a matTooltip="Download File" class="row-action-edit" style="margin-right: 10px;"
+              <a [matTooltip]="'COMMON.DOWNLOAD_FILE' | translate" class="row-action-edit" style="margin-right: 10px;"
                 (click)="downloadAttachment(uploadedFiles[rowIndex])">
                 <i style="font-size: 1.5rem;" class="ft-download"></i>
               </a>
 
-              <a *ngIf="!viewMode" matTooltip="Upload File" class="row-action-delete" (click)="deleteRow(rowIndex)"
+              <a *ngIf="!viewMode" [matTooltip]="'COMMON.DELETE' | translate" class="row-action-delete" (click)="deleteRow(rowIndex)"
                 [ngClass]="{'disabled':viewMode || uploadedFiles[rowIndex]?.isNew}">
                 <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
               </a>
@@ -101,7 +101,7 @@
 
       </div>
       <div class="col-12 mt-3 text-center" *ngIf="uploadedFiles.length === 0 && viewMode">
-  <p class="text-muted">No attachments available</p>
+  <p class="text-muted">{{ 'COMMON.NO_DATA' | translate }}</p>
 </div>
     </div>
 
@@ -109,9 +109,9 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="modal-btn-cancel" (click)="closeDialog()">
-    <i class="ft-x mr-1"></i> {{ viewMode ? 'Close' : 'Cancel' }}
+    <i class="ft-x mr-1"></i> {{ (viewMode ? 'COMMON.CLOSE' : 'COMMON.CANCEL') | translate }}
   </button>
   <button *ngIf="!viewMode" type="button" class="modal-btn-save" (click)="uploadFiles()">
-    <i class="fa fa-upload mr-1"></i> Upload
+    <i class="fa fa-upload mr-1"></i> {{ 'COMMON.UPLOAD' | translate }}
   </button>
 </div>

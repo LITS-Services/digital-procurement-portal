@@ -1,11 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 import { City, Country, State } from 'country-state-city';
 
 @Component({
   selector: 'app-vendor-registration-form',
   templateUrl: './vendor-registration-form.component.html',
-  styleUrls: ['./vendor-registration-form.component.scss']
+  styleUrls: ['./vendor-registration-form.component.scss'],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, TranslateModule]
 })
 export class VendorRegistrationFormComponent implements OnInit {
 

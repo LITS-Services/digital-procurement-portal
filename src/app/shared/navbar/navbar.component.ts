@@ -7,10 +7,12 @@ import { AuthService } from '../auth/auth.service';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { FormControl, UntypedFormControl } from '@angular/forms';
 import { LISTITEMS } from '../data/template-search';
-import { fromEvent, of, Subject, Subscription } from 'rxjs';
+import { fromEvent, of, Subject, Subscription, firstValueFrom } from 'rxjs';
 import { NotifcationService, ReferenceType } from '../services/notification.service';
 import { FirebaseMessagingService } from 'app/firebase-messaging.service';
 import { ToastrService } from 'ngx-toastr';
+import { LanguageService } from 'app/core/language/language.service';
+import { clearCachedObservables } from 'app/core/cached-observable';
 import { tr } from 'date-fns/locale';
 import { catchError, debounceTime, distinctUntilChanged, filter, finalize, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { UserServiceService } from '../services/user-service.service';
@@ -81,11 +83,14 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   isScrolled = false;
   isUserLoading = true;
+  isSwitchingLanguage = false;
+
   constructor(
     public translate: TranslateService,
     private layoutService: LayoutService,
     private router: Router,
     public authService: AuthService,
+    public languageService: LanguageService,
     private configService: ConfigService,
     private companyService: CompanyService,
     private notificationService: NotifcationService,
@@ -96,8 +101,6 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     private lookupService: LookupService,
     private sanitizer: DomSanitizer
   ) {
-    const browserLang: string = translate.getBrowserLang();
-    translate.use(browserLang.match(/en|es|pt|de|ar/) ? browserLang : "en");
     this.config = this.configService.templateConf;
     this.innerWidth = window.innerWidth;
 
@@ -107,6 +110,14 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.currentLang = this.languageService.current();
+    this.selectedLanguageText = this.currentLang === 'ar' ? 'العربية' : 'English';
+    this.languageService.languageChanges$.pipe(takeUntil(this.destroy$)).subscribe(lang => {
+      this.currentLang = lang;
+      this.selectedLanguageText = lang === 'ar' ? 'العربية' : 'English';
+      this.cdr.detectChanges();
+    });
+
     this.sub = this.userService.profilePicture$.subscribe(url => {
       this.profilePicture = url || 'assets/img/profile/user.png';
       this.cdr.detectChanges();
@@ -198,6 +209,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.lastNotificationTime = now;
     this.toaster.success(body, title);
   }
+
 
   ngOnDestroy() {
     if (this.sub) this.sub.unsubscribe();
@@ -641,29 +653,43 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.seachTextEmpty.emit(true);
   }
 
+  async switchLanguage(lang: 'en' | 'ar') {
+    if (this.isSwitchingLanguage) return;
+    if (this.languageService.current() === lang) return;
+    this.isSwitchingLanguage = true;
+
+    try {
+      this.currentLang = lang;
+      this.selectedLanguageText = lang === 'ar' ? 'العربية' : 'English';
+
+      // Persist language to backend and wait for the API call to complete
+      await firstValueFrom(this.languageService.setLanguage(lang));
+
+      // Clear in-memory caches
+      clearCachedObservables();
+
+      // In-app refresh: re-render the active route without a full window reload
+      const currentUrl = this.router.url;
+      const prevStrategy = this.router.routeReuseStrategy.shouldReuseRoute;
+      const prevOnSameUrl = this.router.onSameUrlNavigation;
+      this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+      this.router.onSameUrlNavigation = 'reload';
+      try {
+        await this.router.navigateByUrl(currentUrl);
+      } finally {
+        this.router.routeReuseStrategy.shouldReuseRoute = prevStrategy;
+        this.router.onSameUrlNavigation = prevOnSameUrl;
+      }
+    } catch (err) {
+      console.error('Error switching language:', err);
+    } finally {
+      this.isSwitchingLanguage = false;
+    }
+  }
+
   ChangeLanguage(language: string) {
-    this.translate.use(language);
-    switch (language) {
-      case "en":
-        this.selectedLanguageText = "English";
-        this.selectedLanguageFlag = "./assets/img/flags/us.png";
-        break;
-      case "es":
-        this.selectedLanguageText = "Spanish";
-        this.selectedLanguageFlag = "./assets/img/flags/es.png";
-        break;
-      case "pt":
-        this.selectedLanguageText = "Portuguese";
-        this.selectedLanguageFlag = "./assets/img/flags/pt.png";
-        break;
-      case "de":
-        this.selectedLanguageText = "German";
-        this.selectedLanguageFlag = "./assets/img/flags/de.png";
-        break;
-      case "ar":
-        this.selectedLanguageText = "Arabic";
-        this.selectedLanguageFlag = "./assets/img/flags/de.png";
-        break;
+    if (language === 'en' || language === 'ar') {
+      this.switchLanguage(language);
     }
   }
 

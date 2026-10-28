@@ -15,9 +15,9 @@
     [rows]="approvalHistory" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="40" [rowHeight]="50"
     [limit]="5">
 
-    <ngx-datatable-column name="Approver" prop="approverName"></ngx-datatable-column>
-    <ngx-datatable-column name="Remarks" prop="remarks"></ngx-datatable-column>
-    <ngx-datatable-column name="Approval Date" prop="createdDate">
+    <ngx-datatable-column [name]="'COMMON.APPROVER' | translate" prop="approverName"></ngx-datatable-column>
+    <ngx-datatable-column [name]="'COMMON.REMARKS' | translate" prop="remarks"></ngx-datatable-column>
+    <ngx-datatable-column [name]="'COMMON.APPROVAL_DATE' | translate" prop="createdDate">
         <ng-template let-row="row" ngx-datatable-cell-template>
             {{ row.createdDate | date:'yyyy-MM-dd' }}
         </ng-template>
@@ -27,8 +27,8 @@
 @else {
     <div class="empty-state">
         <i class="fa fa-history empty-icon"></i>
-        <h5 class="empty-message">No approval history found</h5>
-        <p class="empty-submessage">Please check back later or contact the responsible team.</p>
+        <h5 class="empty-message">{{ 'RFQ_MODULE.NO_APPROVAL_HISTORY' | translate }}</h5>
+        <p class="empty-submessage">{{ 'RFQ_MODULE.CHECK_BACK_LATER' | translate }}</p>
     </div>
     }
 <!-- </div> -->

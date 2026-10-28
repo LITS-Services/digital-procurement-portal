@@ -5,7 +5,7 @@
       <!-- Header -->
       <div class="row mb-2">
         <div class="col-md-12">
-          <h4 class="heading">Company Review</h4>
+          <h4 class="heading">{{ 'COMPANY_MODULE.COMPANY_REVIEW' | translate }}</h4>
         </div>
       </div>
 
@@ -34,32 +34,18 @@
             </button>
             <span class="vl"></span>
 
-            <!-- <button class="btn btn-sm" [disabled]="!companyId" (click)="openRemarkModal(2, remarkModal)">
-              <i class="fa fa-circle-check"></i> Approve
-            </button>
-
-            <button class="btn btn-sm" [disabled]="!companyId" (click)="openRemarkModal(4, remarkModal)">
-              <i class="fa fa-rotate-left"></i> Recall
-            </button> -->
-
-            <!-- <button class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId"
-                (click)="onActions('Approve')">
-                <i class="ft-check"></i><label class="ml-1 mt-1">Approve</label>
-              </button> -->
-
-
             <!-- If isAssigned = true → show Submit for Approval -->
             <button *ngIf="!isAssigned && workflowMasterId != 0 && mainApproverId == currentUserId"
               class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
               (click)="onActions('SendBackFromApproval')">
               <i class="ft-arrow-left"></i>
-              <label class="ml-1">Sendback</label>
+              <label class="ml-1">{{ 'COMMON.SENDBACK' | translate }}</label>
             </button>
 
             <button *ngIf="isAssigned && mainApproverId == currentUserId" class="btn btn-sm cstm-ui-table-btn"
               [disabled]="!companyId || isSubmitting" (click)="onActions('sendforapproval')">
               <i class="ft-check"></i>
-              <label class="ml-1">Submit for Approval</label>
+              <label class="ml-1">{{ 'COMMON.SUBMIT_FOR_APPROVAL' | translate }}</label>
             </button>
 
 
@@ -68,7 +54,7 @@
               class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
               (click)="onActions('Approve')">
               <i class="ft-check"></i>
-              <label class="ml-1">Approve</label>
+              <label class="ml-1">{{ 'COMMON.APPROVE' | translate }}</label>
             </button>
 
 
@@ -76,14 +62,14 @@
               class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
               (click)="onActions('Rejected')">
               <i class="ft-x"></i>
-              <label class="ml-1">Reject</label>
+              <label class="ml-1">{{ 'COMMON.REJECT' | translate }}</label>
             </button>
 
             <button *ngIf="isAssigned && workflowMasterId == 0 && mainApproverId == currentUserId"
               class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
               (click)="onActions('SendBack')">
               <i class="ft-arrow-left"></i>
-              <label class="ml-1">Send Back</label>
+              <label class="ml-1">{{ 'COMMON.SEND_BACK' | translate }}</label>
             </button>
 
 
@@ -99,47 +85,47 @@
           <nav>
             <button (click)="selectTab('general-info')" [ngClass]="{ 'tab-current': selectedTab === 'general-info' }"
               class="custom-style-tab">
-              <span>GENERAL<br>INFORMATION</span>
+              <span>{{ 'COMPANY_MODULE.GENERAL_INFO' | translate }}</span>
             </button>
 
             <button (click)="selectTab('addresses')" [ngClass]="{ 'tab-current': selectedTab === 'addresses' }"
               class="custom-style-tab">
-              <span>ADDRESSES</span>
+              <span>{{ 'COMPANY_MODULE.ADDRESSES' | translate }}</span>
             </button>
 
             <button (click)="selectTab('company-contacts')"
               [ngClass]="{ 'tab-current': selectedTab === 'company-contacts' }" class="custom-style-tab">
-              <span>CONTACT</span>
+              <span>{{ 'COMPANY_MODULE.CONTACT' | translate }}</span>
             </button>
 
             <button (click)="selectTab('purchasing-demo')"
               [ngClass]="{ 'tab-current': selectedTab === 'purchasing-demo' }" class="custom-style-tab">
-              <span>DEMOGRAPHICS</span>
+              <span>{{ 'COMPANY_MODULE.DEMOGRAPHICS' | translate }}</span>
             </button>
 
             <button (click)="selectTab('bank-details')" [ngClass]="{ 'tab-current': selectedTab === 'bank-details' }"
               class="custom-style-tab">
-              <span>BANK</span>
+              <span>{{ 'COMPANY_MODULE.BANK' | translate }}</span>
             </button>
 
             <button (click)="selectTab('attachments')" [ngClass]="{ 'tab-current': selectedTab === 'attachments' }"
               class="custom-style-tab">
-              <span>ATTACHMENTS</span>
+              <span>{{ 'COMPANY_MODULE.ATTACHMENTS' | translate }}</span>
             </button>
 
             <button (click)="selectTab('setup-history')" [ngClass]="{ 'tab-current': selectedTab === 'setup-history' }"
               class="custom-style-tab">
-              <span>SETUP<br>HISTORY</span>
+              <span>{{ 'COMPANY_MODULE.SETUP_HISTORY' | translate }}</span>
             </button>
 
             <button (click)="selectTab('approval-history')"
               [ngClass]="{ 'tab-current': selectedTab === 'approval-history' }" class="custom-style-tab">
-              <span>APPROVAL<br>HISTORY</span>
+              <span>{{ 'COMPANY_MODULE.APPROVAL_HISTORY' | translate }}</span>
             </button>
 
             <button (click)="selectTab('vendor-rating')" [ngClass]="{ 'tab-current': selectedTab === 'vendor-rating' }"
               class="custom-style-tab">
-              <span>VENDOR<br>RATING</span>
+              <span>{{ 'COMPANY_MODULE.VENDOR_RATING' | translate }}</span>
             </button>
           </nav>
         </div>
@@ -160,20 +146,20 @@
               </div>
 
               <div class="flex-grow-1">
-                <div class="company-label text-uppercase">Company Name</div>
+                <div class="company-label text-uppercase">{{ 'COMPANY_MODULE.COMPANY_NAME' | translate }}</div>
 
                 <div class="d-flex flex-wrap align-items-center">
                   <h3 class="mb-0 mr-2 company-title">{{ companyName }}</h3>
 
                   <span class="company-status-pill" [ngClass]="companyStatusClass" *ngIf="companyStatusLabel">
                     <span class="status-dot"></span>
-                    {{ companyStatusLabel | uppercase }}
+                    {{ (companyStatusLabel | statusTranslate) | uppercase }}
                   </span>
                 </div>
                 @if (trnNumber) {
                 <div class="company-trn mt-1 d-flex align-items-center">
                   <i class="ft-file-text mr-1 text-primary"></i>
-                  <span class="text-muted mr-1 extra-small">TRN:</span>
+                  <span class="text-muted mr-1 extra-small">{{ 'COMPANY_MODULE.TRN' | translate }}:</span>
                   <span class="font-weight-bold small text-dark">{{ trnNumber }}</span>
                 </div>
                 }
@@ -189,46 +175,6 @@
             </div>
 
             <hr />
-
-            <!-- Associated entities header -->
-            <!-- <div class="d-flex justify-content-between align-items-center mb-1">
-              <div class="d-flex align-items-center">
-                <h5 class="mb-0 mr-2">Associated Entities</h5>
-                <span class="badge badge-light rounded-pill">
-                  {{ associatedEntities.length }}
-                </span>
-              </div>
-            </div> -->
-
-
-
-            <!-- Entity list -->
-            <!-- <div class="entity-card mb-2" *ngFor="let entity of associatedEntities">
-              <div class="d-flex align-items-center justify-content-between"> -->
-            <!-- Left: icon + name + meta -->
-            <!-- <div class="d-flex align-items-center">
-                  <div class="entity-avatar mr-3 entity-avatar--blue">
-                    <i class="fa fa-building"></i>
-                  </div>
-
-                  <div>
-                    <div class="entity-name">{{ entity.name }}</div> -->
-            <!-- <div class="entity-meta text-muted small">
-                    <i class="ft-map-pin mr-1"></i>
-                    {{ entity.city }}, {{ entity.country }}
-                    <span class="mx-1">•</span>
-                    {{ entity.industry }}
-                  </div> -->
-            <!-- </div>
-                </div> -->
-
-            <!-- Right: status + chevron -->
-            <!-- <div class="d-flex align-items-center">
-                  <span class="entity-status-pill" [ngClass]="entity.statusClass">
-                    {{ entity.statusLabel }}
-                  </span>
-
-                </div> -->
           </div>
         </div>
 
@@ -237,12 +183,12 @@
           <ngx-datatable [columnMode]="'force'" *ngIf="addressList && addressList.length > 0" class="bootstrap"
             [rows]="addressList" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="5">
 
-            <ngx-datatable-column [sortable]="false" name="Street" prop="street"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="City" prop="city"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="State" prop="state"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="Zip" prop="zip"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="Country" prop="country"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="Primary">
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.STREET' | translate" prop="street"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMMON.CITY' | translate" prop="city"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMMON.STATE' | translate" prop="state"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.ZIP' | translate" prop="zip"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMMON.COUNTRY' | translate" prop="country"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.PRIMARY' | translate">
               <ng-template let-row="row" ngx-datatable-cell-template>
                 <i style="font-size: 20px;" class="fa" [ngClass]="{
                 'fa-circle-check': row.isPrimary === true,
@@ -258,11 +204,11 @@
           <ngx-datatable [columnMode]="'force'" *ngIf="contactList && contactList.length > 0" class="bootstrap"
             [rows]="contactList" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="5">
 
-            <ngx-datatable-column [sortable]="false" name="Description" prop="description"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="Type" prop="type"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="Contact Number" prop="contactNumber"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="Extension" prop="extension"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="Primary">
+            <ngx-datatable-column [sortable]="false" [name]="'COMMON.DESCRIPTION' | translate" prop="description"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMMON.TYPE' | translate" prop="type"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.CONTACT_NUMBER' | translate" prop="contactNumber"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.EXTENSION' | translate" prop="extension"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.PRIMARY' | translate">
               <ng-template let-row="row" ngx-datatable-cell-template>
                 <i style="font-size: 20px;" class="fa" [ngClass]="{
                 'fa-circle-check': row.isPrimary === true,
@@ -280,14 +226,12 @@
             [rows]="purchasingDemographicsList" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'"
             [limit]="5">
 
-            <ngx-datatable-column [sortable]="false" name="Vendor Type" prop="vendorType"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="Primary Currency"
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.VENDOR_TYPE' | translate" prop="vendorType"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.PRIMARY_CURRENCY' | translate"
               prop="primaryCurrency"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="Line of Business"
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.LINE_OF_BUSINESS' | translate"
               prop="lineOfBusiness"></ngx-datatable-column>
-            <!-- <ngx-datatable-column [sortable]="false" name="Employee Responsible"
-              prop="employeeResponsible"></ngx-datatable-column> -->
-            <ngx-datatable-column [sortable]="false" name="Note" prop="note"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.NOTE' | translate" prop="note"></ngx-datatable-column>
           </ngx-datatable>
         </div>
 
@@ -297,16 +241,16 @@
             [rows]="bankDetailsList" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="5"
             [columnMode]="'force'">
 
-            <ngx-datatable-column [sortable]="false" name="Bank Name" prop="bankName"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="Branch Name" prop="branchName"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="Branch Address" prop="branchAddress"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="Account Holder"
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.BANK_NAME' | translate" prop="bankName"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.BRANCH_NAME' | translate" prop="branchName"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.BRANCH_ADDRESS' | translate" prop="branchAddress"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.ACCOUNT_HOLDER' | translate"
               prop="accountHolderName"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="Account Number" prop="accountNumber"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="IBAN" prop="iban"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="SWIFT/BIC" prop="swifT_BIC_Code"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="Country" prop="country"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="Currency" prop="currency"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.ACCOUNT_NUMBER' | translate" prop="accountNumber"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.IBAN' | translate" prop="iban"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.SWIFT_BIC' | translate" prop="swifT_BIC_Code"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMMON.COUNTRY' | translate" prop="country"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.PRIMARY_CURRENCY' | translate" prop="currency"></ngx-datatable-column>
           </ngx-datatable>
         </div>
 
@@ -315,18 +259,18 @@
           <ngx-datatable *ngIf="attachedFiles && attachedFiles.length > 0" class="bootstrap" [rows]="attachedFiles"
             [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="5" [columnMode]="'force'">
 
-            <ngx-datatable-column [sortable]="false" name="File Name" prop="fileName"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="Format" prop="format"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="Attached By" prop="attachedBy"></ngx-datatable-column>
-            <ngx-datatable-column [sortable]="false" name="Remarks" prop="remarks"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMMON.FILE_NAME' | translate" prop="fileName"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.FORMAT' | translate" prop="format"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.ATTACHED_BY' | translate" prop="attachedBy"></ngx-datatable-column>
+            <ngx-datatable-column [sortable]="false" [name]="'COMMON.REMARKS' | translate" prop="remarks"></ngx-datatable-column>
 
-            <ngx-datatable-column [sortable]="false" name="Attached At" prop="attachedAt">
+            <ngx-datatable-column [sortable]="false" [name]="'COMPANY_MODULE.ATTACHED_AT' | translate" prop="attachedAt">
               <ng-template let-value="value" ngx-datatable-cell-template>
                 {{ value | date:'medium' }}
               </ng-template>
             </ngx-datatable-column>
 
-            <ngx-datatable-column [sortable]="false" name="Action">
+            <ngx-datatable-column [sortable]="false" [name]="'COMMON.ACTION' | translate">
               <ng-template let-row="row" ngx-datatable-cell-template>
                 <i (click)="downloadAttachment(row)" class="fa fa-circle-down"
                   style="font-size: 20px; cursor:pointer"></i>
@@ -335,7 +279,7 @@
           </ngx-datatable>
 
           <div *ngIf="attachedFiles && attachedFiles.length === 0" class="text-muted p-2">
-            No attachments found.
+            {{ 'COMPANY_MODULE.NO_ATTACHMENTS' | translate }}
           </div>
         </div>
 

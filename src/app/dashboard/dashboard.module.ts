@@ -1,3 +1,4 @@
+import { PipeModule } from 'app/shared/pipes/pipe.module';
 import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from "@angular/common";
 
@@ -18,6 +19,7 @@ import { FormsModule } from '@angular/forms';
 
 @NgModule({
     imports: [
+    PipeModule,
         CommonModule,
         FormsModule,
         DashboardRoutingModule,

@@ -1,6 +1,6 @@
 <div class="modal-header d-flex align-items-center justify-content-between">
   <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
-    <i class="ft-alert-circle mr-2 text-white"></i> Exception Policy
+    <i class="ft-alert-circle mr-2 text-white"></i> {{ 'PR_MODULE.EXCEPTION_POLICY' | translate }}
   </h5>
   <button type="button" class="modal-close-btn" aria-label="Close" (click)="closeDialog()">
     <i class="ft-x"></i>
@@ -11,48 +11,48 @@
     <div class="row gx-2">
       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
         <div class="form-group mb-2">
-          <label>Requisition No.</label>
-          <input type="text" placeholder="Enter Requisition No." class="form-control" formControlName="requisitionNo"
+          <label>{{ 'PR_MODULE.REQUISITION_NO' | translate }}</label>
+          <input type="text" [placeholder]="'PR_MODULE.ENTER_REQ_NO' | translate" class="form-control" formControlName="requisitionNo"
             readonly />
         </div>
       </div>
       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
         <div class="form-group mb-2">
-          <label>Requester Name</label>
-          <input type="text" placeholder="Enter Requester Name" class="form-control" formControlName="requesterName" />
+          <label>{{ 'PR_MODULE.REQUESTER_NAME' | translate }}</label>
+          <input type="text" [placeholder]="'PR_MODULE.ENTER_REQUESTER_NAME' | translate" class="form-control" formControlName="requesterName" />
         </div>
       </div>
       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
         <div class="form-group mb-2">
-          <label>Subject</label>
-          <input type="text" placeholder="Enter Subject" class="form-control" formControlName="subject" />
+          <label>{{ 'COMMON.SUBJECT' | translate }}</label>
+          <input type="text" [placeholder]="'PR_MODULE.ENTER_SUBJECT' | translate" class="form-control" formControlName="subject" />
         </div>
       </div>
       
       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
         <div class="form-group mb-2">
-          <label>Requesting Department</label>
-          <input type="text" placeholder="Enter Requesting Department" class="form-control"
+          <label>{{ 'PR_MODULE.REQUESTING_DEPT' | translate }}</label>
+          <input type="text" [placeholder]="'PR_MODULE.ENTER_REQUESTING_DEPT' | translate" class="form-control"
             formControlName="department" />
         </div>
       </div>
       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
         <div class="form-group mb-2">
-          <label>Description of Goods/Services</label>
-          <input type="text" placeholder="Enter Description of Goods/Services" class="form-control"
+          <label>{{ 'PR_MODULE.DESC_GOODS_SERVICES' | translate }}</label>
+          <input type="text" [placeholder]="'PR_MODULE.ENTER_DESC_GOODS_SERVICES' | translate" class="form-control"
             formControlName="description" />
         </div>
       </div>
       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
         <div class="form-group mb-2">
-          <label>Estimated/Actual Value</label>
-          <input type="number" placeholder="Enter Estimated/Actual Value" class="form-control"
+          <label>{{ 'PR_MODULE.ESTIMATED_ACTUAL_VALUE' | translate }}</label>
+          <input type="number" [placeholder]="'PR_MODULE.ENTER_ESTIMATED_ACTUAL_VALUE' | translate" class="form-control"
             formControlName="estimatedValue" />
         </div>
       </div>
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="form-group mb-2">
-          <label>Proposed Alternative Methods of Procurement</label>
+          <label>{{ 'PR_MODULE.PROPOSED_ALT_METHODS' | translate }}</label>
         </div>
       </div>
 
@@ -65,7 +65,7 @@
             formControlName="waiveApproval"
           />
           <label class="form-check-label" for="waiveApproval">
-            Waive Approval
+            {{ 'PR_MODULE.WAIVE_APPROVAL' | translate }}
           </label>
         </div>
         <div class="form-check-inline">
@@ -76,7 +76,7 @@
             formControlName="waiveAmount"
           />
           <label class="form-check-label" for="waiveAmount">
-            Waive Amount
+            {{ 'PR_MODULE.WAIVE_AMOUNT' | translate }}
           </label>
         </div>
       </div>
@@ -84,8 +84,8 @@
       
       <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="form-group mb-2">
-          <label>Waiver Request Justification</label>
-          <textarea name="" rows="5" type="text" placeholder="Enter Waiver Request Justification" class="form-control"
+          <label>{{ 'PR_MODULE.WAIVER_JUSTIFICATION' | translate }}</label>
+          <textarea name="" rows="5" type="text" [placeholder]="'PR_MODULE.ENTER_WAIVER_JUSTIFICATION' | translate" class="form-control"
             formControlName="justification"></textarea>
         </div>
       </div>
@@ -97,9 +97,9 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="modal-btn-cancel" (click)="closeDialog()">
-    <i class="ft-x mr-1"></i> Cancel
+    <i class="ft-x mr-1"></i> {{ 'COMMON.CANCEL' | translate }}
   </button>
   <button *ngIf="!viewMode" type="button" class="modal-btn-save" (click)="submitForm()">
-    <i class="fa fa-save mr-1"></i> Save
+    <i class="fa fa-save mr-1"></i> {{ 'COMMON.SAVE' | translate }}
   </button>
 </div>

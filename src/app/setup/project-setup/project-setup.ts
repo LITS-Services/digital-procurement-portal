@@ -10,11 +10,12 @@ import { DepartmentService } from '../../shared/services/department.service';
 import { CompanyService } from '../../shared/services/Company.services';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { DatatableAutoResizeDirective } from '../../shared/directives/dataTable-auto-resize.directive';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-project-setup',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, NgxDatatableModule, NgbModule, RouterModule, NgSelectModule, DatatableAutoResizeDirective],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, NgxDatatableModule, NgbModule, RouterModule, NgSelectModule, DatatableAutoResizeDirective, TranslateModule],
   templateUrl: './project-setup.html',
   styleUrls: ['./project-setup.scss']
 })

@@ -6,7 +6,7 @@
             <div class="row">
                 <div class="col-md-12" style=" margin-top: -0.25rem;">
                     <!-- <h4>Announcements</h4> -->
-                    <h4 class="heading">Tendering</h4>
+                    <h4 class="heading">{{ 'TENDERING_MODULE.TENDERING' | translate }}</h4>
                 </div>
                 <!-- <div class="col-md-6">
                 </div> -->
@@ -21,18 +21,18 @@
                         <button class="btn btn-lg mr-1" type="button" (click)="homePage()"><i
                                 class="ft-arrow-left"></i></button>
                         <span class="vl"></span>
-                        <button type="reset" ngbTooltip="{{ 'Create new Tendering Request' }}" class="btn btn-sm  cstm-ui-table-btn"
+                        <button type="reset" [ngbTooltip]="'TENDERING_MODULE.CREATE_TOOLTIP' | translate" class="btn btn-sm  cstm-ui-table-btn"
                             (click)="openEmpDetails()">
-                            <i class="ft-plus"></i><label class="ml-1 mt-1" for="">Create</label>
+                            <i class="ft-plus"></i><label class="ml-1 mt-1" for="">{{ 'COMMON.CREATE' | translate }}</label>
                         </button>
                         <button type="reset" class="btn btn-sm  cstm-ui-table-btn">
-                            <i class="ft-edit"></i><label class="ml-1 mt-1" for="">Update</label>
+                            <i class="ft-edit"></i><label class="ml-1 mt-1" for="">{{ 'COMMON.UPDATE' | translate }}</label>
                         </button>
                         <button type="reset" class="btn btn-sm  cstm-ui-table-btn">
-                            <i class="ft-trash"></i><label class="ml-1 mt-1" for="">Delete</label>
+                            <i class="ft-trash"></i><label class="ml-1 mt-1" for="">{{ 'COMMON.DELETE' | translate }}</label>
                         </button>
                         <button type="reset" class="btn btn-sm  cstm-ui-table-btn">
-                            <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
+                            <i class="ft-check"></i><label class="ml-1 mt-1" for="">{{ 'COMMON.APPROVAL' | translate }}</label>
                         </button>
                     </div>
              
@@ -42,7 +42,7 @@
             </div>
             <!-- Content -->
             <ngx-datatable autoResize class="bootstrap core-bootstrap" [rows]="tenderingData"
-            [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [columns]="columns"
+            [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50"
             [rowHeight]="'auto'" [limit]="3" [scrollbarH]="true" [loadingIndicator]="loading"
             [selected]="chkBoxSelected" [swapColumns]="false" [selectionType]="SelectionType.checkbox"
             (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
@@ -63,28 +63,30 @@
                     </div>
                 </ng-template>
             </ngx-datatable-column>
-            <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+            <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="50" [resizeable]="false">
                 <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
                     <span>{{rowIndex + 1}}</span>
                 </ng-template>
             </ngx-datatable-column>
 
-            <ngx-datatable-column name="Tender No." prop="requisitionNo">
+            <ngx-datatable-column [name]="'TENDERING_MODULE.TENDER_NO' | translate" prop="requisitionNo">
 
             </ngx-datatable-column>
 
-            <ngx-datatable-column name="Status" prop="status">
+            <ngx-datatable-column [name]="'COMMON.STATUS' | translate" prop="status">
+                <ng-template let-row="row" ngx-datatable-cell-template>
+                    <span>{{ row.status | statusTranslate }}</span>
+                </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column [name]="'COMMON.DATE' | translate" prop="date">
+            </ngx-datatable-column>
+
+            <ngx-datatable-column [name]="'TENDERING_MODULE.OWNER' | translate" prop="owner">
 
             </ngx-datatable-column>
-            <ngx-datatable-column name="Date" prop="date">
+            <ngx-datatable-column [name]="'TENDERING_MODULE.SUBJECT' | translate" prop="subject">
             </ngx-datatable-column>
-
-            <ngx-datatable-column name="Owner" prop="owner">
-
-            </ngx-datatable-column>
-            <ngx-datatable-column name="Subject" prop="subject">
-            </ngx-datatable-column>
-            <ngx-datatable-column name="Total Amount" prop="totalAmount"
+            <ngx-datatable-column [name]="'COMMON.TOTAL_AMOUNT' | translate" prop="totalAmount"
                 [sortable]="false">
             </ngx-datatable-column>
         </ngx-datatable>

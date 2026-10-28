@@ -3,12 +3,12 @@
     <div class="col-md-3 pr-md-3 mb-3 mb-md-0">
         <div *ngIf="vendorsData.length > 0" class="d-flex justify-content-between align-items-baseline mb-2">
             <div class="small ml-1 vendor-owner mb-2">
-                total: {{ vendorsData?.length }}
+                {{ 'COMMON.TOTAL' | translate }}: {{ vendorsData?.length }}
             </div>
         </div>
 
         <div *ngIf="!selectedVendor && !vendorsData?.length" class="py-4 px-2">
-         No Comments found for this RFQ.
+         {{ 'RFQ_MODULE.NO_COMMENTS_FOUND' | translate }}
       </div>
 
 
@@ -31,7 +31,7 @@
     </div>
     <div class="col-md-9">
         <div *ngIf="!selectedVendor && vendorsData?.length > 0" class="py-4 text-center">
-            Select a vendor from the left to view comments.
+            {{ 'RFQ_MODULE.SELECT_VENDOR_TO_VIEW' | translate }}
         </div>
         <div *ngIf="selectedVendor">
             <div class="card">

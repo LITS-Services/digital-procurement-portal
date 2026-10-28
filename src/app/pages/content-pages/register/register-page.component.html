@@ -13,14 +13,14 @@
 
               <!-- Registration Form -->
               <div class="col-lg-6 col-md-12 px-4 py-3">
-                <h4 class="card-title mb-2">Create Account</h4>
-                <p>Fill the below form to create a new account.</p>
+                <h4 class="card-title mb-2">{{ 'AUTH.CREATE_ACCOUNT' | translate }}</h4>
+                <p>{{ 'AUTH.CREATE_ACCOUNT_SUB' | translate }}</p>
 
                 <!-- Employee Selection -->
                 <div class="form-group">
-                  <label>Select Employee</label>
+                  <label>{{ 'AUTH.SELECT_EMPLOYEE' | translate }}</label>
                   <select class="form-control" (change)="onEmployeeSelected($event.target.value)">
-                    <option value="">Select Employee</option>
+                    <option value="">{{ 'AUTH.SELECT_EMPLOYEE' | translate }}</option>
                     <option *ngFor="let emp of employees" [value]="emp.id">
                       {{ emp.fullName }}
                     </option>
@@ -31,44 +31,44 @@
                 <form [formGroup]="registerForm" novalidate>
                   <!-- Username -->
                   <div class="form-group">
-                    <input type="text" formControlName="Username" class="form-control mb-2" placeholder="Name"
+                    <input type="text" formControlName="Username" class="form-control mb-2" [placeholder]="'COMMON.NAME' | translate"
                       [ngClass]="{ 'is-invalid': rf.Username.invalid && (rf.Username.touched || registerFormSubmitted), 'is-valid': rf.Username.valid && (rf.Username.touched || registerFormSubmitted) }">
                     <div *ngIf="rf.Username.errors && (rf.Username.touched || registerFormSubmitted)" class="text-danger mt-1">
-                      <i class="ft-alert-circle align-middle"></i> Name is required
+                      <i class="ft-alert-circle align-middle"></i> {{ 'AUTH.NAME_REQ' | translate }}
                     </div>
                   </div>
 
                   <!-- Email -->
                   <div class="form-group">
-                    <input type="email" formControlName="email" class="form-control mb-2" placeholder="Email"
+                    <input type="email" formControlName="email" class="form-control mb-2" [placeholder]="'COMMON.EMAIL' | translate"
                       [ngClass]="{ 'is-invalid': rf.email.invalid && (rf.email.touched || registerFormSubmitted), 'is-valid': rf.email.valid && (rf.email.touched || registerFormSubmitted) }">
                     <div *ngIf="rf.email.errors?.required && (rf.email.touched || registerFormSubmitted)" class="text-danger mt-1">
-                      <i class="ft-alert-circle align-middle"></i> Email is required
+                      <i class="ft-alert-circle align-middle"></i> {{ 'AUTH.EMAIL_REQ' | translate }}
                     </div>
                     <div *ngIf="rf.email.errors?.email && (rf.email.touched || registerFormSubmitted)" class="text-danger mt-1">
-                      <i class="ft-alert-circle align-middle"></i> Email must be a valid email address
+                      <i class="ft-alert-circle align-middle"></i> {{ 'AUTH.VALID_EMAIL_REQ' | translate }}
                     </div>
                   </div>
 
                   <!-- Password -->
                   <div class="form-group">
-                    <input type="password" formControlName="password" class="form-control mb-2" placeholder="Password"
+                    <input type="password" formControlName="password" class="form-control mb-2" [placeholder]="'COMMON.PASSWORD' | translate"
                       [ngClass]="{ 'is-invalid': rf.password.invalid && (rf.password.touched || registerFormSubmitted), 'is-valid': rf.password.valid && (rf.password.touched || registerFormSubmitted) }">
                     <div *ngIf="rf.password.errors && (rf.password.touched || registerFormSubmitted)" class="text-danger mt-1">
                       <i class="ft-alert-circle align-middle"></i>
-                      <span *ngIf="rf.password.errors?.required">Password is required</span>
-                      <span *ngIf="rf.password.errors?.passwordComplexity">Password must be at least 6 characters, include 1 uppercase letter and 1 special character</span>
+                      <span *ngIf="rf.password.errors?.required">{{ 'AUTH.PASSWORD_REQ' | translate }}</span>
+                      <span *ngIf="rf.password.errors?.passwordComplexity">{{ 'AUTH.PASSWORD_COMPLEXITY_MSG' | translate }}</span>
                     </div>
                   </div>
 
                   <!-- Confirm Password -->
                   <div class="form-group">
-                    <input type="password" formControlName="confirmPassword" class="form-control mb-2" placeholder="Confirm Password"
+                    <input type="password" formControlName="confirmPassword" class="form-control mb-2" [placeholder]="'USERS_MODULE.CONFIRM_PASSWORD' | translate"
                       [ngClass]="{ 'is-invalid': rf.confirmPassword.invalid && (rf.confirmPassword.touched || registerFormSubmitted), 'is-valid': rf.confirmPassword.valid && (rf.confirmPassword.touched || registerFormSubmitted) }">
                     <div *ngIf="rf.confirmPassword.errors && (rf.confirmPassword.touched || registerFormSubmitted)" class="text-danger mt-1">
                       <i class="ft-alert-circle align-middle"></i>
-                      <span *ngIf="rf.confirmPassword.errors?.required">Confirm Password is required</span>
-                      <span *ngIf="rf.confirmPassword.errors?.mustMatch">Passwords must match</span>
+                      <span *ngIf="rf.confirmPassword.errors?.required">{{ 'AUTH.CONFIRM_PASSWORD_REQ' | translate }}</span>
+                      <span *ngIf="rf.confirmPassword.errors?.mustMatch">{{ 'AUTH.PASSWORDS_MATCH' | translate }}</span>
                     </div>
                   </div>
 
@@ -77,17 +77,17 @@
                     <div class="checkbox auth-checkbox">
                       <input type="checkbox" id="acceptTerms" formControlName="acceptTerms" class="form-control">
                       <label for="acceptTerms">
-                        <span class="font-small-2 mb-3 font-weight-normal">I accept the terms & conditions</span>
+                        <span class="font-small-2 mb-3 font-weight-normal">{{ 'AUTH.ACCEPT_TERMS' | translate }}</span>
                       </label>
                       <div *ngIf="rf.acceptTerms.errors && (rf.acceptTerms.touched || registerFormSubmitted)" class="text-danger mt-1">
-                        <i class="ft-alert-circle align-middle"></i> Accepting terms & conditions is required
+                        <i class="ft-alert-circle align-middle"></i> {{ 'AUTH.ACCEPT_TERMS_REQ' | translate }}
                       </div>
                     </div>
                   </div>
 
                   <!-- Company Selection -->
                   <div class="form-group">
-                    <label>Select Procurement Companies</label>
+                    <label>{{ 'AUTH.SELECT_PROC_COMPANIES' | translate }}</label>
                     <div class="dropdown" [class.show]="dropdownOpen">
                       <button type="button" class="btn btn-outline-secondary w-100 text-start dropdown-toggle"
                         (click)="toggleDropdown()">
@@ -107,14 +107,14 @@
                       </ul>
                     </div>
                     <div *ngIf="companyFormArray.invalid && (companyFormArray.touched || registerFormSubmitted)" class="text-danger mt-1">
-                      <i class="ft-alert-circle align-middle"></i> At least one company must be selected
+                      <i class="ft-alert-circle align-middle"></i> {{ 'AUTH.SELECT_ONE_COMPANY_REQ' | translate }}
                     </div>
                   </div>
 
                   <!-- Buttons -->
                   <div class="d-flex justify-content-between flex-sm-row flex-column">
-                    <a [routerLink]="['/dashboard/dashboard1']" class="btn bg-light-primary mb-2 mb-sm-0">Back To Dashboard</a>
-                    <button type="button" class="btn btn-primary" (click)="onSubmit()">Register</button>
+                    <a [routerLink]="['/dashboard/dashboard1']" class="btn bg-light-primary mb-2 mb-sm-0">{{ 'AUTH.BACK_TO_DASHBOARD' | translate }}</a>
+                    <button type="button" class="btn btn-primary" (click)="onSubmit()">{{ 'AUTH.REGISTER' | translate }}</button>
                   </div>
                 </form>
 

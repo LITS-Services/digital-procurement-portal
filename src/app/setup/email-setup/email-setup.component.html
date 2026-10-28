@@ -5,7 +5,7 @@
       <!-- Header -->
       <div class="row">
         <div class="col-md-12" style="margin-top: -0.25rem;">
-          <h4 class="heading">Invitations</h4>
+          <h4 class="heading">{{ 'SETUP_MODULE.INVITATIONS' | translate }}</h4>
         </div>
       </div>
 
@@ -23,20 +23,20 @@
                 [appPermFormId]="FORM_IDS.INVITATION" [appPermDisable]="'write'"
                 (click)="CreatInvitations(invitationModal)">
                 <i class="ft-mail"></i>
-                <label class="ml-1">Create Invitation</label>
+                <label class="ml-1">{{ 'SETUP_MODULE.CREATE_INVITATION' | translate }}</label>
               </button>
 
               <!-- ✅ Resend Invitation Logic -->
               <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isResendButtonDisabled"
                 (click)="resendInvitation(invitationModal)">
                 <i class="ft-repeat"></i>
-                <label class="ml-1">Resend</label>
+                <label class="ml-1">{{ 'SETUP_MODULE.RESEND' | translate }}</label>
               </button>
             </div>
 
             <div class="d-flex align-items-center">
               <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
-                <i class="ft-sliders"></i><label class="ml-1 btn-label">Filter</label>
+                <i class="ft-sliders"></i><label class="ml-1 btn-label">{{ 'COMMON.FILTER' | translate }}</label>
               </button>
             </div>
           </div>
@@ -48,20 +48,20 @@
           <div class="filter-search">
             <i class="ft-filter search-icon"></i>
             <input style="padding-left: 3.4em;" type="text" class="form-control border-left-0 cstm-ui-input"
-              placeholder="Search..." [(ngModel)]="searchTerm" (ngModelChange)="applySearchFilter()" />
+              [placeholder]="'COMMON.SEARCH' | translate" [(ngModel)]="searchTerm" (ngModelChange)="applySearchFilter()" />
 
           </div>
 
           <div class="d-flex filter-btns-div">
-            <div class="dropdown filter-dropdown" ngbDropdown [ngbTooltip]="statusTouched ? 'Status' : null">
+            <div class="dropdown filter-dropdown" ngbDropdown [ngbTooltip]="statusTouched ? ('COMMON.STATUS' | translate) : null">
               <button class="btn btn-sm filter-btn dropdown-toggle" ngbDropdownToggle>
-                <span class="filter-label">{{ !statusTouched ? "Status" : selectedStatusLabel }} </span>
+                <span class="filter-label">{{ !statusTouched ? ("COMMON.STATUS" | translate) : (selectedStatusLabel | statusTranslate) }} </span>
                 <i class="ft-chevron-down"></i>
               </button>
               <div class="dropdown-menu" ngbDropdownMenu>
-                <button class="dropdown-item" (click)="filterByStatus('All')">All</button>
-                <button class="dropdown-item" (click)="filterByStatus('Send')">Send</button>
-                <button class="dropdown-item" (click)="filterByStatus('Resend')">Resend</button>
+                <button class="dropdown-item" (click)="filterByStatus('All')">{{ 'COMMON.ALL' | translate }}</button>
+                <button class="dropdown-item" (click)="filterByStatus('Send')">{{ 'COMMON.SEND' | translate }}</button>
+                <button class="dropdown-item" (click)="filterByStatus('Resend')">{{ 'COMMON.RESEND' | translate }}</button>
               </div>
             </div>
 
@@ -73,7 +73,7 @@
       <!-- Content -->
       <div class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
         <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="rows" [columnMode]="'force'"
-          [headerHeight]="50" [footerHeight]="50" [columns]="columns" rowHeight="auto" [limit]="10"
+          [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="10"
           [scrollbarH]="isMobile" [loadingIndicator]="loading" [selected]="chkBoxSelected" [swapColumns]="false"
           [selectionType]="SelectionType.checkbox" (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
           <!-- Checkbox Column -->
@@ -93,29 +93,30 @@
           </ngx-datatable-column>
 
           <!-- Sr No -->
-          <ngx-datatable-column name="Sr. No." [minWidth]="50" [maxWidth]="60" [resizeable]="false">
+          <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [minWidth]="50" [maxWidth]="60" [resizeable]="false">
             <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
               <span>{{ rowIndex + 1 }}</span>
             </ng-template>
           </ngx-datatable-column>
 
-          <!-- Dynamic Columns -->
-          <ngx-datatable-column *ngFor="let col of columns" [name]="col.name" [prop]="col.prop"
-            [minWidth]="col.minWidth" [flexGrow]="1">
+          <!-- Columns -->
+          <ngx-datatable-column [name]="'SETUP_MODULE.RECEIVER_EMAIL' | translate" prop="receiverEmail" [minWidth]="120" [flexGrow]="1">
             <ng-template ngx-datatable-cell-template let-row="row">
+              {{ row.receiverEmail }}
+            </ng-template>
+          </ngx-datatable-column>
 
-              <!-- ✅ Status chip rendering -->
-              <ng-container *ngIf="col.prop === 'requestStatusName'; else defaultCell">
-                <span class="chip" [ngClass]="row.statusClass">
-                  {{ row.requestStatusName }}
-                </span>
-              </ng-container>
+          <ngx-datatable-column [name]="'SETUP_MODULE.REQUEST_STATUS' | translate" prop="requestStatusName" [minWidth]="50" [flexGrow]="1">
+            <ng-template ngx-datatable-cell-template let-row="row">
+              <span class="chip" [ngClass]="row.statusClass">
+                {{ row.requestStatusName | statusTranslate }}
+              </span>
+            </ng-template>
+          </ngx-datatable-column>
 
-              <!-- ✅ Default rendering for other columns -->
-              <ng-template #defaultCell>
-                {{ row[col.prop] }}
-              </ng-template>
-
+          <ngx-datatable-column [name]="'COMMON.DATE' | translate" prop="createdDate" [minWidth]="100" [flexGrow]="1">
+            <ng-template ngx-datatable-cell-template let-row="row">
+              {{ row.createdDate }}
             </ng-template>
           </ngx-datatable-column>
         </ngx-datatable>
@@ -137,26 +138,26 @@
   <div class="modal-body">
     <form [formGroup]="invitationForm">
       <div class="form-group mb-2">
-        <label for="receiverEmail">Vendor Email</label>
+        <label for="receiverEmail">{{ 'SETUP_MODULE.VENDOR_EMAIL' | translate }}</label>
         <input type="email" id="receiverEmail" class="form-control" formControlName="receiverEmail"
-          [ngClass]="{ 'is-invalid': submitted && f.receiverEmail.errors }" placeholder="Enter vendor email" />
+          [ngClass]="{ 'is-invalid': submitted && f.receiverEmail.errors }" [placeholder]="'SETUP_MODULE.ENTER_VENDOR_EMAIL' | translate" />
         <div *ngIf="submitted && f.receiverEmail.errors" class="invalid-feedback">
-          <div *ngIf="f.receiverEmail.errors.required">Email is required</div>
-          <div *ngIf="f.receiverEmail.errors.email">Please enter a valid email address</div>
+          <div *ngIf="f.receiverEmail.errors.required">{{ 'SETUP_MODULE.EMAIL_REQUIRED' | translate }}</div>
+          <div *ngIf="f.receiverEmail.errors.email">{{ 'SETUP_MODULE.VALID_EMAIL_REQUIRED' | translate }}</div>
         </div>
       </div>
 
       <div class="form-group mb-2">
-        <label for="subject">Subject</label>
+        <label for="subject">{{ 'COMMON.SUBJECT' | translate }}</label>
         <input type="text" id="subject" class="form-control" formControlName="subject"
-          [ngClass]="{ 'is-invalid': submitted && f.subject.errors }" placeholder="Enter subject" />
+          [ngClass]="{ 'is-invalid': submitted && f.subject.errors }" [placeholder]="'COMMON.ENTER_SUBJECT' | translate" />
         <div *ngIf="submitted && f.subject.errors" class="invalid-feedback">
-          <div *ngIf="f.subject.errors.required">Subject is required</div>
+          <div *ngIf="f.subject.errors.required">{{ 'SETUP_MODULE.SUBJECT_REQUIRED' | translate }}</div>
         </div>
       </div>
 
       <div class="form-group mb-0">
-        <label class="form-label fw-semibold">Email Body</label>
+        <label class="form-label fw-semibold">{{ 'SETUP_MODULE.EMAIL_BODY' | translate }}</label>
 
         <div class="premium-editor-container mini">
           <!-- Floating Toolbar Island -->
@@ -185,20 +186,20 @@
           <!-- Content Area -->
           <div #emailInvitationEditor contenteditable="true" class="premium-writing-area" (input)="onEditorInput()"
             (click)="saveSelection()" (keyup)="saveSelection()" (blur)="saveSelection()"
-            placeholder="Compose your invitation message...">
+            [attr.placeholder]="'SETUP_MODULE.COMPOSE_INVITATION_PLACEHOLDER' | translate">
           </div>
         </div>
 
         <input type="hidden" formControlName="body" />
         <div *ngIf="submitted && f.body.errors" class="text-danger small mt-2">
-          <div *ngIf="f.body.errors.required">Body is required.</div>
+          <div *ngIf="f.body.errors.required">{{ 'SETUP_MODULE.BODY_REQUIRED' | translate }}</div>
         </div>
       </div>
     </form>
   </div>
   <div class="modal-footer">
     <button type="button" class="modal-btn-cancel" (click)="cancel()">
-      <i class="ft-x mr-1"></i> Cancel
+      <i class="ft-x mr-1"></i> {{ 'COMMON.CANCEL' | translate }}
     </button>
     <button type="button" class="modal-btn-save" (click)="sendInvitation(modal)" [disabled]="isSending">
       <span *ngIf="isSending" class="spinner-border spinner-border-sm mr-1" role="status" aria-hidden="true"></span>

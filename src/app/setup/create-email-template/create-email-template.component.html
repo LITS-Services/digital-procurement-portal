@@ -13,14 +13,14 @@
 
           <!-- Reset Button -->
           <button *ngIf="!isEditMode" type="button" class="btn btn-sm cstm-ui-table-btn ms-2" (click)="resetForm()">
-            <label class="ft-refresh-ccw"> Reset</label>
+            <label class="ft-refresh-ccw"> {{ 'COMMON.RESET' | translate }}</label>
           </button>
 
           <!-- Save / Update Button -->
           <button type="button" class="btn btn-sm cstm-ui-table-btn ms-2" (click)="saveEmailTemplate()">
             <i class="ft-save"></i>
             <label class="ml-1">
-              <span class="ms-1">{{ isEditMode ? 'Update' : 'Save' }}</span>
+              <span class="ms-1">{{ isEditMode ? ('COMMON.UPDATE' | translate) : ('COMMON.SAVE' | translate) }}</span>
             </label>
           </button>
         </div>
@@ -31,31 +31,30 @@
 
   <!-- Full Page Form -->
   <div class="card full-form-card p-4 shadow-sm mt-3">
-    <h4 class="heading mb-4">{{ isEditMode ? 'Edit Email Template' : 'New Email Template' }}</h4>
+    <h4 class="heading mb-4">{{ isEditMode ? ('SETUP_MODULE.EDIT_TEMPLATE' | translate) : ('SETUP_MODULE.NEW_TEMPLATE' | translate) }}</h4>
 
     <form [formGroup]="invitationForm" (ngSubmit)="saveEmailTemplate()">
       <div class="row">
 
         <!-- Subject -->
         <div class="col-md-6 mb-3">
-          <label class="form-label">Subject <span class="text-danger">*</span></label>
-          <input type="text" class="form-control" placeholder="Enter subject" formControlName="subject"
+          <label class="form-label">{{ 'COMMON.SUBJECT' | translate }} <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" [placeholder]="'SETUP_MODULE.ENTER_SUBJECT' | translate" formControlName="subject"
             [ngClass]="{ 'is-invalid': submitted && f['subject'].errors }" />
           <div *ngIf="submitted && f['subject'].errors" class="invalid-feedback">
-            Subject is required.
+            {{ 'SETUP_MODULE.SUBJECT_REQ' | translate }}
           </div>
         </div>
 
         <!-- ======================== Action Dropdown ======================== -->
         <div class="col-md-3 mb-3 position-relative">
-          <label class="form-label">Action <span class="text-danger">*</span></label>
+          <label class="form-label">{{ 'COMMON.ACTIONS' | translate }} <span class="text-danger">*</span></label>
 
           <div ngbDropdown class="w-100">
             <button ngbDropdownToggle type="button"
               class="form-control text-start d-flex justify-content-between align-items-center" [disabled]="isEditMode"
               [ngClass]="{ 'is-invalid': submitted && f['emailActionId'].errors }" style="cursor: pointer;">
-              {{ selectedAction?.description || 'Select Action' }}
-              <!-- <span class="dropdown-arrow">&#9662;</span> -->
+              {{ selectedAction?.description || ('SETUP_MODULE.SELECT_ACTION' | translate) }}
             </button>
 
             <div ngbDropdownMenu class="w-100 custom-dropdown">
@@ -66,20 +65,19 @@
           </div>
 
           <div *ngIf="submitted && f['emailActionId'].errors" class="text-danger mt-1">
-            Please select an action.
+            {{ 'SETUP_MODULE.ACTION_REQ' | translate }}
           </div>
         </div>
 
         <!-- ======================== Procurement Company Dropdown ======================== -->
         <div class="col-md-3 mb-3 position-relative">
-          <label class="form-label">Entity</label>
+          <label class="form-label">{{ 'COMMON.ENTITY' | translate }}</label>
 
           <div ngbDropdown class="w-100">
             <button ngbDropdownToggle type="button"
               class="form-control text-start d-flex justify-content-between align-items-center" [disabled]="isEditMode"
               [ngClass]="{ 'is-invalid': submitted && f['procurementCompanyId'].errors }" style="cursor: pointer;">
-              {{ selectedCompany?.description || 'Select Company' }}
-              <!-- <span class="dropdown-arrow">&#9662;</span> -->
+              {{ selectedCompany?.description || ('SETUP_MODULE.SELECT_COMPANY' | translate) }}
             </button>
 
             <div ngbDropdownMenu class="w-100 custom-dropdown">
@@ -90,20 +88,19 @@
           </div>
 
           <div *ngIf="submitted && f['procurementCompanyId'].errors" class="text-danger mt-1">
-            Please select a company.
+            {{ 'SETUP_MODULE.COMPANY_REQ' | translate }}
           </div>
         </div>
 
         <!-- ======================== Workflow Type Dropdown ======================== -->
         <div class="col-md-3 mb-3 position-relative">
-          <label class="form-label">Type <span class="text-danger">*</span></label>
+          <label class="form-label">{{ 'COMMON.TYPE' | translate }} <span class="text-danger">*</span></label>
 
           <div ngbDropdown class="w-100">
             <button ngbDropdownToggle type="button"
               class="form-control text-start d-flex justify-content-between align-items-center" [disabled]="isEditMode"
               [ngClass]="{ 'is-invalid': submitted && f['workFlowTypeId'].errors }" style="cursor: pointer;">
-              {{ selectedType?.description || 'Select Type' }}
-              <!-- <span class="dropdown-arrow">&#9662;</span> -->
+              {{ selectedType?.description || ('SETUP_MODULE.SELECT_TYPE_PH' | translate) }}
             </button>
 
             <div ngbDropdownMenu class="w-100 custom-dropdown">
@@ -114,7 +111,7 @@
           </div>
 
           <div *ngIf="submitted && f['workFlowTypeId'].errors" class="text-danger mt-1">
-            Please select a type.
+            {{ 'SETUP_MODULE.TYPE_REQ' | translate }}
           </div>
         </div>
 
@@ -124,7 +121,7 @@
 
             <!-- Main Editor Column -->
             <div class="editor-column">
-              <label class="form-label mb-2 fw-semibold">Email Body <span class="text-danger">*</span></label>
+              <label class="form-label mb-2 fw-semibold">{{ 'SETUP_MODULE.EMAIL_BODY' | translate }} <span class="text-danger">*</span></label>
 
               <div class="premium-editor-container">
                 <!-- Floating Toolbar Island -->
@@ -181,7 +178,7 @@
               </div>
 
               <div *ngIf="submitted && f['body'].errors" class="text-danger small mt-2">
-                Template body is required.
+                {{ 'SETUP_MODULE.BODY_REQ' | translate }}
               </div>
             </div>
 
@@ -190,12 +187,12 @@
               <div class="sidebar-header">
                 <div class="header-main">
                   <i class="ft-zap shadow-icon pulse"></i>
-                  <span>Tags</span>
+                  <span>{{ 'SETUP_MODULE.TAGS' | translate }}</span>
                 </div>
                 <!-- Search Box -->
                 <div class="sidebar-search mt-3">
                   <i class="ft-search"></i>
-                  <input type="text" placeholder="Search tags..." (input)="filterTags($event)" class="tag-search-input">
+                  <input type="text" [placeholder]="'SETUP_MODULE.SEARCH_TAGS' | translate" (input)="filterTags($event)" class="tag-search-input">
                 </div>
               </div>
 
@@ -214,12 +211,12 @@
                 <ng-template #noTypeInfo>
                   <div class="empty-sidebar-state">
                     <i class="ft-layers"></i>
-                    <p>Select a type to view available tags</p>
+                    <p>{{ 'SETUP_MODULE.SELECT_TYPE_TAGS' | translate }}</p>
                   </div>
                 </ng-template>
 
                 <ng-template #noPh>
-                  <p class="text-muted small p-3">No tags available for this type.</p>
+                  <p class="text-muted small p-3">{{ 'SETUP_MODULE.NO_TAGS' | translate }}</p>
                 </ng-template>
               </div>
             </div>

@@ -8,7 +8,7 @@
           <!-- <h4 class="heading">Create Purchase Request</h4> -->
           <h4 class="heading">
             <ng-container *ngIf="viewMode === false">
-              {{ isNewForm ? 'Create Global Configuration' : 'Update Global Configuration' }}
+              {{ (isNewForm ? 'CONFIG_MODULE.CREATE_GLOBAL_CONFIG' : 'CONFIG_MODULE.UPDATE_GLOBAL_CONFIG') | translate }}
             </ng-container>
           </h4>
         </div>
@@ -25,7 +25,7 @@
             <ng-container *ngIf="isNewForm && !viewMode">
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="newGlobalConfigForm.invalid"
                 (click)="onSubmit()">
-                <i class="ft-plus"></i><label class="ml-1">Save</label>
+                <i class="ft-plus"></i><label class="ml-1">{{ 'COMMON.SAVE' | translate }}</label>
               </button>
 
             </ng-container>
@@ -34,7 +34,7 @@
             <ng-container *ngIf="!isNewForm && !viewMode">
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="newGlobalConfigForm.invalid"
                 (click)="onSubmit()">
-                <i class="ft-edit-2"></i><label class="ml-1">Update</label>
+                <i class="ft-edit-2"></i><label class="ml-1">{{ 'COMMON.UPDATE' | translate }}</label>
               </button>
             </ng-container>
 
@@ -78,16 +78,16 @@
 
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-                  <label>Name</label>
-                  <input type="text" formControlName="name" class="form-control custom-input" placeholder="Enter Name"
+                  <label>{{ 'COMMON.NAME' | translate }}</label>
+                  <input type="text" formControlName="name" class="form-control custom-input" [placeholder]="'CONFIG_MODULE.ENTER_NAME' | translate"
                     required />
                 </div>
               </div>
 
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-                  <label>Value</label>
-                  <input type="text" formControlName="value" placeholder="Enter Value" required
+                  <label>{{ 'COMMON.VALUE' | translate }}</label>
+                  <input type="text" formControlName="value" [placeholder]="'CONFIG_MODULE.ENTER_VALUE' | translate" required
                     class="form-control custom-input" />
                   <!-- <input type="text" formControlName="purchaseRequestNo" placeholder="Enter PR No."
                     class="form-control" /> -->
@@ -103,9 +103,9 @@
 
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-                  <label>Type</label>
+                  <label>{{ 'COMMON.TYPE' | translate }}</label>
                   <select formControlName="type" class="form-control custom-input" required>
-                    <option value="" disabled>Select Type</option>
+                    <option value="" disabled>{{ 'CONFIG_MODULE.SELECT_TYPE' | translate }}</option>
                     <option *ngFor="let t of globalConfigTypes" [value]="t.description">
                       {{ t.description }}
                     </option>

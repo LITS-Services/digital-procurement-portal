@@ -8,10 +8,10 @@
           <h4 class="heading">
             <button class="btn btn-lg" type="button" (click)="homePage()"><i class="ft-arrow-left"></i></button>
             <ng-container *ngIf="viewMode === false; else viewModeTitle">
-              {{ isNewForm ? 'Create Quotation Request' : 'Update Quotation Request' }}
+              {{ (isNewForm ? 'RFQ_MODULE.CREATE_QUOTATION_REQUEST' : 'RFQ_MODULE.UPDATE_QUOTATION_REQUEST') | translate }}
             </ng-container>
             <ng-template #viewModeTitle>
-              View Quotation Request
+              {{ 'RFQ_MODULE.VIEW_QUOTATION_REQUEST' | translate }}
             </ng-template>
           </h4>
         </div>
@@ -58,7 +58,7 @@
       (click)="selectTab('rfq-input')" 
       [ngClass]="{ 'tab-current': selectedTab === 'rfq-input' }"
       class="custom-style-tab">
-      <span>RFQ INPUT</span>
+      <span>{{ 'RFQ_MODULE.RFQ_INPUT' | translate }}</span>
     </button>
 
     <button 
@@ -69,7 +69,7 @@
       }"
       [disabled]="!currentQuotationId"
       class="custom-style-tab">
-      <span>BIDS DETAIL</span>
+      <span>{{ 'RFQ_MODULE.BIDS_DETAIL' | translate }}</span>
     </button>
 
     <button 
@@ -80,7 +80,7 @@
       }"
       [disabled]="!currentQuotationId"
       class="custom-style-tab">
-      <span>COMMENTS</span>
+      <span>{{ 'COMMON.COMMENTS' | translate }}</span>
     </button>
 
     <button 
@@ -91,7 +91,7 @@
       }"
       [disabled]="!currentQuotationId"
       class="custom-style-tab">
-      <span>APPROVAL HISTORY</span>
+      <span>{{ 'COMMON.APPROVAL_HISTORY' | translate }}</span>
     </button>
   </nav>
   </div>
@@ -103,21 +103,21 @@
           <li class="nav-item" role="presentation">
             <a class="nav-link" [class.active]="rfqTabs === 'details'" (click)="selectRfqTab('details')"
               href="javascript:void(0)" role="tab">
-              RFQ Details
+              {{ 'RFQ_MODULE.RFQ_DETAILS' | translate }}
             </a>
           </li>
   
           <li class="nav-item"  role="presentation">
             <a class="nav-link" [class.disabled]="newRfqForm.invalid" [class.active]="rfqTabs === 'items'" (click)="selectRfqTab('items')"
               href="javascript:void(0)" role="tab">
-              Quotation Items
+              {{ 'RFQ_MODULE.QUOTATION_ITEMS' | translate }}
             </a>
           </li>
   
           <li class="nav-item" role="presentation">
             <a class="nav-link" [class.disabled]="!currentQuotationId"  [class.active]="rfqTabs === 'vendors'" (click)="currentQuotationId && selectRfqTab('vendors')"
               href="javascript:void(0)" role="tab">
-              Select Vendors
+              {{ 'RFQ_MODULE.SELECT_VENDORS' | translate }}
             </a>
           </li>
   
@@ -135,7 +135,7 @@
           
             <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" (click)="goBack()"
               title="Back to RFQ Details">
-              <i class="ft-arrow-left"></i><label class="ml-1">Back</label>
+              <i class="ft-arrow-left"></i><label class="ml-1">{{ 'COMMON.BACK' | translate }}</label>
             </button>
           
           </div>
@@ -147,17 +147,17 @@
           
             <button *ngIf="isNewForm && rfqTabs === 'details'" class="btn btn-sm cstm-ui-table-btn"
               [disabled]="newRfqForm.invalid" (click)="goNext()">
-              <i class="ft-arrow-right"></i><label class="ml-1">Next</label>
+              <i class="ft-arrow-right"></i><label class="ml-1">{{ 'COMMON.NEXT' | translate }}</label>
             </button>
           
                 <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" [disabled]="isLoading"
               (click)="saveAsDraftAndGoBack()">
-              <i class="ft-save"></i><label class="ml-1">Save As Draft</label>
+              <i class="ft-save"></i><label class="ml-1">{{ 'COMMON.SAVE_AS_DRAFT' | translate }}</label>
             </button>
           
             <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" [disabled]="isLoading"
               (click)="submitForm(true)">
-              <i class="ft-check"></i><label class="ml-1">Save & Continue</label>
+              <i class="ft-check"></i><label class="ml-1">{{ 'COMMON.SAVE_AND_CONTINUE' | translate }}</label>
             </button>
 
          
@@ -165,27 +165,27 @@
             <button *ngIf="!isNewForm && (rfqTabs === 'details' || rfqTabs === 'items') && isSubmitter"
               class="btn btn-sm cstm-ui-table-btn" [disabled]="newRfqForm.invalid || isStatusCompleted  || isStatusInProgress || !isSubmitter || viewMode"
               (click)="submitForm()">
-              <i class="ft-edit-2"></i><label class="ml-1">Update</label>
+              <i class="ft-edit-2"></i><label class="ml-1">{{ 'COMMON.UPDATE' | translate }}</label>
             </button>
 
-              <button   [ngbTooltip]="useRequestPOMode ? 'Request Purchase Order' : 'Create Purchase Order'" *ngIf="isStatusCompleted && (rfqTabs === 'details' || rfqTabs === 'items') && isSubmitter"
+              <button   [ngbTooltip]="(useRequestPOMode ? 'COMMON.REQUEST_PO' : 'COMMON.CREATE_PO') | translate" *ngIf="isStatusCompleted && (rfqTabs === 'details' || rfqTabs === 'items') && isSubmitter"
               class="btn btn-sm cstm-ui-table-btn"
               (click)="onPOButtonClick()">
-              <i class="ft-plus"></i><label class="ml-1">{{ useRequestPOMode ? 'Request PO' : 'Create PO' }}</label>
+              <i class="ft-plus"></i><label class="ml-1">{{ (useRequestPOMode ? 'COMMON.REQUEST_PO' : 'COMMON.CREATE_PO') | translate }}</label>
             </button>
 
             <ng-container *ngIf="viewMode && !isSubmitter">
             <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
               (click)="onAddRemarks('Approve')">
-              <i class="ft-check"></i><label class="ml-1">Approve</label>
+              <i class="ft-check"></i><label class="ml-1">{{ 'COMMON.APPROVE' | translate }}</label>
             </button>
             <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
               (click)="onAddRemarks('Reject')">
-              <i class="ft-x"></i><label class="ml-1">Reject</label>
+              <i class="ft-x"></i><label class="ml-1">{{ 'COMMON.REJECT' | translate }}</label>
             </button>
             <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
               (click)="onAddRemarks('SendBack')">
-              <i class="ft-arrow-left"></i><label class="ml-1">Send Back</label>
+              <i class="ft-arrow-left"></i><label class="ml-1">{{ 'COMMON.SEND_BACK' | translate }}</label>
             </button>
             </ng-container>          
           
@@ -205,7 +205,7 @@
   
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-                  <label>RFQ No.</label>
+                  <label>{{ 'RFQ_MODULE.RFQ_NO' | translate }}</label>
                   <input type="text" formControlName="rfqNo" class="form-control custom-input" disabled />
                 </div>
               </div>
@@ -214,8 +214,8 @@
   
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-                  <label>PR No.</label>
-                  <input type="text" formControlName="purchaseRequestNo" placeholder="Enter PR No."
+                  <label>{{ 'COMMON.REQUISITION_NO' | translate }}</label>
+                  <input type="text" formControlName="purchaseRequestNo" [placeholder]="'COMMON.REQUISITION_NO' | translate"
                     class="form-control custom-input" />
                 </div>
               </div>
@@ -223,7 +223,7 @@
               <!-- Department Name -->
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-                  <label>Department</label>
+                  <label>{{ 'COMMON.DEPARTMENT' | translate }}</label>
                   <input type="text" formControlName="departmentName" class="form-control custom-input" disabled />
                 </div>
               </div>
@@ -231,7 +231,7 @@
                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
               <label class="d-flex align-items-center mr-2 w-100" [ngbTooltip]="entityHint">
-                <span class="mr-2">Entity</span>
+                <span class="mr-2">{{ 'COMMON.ENTITY' | translate }}</span>
               
                 <small *ngIf="isEntityLocked && entityHint" class="hint-ellipsis ms-auto text-muted">
                   <i class="ft-info mr-1"></i>
@@ -243,7 +243,7 @@
               
                 <select class="form-control custom-input" formControlName="entityId" [disabled]="isEntityLocked || viewMode"
                   (change)="onEntityChanged()">
-                  <option [ngValue]="null">-- Select Entity --</option>
+                  <option [ngValue]="null">{{ 'PR_MODULE.SELECT_ENTITY_PH' | translate }}</option>
                   <option *ngFor="let e of entities" [ngValue]="e.id">
                     {{ e.description }}
                   </option>
@@ -253,14 +253,14 @@
   
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-                  <label>Status</label>
-                  <input type="text" formControlName="status" class="form-control custom-input" disabled />
+                  <label>{{ 'COMMON.STATUS' | translate }}</label>
+                  <input type="text" [value]="rfqForm.get('status')?.value | statusTranslate" class="form-control custom-input" disabled />
                 </div>
               </div>
   
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-                  <label>Owner</label>
+                  <label>{{ 'COMMON.OWNER' | translate }}</label>
                   <input type="text" formControlName="owner"
                     class="form-control custom-input" />
                 </div>
@@ -268,7 +268,7 @@
   
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-                  <label>Date</label>
+                  <label>{{ 'COMMON.DATE' | translate }}</label>
                   <input type="date" class="form-control custom-input" formControlName="date" />
                 </div>
               </div>
@@ -277,15 +277,15 @@
   
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-                  <label>Delivery Location</label>
-                  <input type="text" formControlName="deliveryLocation" placeholder="Enter Delivery Location"
+                  <label>{{ 'COMMON.DELIVERY_LOCATION' | translate }}</label>
+                  <input type="text" formControlName="deliveryLocation" [placeholder]="'PR_MODULE.ENTER_DELIVERY_LOC' | translate"
                     class="form-control  custom-input" />
                 </div>
               </div>
   
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-                  <label>Start Date</label><span class="text-danger">*</span>
+                  <label>{{ 'COMMON.START_DATE' | translate }}</label><span class="text-danger">*</span>
                   <input type="date" class="form-control  custom-input" formControlName="startDate" />
                   <div *ngIf="newRfqForm.get('startDate')?.touched && newRfqForm.get('startDate')?.invalid" class="text-danger">
                     Start Date is required
@@ -295,7 +295,7 @@
   
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-                  <label>End Date</label><span class="text-danger">*</span>
+                  <label>{{ 'COMMON.END_DATE' | translate }}</label><span class="text-danger">*</span>
                   <input type="date" class="form-control  custom-input" formControlName="endDate" />
                   <div *ngIf="newRfqForm.get('endDate')?.touched && newRfqForm.get('endDate')?.invalid" class="text-danger">
                     End Date is required
@@ -305,7 +305,7 @@
 
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2 phone-field-wrapper">
-                  <label>Contact</label>
+                  <label>{{ 'COMMON.PHONE' | translate }}</label>
                   <!-- <input type="text" formControlName="contact" placeholder="Enter Contact No."
                     class="form-control  custom-input" /> -->
                   
@@ -344,20 +344,20 @@
   
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-                  <label>Title</label>
-                  <input type="text" placeholder="Enter Title" class="form-control custom-input"
+                  <label>{{ 'COMMON.TITLE' | translate }}</label>
+                  <input type="text" [placeholder]="'COMMON.TITLE' | translate" class="form-control custom-input"
                     formControlName="title" />
                 </div>
               </div>
   
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-                  <label>Comment</label>
-                  <textarea name="" type="text" formControlName="comment" placeholder="Enter Comments"
+                  <label>{{ 'COMMON.COMMENTS' | translate }}</label>
+                  <textarea name="" type="text" formControlName="comment" [placeholder]="'COMMON.COMMENTS' | translate"
                     class="form-control custom-input"></textarea>
                 </div>
               </div>
-  
+
             </div>
             <br>
   
@@ -382,7 +382,7 @@
     <div *ngIf="!viewMode" class="card-accordion mt-2">
       <!-- Collapsible header -->
       <div class="d-flex justify-content-between align-items-center" style="cursor: pointer;" (click)="isItemsFormCollapsed = !isItemsFormCollapsed">
-        <h5 class="mb-0">Add / Edit Item</h5>
+        <h5 class="mb-0">{{ 'COMMON.ADD_EDIT_ITEM' | translate }}</h5>
         <i class="ft-chevron-down" [style.transform]="isItemsFormCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)'" style="transition: transform 0.2s ease; font-size: 1.2rem;"></i>
       </div>
 
@@ -397,7 +397,7 @@
           style="top: 0; right: 0; z-index: 10;"
         >
           <i class="ft-pocket mr-1"></i>
-          Insert
+          {{ 'COMMON.INSERT' | translate }}
         </button>
 
         <div class="col-6 d-flex align-items-center" style="min-height: 38px;">
@@ -409,7 +409,7 @@
                 name="itemType"
                 value="Inventory"
                 formControlName="itemType"
-              />Inventory
+              />{{ 'COMMON.INVENTORY' | translate }}
             </label>
           </div>
         </div>
@@ -423,7 +423,7 @@
                 name="itemType"
                 value="Non-Inventory"
                 formControlName="itemType"
-              />Non-Inventory
+              />{{ 'COMMON.NON_INVENTORY' | translate }}
             </label>
           </div>
         </div>
@@ -434,14 +434,14 @@
           <div class="row">
             <!-- Left: Item Details -->
             <div class="col-md-6 col-12">
-              <h5>Item Details</h5>
+              <h5>{{ 'COMMON.ITEM_DETAILS' | translate }}</h5>
               <div class="row">
                 <div class="col-md-6 col-12">
                   <div class="form-group mb-2">
-                    <label>Item</label>
+                    <label>{{ 'COMMON.ITEM' | translate }}</label>
                     <select class="form-control custom-input" formControlName="itemId"
                       (change)="onItemSelected(itemForm.get('itemId')?.value)">
-                      <option [ngValue]="0" disabled>Select Item</option>
+                      <option [ngValue]="0" disabled>{{ 'PR_MODULE.SELECT_ITEM_PH' | translate }}</option>
                       <option *ngFor="let item of itemList" [ngValue]="item.id">
                         {{ item.description }}
                       </option>
@@ -451,9 +451,9 @@
 
                 <div class="col-md-6 col-12">
                   <div class="form-group mb-2">
-                    <label>U of M</label>
+                    <label>{{ 'COMMON.U_OF_M' | translate }}</label>
                     <input type="text" class="form-control custom-input" [value]="selectedUomLabel"
-                      placeholder="Select an item first" disabled>
+                      [placeholder]="'PR_MODULE.SELECT_ITEM_PH' | translate" disabled>
                   </div>
                 </div>
               </div>
@@ -461,15 +461,15 @@
               <div class="row">
                  <div class="col-md-6 col-12">
                   <div class="form-group mb-2">
-                    <label>Order Quantity</label>
-                    <input type="number" placeholder="Enter Order Quantity" class="form-control custom-input" formControlName="orderQuantity" />
+                    <label>{{ 'COMMON.ORDER_QUANTITY' | translate }}</label>
+                    <input type="number" [placeholder]="'PR_MODULE.ENTER_ORDER_QTY' | translate" class="form-control custom-input" formControlName="orderQuantity" />
                   </div>
                 </div>
 
                 <div class="col-md-6 col-12">
                   <div class="form-group mb-2">
-                    <label>Unit Cost</label>
-                    <input type="number" placeholder="Enter Unit Cost" class="form-control custom-input" formControlName="unitCost" />
+                    <label>{{ 'COMMON.UNIT_COST' | translate }}</label>
+                    <input type="number" [placeholder]="'COMMON.UNIT_COST' | translate" class="form-control custom-input" formControlName="unitCost" />
                   </div>
                 </div>
               </div>
@@ -477,58 +477,34 @@
               <div class="row">
                   <div class="col-md-6 col-12">
                   <div class="form-group mb-2">
-                    <label>Amount</label>
-                    <input type="number" placeholder="Enter Amount" class="form-control custom-input" formControlName="amount" />
+                    <label>{{ 'COMMON.BUDGET_AMOUNT' | translate }}</label>
+                    <input type="number" [placeholder]="'PR_MODULE.ENTER_BUDGET_AMT' | translate" class="form-control custom-input" formControlName="amount" />
                   </div>
                 </div>
                
 
                 <div class="col-md-6 col-12">
                   <div class="form-group mb-2">
-                    <label>Req. by Date</label>
+                    <label>{{ 'COMMON.REQ_BY_DATE' | translate }}</label>
                     <input type="date" class="form-control custom-input" formControlName="reqByDate" />
                   </div>
                 </div>
               </div>
 
               <div class="form-group mb-2 col-12">
-                <label>Item Description</label>
-                <textarea rows="2" placeholder="Enter Item Description" class="form-control custom-input" formControlName="itemDescription"></textarea>
+                <label>{{ 'COMMON.DESCRIPTION' | translate }}</label>
+                <textarea rows="2" [placeholder]="'PR_MODULE.ENTER_ITEM_DESC' | translate" class="form-control custom-input" formControlName="itemDescription"></textarea>
               </div>
             </div>
 
             <!-- Right: Other Details -->
             <div class="col-12 col-md-6">
-              <h5>Other Details</h5>
-
-              <!-- <div *ngIf="!isNewForm" class="form-group mb-2">
-                <label>Final Vendor</label>
-                <select
-                  class="form-control custom-input"
-                  formControlName="vendorUserId"
-                  (change)="onVendorChange($event.target.value)"
-                >
-                  <option [ngValue]="null" disabled>Select Vendor</option>
-                  <option *ngFor="let v of uniqueVendors" [value]="v.vendorId">
-                    {{ v.vendorName }}
-                  </option>
-                </select>
-              </div>
-
-              <div *ngIf="!isNewForm" class="form-group mb-2">
-                <label>Company</label>
-                <select class="form-control custom-input" formControlName="vendorCompanyId" [compareWith]="compareIds">
-                  <option [ngValue]="null" disabled>Select Company</option>
-                  <option *ngFor="let c of filteredCompanies" [ngValue]="c.companyId">
-                    {{ c.name }}
-                  </option>
-                </select>
-              </div> -->
+              <h5>{{ 'COMMON.OTHER' | translate }}</h5>
 
               <div class="form-group mb-2 ">
-                <label>Account</label>
+                <label>{{ 'COMMON.ACCOUNT' | translate }}</label>
                 <select class="form-control custom-input" formControlName="accountId">
-                  <option value="" disabled selected>Select Account</option>
+                  <option value="" disabled selected>{{ 'COMMON.SELECT' | translate }} {{ 'COMMON.ACCOUNT' | translate }}</option>
                   <option *ngFor="let acc of accountList" [value]="acc.id">
                     {{ acc.description }}
                   </option>
@@ -537,10 +513,10 @@
 
               <!-- Project -->
               <div class="form-group mb-2">
-                <label>Project</label>
+                <label>{{ 'COMMON.PROJECT' | translate }}</label>
                 <select class="form-control custom-input" formControlName="projectId"
                   (change)="onProjectChangedRfq()" [disabled]="viewMode">
-                  <option [ngValue]="null">-- Select Project --</option>
+                  <option [ngValue]="null">{{ 'PR_MODULE.SELECT_PROJECT_PH' | translate }}</option>
                   <option *ngFor="let proj of filteredProjectList" [ngValue]="proj.id">
                     {{ proj.name }}
                   </option>
@@ -549,10 +525,10 @@
 
               <!-- Project Activity -->
               <div class="form-group mb-2">
-                <label>Project Activity</label>
+                <label>{{ 'COMMON.PROJECT_ACTIVITY' | translate }}</label>
                 <select class="form-control custom-input" formControlName="projectActivityId"
                   [disabled]="viewMode || !currentProjectActivities.length">
-                  <option [ngValue]="null">{{ currentProjectActivities.length ? '-- Select Activity --' : '-- Select Project first --' }}</option>
+                  <option [ngValue]="null">{{ currentProjectActivities.length ? ('PR_MODULE.SELECT_ACTIVITY_PH' | translate) : ('PR_MODULE.SELECT_PROJECT_PH' | translate) }}</option>
                   <option *ngFor="let act of currentProjectActivities" [ngValue]="act.id">
                     {{ act.name }}
                   </option>
@@ -560,8 +536,8 @@
               </div>
 
               <div class="form-group mb-2">
-                <label>Remarks</label>
-                <textarea rows="5" placeholder="Enter Remarks" class="form-control custom-input" formControlName="remarks"></textarea>
+                <label>{{ 'COMMON.REMARKS' | translate }}</label>
+                <textarea rows="5" [placeholder]="'COMMON.REMARKS' | translate" class="form-control custom-input" formControlName="remarks"></textarea>
               </div>
             </div>
           </div>
@@ -577,13 +553,8 @@
         [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5"   [scrollbarH]="isMobile">
         <!-- Select -->
         <ngx-datatable-column *ngIf="purchaseRequestId" cellClass="datatable-checkbox-cell"
-          headerClass="datatable-checkbox-cell" name="Select" [width]="60" [sortable]="false" [canAutoResize]="false"
+          headerClass="datatable-checkbox-cell" [name]="'COMMON.SELECT' | translate" [width]="60" [sortable]="false" [canAutoResize]="false"
           [draggable]="false" [resizeable]="false">
-          <!-- <ng-template ngx-datatable-cell-template let-row="row">
-                    <div class="custom-control cstm-checkbox-form2 custom-checkbox">
-                      <input type="checkbox" [(ngModel)]="row.selected" />
-                    </div>
-                  </ng-template> -->
           <!-- Header template with "Select All" -->
           <ng-template ngx-datatable-header-template let-value="value">
             <div class="custom-control cstm-checkbox-form2 custom-checkbox">
@@ -600,7 +571,7 @@
         </ngx-datatable-column>
     
         <!-- Sr. No. -->
-        <ngx-datatable-column name="Sr. No." [width]="60" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+        <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="60" [sortable]="false" [canAutoResize]="false" [draggable]="false"
           [resizeable]="false">
           <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
             <span>{{ rowIndex + 1 }}</span>
@@ -608,55 +579,55 @@
         </ngx-datatable-column>
     
         <!-- Type -->
-        <ngx-datatable-column name="Type" prop="itemType">
+        <ngx-datatable-column [name]="'COMMON.ITEM_TYPE' | translate" prop="itemType">
         </ngx-datatable-column>
 
         <!-- Project -->
-        <ngx-datatable-column name="Project" prop="ProjectName">
+        <ngx-datatable-column [name]="'COMMON.PROJECT' | translate" prop="ProjectName">
           <ng-template let-row="row" ngx-datatable-cell-template>
             <span>{{ row.ProjectName || row.projectName || getProjectNameById(row.projectId) }}</span>
           </ng-template>
         </ngx-datatable-column>
 
         <!-- Project Activity -->
-        <ngx-datatable-column name="Project Activity" prop="ActivityName">
+        <ngx-datatable-column [name]="'COMMON.PROJECT_ACTIVITY' | translate" prop="ActivityName">
           <ng-template let-row="row" ngx-datatable-cell-template>
             <span>{{ row.ActivityName || row.activityName || getActivityNameById(row.projectActivityId) }}</span>
           </ng-template>
         </ngx-datatable-column>
     
         <!-- Item -->
-        <ngx-datatable-column name="Item">
+        <ngx-datatable-column [name]="'COMMON.ITEM' | translate">
           <ng-template let-row="row" ngx-datatable-cell-template>
             {{ getItemNameById(row.itemId) }}
           </ng-template>
         </ngx-datatable-column>
     
         <!-- Description -->
-        <ngx-datatable-column name="Description" prop="itemDescription" [sortable]="false">
+        <ngx-datatable-column [name]="'COMMON.DESCRIPTION' | translate" prop="itemDescription" [sortable]="false">
         </ngx-datatable-column>
     
         <!-- Amount -->
-        <ngx-datatable-column name="Amount" prop="amount" [sortable]="false" [canAutoResize]="false"
+        <ngx-datatable-column [name]="'COMMON.BUDGET_AMOUNT' | translate" prop="amount" [sortable]="false" [canAutoResize]="false"
           [draggable]="false" [resizeable]="false">
         </ngx-datatable-column>
     
         <!-- Vendor Name -->
-        <ngx-datatable-column *ngIf="allItemsFinalized" name="Selected Vendor" [sortable]="false">
+        <ngx-datatable-column *ngIf="allItemsFinalized" [name]="'COMMON.FINAL_VENDOR' | translate" [sortable]="false">
           <ng-template let-row="row" ngx-datatable-cell-template>
             {{ getVendorNameById(row.vendorUserId) }}
           </ng-template>
         </ngx-datatable-column>
     
         <!-- Remarks -->
-        <ngx-datatable-column name="Remarks" prop="remarks" [sortable]="false">
+        <ngx-datatable-column [name]="'COMMON.REMARKS' | translate" prop="remarks" [sortable]="false">
         </ngx-datatable-column>
     
         <!-- Attachments -->
-        <ngx-datatable-column name="Attachments" [sortable]="false" [canAutoResize]="false"
+        <ngx-datatable-column [name]="'COMMON.ATTACHMENTS' | translate" [sortable]="false" [canAutoResize]="false"
           [draggable]="false" [resizeable]="false">
           <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex">
-            <a matTooltip="Attachment" class="row-action-attachment" (click)="openNewEntityModal(rowIndex)"
+            <a [matTooltip]="'COMMON.ATTACHMENT' | translate" class="row-action-attachment" (click)="openNewEntityModal(rowIndex)"
               [ngClass]="{ disabled: actionType === 'View' }">
               <i class="ft-paperclip mr-1" style="font-size: 1.5rem;"></i>
             </a>
@@ -664,15 +635,15 @@
         </ngx-datatable-column>
     
         <!-- Actions -->
-        <ngx-datatable-column *ngIf="!viewMode" name="Actions" [width]="120" [sortable]="false" [canAutoResize]="false"
+        <ngx-datatable-column *ngIf="!viewMode" [name]="'COMMON.ACTIONS' | translate" [width]="120" [sortable]="false" [canAutoResize]="false"
           [draggable]="false" [resizeable]="false">
           <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
-            <a matTooltip="Edit Item" (click)="editRow(row, rowIndex)"
+            <a [matTooltip]="'COMMON.EDIT' | translate" (click)="editRow(row, rowIndex)"
               [ngClass]="viewMode ? 'disabled' : 'row-action-edit'">
               <i class="ft-edit mr-1" style="font-size: 1.5rem;"></i>
             </a>
     
-            <a matTooltip="Delete Item" style="cursor: pointer; color: #d1d4d7;" (click)="deleteRow(rowIndex)"
+            <a [matTooltip]="'COMMON.DELETE' | translate" style="cursor: pointer; color: #d1d4d7;" (click)="deleteRow(rowIndex)"
               [ngClass]="viewMode ? 'disabled' : 'row-action-delete'">
               <i class="ft-trash trash-icon" style="font-size: 1.5rem;"></i>
             </a>
@@ -716,21 +687,21 @@
         <li class="nav-item" role="presentation">
           <a class="nav-link" [class.active]="bidsTab === 'quotation-box'" (click)="selectBidsTab('quotation-box')"
             href="javascript:void(0)" role="tab">
-            Quotation Box
+            {{ 'RFQ_MODULE.QUOTATION_BOX' | translate }}
           </a>
         </li>
     
         <li class="nav-item" role="presentation">
           <a class="nav-link" [class.active]="bidsTab === 'vendor-comparison'" [class.disabled]="!currentQuotationId"
             (click)="selectBidsTab('vendor-comparison')" href="javascript:void(0)" role="tab">
-            Vendor Comparison
+            {{ 'RFQ_MODULE.VENDOR_COMPARISON' | translate }}
           </a>
         </li>
     
         <li class="nav-item" role="presentation">
           <a class="nav-link" [class.active]="bidsTab === 'finalVendor'" [class.disabled]="!currentQuotationId"
             (click)="selectBidsTab('finalVendor')" href="javascript:void(0)" role="tab">
-            Final Vendors
+            {{ 'COMMON.FINAL_VENDORS' | translate }}
           </a>
         </li>
     
@@ -742,7 +713,7 @@
       <div>
         <ng-container *ngIf="isSubmitter">
           <button class="btn btn-sm submit-approval-btn shadow-sm" [disabled]="!allItemsFinalized || newRfqForm.invalid || isStatusCompleted || isStatusInProgress" (click)="onSubmitForApproval()">
-            <i class="ft-check" style="color: #1161cc;"></i><label class="ml-1">Submit for Approval</label>
+            <i class="ft-check" style="color: #1161cc;"></i><label class="ml-1">{{ 'COMMON.SUBMIT_FOR_APPROVAL' | translate }}</label>
           </button>
         </ng-container>
       </div>

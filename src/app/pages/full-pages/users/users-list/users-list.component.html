@@ -74,8 +74,8 @@
             <ngx-datatable class="bootstrap core-bootstrap" [columnMode]="ColumnMode.force" [headerHeight]="50"
               [footerHeight]="50" rowHeight="auto" [limit]="limitRef" [rows]="rows" [scrollbarH]="true"
               [columns]="columns">
-              <ngx-datatable-column name="ID" prop="ID" [width]="50"></ngx-datatable-column>
-              <ngx-datatable-column name="Username" prop="Username" [width]="150">
+              <ngx-datatable-column [name]="'COMMON.ID' | translate" prop="ID" [width]="50"></ngx-datatable-column>
+              <ngx-datatable-column [name]="'AUTH.USERNAME' | translate" prop="Username" [width]="150">
                 <ng-template let-row="row" let-name="value" ngx-datatable-cell-template>
                   <div class="d-flex align-items-center">
                     <img class="rounded-circle mr-1" src="assets/img/portrait/small/{{
@@ -88,22 +88,22 @@
                   </div>
                 </ng-template>
               </ngx-datatable-column>
-              <ngx-datatable-column name="Name" prop="Name" [width]="150"></ngx-datatable-column>
-              <ngx-datatable-column name="Last Activity" prop="Last Activity" [width]="120"></ngx-datatable-column>
-              <ngx-datatable-column name="Verified" prop="Verified" [width]="70"></ngx-datatable-column>
-              <ngx-datatable-column name="Role" prop="Role" [width]="70"></ngx-datatable-column>
-              <ngx-datatable-column name="Status" prop="Status" [width]="70">
+              <ngx-datatable-column [name]="'COMMON.NAME' | translate" prop="Name" [width]="150"></ngx-datatable-column>
+              <ngx-datatable-column [name]="'USERS_MODULE.LAST_ACTIVITY' | translate" prop="Last Activity" [width]="120"></ngx-datatable-column>
+              <ngx-datatable-column [name]="'USERS_MODULE.VERIFIED' | translate" prop="Verified" [width]="70"></ngx-datatable-column>
+              <ngx-datatable-column [name]="'COMMON.ROLE' | translate" prop="Role" [width]="70"></ngx-datatable-column>
+              <ngx-datatable-column [name]="'COMMON.STATUS' | translate" prop="Status" [width]="70">
                 <ng-template let-status="value" ngx-datatable-cell-template>
                   <div class="badge" [ngClass]="{
                       'bg-light-success': status == 'Active',
                       'bg-light-danger': status == 'Banned',
                       'bg-light-warning': status == 'Close'
                     }">
-                    {{ status }}
+                    {{ status | statusTranslate }}
                   </div>
                 </ng-template>
               </ngx-datatable-column>
-              <ngx-datatable-column name="Actions" [width]="50">
+              <ngx-datatable-column [name]="'COMMON.ACTIONS' | translate" [width]="50">
                 <ng-template ngx-datatable-cell-template>
                   <a routerLink="/pages/users-edit"><i class="ft-edit text-primary cursor-pointer"></i></a>
                 </ng-template>

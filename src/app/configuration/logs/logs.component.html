@@ -5,15 +5,15 @@
         <nav>
           <button type="button" (click)="selectTab('exception')"
             [ngClass]="{ 'tab-current': selectedTab === 'exception' }" class="custom-style-tab">
-            <span>EXCEPTION LOGS</span>
+            <span>{{ 'CONFIG_MODULE.EXCEPTION_LOGS' | translate }}</span>
           </button>
           <button type="button" (click)="selectTab('audit-trails')"
             [ngClass]="{ 'tab-current': selectedTab === 'audit-trails' }" class="custom-style-tab">
-            <span>AUDIT TRAILS</span>
+            <span>{{ 'CONFIG_MODULE.AUDIT_TRAILS' | translate }}</span>
           </button>
           <button type="button" *ngIf="canViewSecurityAudit" (click)="selectTab('security-audit')"
             [ngClass]="{ 'tab-current': selectedTab === 'security-audit' }" class="custom-style-tab">
-            <span>SECURITY AUDIT</span>
+            <span>{{ 'CONFIG_MODULE.SECURITY_AUDIT' | translate }}</span>
           </button>
         </nav>
       </div>
@@ -23,9 +23,9 @@
         <button type="button" class="btn btn-sm btn-outline-success mr-2 excel-btn" 
                 (click)="exportToExcel()"
                 [disabled]="loading || logsData.length === 0"
-                title="Export to Excel">
+                [title]="'CONFIG_MODULE.EXPORT_EXCEL' | translate">
           <i class="ft-download"></i>
-          <label class="ml-1 mb-0">Export Excel</label>
+          <label class="ml-1 mb-0">{{ 'CONFIG_MODULE.EXPORT_EXCEL' | translate }}</label>
         </button>
         
         <!-- Filter Button
@@ -44,7 +44,7 @@
     <div class="filter-search">
       <i class="ft-filter search-icon"></i>
       <input style="padding-left: 3.4em;" type="text" class="form-control border-left-0 cstm-ui-input"
-        placeholder="{{ selectedTab === 'exception' ? 'Search by Exception Type, Message...' : selectedTab === 'security-audit' ? 'Search by Email, Event, IP...' : 'Search by Username, Table Name...' }}"
+        placeholder="{{ selectedTab === 'exception' ? ('CONFIG_MODULE.SEARCH_EXCEPTION' | translate) : selectedTab === 'security-audit' ? ('CONFIG_MODULE.SEARCH_SECURITY' | translate) : ('CONFIG_MODULE.SEARCH_AUDIT' | translate) }}"
         [formControl]="searchForm.get('searchTerm')" />
     </div>
 
@@ -55,7 +55,7 @@
           <i class="ft-chevron-down"></i>
         </button>
         <div class="dropdown-menu" ngbDropdownMenu>
-          <button class="dropdown-item" (click)="filterByStatus('All')">All</button>
+          <button class="dropdown-item" (click)="filterByStatus('All')">{{ 'COMMON.ALL' | translate }}</button>
           <ng-container *ngIf="selectedTab === 'audit-trails'">
             <button class="dropdown-item" (click)="filterByStatus('UPDATE')">UPDATE</button>
             <button class="dropdown-item" (click)="filterByStatus('INSERT')">INSERT</button>
@@ -97,26 +97,26 @@
       (clickType)="'single'" appPermission [appPermFormId]="FORM_IDS.LOGS" [appPermDisable]="'write'">
 
       <!-- Sr. No -->
-      <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+      <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="50" [resizeable]="false">
         <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
           <span>{{ ((currentPage - 1) * pageSize) + rowIndex + 1 }}</span>
         </ng-template>
       </ngx-datatable-column>
 
       <!-- <ngx-datatable-column name="TimeStamp" prop="timestamp"></ngx-datatable-column> -->
-      <ngx-datatable-column name="TimeStamp" prop="timestamp">
+      <ngx-datatable-column [name]="'COMMON.TIMESTAMP' | translate" prop="timestamp">
         <ng-template ngx-datatable-cell-template let-row="row">
           {{ row.timestamp | date:'dd-MM-yyyy HH:mm a' }}
         </ng-template>
       </ngx-datatable-column>
-      <ngx-datatable-column name="Exception Type" prop="exceptionType"></ngx-datatable-column>
-      <ngx-datatable-column name="Message" prop="message">
+      <ngx-datatable-column [name]="'CONFIG_MODULE.EXCEPTION_TYPE' | translate" prop="exceptionType"></ngx-datatable-column>
+      <ngx-datatable-column [name]="'CONFIG_MODULE.MESSAGE' | translate" prop="message">
         <ng-template ngx-datatable-cell-template let-value="value">
           {{ value && value.length > 15 ? value.slice(0, 15) + '...' : value }}
         </ng-template>
       </ngx-datatable-column>
-      <ngx-datatable-column name="Http Method" prop="httpMethod"></ngx-datatable-column>
-      <ngx-datatable-column name="Body" prop="body">
+      <ngx-datatable-column [name]="'CONFIG_MODULE.HTTP_METHOD' | translate" prop="httpMethod"></ngx-datatable-column>
+      <ngx-datatable-column [name]="'CONFIG_MODULE.BODY' | translate" prop="body">
         <ng-template ngx-datatable-cell-template let-value="value">
           {{ value && value.length > 15 ? value.slice(0, 15) + '...' : value }}
         </ng-template>
@@ -132,27 +132,27 @@
       (clickType)="'single'" appPermission [appPermFormId]="FORM_IDS.LOGS" [appPermDisable]="'write'">
 
       <!-- Sr. No -->
-      <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+      <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="50" [resizeable]="false">
         <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
           <span>{{ ((currentPage - 1) * pageSize) + rowIndex + 1 }}</span>
         </ng-template>
       </ngx-datatable-column>
 
-      <ngx-datatable-column name="Table Name" prop="tableName"></ngx-datatable-column>
-      <ngx-datatable-column name="Action Type" prop="actionType"></ngx-datatable-column>
+      <ngx-datatable-column [name]="'CONFIG_MODULE.TABLE_NAME' | translate" prop="tableName"></ngx-datatable-column>
+      <ngx-datatable-column [name]="'CONFIG_MODULE.ACTION_TYPE' | translate" prop="actionType"></ngx-datatable-column>
       <!-- <ngx-datatable-column name="TimeStamp" prop="timestamp"></ngx-datatable-column> -->
-      <ngx-datatable-column name="TimeStamp" prop="timestamp">
+      <ngx-datatable-column [name]="'COMMON.TIMESTAMP' | translate" prop="timestamp">
         <ng-template ngx-datatable-cell-template let-row="row">
           {{ row.timestamp | date:'dd-MM-yyyy HH:mm a' }}
         </ng-template>
       </ngx-datatable-column>
-      <ngx-datatable-column name="Username" prop="username"></ngx-datatable-column>
-      <ngx-datatable-column name="Changes" prop="changes">
+      <ngx-datatable-column [name]="'CONFIG_MODULE.USERNAME' | translate" prop="username"></ngx-datatable-column>
+      <ngx-datatable-column [name]="'CONFIG_MODULE.CHANGES' | translate" prop="changes">
         <ng-template ngx-datatable-cell-template let-value="value">
           {{ value && value.length > 15 ? value.slice(0, 15) + '...' : value }}
         </ng-template>
       </ngx-datatable-column>
-      <ngx-datatable-column name="Is Entity Deleted" prop="isEntityDeleted"></ngx-datatable-column>
+      <ngx-datatable-column [name]="'CONFIG_MODULE.IS_ENTITY_DELETED' | translate" prop="isEntityDeleted"></ngx-datatable-column>
     </ngx-datatable>
 
     <ngx-datatable autoResize *ngIf="selectedTab === 'security-audit'" class="bootstrap core-bootstrap" [rows]="logsData"
@@ -162,21 +162,21 @@
       [selectionType]="SelectionType.single" (rowClick)="onRowClick($event)" (activate)="onActivate($event)"
       (clickType)="'single'" appPermission [appPermFormId]="FORM_IDS.LOGS" [appPermDisable]="'write'">
 
-      <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+      <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="50" [resizeable]="false">
         <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
           <span>{{ ((currentPage - 1) * pageSize) + rowIndex + 1 }}</span>
         </ng-template>
       </ngx-datatable-column>
-      <ngx-datatable-column name="TimeStamp" prop="timestamp">
+      <ngx-datatable-column [name]="'COMMON.TIMESTAMP' | translate" prop="timestamp">
         <ng-template ngx-datatable-cell-template let-row="row">
           {{ row.timestamp | date:'dd-MM-yyyy HH:mm a' }}
         </ng-template>
       </ngx-datatable-column>
-      <ngx-datatable-column name="Event Type" prop="eventType"></ngx-datatable-column>
-      <ngx-datatable-column name="Outcome" prop="outcome"></ngx-datatable-column>
-      <ngx-datatable-column name="Email" prop="email"></ngx-datatable-column>
-      <ngx-datatable-column name="IP Address" prop="ipAddress"></ngx-datatable-column>
-      <ngx-datatable-column name="Resource" prop="resource"></ngx-datatable-column>
+      <ngx-datatable-column [name]="'CONFIG_MODULE.EVENT_TYPE' | translate" prop="eventType"></ngx-datatable-column>
+      <ngx-datatable-column [name]="'CONFIG_MODULE.OUTCOME' | translate" prop="outcome"></ngx-datatable-column>
+      <ngx-datatable-column [name]="'COMMON.EMAIL' | translate" prop="email"></ngx-datatable-column>
+      <ngx-datatable-column [name]="'CONFIG_MODULE.IP_ADDRESS' | translate" prop="ipAddress"></ngx-datatable-column>
+      <ngx-datatable-column [name]="'CONFIG_MODULE.RESOURCE' | translate" prop="resource"></ngx-datatable-column>
     </ngx-datatable>
   </div>
 </div>
@@ -185,7 +185,7 @@
 <ng-template #logDetailModal let-modal>
   <div class="modal-header d-flex align-items-center justify-content-between">
     <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
-      <i class="ft-file-text mr-2 text-white"></i> {{ selectedTab === 'exception' ? 'Exception Log Details' : selectedTab === 'security-audit' ? 'Security Audit Details' : 'Audit Trail Details' }}
+      <i class="ft-file-text mr-2 text-white"></i> {{ (selectedTab === 'exception' ? 'CONFIG_MODULE.EXCEPTION_LOG_DETAILS' : selectedTab === 'security-audit' ? 'CONFIG_MODULE.SECURITY_AUDIT_DETAILS' : 'CONFIG_MODULE.AUDIT_TRAIL_DETAILS') | translate }}
     </h5>
     <button type="button" class="modal-close-btn" aria-label="Close" (click)="modal.dismiss('Cross click')">
       <i class="ft-x"></i>
@@ -201,26 +201,26 @@
       </div> -->
 
       <div class="mb-2">
-        <label class="form-label">Timestamp</label>
+        <label class="form-label">{{ 'COMMON.TIMESTAMP' | translate }}</label>
         <input type="text" class="form-control" [value]="selectedLog?.timestamp | date:'dd-MM-yyyy HH:mm a'" disabled />
       </div>
 
       <!-- Exception Log Fields - Keep original structure -->
       <ng-container *ngIf="selectedTab === 'exception'">
         <div class="mb-2">
-          <label class="form-label">Http Method</label>
+          <label class="form-label">{{ 'CONFIG_MODULE.HTTP_METHOD' | translate }}</label>
           <input type="text" class="form-control" [value]="selectedLog.httpMethod" disabled />
         </div>
         <div class="mb-2">
-          <label class="form-label">Exception Type</label>
+          <label class="form-label">{{ 'CONFIG_MODULE.EXCEPTION_TYPE' | translate }}</label>
           <input type="text" class="form-control" [value]="selectedLog.exceptionType" disabled />
         </div>
         <div class="mb-2">
-          <label class="form-label">Message</label>
+          <label class="form-label">{{ 'CONFIG_MODULE.MESSAGE' | translate }}</label>
           <textarea class="form-control" rows="3" [value]="selectedLog.message" disabled></textarea>
         </div>
         <div class="mb-2">
-          <label class="form-label">Body</label>
+          <label class="form-label">{{ 'CONFIG_MODULE.BODY' | translate }}</label>
           <textarea class="form-control" rows="3" [value]="selectedLog.body" disabled></textarea>
         </div>
       </ng-container>
@@ -228,50 +228,50 @@
       <!-- Audit Trail Fields - Keep original structure -->
       <ng-container *ngIf="selectedTab === 'audit-trails'">
         <div class="mb-2">
-          <label class="form-label">Table Name</label>
+          <label class="form-label">{{ 'CONFIG_MODULE.TABLE_NAME' | translate }}</label>
           <input type="text" class="form-control" [value]="selectedLog.tableName" disabled />
         </div>
         <div class="mb-2">
-          <label class="form-label">Action Type</label>
+          <label class="form-label">{{ 'CONFIG_MODULE.ACTION_TYPE' | translate }}</label>
           <input type="text" class="form-control" [value]="selectedLog.actionType" disabled />
         </div>
         <div class="mb-2">
-          <label class="form-label">Username</label>
+          <label class="form-label">{{ 'CONFIG_MODULE.USERNAME' | translate }}</label>
           <input type="text" class="form-control" [value]="selectedLog.username" disabled />
         </div>
         <div class="mb-2">
-          <label class="form-label">Changes</label>
+          <label class="form-label">{{ 'CONFIG_MODULE.CHANGES' | translate }}</label>
           <textarea type="text" class="form-control" rows="3" [value]="selectedLog.changes" disabled></textarea>
         </div>
       </ng-container>
 
       <ng-container *ngIf="selectedTab === 'security-audit'">
         <div class="mb-2">
-          <label class="form-label">Event Type</label>
+          <label class="form-label">{{ 'CONFIG_MODULE.EVENT_TYPE' | translate }}</label>
           <input type="text" class="form-control" [value]="selectedLog.eventType" disabled />
         </div>
         <div class="mb-2">
-          <label class="form-label">Outcome</label>
+          <label class="form-label">{{ 'CONFIG_MODULE.OUTCOME' | translate }}</label>
           <input type="text" class="form-control" [value]="selectedLog.outcome" disabled />
         </div>
         <div class="mb-2">
-          <label class="form-label">Email</label>
+          <label class="form-label">{{ 'COMMON.EMAIL' | translate }}</label>
           <input type="text" class="form-control" [value]="selectedLog.email" disabled />
         </div>
         <div class="mb-2">
-          <label class="form-label">IP Address</label>
+          <label class="form-label">{{ 'CONFIG_MODULE.IP_ADDRESS' | translate }}</label>
           <input type="text" class="form-control" [value]="selectedLog.ipAddress" disabled />
         </div>
         <div class="mb-2">
-          <label class="form-label">Resource</label>
+          <label class="form-label">{{ 'CONFIG_MODULE.RESOURCE' | translate }}</label>
           <input type="text" class="form-control" [value]="selectedLog.resource" disabled />
         </div>
         <div class="mb-2">
-          <label class="form-label">Detail</label>
+          <label class="form-label">{{ 'COMMON.DETAILS' | translate }}</label>
           <textarea class="form-control" rows="3" [value]="selectedLog.detail" disabled></textarea>
         </div>
         <div class="mb-2">
-          <label class="form-label">Correlation Id</label>
+          <label class="form-label">{{ 'CONFIG_MODULE.CORRELATION_ID' | translate }}</label>
           <input type="text" class="form-control" [value]="selectedLog.correlationId" disabled />
         </div>
       </ng-container>
@@ -280,7 +280,7 @@
 
   <div class="modal-footer">
     <button type="button" class="modal-btn-cancel" (click)="modal.close()">
-      <i class="ft-x mr-1"></i> Close
+      <i class="ft-x mr-1"></i> {{ 'COMMON.CLOSE' | translate }}
     </button>
   </div>
 </ng-template>

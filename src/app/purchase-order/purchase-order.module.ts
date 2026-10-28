@@ -1,3 +1,4 @@
+import { PipeModule } from 'app/shared/pipes/pipe.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -15,6 +16,7 @@ import { VendorRating } from './purchase-order-details/vendor-rating/vendor-rati
 import { ReactiveFormsModule } from '@angular/forms';
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { TranslateModule } from '@ngx-translate/core';
 
 
 @NgModule({
@@ -27,8 +29,10 @@ import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
     InvoiceComponent
   ],
   imports: [
+    PipeModule,
     CommonModule,
     PurchaseOrderRoutingModule,
+    TranslateModule,
     NgxDatatableModule,
     AutoResizeDatatableDirective,
     PermissionDirective,

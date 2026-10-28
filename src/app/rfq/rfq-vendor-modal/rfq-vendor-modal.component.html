@@ -1,7 +1,7 @@
 <div class="modal-body vendor-picker">
   <div class="d-flex justify-content-end mb-3">
     <button class="btn btn-sm submit-approval-btn shadow-sm" [disabled]="viewMode || isStatusInProgress || isStatusCompleted || !isSubmitter" (click)="onSubmit()">
-     <i class="ft-check" style="color: #1161cc;"></i><label class="ml-1">Invite Selected Vendors</label>
+     <i class="ft-check" style="color: #1161cc;"></i><label class="ml-1">{{ 'RFQ_MODULE.INVITE_SELECTED_VENDORS' | translate }}</label>
     </button>
   </div>
 
@@ -10,18 +10,18 @@
     <section class="panel">
       <header class="panel-header">
         <div>
-          <h5 class="title">All Vendors</h5>
-          <small class="muted">{{ availableVendors.length }} total</small>
+          <h5 class="title">{{ 'RFQ_MODULE.ALL_VENDORS' | translate }}</h5>
+          <small class="muted">{{ availableVendors.length }} {{ 'COMMON.TOTAL' | translate }}</small>
         </div>
         <div class="panel-actions">
           <button class="btn btn-sm btn-outline-info" (click)="selectAll()">
             <i class="ft ft-check"></i>
-            Select All</button>
+            {{ 'COMMON.SELECT_ALL' | translate }}</button>
         </div>
       </header>
 
       <div class="panel-search">
-        <input class="form-control" type="text" placeholder="Search vendor or company..."
+        <input class="form-control" type="text" [placeholder]="'RFQ_MODULE.SEARCH_VENDOR_PLACEHOLDER' | translate"
                [(ngModel)]="leftSearch" (input)="recomputeLists()" />
       </div>
 
@@ -55,11 +55,11 @@
           </div>
 
           <button class="btn btn-xs add-btn" [disabled]="viewMode" (click)="addToRight(v); $event.stopPropagation()">
-            Add<i class="ft-arrow-right ml-1"></i></button>
+            {{ 'COMMON.ADD' | translate }}<i class="ft-arrow-right ml-1"></i></button>
         </div>
       </div>
       <ng-template #emptyLeft>
-        <div class="empty">All vendors are selected.</div>
+        <div class="empty">{{ 'RFQ_MODULE.ALL_VENDORS_SELECTED' | translate }}</div>
       </ng-template>
     </section>
 
@@ -67,18 +67,18 @@
     <section class="panel">
       <header class="panel-header">
         <div>
-          <h5 class="title">Selected Vendors</h5>
-          <small class="muted">{{ gridSelected.length }} selected</small>
+          <h5 class="title">{{ 'RFQ_MODULE.SELECTED_VENDORS' | translate }}</h5>
+          <small class="muted">{{ gridSelected.length }} {{ 'COMMON.SELECTED' | translate }}</small>
         </div>
         <div class="panel-actions">
           <button [disabled]="viewMode" class="btn btn-sm btn-outline-danger" (click)="removeAll()">
              <i class="ft ft-x"></i>
-            Remove All</button>
+            {{ 'RFQ_MODULE.REMOVE_ALL' | translate }}</button>
         </div>
       </header>
 
       <div class="panel-search">
-        <input class="form-control" type="text" placeholder="Search selected..."
+        <input class="form-control" type="text" [placeholder]="'RFQ_MODULE.SEARCH_SELECTED_PLACEHOLDER' | translate"
                [(ngModel)]="rightSearch" (input)="recomputeLists()" />
       </div>
 
@@ -88,8 +88,8 @@
           <div class="vh">
             <div class="vh-title">
               {{ v.vendorName }}
-              <span *ngIf="persistedIds.has(getKey(v))" class="chip chip-saved">Invited</span>
-                <span *ngIf="isLocked(v)" class="chip chip-locked ml-1">Quoted</span>
+              <span *ngIf="persistedIds.has(getKey(v))" class="chip chip-saved">{{ 'RFQ_MODULE.INVITED' | translate }}</span>
+                <span *ngIf="isLocked(v)" class="chip chip-locked ml-1">{{ 'RFQ_MODULE.QUOTED' | translate }}</span>
             </div>
             <div class="vh-sub">{{ v.companyName }}</div>
           </div>
@@ -99,7 +99,7 @@
         </div>
       </div>
       <ng-template #emptyRight>
-        <div class="empty">No vendors selected yet.</div>
+        <div class="empty">{{ 'RFQ_MODULE.NO_VENDORS_SELECTED_YET' | translate }}</div>
       </ng-template>
     </section>
   </div>

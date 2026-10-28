@@ -26,6 +26,7 @@ import { UsersViewComponent } from "./users/users-view/users-view.component";
 import { UsersEditComponent } from "./users/users-edit/users-edit.component";
 
 import { NgxDatatableModule } from "@swimlane/ngx-datatable";
+import { TranslateModule } from "@ngx-translate/core";
 @NgModule({
   imports: [
     CommonModule,
@@ -39,6 +40,7 @@ import { NgxDatatableModule } from "@swimlane/ngx-datatable";
     // SwiperModule, // Incompatible with Angular 21
     PipeModule,
     NgxDatatableModule,
+    TranslateModule,
   ],
   declarations: [
     GalleryPageComponent,

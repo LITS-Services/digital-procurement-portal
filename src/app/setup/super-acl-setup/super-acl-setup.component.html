@@ -4,7 +4,7 @@
 
       <div class="row">
         <div class="col-md-12" style="margin-top: -0.25rem;">
-          <h4 class="heading">Super ACL</h4>
+          <h4 class="heading">{{ 'SETUP_MODULE.SUPER_ACL' | translate }}</h4>
         </div>
       </div>
 
@@ -25,17 +25,17 @@
             <button type="button" class="role-trigger"
               [ngClass]="{ 'role-active': statusFilter === '' }"
               (click)="setStatusFilter('')">
-              All
+              {{ 'COMMON.ALL' | translate }}
             </button>
             <button type="button" class="role-trigger"
               [ngClass]="{ 'role-active': statusFilter === 'active' }"
               (click)="setStatusFilter('active')">
-              Active
+              {{ 'COMMON.ACTIVE' | translate }}
             </button>
             <button type="button" class="role-trigger"
               [ngClass]="{ 'role-active': statusFilter === 'inactive' }"
               (click)="setStatusFilter('inactive')">
-              Inactive
+              {{ 'COMMON.INACTIVE' | translate }}
             </button>
           </div>
 
@@ -44,7 +44,7 @@
             <input type="text"
               [(ngModel)]="search"
               (ngModelChange)="onSearchChange()"
-              placeholder="Search form or route" />
+              [placeholder]="'SETUP_MODULE.SEARCH_FORM_ROUTE' | translate" />
           </div>
         </div>
       </div>
@@ -55,7 +55,7 @@
             <i class="fa fa-lock"></i>
           </div>
           <div class="alert-text">
-            <p>Deactivated forms are hidden from normal ACL and from menus until you activate them again.</p>
+            <p>{{ 'SETUP_MODULE.SUPER_ACL_NOTICE' | translate }}</p>
           </div>
         </div>
 
@@ -69,19 +69,19 @@
           [limit]="10"
           [scrollbarH]="isMobile">
 
-          <ngx-datatable-column name="Form" prop="name" [flexGrow]="2" [minWidth]="220" [sortable]="false">
+          <ngx-datatable-column [name]="'SETUP_MODULE.FORM' | translate" prop="name" [flexGrow]="2" [minWidth]="220" [sortable]="false">
             <ng-template ngx-datatable-cell-template let-row="row">
               <div class="super-acl-form-name">{{ row.name }}</div>
             </ng-template>
           </ngx-datatable-column>
 
-          <ngx-datatable-column name="Path" prop="route" [flexGrow]="2" [minWidth]="240" [sortable]="false">
+          <ngx-datatable-column [name]="'SETUP_MODULE.PATH' | translate" prop="route" [flexGrow]="2" [minWidth]="240" [sortable]="false">
             <ng-template ngx-datatable-cell-template let-row="row">
               <div class="super-acl-form-route">{{ row.route }}</div>
             </ng-template>
           </ngx-datatable-column>
 
-          <ngx-datatable-column name="Active" prop="isActive" [flexGrow]="1" [minWidth]="120" [sortable]="false">
+          <ngx-datatable-column [name]="'COMMON.ACTIVE' | translate" prop="isActive" [flexGrow]="1" [minWidth]="120" [sortable]="false">
             <ng-template ngx-datatable-cell-template let-row="row">
               <label class="toggle-switch" (click)="$event.stopPropagation()">
                 <input type="checkbox"
@@ -93,10 +93,10 @@
             </ng-template>
           </ngx-datatable-column>
 
-          <ngx-datatable-column name="Status" prop="isActive" [flexGrow]="1" [minWidth]="120" [sortable]="false">
+          <ngx-datatable-column [name]="'COMMON.STATUS' | translate" prop="isActive" [flexGrow]="1" [minWidth]="120" [sortable]="false">
             <ng-template ngx-datatable-cell-template let-row="row">
               <span class="status-chip" [class.status-active]="row.isActive" [class.status-inactive]="!row.isActive">
-                {{ isSaving(row) ? 'Saving...' : (row.isActive ? 'Active' : 'Inactive') }}
+                {{ isSaving(row) ? ('COMMON.SAVING' | translate) : (row.isActive | statusTranslate) }}
               </span>
             </ng-template>
           </ngx-datatable-column>

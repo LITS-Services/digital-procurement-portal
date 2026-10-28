@@ -1,6 +1,6 @@
 <div class="modal-header d-flex align-items-center justify-content-between">
   <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
-    <i class="ft-paperclip mr-2 text-white"></i> Attachment
+    <i class="ft-paperclip mr-2 text-white"></i> {{ 'COMMON.ATTACHMENTS' | translate }}
   </h5>
   <button type="button" class="modal-close-btn" aria-label="Close" (click)="closeDialog()">
     <i class="ft-x"></i>
@@ -8,7 +8,7 @@
 </div>
 <div class="modal-body">
   <div class="col-12">
-    <h5 *ngIf="!viewMode" class="heading-upload">Upload Files</h5>
+    <h5 *ngIf="!viewMode" class="heading-upload">{{ 'PR_MODULE.UPLOAD_FILES' | translate }}</h5>
   </div>
   <!-- Your form fields and content -->
   <form [formGroup]="AttachmentForm">
@@ -31,21 +31,21 @@
         <ngx-datatable class="bootstrap core-bootstrap" [rows]="uploadedFiles" [columnMode]="'standard'"
           [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
 
-          <ngx-datatable-column name="Sr. No." [width]="100">
+          <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="100">
             <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
               <span>{{rowIndex + 1}}</span>
             </ng-template>
           </ngx-datatable-column>
 
-          <ngx-datatable-column name="Type" prop="contentType" [width]="300">
+          <ngx-datatable-column [name]="'COMMON.TYPE' | translate" prop="contentType" [width]="300">
           </ngx-datatable-column>
 
-          <ngx-datatable-column name="File" prop="fileName" [width]="250">
+          <ngx-datatable-column [name]="'COMMON.FILE' | translate" prop="fileName" [width]="250">
           </ngx-datatable-column>
 
           <!-- <ngx-datatable-column name="Remarks" [width]="150" prop="remarks">
           </ngx-datatable-column> -->
-          <ngx-datatable-column name="Visible to Vendor" [width]="150">
+          <ngx-datatable-column [name]="'RFQ_MODULE.VISIBLE_TO_VENDOR' | translate" [width]="150">
             <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
 
               <input class="ms-2" type="checkbox" [disabled]="viewMode" [ngModelOptions]="{ standalone: true }"
@@ -54,16 +54,16 @@
             </ng-template>
           </ngx-datatable-column>
 
-          <ngx-datatable-column name="Actions" [width]="100">
+          <ngx-datatable-column [name]="'COMMON.ACTIONS' | translate" [width]="100">
             <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex">
 
-              <a matTooltip="Download File" class="row-action-edit" style="margin-right: 10px;"
+              <a [matTooltip]="'COMMON.DOWNLOAD_FILE' | translate" class="row-action-edit" style="margin-right: 10px;"
                 (click)="downloadAttachment(uploadedFiles[rowIndex])"
                 [ngClass]="{'disabled': viewMode }">
                 <i style="font-size: 1.5rem;" class="ft-download"></i>
               </a>
 
-              <a *ngIf="!viewMode" matTooltip="Upload File" class="row-action-delete" (click)="deleteRow(rowIndex)"
+              <a *ngIf="!viewMode" [matTooltip]="'COMMON.DELETE' | translate" class="row-action-delete" (click)="deleteRow(rowIndex)"
                 [ngClass]="{'disabled': viewMode || uploadedFiles[rowIndex]?.isNew}">
                 <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
               </a>
@@ -79,9 +79,9 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="modal-btn-cancel" (click)="closeDialog()">
-    <i class="ft-x mr-1"></i> {{ viewMode ? 'Close' : 'Cancel' }}
+    <i class="ft-x mr-1"></i> {{ viewMode ? ('COMMON.CLOSE' | translate) : ('COMMON.CANCEL' | translate) }}
   </button>
   <button *ngIf="!viewMode" type="button" class="modal-btn-save" (click)="uploadFiles()">
-    <i class="fa fa-upload mr-1"></i> Upload
+    <i class="fa fa-upload mr-1"></i> {{ 'COMMON.UPLOAD' | translate }}
   </button>
 </div>

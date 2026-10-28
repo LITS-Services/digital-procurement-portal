@@ -9,46 +9,46 @@
   (click)="save()"
   [disabled]="isGrnSubmitted"
 >
-  {{ isGrnSubmitted ? 'GRN Submitted' : 'Submit GRN' }}
+  {{ isGrnSubmitted ? ('PO_MODULE.GRN_SUBMITTED' | translate) : ('PO_MODULE.SUBMIT_GRN' | translate) }}
 </button>
 
     </div>
 
     <div class="row mb-3">
         <div class="col-md-4 mb-3">
-        <label class="form-label small">GRN No</label>
+        <label class="form-label small">{{ 'PO_MODULE.GRN_NO' | translate }}</label>
         <input class="form-control form-control-sm" formControlName="grNumber" disabled>
       </div>
 
       <div class="col-md-4 mb-3">
-        <label class="form-label small">PO No</label>
+        <label class="form-label small">{{ 'PO_MODULE.PO_NO' | translate }}</label>
         <input class="form-control form-control-sm" formControlName="purchaseOrderNo" disabled>
       </div>
 
       <div class="col-md-4 mb-3">
-        <label class="form-label small">Vendor Name</label>
+        <label class="form-label small">{{ 'COMMON.VENDOR' | translate }}</label>
         <input class="form-control form-control-sm" formControlName="vendorName" disabled>
       </div>
 
       <div class="col-md-4 mb-3">
-        <label class="form-label small">Receiver Name</label>
+        <label class="form-label small">{{ 'COMMON.RECEIVER_NAME' | translate }}</label>
         <input class="form-control form-control-sm" formControlName="receiverName" disabled>
       </div>
 
       <div class="col-md-4 mb-3">
-        <label class="form-label small">Status</label>
-        <input class="form-control form-control-sm" formControlName="requestStatus" disabled>
+        <label class="form-label small">{{ 'COMMON.STATUS' | translate }}</label>
+        <input class="form-control form-control-sm" [value]="grnForm.get('requestStatus')?.value | statusTranslate" disabled>
       </div>
 
       <div class="col-md-8 mb-3">
-        <label class="form-label small">Remarks</label>
+        <label class="form-label small">{{ 'COMMON.REMARKS' | translate }}</label>
         <textarea class="form-control form-control-sm" rows="2" formControlName="remarks"></textarea>
       </div>
     </div>
 
     <!-- Items Section -->
     <h5 class="heading mb-3 fw-bold" (click)="toggleItems()" style="cursor: pointer;">
-      Items
+      {{ 'COMMON.ITEMS' | translate }}
       <i class="fa" [ngClass]="itemsExpanded ? 'fa-chevron-down' : 'fa-chevron-up'" style="font-size: 12px;"></i>
     </h5>
 
@@ -59,11 +59,11 @@
             <table class="table table-sm pro-table mb-0">
               <thead>
                 <tr>
-                  <th>Item</th>
-                  <th class="text-center">Ordered Qty</th>
-                  <th class="text-center">Received Qty</th>
-                  <th class="text-center">Received Date</th>
-                  <th>Remarks</th>
+                  <th>{{ 'COMMON.ITEM' | translate }}</th>
+                  <th class="text-center">{{ 'PO_MODULE.ORDERED_QTY' | translate }}</th>
+                  <th class="text-center">{{ 'PO_MODULE.RECEIVED_QTY' | translate }}</th>
+                  <th class="text-center">{{ 'PO_MODULE.RECEIVED_DATE' | translate }}</th>
+                  <th>{{ 'COMMON.REMARKS' | translate }}</th>
                 </tr>
               </thead>
               <tbody formArrayName="items">
@@ -71,10 +71,6 @@
                   <td>{{ item.get('itemName')?.value }}</td>
                   <td class="text-center">{{ item.get('orderedQty')?.value }}</td>
                   <td class="text-center">{{ item.get('receivedQuantity')?.value }}</td>
-                  <!-- <td class="text-center">
-                    <input type="date" class="form-control form-control-sm" formControlName="receivedDate">
-                    <span class="required-star">*</span>
-                  </td> -->
                   <td class="text-center">
   <div class="d-flex justify-content-center gap-1">
     <input type="date" class="form-control form-control-sm" formControlName="receivedDate">
@@ -100,8 +96,8 @@
 @else {
   <div class="empty-state">
         <i class="fa fa-box-open empty-icon"></i>
-        <h5 class="empty-message">Shipment Details aren't received yet, Unable to Submit GRN</h5>
-        <p class="empty-submessage">Please check back later or contact the responsible team.</p>
+        <h5 class="empty-message">{{ 'PO_MODULE.NO_SHIPMENT_FOR_GRN' | translate }}</h5>
+        <p class="empty-submessage">{{ 'RFQ_MODULE.CHECK_BACK_LATER' | translate }}</p>
     </div>
 }
 
@@ -109,12 +105,12 @@
 <div class="rating-backdrop" *ngIf="showRatingModal">
   <div class="rating-modal">
 
-    <h4 class="rating-title">What is your rating?</h4>
+    <h4 class="rating-title">{{ 'PO_MODULE.WHAT_IS_YOUR_RATING' | translate }}</h4>
 
     <p class="rating-subtitle">
-      How was your experience with
+      {{ 'PO_MODULE.HOW_WAS_EXPERIENCE' | translate }}
       <strong>{{ vendorName }}</strong>
-      for Purchase Order
+      {{ 'PO_MODULE.FOR_PO' | translate }}
       <strong>#{{ purchaseOrderNo }}</strong>?
     </p>
 
@@ -133,21 +129,21 @@
     </div>
 
     <div class="selected-rating" *ngIf="selectedRating">
-      Selected Rating: <strong>{{ selectedRating | number:'1.1-1' }}</strong>
+      {{ 'PO_MODULE.SELECTED_RATING' | translate }}: <strong>{{ selectedRating | number:'1.1-1' }}</strong>
     </div>
 
     <!-- Comment -->
     <div class="mt-3">
-      <textarea class="form-control" rows="3" placeholder="Add a comment (optional)" [formControl]="ratingComment"></textarea>
+      <textarea class="form-control" rows="3" [placeholder]="'PO_MODULE.ADD_COMMENT_OPTIONAL' | translate" [formControl]="ratingComment"></textarea>
     </div>
 
     <button class="btn btn-primary w-100 mt-3" (click)="submitVendorRating()"
       [disabled]="!selectedRating || savingRating">
-      Submit Rating
+      {{ 'PO_MODULE.SUBMIT_RATING' | translate }}
     </button>
 
     <button class="btn btn-link text-muted mt-2" (click)="closeRatingModal()">
-      Close
+      {{ 'COMMON.CLOSE' | translate }}
     </button>
 
   </div>

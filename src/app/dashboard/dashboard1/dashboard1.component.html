@@ -3,7 +3,7 @@
   <!-- Top header -->
   <div class="dashboard-header">
     <div>
-      <h2 class="dashboard-title">Dashboard</h2>
+      <h2 class="dashboard-title">{{ 'Dashboard' | translate }}</h2>
     </div>
 
     <!-- <div class="dashboard-period-switch">
@@ -19,7 +19,7 @@
       <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 top-metrics-row mob-gap">
         <div class="col count-card">
           <div class="stat-card stat-card--primary" (click)="goToPurchaseRequest()">
-             <div class="stat-card__label"> <span>Purchase Requests</span> <span class="arrow-div"><i class="ft ft-arrow-up-right"></i></span></div>
+             <div class="stat-card__label"> <span>{{ 'NAV.PURCHASE_REQUEST' | translate }}</span> <span class="arrow-div"><i class="ft ft-arrow-up-right"></i></span></div>
             <div class="stat-card__body">
               <div class="stat-card__text">
                 <div class="stat-card__value">
@@ -35,10 +35,10 @@
             </div>
              <div class="stat-card__chips">
                   <span class="metric-chip">
-                    New: <strong class="ml-1">{{ procurementDashboardCounts?.newPR || 0 }}</strong>
+                    {{ 'COMMON.NEW' | translate }}: <strong class="ml-1">{{ procurementDashboardCounts?.newPR || 0 }}</strong>
                   </span>
                   <span class="metric-chip metric-chip--muted">
-                    In Progress: <strong class="ml-1">{{ procurementDashboardCounts?.inProgressPR || 0 }}</strong>
+                    {{ 'COMMON.IN_PROGRESS' | translate }}: <strong class="ml-1">{{ procurementDashboardCounts?.inProgressPR || 0 }}</strong>
                   </span>
                 </div>
           </div>
@@ -54,7 +54,7 @@
       (click)="goToRfq()"
       [attr.title]="!canAccessRFQ ? 'No permission to access RFQs' : ''">
       <div class="stat-card__label">
-        <span>RFQs </span> 
+        <span>{{ 'RFQ' | translate }}</span> 
         <span class="arrow-div">
           <i class="ft ft-arrow-up-right"></i>
         </span>
@@ -71,10 +71,10 @@
       </div>
       <div class="stat-card__chips">
         <span class="metric-chip">
-          In Progress: <strong class="ml-1">{{ procurementDashboardCounts?.inProgressQR || 0 }}</strong>
+          {{ 'COMMON.IN_PROGRESS' | translate }}: <strong class="ml-1">{{ procurementDashboardCounts?.inProgressQR || 0 }}</strong>
         </span>
         <span class="metric-chip metric-chip--danger">
-          Rejected: <strong class="ml-1">{{ procurementDashboardCounts?.rejectedQR || 0 }}</strong>
+          {{ 'COMMON.REJECTED' | translate }}: <strong class="ml-1">{{ procurementDashboardCounts?.rejectedQR || 0 }}</strong>
         </span>
       </div>
     </div>
@@ -88,7 +88,7 @@
       (click)="goToPurchaseOrder()"
       [attr.title]="!canAccessPurchaseOrder ? 'No permission to access Purchase Orders' : ''">
       <div class="stat-card__label">
-        <span>Purchase Orders</span> 
+        <span>{{ 'PO_MODULE.PURCHASE_ORDERS' | translate }}</span> 
         <span class="arrow-div">
           <i class="ft ft-arrow-up-right"></i>
         </span>
@@ -105,10 +105,10 @@
       </div>
       <div class="stat-card__chips">
         <span class="metric-chip">
-          Open: <strong class="ml-1">{{ procurementDashboardCounts?.openPO || 0 }}</strong>
+          {{ 'COMMON.OPEN' | translate }}: <strong class="ml-1">{{ procurementDashboardCounts?.openPO || 0 }}</strong>
         </span>
         <span class="metric-chip metric-chip--success">
-          Delivered: <strong class="ml-1">{{ procurementDashboardCounts?.deliveredPO || 0 }}</strong>
+          {{ 'COMMON.DELIVERED' | translate }}: <strong class="ml-1">{{ procurementDashboardCounts?.deliveredPO || 0 }}</strong>
         </span>
       </div>
     </div>
@@ -122,7 +122,7 @@
       (click)="goToCompany()"
       [attr.title]="!canAccessCompany ? 'No permission to access Companies' : ''">
       <div class="stat-card__label">
-        <span>Companies</span> 
+        <span>{{ 'COMMON.COMPANY' | translate }}</span> 
         <span class="arrow-div">
           <i class="ft ft-arrow-up-right"></i>
         </span>
@@ -139,7 +139,7 @@
       </div>
       <div class="stat-card__chips">
         <span class="metric-chip">
-          Onboarded: <strong class="ml-1">{{ procurementDashboardCounts?.onboardedVendorCompanies || 0 }}</strong>
+          {{ 'COMMON.ONBOARDED' | translate }}: <strong class="ml-1">{{ procurementDashboardCounts?.onboardedVendorCompanies || 0 }}</strong>
         </span>
       </div>
     </div>
@@ -153,7 +153,7 @@
       (click)="goToEntity()"
       [attr.title]="!canAccessEntity ? 'No permission to access Entities' : ''">
       <div class="stat-card__label"> 
-        <span>Entities</span> 
+        <span>{{ 'ENTITIES_MODULE.ENTITIES' | translate }}</span> 
         <span class="arrow-div">
           <i class="ft ft-arrow-up-right"></i>
         </span>
@@ -170,7 +170,7 @@
       </div>
       <div class="stat-card__chips">
         <span class="metric-chip">
-          Active: <strong class="ml-1">{{ procurementDashboardCounts?.activeProcurementCompanies || 0 }}</strong>
+          {{ 'COMMON.ACTIVE' | translate }}: <strong class="ml-1">{{ procurementDashboardCounts?.activeProcurementCompanies || 0 }}</strong>
         </span>
       </div>
     </div>
@@ -183,24 +183,24 @@
           <div class="panel-card h-100">
             <div class="panel-card__header">
               <div>
-                <h3 class="panel-card__title">RFQ Pipeline</h3>
-                <p class="panel-card__subtitle">Total RFQs vs Quoted vs Selected</p>
+                <h3 class="panel-card__title">{{ 'DASHBOARD_MODULE.RFQ_PIPELINE' | translate }}</h3>
+                <p class="panel-card__subtitle">{{ 'DASHBOARD_MODULE.PIPELINE_SUBTITLE' | translate }}</p>
               </div>
               <div class="segmented-toggle">
                 <button class="segmented-toggle__btn"
                   [ngClass]="{ 'segmented-toggle__btn--active': activeRange === 'month' }"
                   (click)="changeRange('month')">
-                  Month
+                  {{ 'DASHBOARD_MODULE.MONTH' | translate }}
                 </button>
                 <button class="segmented-toggle__btn"
                   [ngClass]="{ 'segmented-toggle__btn--active': activeRange === 'quarter' }"
                   (click)="changeRange('quarter')">
-                  Quarter
+                  {{ 'DASHBOARD_MODULE.QUARTER' | translate }}
                 </button>
 
                 <button class="segmented-toggle__btn"
                   [ngClass]="{ 'segmented-toggle__btn--active': activeRange === 'year' }" (click)="changeRange('year')">
-                  Year
+                  {{ 'DASHBOARD_MODULE.YEAR' | translate }}
                 </button>
               </div>
             </div>
@@ -221,7 +221,7 @@
         <div class="col-lg-4 col-12">
           <div class="panel-card h-100">
             <div class="panel-card__header panel-card__header--tight">
-              <h3 class="panel-card__title">Recent Top Vendors</h3>
+              <h3 class="panel-card__title">{{ 'DASHBOARD_MODULE.RECENT_TOP_VENDORS' | translate }}</h3>
             </div>
 
             <div class="panel-card__body panel-card__body--flush panel-card__body--scroll">
@@ -241,17 +241,17 @@
                     <div class="vendor-row__meta">
                       <div class="vendor-row__name">{{ v.vendorName }}</div>
                       <div class="vendor-row__sub">
-                        <i class="ft ft-map-pin"></i> {{ v.city }} &bull; {{ v.numberOfBuys }} buys
+                        <i class="ft ft-map-pin"></i> {{ v.city }} &bull; {{ v.numberOfBuys }} {{ 'DASHBOARD_MODULE.BUYS' | translate }}
                       </div>
                     </div>
                     <div class="vendor-row__badge">
-                      {{ v.successCount }} Success
+                      {{ v.successCount }} {{ 'COMMON.SUCCESS' | translate }}
                     </div>
                   </div>
                   }
                   @else {
                   <div class="vendors-empty-state">
-                    No vendor data available.
+                    {{ 'DASHBOARD_MODULE.NO_VENDOR_DATA' | translate }}
                   </div>
                   }
                   }
@@ -268,9 +268,9 @@
         <div class="col-lg-4 col-12">
           <div class="panel-card cardHeight h-100">
             <div class="panel-card__header">
-              <h3 class="panel-card__title">Upcoming Purchases</h3>
+              <h3 class="panel-card__title">{{ 'DASHBOARD_MODULE.UPCOMING_PURCHASES' | translate }}</h3>
               <a class="panel-card__link" (click)="goToPurchaseRequest()">
-                View all
+                {{ 'COMMON.VIEW_ALL' | translate }}
               </a>
             </div>
 
@@ -278,10 +278,10 @@
               <table class="table upcoming-table mb-0">
                 <thead>
                   <tr>
-                    <th>Requisition No</th>
-                    <th>Qty</th>
-                    <th>Req Date</th>
-                    <th>Budget</th>
+                    <th>{{ 'COMMON.REQUISITION_NO' | translate }}</th>
+                    <th>{{ 'COMMON.QUANTITY' | translate }}</th>
+                    <th>{{ 'COMMON.REQ_BY_DATE' | translate }}</th>
+                    <th>{{ 'COMMON.BUDGET_AMOUNT' | translate }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -301,7 +301,7 @@
                   </tr>
                   }
                   @else {
-                  <div>No data available</div>
+                  <div>{{ 'COMMON.NO_DATA' | translate }}</div>
                   }
                   }
                 
@@ -316,9 +316,9 @@
           <div class="panel-card cardHeight h-100 monthly-expenses-card">
             <div class="panel-card__header">
               <div>
-                <h3 class="panel-card__title">Monthly Spend</h3>
+                <h3 class="panel-card__title">{{ 'DASHBOARD_MODULE.MONTHLY_SPEND' | translate }}</h3>
                 <p class="panel-card__subtitle">
-                  <span>AED </span>{{ monthlySpendAmount }} this month
+                  <span>{{ 'COMMON.AED' | translate }} </span>{{ monthlySpendAmount }} {{ 'DASHBOARD_MODULE.THIS_MONTH' | translate }}
                 </p>
               </div>
             </div>
@@ -334,11 +334,11 @@
 
                 <div class="monthly-expenses-center">
                   <div class="monthly-expenses-amount">
-                    <span class="currency">AED</span>
+                    <span class="currency">{{ 'COMMON.AED' | translate }}</span>
                     <span class="amount">{{ monthlySpendAmount }}</span>
                   </div>
                   <div class="monthly-expenses-caption">
-                    Total
+                    {{ 'COMMON.TOTAL' | translate }}
                   </div>
                 </div>
               </div>
@@ -358,7 +358,7 @@
           <div class="panel-card cardHeight h-100">
             <div class="panel-card__header">
               <div>
-                <h3 class="panel-card__title">Delivery Performance</h3>
+                <h3 class="panel-card__title">{{ 'DASHBOARD_MODULE.DELIVERY_PERFORMANCE' | translate }}</h3>
               </div>
             </div>
 
@@ -378,7 +378,7 @@
                 } @else {
                 
                 <div class="vendors-empty-state text-muted px-1 mt-1">
-                  No delivery data available.
+                  {{ 'DASHBOARD_MODULE.NO_DELIVERY_DATA' | translate }}
                 </div>
                 
                 }

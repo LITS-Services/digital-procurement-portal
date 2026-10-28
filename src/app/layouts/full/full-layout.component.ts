@@ -106,6 +106,31 @@ export class FullLayoutComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.layoutSub) {
       this.layoutSub.unsubscribe();
     }
+
+    // Clean up layout classes from body when leaving full layout
+    const layoutClasses = [
+      "vertical-layout",
+      "vertical-menu",
+      "vertical-overlay-menu",
+      "horizontal-layout",
+      "horizontal-menu",
+      "horizontal-menu-padding",
+      "sidebar-lg",
+      "sidebar-sm",
+      "sidebar-md",
+      "menu-expanded",
+      "navbar-static",
+      "navbar-sticky",
+      "menu-open",
+      "menu-hide",
+      "nav-collapsed",
+      "fixed-navbar",
+      "navbar-scrolled",
+      "page-scrolled",
+      "overflow-hidden"
+    ];
+    layoutClasses.forEach(cls => this.renderer.removeClass(this.document.body, cls));
+    this.renderer.removeAttribute(this.document.body, "data-menu");
   }
 
   //adjust layout

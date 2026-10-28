@@ -2,12 +2,7 @@
 @import './app/shared/custom-style/filter-bar.css';
 @import './app/shared/custom-style/custom-tab.css';
 @import 'ngx-toastr/toastr';
-
-.rtl {
-  direction: rtl !important;
-  /* // color: red !important;
-    // font-size: 30px !important; */
-}
+@import './assets/css/rtl.css';
 
 
 
@@ -1326,6 +1321,13 @@ body .dropdown-menu {
   position: absolute !important;
 }
 
+html[dir="rtl"] .cdk-overlay-pane:has(.sidebar-collapsed-menu),
+html.rtl .cdk-overlay-pane:has(.sidebar-collapsed-menu),
+body.rtl .cdk-overlay-pane:has(.sidebar-collapsed-menu) {
+  left: auto !important;
+  right: 60px !important;
+}
+
 .collapsed-has-sub .submenu-dot {
     position: absolute;
     top: 20px;
@@ -1334,6 +1336,13 @@ body .dropdown-menu {
     height: 7px;
     border-radius: 50%;
     background-color: #57a0ff;
+}
+
+html[dir="rtl"] .collapsed-has-sub .submenu-dot,
+html.rtl .collapsed-has-sub .submenu-dot,
+body.rtl .collapsed-has-sub .submenu-dot {
+    right: auto !important;
+    left: 4px !important;
 }
 
 
@@ -1355,10 +1364,31 @@ body .dropdown-menu {
 
 
 /* Tooltip nicer */
+.sidebar-collapsed-tooltip {
+  pointer-events: none !important;
+  z-index: 1090 !important;
+}
+
 .sidebar-collapsed-tooltip .tooltip-inner {
-  padding: 6px 10px;
+  padding: 6px 12px;
   font-size: 12px;
   border-radius: 8px;
+  white-space: nowrap;
+  max-width: none;
+}
+
+html[dir="rtl"] .sidebar-collapsed-tooltip,
+html.rtl .sidebar-collapsed-tooltip,
+body.rtl .sidebar-collapsed-tooltip {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+html[dir="rtl"] .sidebar-collapsed-tooltip .tooltip-inner,
+html.rtl .sidebar-collapsed-tooltip .tooltip-inner,
+body.rtl .sidebar-collapsed-tooltip .tooltip-inner {
+  text-align: right !important;
+  direction: rtl !important;
 }
 
 
@@ -1466,4 +1496,27 @@ body .dropdown-menu {
 
 .swal2-popup.modern-budget-limit-popup .swal2-close:hover {
   color: #1e293b !important;
+}
+
+/* Enforce full width and zero margins on auth / blank / content pages globally */
+body.blank-page .main-panel,
+body.blank-page .main-content,
+body.blank-page .content-wrapper,
+body.blank-page .wrapper,
+body.auth-page .main-panel,
+body.auth-page .main-content,
+body.auth-page .content-wrapper,
+body.auth-page .wrapper,
+app-content-layout,
+app-content-layout .main-panel,
+app-content-layout .main-content,
+app-content-layout .content-wrapper,
+app-content-layout .wrapper,
+app-content-layout #login {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
 }

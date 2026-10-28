@@ -35,12 +35,7 @@ import { NgHcaptchaModule } from 'ng-hcaptcha';
     NgHcaptchaModule.forRoot({ siteKey: '1b1afe16-c082-4211-accf-2921906c959b' }),
     ReactiveFormsModule,
     NgbModule,
-    TranslateModule.forChild({
-      loader: {
-        provide: TranslateLoader,
-        useClass: TranslateHttpLoader
-      }
-    }),
+    TranslateModule.forChild(),
     NgxSpinnerModule
   ],
   declarations: [

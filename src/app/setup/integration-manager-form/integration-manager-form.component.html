@@ -3,7 +3,7 @@
     <div class="col-12">
       <div class="row">
         <div class="col-md-12" style="margin-top: -0.25rem;">
-          <h4 class="heading">{{ isEditMode ? 'Update Integration' : 'Create Integration' }}</h4>
+          <h4 class="heading">{{ isEditMode ? ('SETUP_MODULE.UPDATE_INTEGRATION' | translate) : ('SETUP_MODULE.CREATE_INTEGRATION' | translate) }}</h4>
         </div>
       </div>
 
@@ -14,7 +14,7 @@
             <span class="vl"></span>
             <button class="btn btn-sm cstm-ui-table-btn" [disabled]="integrationForm.invalid || loading" (click)="onSave()">
               <i [ngClass]="isEditMode ? 'ft-edit-2' : 'ft-plus'"></i>
-              <label class="ml-1">{{ isEditMode ? 'Update' : 'Save' }}</label>
+              <label class="ml-1">{{ isEditMode ? ('COMMON.UPDATE' | translate) : ('COMMON.SAVE' | translate) }}</label>
             </button>
           </div>
         </div>
@@ -26,29 +26,27 @@
             <div class="row gx-3">
               <div class="col-lg-6 col-md-6 col-sm-12">
                 <div class="form-group mb-2">
-                  <label>Integration Name</label>
+                  <label>{{ 'SETUP_MODULE.INTEGRATION_NAME' | translate }}</label>
                   <input type="text" formControlName="name" class="form-control custom-input"
-                    placeholder="e.g. ERP Sync Service" />
+                    [placeholder]="'SETUP_MODULE.ERP_SYNC_SERVICE_EG' | translate" />
                 </div>
               </div>
 
               <div class="col-lg-6 col-md-6 col-sm-12">
                 <div class="form-group mb-2">
-                  <label>Code</label>
+                  <label>{{ 'COMMON.CODE' | translate }}</label>
                   <input type="text" formControlName="code" class="form-control custom-input"
                     [class.readonly-disabled-look]="isEditMode"
                     [readonly]="isEditMode"
-                    placeholder="e.g. ERP_SYNC" />
+                    [placeholder]="'SETUP_MODULE.ERP_SYNC_CODE_EG' | translate" />
                 </div>
               </div>
 
-          
-
               <div class="col-lg-6 col-md-6 col-sm-12">
                 <div class="form-group mb-2">
-                  <label>Interval Type</label>
+                  <label>{{ 'SETUP_MODULE.INTERVAL_TYPE' | translate }}</label>
                   <select formControlName="intervalType" class="form-control custom-input">
-                    <option [ngValue]="null" disabled>Select interval type</option>
+                    <option [ngValue]="null" disabled>{{ 'SETUP_MODULE.SELECT_INTERVAL_TYPE' | translate }}</option>
                     <option *ngFor="let intervalType of intervalTypeOptions" [value]="intervalType.value">
                       {{ intervalType.label }}
                     </option>
@@ -58,26 +56,25 @@
 
               <div class="col-lg-6 col-md-6 col-sm-12">
                 <div class="form-group mb-2">
-                  <label>Interval</label>
+                  <label>{{ 'SETUP_MODULE.INTERVAL' | translate }}</label>
                   <input type="number" formControlName="interval" min="1" class="form-control custom-input"
-                    placeholder="e.g. 30" />
+                    [placeholder]="'SETUP_MODULE.INTERVAL_EG' | translate" />
                 </div>
               </div>
               <div class="col-12">
                 <div class="form-group mb-3">
-                  <label>Endpoint URL</label>
+                  <label>{{ 'SETUP_MODULE.ENDPOINT_URL' | translate }}</label>
                   <input type="text" formControlName="url" class="form-control custom-input"
-                    placeholder="e.g. https://api.example.com/sync" />
+                    [placeholder]="'SETUP_MODULE.URL_EG' | translate" />
                 </div>
               </div>
 
               <div class="col-6 mt-2">
                 <div class="form-group mb-2">
-                  <!-- <label class="d-block">Status</label> -->
                   <div class="status-row">
                     <div class="status-meta">
-                      <div class="status-title">{{ integrationForm.get('isActive')?.value ? 'Active' : 'Inactive' }}</div>
-                      <div class="status-subtitle">Enable this integration to run on schedule</div>
+                      <div class="status-title">{{ integrationForm.get('isActive')?.value ? ('COMMON.ACTIVE' | translate) : ('COMMON.INACTIVE' | translate) }}</div>
+                      <div class="status-subtitle">{{ 'SETUP_MODULE.ENABLE_SCHEDULE' | translate }}</div>
                     </div>
                     <label class="switch">
                       <input type="checkbox" id="integrationIsActive" formControlName="isActive">

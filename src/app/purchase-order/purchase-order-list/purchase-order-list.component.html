@@ -6,7 +6,7 @@
       <div class="row">
         <div class="col-md-12" style="margin-top: -0.25rem;">
           <!-- <h4>Announcements</h4> -->
-          <h4 class="heading">Purchase Orders</h4>
+          <h4 class="heading">{{ 'PO_MODULE.PURCHASE_ORDERS' | translate }}</h4>
         </div>
       </div>
 
@@ -18,28 +18,11 @@
               <button class="btn btn-lg mr-1 " type="button" (click)="homePage()">
                 <i class="ft-arrow-left"></i></button>
               <span class="vl"></span>
-              <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn"
-                                ngbTooltip="Create new Global Configuration" (click)="openEmpDetails()">
-                                <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
-                            </button>
-                            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()">
-                                <i class="ft-edit"></i><label class="ml-1 mt-1">Update</label>
-                            </button> -->
-
-              <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()"
-                                [disabled]="isDeleteButtonDisabled">
-                                <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
-                            </button> -->
-
-              <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
-                                (click)="onView()">
-                                <i class="ft-eye"></i><label class="ml-1 mt-1">View</label>
-                            </button> -->
             </div>
 
             <div class="d-flex align-items-center me-2">
               <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="toggleFilterBar()">
-                <i class="ft-sliders"></i><label class="ml-1 btn-label">Filter</label>
+                <i class="ft-sliders"></i><label class="ml-1 btn-label">{{ 'COMMON.FILTER' | translate }}</label>
               </button>
             </div>
           </div>
@@ -50,20 +33,17 @@
        <div *ngIf="showFilterBar" class="filter-bar">
         <div class="d-flex align-items-center justify-content-between pl-3 pr-1 py-2 filter-wrapper">
           <div class="filter-search">
-            <!-- <i class="ft-filter search-icon"></i>
-            <input type="text" placeholder="Search by keywords" class="form-control form-control-sm search-input"
-              [(ngModel)]="searchText"> -->
           </div>
 
           <div class="d-flex filter-btns-div">
-            <div class="dropdown filter-dropdown" ngbDropdown [ngbTooltip]="statusTouched ? 'Status' : null">
+            <div class="dropdown filter-dropdown" ngbDropdown [ngbTooltip]="statusTouched ? ('COMMON.STATUS' | translate) : null">
               <button class="btn btn-sm filter-btn dropdown-toggle" ngbDropdownToggle>
-                <span class="filter-label">{{ !statusTouched ? "Status" : selectedStatusLabel }} </span>
+                <span class="filter-label">{{ !statusTouched ? ('COMMON.STATUS' | translate) : (selectedStatusLabel | statusTranslate) }} </span>
                 <i class="ft-chevron-down"></i>
               </button>
               <div class="dropdown-menu" ngbDropdownMenu>
                 <button class="dropdown-item" (click)="onStatusChange('All')">
-                  All
+                  {{ 'COMMON.ALL' | translate }}
                 </button>
                 <button class="dropdown-item" *ngFor="let s of statuses" (click)="onStatusChange(s)">
                   {{ s.description }}
@@ -82,30 +62,15 @@
         [rowHeight]="'auto'" [limit]="pageSize" [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1"
         (page)="onPageChange($event)" [scrollbarH]="isMobile" [loadingIndicator]="loading" [selected]="chkBoxSelected"
         [swapColumns]="false" (sort)="onSort($event)" appPermission [appPermFormId]="FORM_IDS.PURCHASE_ORDER" [appPermDisable]="'write'">>
-        <!-- <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
-                    [resizeable]="false">
-                    <ng-template ngx-datatable-header-template>
-                        <div class="custom-control cstm-checkbox-form">
-                            <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
-                        </div>
-                    </ng-template>
-                    <ng-template ngx-datatable-cell-template let-value="value" let-isSelected="isSelected"
-                        let-onCheckboxChangeFn="onCheckboxChangeFn">
-
-                        <div class="custom-control cstm-checkbox-form custom-checkbox">
-                            <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
-                        </div>
-                    </ng-template>
-                </ngx-datatable-column> -->
 
         <!-- Sr. No -->
-        <ngx-datatable-column name="Sr. No." [flexGrow]="1" [maxWidth]="70" [canAutoResize]="false" [resizeable]="false" [sortable]="false">
+        <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [flexGrow]="1" [maxWidth]="70" [canAutoResize]="false" [resizeable]="false" [sortable]="false">
           <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
             <span>{{ rowIndex + 1 }}</span>
           </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="PO No." prop="purchaseOrderNo" [flexGrow]="1" [minWidth]="100" [sortable]="false">
+        <ngx-datatable-column [name]="'PO_MODULE.PO_NO' | translate" prop="purchaseOrderNo" [flexGrow]="1" [minWidth]="100" [sortable]="false">
           <ng-template ngx-datatable-cell-template let-row="row">
             <a href="javascript:void(0)" (click)="onRowClick(row)" appPermission [appPermFormId]="FORM_IDS.PURCHASE_ORDER"
               [appPermDisable]="'write'">
@@ -114,45 +79,32 @@
           </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="Status" prop="requestStatus" [sortable]="false" [flexGrow]="1" [minWidth]="120">
+        <ngx-datatable-column [name]="'COMMON.STATUS' | translate" prop="requestStatus" [sortable]="false" [flexGrow]="1" [minWidth]="120">
           <ng-template ngx-datatable-cell-template let-row="row">
             <span [ngClass]="row.statusClass">
-              {{ row.requestStatus }}
+              {{ row.requestStatus | statusTranslate }}
             </span>
           </ng-template>
         </ngx-datatable-column>
         
-        <ngx-datatable-column name="Requisition No." prop="requisitionNo" [sortable]="false" [flexGrow]="2" [minWidth]="140">
+        <ngx-datatable-column [name]="'COMMON.REQUISITION_NO' | translate" prop="requisitionNo" [sortable]="false" [flexGrow]="2" [minWidth]="140">
         </ngx-datatable-column>
 
-        <!-- <ngx-datatable-column name="Date" prop="date" [width]="50">
-                </ngx-datatable-column> -->
-
-        <ngx-datatable-column name="RFQ No." prop="rfqNo" [sortable]="false" [flexGrow]="2" [minWidth]="160">
+        <ngx-datatable-column [name]="'COMMON.RFQ_NO' | translate" prop="rfqNo" [sortable]="false" [flexGrow]="2" [minWidth]="160">
         </ngx-datatable-column>
-        <ngx-datatable-column name="Entity" prop="entityName" [sortable]="false" [flexGrow]="2" [minWidth]="120">
+        <ngx-datatable-column [name]="'COMMON.ENTITY' | translate" prop="entityName" [sortable]="false" [flexGrow]="2" [minWidth]="120">
         </ngx-datatable-column>
-        <ngx-datatable-column name="Vendor" prop="vendorCompanyName" [sortable]="false" [flexGrow]="1" [minWidth]="120">
+        <ngx-datatable-column [name]="'COMMON.VENDOR' | translate" prop="vendorCompanyName" [sortable]="false" [flexGrow]="1" [minWidth]="120">
         </ngx-datatable-column>
         
-        <ngx-datatable-column name="Total Items" prop="itemsCount" [sortable]="false" [flexGrow]="1" [minWidth]="80">
+        <ngx-datatable-column [name]="'COMMON.TOTAL_ITEMS' | translate" prop="itemsCount" [sortable]="false" [flexGrow]="1" [minWidth]="80">
         </ngx-datatable-column>
-        <!-- <ngx-datatable-column name="Total Amount" prop="totalAmount" [sortable]="false">
-        </ngx-datatable-column> -->
 
-        <ngx-datatable-column name="Date" prop="createdDate" [sortable]="false" [flexGrow]="1" [minWidth]="100">
+        <ngx-datatable-column [name]="'COMMON.DATE' | translate" prop="createdDate" [sortable]="false" [flexGrow]="1" [minWidth]="100">
           <ng-template let-row="row" ngx-datatable-cell-template>
             {{ row.createdDate | date:'yyyy-MM-dd' }}
           </ng-template>
         </ngx-datatable-column>
-        <!-- <ngx-datatable-column name="Amount" prop="amount" [sortable]="false">
-                </ngx-datatable-column> -->
-
-        <!-- <ngx-datatable-column name="Comments" prop="comment">
-                </ngx-datatable-column>
-
-                <ngx-datatable-column name="Total Amount" prop="amount" [sortable]="false">
-                </ngx-datatable-column> -->
 
       </ngx-datatable>
       </div>

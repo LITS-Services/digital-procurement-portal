@@ -5,7 +5,7 @@
       <!-- Header -->
       <div class="row">
         <div class="col-md-12" style="margin-top: -0.25rem;">
-          <h4 class="heading">Register / Edit Company</h4>
+          <h4 class="heading">{{ 'ENTITIES_MODULE.REGISTER_EDIT_COMPANY' | translate }}</h4>
         </div>
       </div>
 
@@ -20,12 +20,12 @@
 
             <button type="submit" class="btn btn-sm cstm-ui-table-btn ml-2" form="companyForm">
               <i class="ft-plus"></i>
-              <label class="ml-1">Save</label>
+              <label class="ml-1">{{ 'COMMON.SAVE' | translate }}</label>
             </button>
 
             <button type="reset" class="btn btn-sm cstm-ui-table-btn ml-1" (click)="onReset()">
               <i class="ft-refresh-ccw"></i>
-              <label class="ml-1">Reset</label>
+              <label class="ml-1">{{ 'COMMON.RESET' | translate }}</label>
             </button>
           </div>
         </div>
@@ -44,28 +44,28 @@
                 <div class="rounded cstm-inner-card h-100 p-3">
                   <div class="d-flex justify-content-between align-items-start mb-2">
                     <div>
-                      <h6 class="mb-1">Company details</h6>
+                      <h6 class="mb-1">{{ 'ENTITIES_MODULE.COMPANY_DETAILS' | translate }}</h6>
                     </div>
                   </div>
 
                   <div class="row gx-2 mt-2">
                     <div class="col-lg-6 col-md-6 col-sm-12">
                       <div class="form-group mb-2">
-                        <label>Name</label>
+                        <label>{{ 'COMMON.NAME' | translate }}</label>
                         <input
                           type="text"
                           formControlName="name"
                           class="form-control"
-                          placeholder="Enter Company Name" />
+                          [placeholder]="'COMMON.NAME' | translate" />
                       </div>
                     </div>
 
                     <div class="col-lg-6 col-md-6 col-sm-12">
                       <div class="form-group mb-2">
-                        <label>Status</label>
+                        <label>{{ 'COMMON.STATUS' | translate }}</label>
                         <select formControlName="isDeleted" class="form-control">
-                          <option [ngValue]="false">Active</option>
-                          <option [ngValue]="true">Inactive</option>
+                          <option [ngValue]="false">{{ 'COMMON.ACTIVE' | translate }}</option>
+                          <option [ngValue]="true">{{ 'COMMON.INACTIVE' | translate }}</option>
                         </select>
                       </div>
                     </div>
@@ -97,7 +97,7 @@
                       <div>
                         <button class="btn btn-primary mt-2 mb-1 mt-md-0" type="button" (click)="openAddAddressModal()">
                           <i class="ft-plus"></i>
-                          <span class="ml-1">Add Address</span>
+                          <span class="ml-1">{{ 'COMMON.ADD_ADDRESS' | translate }}</span>
                         </button>
                       </div>
                   
@@ -107,14 +107,14 @@
                       <table class="table table-sm pro-table mb-0">
                         <thead>
                           <tr>
-                            <th>Code</th>
-                            <th>Country</th>
-                            <th class="text-center">City</th>
-                            <th>Region</th>
-                            <th>Address 1</th>
-                            <th>Address 2</th>
-                            <th>Post Code</th>
-                            <th class="text-center" style="width: 110px;">Actions</th>
+                            <th>{{ 'COMMON.ADDRESS_CODE' | translate }}</th>
+                            <th>{{ 'COMMON.COUNTRY' | translate }}</th>
+                            <th class="text-center">{{ 'COMMON.CITY' | translate }}</th>
+                            <th>{{ 'COMMON.REGION' | translate }}</th>
+                            <th>{{ 'COMMON.ADDRESS_1' | translate }}</th>
+                            <th>{{ 'COMMON.ADDRESS_2' | translate }}</th>
+                            <th>{{ 'COMMON.POST_CODE' | translate }}</th>
+                            <th class="text-center" style="width: 110px;">{{ 'COMMON.ACTIONS' | translate }}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -141,7 +141,7 @@
                   
                     <ng-template #noAddresses>
                       <div class="alert alert-light border mt-2 mb-0 py-2 small">
-                        No addresses added yet. Click <strong>Add Address</strong> to create one.
+                        {{ 'ENTITIES_MODULE.NO_ADDRESSES_YET' | translate }}
                       </div>
                     </ng-template>
                   </div>
@@ -151,7 +151,7 @@
               <!-- Right: Logo -->
               <div class="col-lg-4 col-md-5 col-sm-12 mb-3">
                 <div class="form-group mb-2 d-flex flex-column align-items-center">
-                  <label class="mb-1">Logo</label>
+                  <label class="mb-1">{{ 'COMMON.LOGO' | translate }}</label>
               
                   <!-- Circle upload button -->
                   <label class="logo-upload-circle" [ngClass]="{ 'has-image': previewUrl || existingLogo }">
@@ -160,7 +160,7 @@
                     <!-- When no image selected -->
                     <ng-container *ngIf="!previewUrl && !existingLogo">
                       <i class="ft-image text-muted"></i>
-                      <span class="logo-upload-text">Upload</span>
+                      <span class="logo-upload-text">{{ 'COMMON.UPLOAD' | translate }}</span>
                     </ng-container>
               
                     <!-- When image selected / existing -->
@@ -170,14 +170,14 @@
                       <!-- Hover overlay -->
                       <div class="logo-upload-overlay">
                         <span class="logo-upload-overlay-text">
-                          <i class="ft-upload mr-1"></i>change image
+                          <i class="ft-upload mr-1"></i>{{ 'ENTITIES_MODULE.CHANGE_IMAGE' | translate }}
                         </span>
                       </div>
                     </ng-container>
                   </label>
               
                   <small class="text-muted mt-2">
-                    PNG / JPG up to 2MB.
+                    {{ 'ENTITIES_MODULE.PNG_JPG_MAX' | translate }}
                   </small>
                 </div>
               </div>
@@ -200,7 +200,7 @@
 <ng-template #addressModal let-modal>
   <div class="modal-header d-flex align-items-center justify-content-between">
     <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
-      <i class="ft-map-pin mr-2 text-white"></i> {{ selectedAddressIndex !== null ? 'Edit Address' : 'Add Address' }}
+      <i class="ft-map-pin mr-2 text-white"></i> {{ selectedAddressIndex !== null ? ('COMMON.EDIT_ADDRESS' | translate) : ('COMMON.ADD_ADDRESS' | translate) }}
     </h5>
     <button type="button" class="modal-close-btn" aria-label="Close" (click)="modal.dismiss()">
       <i class="ft-x"></i>
@@ -210,27 +210,27 @@
   <div class="modal-body">
     <form [formGroup]="addressForm">
       <div class="form-group mb-2">
-        <label>Country</label>
+        <label>{{ 'COMMON.COUNTRY' | translate }}</label>
         <input formControlName="country" class="form-control" />
       </div>
       <div class="form-group mb-2">
-        <label>City</label>
+        <label>{{ 'COMMON.CITY' | translate }}</label>
         <input formControlName="city" class="form-control" />
       </div>
       <div class="form-group mb-2">
-        <label>Region</label>
+        <label>{{ 'COMMON.REGION' | translate }}</label>
         <input formControlName="region" class="form-control" />
       </div>
       <div class="form-group mb-2">
-        <label>Post Code</label>
+        <label>{{ 'COMMON.POST_CODE' | translate }}</label>
         <input type="number" formControlName="postCode" class="form-control" />
       </div>
       <div class="form-group mb-0">
-        <label>Address 1</label>
+        <label>{{ 'COMMON.ADDRESS_1' | translate }}</label>
         <textarea formControlName="address" class="form-control" rows="2"></textarea>
       </div>
       <div class="form-group mb-0">
-        <label>Address 2</label>
+        <label>{{ 'COMMON.ADDRESS_2' | translate }}</label>
         <textarea formControlName="address2" class="form-control" rows="2"></textarea>
       </div>
     </form>
@@ -238,10 +238,10 @@
 
   <div class="modal-footer">
     <button type="button" class="modal-btn-cancel" (click)="modal.dismiss()">
-      <i class="ft-x mr-1"></i> Cancel
+      <i class="ft-x mr-1"></i> {{ 'COMMON.CANCEL' | translate }}
     </button>
     <button type="button" class="modal-btn-save" (click)="saveAddress(modal)">
-      <i class="fa fa-save mr-1"></i> Save
+      <i class="fa fa-save mr-1"></i> {{ 'COMMON.SAVE' | translate }}
     </button>
   </div>
 </ng-template>

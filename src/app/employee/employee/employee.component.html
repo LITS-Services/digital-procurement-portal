@@ -4,8 +4,7 @@
 
       <div class="row">
         <div class="col-md-12" style="margin-top: -0.25rem;">
-          <!-- <h4 class="heading">Create User(s) </h4> -->
-          <h4 class="heading">{{ isEditMode ? 'Edit User(s)' : 'Create User(s)' }}</h4>
+          <h4 class="heading">{{ isEditMode ? ('USERS_MODULE.EDIT_USERS' | translate) : ('USERS_MODULE.CREATE_USERS' | translate) }}</h4>
         </div>
       </div>
 
@@ -17,10 +16,10 @@
             </button>
             <span class="vl"></span>
             <button (click)="onSubmit()" type="submit" class="btn btn-sm cstm-ui-table-btn" form="companyForm">
-              <i class="ft-plus"></i><label class="ml-1">Save</label>
+              <i class="ft-plus"></i><label class="ml-1">{{ 'COMMON.SAVE' | translate }}</label>
             </button>
             <button type="reset" class="btn btn-sm cstm-ui-table-btn" (click)="onReset()">
-              <i class="ft-refresh-ccw"></i><label class="ml-1">Reset</label>
+              <i class="ft-refresh-ccw"></i><label class="ml-1">{{ 'COMMON.RESET' | translate }}</label>
             </button>
           </div>
         </div>
@@ -28,16 +27,15 @@
 
       <div class="card">
         <div class="card-body">
-          <!-- (ngSubmit)="onSubmit()" -->
           <form [formGroup]="companyForm" id="companyForm">
             <div class="row gx-2">
 
               <!-- Employee dropdown (only in create mode) -->
               <div class="col-lg-4 col-md-4 col-sm-6" *ngIf="!isEditMode">
                 <div class="form-group mb-2">
-                  <label>Select Employee</label>
+                  <label>{{ 'USERS_MODULE.SELECT_EMPLOYEE' | translate }}</label>
                   <select class="form-control" formControlName="employeeId" (change)="onEmployeeSelect($event)">
-                    <option value="">-- Select Employee --</option>
+                    <option value="">{{ 'USERS_MODULE.CHOOSE_EMPLOYEE' | translate }}</option>
                     <option *ngFor="let emp of employees" [value]="emp.id">
                       {{ emp.fullName || emp.userName }}
                     </option>
@@ -48,14 +46,14 @@
               <!-- Name -->
               <div class="col-lg-4 col-md-4 col-sm-6">
                 <div class="form-group mb-2">
-                  <label>Name</label>
-                  <input type="text" formControlName="name" class="form-control" placeholder="Enter Name"
+                  <label>{{ 'COMMON.NAME' | translate }}</label>
+                  <input type="text" formControlName="name" class="form-control" [placeholder]="'USERS_MODULE.ENTER_NAME' | translate"
                     [disabled]="isEditMode" />
                   <div
                     *ngIf="companyForm.get('name')?.invalid && (companyForm.get('name')?.touched || companyFormSubmitted)"
                     class="text-danger">
-                    <small *ngIf="companyForm.get('name')?.errors?.['required']">Name is required.</small>
-                    <small *ngIf="companyForm.get('name')?.errors?.['pattern']">Name cannot contain spaces.</small>
+                    <small *ngIf="companyForm.get('name')?.errors?.['required']">{{ 'USERS_MODULE.NAME_REQ' | translate }}</small>
+                    <small *ngIf="companyForm.get('name')?.errors?.['pattern']">{{ 'USERS_MODULE.NAME_NO_SPACES' | translate }}</small>
                   </div>
                 </div>
               </div>
@@ -63,12 +61,12 @@
               <!-- Email -->
               <div class="col-lg-4 col-md-4 col-sm-6">
                 <div class="form-group mb-2">
-                  <label>Email</label>
-                  <input type="email" formControlName="email" class="form-control" placeholder="Enter Email"
+                  <label>{{ 'COMMON.EMAIL' | translate }}</label>
+                  <input type="email" formControlName="email" class="form-control" [placeholder]="'USERS_MODULE.ENTER_EMAIL' | translate"
                     [disabled]="isEditMode" />
                   <div *ngIf="companyForm.get('email')?.invalid && companyForm.get('email')?.touched"
                     class="text-danger">
-                    Enter a valid email.
+                    {{ 'USERS_MODULE.ENTER_VALID_EMAIL' | translate }}
                   </div>
                 </div>
               </div>
@@ -76,7 +74,7 @@
               <!-- Password -->
               <div class="col-lg-4 col-md-4 col-sm-6">
                 <div class="form-group mb-2">
-                  <label>Password</label>
+                  <label>{{ 'COMMON.PASSWORD' | translate }}</label>
                   <div class="password-input-group">
                     <input [type]="passwordFieldType" formControlName="password" class="form-control custom-input"
                       placeholder="********" [disabled]="isEditMode" />
@@ -86,16 +84,15 @@
                   </div>
                   <div *ngIf="companyForm.get('password')?.invalid && companyFormSubmitted && !isEditMode"
                     class="text-danger">
-                    <small *ngIf="companyForm.get('password')?.errors?.['required']">Password is required.</small>
-                    <small *ngIf="companyForm.get('password')?.errors?.['minlength']">Minimum 6 characters
-                      required.</small>
+                    <small *ngIf="companyForm.get('password')?.errors?.['required']">{{ 'USERS_MODULE.PASSWORD_REQ' | translate }}</small>
+                    <small *ngIf="companyForm.get('password')?.errors?.['minlength']">{{ 'USERS_MODULE.MIN_6_CHARS' | translate }}</small>
                     <small *ngIf="companyForm.get('password')?.errors?.['pattern']">
-                      Must include at least one uppercase and one special character.
+                      {{ 'USERS_MODULE.PASSWORD_COMPLEXITY' | translate }}
                     </small>
                   </div>
 
                   <small class="text-muted" *ngIf="isEditMode">
-                    Password is hidden. Cannot be changed in edit mode.
+                    {{ 'USERS_MODULE.PASSWORD_HIDDEN_EDIT' | translate }}
                   </small>
                 </div>
               </div>
@@ -103,21 +100,20 @@
               <!-- Confirm Password -->
               <div class="col-lg-4 col-md-4 col-sm-6">
                 <div class="form-group mb-2">
-                  <label>Confirm Password</label>
+                  <label>{{ 'USERS_MODULE.CONFIRM_PASSWORD' | translate }}</label>
                   <div class="password-input-group">
                     <input [type]="confirmPasswordFieldType" formControlName="confirmPassword"
                       class="form-control custom-input" placeholder="********" [disabled]="isEditMode" />
                     <i *ngIf="!isEditMode" class="eye-icon ft"
                       [ngClass]="confirmPasswordFieldType === 'password' ? 'ft-eye-off' : 'ft-eye'"
                       (click)="togglePassword('confirmPassword')" style="cursor: pointer;"></i>
-
                   </div>
                   <div *ngIf="companyFormSubmitted && !isEditMode" class="text-danger">
                     <small *ngIf="companyForm.get('confirmPassword')?.errors?.['required']">
-                      Please confirm your password.
+                      {{ 'USERS_MODULE.CONFIRM_PASSWORD_REQ' | translate }}
                     </small>
                     <small *ngIf="companyForm.errors?.['passwordMismatch']">
-                      Passwords do not match.
+                      {{ 'USERS_MODULE.PASSWORD_MISMATCH' | translate }}
                     </small>
                   </div>
                 </div>
@@ -126,9 +122,9 @@
               <!-- Role -->
               <div class="col-lg-4 col-md-4 col-sm-6">
                 <div class="form-group mb-2">
-                  <label>Role</label>
+                  <label>{{ 'COMMON.ROLE' | translate }}</label>
                   <select class="form-control" formControlName="roleId" [disabled]="isEditMode">
-                    <option value="">-- Select Role --</option>
+                    <option value="">{{ 'USERS_MODULE.CHOOSE_ROLE' | translate }}</option>
                     <option *ngFor="let role of roles" [value]="role.id">
                       {{ role.name }}
                     </option>
@@ -140,38 +136,30 @@
               <div class="d-flex">
                 <div class="col-lg-6 col-md-6 col-sm-12 me-1">
                   <div class="mb-2">
-                    <label>Select Companies</label>
+                    <label>{{ 'USERS_MODULE.SELECT_COMPANIES' | translate }}</label>
                     <ng-select class="custom-style" [items]="companies" bindLabel="name" bindValue="id"
-                      [multiple]="true" [searchable]="true" placeholder="Select Company(s)"
+                      [multiple]="true" [searchable]="true" [placeholder]="'USERS_MODULE.SELECT_COMPANY_PLACEHOLDER' | translate"
                       formControlName="companyIds">
                     </ng-select>
 
                     <div *ngIf="companyForm.get('companyIds')?.invalid && companyFormSubmitted && !isEditMode"
                       class="text-danger">
-                      Please select at least one company.
+                      {{ 'USERS_MODULE.SELECT_ONE_COMPANY' | translate }}
                     </div>
                   </div>
                 </div>
 
                 <!-- Status toggle button -->
                 <div class="form-group mb-2">
-                  <label>Status</label>
-                  <!-- <div>
-                  <button type="button" class="btn"
-                    [ngClass]="companyForm.get('isDeleted')?.value ? 'btn-danger' : 'btn-success'"
-                    (click)="toggleStatus()">
-                    {{ companyForm.get('isDeleted')?.value ? 'Inactive' : 'Active' }}
-                  </button>
-                </div> -->
+                  <label>{{ 'COMMON.STATUS' | translate }}</label>
                   <div>
                     <div class="checkbox-wrapper-4">
-                      <!-- <input formControlName="isDeleted" class="inp-cbx" id="Active" type="checkbox" /> -->
                       <input id="Active" type="checkbox" class="inp-cbx"
                         [checked]="!companyForm.get('isDeleted')?.value" (change)="onActiveChange($event)" />
                       <label class="cbx" for="Active"><span>
                           <svg width="12px" height="10px">
                             <use xlink:href="#check-4"></use>
-                          </svg></span><span>Active</span></label>
+                          </svg></span><span>{{ 'COMMON.ACTIVE' | translate }}</span></label>
                       <svg class="inline-svg">
                         <symbol id="check-4" viewbox="0 0 12 10">
                           <polyline points="1.5 6 4.5 9 10.5 1">
@@ -182,28 +170,6 @@
                   </div>
                 </div>
               </div>
-
-
-              <!-- Companies -->
-              <!-- <div class="col-lg-6 col-md-6 col-sm-12" *ngIf="companies.length">
-                <div class="mb-2">
-                  <label>Select Companies</label>
-                  <div class="form-control" style="height:auto; max-height:200px; overflow-y:auto;">
-                    <div *ngFor="let company of companies">
-                      <input type="checkbox" [value]="company.companyGUID"
-                        (change)="onCompanyToggle($event, company.companyGUID)"
-                        [checked]="selectedCompanyGUIDs.includes(company.companyGUID)" />
-                      <label class="ml-1">{{ company.name }}</label>
-                    </div>
-                  </div>
-                  <div *ngIf="selectedCompanyGUIDs.length === 0 && companyFormSubmitted && !isEditMode"
-                    class="text-danger">
-                    Please select at least one company.
-                  </div>
-                </div>
-              </div> -->
-
-
 
             </div>
           </form>

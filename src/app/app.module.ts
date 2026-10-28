@@ -45,6 +45,28 @@ import { permissionInitializer } from "./shared/permissions/permission.init";
 import { PermissionService } from "./shared/permissions/permission.service";
 import { DataSourceService } from "./shared/services/data-source.service";
 
+import { Observable, of } from "rxjs";
+import { LanguageService, LanguageInterceptor } from "./core/language";
+import en from '../assets/i18n/en.json';
+import ar from '../assets/i18n/ar.json';
+
+export class BundledTranslateLoader implements TranslateLoader {
+  getTranslation(lang: string): Observable<any> {
+    const table = lang === 'ar' ? ar : en;
+    return of(table);
+  }
+}
+
+export function appLanguageInitializer(languageService: LanguageService) {
+  return () => {
+    try {
+      languageService.init();
+    } catch {
+      /* fallback */
+    }
+  };
+}
+
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
   wheelPropagation: false
@@ -78,7 +100,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useClass: TranslateHttpLoader
+        useClass: BundledTranslateLoader
       }
     }),
     GoogleMapsModule,
@@ -93,6 +115,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     AuthService,
     AuthGuard,
     DragulaService,
+    { provide: HTTP_INTERCEPTORS, useClass: LanguageInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: CsrfInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: HttpRetryTimeoutInterceptor, multi: true },
@@ -100,6 +123,12 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     {
       provide: PERFECT_SCROLLBAR_CONFIG,
       useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
+    },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: appLanguageInitializer,
+      deps: [LanguageService],
+      multi: true
     },
     {
       provide: APP_INITIALIZER,

@@ -36,6 +36,7 @@ import { IntegrationManagerListComponent } from './integration-manager-list/inte
 import { IntegrationManagerFormComponent } from './integration-manager-form/integration-manager-form.component';
 import { TurnstileSetupComponent } from './turnstile-setup/turnstile-setup.component';
 import { DataSourceSetupComponent } from './data-source-setup/data-source-setup.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 
 
@@ -83,7 +84,8 @@ import { DataSourceSetupComponent } from './data-source-setup/data-source-setup.
     NgxSpinnerModule,
     AutoResizeDatatableDirective,
     DatatableAutoResizeDirective,
-    PermissionDirective
+    PermissionDirective,
+    TranslateModule
   ],
   schemas: [NO_ERRORS_SCHEMA]
 })

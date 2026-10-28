@@ -270,6 +270,22 @@ nav.navbar.header-navbar {
   }
 }
 
+// Arabic (RTL) mode: Remove padding-left from navbar container
+html[dir="rtl"],
+html.rtl,
+body.rtl,
+[dir="rtl"] {
+  &.vertical-menu.sidebar-lg .navbar .navbar-container,
+  .vertical-menu.sidebar-lg .navbar .navbar-container,
+  &.vertical-menu.sidebar-sm .navbar .navbar-container,
+  .vertical-menu.sidebar-sm .navbar .navbar-container,
+  &.vertical-menu .navbar .navbar-container,
+  .vertical-menu .navbar .navbar-container {
+    padding-left: 0 !important;
+  }
+}
+
+
 @media (min-width: 992px) {
   .navbar.header-navbar{
     .navbar-nav {

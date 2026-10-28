@@ -6,7 +6,7 @@
       <div class="row">
         <div class="col-md-12" style="margin-top: -0.25rem;">
           <h4 class="heading">
-            Inventory Transfer
+            {{ 'INV_TRANSFER_MODULE.TITLE' | translate }}
           </h4>
         </div>
       </div>
@@ -23,7 +23,7 @@
           <div class="col-md-6 col-6 text-end cstm-action-bar">
             <button type="button" class="btn btn-sm cstm-ui-table-btn">
               <i class="ft-printer"></i>
-              <label class="ml-1 btn-label">Print</label>
+              <label class="ml-1 btn-label">{{ 'COMMON.PRINT' | translate }}</label>
             </button>
           </div>
         </div>
@@ -38,42 +38,42 @@
 
             <div class="form-grid mb-2">
               <div class="form-grid__item">
-                <label>Requisition No.</label>
+                <label>{{ 'COMMON.REQUISITION_NO' | translate }}</label>
                 <input class="form-control custom-input" formControlName="requisitionNo" disabled>
               </div>
 
               <div class="form-grid__item">
-                <label>Status</label>
-                <input class="form-control custom-input" formControlName="status" disabled>
+                <label>{{ 'COMMON.STATUS' | translate }}</label>
+                <input class="form-control custom-input" [value]="newPurchaseRequestForm.get('status')?.value | statusTranslate" disabled>
               </div>
 
               <div class="form-grid__item">
-                <label>Submitted Date</label>
+                <label>{{ 'COMMON.SUBMITTED_DATE' | translate }}</label>
                 <input type="date" class="form-control custom-input" formControlName="submittedDate" disabled>
               </div>
 
               <div class="form-grid__item">
-                <label>Delivery Location</label>
+                <label>{{ 'COMMON.DELIVERY_LOCATION' | translate }}</label>
                 <input class="form-control custom-input" formControlName="deliveryLocation" disabled>
               </div>
 
               <div class="form-grid__item">
-                <label>Receiver Name</label>
+                <label>{{ 'COMMON.RECEIVER_NAME' | translate }}</label>
                 <input class="form-control custom-input" formControlName="receiverName" disabled>
               </div>
 
               <div class="form-grid__item">
-                <label>Receiver Contact</label>
+                <label>{{ 'COMMON.RECEIVER_CONTACT' | translate }}</label>
                 <input class="form-control custom-input" formControlName="receiverContact" disabled>
               </div>
 
               <div class="form-grid__item">
-                <label>Department</label>
+                <label>{{ 'COMMON.DEPARTMENT' | translate }}</label>
                 <input class="form-control custom-input" formControlName="department" disabled>
               </div>
 
               <div class="form-grid__item form-grid__item--full">
-                <label>Subject</label>
+                <label>{{ 'COMMON.SUBJECT' | translate }}</label>
                 <input class="form-control custom-input" formControlName="subject" disabled>
               </div>
             </div>
@@ -85,7 +85,7 @@
                   <button ngbAccordionButton type="button" class="w-100 p-0 bg-transparent border-0">
                     <div class="row">
                       <div class="col-md-12 d-flex justify-content-between align-items-center">
-                        <label class="address-label mb-0">Receiving Address</label>
+                        <label class="address-label mb-0">{{ 'COMMON.RECEIVING_ADDRESS' | translate }}</label>
                         <i class="ft ft-chevron-down"></i>
                       </div>
                     </div>
@@ -96,32 +96,32 @@
                   <div ngbAccordionBody>
                     <div class="form-grid w-100">
                       <div class="form-grid__item">
-                        <label>Country</label>
+                        <label>{{ 'COMMON.COUNTRY' | translate }}</label>
                         <input class="form-control custom-input" formControlName="country" disabled>
                       </div>
 
                       <div class="form-grid__item">
-                        <label>City</label>
+                        <label>{{ 'COMMON.CITY' | translate }}</label>
                         <input class="form-control custom-input" formControlName="city" disabled>
                       </div>
 
                       <div class="form-grid__item">
-                        <label>Region</label>
+                        <label>{{ 'COMMON.REGION' | translate }}</label>
                         <input class="form-control custom-input" formControlName="region" disabled>
                       </div>
 
                       <div class="form-grid__item">
-                        <label>Post Code</label>
+                        <label>{{ 'COMMON.POST_CODE' | translate }}</label>
                         <input class="form-control custom-input" formControlName="postCode" disabled>
                       </div>
 
                       <div class="form-grid__item form-grid__item--address">
-                        <label>Address 1</label>
+                        <label>{{ 'COMMON.ADDRESS_1' | translate }}</label>
                         <input class="form-control custom-input" formControlName="address" disabled>
                       </div>
 
                       <div class="form-grid__item form-grid__item--address">
-                        <label>Address 2</label>
+                        <label>{{ 'COMMON.ADDRESS_2' | translate }}</label>
                         <input class="form-control custom-input" formControlName="address2" disabled>
                       </div>
                     </div>
@@ -144,49 +144,49 @@
               rowHeight="auto"
               [scrollbarH]="true">
 
-              <ngx-datatable-column name="Sr" [width]="50">
+              <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="50">
                 <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
                   {{ rowIndex + 1 }}
                 </ng-template>
               </ngx-datatable-column>
 
-              <ngx-datatable-column name="Item">
+              <ngx-datatable-column [name]="'COMMON.ITEM' | translate">
                 <ng-template let-row="row" ngx-datatable-cell-template>
                   {{ getItemNameById(row.itemId) }}
                 </ng-template>
               </ngx-datatable-column>
 
-              <ngx-datatable-column name="Description">
+              <ngx-datatable-column [name]="'COMMON.DESCRIPTION' | translate">
                 <ng-template let-row="row" ngx-datatable-cell-template>
                   {{ row.itemDescription }}
                 </ng-template>
               </ngx-datatable-column>
 
-              <ngx-datatable-column name="Qty" [width]="80">
+              <ngx-datatable-column [name]="'COMMON.QUANTITY' | translate" [width]="80">
                 <ng-template let-row="row" ngx-datatable-cell-template>
                   {{ row.orderQuantity }}
                 </ng-template>
               </ngx-datatable-column>
 
-              <ngx-datatable-column name="Amount" [width]="120">
+              <ngx-datatable-column [name]="'COMMON.TOTAL_AMOUNT' | translate" [width]="120">
                 <ng-template let-row="row" ngx-datatable-cell-template>
                   {{ row.amount | number }}
                 </ng-template>
               </ngx-datatable-column>
 
-                <ngx-datatable-column name="From Company">
+                <ngx-datatable-column [name]="'INV_TRANSFER_MODULE.FROM_COMPANY' | translate">
                 <ng-template let-row="row" ngx-datatable-cell-template>
                   {{ row.procurementCompany }}
                 </ng-template>
               </ngx-datatable-column>
 
-                <ngx-datatable-column name="Address">
+                <ngx-datatable-column [name]="'COMMON.ADDRESS' | translate">
                 <ng-template let-row="row" ngx-datatable-cell-template>
                   {{ row.procurementCompanyAddressDetails }}
                 </ng-template>
               </ngx-datatable-column>
 
-              <ngx-datatable-column name="Attachments" [width]="120" [sortable]="false">
+              <ngx-datatable-column [name]="'COMMON.ATTACHMENTS' | translate" [width]="120" [sortable]="false">
                 <ng-template ngx-datatable-cell-template let-row="row">
                   <a
                     class="row-action-attachment"

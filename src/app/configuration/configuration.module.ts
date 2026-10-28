@@ -1,3 +1,4 @@
+import { PipeModule } from 'app/shared/pipes/pipe.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ConfigurationRoutingModule } from './configuration-routing.module';
@@ -11,6 +12,7 @@ import { PermissionDirective } from 'app/shared/permissions/permission.directive
 import { HasPermissionDirective } from 'app/shared/auth/has-permission.directive';
 import { NgbDropdownModule, NgbModalModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
+import { TranslateModule } from '@ngx-translate/core';
 
 
 @NgModule({
@@ -22,6 +24,7 @@ import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-au
     LogsComponent
   ],
   imports: [
+    PipeModule,
     CommonModule,
     ConfigurationRoutingModule,
     NgxDatatableModule,
@@ -31,7 +34,8 @@ import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-au
       NgbTooltipModule,
       DatatableAutoResizeDirective,
     PermissionDirective,
-    HasPermissionDirective
-]
+    HasPermissionDirective,
+    TranslateModule
+  ]
 })
 export class ConfigurationModule { }

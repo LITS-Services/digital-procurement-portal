@@ -28,43 +28,27 @@
             <nav>
                 <button (click)="selectTab('po-details')" [ngClass]="{ 'tab-current': selectedTab === 'po-details' }"
                     class="custom-style-tab">
-                    <span>PURCHASE ORDER</span>
+                    <span>{{ 'PO_MODULE.PURCHASE_ORDER' | translate }}</span>
                 </button>
 
                 <button (click)="selectTab('shipment-details')"
                     [ngClass]="{ 'tab-current': selectedTab === 'shipment-details' }" class="custom-style-tab">
-                    <span>SHIPMENT DETAILS</span>
+                    <span>{{ 'PO_MODULE.SHIPMENT_DETAILS' | translate }}</span>
                 </button>
 
                 <button (click)="selectTab('grn-details')" [ngClass]="{ 'tab-current': selectedTab === 'grn-details' }"
                     class="custom-style-tab">
-                    <span>GRN</span>
+                    <span>{{ 'PO_MODULE.GRN' | translate }}</span>
                 </button>
 
                 <button (click)="selectTab('invoice-details')"
                     [ngClass]="{ 'tab-current': selectedTab === 'invoice-details' }" class="custom-style-tab">
-                    <span>INVOICING</span>
+                    <span>{{ 'PO_MODULE.INVOICING' | translate }}</span>
                 </button>
-
-                <!-- <button (click)="selectTab('vendor-rating')"
-                    [ngClass]="{ 'tab-current': selectedTab === 'vendor-rating' }" class="custom-style-tab">
-                    <span>VENDOR RATING</span>
-                </button> -->
             </nav>
         </div>
 
         <div *ngIf="selectedTab === 'po-details'">
-            <!-- Action Bar -->
-            <!-- <div class="card cstm-ui-card mb-3 py-2 px-3 d-flex justify-content-between flex-wrap">
-            <div class="d-flex align-items-center">
-                <button class="btn btn-lg" type="button" (click)="homePage()">
-                    <i class="ft-arrow-left"></i>
-                </button>
-
-                <h5 class="mt-2 fw-bold heading">Purchase Order Details</h5>
-            </div>
-        </div> -->
-
             <!-- PO Info Card -->
             <div class="card cstm-ui-card mb-4">
                 <div class="card-body">
@@ -72,42 +56,42 @@
                     <div class="row">
 
                         <div class="col-lg-4 col-md-6 mb-3">
-                            <label>PO Number</label>
+                            <label>{{ 'PO_MODULE.PO_NUMBER' | translate }}</label>
                             <input class="form-control custom-input" [value]="poDetails?.purchaseOrderNo" disabled>
                         </div>
 
                         <div class="col-lg-4 col-md-6 mb-3">
-                            <label>Requisition No</label>
+                            <label>{{ 'COMMON.REQUISITION_NO' | translate }}</label>
                             <input class="form-control custom-input" [value]="poDetails?.requisitionNo || '-'" disabled>
                         </div>
 
                         <div class="col-lg-4 col-md-6 mb-3">
-                            <label>RFQ No</label>
+                            <label>{{ 'COMMON.RFQ_NO' | translate }}</label>
                             <input class="form-control custom-input" [value]="poDetails?.rfqNo || '-'" disabled>
                         </div>
 
                            <div class="col-lg-4 col-md-6 mb-3">
-                            <label>Entity</label>
+                            <label>{{ 'COMMON.ENTITY' | translate }}</label>
                             <input class="form-control custom-input" [value]="poDetails?.entityName || '-'" disabled>
                         </div>
 
                         <div class="col-lg-4 col-md-6 mb-3">
-                            <label>Department</label>
+                            <label>{{ 'COMMON.DEPARTMENT' | translate }}</label>
                             <input class="form-control custom-input" [value]="poDetails?.department || '-'" disabled>
                         </div>
 
                         <div class="col-lg-4 col-md-6 mb-3">
-                            <label>Vendor</label>
+                            <label>{{ 'COMMON.VENDOR' | translate }}</label>
                             <input class="form-control custom-input" [value]="poDetails?.vendorCompanyName" disabled>
                         </div>
 
                         <div class="col-lg-4 col-md-6 mb-3">
-                            <label>Status</label>
-                            <input class="form-control custom-input" [value]="poDetails?.requestStatus" disabled>
+                            <label>{{ 'COMMON.STATUS' | translate }}</label>
+                            <input class="form-control custom-input" [value]="poDetails?.requestStatus | statusTranslate" disabled>
                         </div>
 
                         <div class="col-lg-4 col-md-6 mb-3">
-                            <label>Created Date</label>
+                            <label>{{ 'COMMON.CREATED_DATE' | translate }}</label>
                             <input class="form-control custom-input"
                                 [value]="poDetails?.createdDate | date:'yyyy-MM-dd'" disabled>
                         </div>
@@ -117,7 +101,7 @@
             </div>
             <!-- Items Section -->
             <h5 class="heading mb-3 fw-bold" (click)="toggleItems()" style="cursor: pointer;">
-                Items
+                {{ 'COMMON.ITEMS' | translate }}
                 <i class="fa" [ngClass]="itemsExpanded ? 'fa-chevron-down' : 'fa-chevron-up'"
                     style="font-size: 12px;"></i>
             </h5>
@@ -130,12 +114,12 @@
                             <table class="table table-sm pro-table mb-0">
                                 <thead>
                                     <tr>
-                                        <th>Item</th>
-                                        <th>Description</th>
-                                        <th>Project</th>
-                                        <th>Activity</th>
-                                        <th class="text-end">Quantity</th>
-                                        <th class="text-end">Amount</th>
+                                        <th>{{ 'COMMON.ITEM' | translate }}</th>
+                                        <th>{{ 'COMMON.DESCRIPTION' | translate }}</th>
+                                        <th>{{ 'COMMON.PROJECT' | translate }}</th>
+                                        <th>{{ 'COMMON.ACTIVITY' | translate }}</th>
+                                        <th class="text-end">{{ 'COMMON.QUANTITY' | translate }}</th>
+                                        <th class="text-end">{{ 'COMMON.TOTAL_AMOUNT' | translate }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -159,7 +143,7 @@
 
 
             <div class="d-flex justify-content-end fw-bold mt-3">
-                <h5>Total: {{ poDetails?.totalAmount | number:'1.2-2' }}</h5>
+                <h5>{{ 'COMMON.TOTAL' | translate }}: {{ poDetails?.totalAmount | number:'1.2-2' }}</h5>
             </div>
         </div>
         <div *ngIf="selectedTab === 'shipment-details'">

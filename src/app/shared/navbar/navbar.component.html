@@ -18,9 +18,9 @@
   [display]="'dynamic'"
   [placement]="'bottom-start'"
   (openChange)="entityOpen = $event">
-        <button class="entity-trigger" ngbDropdownToggle title="Switch entity/company">
+        <button class="entity-trigger" ngbDropdownToggle [title]="'NAV.SWITCH_ENTITY' | translate">
           <!-- label first -->
-          <span class="entity-label text-truncate">{{ selectedCompany?.description || 'Select entity' }}</span>
+          <span class="entity-label text-truncate">{{ selectedCompany?.description || ('NAV.SELECT_ENTITY' | translate) }}</span>
       
           <!-- sync icon after text -->
           <span class="sync-icon" [class.rotate]="entityOpen">
@@ -64,23 +64,23 @@
             <div class="search-input-wrapper">
               <i class="ft-search search-icon"></i>
               <input type="text" class="custom-input search-input" [formControl]="searchCtrl" (focus)="openPanel()"
-                (keydown)="onKeyDown($event)" placeholder="PR, RFQ or PO" />
+                (keydown)="onKeyDown($event)" [placeholder]="'NAV.SEARCH_PLACEHOLDER' | translate" />
             </div>
 
           <div class="search-panel" *ngIf="panelOpen" (click)="$event.stopPropagation()">
             <div class="search-panel__header">
-              <div class="search-panel__title">SEARCH</div>
+              <div class="search-panel__title">{{ 'NAV.SEARCH_TITLE' | translate }}</div>
           
               <div class="search-panel__shortcuts">
                 <span class="kbd">↑↓</span>
-                <span class="txt">to navigate</span>
+                <span class="txt">{{ 'NAV.TO_NAVIGATE' | translate }}</span>
                 <span class="kbd">Enter</span>
-                <span class="txt">to open</span>
+                <span class="txt">{{ 'NAV.TO_OPEN' | translate }}</span>
               </div>
             </div>
           
             <div class="panel-body">
-              <div *ngIf="loading" class="loading">Searching…</div>
+              <div *ngIf="loading" class="loading">{{ 'COMMON.LOADING' | translate }}</div>
           
               <ng-container *ngIf="!loading">
                 <div *ngIf="results?.length; else emptyState">
@@ -96,7 +96,7 @@
                       <div class="title text-ellipsis" [innerHTML]="highlightText(r?.message, searchCtrl.value || '')">
                       </div>
                         <div class="subtitle text-ellipsis">
-                          Click to open details
+                          {{ 'NAV.DETAILS_CLICK' | translate }}
                         </div>
                       </div>
                     </div>
@@ -108,7 +108,7 @@
                 </div>
           
                 <ng-template #emptyState>
-                  <div class="empty">No results</div>
+                  <div class="empty">{{ 'COMMON.NO_RESULTS' | translate }}</div>
                 </ng-template>
               </ng-container>
             </div>
@@ -118,6 +118,16 @@
               <!-- <button class="icon-btn">
                  <i class="ft-moon"></i>
                 </button> -->
+              <div class="lang-switch-wrapper">
+                <button type="button" class="icon-btn lang-toggle-btn"
+                  [disabled]="isSwitchingLanguage"
+                  (click)="switchLanguage(currentLang === 'en' ? 'ar' : 'en')"
+                  [title]="currentLang === 'en' ? 'Switch to العربية' : 'Switch to English'">
+                  <i class="ft-globe font-medium-1 me-1"></i>
+                  <span class="lang-code-text">{{ currentLang === 'en' ? 'العربية' : 'EN' }}</span>
+                </button>
+              </div>
+
               <div class="notification-wrapper" #notifRoot>
                 <button class="icon-btn notification-bell" (click)="togglePanel()" aria-haspopup="true"
                   [attr.aria-expanded]="notifOpen">
@@ -128,7 +138,7 @@
                 <div class="notif-panel" *ngIf="notifOpen" [class.show]="notifOpen" (click)="$event.stopPropagation()">
                   <div class="panel-header">
                     <div class="panel-row">
-                      <span class="title">Notifications</span>
+                      <span class="title">{{ 'NAV.NOTIFICATIONS' | translate }}</span>
                       <span *ngIf="notificationCount > 0" class="count-div">{{notificationCount}}</span>
                     </div>
                     <button class="icon-btn xs" (click)="closePanel()" aria-label="Close">
@@ -152,13 +162,13 @@
                     </ng-container>
 
                     <ng-template #emptyState>
-                      <div class="empty p-2">No Notifcation: You're all caught up</div>
+                      <div class="empty p-2">{{ 'NAV.NO_NOTIFICATIONS' | translate }}</div>
                     </ng-template>
                   </div>
 
                   <div class="panel-footer">
-                              <button class="btn btn-markasread" (click)="markAllAsRead()"><i class="ft ft-check ml-2"></i>Mark all as read</button>
-                              <button class="btn btn-clearall" (click)="clearAllNotification()"><i class="ft ft-trash-2 ml-2"></i>Clear All</button>
+                              <button class="btn btn-markasread" (click)="markAllAsRead()"><i class="ft ft-check ml-2"></i>{{ 'NAV.MARK_ALL_AS_READ' | translate }}</button>
+                              <button class="btn btn-clearall" (click)="clearAllNotification()"><i class="ft ft-trash-2 ml-2"></i>{{ 'NAV.CLEAR_ALL' | translate }}</button>
                   </div>
                 </div>
               </div>
@@ -170,7 +180,7 @@
               href="javascript:;" data-toggle="dropdown" ngbDropdownToggle>
               <div class="user d-md-flex d-none me-2">
                 <span class="text-end user-text">{{username}}</span><span
-                  class="text-end text-muted font-small-3">Available</span>
+                  class="text-end text-muted font-small-3">{{ 'NAV.AVAILABLE' | translate }}</span>
               </div>
               <!-- <img class="avatar" [src]="profilePicture || 'assets/img/profile/user.png'" alt="avatar" height="35"
                 width="35" /> -->
@@ -188,15 +198,33 @@
 
               <a class="dropdown-item" routerLink="/pages/profile">
                 <div class="d-flex align-items-center">
-                  <i class="ft-edit me-2"></i><span>Edit Profile</span>
+                  <i class="ft-edit me-2"></i><span>{{ 'PROFILE.VIEW_PROFILE' | translate }}</span>
                 </div>
               </a>
 
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" (click)="logout()">
+
+              <div class="profile-menu-lang-row px-3 py-2">
+                <div class="d-flex align-items-center text-muted font-small-3 mb-1">
+                  <i class="ft-globe me-2"></i>
+                  <span>{{ 'SETTINGS.LANGUAGE' | translate }}</span>
+                </div>
+                <div class="profile-lang-switch">
+                  <span class="profile-lang-glider" [class.is-ar]="currentLang === 'ar'"></span>
+                  <button type="button" class="profile-lang-option" [class.is-active]="currentLang === 'en'" [disabled]="isSwitchingLanguage" (click)="switchLanguage('en'); $event.stopPropagation()">
+                    <span class="profile-lang-label profile-lang-label-en">EN</span>
+                  </button>
+                  <button type="button" class="profile-lang-option" [class.is-active]="currentLang === 'ar'" [disabled]="isSwitchingLanguage" (click)="switchLanguage('ar'); $event.stopPropagation()">
+                    <span class="profile-lang-label profile-lang-label-ar">العربية</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item text-danger" (click)="logout()">
                 <div class="d-flex align-items-center">
                   <i class="ft-power me-2"></i>
-                  <span>Logout</span>
+                  <span>{{ 'AUTH.LOGOUT' | translate }}</span>
                 </div>
               </a>
 

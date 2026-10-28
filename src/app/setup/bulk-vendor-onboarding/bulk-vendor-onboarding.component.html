@@ -5,7 +5,7 @@
       <!-- Header -->
       <div class="row mb-2">
         <div class="col-md-12">
-          <h4 class="heading mb-1">Bulk Company Upload</h4>
+          <h4 class="heading mb-1">{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.TITLE' | translate }}</h4>
           <p class="text-muted small mb-0">
             Upload an Excel file, then review all sections (General, Address, Contact, Bank, Demographics, Attachments)
             before importing.
@@ -26,9 +26,9 @@
                   <div class="card-body">
 
                     <div class="text-center mb-3">
-                      <div class="section-title mb-1">Upload Excel file</div>
+                      <div class="section-title mb-1">{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.UPLOAD_EXCEL' | translate }}</div>
                       <div class="text-muted extra-small">
-                        Supported: .xlsx &middot; Use the approved vendor onboarding template.
+                        {{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.SUPPORTED_EXT' | translate }}
                       </div>
                     </div>
 
@@ -45,11 +45,11 @@
                           📊
                         </div>
                         <div class="small">
-                          <span class="text-primary font-weight-500">Click to Upload</span>
+                          <span class="text-primary font-weight-500">{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.CLICK_TO_UPLOAD' | translate }}</span>
                           
                         </div>
                         <div class="text-muted extra-small mt-1">
-                          Rows will be mapped into: General, Address, Contact, Bank, Demographics, Attachments.
+                          {{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.ROWS_MAPPED' | translate }}
                         </div>
                       </div>
                     </label>
@@ -63,7 +63,7 @@
                             {{ selectedFile?.name }}
                           </div>
                           <span class="badge badge-secondary extra-small">
-                         {{ isParsing ? 'Parsing...' : 'No valid company data found' }}
+                         {{ isParsing ? ('SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.PARSING' | translate) : ('SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.NO_VALID_DATA' | translate) }}
                           </span>
                         </div>
                         <div class="text-muted extra-small mt-1">
@@ -102,10 +102,10 @@
             
                   <div class="mb-1 mb-md-0 d-flex">
                     <button type="button" class="btn btn-link btn-sm p-0 mr-3 extra-small" (click)="onChangeFile()">
-                    <i class="ft ft-refresh-cw mr-1"></i>  Change file
+                    <i class="ft ft-refresh-cw mr-1"></i> {{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.CHANGE_FILE' | translate }}
                     </button>
                     <button type="button" class="btn btn-sm btn-primary" [disabled]="!hasCompany" (click)="onConfirmImport()">
-                      Confirm & Submit
+                      {{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.CONFIRM_SUBMIT' | translate }}
                     </button>
                   </div>
                 </div>
@@ -118,7 +118,7 @@
                 <div class="section-header d-flex justify-content-between align-items-center mb-3">
                   <div class="d-flex align-items-center">
                     <div class="section-dot mr-2"></div>
-                    <div class="section-title mb-0">General information</div>
+                    <div class="section-title mb-0">{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.GENERAL_INFO' | translate }}</div>
                   </div>
                   <!-- <span class="badge badge-success extra-small">
                     {{ company?.requestStatus?.status }}
@@ -132,7 +132,7 @@
                   </div>
                   <div class="flex-grow-1 mb-2">
                  
-                    <div class="field-label extra-small">Company</div>
+                    <div class="field-label extra-small">{{ 'COMMON.COMPANY' | translate }}</div>
                     <div class="company-title" [title]="company?.name">
                       {{ company?.name }}
                     </div>
@@ -145,7 +145,7 @@
                   </div>
                   <div class="flex-grow-1 mb-2">
                  
-                    <div class="field-label extra-small">Vendor</div>
+                    <div class="field-label extra-small">{{ 'COMMON.VENDOR' | translate }}</div>
                     <div class="company-title" [title]="company?.users?.[0]?.userName">
                       <span *ngIf="company?.users.length">
                          {{ company?.users?.[0]?.userName }} <span class="extra-small text-muted">({{ company?.users?.[0]?.userEmail }})</span>
@@ -162,7 +162,7 @@
 
                 <div class="row small-fields">
                   <div class="col-md-12 mb-1">
-                    <div class="field-label">Remarks</div>
+                    <div class="field-label">{{ 'COMMON.REMARKS' | translate }}</div>
                     <div class="field-value text-truncate" [title]="company?.remarks">
                       {{ company?.remarks }}
                     </div>
@@ -181,10 +181,10 @@
                 <div class="section-header d-flex justify-content-between align-items-center mb-3">
                   <div class="d-flex align-items-center">
                     <div class="section-dot mr-2"></div>
-                    <div class="section-title mb-0">Addresses</div>
+                    <div class="section-title mb-0">{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.ADDRESSES' | translate }}</div>
                   </div>
                   <span class="badge badge-light extra-small">
-                    {{ company?.addresses?.length || 0 }} records
+                    {{ company?.addresses?.length || 0 }} {{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.RECORDS' | translate }}
                   </span>
                 </div>
 
@@ -192,10 +192,10 @@
                   <table class="table pro-table table-sm mb-0">
                     <thead>
                       <tr>
-                        <th>Street</th>
-                        <th>City</th>
-                        <th>Country</th>
-                        <th>Type</th>
+                        <th>{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.STREET' | translate }}</th>
+                        <th>{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.CITY' | translate }}</th>
+                        <th>{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.COUNTRY' | translate }}</th>
+                        <th>{{ 'COMMON.TYPE' | translate }}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -207,19 +207,19 @@
                         <td>{{ addr.country }}</td>
                         <td>
                           <span *ngIf="addr.isPrimary === 'Yes'; else secondary" class="badge badge-warning extra-small">
-                            Primary
+                            {{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.PRIMARY' | translate }}
                           </span>
                         
                           <!-- non primary -->
                           <ng-template #secondary>
-                            Secondary
+                            {{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.SECONDARY' | translate }}
                           </ng-template>
                         </td>
                       </tr>
                       </ng-container>
                         <ng-template #noAddresses>
                           <div class="text-muted extra-small py-2">
-                            No address data found in the Excel file.
+                            {{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.NO_ADDRESS_DATA' | translate }}
                           </div>
                         </ng-template>
                     </tbody>
@@ -234,10 +234,10 @@
                 <div class="section-header d-flex justify-content-between align-items-center mb-3">
                   <div class="d-flex align-items-center">
                     <div class="section-dot mr-2"></div>
-                    <div class="section-title mb-0">Contacts</div>
+                    <div class="section-title mb-0">{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.CONTACTS' | translate }}</div>
                   </div>
                   <span class="badge badge-light extra-small">
-                    {{ company?.contacts?.length || 0 }} records
+                    {{ company?.contacts?.length || 0 }} {{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.RECORDS' | translate }}
                   </span>
                 </div>
 
@@ -254,7 +254,7 @@
                             {{ c.description }}
                           </div>
                           <span *ngIf="c.isPrimary" class="badge badge-warning extra-small">
-                            Primary
+                            {{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.PRIMARY' | translate }}
                           </span>
                         </div>
                         <div class="extra-small text-muted d-flex align-items-center mt-1">
@@ -282,7 +282,7 @@
 
                       <ng-template #noContacts>
                           <div class="text-muted extra-small py-2">
-                            No contacts detail found in the Excel file.
+                            {{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.NO_CONTACTS_DATA' | translate }}
                           </div>
                         </ng-template>
                 
@@ -297,7 +297,7 @@
                 <div class="section-header d-flex justify-content-between align-items-center mb-3">
                   <div class="d-flex align-items-center">
                     <div class="section-dot mr-2"></div>
-                    <div class="section-title mb-0">Bank details</div>
+                    <div class="section-title mb-0">{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.BANK_DETAILS' | translate }}</div>
                   </div>
                 </div>
 
@@ -306,12 +306,12 @@
                   <table class="table pro-table table-sm mb-0">
                     <thead>
                       <tr>
-                        <th>Bank name</th>
-                        <th>Account holder</th>
-                        <th>Account / IBAN</th>
-                        <th>Branch</th>
-                        <th>Country</th>
-                        <th>Currency</th>
+                        <th>{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.BANK_NAME' | translate }}</th>
+                        <th>{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.ACCOUNT_HOLDER' | translate }}</th>
+                        <th>{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.ACCOUNT_IBAN' | translate }}</th>
+                        <th>{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.BRANCH' | translate }}</th>
+                        <th>{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.COUNTRY' | translate }}</th>
+                        <th>{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.CURRENCY' | translate }}</th>
                       </tr>
                     </thead>
                     
@@ -348,7 +348,7 @@
                           
                           <ng-template #noBank>
                             <div class="text-muted extra-small py-2">
-                              No bank data found in the Excel file.
+                              {{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.NO_BANK_DATA' | translate }}
                             </div>
                           </ng-template>
                     </tbody>
@@ -363,39 +363,39 @@
                 <div class="section-header d-flex justify-content-between align-items-center mb-3">
                   <div class="d-flex align-items-center">
                     <div class="section-dot mr-2"></div>
-                    <div class="section-title mb-0">Demographics</div>
+                    <div class="section-title mb-0">{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.DEMOGRAPHICS' | translate }}</div>
                   </div>
                 </div>
 
                     <ng-container *ngIf="company?.demographics; else noDemographics">      
                       <div class="row small-fields">
                         <div class="col-md-6 mb-2">
-                          <div class="field-label">Vendor Type</div>
+                          <div class="field-label">{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.VENDOR_TYPE' | translate }}</div>
                           <div class="field-value">
                             {{ company?.demographics?.vendorType }}
                           </div>
                         </div>
                         <div class="col-md-6 mb-2">
-                          <div class="field-label">Primary Currency</div>
+                          <div class="field-label">{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.PRIMARY_CURRENCY' | translate }}</div>
                           <div class="field-value">
                             {{ company?.demographics?.primaryCurrency }}
                           </div>
                         </div>
                         <div class="col-md-6 mb-2">
-                          <div class="field-label">Line of Business</div>
+                          <div class="field-label">{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.LINE_OF_BUSINESS' | translate }}</div>
                           <div class="field-value">
                             {{ company?.demographics?.lineOfBusiness }}
                           </div>
                         </div>
                         <div class="col-md-6 mb-2">
-                          <div class="field-label">Employee Responsible</div>
+                          <div class="field-label">{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.EMPLOYEE_RESPONSIBLE' | translate }}</div>
                           <div class="field-value">
                             {{ company?.demographics?.employeeResponsible }}
                           </div>
                         </div>
                     
                         <div class="col-md-12 mb-2">
-                          <div class="field-label">Note</div>
+                          <div class="field-label">{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.NOTE' | translate }}</div>
                           <div class="field-value">
                             {{ company?.demographics?.note }}
                           </div>
@@ -405,7 +405,7 @@
 
                       <ng-template #noDemographics>
                             <div class="text-muted extra-small py-2">
-                              No demographics data found in the Excel file.
+                              {{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.NO_DEMOGRAPHICS_DATA' | translate }}
                             </div>
                           </ng-template>
               </div>
@@ -417,7 +417,7 @@
                 <div class="section-header d-flex justify-content-between align-items-center mb-3">
                     <div class="d-flex align-items-center">
                         <div class="section-dot mr-2"></div>
-                        <div class="section-title mb-0">Attachments</div>
+                        <div class="section-title mb-0">{{ 'COMMON.ATTACHMENTS' | translate }}</div>
                     </div>
         
                     <div class="d-flex align-items-center">
@@ -426,12 +426,12 @@
                                 (change)="onAttachmentSelected($event)" />
                             <button type="button" class="btn btn-outline-primary btn-sm"
                                 (click)="attachmentInput.click()">
-                               <i class="ft ft-plus mr-1"></i> Upload Attachments
+                               <i class="ft ft-plus mr-1"></i> {{ 'COMMON.UPLOAD_ATTACHMENT' | translate }}
                             </button>
                         </div>
 
                         <span class="badge badge-light extra-small mr-2">
-                            {{ company?.attachments?.length || 0 }} files
+                            {{ company?.attachments?.length || 0 }} {{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.FILES' | translate }}
                         </span>
         
                         <!-- Upload attachment button -->
@@ -440,7 +440,7 @@
                 </div>
         
                 <div *ngIf="!company?.attachments?.length" class="extra-small text-muted">
-                    No attachments uploaded yet. Use the <strong>Upload</strong> button to add files.
+                    {{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.NO_ATTACHMENTS' | translate }}
                 </div>
         
                 <div *ngFor="let a of company?.attachments" class="attachment-row">
@@ -467,7 +467,7 @@
             <!-- Bottom actions -->
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mt-2">
               <p class="text-muted extra-small mb-2 mb-md-0">
-                Review all sections. If everything looks correct, proceed with import or change file to re-upload.
+                {{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.REVIEW_MSG' | translate }}
               </p>
             </div>
 

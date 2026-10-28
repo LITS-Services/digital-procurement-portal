@@ -3,7 +3,7 @@
     <div class="col-12">
       <div class="row">
         <div class="col-md-12" style="margin-top: -0.25rem;">
-          <h4 class="heading">Turnstile</h4>
+          <h4 class="heading">{{ 'SETUP_MODULE.TURNSTILE' | translate }}</h4>
         </div>
       </div>
 
@@ -21,7 +21,7 @@
       <div class="card turnstile-settings-card">
         <div class="card-body">
           <p class="mb-3 text-muted">
-            Enable Cloudflare Turnstile separately for each portal. Site and secret keys stay in configuration files, not in this screen.
+            {{ 'SETUP_MODULE.TURNSTILE_DESC' | translate }}
           </p>
 
           <div class="turnstile-options">
@@ -35,7 +35,7 @@
                 appPermission
                 [appPermFormId]="FORM_IDS.TURNSTILE"
                 [appPermDisable]="'write'" />
-              <span>Enable captcha on Procurement login</span>
+              <span>{{ 'SETUP_MODULE.ENABLE_CAPTCHA_PROCUREMENT' | translate }}</span>
             </label>
 
             <label class="d-flex align-items-center" [class.disabled]="loading || saving">
@@ -48,7 +48,7 @@
                 appPermission
                 [appPermFormId]="FORM_IDS.TURNSTILE"
                 [appPermDisable]="'write'" />
-              <span>Enable captcha on Vendor login</span>
+              <span>{{ 'SETUP_MODULE.ENABLE_CAPTCHA_VENDOR' | translate }}</span>
             </label>
           </div>
         </div>

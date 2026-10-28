@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { LanguageService } from '../../../core/language/language.service';
+import { AppLanguage } from '../../../core/language/language.types';
 
 @Component({
   selector: 'app-main-layout',
@@ -8,9 +10,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainLayoutComponent implements OnInit {
 
-  constructor() { }
+  constructor(public languageService: LanguageService) { }
 
   ngOnInit(): void {
+  }
+
+  get currentLang(): AppLanguage {
+    return this.languageService.current();
+  }
+
+  switchLanguage(lang: 'en' | 'ar'): void {
+    sessionStorage.setItem('login_selected_lang', lang);
+    this.languageService.setLanguage(lang, false).subscribe();
   }
 
 }

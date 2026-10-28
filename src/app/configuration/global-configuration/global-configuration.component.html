@@ -6,7 +6,7 @@
             <div class="row">
                 <div class="col-md-12" style="margin-top: -0.25rem;">
                     <!-- <h4>Announcements</h4> -->
-                    <h4 class="heading">Global Configurations</h4>
+                    <h4 class="heading">{{ 'CONFIG_MODULE.GLOBAL_CONFIGURATIONS' | translate }}</h4>
                 </div>
             </div>
 
@@ -19,14 +19,14 @@
                                 <i class="ft-arrow-left"></i></button>
                             <span class="vl"></span>
                             <button type="button" class="btn btn-sm cstm-ui-table-btn"
-                                ngbTooltip="Create new Global Configuration" (click)="openEmpDetails()" appPermission
+                                [ngbTooltip]="'CONFIG_MODULE.CREATE_TOOLTIP' | translate" (click)="openEmpDetails()" appPermission
                                 [appPermFormId]="FORM_IDS.GLOBAL_CONFIGURATION" [appPermDisable]="'write'">
-                                <i class="ft-plus"></i><label class="ml-1">Create</label>
+                                <i class="ft-plus"></i><label class="ml-1">{{ 'COMMON.CREATE' | translate }}</label>
                             </button>
                             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()"
                                 appPermission [appPermFormId]="FORM_IDS.GLOBAL_CONFIGURATION"
                                 [appPermDisable]="'write'">
-                                <i class="ft-edit"></i><label class="ml-1">Update</label>
+                                <i class="ft-edit"></i><label class="ml-1">{{ 'COMMON.UPDATE' | translate }}</label>
                             </button>
 
                             <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()"
@@ -73,16 +73,16 @@
                     </ngx-datatable-column>
 
                     <!-- Sr. No -->
-                    <ngx-datatable-column name="Sr. No." [maxWidth]="60" [resizeable]="false">
+                    <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [maxWidth]="60" [resizeable]="false">
                         <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
                             <span>{{ rowIndex + 1 }}</span>
                         </ng-template>
                     </ngx-datatable-column>
 
-                    <ngx-datatable-column name="Name" prop="name" [flexGrow]="1" [minWidth]="100" [maxWidth]="350">
+                    <ngx-datatable-column [name]="'COMMON.NAME' | translate" prop="name" [flexGrow]="1" [minWidth]="100" [maxWidth]="350">
                     </ngx-datatable-column>
 
-                    <ngx-datatable-column name="Value" prop="value" [flexGrow]="2" [minWidth]="160">
+                    <ngx-datatable-column [name]="'COMMON.VALUE' | translate" prop="value" [flexGrow]="2" [minWidth]="160">
                     </ngx-datatable-column>
 
                     <!-- <ngx-datatable-column name="Date" prop="date" [width]="50">
@@ -94,7 +94,7 @@
                     </ng-template>
                 </ngx-datatable-column> -->
 
-                    <ngx-datatable-column name="Type" prop="type" [flexGrow]="1" [minWidth]="120" [maxWidth]="150">
+                    <ngx-datatable-column [name]="'COMMON.TYPE' | translate" prop="type" [flexGrow]="1" [minWidth]="120" [maxWidth]="150">
                     </ngx-datatable-column>
 
                     <!-- <ngx-datatable-column name="Comments" prop="comment">

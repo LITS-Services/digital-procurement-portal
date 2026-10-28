@@ -21,6 +21,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-au
             NgxSpinnerModule,
             AutoResizeDatatableDirective,
             PermissionDirective,
-            DatatableAutoResizeDirective
+            DatatableAutoResizeDirective,
+            TranslateModule
   ],
   schemas: [NO_ERRORS_SCHEMA]
 })

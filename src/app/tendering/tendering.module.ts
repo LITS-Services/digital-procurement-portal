@@ -18,6 +18,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { NewTenderingRequestComponent } from './new-tendering-request/new-tendering-request.component';
 import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
+import { TranslateModule } from '@ngx-translate/core';
 
 
 @NgModule({
@@ -45,7 +46,8 @@ import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-r
     NgbDatepickerModule,
     ToastrModule.forRoot() ,
     NgxSpinnerModule,
-    AutoResizeDatatableDirective
+    AutoResizeDatatableDirective,
+    TranslateModule
   ],
   schemas: [NO_ERRORS_SCHEMA]
 })

@@ -3,7 +3,7 @@
     <div class="col-12">
       <div class="row">
         <div class="col-md-12" style="margin-top: -0.25rem;">
-          <h4 class="heading">Integrations</h4>
+          <h4 class="heading">{{ 'SETUP_MODULE.INTEGRATIONS' | translate }}</h4>
         </div>
       </div>
 
@@ -18,17 +18,17 @@
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onCreate()"
                 appPermission [appPermFormId]="FORM_IDS.INTEGRATION_MANAGER" [appPermDisable]="'write'">
-                <i class="ft-plus"></i><label class="ml-1">Create</label>
+                <i class="ft-plus"></i><label class="ml-1">{{ 'COMMON.CREATE' | translate }}</label>
               </button>
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onEdit()"
                 [disabled]="isEditButtonDisabled">
-                <i class="ft-edit"></i><label class="ml-1">Update</label>
+                <i class="ft-edit"></i><label class="ml-1">{{ 'COMMON.UPDATE' | translate }}</label>
               </button>
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onDelete()"
                 [disabled]="isDeleteButtonDisabled">
-                <i class="ft-trash"></i><label class="ml-1">Delete</label>
+                <i class="ft-trash"></i><label class="ml-1">{{ 'COMMON.DELETE' | translate }}</label>
               </button>
             </div>
           </div>
@@ -56,21 +56,21 @@
             </ng-template>
           </ngx-datatable-column>
 
-          <ngx-datatable-column name="Sr. No." [maxWidth]="70" [resizeable]="false">
+          <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [maxWidth]="70" [resizeable]="false">
             <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
               <span>{{ (currentPage - 1) * pageSize + rowIndex + 1 }}</span>
             </ng-template>
           </ngx-datatable-column>
 
-          <ngx-datatable-column name="Name" prop="name" [minWidth]="180"></ngx-datatable-column>
-          <ngx-datatable-column name="Code" prop="code" [minWidth]="120"></ngx-datatable-column>
-          <ngx-datatable-column name="Endpoint URL" prop="url" [minWidth]="220"></ngx-datatable-column>
-          <ngx-datatable-column name="Interval Type" prop="intervalType" [minWidth]="120"></ngx-datatable-column>
-          <ngx-datatable-column name="Interval" prop="interval" [minWidth]="100"></ngx-datatable-column>
-          <ngx-datatable-column name="Active" prop="isActive" [minWidth]="100">
+          <ngx-datatable-column [name]="'COMMON.NAME' | translate" prop="name" [minWidth]="180"></ngx-datatable-column>
+          <ngx-datatable-column [name]="'COMMON.CODE' | translate" prop="code" [minWidth]="120"></ngx-datatable-column>
+          <ngx-datatable-column [name]="'SETUP_MODULE.ENDPOINT_URL' | translate" prop="url" [minWidth]="220"></ngx-datatable-column>
+          <ngx-datatable-column [name]="'SETUP_MODULE.INTERVAL_TYPE' | translate" prop="intervalType" [minWidth]="120"></ngx-datatable-column>
+          <ngx-datatable-column [name]="'SETUP_MODULE.INTERVAL' | translate" prop="interval" [minWidth]="100"></ngx-datatable-column>
+          <ngx-datatable-column [name]="'COMMON.ACTIVE' | translate" prop="isActive" [minWidth]="100">
             <ng-template let-row="row" ngx-datatable-cell-template>
               <span [ngClass]="getStatusClass(row?.isActive)">
-                {{ getStatusText(row?.isActive) }}
+                {{ row?.isActive | statusTranslate }}
               </span>
             </ng-template>
           </ngx-datatable-column>

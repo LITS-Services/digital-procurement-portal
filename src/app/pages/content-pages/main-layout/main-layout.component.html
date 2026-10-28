@@ -1,5 +1,16 @@
 <!--Login Page Starts-->
 <section id="login">
+    <div class="auth-lang-switcher">
+        <div class="auth-lang-pill" role="group" aria-label="Language selection">
+            <span class="auth-lang-glider" [class.is-ar]="currentLang === 'ar'"></span>
+            <button type="button" class="auth-lang-btn" [class.active]="currentLang === 'en'" (click)="switchLanguage('en')">
+                <span>EN</span>
+            </button>
+            <button type="button" class="auth-lang-btn" [class.active]="currentLang === 'ar'" (click)="switchLanguage('ar')">
+                <span>العربية</span>
+            </button>
+        </div>
+    </div>
     <div class="row auth-height full-height-vh m-0">
         <div class="col-12 d-flex align-items-center justify-content-center">
             <div class="card overflow-hidden">

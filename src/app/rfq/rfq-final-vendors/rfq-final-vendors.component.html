@@ -27,8 +27,7 @@
         </span>
       </button> -->
 
-      <button class="btn btn-primary" [disabled]="loading || viewMode || allItemsFinalized" (click)="onSubmit()">Submit
-        Final Vendors</button>
+      <button class="btn btn-primary" [disabled]="loading || viewMode || allItemsFinalized" (click)="onSubmit()">{{ 'RFQ_MODULE.SUBMIT_FINAL_VENDORS' | translate }}</button>
     </div>
     <!-- <div *ngIf="allItemsFinalized" class="alert alert-info mb-2">
   <i class="fa fa-lock me-1"></i>
@@ -39,8 +38,8 @@
         <i class="fa fa-lock"></i>
       </div>
       <div class="alert-text">
-        <h5>All Vendors Finalized</h5>
-        <p>Vendors for all items have already been finalized. No further changes can be made.</p>
+        <h5>{{ 'RFQ_MODULE.ALL_VENDORS_FINALIZED' | translate }}</h5>
+        <p>{{ 'RFQ_MODULE.ALL_VENDORS_FINALIZED_DESC' | translate }}</p>
       </div>
     </div>
 
@@ -48,14 +47,14 @@
       [rowHeight]="'auto'" [scrollbarH]="true" [footerHeight]="50">
 
       <!-- Sr. No. -->
-      <ngx-datatable-column name="Sr. No." [width]="10" [sortable]="false">
+      <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="10" [sortable]="false">
         <ng-template let-rowIndex="rowIndex" let-row="row" ngx-datatable-cell-template>
           <span *ngIf="row.itemName !== 'Total'">{{rowIndex + 1}}</span>
         </ng-template>
       </ngx-datatable-column>
 
       <!-- Item Name -->
-      <ngx-datatable-column name="Item">
+      <ngx-datatable-column [name]="'COMMON.ITEM' | translate">
         <ng-template let-row="row" ngx-datatable-cell-template>
           <b *ngIf="row.itemName === 'Total'">{{ row.itemName }}</b>
           <span *ngIf="row.itemName !== 'Total'">{{ row.itemName }}</span>
@@ -63,7 +62,7 @@
       </ngx-datatable-column>
 
       <!-- Budget Amount -->
-      <ngx-datatable-column name="Budget Amount" prop="amount" [sortable]="false">
+      <ngx-datatable-column [name]="'COMMON.BUDGET_AMOUNT' | translate" prop="amount" [sortable]="false">
         <ng-template let-row="row" ngx-datatable-cell-template>
           <b *ngIf="row.itemName === 'Total'">{{ row.amount | number:'1.2-2' }}</b>
           <span *ngIf="row.itemName !== 'Total'">{{ row.amount }}</span>
@@ -71,7 +70,7 @@
       </ngx-datatable-column>
 
       <!-- Quote Amount -->
-      <ngx-datatable-column name="Quote Amount" [sortable]="false">
+      <ngx-datatable-column [name]="'RFQ_MODULE.QUOTE_AMOUNT' | translate" [sortable]="false">
         <ng-template let-row="row" ngx-datatable-cell-template>
           <b *ngIf="row.itemName === 'Total'">{{ row.quoteAmount | number:'1.2-2' }}</b>
           <span *ngIf="row.itemName !== 'Total'">{{ getQuoteAmount(row.id) !== null ? (getQuoteAmount(row.id) |
@@ -87,19 +86,19 @@
       </ngx-datatable-column> -->
 
       <!-- Final Vendor -->
-      <ngx-datatable-column name="Final Vendor" [sortable]="false">
+      <ngx-datatable-column [name]="'RFQ_MODULE.FINAL_VENDOR' | translate" [sortable]="false">
         <ng-template let-row="row" ngx-datatable-cell-template>
           <ng-container *ngIf="row.itemName !== 'Total'">
             <select [disabled]="loading || viewMode || allItemsFinalized || isItemFinalized(row)" class="form-control"
               [ngModel]="selected[row.id] || null" (ngModelChange)="onVendorSelectionChange(row.id, $event)"
               [ngModelOptions]="{ standalone: true }">
-              <option [ngValue]="null" disabled>Select Company</option>
+              <option [ngValue]="null" disabled>{{ 'RFQ_MODULE.SELECT_COMPANY' | translate }}</option>
               <option *ngFor="let v of vendorData" [ngValue]="v">{{ v.companyName }}</option>
             </select>
           </ng-container>
 
           <ng-container *ngIf="row.itemName === 'Total'">
-            <span>Difference: </span>
+            <span>{{ 'RFQ_MODULE.DIFFERENCE' | translate }}: </span>
             <b *ngIf="row.itemName === 'Total'">{{ row.difference | number:'1.2-2' }}</b>
           </ng-container>
 
@@ -113,7 +112,7 @@
 <ng-template #aiModal let-modal>
   <div class="modal-header d-flex align-items-center justify-content-between">
     <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
-      <i class="ft-cpu mr-2 text-white"></i> AI Recommendation
+      <i class="ft-cpu mr-2 text-white"></i> {{ 'RFQ_MODULE.AI_RECOMMENDATION' | translate }}
     </h5>
     <button type="button" class="modal-close-btn" aria-label="Close" (click)="modal.dismiss()">
       <i class="ft-x"></i>
@@ -127,7 +126,7 @@
 
   <div class="modal-footer">
     <button type="button" class="modal-btn-cancel" (click)="modal.close()">
-      <i class="ft-x mr-1"></i> Close
+      <i class="ft-x mr-1"></i> {{ 'COMMON.CLOSE' | translate }}
     </button>
   </div>
 </ng-template>
