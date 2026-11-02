@@ -13,8 +13,7 @@
           <a class="nav-link apptogglefullscreen" id="navbar-fullscreen" href="javascript:;" appToggleFullscreen
             (click)="ToggleClass()"><i class=" {{toggleClass}} font-medium-3"></i></a>
         </li> -->
-        <li class="nav-item entity-switcher" ngbDropdown #entityDd="ngbDropdown" [display]="'dynamic'"
-          [placement]="'bottom-start'" (openChange)="entityOpen = $event">
+        <li class="nav-item entity-switcher" ngbDropdown #entityDd="ngbDropdown" display="static" (openChange)="entityOpen = $event">
           <button class="entity-trigger" ngbDropdownToggle [title]="'NAV.SWITCH_ENTITY' | translate">
             <!-- label first -->
             <span class="entity-label text-truncate">{{ (selectedCompany?.id === 'All' ? ('NAV.ALL_ENTITIES' |
@@ -26,7 +25,7 @@
             </span>
           </button>
 
-          <div class="dropdown-menu dropdown-menu-right entity-menu" ngbDropdownMenu>
+          <div class="dropdown-menu entity-menu" ngbDropdownMenu>
             <button class="dropdown-item entity-item" *ngFor="let c of companies"
               [class.active]="c.id === selectedCompanyId" (click)="selectCompany(c, entityDd)">
               <span class="text-truncate">{{ c.id === 'All' ? ('NAV.ALL_ENTITIES' | translate) : c.description }}</span>

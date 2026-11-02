@@ -230,14 +230,12 @@
 
                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-              <label class="d-flex align-items-center mr-2 w-100" [ngbTooltip]="entityHint">
-                <span class="mr-2">{{ 'COMMON.ENTITY' | translate }}</span>
+              <label class="d-flex align-items-center justify-content-between w-100 mb-1" [ngbTooltip]="entityHint" container="body">
+                <span class="text-nowrap flex-shrink-0 me-2">{{ 'COMMON.ENTITY' | translate }}</span>
               
                 <small *ngIf="isEntityLocked && entityHint" class="hint-ellipsis ms-auto text-muted">
-                  <i class="ft-info mr-1"></i>
-                  <span class="hint-text">
-                    {{ entityHint }}
-                  </span>
+                  <i class="ft-info"></i>
+                  <span class="hint-text">{{ entityHint }}</span>
                 </small>
               </label>
               
@@ -713,7 +711,7 @@
       <div>
         <ng-container *ngIf="isSubmitter">
           <button class="btn btn-sm submit-approval-btn shadow-sm" [disabled]="!allItemsFinalized || newRfqForm.invalid || isStatusCompleted || isStatusInProgress" (click)="onSubmitForApproval()">
-            <i class="ft-check" style="color: #1161cc;"></i><label class="ml-1">{{ 'COMMON.SUBMIT_FOR_APPROVAL' | translate }}</label>
+            <i class="ft-check" style="color: #1161cc;"></i><span class="ms-1">{{ 'COMMON.SUBMIT_FOR_APPROVAL' | translate }}</span>
           </button>
         </ng-container>
       </div>

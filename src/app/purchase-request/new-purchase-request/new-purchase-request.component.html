@@ -175,11 +175,11 @@
 
               <div class="form-grid__item">
                 <div class="form-group mb-2">
-                  <label class="d-flex align-items-center mr-2 w-100" [ngbTooltip]="entityHint">
-                    <span class="mr-2">{{ 'COMMON.ENTITY' | translate }} <span class="text-danger">*</span></span>
+                  <label class="d-flex align-items-center justify-content-between w-100 mb-1" [ngbTooltip]="entityHint" container="body">
+                    <span class="text-nowrap flex-shrink-0 me-2">{{ 'COMMON.ENTITY' | translate }}&nbsp;<span class="text-danger">*</span></span>
 
-                    <small *ngIf="isEntityLocked && entityHint" class="hint-ellipsis ml-auto text-muted">
-                      <i class="ft-info mr-1"></i>
+                    <small *ngIf="isEntityLocked && entityHint" class="hint-ellipsis ms-auto text-muted">
+                      <i class="ft-info"></i>
                       <span class="hint-text">{{ entityHint }}</span>
                     </small>
                   </label>

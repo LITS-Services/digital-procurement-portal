@@ -1,7 +1,7 @@
 <div class="modal-body vendor-picker">
-  <div class="d-flex justify-content-end mb-3">
+  <div class="vendor-actions-bar">
     <button class="btn btn-sm submit-approval-btn shadow-sm" [disabled]="viewMode || isStatusInProgress || isStatusCompleted || !isSubmitter" (click)="onSubmit()">
-     <i class="ft-check" style="color: #1161cc;"></i><label class="ml-1">{{ 'RFQ_MODULE.INVITE_SELECTED_VENDORS' | translate }}</label>
+     <i class="ft-check" style="color: #1161cc;"></i><span class="ms-1">{{ 'RFQ_MODULE.INVITE_SELECTED_VENDORS' | translate }}</span>
     </button>
   </div>
 

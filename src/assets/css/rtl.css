@@ -1168,6 +1168,39 @@ body.rtl .user-profile-menu .dropdown-item {
   text-align: right !important;
 }
 
+/* Entity Switcher Dropdown in RTL Mode */
+html[dir="rtl"] .entity-switcher,
+html.rtl .entity-switcher,
+body.rtl .entity-switcher {
+  position: relative !important;
+}
+
+html[dir="rtl"] .entity-menu,
+html.rtl .entity-menu,
+body.rtl .entity-menu {
+  direction: rtl !important;
+  text-align: right !important;
+  right: 0 !important;
+  left: auto !important;
+  top: calc(100% + 6px) !important;
+  transform: none !important;
+  z-index: 1050 !important;
+}
+
+html[dir="rtl"] .entity-menu .entity-item,
+html.rtl .entity-menu .entity-item,
+body.rtl .entity-menu .entity-item {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+html[dir="rtl"] .entity-switcher .sync-icon,
+html.rtl .entity-switcher .sync-icon,
+body.rtl .entity-switcher .sync-icon {
+  margin-left: 0 !important;
+  margin-right: 4px !important;
+}
+
 
 /* --------------------------------------------------------------------------
    7. TOASTR NOTIFICATIONS (MIRRORED TO TOP LEFT IN RTL)

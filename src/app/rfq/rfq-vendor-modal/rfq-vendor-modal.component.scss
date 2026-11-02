@@ -144,18 +144,49 @@
     height: calc(100vh - 40vh) !important;
   }
 
-.submit-approval-btn{
-  background-color: white;
-  padding: 5px 8px;
-  border: 1px solid #dadada;
-  font-size: 14px !important;
-  transition-duration: 250ms;
-  cursor: pointer;
-}
+  .vendor-actions-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 0.5rem;
+    margin-bottom: 1.25rem !important;
+  }
 
-.submit-approval-btn:hover{
-    background-color: rgb(201, 201, 201);
-}
+  .submit-approval-btn {
+    background-color: white;
+    padding: 6px 14px;
+    border: 1px solid #dadada;
+    border-radius: 6px;
+    font-size: 13.5px !important;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 0 !important;
+
+    i {
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    span, label {
+      margin-bottom: 0 !important;
+      cursor: pointer;
+      line-height: 1.2;
+    }
+  }
+
+  .submit-approval-btn:hover:not(:disabled) {
+    background-color: #f3f4f6;
+    border-color: #cbd5e1;
+  }
+
+  .submit-approval-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
 
   .panel-header {
     padding: 14px 16px;
