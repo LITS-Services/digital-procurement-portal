@@ -2,6 +2,7 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
 import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { LookupService } from 'app/shared/services/lookup.service';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
@@ -31,6 +32,10 @@ export class GrnDetailsComponent implements OnInit {
   loading = true;
   isGrnSubmitted = false;
 
+  paymentTermsList: any[] = [];
+  paymentMethodsList: any[] = [];
+  currencyList: string[] = ['USD', 'PKR', 'SAR', 'AED'];
+
   showRatingModal = false;
   vendorName = '';
   purchaseOrderNo = '';
@@ -42,13 +47,13 @@ export class GrnDetailsComponent implements OnInit {
   selectedRating: number | null = null;
   ratingComment = this.fb.control('');
 
-
   savingRating = false;
   poDetails: any;
 
   constructor(
     private route: ActivatedRoute,
     private purchaseOrderService: PurchaseOrderService,
+    private lookupService: LookupService,
     private cdr: ChangeDetectorRef,
     private spinner: NgxSpinnerService,
     private fb: FormBuilder,
@@ -60,15 +65,35 @@ export class GrnDetailsComponent implements OnInit {
     this.form = this.fb.group({
       grNumber: [{ value: '', disabled: true }],
       purchaseOrderNo: [{ value: '', disabled: true }],
-      vendorName: [{ value: '', disabled: true }],
-      receiverName: [{ value: '', disabled: true }],
       requestStatus: [{ value: '', disabled: true }],
+      vendorNo: [''],
+      vendorName: [''],
+      receiverName: [''],
+      postingDate: [''],
+      documentDate: [''],
+      dueDate: [''],
+      orderDate: [''],
+      vendorCurrency: [''],
+      paymentTerms: [''],
+      paymentMethod: [''],
+      locationCode: [''],
+      shipToPostCode: [''],
+      address: [''],
+      address2: [''],
+      city: [''],
+      shipToName: [''],
+      shipToAddress: [''],
+      shipToAddress2: [''],
+      shipToCity: [''],
+      shipToCountry: [''],
+      payToAddress: [''],
       remarks: [''],
       items: this.fb.array([])
     });
 
     this.itemsForm = this.form.get('items') as FormArray;
 
+    this.loadDropdowns();
     this.loadGrnOrPurchaseOrder();
   }
 
@@ -78,6 +103,24 @@ export class GrnDetailsComponent implements OnInit {
 
   toggleItems() {
     this.itemsExpanded = !this.itemsExpanded;
+  }
+
+  private loadDropdowns() {
+    this.lookupService.getPaymentTerms().subscribe({
+      next: (res) => {
+        this.paymentTermsList = res || [];
+        this.cdr.detectChanges();
+      },
+      error: () => {}
+    });
+
+    this.lookupService.getPaymentMethods().subscribe({
+      next: (res) => {
+        this.paymentMethodsList = res || [];
+        this.cdr.detectChanges();
+      },
+      error: () => {}
+    });
   }
 
   private loadGrnOrPurchaseOrder() {
@@ -123,10 +166,29 @@ export class GrnDetailsComponent implements OnInit {
     this.form.patchValue({
       grNumber: grn.grNumber,
       purchaseOrderNo: grn.purchaseOrderNo,
-      vendorName: grn.vendorName,
-      receiverName: grn.receiverName,
       requestStatus: grn.requestStatus,
-      remarks: grn.remarks
+      vendorNo: grn.vendorNo || '',
+      vendorName: grn.vendorName || '',
+      receiverName: grn.receiverName || '',
+      postingDate: grn.postingDate ? grn.postingDate.split('T')[0] : null,
+      documentDate: grn.documentDate ? grn.documentDate.split('T')[0] : null,
+      dueDate: grn.dueDate ? grn.dueDate.split('T')[0] : null,
+      orderDate: grn.orderDate ? grn.orderDate.split('T')[0] : null,
+      vendorCurrency: grn.vendorCurrency || '',
+      paymentTerms: grn.paymentTerms || '',
+      paymentMethod: grn.paymentMethod || '',
+      locationCode: grn.locationCode || '',
+      shipToPostCode: grn.shipToPostCode || '',
+      address: grn.address || '',
+      address2: grn.address2 || '',
+      city: grn.city || '',
+      shipToName: grn.shipToName || '',
+      shipToAddress: grn.shipToAddress || '',
+      shipToAddress2: grn.shipToAddress2 || '',
+      shipToCity: grn.shipToCity || '',
+      shipToCountry: grn.shipToCountry || '',
+      payToAddress: grn.payToAddress || '',
+      remarks: grn.remarks || ''
     });
 
     this.itemsForm.clear();
@@ -134,11 +196,16 @@ export class GrnDetailsComponent implements OnInit {
       this.itemsForm.push(
         this.fb.group({
           purchaseOrderLineId: [item.purchaseOrderLineId],
-          itemName: [item.itemName],
-          orderedQty: [item.orderedQuantity],
+          itemNo: [item.itemNo || ''],
+          itemName: [item.itemName || ''],
+          itemDesc: [item.itemDescription || item.itemName || ''],
+          orderedQty: [item.orderedQuantity ?? item.quantity],
+          unitCostExclVat: [item.unitCostExclVat],
           receivedQuantity: [item.receivedQuantity],
           receivedDate: [item.receivedDate ? item.receivedDate.split('T')[0] : null, Validators.required],
-          remarks: [item.remarks]
+          plannedReceiptDate: [item.plannedReceiptDate ? item.plannedReceiptDate.split('T')[0] : null],
+          expectedReceiptDate: [item.expectedReceiptDate ? item.expectedReceiptDate.split('T')[0] : null],
+          remarks: [item.remarks || '']
         })
       );
     });
@@ -147,10 +214,32 @@ export class GrnDetailsComponent implements OnInit {
   }
 
   private patchFormFromPO(po: any) {
+    const today = new Date().toISOString().split('T')[0];
     this.form.patchValue({
       purchaseOrderNo: po.purchaseOrderNo,
-      vendorName: po.vendorName,
-      receiverName: po.receiverName
+      requestStatus: po.requestStatus,
+      vendorNo: po.vendorNo || '',
+      vendorName: po.vendorName || po.vendorCompanyName || '',
+      receiverName: po.receiverName || '',
+      postingDate: po.postingDate ? po.postingDate.split('T')[0] : today,
+      documentDate: po.documentDate ? po.documentDate.split('T')[0] : today,
+      dueDate: po.dueDate ? po.dueDate.split('T')[0] : null,
+      orderDate: po.orderDate ? po.orderDate.split('T')[0] : (po.createdDate ? po.createdDate.split('T')[0] : null),
+      vendorCurrency: po.vendorCurrency || 'SAR',
+      paymentTerms: po.paymentTerms || '',
+      paymentMethod: po.paymentMethod || '',
+      locationCode: po.locationCode || '',
+      shipToPostCode: po.shipToPostCode || '',
+      address: po.address || '',
+      address2: po.address2 || '',
+      city: po.city || '',
+      shipToName: po.shipToName || '',
+      shipToAddress: po.shipToAddress || '',
+      shipToAddress2: po.shipToAddress2 || '',
+      shipToCity: po.shipToCity || '',
+      shipToCountry: po.shipToCountry || '',
+      payToAddress: po.payToAddress || '',
+      remarks: ''
     });
 
     this.itemsForm.clear();
@@ -158,10 +247,15 @@ export class GrnDetailsComponent implements OnInit {
       this.itemsForm.push(
         this.fb.group({
           purchaseOrderLineId: [line.purchaseOrderLineId],
-          itemName: [line.itemName],
+          itemNo: [line.itemNo || ''],
+          itemName: [line.itemName || ''],
+          itemDesc: [line.itemDescription || line.itemName || ''],
           orderedQty: [line.quantity],
-          receivedQuantity: [line.shippingQuantity], // prefilled from ShippingQuantity
-          receivedDate: [null, Validators.required],
+          unitCostExclVat: [line.unitPrice],
+          receivedQuantity: [line.shippingQuantity ?? line.quantity, [Validators.required, Validators.min(0)]],
+          receivedDate: [today, Validators.required],
+          plannedReceiptDate: [line.deliveryDate ? line.deliveryDate.split('T')[0] : null],
+          expectedReceiptDate: [null],
           remarks: ['']
         })
       );
@@ -190,14 +284,49 @@ export class GrnDetailsComponent implements OnInit {
 
       const itemsPayload = this.itemsForm.controls.map((ctrl) => ({
         purchaseOrderLineId: ctrl.get('purchaseOrderLineId')?.value,
+        itemNo: ctrl.get('itemNo')?.value,
+        itemDesc: ctrl.get('itemDesc')?.value,
+        orderedQuantity: ctrl.get('orderedQty')?.value,
+        quantity: ctrl.get('orderedQty')?.value,
+        unitCostExclVat: ctrl.get('unitCostExclVat')?.value,
+        receivedQuantity: ctrl.get('receivedQuantity')?.value != null ? Number(ctrl.get('receivedQuantity')?.value) : null,
         receivedDate: ctrl.get('receivedDate')?.value
           ? new Date(ctrl.get('receivedDate')?.value)
+          : null,
+        plannedReceiptDate: ctrl.get('plannedReceiptDate')?.value
+          ? new Date(ctrl.get('plannedReceiptDate')?.value)
+          : null,
+        expectedReceiptDate: ctrl.get('expectedReceiptDate')?.value
+          ? new Date(ctrl.get('expectedReceiptDate')?.value)
           : null,
         remarks: ctrl.get('remarks')?.value
       }));
 
+      const formVal = this.form.getRawValue();
+
       const grnPayload = {
-        remarks: this.form.get('remarks')?.value,
+        vendorNo: formVal.vendorNo,
+        vendorName: formVal.vendorName,
+        receiverName: formVal.receiverName,
+        postingDate: formVal.postingDate ? new Date(formVal.postingDate) : null,
+        documentDate: formVal.documentDate ? new Date(formVal.documentDate) : null,
+        dueDate: formVal.dueDate ? new Date(formVal.dueDate) : null,
+        orderDate: formVal.orderDate ? new Date(formVal.orderDate) : null,
+        vendorCurrency: formVal.vendorCurrency,
+        paymentTerms: formVal.paymentTerms,
+        paymentMethod: formVal.paymentMethod,
+        locationCode: formVal.locationCode,
+        shipToPostCode: formVal.shipToPostCode,
+        address: formVal.address,
+        address2: formVal.address2,
+        city: formVal.city,
+        shipToName: formVal.shipToName,
+        shipToAddress: formVal.shipToAddress,
+        shipToAddress2: formVal.shipToAddress2,
+        shipToCity: formVal.shipToCity,
+        shipToCountry: formVal.shipToCountry,
+        payToAddress: formVal.payToAddress,
+        remarks: formVal.remarks,
         goodsReceiptItems: itemsPayload
       };
 
@@ -213,8 +342,8 @@ export class GrnDetailsComponent implements OnInit {
           }
 
           this.loadGrnOrPurchaseOrder();
-          this.vendorName = this.form.get('vendorName')?.value;
-          this.purchaseOrderNo = this.form.get('purchaseOrderNo')?.value;
+          this.vendorName = formVal.vendorName;
+          this.purchaseOrderNo = formVal.purchaseOrderNo;
           this.openRatingModal();
         },
         error: () => this.toastr.error('Failed to create GRN.')
@@ -258,7 +387,6 @@ export class GrnDetailsComponent implements OnInit {
     if (rating >= index + 0.5) return 'fa-star-half-alt';
     return 'fa-star-o';
   }
-
 
   submitVendorRating() {
     if (!this.selectedRating) return;

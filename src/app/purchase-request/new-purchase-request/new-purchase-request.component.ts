@@ -846,9 +846,20 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     }
   }
 
-  private applyDimensionValues(values: any[], selectedDepartment?: string): void {
+  private applyDimensionValues(values: any[], selectedDepartment?: string, savedDimensionValueId?: number | null): void {
     this.dimensionValueList = this.mapDimensionDropdownItems(values);
     const ctrl = this.newPurchaseRequestForm.get('dimensionValueId');
+
+    const targetValueId = (savedDimensionValueId && !Number.isNaN(savedDimensionValueId))
+      ? savedDimensionValueId
+      : (ctrl?.value ? Number(ctrl.value) : null);
+
+    if (targetValueId && this.dimensionValueList.some(v => v.id === targetValueId)) {
+      ctrl?.setValue(targetValueId, { emitEvent: false });
+      this.setDimensionValueControlState(false);
+      this.cdr.markForCheck();
+      return;
+    }
 
     if (this.dimensionValueList.length === 1) {
       const only = this.dimensionValueList[0];
@@ -903,10 +914,11 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   private restoreSelectedDimension(): void {
     const department = (this.newPurchaseRequestForm.get('department')?.value || '').toString().trim();
     const currentDimensionId = Number(this.newPurchaseRequestForm.get('dimensionId')?.value);
+    const currentDimensionValueId = Number(this.newPurchaseRequestForm.get('dimensionValueId')?.value);
 
     const applyMatch = (dimensionId: number, values: any[]) => {
       this.newPurchaseRequestForm.get('dimensionId')?.setValue(dimensionId, { emitEvent: false });
-      this.applyDimensionValues(values, department);
+      this.applyDimensionValues(values, department, currentDimensionValueId);
     };
 
     if (currentDimensionId && this.dimensionList.some(d => Number(d.id) === currentDimensionId)) {
@@ -2170,6 +2182,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       createdBy: f.createdBy || '',
       entityId: finalEntityId,
       addressId: f.addressId,
+      dimensionId: f.dimensionId ? Number(f.dimensionId) : null,
+      dimensionValueId: f.dimensionValueId ? Number(f.dimensionValueId) : null,
       purchaseItems
     };
 
@@ -2297,6 +2311,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       // createdBy: f.createdBy || 'USER',
       entityId: finalEntityId,
       addressId: f.addressId,
+      dimensionId: f.dimensionId ? Number(f.dimensionId) : null,
+      dimensionValueId: f.dimensionValueId ? Number(f.dimensionValueId) : null,
       purchaseItems
     };
 

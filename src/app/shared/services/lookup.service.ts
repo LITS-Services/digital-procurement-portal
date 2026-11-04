@@ -127,12 +127,12 @@ export class LookupService {
   getAllProjects() {
     return this.http.get<any>(`${environment.apiUrl}/Project/GetAll?currentPage=1&pageSize=1000`);
   }
-  // getAddress2ByEntity(entityId: number) {
-  //   const url = `${this.baseUrl}/dropdowns`;
-  //   const params = {
-  //     name: 'address2-by-entity',
-  //     id: entityId.toString()
-  //   };
-  //   return this.http.get<any[]>(url, { params });
-  // }
+
+  getPaymentTerms() {
+    return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=payment-term`);
+  }
+
+  getPaymentMethods() {
+    return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=payment-method`);
+  }
 }
