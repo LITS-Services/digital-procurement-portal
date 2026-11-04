@@ -1,6 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ShipmentService } from 'app/shared/services/shipment.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 
@@ -19,47 +18,69 @@ import { NgxSpinnerService } from 'ngx-spinner';
     ])
   ]
 })
-
-export class ShipmentDetailsComponent implements OnInit {
+export class ShipmentDetailsComponent implements OnInit, OnChanges {
   @Input() poId!: number;
-  shipmentDetails: any;
-  loading = true;
-  poDetails: any;
+  shipmentData: any = null;
+  loading = false;
   itemsExpanded = true;
-  constructor(private shipmentService: ShipmentService,
-    private purchaseOrderService: PurchaseOrderService,
+
+  // Selected item for viewing shipment lines modal
+  selectedItem: any = null;
+  showShipmentsModal = false;
+
+  constructor(
+    private shipmentService: ShipmentService,
     private cdr: ChangeDetectorRef,
     private spinner: NgxSpinnerService
   ) { }
 
   ngOnInit(): void {
-    if (this.poId) this.loadShipmentDetails();
-    // this.getPurchaseOrderDetails();
+    if (this.poId) {
+      this.loadShipmentDetails();
+    }
   }
-  
-  loadShipmentDetails() {
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['poId'] && !changes['poId'].firstChange && this.poId) {
+      this.loadShipmentDetails();
+    }
+  }
+
+  loadShipmentDetails(): void {
     this.loading = true;
     this.spinner.show();
     this.shipmentService.getShipmentDetailById(this.poId).subscribe({
-      next: res => {
-        this.shipmentDetails = res; // because your API returns Result<T>
+      next: (res: any) => {
+        this.shipmentData = res;
         this.loading = false;
         this.spinner.hide();
         this.cdr.detectChanges();
       },
-      error: () => this.loading = false
+      error: () => {
+        this.loading = false;
+        this.spinner.hide();
+        this.cdr.detectChanges();
+      }
     });
   }
 
-  // getPurchaseOrderDetails() {
-  //   this.purchaseOrderService.getPurchaseOrderById(this.poId).subscribe(res => {
-  //     this.poDetails = res;
-  //     this.loading = false;
-  //     this.cdr.detectChanges();
-  //   });
-  // }
-
-  toggleItems() {
+  toggleItems(): void {
     this.itemsExpanded = !this.itemsExpanded;
+  }
+
+  viewShipments(item: any): void {
+    this.selectedItem = item;
+    this.showShipmentsModal = true;
+    this.cdr.detectChanges();
+  }
+
+  closeShipmentsModal(): void {
+    this.showShipmentsModal = false;
+    this.selectedItem = null;
+    this.cdr.detectChanges();
+  }
+
+  hasShipments(item: any): boolean {
+    return !!(item?.shipmentLines && item.shipmentLines.length > 0);
   }
 }

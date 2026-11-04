@@ -48,6 +48,9 @@ export class NewRfqComponent implements OnInit {
   accountList: any[] = [];
 
   newRfqForm: FormGroup;
+  get rfqForm(): FormGroup {
+    return this.newRfqForm;
+  }
   itemForm: FormGroup;
   editingRowIndex: number | null = null; // Track row being edited
   newQuotationItemData = [];
@@ -169,29 +172,6 @@ export class NewRfqComponent implements OnInit {
     this.loadAccounts();
     this.loadUnitsOfMeasurements();
     this.loadProjects();
-    this.route.queryParamMap.subscribe((params) => {
-      const id = params.get('id');
-      const mode = params.get('mode');
-      const prId = params.get('prId');
-      const focus = params.get('focus');
-
-      this.viewMode = mode === 'view';
-      this.isNewForm = !id;
-
-      if (focus === 'comments') {
-        this.selectedTab = 'comments';
-      }
-
-      if (id) {
-        this.currentQuotationId = +id;
-        this.loadExistingQuotation(+id);
-      } else if (prId) {
-        // new work
-        this.purchaseRequestId = +prId;
-        this.isItemsFormCollapsed = true;
-        this.loadFromPurchaseRequest(+prId);
-      }
-    });
 
     // RFQ Form
     this.newRfqForm = this.fb.group({
@@ -259,10 +239,34 @@ export class NewRfqComponent implements OnInit {
 
     this.checkEntitySelection();
 
-    if (this.viewMode) {
-      this.newRfqForm.disable();
-      this.itemForm.disable();
-    }
+    this.route.queryParamMap.subscribe((params) => {
+      const id = params.get('id');
+      const mode = params.get('mode');
+      const prId = params.get('prId');
+      const focus = params.get('focus');
+
+      this.viewMode = mode === 'view';
+      this.isNewForm = !id;
+
+      if (focus === 'comments') {
+        this.selectedTab = 'comments';
+      }
+
+      if (id) {
+        this.currentQuotationId = +id;
+        this.loadExistingQuotation(+id);
+      } else if (prId) {
+        // new work
+        this.purchaseRequestId = +prId;
+        this.isItemsFormCollapsed = true;
+        this.loadFromPurchaseRequest(+prId);
+      }
+
+      if (this.viewMode) {
+        this.newRfqForm.disable();
+        this.itemForm.disable();
+      }
+    });
   }
 
   @HostListener('window:scroll', [])
@@ -725,6 +729,7 @@ export class NewRfqComponent implements OnInit {
   private toDateInputValue(date: any): string | null {
     if (!date) return null;
     const d = new Date(date);
+    if (isNaN(d.getTime())) return null;
     return d.toISOString().split('T')[0];
   }
 
@@ -747,99 +752,115 @@ export class NewRfqComponent implements OnInit {
     this.spinner.show();
     this.purchaseRequestId = prId;
     this.purchaseRequestService.getPurchaseRequestById(prId, true).subscribe({
-      next: async (pr) => {
-        if (!pr) return;
+      next: (prRes: any) => {
+        try {
+          const pr = prRes?.value ?? prRes;
+          if (!pr || (!pr.id && !pr.requisitionNo)) {
+            this.toastr.warning('Purchase Request could not be loaded.');
+            return;
+          }
 
-        // Capture department from PR header
-        this.departmentId = Number(pr.departmentId) || null;
-        this.departmentName = pr.departmentName || pr.department || '';
+          // Capture department from PR header
+          this.departmentId = Number(pr.departmentId) || null;
+          this.departmentName = pr.departmentName || pr.department || '';
 
-        //  Patch header-level fields
-        this.newRfqForm.patchValue({
-          purchaseRequestId: pr.id,
-          purchaseRequestNo: pr.requisitionNo,
-          deliveryLocation: pr.deliveryLocation,
-          date: this.toDateInputValue(pr.submittedDate),
-          departmentName: this.departmentName,
-        }, { emitEvent: false });
+          // Patch header-level fields
+          this.newRfqForm.patchValue({
+            purchaseRequestId: pr.id,
+            purchaseRequestNo: pr.requisitionNo,
+            deliveryLocation: pr.deliveryLocation || '',
+            date: this.toDateInputValue(pr.submittedDate),
+            departmentName: this.departmentName,
+          }, { emitEvent: false });
 
-        // Filter projects for this department
-        this.updateFilteredProjectsForRfq();
+          // Filter projects for this department
+          this.updateFilteredProjectsForRfq();
 
-        await this.resetPhoneInput();
-        setTimeout(() =>  this.patchReceiverContactFromE164(pr.receiverContact), 0);
-   
-        this.cdr.detectChanges();
+          if (pr.receiverContact || pr.contact) {
+            setTimeout(() => this.patchReceiverContactFromE164(pr.receiverContact || pr.contact), 0);
+          }
 
-        const rfqEntityId = Number(pr.entityId) || null;
-        this.applyEntity(rfqEntityId);
+          const rfqEntityId = Number(pr.entityId) || null;
+          this.passEntityId = rfqEntityId;
+          this.applyEntity(rfqEntityId);
 
-        // Map PR items → RFQ items, only include items not already used
-        const unusedItems = pr.purchaseItems?.filter((item: any) => !item.usedInRfq) || [];
+          // Map PR items -> RFQ items, only include items not already used
+          const allItems = pr.purchaseItems || [];
+          const unusedItems = allItems.filter(
+            (item: any) => !item.isRfqCreated && !item.usedInRfq && !item.isInventoryTransfer && !item.isPoRequested
+          );
 
-        this.hasUnusedItems = unusedItems.length > 0;
+          this.hasUnusedItems = unusedItems.length > 0;
 
-        if (!this.hasUnusedItems) {
-          this.toastr.info('No items available. Cannot generate a new RFQ.');
+          if (!this.hasUnusedItems) {
+            this.toastr.info('No items available. Cannot generate a new RFQ.');
+            return;
+          }
+
+          // Map PR items -> RFQ items
+          this.newQuotationItemData = unusedItems.map((item: any) => ({
+            id: null,
+            purchaseItemId: item.id,
+            rfqNo: '',
+            itemType: item.itemType,
+            itemId: item.itemId,
+            unitOfMeasurementId: item.unitOfMeasurementId,
+            amount: item.amount,
+            unitCost: item.unitCost,
+            orderQuantity: item.orderQuantity,
+            reqByDate: this.toDateInputValue(item.reqByDate),
+            itemDescription: item.itemDescription,
+            accountId: item.accountId,
+            remarks: item.remarks || '',
+            vatProdPostingGroup: item.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
+            unitOfMeasurementSymbol: item.unitOfMeasurementSymbol || item.unitOfMeasurementCode || null,
+            createdBy: item.createdBy || 'current-user',
+            quotationRequestId: 0,
+            vendorUserId: null,
+            vendorCompanyId: null,
+            selected: true,
+            // Carry department/project/activity from the PR item
+            departmentId: item.departmentId || this.departmentId || null,
+            projectId: item.projectId || null,
+            projectActivityId: item.projectActivityId || null,
+            ProjectName: item.ProjectName || item.projectName || this.getProjectNameById(item.projectId),
+            projectName: item.projectName || item.ProjectName || this.getProjectNameById(item.projectId),
+            ActivityName: item.ActivityName || item.activityName || item.projectActivityName || this.getActivityNameById(item.projectActivityId),
+            activityName: item.activityName || item.ActivityName || item.projectActivityName || this.getActivityNameById(item.projectActivityId),
+
+            quotationItemAttachments:
+              (item.attachments || []).map((a: any) => ({
+                id: a.id,
+                content: a.content || '',
+                contentType: a.contentType || '',
+                fileName: a.fileName || '',
+                fromForm: a.fromForm || '',
+                visibleToVendor: a.visibleToVendor ?? false,
+                createdDate: a.createdDate,
+                modifiedDate: a.modifiedDate,
+                createdBy: a.createdBy || 'current-user',
+                isDeleted: a.isDeleted || false,
+                fromPr: a.fromPr ?? true,
+                quotationItemId: a.quotationItemId || 0,
+              })),
+          }));
+
+          this.newQuotationItemData = [...this.newQuotationItemData];
+          this.allSelected = true;
+          this.updateSelectAllState();
+        } catch (e) {
+          console.error('Error processing PR data for RFQ:', e);
+          this.toastr.error('Failed to process Purchase Request details.');
+        } finally {
           this.spinner.hide();
-          this.cdr.markForCheck();
-          return;
+          this.cdr.detectChanges();
         }
-        //  Map PR items → RFQ items
-        this.newQuotationItemData = pr.purchaseItems?.map((item: any) => ({
-          id: null,
-          purchaseItemId: item.id,
-          rfqNo: '',
-          itemType: item.itemType,
-          itemId: item.itemId,
-          unitOfMeasurementId: item.unitOfMeasurementId,
-          amount: item.amount,
-          unitCost: item.unitCost,
-          orderQuantity: item.orderQuantity,
-          reqByDate: item.reqByDate,
-          itemDescription: item.itemDescription,
-          accountId: item.accountId,
-          remarks: item.remarks || '',
-          vatProdPostingGroup: item.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
-          unitOfMeasurementSymbol: item.unitOfMeasurementSymbol || item.unitOfMeasurementCode || null,
-          createdBy: item.createdBy || 'current-user',
-          quotationRequestId: 0,
-          vendorUserId: null,
-          vendorCompanyId: null,
-          // Carry department/project/activity from the PR item
-          departmentId: item.departmentId || this.departmentId || null,
-          projectId: item.projectId || null,
-          projectActivityId: item.projectActivityId || null,
-          ProjectName: item.ProjectName || item.projectName || this.getProjectNameById(item.projectId),
-          projectName: item.projectName || item.ProjectName || this.getProjectNameById(item.projectId),
-          ActivityName: item.ActivityName || item.activityName || item.projectActivityName || this.getActivityNameById(item.projectActivityId),
-          activityName: item.activityName || item.ActivityName || item.projectActivityName || this.getActivityNameById(item.projectActivityId),
-
-          quotationItemAttachments:
-            item.attachments?.map((a: any) => ({
-              id: a.id,
-              content: a.content || '',
-              contentType: a.contentType || '',
-              fileName: a.fileName || '',
-              fromForm: a.fromForm || '',
-              visibleToVendor: a.visibleToVendor,
-              createdDate: a.createdDate,
-              modifiedDate: a.modifiedDate,
-              createdBy: a.createdBy || 'current-user',
-              isDeleted: a.isDeleted || false,
-              fromPr: a.fromPr,
-              quotationItemId: a.quotationItemId || 0,
-            })) || [],
-        }));
-
-        this.newQuotationItemData = [...this.newQuotationItemData];
-        this.spinner.hide();
-        this.cdr.detectChanges();
       },
       error: (err) => {
         this.spinner.hide();
         this.cdr.detectChanges();
         console.error('Error loading PR', err);
+        this.toastr.error('Failed to load Purchase Request.');
       },
     });
   }

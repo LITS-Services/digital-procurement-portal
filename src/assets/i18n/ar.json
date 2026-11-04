@@ -655,7 +655,12 @@
     "PO_DATE": "تاريخ أمر الشراء",
     "ELIGIBLE_FOR_PO": "مؤهل لأمر الشراء",
     "TOTAL_REVIEWS": "إجمالي التقييمات",
-    "AVG_RATING": "متوسط التقييم"
+    "AVG_RATING": "متوسط التقييم",
+    "TOTAL_SHIPPED_QTY": "إجمالي الكمية المشحونة",
+    "REMAINING_QTY": "الكمية المتبقية",
+    "VIEW_SHIPMENTS": "عرض الشحنات",
+    "TRANSFER_FROM": "رمز المصدر",
+    "TRANSFER_TO": "رمز الوجهة"
   },
   "INV_TRANSFER_MODULE": {
     "TITLE": "تحويل المخزون",

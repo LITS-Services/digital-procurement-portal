@@ -654,7 +654,12 @@
     "PO_DATE": "PO Date",
     "ELIGIBLE_FOR_PO": "Eligible for PO",
     "TOTAL_REVIEWS": "Total Reviews",
-    "AVG_RATING": "Average Rating"
+    "AVG_RATING": "Average Rating",
+    "TOTAL_SHIPPED_QTY": "Total Shipped Qty",
+    "REMAINING_QTY": "Remaining Qty",
+    "VIEW_SHIPMENTS": "View Shipments",
+    "TRANSFER_FROM": "From Code",
+    "TRANSFER_TO": "To Code"
   },
   "INV_TRANSFER_MODULE": {
     "TITLE": "Inventory Transfer",

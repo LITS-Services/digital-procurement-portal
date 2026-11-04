@@ -17,10 +17,9 @@
 
 .pro-table thead,
 .pro-table thead th {
-  background-color: #f4f6fb !important; /* or your header color */
+  background-color: #f4f6fb !important;
 }
 
-/* Force ONLY body “accent/striped/hover” to white */
 .pro-table tbody {
   --bs-table-accent-bg: #fff;
   --bs-table-striped-bg: #fff;
@@ -37,85 +36,154 @@
     background: #f8f9fc;
 }
 
-.pro-table tbody tr td:last-child,
-.pro-table thead th:last-child {
-    font-weight: 600;
-}
-
 .pro-table td, .pro-table th {
     vertical-align: middle !important;
 }
 
- .po-tabs {
-    display: flex;
-    border-bottom: 2px solid #e5e7eb;
-    gap: 0px;
-    margin-bottom: 1.5rem;
-  }
+.heading {
+    color: #374151;
+    user-select: none;
+    transition: color 0.2s ease;
+    &:hover {
+        color: #1543b7;
+    }
+}
 
-  .po-tab {
-    background: transparent;
-    border: none;
-    padding: 10px 22px;
-    font-size: .85rem;
+.badge {
+    padding: 0.35em 0.65em;
+    font-size: 0.78rem;
     font-weight: 600;
+    border-radius: 6px;
+}
+
+.badge-success {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+.badge-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.badge-light {
+    background-color: #f3f4f6;
     color: #6b7280;
-    cursor: pointer;
-    position: relative;
-    transition: all .25s ease-in-out;
-    border-radius: 6px 6px 0 0;
-  }
+}
 
-  .po-tab:hover {
-    background: #f3f4f6;
-    color: #111827;
-  }
+.badge-secondary {
+    background-color: #6c757d;
+    color: #ffffff;
+}
 
-  .po-tab.active {
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 2rem;
+    margin: 2rem 0;
+    border: 2px dashed #ced4da;
+    border-radius: 0.5rem;
+    background-color: #f8f9fa;
+    color: #6c757d;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background-color: #f1f3f5;
+        border-color: #adb5bd;
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #adb5bd;
+    }
+
+    .empty-message {
+        font-weight: 600;
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-submessage {
+        font-size: 0.95rem;
+        color: #868e96;
+        margin: 0;
+    }
+}
+
+/* Modal Backdrop & Dialog */
+.shipment-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+    padding: 1.25rem;
+}
+
+.shipment-modal {
     background: #ffffff;
-    color: #1543b7;
-    font-weight: 700;
-    border-bottom: 3px solid #2c189b;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-    outline: 2px solid #102da1;
-    outline-offset: -2px;
-    border-radius: 6px 6px 0 0;
-  }
+    width: 900px;
+    max-width: 95vw;
+    max-height: 85vh;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    animation: modalSlideIn 0.2s ease-out;
+}
 
-    .empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 3rem 2rem;
-  margin: 2rem 0;
-  border: 2px dashed #ced4da;
-  border-radius: 0.5rem;
-  background-color: #f8f9fa;
-  color: #6c757d;
-  transition: all 0.3s ease;
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-16px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
 
-  &:hover {
-    background-color: #f1f3f5;
-    border-color: #adb5bd;
-  }
+.shipment-modal-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f9fafb;
 
-  .empty-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    color: #adb5bd;
-  }
+    .btn-close {
+        background: transparent;
+        border: none;
+        font-size: 1.5rem;
+        line-height: 1;
+        color: #6b7280;
+        cursor: pointer;
+        padding: 0;
+        transition: color 0.15s ease;
 
-  .empty-message {
-    font-weight: 600;
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
-  }
+        &:hover {
+            color: #111827;
+        }
+    }
+}
 
-  .empty-submessage {
-    font-size: 0.95rem;
-    color: #868e96;
-    margin: 0;
-  }
+.shipment-modal-body {
+    padding: 1.25rem 1.5rem;
+    overflow-y: auto;
+}
+
+.shipment-modal-footer {
+    padding: 0.75rem 1.5rem;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    background: #f9fafb;
 }

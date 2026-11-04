@@ -54,7 +54,7 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
       region: [''],
       address: [''],
       address2: [''],
-      postCode: [null]
+      postCode: ['']
     });
 
     if (this.isEditMode) {
@@ -156,43 +156,51 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
     if (this.companyForm.invalid) return;
 
     const companyData: any = {
-      companyGUID: this.companyForm.value.companyGUID || this.generateGUID(),
-      name: this.companyForm.value.name,
+      companyGUID: this.companyForm.getRawValue().companyGUID || this.generateGUID(),
+      name: this.companyForm.getRawValue().name,
       logo: this.existingLogo || 'string',
-      isDeleted: this.companyForm.value.isDeleted,
-      addressDetails: this.addresses
+      isDeleted: this.companyForm.getRawValue().isDeleted,
+      addressDetails: this.addresses.map(addr => ({
+        ...addr,
+        postCode: String(addr.postCode ?? '')
+      }))
     };
 
     const sendRequest = () => {
       if (this.isEditMode) {
-        // Update
         const payload = {
           id: this.companyId,
           procurementCompany: companyData
         };
-        this.companyService.updateProCompaniesById(this.companyId, payload).subscribe({
-          next: (res) => this.router.navigate(['/procurment-companies']),
-          error: (err) => console.error('Update failed:', err)
+
+        this.companyService.updateProCompaniesById(
+          this.companyId,
+          payload
+        ).subscribe({
+          next: () => this.router.navigate(['/procurment-companies']),
+          error: err => console.error('Update failed:', err)
         });
+
       } else {
-        // Create
         const payload = {
           procurementCompanyVM: companyData
         };
+
         this.companyService.createProCompany(payload).subscribe({
-          next: (res) => this.router.navigate(['/procurment-companies']),
-          error: (err) => console.error('Creation failed:', err)
+          next: () => this.router.navigate(['/procurment-companies']),
+          error: err => console.error('Creation failed:', err)
         });
       }
     };
 
-    // Handle file upload if present
     if (this.selectedFile) {
       const reader = new FileReader();
+
       reader.onload = () => {
         companyData.logo = reader.result as string;
         sendRequest();
       };
+
       reader.readAsDataURL(this.selectedFile);
     } else {
       sendRequest();
@@ -275,16 +283,33 @@ export class ProcurmentCompaniesEditComponent implements OnInit {
     });
   }
 
+  // saveAddress(modal: any) {
+  //   if (this.addressForm.invalid) return;
+
+  //   const address = this.addressForm.value;
+
+  //   if (this.selectedAddressIndex !== null) {
+  //     this.addresses[this.selectedAddressIndex] = address;
+  //   } else {
+  //     this.addresses.push(address);
+  //   }
+  //   modal.close();
+  // }
+
   saveAddress(modal: any) {
     if (this.addressForm.invalid) return;
 
-    const address = this.addressForm.value;
+    const address = {
+      ...this.addressForm.getRawValue(),
+      postCode: String(this.addressForm.get('postCode')?.value ?? '')
+    };
 
     if (this.selectedAddressIndex !== null) {
       this.addresses[this.selectedAddressIndex] = address;
     } else {
       this.addresses.push(address);
     }
+
     modal.close();
   }
 

@@ -633,7 +633,7 @@ export class PurchaseRequestComponent implements OnInit {
     }
 
     this.router.navigate(['/rfq/new-rfq'], {
-      queryParams: { prId: row.requestId }
+      queryParams: { prId: row.requestId || row.id }
     });
   }
 

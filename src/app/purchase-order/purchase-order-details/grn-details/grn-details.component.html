@@ -1,4 +1,4 @@
-@if (poDetails?.shipmentDetailNo) {
+<!-- @if (poDetails?.shipmentDetailNo) { -->
 <div class="card cstm-ui-card mb-4" [formGroup]="form">
   <div class="card-body">
 
@@ -37,7 +37,7 @@
 
       <div class="col-md-4 mb-3">
         <label class="form-label small">{{ 'COMMON.STATUS' | translate }}</label>
-        <input class="form-control form-control-sm" [value]="grnForm.get('requestStatus')?.value | statusTranslate" disabled>
+        <input class="form-control form-control-sm" [value]="form.get('requestStatus')?.value | statusTranslate" disabled>
       </div>
 
       <div class="col-md-8 mb-3">
@@ -91,15 +91,15 @@
 
   </div>
 </div>
-} 
+<!-- }  -->
 
-@else {
+<!-- @else {
   <div class="empty-state">
         <i class="fa fa-box-open empty-icon"></i>
         <h5 class="empty-message">{{ 'PO_MODULE.NO_SHIPMENT_FOR_GRN' | translate }}</h5>
         <p class="empty-submessage">{{ 'RFQ_MODULE.CHECK_BACK_LATER' | translate }}</p>
     </div>
-}
+} -->
 
 <!-- Vendor Rating Modal -->
 <div class="rating-backdrop" *ngIf="showRatingModal">

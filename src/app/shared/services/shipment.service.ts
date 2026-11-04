@@ -11,6 +11,6 @@ export class ShipmentService {
   constructor(private http: HttpClient) { }
   
   getShipmentDetailById(id: number) {
-    return this.http.get<any>(`${this.baseUrl}/shipment-detail-by-purchase-order?purchaseOrderId=${id}`);
+    return this.http.get<any>(`${this.baseUrl}/shipment-detail-all-by-purchase-order?purchaseOrderId=${id}`);
   }
 }
