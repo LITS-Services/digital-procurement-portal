@@ -159,7 +159,7 @@ export class RfqVendorModalComponent implements OnInit {
       if(this.viewMode) return;
 
         if (this.isLocked(vendor)) {
-    this.toastr.warning('This vendor has already submitted a bid and cannot be removed.');
+    this.toastr.warning('This vendor has already submitted a quote and cannot be removed.');
     return;
   }
 

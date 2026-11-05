@@ -92,7 +92,7 @@
 
             <ngx-datatable-column [name]="'SETUP_MODULE.FORM' | translate" prop="label" [flexGrow]="2" [minWidth]="200" [sortable]="false">
               <ng-template ngx-datatable-cell-template let-row="row">
-                <div class="data-source-form-name">{{ row.label }}</div>
+                <div class="data-source-form-name">{{ row.labelKey ? (row.labelKey | translate) : row.label }}</div>
               </ng-template>
             </ngx-datatable-column>
 
@@ -165,7 +165,7 @@
         [notFoundText]="'SETUP_MODULE.ALL_FORMS_ADDED' | translate">
         <ng-template ng-option-tmp let-item="item">
           <div class="d-flex flex-column py-1">
-            <span class="font-weight-600 text-dark" style="font-size: 13px; line-height: 1.3;">{{ item.label }}</span>
+            <span class="font-weight-600 text-dark" style="font-size: 13px; line-height: 1.3;">{{ item.labelKey ? (item.labelKey | translate) : item.label }}</span>
             <small class="text-muted" style="font-size: 11.5px; line-height: 1.2;">{{ item.route }}</small>
           </div>
         </ng-template>

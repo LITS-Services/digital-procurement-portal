@@ -597,15 +597,15 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
           ...this.spendChartOptions,
           series: [
             {
-              name: 'Total RFQs',
+              name: this.translate.instant('DASHBOARD_MODULE.TOTAL_RFQS') || 'Total RFQs',
               data: totalRfq,
             },
             {
-              name: 'Total Quotations',
+              name: this.translate.instant('DASHBOARD_MODULE.TOTAL_QUOTATIONS') || 'Total Quotations',
               data: rfqQuotation,
             },
             {
-              name: 'Selected Quotations',
+              name: this.translate.instant('DASHBOARD_MODULE.SELECTED_QUOTATIONS') || 'Selected Quotations',
               data: selectedRfq,
             },
           ],
@@ -714,11 +714,11 @@ private initVendorDeliveryChart(): void {
       this.vendorDeliveryOptions = {
         series: [
           {
-            name: 'On-Time',
+            name: this.translate.instant('DASHBOARD_MODULE.ON_TIME') || 'On-Time',
             data: onTimeDeliveries,
           },
           {
-            name: 'Late',
+            name: this.translate.instant('DASHBOARD_MODULE.LATE') || 'Late',
             data: lateDeliveries,
           },
         ],

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'app/shared/auth/auth.service';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
@@ -7,6 +7,9 @@ import { DashboardService } from 'app/shared/services/dashboard.service';
 import { CompanyService } from 'app/shared/services/Company.services';
 import { ProjectBudgetConsumptionVM, ProjectService } from 'app/shared/services/project.service';
 import { PurchaseRequestService } from 'app/shared/services/purchase-request-services/purchase-request.service';
+import { TranslateService } from '@ngx-translate/core';
+import { Subject } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs/operators';
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -22,7 +25,6 @@ import {
   ApexYAxis
 } from 'ng-apexcharts';
 import { ToastrService } from 'ngx-toastr';
-import { finalize } from 'rxjs/operators';
 
 export interface PurchaseRequestsCountVM {
   totalRequests: number;
@@ -64,7 +66,8 @@ export type ConsumedChartOptions = {
   styleUrls: ['./employee-dashboard.component.scss'],
   standalone: false
 })
-export class EmployeeDashboardComponent implements OnInit {
+export class EmployeeDashboardComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   userId: string = '';
   entityId: number = 0;
   userName: string = '';
@@ -108,7 +111,8 @@ export class EmployeeDashboardComponent implements OnInit {
     private purchaseRequestService: PurchaseRequestService,
     private permissionService: PermissionService,
     private toastr: ToastrService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -120,6 +124,17 @@ export class EmployeeDashboardComponent implements OnInit {
     this.checkPermissions();
     this.initConsumedChart();
     this.loadData();
+
+    this.translate.onLangChange.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      if (this.isChartReady) {
+        this.updateChartWithData(this.consumptionRows);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private checkPermissions(): void {
@@ -439,16 +454,19 @@ export class EmployeeDashboardComponent implements OnInit {
 
     const hasAnyBudget = budgetData.some(b => b > 0);
 
+    const consumedName = this.translate.instant('DASHBOARD_MODULE.CONSUMED_AMOUNT') || 'Consumed Amount';
+    const budgetName = this.translate.instant('DASHBOARD_MODULE.ALLOCATED_BUDGET') || 'Allocated Budget';
+
     const series: ApexAxisChartSeries = [
       {
-        name: 'Consumed Amount',
+        name: consumedName,
         data: consumedData,
       }
     ];
 
     if (hasAnyBudget) {
       series.push({
-        name: 'Allocated Budget',
+        name: budgetName,
         data: budgetData,
       });
     }

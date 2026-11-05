@@ -56,7 +56,7 @@
       <!-- Item Name -->
       <ngx-datatable-column [name]="'COMMON.ITEM' | translate">
         <ng-template let-row="row" ngx-datatable-cell-template>
-          <b *ngIf="row.itemName === 'Total'">{{ row.itemName }}</b>
+          <b *ngIf="row.itemName === 'Total'">{{ 'COMMON.TOTAL' | translate }}</b>
           <span *ngIf="row.itemName !== 'Total'">{{ row.itemName }}</span>
         </ng-template>
       </ngx-datatable-column>

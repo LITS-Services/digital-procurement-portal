@@ -7,6 +7,8 @@ import { NgxSpinnerService } from "ngx-spinner";
 import { ToastrService } from 'ngx-toastr';
 import { environment } from 'environments/environment';
 import { LoginTurnstileProtectionService } from 'app/shared/auth/login-turnstile-protection.service';
+import { TranslateService } from '@ngx-translate/core';
+import { LanguageService } from 'app/core/language/language.service';
 import { Subscription, interval } from 'rxjs';
 
 @Component({
@@ -33,6 +35,7 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
   private loadErrSub?: Subscription;
   private lockoutTickSub?: Subscription;
   private blockedUntilMs = 0;
+  private langSub?: Subscription;
 
   loginForm = new UntypedFormGroup({
     username: new UntypedFormControl('', [Validators.required]),
@@ -50,10 +53,23 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
     public toastr: ToastrService,
     private cdr: ChangeDetectorRef,
     private perms: PermissionService,
+    private languageService: LanguageService,
+    private translate: TranslateService,
     private turnstileProtection: LoginTurnstileProtectionService
   ) { }
 
   ngOnInit() {
+    const activeLang = this.languageService.current();
+    if (this.translate.currentLang !== activeLang) {
+      this.translate.use(activeLang);
+    }
+    this.langSub = this.languageService.languageChanges$.subscribe((lang) => {
+      if (this.translate.currentLang !== lang) {
+        this.translate.use(lang);
+      }
+      this.cdr.markForCheck();
+      this.cdr.detectChanges();
+    });
     this.tokenSub = this.turnstileProtection.captchaTokenChanged$.subscribe(token => {
       this.turnstileToken = token;
     });
@@ -137,6 +153,7 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnDestroy(): void {
+    this.langSub?.unsubscribe();
     this.tokenSub?.unsubscribe();
     this.loadErrSub?.unsubscribe();
     this.clearLockoutCountdown();

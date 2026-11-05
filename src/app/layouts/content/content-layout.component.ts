@@ -4,6 +4,7 @@ import { DOCUMENT } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { CustomizerService } from 'app/shared/services/customizer.service';
 import { TranslateService } from '@ngx-translate/core';
+import { LanguageService } from 'app/core/language/language.service';
 
 @Component({
   selector: 'app-content-layout',
@@ -21,6 +22,7 @@ export class ContentLayoutComponent implements OnInit, OnDestroy {
 
   constructor(private configService: ConfigService,
     public translate: TranslateService,
+    private languageService: LanguageService,
     @Inject(DOCUMENT) private document: Document,
     private renderer: Renderer2, private cdr: ChangeDetectorRef,
     private customizerService: CustomizerService
@@ -28,8 +30,10 @@ export class ContentLayoutComponent implements OnInit, OnDestroy {
     this.config = this.configService.templateConf;
     this.renderer.addClass(this.document.body, "auth-page");
 
-    const browserLang: string = translate.getBrowserLang();
-    translate.use(browserLang.match(/en|fr/) ? browserLang : 'en');
+    const activeLang = this.languageService.current();
+    if (this.translate.currentLang !== activeLang) {
+      this.translate.use(activeLang);
+    }
   }
 
   ngOnInit() {

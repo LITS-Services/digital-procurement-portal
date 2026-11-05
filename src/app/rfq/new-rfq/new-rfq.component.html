@@ -31,7 +31,7 @@
       <a class="nav-link nav-cstm-a" 
         href="javascript:void(0)" role="tab" [class.disabled]="!currentQuotationId"
        >
-        Bids Detail
+        Quotes Detail
       </a>
     </li>
 
@@ -319,6 +319,7 @@
                     [selectFirstCountry]="true"
                     [separateDialCode]="true"
                     [selectedCountryISO]="selectedCountryISO"
+                    [searchCountryPlaceholder]="'COMMON.SEARCH_COUNTRY' | translate"
                     [numberFormat]="PhoneNumberFormat.International"
                     [maxLength]="20">
                   </ngx-intl-tel-input>

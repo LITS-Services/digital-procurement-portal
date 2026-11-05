@@ -487,6 +487,14 @@ export class AuthService {
     if (currentLocale) {
       localStorage.setItem('procurement_locale', currentLocale);
       localStorage.setItem('language', currentLocale);
+      try {
+        const langService = this.injector.get(LanguageService);
+        if (currentLocale === 'ar' || currentLocale === 'en') {
+          langService.setLanguage(currentLocale as any, false);
+        }
+      } catch {
+        /* optional */
+      }
     }
     this.loggingOut = false;
     if (reason === 'session-expired') {

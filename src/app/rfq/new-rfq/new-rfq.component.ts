@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, HostListener, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbAccordionItem, NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -16,7 +16,9 @@ import { LookupService } from 'app/shared/services/lookup.service';
 import { SelectedVendorsModalComponent } from './selected-vendors-modal/selected-vendors-modal.component';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
+import { CountryISO, NgxIntlTelInputComponent, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
+import { LanguageService } from 'app/core/language/language.service';
+import { localizeIntlTelInput } from 'app/shared/utils/country-i18n.util';
 import { PhoneNumberUtil, PhoneNumberFormat as LibPhoneNumberFormat } from 'google-libphonenumber';
 import { ProjectService, ProjectItem, ProjectActivityItem } from 'app/shared/services/project.service';
 import { DataSourceService } from 'app/shared/services/data-source.service';
@@ -27,7 +29,8 @@ import { DataSourceService } from 'app/shared/services/data-source.service';
   styleUrls: ['./new-rfq.component.scss'],
   standalone: false,
 })
-export class NewRfqComponent implements OnInit {
+export class NewRfqComponent implements OnInit, AfterViewInit {
+  @ViewChild(NgxIntlTelInputComponent) contactIntlTelComponent?: NgxIntlTelInputComponent;
   currentRfqNo!: string;
   isNewForm = true; // true = create, false = edit
   isFormDirty = false; // track if any field was touched
@@ -162,8 +165,16 @@ export class NewRfqComponent implements OnInit {
     private purchaseOrderService: PurchaseOrderService,
     private spinner: NgxSpinnerService,
     private projectService: ProjectService,
-    private dataSourceService: DataSourceService
+    private dataSourceService: DataSourceService,
+    private languageService: LanguageService
   ) {}
+
+  ngAfterViewInit(): void {
+    localizeIntlTelInput(this.contactIntlTelComponent, null, this.languageService.current());
+    this.languageService.languageChanges$.subscribe((lang) => {
+      localizeIntlTelInput(this.contactIntlTelComponent, null, lang);
+    });
+  }
 
   ngOnInit(): void {
     this.loadVendorUsers();

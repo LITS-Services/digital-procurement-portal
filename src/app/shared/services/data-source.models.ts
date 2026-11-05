@@ -3,27 +3,28 @@ export type DataSourceMode = 'local' | 'businessCentral';
 export interface DataSourceFormOption {
   key: string;
   label: string;
+  labelKey?: string;
   route: string;
 }
 
 /** Shown on the checklist before Add More Forms is used. */
 export const DATA_SOURCE_FORMS: readonly DataSourceFormOption[] = [
-  { key: 'purchase-request', label: 'Purchase Requests', route: '/purchase-request' },
-  { key: 'rfq', label: 'Request for Quotations', route: '/rfq' },
-  { key: 'purchase-order', label: 'Purchase Orders', route: '/purchase-order' },
-  { key: 'vendor-companies', label: 'Vendor Companies', route: '/company' },
-  { key: 'inventory-transfer', label: 'Inventory Transfers', route: '/inventory-transfer' },
+  { key: 'purchase-request', label: 'Purchase Requests', labelKey: 'SETUP_MODULE.DS_PURCHASE_REQUESTS', route: '/purchase-request' },
+  { key: 'rfq', label: 'Request for Quotations', labelKey: 'SETUP_MODULE.DS_RFQ', route: '/rfq' },
+  { key: 'purchase-order', label: 'Purchase Orders', labelKey: 'SETUP_MODULE.DS_PURCHASE_ORDERS', route: '/purchase-order' },
+  { key: 'vendor-companies', label: 'Vendor Companies', labelKey: 'SETUP_MODULE.DS_VENDOR_COMPANIES', route: '/company' },
+  { key: 'inventory-transfer', label: 'Inventory Transfers', labelKey: 'SETUP_MODULE.DS_INVENTORY_TRANSFERS', route: '/inventory-transfer' },
 ];
 
 /** Catalog of forms that can be synced from Business Central. */
 export const DATA_SOURCE_FORM_CATALOG: readonly DataSourceFormOption[] = [
   ...DATA_SOURCE_FORMS,
-  { key: 'procurement-users', label: 'Procurement Users', route: '/employee-list' },
-  { key: 'entities', label: 'Entities', route: '/procurment-companies' },
-  { key: 'vendor-onboarding', label: 'Vendor Onboarding', route: '/setup/vendor-onboarding-setup' },
-  { key: 'invitation', label: 'Invitations', route: '/setup/email-setup' },
-  { key: 'email-template', label: 'Email Templates', route: '/setup/email-templatelist' },
-  { key: 'workflow-setup', label: 'Workflow Setup', route: '/setup/workflow' },
+  { key: 'procurement-users', label: 'Procurement Users', labelKey: 'SETUP_MODULE.DS_PROCUREMENT_USERS', route: '/employee-list' },
+  { key: 'entities', label: 'Entities', labelKey: 'SETUP_MODULE.DS_ENTITIES', route: '/procurment-companies' },
+  { key: 'vendor-onboarding', label: 'Vendor Onboarding', labelKey: 'SETUP_MODULE.DS_VENDOR_ONBOARDING', route: '/setup/vendor-onboarding-setup' },
+  { key: 'invitation', label: 'Invitations', labelKey: 'SETUP_MODULE.DS_INVITATIONS', route: '/setup/email-setup' },
+  { key: 'email-template', label: 'Email Templates', labelKey: 'SETUP_MODULE.DS_EMAIL_TEMPLATES', route: '/setup/email-templatelist' },
+  { key: 'workflow-setup', label: 'Workflow Setup', labelKey: 'SETUP_MODULE.DS_WORKFLOW_SETUP', route: '/setup/workflow' },
 ];
 
 /** Checked by default when Business Central mode is turned on for the first time. */

@@ -18,6 +18,7 @@ import { ToastrService } from 'ngx-toastr';
 interface FormRowItem {
   key: string;
   label: string;
+  labelKey?: string;
   route: string;
   active: boolean;
 }
@@ -113,6 +114,7 @@ export class DataSourceSetupComponent implements OnInit {
       .map(f => ({
         key: f.key,
         label: f.label,
+        labelKey: f.labelKey,
         route: f.route,
         active: active.has(f.key)
       }));

@@ -6,6 +6,7 @@ import { BehaviorSubject, Observable, of, tap, catchError, shareReplay, forkJoin
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../shared/auth/auth.service';
 import { clearCachedObservables } from '../cached-observable';
+import '../../shared/utils/sweetalert-i18n';
 import {
   AppLanguage,
   LANGUAGE_STORAGE_KEY,

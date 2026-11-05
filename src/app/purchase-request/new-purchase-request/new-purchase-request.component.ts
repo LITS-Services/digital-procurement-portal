@@ -20,7 +20,9 @@ import { catchError, distinctUntilChanged, filter, finalize, map, pairwise, star
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { PurchaseRequestExceptionPolicyComponent } from 'app/shared/modals/purchase-request-exception-policy/purchase-request-exception-policy.component';
 import { forkJoin, of, Subject } from 'rxjs';
-import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
+import { CountryISO, NgxIntlTelInputComponent, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
+import { LanguageService } from 'app/core/language/language.service';
+import { localizeIntlTelInput } from 'app/shared/utils/country-i18n.util';
 import { PhoneNumberUtil, PhoneNumberFormat as LibPhoneNumberFormat } from 'google-libphonenumber';
 import { DataSourceService } from 'app/shared/services/data-source.service';
 import { NgSelectComponent } from '@ng-select/ng-select';
@@ -161,6 +163,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   @ViewChild('tableRowDetails') tableRowDetails: any;
   @ViewChild('tableResponsive') tableResponsive: any;
   @ViewChild('receiverIntlWrap', { read: ElementRef }) receiverIntlWrap?: ElementRef<HTMLElement>;
+  @ViewChild(NgxIntlTelInputComponent) receiverIntlTelComponent?: NgxIntlTelInputComponent;
 
   private receiverIntlMutationObserver?: MutationObserver;
   private receiverIntlSearchUnlisten?: () => void;
@@ -180,7 +183,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     private purchaseOrderService: PurchaseOrderService,
     private projectService: ProjectService,
     private renderer: Renderer2,
-    private dataSourceService: DataSourceService
+    private dataSourceService: DataSourceService,
+    private languageService: LanguageService
 
   ) { }
 
@@ -380,8 +384,32 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   }
 
   ngAfterViewInit(): void {
+    this.localizeReceiverPhoneCountries();
     this.setupReceiverIntlCountryListFilter();
+
+
+    this.languageService.languageChanges$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.localizeReceiverPhoneCountries();
+    });
   }
+
+  private localizeReceiverPhoneCountries(): void {
+    const lang = this.languageService.current();
+    const root = this.receiverIntlWrap?.nativeElement;
+    localizeIntlTelInput(this.receiverIntlTelComponent, root, lang);
+    if (root) {
+      const searchInput = root.querySelector<HTMLInputElement>('#country-search-box');
+      if (searchInput) {
+
+      this.applyReceiverIntlCountryRowFilter(root, searchInput.value);
+      }
+    }
+  }
+
+
+
+
+
 
   ngOnDestroy(): void {
     this.panelPositionObserver?.disconnect();
@@ -408,8 +436,10 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       searchInput.dataset['receiverIntlFilter'] = '1';
 
       this.receiverIntlSearchUnlisten = this.renderer.listen(searchInput, 'input', () => {
-        this.applyReceiverIntlCountryRowFilter(root, searchInput.value);
+
+      this.applyReceiverIntlCountryRowFilter(root, searchInput.value);
       });
+      this.localizeReceiverPhoneCountries();
       this.applyReceiverIntlCountryRowFilter(root, searchInput.value);
     };
 
@@ -464,7 +494,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
   /** English / Latin segments of the dropdown label — used only for filtering, not display. */
   private static extractCountryLabelWords(nameLower: string): string[] {
-    return nameLower.match(/[a-z0-9]+/gi) ?? [];
+    return nameLower.match(/[\p{L}\p{N}]+/gu) ?? [];
   }
 
   /**

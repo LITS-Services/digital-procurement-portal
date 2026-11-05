@@ -222,7 +222,7 @@ private applyOfferFilterAndSort() {
 
     Swal.fire({
       title: 'Reject Vendor?',
-      text: 'Are you sure you want to reject this vendor\'s bid?',
+      text: 'Are you sure you want to reject this vendor\'s quote?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, Reject',
@@ -256,7 +256,7 @@ private applyOfferFilterAndSort() {
 
     Swal.fire({
       title: 'Send for Revision?',
-      text: 'Are you sure you want to send this vendor\'s bid for revision?',
+      text: 'Are you sure you want to send this vendor\'s quote for revision?',
       icon: 'question',
       showCancelButton: true,
       confirmButtonText: 'Yes, Revise',
