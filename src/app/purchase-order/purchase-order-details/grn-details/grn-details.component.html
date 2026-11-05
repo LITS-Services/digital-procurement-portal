@@ -1,224 +1,248 @@
-<!-- @if (poDetails?.shipmentDetailNo) { -->
-<div class="card cstm-ui-card mb-4" [formGroup]="form">
-  <div class="card-body">
+<div [formGroup]="form">
 
-    <!-- Header Row -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h5 class="heading mb-0 fw-bold">{{ 'PO_MODULE.GRN' | translate }}</h5>
-      <button
-        class="btn btn-primary"
-        (click)="save()"
-        [disabled]="isGrnSubmitted"
-      >
-        {{ isGrnSubmitted ? ('PO_MODULE.GRN_SUBMITTED' | translate) : ('PO_MODULE.SUBMIT_GRN' | translate) }}
-      </button>
-    </div>
+  <!-- Header Card (Card contains Arrow and Submit GRN button) -->
+  <div class="card cstm-ui-card mb-4">
+    <div class="card-body">
 
-    <!-- General Information -->
-    <div class="row mb-3">
-      <div class="col-md-4 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.GRN_NO' | translate }}</label>
-        <input class="form-control form-control-sm" formControlName="grNumber" disabled>
+      <!-- Top Row inside card: Collapse arrow on left, Submit button on right -->
+      <div class="d-flex justify-content-between align-items-center" [ngClass]="headerExpanded ? 'mb-3' : 'mb-0'">
+        <button
+          type="button"
+          class="btn btn-sm btn-light text-muted d-flex align-items-center justify-content-center p-0"
+          (click)="toggleHeader()"
+          style="width: 32px; height: 32px; border-radius: 50%; cursor: pointer;"
+          [title]="headerExpanded ? 'Collapse' : 'Expand'"
+        >
+          <i class="fa" [ngClass]="headerExpanded ? 'fa-chevron-down' : 'fa-chevron-up'" style="font-size: 13px;"></i>
+        </button>
+
+        <button
+          class="btn btn-primary"
+          (click)="save()"
+          [disabled]="isGrnSubmitted"
+        >
+          {{ isGrnSubmitted ? ('PO_MODULE.GRN_SUBMITTED' | translate) : ('PO_MODULE.SUBMIT_GRN' | translate) }}
+        </button>
       </div>
 
-      <div class="col-md-4 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.PO_NO' | translate }}</label>
-        <input class="form-control form-control-sm" formControlName="purchaseOrderNo" disabled>
-      </div>
+      <!-- Collapsible Header Content -->
+      <div [@expandCollapse]="headerExpanded ? 'expanded' : 'collapsed'" style="overflow: hidden;">
 
-      <div class="col-md-4 mb-3">
-        <label class="form-label small">{{ 'COMMON.STATUS' | translate }}</label>
-        <input class="form-control form-control-sm" [value]="form.get('requestStatus')?.value | statusTranslate" disabled>
-      </div>
-
-      <div class="col-md-4 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.VENDOR_NO' | translate }}</label>
-        <input class="form-control form-control-sm" formControlName="vendorNo">
-      </div>
-
-      <div class="col-md-4 mb-3">
-        <label class="form-label small">{{ 'COMMON.VENDOR' | translate }}</label>
-        <input class="form-control form-control-sm" formControlName="vendorName">
-      </div>
-
-      <div class="col-md-4 mb-3">
-        <label class="form-label small">{{ 'COMMON.RECEIVER_NAME' | translate }}</label>
-        <input class="form-control form-control-sm" formControlName="receiverName">
-      </div>
-    </div>
-
-    <!-- Dates and Currency Section -->
-    <h6 class="text-muted fw-semibold mb-3 border-bottom pb-2">{{ 'COMMON.DETAILS' | translate }}</h6>
-    <div class="row mb-3">
-      <div class="col-md-3 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.POSTING_DATE' | translate }}</label>
-        <input type="date" class="form-control form-control-sm" formControlName="postingDate">
-      </div>
-
-      <div class="col-md-3 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.DOCUMENT_DATE' | translate }}</label>
-        <input type="date" class="form-control form-control-sm" formControlName="documentDate">
-      </div>
-
-      <div class="col-md-3 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.DUE_DATE' | translate }}</label>
-        <input type="date" class="form-control form-control-sm" formControlName="dueDate">
-      </div>
-
-      <div class="col-md-3 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.ORDER_DATE' | translate }}</label>
-        <input type="date" class="form-control form-control-sm" formControlName="orderDate">
-      </div>
-
-      <div class="col-md-4 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.VENDOR_CURRENCY' | translate }}</label>
-        <select class="form-select form-select-sm" formControlName="vendorCurrency">
-          <option value="">{{ 'COMMON.SELECT' | translate }}</option>
-          <option *ngFor="let curr of currencyList" [value]="curr">{{ curr }}</option>
-        </select>
-      </div>
-
-      <div class="col-md-4 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.PAYMENT_TERMS' | translate }}</label>
-        <select class="form-select form-select-sm" formControlName="paymentTerms">
-          <option value="">{{ 'COMMON.SELECT' | translate }}</option>
-          <option *ngFor="let term of paymentTermsList" [value]="term.description || term.code || term.id">
-            {{ term.description || term.code }}
-          </option>
-        </select>
-      </div>
-
-      <div class="col-md-4 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.PAYMENT_METHOD' | translate }}</label>
-        <select class="form-select form-select-sm" formControlName="paymentMethod">
-          <option value="">{{ 'COMMON.SELECT' | translate }}</option>
-          <option *ngFor="let method of paymentMethodsList" [value]="method.description || method.code || method.id">
-            {{ method.description || method.code }}
-          </option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Address & Shipping Section -->
-    <h6 class="text-muted fw-semibold mb-3 border-bottom pb-2">{{ 'PO_MODULE.SHIPMENT_DETAILS' | translate }}</h6>
-    <div class="row mb-3">
-      <div class="col-md-3 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.LOCATION_CODE' | translate }}</label>
-        <input class="form-control form-control-sm" formControlName="locationCode">
-      </div>
-
-      <div class="col-md-3 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.ADDRESS' | translate }}</label>
-        <input class="form-control form-control-sm" formControlName="address">
-      </div>
-
-      <div class="col-md-3 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.ADDRESS2' | translate }}</label>
-        <input class="form-control form-control-sm" formControlName="address2">
-      </div>
-
-      <div class="col-md-3 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.CITY' | translate }}</label>
-        <input class="form-control form-control-sm" formControlName="city">
-      </div>
-
-      <div class="col-md-3 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.SHIP_TO_NAME' | translate }}</label>
-        <input class="form-control form-control-sm" formControlName="shipToName">
-      </div>
-
-      <div class="col-md-3 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.SHIP_TO_ADDRESS' | translate }}</label>
-        <input class="form-control form-control-sm" formControlName="shipToAddress">
-      </div>
-
-      <div class="col-md-3 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.SHIP_TO_ADDRESS_2' | translate }}</label>
-        <input class="form-control form-control-sm" formControlName="shipToAddress2">
-      </div>
-
-      <div class="col-md-3 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.SHIP_TO_CITY' | translate }}</label>
-        <input class="form-control form-control-sm" formControlName="shipToCity">
-      </div>
-
-      <div class="col-md-3 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.SHIP_TO_POST_CODE' | translate }}</label>
-        <input class="form-control form-control-sm" formControlName="shipToPostCode">
-      </div>
-
-      <div class="col-md-3 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.SHIP_TO_COUNTRY' | translate }}</label>
-        <input class="form-control form-control-sm" formControlName="shipToCountry">
-      </div>
-
-      <div class="col-md-6 mb-3">
-        <label class="form-label small">{{ 'PO_MODULE.PAY_TO_ADDRESS' | translate }}</label>
-        <input class="form-control form-control-sm" formControlName="payToAddress">
-      </div>
-
-      <div class="col-md-6 mb-3">
-        <label class="form-label small">{{ 'COMMON.REMARKS' | translate }}</label>
-        <textarea class="form-control form-control-sm" rows="2" formControlName="remarks"></textarea>
-      </div>
-    </div>
-
-    <!-- Items Section -->
-    <h5 class="heading mb-3 fw-bold" (click)="toggleItems()" style="cursor: pointer;">
-      {{ 'COMMON.ITEMS' | translate }}
-      <i class="fa" [ngClass]="itemsExpanded ? 'fa-chevron-down' : 'fa-chevron-up'" style="font-size: 12px;"></i>
-    </h5>
-
-    <div [@expandCollapse]="itemsExpanded ? 'expanded' : 'collapsed'" style="overflow: hidden;">
-      <div class="card cstm-ui-card border-0 shadow-sm">
-        <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table table-sm pro-table mb-0 align-middle">
-              <thead>
-                <tr>
-                  <th>{{ 'PO_MODULE.ITEM_NO' | translate }}</th>
-                  <th>{{ 'COMMON.ITEM' | translate }}</th>
-                  <th class="text-center">{{ 'PO_MODULE.ORDERED_QTY' | translate }}</th>
-                  <th class="text-end">{{ 'PO_MODULE.UNIT_COST' | translate }}</th>
-                  <th class="text-center" style="min-width: 110px;">{{ 'PO_MODULE.RECEIVED_QTY' | translate }} <span class="text-danger">*</span></th>
-                  <th class="text-center" style="min-width: 140px;">{{ 'PO_MODULE.RECEIVED_DATE' | translate }} <span class="text-danger">*</span></th>
-                  <th class="text-center" style="min-width: 140px;">{{ 'PO_MODULE.PLANNED_RECEIPT_DATE' | translate }}</th>
-                  <th class="text-center" style="min-width: 140px;">{{ 'PO_MODULE.EXPECTED_RECEIPT_DATE' | translate }}</th>
-                  <th style="min-width: 150px;">{{ 'COMMON.REMARKS' | translate }}</th>
-                </tr>
-              </thead>
-              <tbody formArrayName="items">
-                <tr *ngFor="let item of itemsForm.controls; let i = index" [formGroupName]="i">
-                  <td>{{ item.get('itemNo')?.value || '-' }}</td>
-                  <td>{{ item.get('itemDesc')?.value || item.get('itemName')?.value }}</td>
-                  <td class="text-center">{{ item.get('orderedQty')?.value }}</td>
-                  <td class="text-end">{{ item.get('unitCostExclVat')?.value | number:'1.2-2' }}</td>
-                  <td class="text-center">
-                    <input type="number" class="form-control form-control-sm text-center" formControlName="receivedQuantity" min="0">
-                  </td>
-                  <td class="text-center">
-                    <input type="date" class="form-control form-control-sm" formControlName="receivedDate">
-                  </td>
-                  <td class="text-center">
-                    <input type="date" class="form-control form-control-sm" formControlName="plannedReceiptDate">
-                  </td>
-                  <td class="text-center">
-                    <input type="date" class="form-control form-control-sm" formControlName="expectedReceiptDate">
-                  </td>
-                  <td>
-                    <input type="text" class="form-control form-control-sm" formControlName="remarks">
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+        <!-- General Information -->
+        <div class="row">
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.GRN_NO' | translate }}</label>
+            <input class="form-control custom-input" formControlName="grNumber" disabled>
           </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.PO_NO' | translate }}</label>
+            <input class="form-control custom-input" formControlName="purchaseOrderNo" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'COMMON.STATUS' | translate }}</label>
+            <input class="form-control custom-input" [value]="form.get('requestStatus')?.value | statusTranslate" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.VENDOR_NO' | translate }}</label>
+            <input class="form-control custom-input" formControlName="vendorNo">
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'COMMON.VENDOR' | translate }}</label>
+            <input class="form-control custom-input" formControlName="vendorName">
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'COMMON.RECEIVER_NAME' | translate }}</label>
+            <input class="form-control custom-input" formControlName="receiverName">
+          </div>
+        </div>
+
+        <!-- Dates and Currency Section -->
+        <h6 class="text-muted fw-semibold mb-3 mt-2 border-bottom pb-2">{{ 'COMMON.DETAILS' | translate }}</h6>
+        <div class="row">
+          <div class="col-lg-3 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.POSTING_DATE' | translate }}</label>
+            <input type="date" class="form-control custom-input" formControlName="postingDate">
+          </div>
+
+          <div class="col-lg-3 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.DOCUMENT_DATE' | translate }}</label>
+            <input type="date" class="form-control custom-input" formControlName="documentDate">
+          </div>
+
+          <div class="col-lg-3 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.DUE_DATE' | translate }}</label>
+            <input type="date" class="form-control custom-input" formControlName="dueDate">
+          </div>
+
+          <div class="col-lg-3 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.ORDER_DATE' | translate }}</label>
+            <input type="date" class="form-control custom-input" formControlName="orderDate">
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.VENDOR_CURRENCY' | translate }}</label>
+            <select class="form-control custom-input" formControlName="vendorCurrency">
+              <option value="">{{ 'COMMON.SELECT' | translate }}</option>
+              <option *ngFor="let curr of currencyList" [value]="curr">{{ curr }}</option>
+            </select>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.PAYMENT_TERMS' | translate }}</label>
+            <select class="form-control custom-input" formControlName="paymentTerms">
+              <option value="">{{ 'COMMON.SELECT' | translate }}</option>
+              <option *ngFor="let term of paymentTermsList" [value]="term.description || term.code || term.id">
+                {{ term.description || term.code }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.PAYMENT_METHOD' | translate }}</label>
+            <select class="form-control custom-input" formControlName="paymentMethod">
+              <option value="">{{ 'COMMON.SELECT' | translate }}</option>
+              <option *ngFor="let method of paymentMethodsList" [value]="method.description || method.code || method.id">
+                {{ method.description || method.code }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Address & Shipping Section -->
+        <h6 class="text-muted fw-semibold mb-3 mt-2 border-bottom pb-2">{{ 'PO_MODULE.SHIPMENT_DETAILS' | translate }}</h6>
+        <div class="row">
+          <div class="col-lg-3 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.LOCATION_CODE' | translate }}</label>
+            <input class="form-control custom-input" formControlName="locationCode">
+          </div>
+
+          <div class="col-lg-3 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.ADDRESS' | translate }}</label>
+            <input class="form-control custom-input" formControlName="address">
+          </div>
+
+          <div class="col-lg-3 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.ADDRESS2' | translate }}</label>
+            <input class="form-control custom-input" formControlName="address2">
+          </div>
+
+          <div class="col-lg-3 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.CITY' | translate }}</label>
+            <input class="form-control custom-input" formControlName="city">
+          </div>
+
+          <div class="col-lg-3 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.SHIP_TO_NAME' | translate }}</label>
+            <input class="form-control custom-input" formControlName="shipToName">
+          </div>
+
+          <div class="col-lg-3 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.SHIP_TO_ADDRESS' | translate }}</label>
+            <input class="form-control custom-input" formControlName="shipToAddress">
+          </div>
+
+          <div class="col-lg-3 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.SHIP_TO_ADDRESS_2' | translate }}</label>
+            <input class="form-control custom-input" formControlName="shipToAddress2">
+          </div>
+
+          <div class="col-lg-3 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.SHIP_TO_CITY' | translate }}</label>
+            <input class="form-control custom-input" formControlName="shipToCity">
+          </div>
+
+          <div class="col-lg-3 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.SHIP_TO_POST_CODE' | translate }}</label>
+            <input class="form-control custom-input" formControlName="shipToPostCode">
+          </div>
+
+          <div class="col-lg-3 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.SHIP_TO_COUNTRY' | translate }}</label>
+            <input class="form-control custom-input" formControlName="shipToCountry">
+          </div>
+
+          <div class="col-lg-6 col-md-6 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'PO_MODULE.PAY_TO_ADDRESS' | translate }}</label>
+            <input class="form-control custom-input" formControlName="payToAddress">
+          </div>
+
+          <div class="col-lg-6 col-md-12 mb-3">
+            <label class="form-label text-muted small mb-1">{{ 'COMMON.REMARKS' | translate }}</label>
+            <textarea class="form-control custom-input" rows="2" formControlName="remarks" style="height: auto !important; min-height: 42px;"></textarea>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Items Section Toggle -->
+  <h5 class="heading mb-3 fw-bold d-flex align-items-center justify-content-between" (click)="toggleItems()" style="cursor: pointer;">
+    <span>
+      {{ 'COMMON.ITEMS' | translate }}
+      <span class="badge bg-secondary text-white ms-2" style="font-size: 0.75rem;" *ngIf="itemsForm.length">
+        {{ itemsForm.length }}
+      </span>
+    </span>
+    <i class="fa" [ngClass]="itemsExpanded ? 'fa-chevron-down' : 'fa-chevron-up'" style="font-size: 13px;"></i>
+  </h5>
+
+  <!-- Collapsible Items Card -->
+  <div [@expandCollapse]="itemsExpanded ? 'expanded' : 'collapsed'" style="overflow: hidden;">
+    <div class="card cstm-ui-card border-0 shadow-sm mb-4">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-sm pro-table mb-0 align-middle">
+            <thead>
+              <tr>
+                <th style="width: 45px;">#</th>
+                <th>{{ 'PO_MODULE.ITEM_NO' | translate }}</th>
+                <th>{{ 'COMMON.ITEM' | translate }}</th>
+                <th class="text-center">{{ 'PO_MODULE.ORDERED_QTY' | translate }}</th>
+                <th class="text-end">{{ 'PO_MODULE.UNIT_COST' | translate }}</th>
+                <th class="text-center" style="min-width: 110px;">{{ 'PO_MODULE.RECEIVED_QTY' | translate }} <span class="text-danger">*</span></th>
+                <th class="text-center" style="min-width: 140px;">{{ 'PO_MODULE.RECEIVED_DATE' | translate }} <span class="text-danger">*</span></th>
+                <th class="text-center" style="min-width: 140px;">{{ 'PO_MODULE.PLANNED_RECEIPT_DATE' | translate }}</th>
+                <th class="text-center" style="min-width: 140px;">{{ 'PO_MODULE.EXPECTED_RECEIPT_DATE' | translate }}</th>
+                <th style="min-width: 150px;">{{ 'COMMON.REMARKS' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody formArrayName="items">
+              <tr *ngFor="let item of itemsForm.controls; let i = index" [formGroupName]="i">
+                <td class="text-muted">{{ item.get('lineNo')?.value || (i + 1) }}</td>
+                <td>{{ item.get('itemNo')?.value || '-' }}</td>
+                <td>{{ item.get('itemDesc')?.value || item.get('itemName')?.value }}</td>
+                <td class="text-center">{{ item.get('orderedQty')?.value }}</td>
+                <td class="text-end">{{ item.get('unitCostExclVat')?.value | number:'1.2-2' }}</td>
+                <td class="text-center">
+                  <input type="number" class="form-control form-control-sm text-center" formControlName="receivedQuantity" min="0">
+                </td>
+                <td class="text-center">
+                  <input type="date" class="form-control form-control-sm" formControlName="receivedDate">
+                </td>
+                <td class="text-center">
+                  <input type="date" class="form-control form-control-sm" formControlName="plannedReceiptDate">
+                </td>
+                <td class="text-center">
+                  <input type="date" class="form-control form-control-sm" formControlName="expectedReceiptDate">
+                </td>
+                <td>
+                  <input type="text" class="form-control form-control-sm" formControlName="remarks">
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
-
   </div>
+
 </div>
-<!-- }  -->
 
 <!-- Vendor Rating Modal -->
 <div class="rating-backdrop" *ngIf="showRatingModal">
@@ -241,9 +265,7 @@
           {{ hoverRating | number:'1.1-1' }}
         </span>
 
-          <i class="fa star-icon" [ngClass]="getStarFill(i)"></i>
-
-
+        <i class="fa star-icon" [ngClass]="getStarFill(i)"></i>
       </div>
     </div>
 

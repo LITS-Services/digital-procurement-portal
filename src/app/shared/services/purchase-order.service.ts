@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AvgVendorRatingVM } from 'app/purchase-order/purchase-order-details/vendor-rating/vendor-rating';
+import { withSkipToast } from 'app/shared/interceptor/response-handler.interceptor';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 
@@ -74,7 +75,9 @@ export class PurchaseOrderService {
   }
 
   getGoodsReceiptNoteById(purchaseOrderId: number) {
-    return this.http.get<any>(`${this.baseUrl}/get-grn?purchaseOrderId=${purchaseOrderId}`);
+    return this.http.get<any>(`${this.baseUrl}/get-grn?purchaseOrderId=${purchaseOrderId}`, {
+      context: withSkipToast()
+    });
   }
 
   getInvoiceByPoId(purchaseOrderId: number) {

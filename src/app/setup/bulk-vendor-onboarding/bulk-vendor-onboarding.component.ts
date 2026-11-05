@@ -114,7 +114,7 @@ export class BulkVendorOnboardingComponent implements OnInit {
             city: (r.City || '').trim(),
             state: (r.State || '').trim(),
             country: (r.Country || '').trim(),
-            zip: (r.Zip || '').trim(),
+            zip: String(r.Zip || '').trim(),
           }))
           .filter((a) => a.country || a.city);
       }
@@ -147,7 +147,8 @@ export class BulkVendorOnboardingComponent implements OnInit {
               description: (r.Description || '').trim(),
               type: (r.Type || '').trim(),
               email: (r.Email || '').trim(),
-              phone: (r.Phone || '').trim(),
+              phone: String(r.Phone || r.ContactNumber || '').trim(),
+              extension: String(r.Extension || '').trim(),
               isPrimary,
             } as ContactDetail;
           })
@@ -163,9 +164,9 @@ export class BulkVendorOnboardingComponent implements OnInit {
             id: index + 1,
             bankName: (r.BankName || '').trim(),
             accountHolderName: (r.AccountHolderName || '').trim(),
-            accountNumber: (r.AccountNumber || '').trim(),
+            accountNumber: String(r.AccountNumber || '').trim(),
             iban: (r.IBAN || '').trim(),
-            swifT_BIC_Code: (r.SwiftCode || '').trim(),
+            swifT_BIC_Code: String(r.SwiftCode || r.SWIFT_BIC_Code || (r as any)['SWIFT/BIC'] || '').trim(),
             branchName: (r.BranchName || '').trim(),
             branchAddress: (r.BranchAddress || '').trim(),
             country: (r.Country || '').trim(),
@@ -174,23 +175,33 @@ export class BulkVendorOnboardingComponent implements OnInit {
           .filter((b) => b.bankName || b.accountNumber || b.iban);
       }
 
-      const demographicRows: DemographicsRow[] = XLSX.utils.sheet_to_json(demographicSheet);
-      const firstDemoRow = demographicRows[0];
       let demographics: DemographicDetail | null = null;
-      if (
-        firstDemoRow?.VendorType ||
-        firstDemoRow?.PrimaryCurrency ||
-        firstDemoRow?.LineOfBusiness ||
-        firstDemoRow?.EmployeeResponsible ||
-        firstDemoRow?.Note
-      ) {
-        demographics = {
-          vendorType: (firstDemoRow.VendorType || '').trim(),
-          primaryCurrency: (firstDemoRow.PrimaryCurrency || '').trim(),
-          lineOfBusiness: (firstDemoRow.LineOfBusiness || '').trim(),
-          employeeResponsible: (firstDemoRow.EmployeeResponsible || '').trim(),
-          note: (firstDemoRow.Note || '').trim(),
-        };
+      if (demographicSheet) {
+        const demographicRows = XLSX.utils.sheet_to_json<DemographicsRow>(demographicSheet, { defval: '' });
+        const firstDemoRow = demographicRows[0];
+        if (
+          firstDemoRow?.VendorType ||
+          firstDemoRow?.PrimaryCurrency ||
+          firstDemoRow?.LineOfBusiness ||
+          firstDemoRow?.EmployeeResponsible ||
+          firstDemoRow?.Note ||
+          firstDemoRow?.Segment ||
+          firstDemoRow?.Speciality ||
+          firstDemoRow?.Chain ||
+          firstDemoRow?.BirthCountry
+        ) {
+          demographics = {
+            vendorType: (firstDemoRow.VendorType || '').trim(),
+            primaryCurrency: (firstDemoRow.PrimaryCurrency || '').trim(),
+            lineOfBusiness: (firstDemoRow.LineOfBusiness || '').trim(),
+            employeeResponsible: (firstDemoRow.EmployeeResponsible || '').trim(),
+            note: (firstDemoRow.Note || '').trim(),
+            segment: (firstDemoRow.Segment || '').trim(),
+            speciality: (firstDemoRow.Speciality || '').trim(),
+            chain: (firstDemoRow.Chain || '').trim(),
+            birthCountry: (firstDemoRow.BirthCountry || '').trim(),
+          };
+        }
       }
 
       const nowIso = new Date().toISOString();
@@ -200,16 +211,13 @@ export class BulkVendorOnboardingComponent implements OnInit {
         name: (firstCompanyRow.Name || '').trim(),
         logo: '',
         remarks: (firstCompanyRow.Remarks || '').trim(),
-        // requestStatusId: 0,
-        // requestStatus: {
-        //   status: 'Imported',
-        //   id: 0,
-        //   createdDate: nowIso,
-        //   modifiedDate: nowIso,
-        //   createdBy: null,
-        //   modifiedBy: null,
-        //   isDeleted: false
-        // },
+        trn: String(firstCompanyRow.TRN || '').trim(),
+        websiteUrl: (firstCompanyRow.WebsiteUrl || '').trim(),
+        paymentTerm: (firstCompanyRow.PaymentTerm || '').trim(),
+        paymentMethod: (firstCompanyRow.PaymentMethod || '').trim(),
+        vendorPostingGroup: (firstCompanyRow.VendorPostingGroup || '').trim(),
+        generalBusinessPostingGroup: (firstCompanyRow.GeneralBusinessPostingGroup || '').trim(),
+        vatBusinessPostingGroup: (firstCompanyRow.VATBusinessPostingGroup || '').trim(),
         bankDetails,
         addresses,
         contacts,
@@ -314,6 +322,13 @@ export class BulkVendorOnboardingComponent implements OnInit {
           ? this.company.users[0].userEmail
           : (this.company as any).userEmail || '',
       remarks: this.company.remarks || '',
+      trn: this.company.trn || '',
+      websiteUrl: this.company.websiteUrl || '',
+      paymentTerm: this.company.paymentTerm || '',
+      paymentMethod: this.company.paymentMethod || '',
+      vendorPostingGroup: this.company.vendorPostingGroup || '',
+      generalBusinessPostingGroup: this.company.generalBusinessPostingGroup || '',
+      vatBusinessPostingGroup: this.company.vatBusinessPostingGroup || '',
 
       bankDetails: (this.company.bankDetails || []).map((b: any) => ({
         id: 0,
@@ -351,7 +366,7 @@ export class BulkVendorOnboardingComponent implements OnInit {
         description: c.description,
         type: c.type,
         contactNumber: c.phone, // your Excel "Phone" mapped here
-        extension: '',
+        extension: c.extension || '',
         isPrimary: c.isPrimary === true,
       })),
 
@@ -368,11 +383,11 @@ export class BulkVendorOnboardingComponent implements OnInit {
             primaryContactId: 0,
             vendorType: this.company.demographics.vendorType || '',
             lineOfBusiness: this.company.demographics.lineOfBusiness || '',
-            birthCountry: '',
+            birthCountry: this.company.demographics.birthCountry || '',
             employeeResponsible: this.company.demographics.employeeResponsible || '',
-            segment: '',
-            speciality: '',
-            chain: '',
+            segment: this.company.demographics.segment || '',
+            speciality: this.company.demographics.speciality || '',
+            chain: this.company.demographics.chain || '',
             note: this.company.demographics.note || '',
           }
         : null,
@@ -387,24 +402,37 @@ export class BulkVendorOnboardingComponent implements OnInit {
 
     // ---- Call API ----
     this.companyService.registerCompanyInBulk(payload).subscribe({
-
       next: (res: any) => {
-
-      if (typeof res === 'number') {
-        this.toastr.success('Companies successfully submitted.');
         this.spinner.hide();
-        this.onClearPreview();
-        //this.selectedEntityIds = [];
-        this.router.navigate(['/company']);
-        return;
-      }
-      
-      this.spinner.hide();
 
+        const isSuccess =
+          typeof res === 'number' ||
+          res?.isSuccess === true ||
+          (res && typeof res.value === 'number');
+
+        if (isSuccess) {
+          this.toastr.success('Companies successfully submitted.');
+          this.onClearPreview();
+          this.router.navigate(['/company']);
+          return;
+        }
+
+        const errMsg =
+          res?.errors?.length
+            ? res.errors.join(', ')
+            : res?.validationErrors?.length
+            ? res.validationErrors.map((v: any) => v.errorMessage || v).join(', ')
+            : 'Failed to submit companies.';
+        this.toastr.error(errMsg);
       },
       error: (err: any) => {
-         this.spinner.hide();
+        this.spinner.hide();
         console.error('Error registering company in bulk:', err);
+        const errMsg =
+          err?.error?.errors?.length
+            ? err.error.errors.join(', ')
+            : err?.error?.message || err?.message || 'Error registering company in bulk.';
+        this.toastr.error(errMsg);
       },
     });
   }

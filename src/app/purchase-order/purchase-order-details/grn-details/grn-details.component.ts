@@ -28,6 +28,7 @@ export class GrnDetailsComponent implements OnInit {
   form!: FormGroup;
   itemsForm!: FormArray;
   grnId?: number;
+  headerExpanded: boolean = true;
   itemsExpanded: boolean = true;
   loading = true;
   isGrnSubmitted = false;
@@ -101,6 +102,10 @@ export class GrnDetailsComponent implements OnInit {
     return this.itemsForm.controls;
   }
 
+  toggleHeader() {
+    this.headerExpanded = !this.headerExpanded;
+  }
+
   toggleItems() {
     this.itemsExpanded = !this.itemsExpanded;
   }
@@ -129,44 +134,66 @@ export class GrnDetailsComponent implements OnInit {
 
     // First try to load GRN
     this.purchaseOrderService.getGoodsReceiptNoteById(this.poId).subscribe({
-      next: (grn) => {
-        if (grn && grn.id) {
+      next: (res) => {
+        const grn = res?.value || (res?.id ? res : null);
+        if (grn && grn.id && grn.id > 0) {
           this.grnId = grn.id;
           this.isGrnSubmitted = true;
           this.poDetails = grn;
           this.patchFormFromGRN(grn);
           this.form.disable({ emitEvent: false });
+          this.loading = false;
+          this.spinner.hide();
           this.cdr.detectChanges();
         } else {
           // If no GRN exists, load from PO
-          this.purchaseOrderService.getPurchaseOrderById(this.poId).subscribe({
-            next: (po) => {
-              if (po) this.patchFormFromPO(po);
-              this.poDetails = po;
-              this.cdr.detectChanges();
-            },
-            complete: () => this.spinner.hide()
-          });
+          this.isGrnSubmitted = false;
+          this.loadFromPO();
         }
-        this.spinner.hide();
       },
       error: () => {
         // fallback to PO if GRN call fails
-        this.purchaseOrderService.getPurchaseOrderById(this.poId).subscribe({
-          next: (po) => {
-            if (po) this.patchFormFromPO(po);
-          },
-          complete: () => this.spinner.hide()
-        });
+        this.isGrnSubmitted = false;
+        this.loadFromPO();
+      }
+    });
+  }
+
+  private loadFromPO() {
+    this.purchaseOrderService.getPurchaseOrderById(this.poId).subscribe({
+      next: (res) => {
+        const po = res?.value || res;
+        if (po) {
+          this.poDetails = po;
+          this.patchFormFromPO(po);
+          if (po.grNumber && po.grNumber.trim().length > 0) {
+            this.isGrnSubmitted = true;
+            this.form.disable({ emitEvent: false });
+          } else {
+            this.isGrnSubmitted = false;
+            this.form.enable({ emitEvent: false });
+            this.form.get('grNumber')?.disable({ emitEvent: false });
+            this.form.get('purchaseOrderNo')?.disable({ emitEvent: false });
+            this.form.get('requestStatus')?.disable({ emitEvent: false });
+          }
+        }
+        this.loading = false;
+        this.spinner.hide();
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.loading = false;
+        this.spinner.hide();
+        this.cdr.detectChanges();
       }
     });
   }
 
   private patchFormFromGRN(grn: any) {
     this.form.patchValue({
-      grNumber: grn.grNumber,
-      purchaseOrderNo: grn.purchaseOrderNo,
-      requestStatus: grn.requestStatus,
+      grNumber: grn.grNumber || '',
+      purchaseOrderNo: grn.purchaseOrderNo || '',
+      requestStatus: grn.requestStatus || '',
       vendorNo: grn.vendorNo || '',
       vendorName: grn.vendorName || '',
       receiverName: grn.receiverName || '',
@@ -192,10 +219,11 @@ export class GrnDetailsComponent implements OnInit {
     });
 
     this.itemsForm.clear();
-    grn.goodsReceiptItems?.forEach((item: any) => {
+    grn.goodsReceiptItems?.forEach((item: any, idx: number) => {
       this.itemsForm.push(
         this.fb.group({
           purchaseOrderLineId: [item.purchaseOrderLineId],
+          lineNo: [item.lineNo || (idx + 1)],
           itemNo: [item.itemNo || ''],
           itemName: [item.itemName || ''],
           itemDesc: [item.itemDescription || item.itemName || ''],
@@ -216,8 +244,8 @@ export class GrnDetailsComponent implements OnInit {
   private patchFormFromPO(po: any) {
     const today = new Date().toISOString().split('T')[0];
     this.form.patchValue({
-      purchaseOrderNo: po.purchaseOrderNo,
-      requestStatus: po.requestStatus,
+      purchaseOrderNo: po.purchaseOrderNo || '',
+      requestStatus: po.requestStatus || '',
       vendorNo: po.vendorNo || '',
       vendorName: po.vendorName || po.vendorCompanyName || '',
       receiverName: po.receiverName || '',
@@ -243,10 +271,11 @@ export class GrnDetailsComponent implements OnInit {
     });
 
     this.itemsForm.clear();
-    po.items?.forEach((line: any) => {
+    po.items?.forEach((line: any, idx: number) => {
       this.itemsForm.push(
         this.fb.group({
           purchaseOrderLineId: [line.purchaseOrderLineId],
+          lineNo: [line.lineNo || (idx + 1)],
           itemNo: [line.itemNo || ''],
           itemName: [line.itemName || ''],
           itemDesc: [line.itemDescription || line.itemName || ''],
@@ -284,6 +313,7 @@ export class GrnDetailsComponent implements OnInit {
 
       const itemsPayload = this.itemsForm.controls.map((ctrl) => ({
         purchaseOrderLineId: ctrl.get('purchaseOrderLineId')?.value,
+        lineNo: ctrl.get('lineNo')?.value,
         itemNo: ctrl.get('itemNo')?.value,
         itemDesc: ctrl.get('itemDesc')?.value,
         orderedQuantity: ctrl.get('orderedQty')?.value,

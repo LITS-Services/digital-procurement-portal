@@ -1,11 +1,11 @@
 export interface RequestStatus {
   status: string;
   id: number;
-[key: string]: any; 
+  [key: string]: any; 
 }
 
 export interface BankDetail {
-  vendorCompanyId?: number;        // not used yet (no API)
+  vendorCompanyId?: number;
   bankName: string;
   accountHolderName: string;
   accountNumber: string;
@@ -22,9 +22,8 @@ export interface BankDetail {
 }
 
 export interface UsersDetail {
-  userName:string;
-  userEmail:string
-
+  userName: string;
+  userEmail: string;
 }
 
 export interface AddressDetail {
@@ -43,6 +42,7 @@ export interface ContactDetail {
   type?: string;
   email: string;
   phone: string;
+  extension?: string;
   isPrimary?: boolean;
 }
 
@@ -51,7 +51,11 @@ export interface DemographicDetail {
   primaryCurrency: string;
   lineOfBusiness: string;
   employeeResponsible: string;
-  note:string;
+  note: string;
+  segment?: string;
+  speciality?: string;
+  chain?: string;
+  birthCountry?: string;
 }
 
 export interface AttachmentDetail {
@@ -59,21 +63,27 @@ export interface AttachmentDetail {
   fileName: string;
   fileType: string;
   sizeInKb: number;
-  // keep reference to File for later API upload
   file?: File;
 }
 
 export interface Company {
-  companyGUID: string; // you can treat this as CompanyKey or generate GUID later
+  companyGUID: string;
   name: string;
   logo: string;
   remarks: string;
+  trn?: string;
+  websiteUrl?: string;
+  paymentTerm?: string;
+  paymentMethod?: string;
+  vendorPostingGroup?: string;
+  generalBusinessPostingGroup?: string;
+  vatBusinessPostingGroup?: string;
   requestStatusId?: number;
   requestStatus?: RequestStatus;
   bankDetails: BankDetail[];
   addresses: AddressDetail[];
   contacts: ContactDetail[];
-  users:UsersDetail[];
+  users: UsersDetail[];
   demographics: DemographicDetail | null;
   attachments: AttachmentDetail[];
 }
@@ -83,6 +93,13 @@ export type CompaniesRow = {
   CompanyKey?: string;
   Name?: string;
   Remarks?: string;
+  TRN?: string | number;
+  WebsiteUrl?: string;
+  PaymentTerm?: string;
+  PaymentMethod?: string;
+  VendorPostingGroup?: string;
+  GeneralBusinessPostingGroup?: string;
+  VATBusinessPostingGroup?: string;
 };
 
 export type UserRow = {
@@ -106,6 +123,8 @@ export type ContactRow = {
   Type?: string;
   Email?: string;
   Phone?: string;
+  ContactNumber?: string;
+  Extension?: string | number;
   IsPrimary?: string;
 };
 
@@ -113,9 +132,10 @@ export type BankRow = {
   CompanyKey?: string;
   BankName?: string;
   AccountHolderName?: string;
-  AccountNumber?: string;
+  AccountNumber?: string | number;
   IBAN?: string;
   SwiftCode?: string;
+  SWIFT_BIC_Code?: string;
   BranchName?: string;
   BranchAddress?: string;
   Country?: string;
@@ -123,9 +143,13 @@ export type BankRow = {
 };
 
 export type DemographicsRow = {
-  VendorType: string;
-  PrimaryCurrency: string;
-  LineOfBusiness: string;
-  EmployeeResponsible: string;
-  Note:string;
-}
+  VendorType?: string;
+  PrimaryCurrency?: string;
+  LineOfBusiness?: string;
+  EmployeeResponsible?: string;
+  Note?: string;
+  Segment?: string;
+  Speciality?: string;
+  Chain?: string;
+  BirthCountry?: string;
+};

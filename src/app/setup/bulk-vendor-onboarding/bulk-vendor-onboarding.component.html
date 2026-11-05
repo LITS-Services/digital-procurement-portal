@@ -161,16 +161,40 @@
              
 
                 <div class="row small-fields">
-                  <div class="col-md-12 mb-1">
+                  <div class="col-md-4 mb-2" *ngIf="company?.trn">
+                    <div class="field-label">TRN</div>
+                    <div class="field-value font-weight-500">{{ company?.trn }}</div>
+                  </div>
+                  <div class="col-md-4 mb-2" *ngIf="company?.websiteUrl">
+                    <div class="field-label">Website</div>
+                    <div class="field-value">{{ company?.websiteUrl }}</div>
+                  </div>
+                  <div class="col-md-4 mb-2" *ngIf="company?.paymentTerm">
+                    <div class="field-label">Payment Term</div>
+                    <div class="field-value">{{ company?.paymentTerm }}</div>
+                  </div>
+                  <div class="col-md-4 mb-2" *ngIf="company?.paymentMethod">
+                    <div class="field-label">Payment Method</div>
+                    <div class="field-value">{{ company?.paymentMethod }}</div>
+                  </div>
+                  <div class="col-md-4 mb-2" *ngIf="company?.vendorPostingGroup">
+                    <div class="field-label">Vendor Posting Group</div>
+                    <div class="field-value">{{ company?.vendorPostingGroup }}</div>
+                  </div>
+                  <div class="col-md-4 mb-2" *ngIf="company?.generalBusinessPostingGroup">
+                    <div class="field-label">General Business Posting Group</div>
+                    <div class="field-value">{{ company?.generalBusinessPostingGroup }}</div>
+                  </div>
+                  <div class="col-md-4 mb-2" *ngIf="company?.vatBusinessPostingGroup">
+                    <div class="field-label">VAT Business Posting Group</div>
+                    <div class="field-value">{{ company?.vatBusinessPostingGroup }}</div>
+                  </div>
+                  <div class="col-md-12 mb-1" *ngIf="company?.remarks">
                     <div class="field-label">{{ 'COMMON.REMARKS' | translate }}</div>
                     <div class="field-value text-truncate" [title]="company?.remarks">
                       {{ company?.remarks }}
                     </div>
                   </div>
-
-                  <hr class="w-100 mx-2">
-
-               
                 </div>
               </div>
             </div>
@@ -262,7 +286,7 @@
                           <!-- Phone -->
                           <span class="d-flex align-items-center">
                             <i class="ft ft-phone mr-1"></i>
-                            {{ c.phone || 'N/A' }}
+                            {{ c.phone || 'N/A' }} <span *ngIf="c.extension" class="ml-1 text-muted">(Ext: {{ c.extension }})</span>
                           </span>
                         
                           <!-- Dot divider -->
@@ -391,6 +415,30 @@
                           <div class="field-label">{{ 'SETUP_MODULE.BULK_COMPANY_UPLOAD_SEC.EMPLOYEE_RESPONSIBLE' | translate }}</div>
                           <div class="field-value">
                             {{ company?.demographics?.employeeResponsible }}
+                          </div>
+                        </div>
+                        <div class="col-md-6 mb-2" *ngIf="company?.demographics?.segment">
+                          <div class="field-label">Segment</div>
+                          <div class="field-value">
+                            {{ company?.demographics?.segment }}
+                          </div>
+                        </div>
+                        <div class="col-md-6 mb-2" *ngIf="company?.demographics?.speciality">
+                          <div class="field-label">Speciality</div>
+                          <div class="field-value">
+                            {{ company?.demographics?.speciality }}
+                          </div>
+                        </div>
+                        <div class="col-md-6 mb-2" *ngIf="company?.demographics?.chain">
+                          <div class="field-label">Chain</div>
+                          <div class="field-value">
+                            {{ company?.demographics?.chain }}
+                          </div>
+                        </div>
+                        <div class="col-md-6 mb-2" *ngIf="company?.demographics?.birthCountry">
+                          <div class="field-label">Birth Country</div>
+                          <div class="field-value">
+                            {{ company?.demographics?.birthCountry }}
                           </div>
                         </div>
                     
