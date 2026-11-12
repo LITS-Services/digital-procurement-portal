@@ -160,24 +160,6 @@
   margin-top: -1px;
 }
 
-.ngx-datatable.bootstrap ::ng-deep .datatable-footer .datatable-pager ul li:not(.disabled).active a,
-.ngx-datatable.bootstrap .datatable-footer .datatable-pager ul li:not(.disabled):hover a {
-  background: #116AEF !important;
-  color: #ffffff !important;
-  font-weight: bold;
-}
-
-.ngx-datatable.bootstrap ::ng-deep .datatable-footer .datatable-pager a {
-  height: 22px;
-  min-width: 24px;
-  line-height: 22px;
-  padding: 0;
-  border-radius: 3px;
-  margin: 0 3px;
-  text-align: center;
-  text-decoration: none;
-  color: #6c757d !important;
-}
 
 .comments-section {
   ::ng-deep .comments-thread {

@@ -45,7 +45,7 @@
 
           <!-- <ngx-datatable-column name="Remarks" [width]="150" prop="remarks">
           </ngx-datatable-column> -->
-          <ngx-datatable-column [name]="'RFQ_MODULE.VISIBLE_TO_VENDOR' | translate" [width]="150">
+          <ngx-datatable-column [name]="'RFQ_MODULE.VISIBLE_TO_VENDOR' | translate" [width]="175" [minWidth]="170">
             <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
 
               <input class="ms-2" type="checkbox" [disabled]="viewMode" [ngModelOptions]="{ standalone: true }"

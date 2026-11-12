@@ -99,6 +99,7 @@ export type SpendChartOptions = {
   grid: ApexGrid;
   theme: ApexTheme;
   legend: ApexLegend;
+  colors: string[];
 };
 
 export type SpendDonutOptions = {
@@ -127,6 +128,7 @@ export type VendorDeliveryChartOptions = {
   grid: ApexGrid;
   colors: string[];
   theme: ApexTheme;
+  responsive?: ApexResponsive[];
 };
 
 @Component({
@@ -153,8 +155,9 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
     { label: 'Non-Inventory', color: '#219ebc', value: '35%' },
   ];
 
-  monthlySpendAmount = 'AED 0';
+  monthlySpendAmount = '0';
   monthlySpendLabel = '';
+  isMonthlySpendEmpty = true;
 
   progressReport = [
     { month: 'Jan', value: 68 },
@@ -378,6 +381,7 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
 
         const inventory = Number(data?.inventory ?? 0);
         const nonInventory = Number(data?.nonInventory ?? 0);
+        this.isMonthlySpendEmpty = inventory <= 0 && nonInventory <= 0;
 
         this.spendDonutOptions = {
           ...this.spendDonutOptions,
@@ -484,44 +488,79 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
   private initSpendChart(): void {
     this.spendChartOptions = {
       series: [],
+      colors: ['#116AEF', '#60A5FA', '#93C5FD'],
       chart: {
         type: 'area',
-        height: 280,
+        height: 290,
+        fontFamily: 'Poppins, sans-serif',
         toolbar: { show: false },
         zoom: { enabled: false },
       },
       xaxis: {
         categories: [],
         labels: {
-          style: { fontSize: '11px' },
+          rotate: 0,
+          rotateAlways: false,
+          hideOverlappingLabels: true,
+          offsetY: 6,
+          style: { fontSize: '12px', colors: '#64748B' },
         },
         axisBorder: { show: false },
         axisTicks: { show: false },
+        tooltip: { enabled: false },
       },
       yaxis: {
+        min: 0,
+        max: 6,
+        tickAmount: 6,
+        decimalsInFloat: 0,
         labels: {
-          formatter: (val: number) => val.toString(),
-          style: { fontSize: '11px' },
+          offsetX: -10,
+          formatter: (val: number) => Math.round(val).toString(),
+          style: { fontSize: '12px', colors: '#64748B' },
         },
       },
       stroke: {
         curve: 'smooth',
-        width: 3,
+        width: 2,
+        lineCap: 'round',
       },
       dataLabels: { enabled: false },
       fill: {
         type: 'gradient',
+        colors: ['#116AEF', '#60A5FA', '#93C5FD'],
         gradient: {
-          shadeIntensity: 0.8,
-          opacityFrom: 0.25,
-          opacityTo: 0.05,
-          stops: [0, 90, 100],
+          type: 'vertical',
+          shadeIntensity: 0,
+          inverseColors: false,
+          opacityFrom: 0.3,
+          opacityTo: 0.0,
+          stops: [0, 100],
+          colorStops: [
+            [
+              { offset: 0, color: '#116AEF', opacity: 0.3 },
+              { offset: 65, color: '#116AEF', opacity: 0.1 },
+              { offset: 100, color: '#116AEF', opacity: 0.0 },
+            ],
+            [
+              { offset: 0, color: '#60A5FA', opacity: 0.22 },
+              { offset: 65, color: '#60A5FA', opacity: 0.07 },
+              { offset: 100, color: '#60A5FA', opacity: 0.0 },
+            ],
+            [
+              { offset: 0, color: '#93C5FD', opacity: 0.15 },
+              { offset: 65, color: '#93C5FD', opacity: 0.05 },
+              { offset: 100, color: '#93C5FD', opacity: 0.0 },
+            ],
+          ],
         },
       },
       grid: {
-        borderColor: 'rgba(148, 163, 184, 0.3)',
-        strokeDashArray: 4,
-        padding: { left: 8, right: 12 },
+        borderColor: '#E2E8F0',
+        strokeDashArray: 6,
+        xaxis: { lines: { show: false } },
+        yaxis: { lines: { show: true } },
+        padding: { top: 8, left: 14, right: 16, bottom: 8 },
       },
       tooltip: {
         shared: true,
@@ -537,25 +576,42 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
           },
         },
         y: {
-          formatter: (val: number) => `${val.toLocaleString()} RFQs`,
+          formatter: (val: number) => `${val != null ? val.toLocaleString() : 0} RFQs`,
         },
       },
       legend: {
+        show: true,
+        position: 'bottom',
         horizontalAlign: 'left',
+        offsetY: 6,
+        fontSize: '12px',
+        labels: {
+          colors: '#64748B',
+        },
+        markers: {
+          strokeWidth: 0,
+        },
+        itemMargin: {
+          horizontal: 12,
+          vertical: 4,
+        },
       },
       theme: {
         mode: 'light',
-        palette: 'palette2',
       },
     };
   }
 
   changeRange(range: 'month' | 'quarter' | 'year'): void {
+    if (this.activeRange === range && this.isRfqChartReady) {
+      return;
+    }
     this.setChartRange(range);
   }
 
   private setChartRange(range: 'month' | 'quarter' | 'year'): void {
     this.activeRange = range;
+    this.cdr.detectChanges();
 
     const filterType = range === 'month' ? 1 : range === 'quarter' ? 2 : 3;
 
@@ -593,6 +649,10 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
           selectedRfq.push(row.quotesSelected);
         });
 
+        const maxDataVal = Math.max(...totalRfq, ...rfqQuotation, ...selectedRfq, 0);
+        const yMax = maxDataVal <= 6 ? 6 : Math.ceil(maxDataVal / 5) * 5;
+        const yTickAmount = maxDataVal <= 6 ? 6 : 5;
+
         this.spendChartOptions = {
           ...this.spendChartOptions,
           series: [
@@ -612,6 +672,13 @@ export class Dashboard1Component implements OnInit, AfterViewInit {
           xaxis: {
             ...this.spendChartOptions.xaxis,
             categories,
+            tickAmount: categories.length > 12 ? 11 : undefined,
+          },
+          yaxis: {
+            ...this.spendChartOptions.yaxis,
+            min: 0,
+            max: yMax,
+            tickAmount: yTickAmount,
           },
         };
         this.isRfqChartReady = true;
@@ -725,16 +792,20 @@ private initVendorDeliveryChart(): void {
         colors: ['#116aef', '#f97316'],
         chart: {
           type: 'bar',
-          height: 210,
+          height: 200,
+          width: '100%',
           stacked: true,
           toolbar: { show: false },
           parentHeightOffset: 0,
           offsetY: 0,
+          redrawOnParentResize: true,
+          redrawOnWindowResize: true,
         },
         plotOptions: {
           bar: {
             horizontal: true,
             barHeight: '55%',
+            borderRadius: 2,
           },
         },
         grid: {
@@ -758,13 +829,15 @@ private initVendorDeliveryChart(): void {
             },
           },
           title: {
-            text: 'Deliveries',
+            text: this.translate.instant('DASHBOARD_MODULE.DELIVERIES') || 'Deliveries',
+            offsetY: 4,
           },
         },
         yaxis: {
           labels: {
             style: { fontSize: '12px' },
             offsetX: 0,
+            maxWidth: 280,
           },
         },
         fill: {
@@ -772,7 +845,7 @@ private initVendorDeliveryChart(): void {
         },
         tooltip: {
           y: {
-            formatter: (val: number) => `${val} orders`,
+            formatter: (val: number) => `${val} ${this.translate.instant('DASHBOARD_MODULE.ORDERS') || 'orders'}`,
           },
         },
         legend: {
@@ -786,6 +859,21 @@ private initVendorDeliveryChart(): void {
             vertical: 0,
           },
         },
+        responsive: [
+          {
+            breakpoint: 768,
+            options: {
+              yaxis: {
+                labels: {
+                  maxWidth: 130,
+                },
+              },
+              legend: {
+                offsetX: 0,
+              },
+            },
+          },
+        ],
         theme: {
           mode: 'light',
         },

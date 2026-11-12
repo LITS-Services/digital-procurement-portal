@@ -57,134 +57,146 @@
       <div class="collapse navbar-collapse d-block" id="navbarSupportedContent">
         <ul class="navbar-nav">
 
-          <div class="search-bar-container" #searchRoot>
-            <div class="search-input-wrapper">
-              <i class="ft-search search-icon"></i>
-              <input type="text" class="custom-input search-input" [formControl]="searchCtrl" (focus)="openPanel()"
-                (keydown)="onKeyDown($event)" [placeholder]="'NAV.SEARCH_PLACEHOLDER' | translate" />
-            </div>
+          <div class="navbar-actions-container" #searchRoot>
 
-            <div class="search-panel" *ngIf="panelOpen" (click)="$event.stopPropagation()">
-              <div class="search-panel__header">
-                <div class="search-panel__title">{{ 'NAV.SEARCH_TITLE' | translate }}</div>
+            <!-- Expandable Search -->
+            <div class="nav-search-wrapper" [class.is-expanded]="searchExpanded">
+              <button *ngIf="!searchExpanded" type="button" class="navbar-icon-btn search-toggle-btn"
+                (click)="openSearch($event)" [title]="'NAV.SEARCH_TITLE' | translate">
+                <img src="assets/img/svg-icons/search-nav-icon.svg" class="nav-icon-svg" alt="Search" />
+              </button>
 
-                <div class="search-panel__shortcuts">
-                  <span class="kbd">↑↓</span>
-                  <span class="txt">{{ 'NAV.TO_NAVIGATE' | translate }}</span>
-                  <span class="kbd">Enter</span>
-                  <span class="txt">{{ 'NAV.TO_OPEN' | translate }}</span>
-                </div>
+              <div class="search-input-wrapper" [class.expanded]="searchExpanded">
+                <img src="assets/img/svg-icons/search-nav-icon.svg" class="search-icon search-nav-svg" alt="Search" />
+                <input #navSearchInput type="text" class="custom-input search-input" [formControl]="searchCtrl"
+                  (focus)="openPanel()" (keydown)="onKeyDown($event)" [placeholder]="'NAV.SEARCH_PLACEHOLDER' | translate" />
+                <button type="button" class="search-clear-btn" (click)="closeSearch($event)" [title]="'COMMON.CLOSE' | translate">
+                  <i class="ft-x"></i>
+                </button>
               </div>
 
-              <div class="panel-body">
-                <div *ngIf="loading" class="loading">{{ 'COMMON.LOADING' | translate }}</div>
+              <!-- Search Results Dropdown -->
+              <div class="search-panel" *ngIf="panelOpen && searchExpanded" (click)="$event.stopPropagation()">
+                <div class="search-panel__header">
+                  <div class="search-panel__title">{{ 'NAV.SEARCH_TITLE' | translate }}</div>
 
-                <ng-container *ngIf="!loading">
-                  <div *ngIf="results?.length; else emptyState">
-                    <div class="result-item" *ngFor="let r of results; let i = index; trackBy: trackById"
-                      [class.active]="i === activeIndex" (mouseenter)="activeIndex = i" (click)="selectResult(r)">
+                  <div class="search-panel__shortcuts">
+                    <span class="kbd">↑↓</span>
+                    <span class="txt">{{ 'NAV.TO_NAVIGATE' | translate }}</span>
+                    <span class="kbd">Enter</span>
+                    <span class="txt">{{ 'NAV.TO_OPEN' | translate }}</span>
+                  </div>
+                </div>
 
-                      <div class="result-main">
-                        <div class="result-badge">
-                          {{ getBadgeLabel(r?.message) }}
+                <div class="panel-body">
+                  <div *ngIf="loading" class="loading">{{ 'COMMON.LOADING' | translate }}</div>
+
+                  <ng-container *ngIf="!loading">
+                    <div *ngIf="results?.length; else emptyState">
+                      <div class="result-item" *ngFor="let r of results; let i = index; trackBy: trackById"
+                        [class.active]="i === activeIndex" (mouseenter)="activeIndex = i" (click)="selectResult(r)">
+
+                        <div class="result-main">
+                          <div class="result-badge">
+                            {{ getBadgeLabel(r?.message) }}
+                          </div>
+
+                          <div class="result-text">
+                            <div class="title text-ellipsis"
+                              [innerHTML]="highlightText(r?.message, searchCtrl.value || '')">
+                            </div>
+                            <div class="subtitle text-ellipsis">
+                              {{ 'NAV.DETAILS_CLICK' | translate }}
+                            </div>
+                          </div>
                         </div>
 
-                        <div class="result-text">
-                          <div class="title text-ellipsis"
-                            [innerHTML]="highlightText(r?.message, searchCtrl.value || '')">
-                          </div>
-                          <div class="subtitle text-ellipsis">
-                            {{ 'NAV.DETAILS_CLICK' | translate }}
-                          </div>
+                        <div class="result-arrow">
+                          <i class="ft-chevron-right"></i>
                         </div>
-                      </div>
-
-                      <div class="result-arrow">
-                        <i class="ft-chevron-right"></i>
                       </div>
                     </div>
-                  </div>
-
-                  <ng-template #emptyState>
-                    <div class="empty">{{ 'COMMON.NO_RESULTS' | translate }}</div>
-                  </ng-template>
-                </ng-container>
-              </div>
-            </div>
-
-            <div class="icon-buttons">
-              <!-- <button class="icon-btn">
-                 <i class="ft-moon"></i>
-                </button> -->
-              <div class="lang-dropdown-wrapper" ngbDropdown [display]="'dynamic'" (openChange)="langOpen = $event">
-                <button type="button" class="icon-btn lang-dropdown-toggle" ngbDropdownToggle
-                  [disabled]="isSwitchingLanguage" [title]="'SETTINGS.LANGUAGE' | translate">
-                  <i class="ft-globe lang-globe-icon"></i>
-                  <span class="lang-code-text">{{ currentLang === 'ar' ? 'العربية' : 'English' }}</span>
-                  <i class="ft-chevron-down lang-chevron-icon" [class.rotate]="langOpen"></i>
-                </button>
-
-                <div class="dropdown-menu dropdown-menu-right lang-dropdown-menu" ngbDropdownMenu>
-                  <button type="button" class="dropdown-item lang-item" [class.active]="currentLang === 'en'"
-                    [disabled]="isSwitchingLanguage" (click)="switchLanguage('en')">
-                    <span class="lang-name">English</span>
-                    <i *ngIf="currentLang === 'en'" class="ft-check lang-check-icon"></i>
-                  </button>
-                  <button type="button" class="dropdown-item lang-item" [class.active]="currentLang === 'ar'"
-                    [disabled]="isSwitchingLanguage" (click)="switchLanguage('ar')">
-                    <span class="lang-name">العربية</span>
-                    <i *ngIf="currentLang === 'ar'" class="ft-check lang-check-icon"></i>
-                  </button>
-                </div>
-              </div>
-
-              <div class="notification-wrapper" #notifRoot>
-                <button class="icon-btn notification-bell" (click)="togglePanel()" aria-haspopup="true"
-                  [attr.aria-expanded]="notifOpen">
-                  <i class="ft-bell"></i>
-                  <span class="dot" *ngIf="unreadCount > 0">{{unreadCount}}</span>
-                </button>
-
-                <div class="notif-panel" *ngIf="notifOpen" [class.show]="notifOpen" (click)="$event.stopPropagation()">
-                  <div class="panel-header">
-                    <div class="panel-row">
-                      <span class="title">{{ 'NAV.NOTIFICATIONS' | translate }}</span>
-                      <span *ngIf="notificationCount > 0" class="count-div">{{notificationCount}}</span>
-                    </div>
-                    <button class="icon-btn xs" (click)="closePanel()" aria-label="Close">
-                      <i class="ft-x"></i>
-                    </button>
-                  </div>
-
-                  <div class="panel-body">
-                    <ng-container *ngIf="notifications?.length; else emptyState">
-                      <div class="notif-item" [ngClass]="{ 'unread-notif': n.status === 0 }"
-                        *ngFor="let n of notifications" (click)="onNotifClick(n)">
-                        <div class="row-1">
-                          <div class="title text-ellipsis d-flex align-items-center">{{ n.title }}
-                            <span *ngIf="n.status === 0" class="dot-unread ml-1"></span>
-                          </div>
-                          <span [container]="'body'" [ngbTooltip]="n.createdOn | date: 'short'" class="time">{{
-                            n.timeAgo }}</span>
-                        </div>
-                        <div class="message text-ellipsis-2" *ngIf="n.message">{{ n.message }}</div>
-                      </div>
-                    </ng-container>
 
                     <ng-template #emptyState>
-                      <div class="empty p-2">{{ 'NAV.NO_NOTIFICATIONS' | translate }}</div>
+                      <div class="empty">{{ 'COMMON.NO_RESULTS' | translate }}</div>
                     </ng-template>
-                  </div>
-
-                  <div class="panel-footer">
-                    <button class="btn btn-markasread" (click)="markAllAsRead()"><i class="ft ft-check ml-2"></i>{{
-                      'NAV.MARK_ALL_AS_READ' | translate }}</button>
-                    <button class="btn btn-clearall" (click)="clearAllNotification()"><i
-                        class="ft ft-trash-2 ml-2"></i>{{ 'NAV.CLEAR_ALL' | translate }}</button>
-                  </div>
+                  </ng-container>
                 </div>
               </div>
             </div>
+
+
+            <!-- Notification Bell Icon (Before Language in LTR as per Design) -->
+            <div class="notification-wrapper" #notifRoot>
+              <button type="button" class="navbar-icon-btn notification-bell" (click)="togglePanel()" aria-haspopup="true"
+                [attr.aria-expanded]="notifOpen" [title]="'NAV.NOTIFICATIONS' | translate">
+                <img src="assets/img/svg-icons/notification-nav-icon.svg" class="nav-icon-svg notif-nav-svg" alt="Notifications" />
+                <span class="dot" *ngIf="unreadCount > 0">{{unreadCount}}</span>
+              </button>
+
+              <div class="notif-panel" *ngIf="notifOpen" [class.show]="notifOpen" (click)="$event.stopPropagation()">
+                <div class="panel-header">
+                  <div class="panel-row">
+                    <span class="title">{{ 'NAV.NOTIFICATIONS' | translate }}</span>
+                    <span *ngIf="notificationCount > 0" class="count-div">{{notificationCount}}</span>
+                  </div>
+                  <button type="button" class="navbar-icon-btn xs" (click)="closePanel()" aria-label="Close">
+                    <i class="ft-x"></i>
+                  </button>
+                </div>
+
+                <div class="panel-body">
+                  <ng-container *ngIf="notifications?.length; else emptyState">
+                    <div class="notif-item" [ngClass]="{ 'unread-notif': n.status === 0 }"
+                      *ngFor="let n of notifications" (click)="onNotifClick(n)">
+                      <div class="row-1">
+                        <div class="title text-ellipsis d-flex align-items-center">{{ n.title }}
+                          <span *ngIf="n.status === 0" class="dot-unread ml-1"></span>
+                        </div>
+                        <span [container]="'body'" [ngbTooltip]="n.createdOn | date: 'short'" class="time">{{
+                          n.timeAgo }}</span>
+                      </div>
+                      <div class="message text-ellipsis-2" *ngIf="n.message">{{ n.message }}</div>
+                    </div>
+                  </ng-container>
+
+                  <ng-template #emptyState>
+                    <div class="empty p-2">{{ 'NAV.NO_NOTIFICATIONS' | translate }}</div>
+                  </ng-template>
+                </div>
+
+                <div class="panel-footer">
+                  <button class="btn btn-markasread" (click)="markAllAsRead()"><i class="ft ft-check ml-2"></i>{{
+                    'NAV.MARK_ALL_AS_READ' | translate }}</button>
+                  <button class="btn btn-clearall" (click)="clearAllNotification()"><i
+                      class="ft ft-trash-2 ml-2"></i>{{ 'NAV.CLEAR_ALL' | translate }}</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Language Selection Dropdown -->
+            <div class="lang-dropdown-wrapper" ngbDropdown display="static" (openChange)="langOpen = $event">
+              <button type="button" class="lang-dropdown-toggle" ngbDropdownToggle
+                [disabled]="isSwitchingLanguage" [title]="'SETTINGS.LANGUAGE' | translate">
+                <i class="ft-globe lang-globe-icon"></i>
+                <span class="lang-code-text">{{ currentLang === 'ar' ? 'العربية' : 'English' }}</span>
+                <img src="assets/img/svg-icons/downarrow-icon.svg" class="lang-chevron-icon" [class.rotate]="langOpen" alt="" />
+              </button>
+
+              <div class="dropdown-menu dropdown-menu-right lang-dropdown-menu" ngbDropdownMenu>
+                <button type="button" class="dropdown-item lang-item" [class.active]="currentLang === 'en'"
+                  [disabled]="isSwitchingLanguage" (click)="switchLanguage('en')">
+                  <span class="lang-name">English</span>
+                  <i *ngIf="currentLang === 'en'" class="ft-check lang-check-icon"></i>
+                </button>
+                <button type="button" class="dropdown-item lang-item" [class.active]="currentLang === 'ar'"
+                  [disabled]="isSwitchingLanguage" (click)="switchLanguage('ar')">
+                  <span class="lang-name">العربية</span>
+                  <i *ngIf="currentLang === 'ar'" class="ft-check lang-check-icon"></i>
+                </button>
+              </div>
+            </div>
+
           </div>
 
           <li class="dropdown nav-item me-1" placement="bottom-left" display="static" ngbDropdown
@@ -192,8 +204,8 @@
             <a class="nav-link dropdown-toggle user-dropdown d-flex align-items-end" id="dropdownBasic2"
               href="javascript:;" data-toggle="dropdown" ngbDropdownToggle>
               <div class="user d-md-flex d-none me-2">
-                <span class="text-end user-text">{{username}}</span><span class="text-end text-muted font-small-3">{{
-                  'NAV.AVAILABLE' | translate }}</span>
+                <span class="text-end user-text">{{username}}</span>
+                <span class="text-end text-muted font-small-3">{{ userRole }}</span>
               </div>
               <!-- <img class="avatar" [src]="profilePicture || 'assets/img/profile/user.png'" alt="avatar" height="35"
                 width="35" /> -->
@@ -202,7 +214,7 @@
                 <img class="profile-avatar" [src]="profilePicture || 'assets/img/profile/user.png'" alt="avatar">
 
                 <div class="profile-pill">
-                  <i class="ft-chevron-down pill-icon"></i>
+                  <img src="assets/img/svg-icons/downarrow-icon.svg" class="pill-icon" alt="" />
                 </div>
               </div>
             </a>

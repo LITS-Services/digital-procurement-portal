@@ -15,28 +15,29 @@
           <div class="col-md-12 d-flex justify-content-between align-items-center">
             <div>
               <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
-                <i class="ft-arrow-left"></i>
+                <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
               </button>
               <span class="vl"></span>
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn" appPermission
-                [appPermFormId]="FORM_IDS.INVITATION" [appPermDisable]="'write'"
+                [appPermFormId]="FORM_IDS.INVITATION" [appPermDisable]="'write'" [appPermHide]="true"
                 (click)="CreatInvitations(invitationModal)">
-                <i class="ft-mail"></i>
-                <label class="ml-1">{{ 'SETUP_MODULE.CREATE_INVITATION' | translate }}</label>
+                <img src="assets/img/svg-icons/create-icon.svg" class="btn-action-icon" alt="" />
+                <label>{{ 'SETUP_MODULE.CREATE_INVITATION' | translate }}</label>
               </button>
 
-              <!-- ✅ Resend Invitation Logic -->
-              <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isResendButtonDisabled"
+              <!-- ✅ Resend Invitation Logic (shown when row selected) -->
+              <button *ngIf="!isResendButtonDisabled" type="button" class="btn btn-sm cstm-ui-table-btn"
                 (click)="resendInvitation(invitationModal)">
-                <i class="ft-repeat"></i>
-                <label class="ml-1">{{ 'SETUP_MODULE.RESEND' | translate }}</label>
+                <img src="assets/img/svg-icons/Sync_icon.svg" class="btn-action-icon" alt="" />
+                <label>{{ 'SETUP_MODULE.RESEND' | translate }}</label>
               </button>
             </div>
 
             <div class="d-flex align-items-center">
               <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
-                <i class="ft-sliders"></i><label class="ml-1 btn-label">{{ 'COMMON.FILTER' | translate }}</label>
+                <img src="assets/img/svg-icons/filter-icon.svg" class="btn-action-icon" alt="" />
+                <label class="btn-label">{{ 'COMMON.FILTER' | translate }}</label>
               </button>
             </div>
           </div>
@@ -93,7 +94,7 @@
           </ngx-datatable-column>
 
           <!-- Sr No -->
-          <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [minWidth]="50" [maxWidth]="60" [resizeable]="false">
+          <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="75" [minWidth]="75" [maxWidth]="80" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
             <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
               <span>{{ rowIndex + 1 }}</span>
             </ng-template>
@@ -106,7 +107,7 @@
             </ng-template>
           </ngx-datatable-column>
 
-          <ngx-datatable-column [name]="'SETUP_MODULE.REQUEST_STATUS' | translate" prop="requestStatusName" [minWidth]="50" [flexGrow]="1">
+          <ngx-datatable-column [name]="'SETUP_MODULE.REQUEST_STATUS' | translate" prop="requestStatusName" [minWidth]="140" [flexGrow]="1">
             <ng-template ngx-datatable-cell-template let-row="row">
               <span class="chip" [ngClass]="row.statusClass">
                 {{ row.requestStatusName | statusTranslate }}

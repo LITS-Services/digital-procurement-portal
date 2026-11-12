@@ -6,7 +6,8 @@
     </div>
 
     <div class="d-flex align-items-center mt-2 mt-md-0">
-      <button *ngIf="canCreatePR" class="btn btn-primary btn-sm d-flex align-items-center" (click)="createNewPurchaseRequest()">
+      <button *ngIf="canCreatePR" class="btn btn-primary btn-sm d-flex align-items-center"
+        (click)="createNewPurchaseRequest()">
         <i class="ft ft-plus mr-1"></i> {{ 'DASHBOARD_MODULE.NEW_PURCHASE_REQUEST' | translate }}
       </button>
     </div>
@@ -19,10 +20,10 @@
       <div class="row row-cols-1 row-cols-md-3 row-cols-lg-5 top-metrics-row mob-gap">
         <!-- Card 1: Total Purchase Requests -->
         <div class="col count-card">
-          <div class="stat-card stat-card--primary" (click)="goToPurchaseRequests()">
+          <div class="stat-card stat-card--primary" [ngClass]="{ 'stat-card--disabled': !canViewPR }"
+            (click)="goToPurchaseRequests()">
             <div class="stat-card__label">
               <span>{{ 'DASHBOARD_MODULE.TOTAL_REQUESTS' | translate }}</span>
-              <span class="arrow-div"><i class="ft ft-arrow-up-right"></i></span>
             </div>
             <div class="stat-card__body">
               <div class="stat-card__text">
@@ -35,10 +36,10 @@
               </div>
             </div>
             <div class="stat-card__chips">
-              <span class="metric-chip">
+              <span class="metric-chip metric-chip--new">
                 {{ 'COMMON.NEW' | translate }}: <strong class="ml-1">{{ counts.newRequests }}</strong>
               </span>
-              <span class="metric-chip metric-chip--muted">
+              <span class="metric-chip metric-chip--in-process">
                 {{ 'COMMON.IN_PROGRESS' | translate }}: <strong class="ml-1">{{ counts.inProgressRequests }}</strong>
               </span>
             </div>
@@ -47,10 +48,10 @@
 
         <!-- Card 2: Draft / New -->
         <div class="col count-card">
-          <div class="stat-card stat-card--amber" (click)="goToPurchaseRequests('New')">
+          <div class="stat-card stat-card--amber" [ngClass]="{ 'stat-card--disabled': !canViewPR }"
+            (click)="goToPurchaseRequests('New')">
             <div class="stat-card__label">
               <span>{{ 'DASHBOARD_MODULE.DRAFT_NEW' | translate }}</span>
-              <span class="arrow-div"><i class="ft ft-arrow-up-right"></i></span>
             </div>
             <div class="stat-card__body">
               <div class="stat-card__text">
@@ -63,7 +64,7 @@
               </div>
             </div>
             <div class="stat-card__chips">
-              <span class="metric-chip metric-chip--amber">
+              <span class="metric-chip metric-chip--new">
                 {{ 'COMMON.DRAFT' | translate }}: <strong class="ml-1">{{ counts.newRequests }}</strong>
               </span>
             </div>
@@ -72,10 +73,10 @@
 
         <!-- Card 3: In Progress -->
         <div class="col count-card">
-          <div class="stat-card stat-card--indigo" (click)="goToPurchaseRequests('InProgress')">
+          <div class="stat-card stat-card--indigo" [ngClass]="{ 'stat-card--disabled': !canViewPR }"
+            (click)="goToPurchaseRequests('InProgress')">
             <div class="stat-card__label">
               <span>{{ 'COMMON.IN_PROGRESS' | translate }}</span>
-              <span class="arrow-div"><i class="ft ft-arrow-up-right"></i></span>
             </div>
             <div class="stat-card__body">
               <div class="stat-card__text">
@@ -88,7 +89,7 @@
               </div>
             </div>
             <div class="stat-card__chips">
-              <span class="metric-chip">
+              <span class="metric-chip metric-chip--in-process">
                 {{ 'COMMON.UNDER_REVIEW' | translate }}: <strong class="ml-1">{{ counts.inProgressRequests }}</strong>
               </span>
             </div>
@@ -97,10 +98,10 @@
 
         <!-- Card 4: Approved / Completed -->
         <div class="col count-card">
-          <div class="stat-card stat-card--emerald" (click)="goToPurchaseRequests('Completed')">
+          <div class="stat-card stat-card--emerald" [ngClass]="{ 'stat-card--disabled': !canViewPR }"
+            (click)="goToPurchaseRequests('Completed')">
             <div class="stat-card__label">
               <span>{{ 'COMMON.APPROVED' | translate }}</span>
-              <span class="arrow-div"><i class="ft ft-arrow-up-right"></i></span>
             </div>
             <div class="stat-card__body">
               <div class="stat-card__text">
@@ -113,7 +114,7 @@
               </div>
             </div>
             <div class="stat-card__chips">
-              <span class="metric-chip metric-chip--success">
+              <span class="metric-chip metric-chip--completed">
                 {{ 'COMMON.COMPLETED' | translate }}: <strong class="ml-1">{{ counts.completedRequests }}</strong>
               </span>
             </div>
@@ -122,10 +123,10 @@
 
         <!-- Card 5: Rejected / Returned -->
         <div class="col count-card">
-          <div class="stat-card stat-card--rose" (click)="goToPurchaseRequests('Rejected')">
+          <div class="stat-card stat-card--rose" [ngClass]="{ 'stat-card--disabled': !canViewPR }"
+            (click)="goToPurchaseRequests('Rejected')">
             <div class="stat-card__label">
               <span>{{ 'DASHBOARD_MODULE.REJECTED' | translate }}</span>
-              <span class="arrow-div"><i class="ft ft-arrow-up-right"></i></span>
             </div>
             <div class="stat-card__body">
               <div class="stat-card__text">
@@ -138,8 +139,9 @@
               </div>
             </div>
             <div class="stat-card__chips">
-              <span class="metric-chip metric-chip--danger">
-                {{ 'COMMON.ACTION_NEEDED' | translate }}: <strong class="ml-1">{{ counts.rejectedRequests || 0 }}</strong>
+              <span class="metric-chip metric-chip--rejected">
+                {{ 'COMMON.ACTION_NEEDED' | translate }}: <strong class="ml-1">{{ counts.rejectedRequests || 0
+                  }}</strong>
               </span>
             </div>
           </div>
@@ -155,73 +157,89 @@
               <div>
                 <h3 class="panel-card__title">{{ 'DASHBOARD_MODULE.PROJECT_CONSUMED_AMOUNT' | translate }}</h3>
                 <p class="panel-card__subtitle">
-                  {{ filterMode === 'all' ? ('DASHBOARD_MODULE.ALL_PROJECTS' | translate) : selectedProjectName }} &bull; {{ 'DASHBOARD_MODULE.TOTAL_CONSUMED' | translate }}: <strong>{{ 'COMMON.AED' | translate }} {{ totalConsumedAmount | number:'1.2-2' }}</strong>
+                  {{ filterMode === 'all' ? ('DASHBOARD_MODULE.ALL_PROJECTS' | translate) : selectedProjectName }}
+                  &bull; {{ 'DASHBOARD_MODULE.TOTAL_CONSUMED' | translate }}: <strong>{{ 'COMMON.AED' | translate }} {{
+                    totalConsumedAmount | number:'1.2-2' }}</strong>
                   <span *ngIf="totalBudgetAmount > 0" class="text-muted ml-1">
-                    / {{ 'DASHBOARD_MODULE.BUDGET' | translate }}: {{ 'COMMON.AED' | translate }} {{ totalBudgetAmount | number:'1.2-2' }} ({{ utilizationPercentage }}%)
+                    / {{ 'DASHBOARD_MODULE.BUDGET' | translate }}: {{ 'COMMON.AED' | translate }} {{ totalBudgetAmount |
+                    number:'1.2-2' }} ({{ utilizationPercentage }}%)
                   </span>
                 </p>
               </div>
 
-              <!-- Filter Tabs ALWAYS in the same top-right position -->
-              <div class="segmented-toggle flex-shrink-0">
-                <button class="segmented-toggle__btn"
-                  [ngClass]="{ 'segmented-toggle__btn--active': filterMode === 'all' }"
-                  (click)="setFilterMode('all')">
-                  {{ 'DASHBOARD_MODULE.ALL_PROJECTS' | translate }}
-                </button>
-                <button class="segmented-toggle__btn"
-                  [ngClass]="{ 'segmented-toggle__btn--active': filterMode === 'project' }"
-                  (click)="setFilterMode('project')">
-                  {{ 'DASHBOARD_MODULE.PROJECT_WISE' | translate }}
-                </button>
-              </div>
-            </div>
+              <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                <!-- Project Filter Dropdown (All Projects / Project Wise) -->
+                <div class="chart-range-dropdown" ngbDropdown display="dynamic" placement="bottom-end">
+                  <button type="button" class="btn chart-range-btn" ngbDropdownToggle id="projectFilterDropdown"
+                    [attr.aria-label]="'DASHBOARD_MODULE.PROJECT_CONSUMED_AMOUNT' | translate">
+                    <span class="chart-range-text">
+                      {{ (filterMode === 'all' ? 'DASHBOARD_MODULE.ALL_PROJECTS' : 'DASHBOARD_MODULE.PROJECT_WISE') | translate }}
+                    </span>
+                    <i class="ft ft-chevron-down chart-range-icon"></i>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right chart-range-menu shadow-sm" ngbDropdownMenu aria-labelledby="projectFilterDropdown">
+                    <button type="button" class="dropdown-item chart-range-item" [class.active]="filterMode === 'all'" (click)="setFilterMode('all')">
+                      <span>{{ 'DASHBOARD_MODULE.ALL_PROJECTS' | translate }}</span>
+                      <i *ngIf="filterMode === 'all'" class="ft ft-check chart-check-icon"></i>
+                    </button>
+                    <button type="button" class="dropdown-item chart-range-item" [class.active]="filterMode === 'project'" (click)="setFilterMode('project')">
+                      <span>{{ 'DASHBOARD_MODULE.PROJECT_WISE' | translate }}</span>
+                      <i *ngIf="filterMode === 'project'" class="ft ft-check chart-check-icon"></i>
+                    </button>
+                  </div>
+                </div>
 
-            <!-- 2nd Row: Project Dropdown when Project Wise is active -->
-            <div *ngIf="filterMode === 'project'" class="project-sub-row">
-              <div class="project-select-wrap">
-                <select class="form-control custom-input project-filter-select"
-                  [(ngModel)]="selectedProjectId"
-                  (change)="onProjectSelectChange($event)">
-                  <option [ngValue]="null" disabled>{{ 'PR_MODULE.SELECT_PROJECT_PH' | translate }}</option>
-                  <option *ngFor="let p of projectOptions" [ngValue]="p.id">
-                    {{ p.name }}
-                  </option>
-                </select>
+                <!-- Specific Project Selection Dropdown (Replaces the raw select with same styling) -->
+                <div *ngIf="filterMode === 'project'" class="chart-range-dropdown project-dropdown-specific" ngbDropdown display="dynamic" placement="bottom-end">
+                  <button type="button" class="btn chart-range-btn project-select-btn" ngbDropdownToggle id="specificProjectDropdown"
+                    [attr.title]="selectedProjectName || ('PR_MODULE.SELECT_PROJECT_PH' | translate)">
+                    <span class="chart-range-text project-name-text">
+                      {{ selectedProjectName || ('PR_MODULE.SELECT_PROJECT_PH' | translate) }}
+                    </span>
+                    <i class="ft ft-chevron-down chart-range-icon"></i>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right chart-range-menu shadow-sm project-menu-scrollable" ngbDropdownMenu aria-labelledby="specificProjectDropdown">
+                    <button type="button" class="dropdown-item chart-range-item" *ngFor="let p of projectOptions"
+                      [class.active]="selectedProjectId === p.id"
+                      (click)="selectProject(p.id)">
+                      <span class="text-truncate">{{ p.name }}</span>
+                      <i *ngIf="selectedProjectId === p.id" class="ft ft-check chart-check-icon ms-2"></i>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
             <div class="panel-card__body">
               <!-- Loading Spinner -->
-              <div *ngIf="isLoadingChart" class="d-flex justify-content-center align-items-center" style="min-height:280px">
+              <div *ngIf="isLoadingChart" class="d-flex justify-content-center align-items-center"
+                style="min-height:280px">
                 <div class="spinner-border text-primary" role="status"></div>
               </div>
 
               <!-- Empty State -->
               <div *ngIf="!isLoadingChart && (!consumptionRows || consumptionRows.length === 0)"
-                class="d-flex flex-column justify-content-center align-items-center text-center py-5" style="min-height:280px">
+                class="d-flex flex-column justify-content-center align-items-center text-center py-5"
+                style="min-height:280px">
                 <div class="empty-chart-icon mb-2">
                   <i class="ft ft-bar-chart-2 font-large-1 text-muted"></i>
                 </div>
-                <h6 class="text-dark font-weight-medium mb-1">{{ 'DASHBOARD_MODULE.NO_CONSUMED_RECORDS' | translate }}</h6>
-                <p class="small text-muted mb-0">No budget consumption data found for {{ filterMode === 'all' ? ('DASHBOARD_MODULE.ALL_PROJECTS' | translate) : selectedProjectName }}.</p>
+                <h6 class="text-dark font-weight-medium mb-1">{{ 'DASHBOARD_MODULE.NO_CONSUMED_RECORDS' | translate }}
+                </h6>
+                <p class="small text-muted mb-0">No budget consumption data found for {{ filterMode === 'all' ?
+                  ('DASHBOARD_MODULE.ALL_PROJECTS' | translate) : selectedProjectName }}.</p>
               </div>
 
               <!-- Apex Chart -->
-              <div *ngIf="!isLoadingChart && consumptionRows && consumptionRows.length > 0 && isChartReady" id="line-area" class="lineArea">
-                <apx-chart class="apx-chart"
-                  [series]="consumedChartOptions.series"
-                  [chart]="consumedChartOptions.chart"
-                  [xaxis]="consumedChartOptions.xaxis"
-                  [yaxis]="consumedChartOptions.yaxis"
-                  [stroke]="consumedChartOptions.stroke"
-                  [dataLabels]="consumedChartOptions.dataLabels"
-                  [fill]="consumedChartOptions.fill"
-                  [grid]="consumedChartOptions.grid"
-                  [tooltip]="consumedChartOptions.tooltip"
-                  [theme]="consumedChartOptions.theme"
-                  [markers]="consumedChartOptions.markers"
-                  [legend]="consumedChartOptions.legend">
+              <div *ngIf="!isLoadingChart && consumptionRows && consumptionRows.length > 0 && isChartReady"
+                id="line-area" class="lineArea">
+                <apx-chart class="apx-chart" [series]="consumedChartOptions.series"
+                  [colors]="consumedChartOptions.colors" [chart]="consumedChartOptions.chart"
+                  [xaxis]="consumedChartOptions.xaxis" [yaxis]="consumedChartOptions.yaxis"
+                  [stroke]="consumedChartOptions.stroke" [dataLabels]="consumedChartOptions.dataLabels"
+                  [fill]="consumedChartOptions.fill" [grid]="consumedChartOptions.grid"
+                  [tooltip]="consumedChartOptions.tooltip" [theme]="consumedChartOptions.theme"
+                  [markers]="consumedChartOptions.markers" [legend]="consumedChartOptions.legend">
                 </apx-chart>
               </div>
             </div>
@@ -243,7 +261,8 @@
               <div class="status-bars-group">
                 <div class="progress-item mb-3">
                   <div class="d-flex justify-content-between font-small-3 mb-1">
-                    <span><i class="fa fa-circle font-small-1 text-warning mr-1"></i> {{ 'DASHBOARD_MODULE.DRAFT_NEW' | translate }}</span>
+                    <span><i class="fa fa-circle font-small-1 text-warning mr-1"></i> {{ 'DASHBOARD_MODULE.DRAFT_NEW' |
+                      translate }}</span>
                     <span class="font-weight-bold">{{ counts.newRequests }} ({{ getNewPercentage() }}%)</span>
                   </div>
                   <div class="progress progress-sm">
@@ -253,31 +272,40 @@
 
                 <div class="progress-item mb-3">
                   <div class="d-flex justify-content-between font-small-3 mb-1">
-                    <span><i class="fa fa-circle font-small-1 text-primary mr-1"></i> {{ 'COMMON.IN_PROGRESS' | translate }}</span>
-                    <span class="font-weight-bold">{{ counts.inProgressRequests }} ({{ getInProgressPercentage() }}%)</span>
+                    <span><i class="fa fa-circle font-small-1 text-primary mr-1"></i> {{ 'COMMON.IN_PROGRESS' |
+                      translate }}</span>
+                    <span class="font-weight-bold">{{ counts.inProgressRequests }} ({{ getInProgressPercentage()
+                      }}%)</span>
                   </div>
                   <div class="progress progress-sm">
-                    <div class="progress-bar bg-primary" role="progressbar" [style.width.%]="getInProgressPercentage()"></div>
+                    <div class="progress-bar bg-primary" role="progressbar" [style.width.%]="getInProgressPercentage()">
+                    </div>
                   </div>
                 </div>
 
                 <div class="progress-item mb-3">
                   <div class="d-flex justify-content-between font-small-3 mb-1">
-                    <span><i class="fa fa-circle font-small-1 text-success mr-1"></i> {{ 'COMMON.APPROVED' | translate }}</span>
-                    <span class="font-weight-bold">{{ counts.completedRequests }} ({{ getCompletedPercentage() }}%)</span>
+                    <span><i class="fa fa-circle font-small-1 text-success mr-1"></i> {{ 'COMMON.APPROVED' | translate
+                      }}</span>
+                    <span class="font-weight-bold">{{ counts.completedRequests }} ({{ getCompletedPercentage()
+                      }}%)</span>
                   </div>
                   <div class="progress progress-sm">
-                    <div class="progress-bar bg-success" role="progressbar" [style.width.%]="getCompletedPercentage()"></div>
+                    <div class="progress-bar bg-success" role="progressbar" [style.width.%]="getCompletedPercentage()">
+                    </div>
                   </div>
                 </div>
 
                 <div class="progress-item mb-2">
                   <div class="d-flex justify-content-between font-small-3 mb-1">
-                    <span><i class="fa fa-circle font-small-1 text-danger mr-1"></i> {{ 'DASHBOARD_MODULE.REJECTED' | translate }}</span>
-                    <span class="font-weight-bold">{{ counts.rejectedRequests || 0 }} ({{ getRejectedPercentage() }}%)</span>
+                    <span><i class="fa fa-circle font-small-1 text-danger mr-1"></i> {{ 'DASHBOARD_MODULE.REJECTED' |
+                      translate }}</span>
+                    <span class="font-weight-bold">{{ counts.rejectedRequests || 0 }} ({{ getRejectedPercentage()
+                      }}%)</span>
                   </div>
                   <div class="progress progress-sm">
-                    <div class="progress-bar bg-danger" role="progressbar" [style.width.%]="getRejectedPercentage()"></div>
+                    <div class="progress-bar bg-danger" role="progressbar" [style.width.%]="getRejectedPercentage()">
+                    </div>
                   </div>
                 </div>
               </div>
@@ -286,15 +314,18 @@
               <div class="status-summary-footer mt-auto pt-3 border-top">
                 <div class="row no-gutters text-center">
                   <div class="col-4 border-right pr-2">
-                    <div class="text-muted font-small-1 text-uppercase font-weight-bold mb-1">{{ 'DASHBOARD_MODULE.TOTAL_REQUESTS' | translate }}</div>
+                    <div class="text-muted font-small-1 text-uppercase font-weight-bold mb-1">{{
+                      'DASHBOARD_MODULE.TOTAL_REQUESTS' | translate }}</div>
                     <div class="font-medium-1 font-weight-bold text-dark">{{ counts.totalRequests || 0 }}</div>
                   </div>
                   <div class="col-4 border-right px-2">
-                    <div class="text-muted font-small-1 text-uppercase font-weight-bold mb-1">{{ 'DASHBOARD_MODULE.IN_REVIEW' | translate }}</div>
+                    <div class="text-muted font-small-1 text-uppercase font-weight-bold mb-1">{{
+                      'DASHBOARD_MODULE.IN_REVIEW' | translate }}</div>
                     <div class="font-medium-1 font-weight-bold text-primary">{{ counts.inProgressRequests || 0 }}</div>
                   </div>
                   <div class="col-4 pl-2">
-                    <div class="text-muted font-small-1 text-uppercase font-weight-bold mb-1">{{ 'DASHBOARD_MODULE.APPROVAL' | translate }}</div>
+                    <div class="text-muted font-small-1 text-uppercase font-weight-bold mb-1">{{
+                      'DASHBOARD_MODULE.APPROVAL' | translate }}</div>
                     <div class="font-medium-1 font-weight-bold text-success">{{ getCompletedPercentage() }}%</div>
                   </div>
                 </div>
@@ -321,7 +352,7 @@
               </div>
             </div>
 
-            <div class="panel-card__body panel-card__body--flush panel-card__body--scroll">
+            <div class="panel-card__body dashboard-table-body">
               <!-- Loading -->
               <div *ngIf="isLoadingRequests" class="d-flex justify-content-center align-items-center py-5">
                 <div class="spinner-border text-primary" role="status"></div>
@@ -330,48 +361,58 @@
               <!-- Empty -->
               <div *ngIf="!isLoadingRequests && recentRequests.length === 0" class="text-center py-5 text-muted">
                 <i class="ft ft-file-text font-large-2 text-muted mb-2 d-block"></i>
-                <h5 class="text-dark font-weight-medium mb-1">{{ 'DASHBOARD_MODULE.NO_REQUESTS_FOUND' | translate }}</h5>
+                <h5 class="text-dark font-weight-medium mb-1">{{ 'DASHBOARD_MODULE.NO_REQUESTS_FOUND' | translate }}
+                </h5>
                 <p class="small text-muted mb-3">{{ 'DASHBOARD_MODULE.NO_REQUESTS_SUB' | translate }}</p>
                 <div class="d-flex justify-content-center">
-                  <button *ngIf="canCreatePR" class="btn btn-primary btn-sm d-inline-flex align-items-center" (click)="createNewPurchaseRequest()">
+                  <button *ngIf="canCreatePR" class="btn btn-primary btn-sm d-inline-flex align-items-center"
+                    (click)="createNewPurchaseRequest()">
                     <i class="ft ft-plus mr-1"></i> {{ 'DASHBOARD_MODULE.CREATE_FIRST_REQUEST' | translate }}
                   </button>
                 </div>
               </div>
 
               <!-- Table -->
-              <table *ngIf="!isLoadingRequests && recentRequests.length > 0" class="table upcoming-table mb-0">
-                <thead>
-                  <tr>
-                    <th>{{ 'COMMON.REQUISITION_NO' | translate }}</th>
-                    <th>{{ 'COMMON.ENTITY' | translate }}</th>
-                    <th>{{ 'COMMON.DEPARTMENT' | translate }}</th>
-                    <th>{{ 'COMMON.REQ_BY_DATE' | translate }}</th>
-                    <th>{{ 'COMMON.STATUS' | translate }}</th>
-                    <th class="text-right">{{ 'COMMON.ACTION' | translate }}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let pr of recentRequests" class="clickable-row" (click)="viewRequestDetails(pr)">
-                    <td class="font-weight-bold text-primary">
-                      {{ pr.requisitionNo || ('PR-' + pr.id) }}
-                    </td>
-                    <td>{{ pr.entityName || '—' }}</td>
-                    <td>{{ pr.department || '—' }}</td>
-                    <td>{{ (pr.requestDate || pr.createdDate) | date:'mediumDate' }}</td>
-                    <td>
-                      <span class="custom-badge" [ngClass]="getStatusClass(pr.requestStatus || pr.status)">
-                        {{ (pr.requestStatus || pr.status) | statusTranslate }}
-                      </span>
-                    </td>
-                    <td class="text-right">
-                      <button class="btn btn-sm btn-icon btn-light" (click)="$event.stopPropagation(); viewRequestDetails(pr)" [title]="'COMMON.VIEW' | translate">
-                        <i class="ft ft-eye text-primary"></i>
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div *ngIf="!isLoadingRequests && recentRequests.length > 0"
+                class="table-responsive dashboard-listing-table-wrap">
+                <table class="table upcoming-table dashboard-listing-table mb-0">
+                  <thead>
+                    <tr>
+                      <th style="width: 85px;">{{ 'COMMON.SR_NO' | translate }}</th>
+                      <th>{{ 'COMMON.REQUISITION_NO' | translate }}</th>
+                      <th>{{ 'COMMON.STATUS' | translate }}</th>
+                      <th>{{ 'COMMON.DATE' | translate }}</th>
+                      <th>{{ 'COMMON.ENTITY' | translate }}</th>
+                      <th>{{ 'COMMON.DEPARTMENT' | translate }}</th>
+                      <th style="width: 90px;">{{ 'COMMON.ACTION' | translate }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let pr of recentRequests; let i = index" class="clickable-row"
+                      (click)="viewRequestDetails(pr)">
+                      <td>{{ i + 1 }}</td>
+                      <td>
+                        {{ pr.requisitionNo || ('PR-' + pr.id) }}
+                      </td>
+                      <td>
+                        <span class="custom-badge" [ngClass]="getStatusClass(pr.requestStatus || pr.status)">
+                          {{ (pr.requestStatus || pr.status) | statusTranslate }}
+                        </span>
+                      </td>
+                      <td>{{ (pr.submittedDate || pr.requestDate || pr.createdDate) | date:'yyyy-MM-dd' }}</td>
+                      <td>{{ pr.entityName || '—' }}</td>
+                      <td>{{ pr.department || '—' }}</td>
+                      <td>
+                        <button type="button" class="btn btn-sm table-action-btn"
+                          (click)="$event.stopPropagation(); viewRequestDetails(pr)"
+                          [title]="'COMMON.VIEW' | translate">
+                          <i class="ft ft-eye"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>

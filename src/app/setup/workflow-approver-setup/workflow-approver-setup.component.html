@@ -22,12 +22,12 @@
       <ngx-datatable-column [name]="'SETUP_MODULE.APPROVER' | translate" prop="approverName" [width]="120"></ngx-datatable-column>
       <ngx-datatable-column [name]="'COMMON.TYPE' | translate" prop="workflowType" [width]="120"></ngx-datatable-column>
       <ngx-datatable-column [name]="'SETUP_MODULE.APPROVER_LEVEL' | translate" prop="approverLevel" [width]="140"></ngx-datatable-column>
-      <ngx-datatable-column [name]="'SETUP_MODULE.AMOUNT_FROM' | translate" prop="amountFrom" [width]="120"></ngx-datatable-column>
+      <ngx-datatable-column [name]="'SETUP_MODULE.AMOUNT_FROM' | translate" prop="amountFrom" [width]="135"></ngx-datatable-column>
       <ngx-datatable-column [name]="'SETUP_MODULE.AMOUNT_TO' | translate" prop="amountTo" [width]="120"></ngx-datatable-column>
-      <ngx-datatable-column [name]="'SETUP_MODULE.PROXY_APPROVER' | translate" prop="proxyApproverName" [width]="120"></ngx-datatable-column>
+      <ngx-datatable-column [name]="'SETUP_MODULE.PROXY_APPROVER' | translate" prop="proxyApproverName" [width]="155"></ngx-datatable-column>
       <ngx-datatable-column [name]="'SETUP_MODULE.GRACE_DAYS' | translate" prop="graceDays" [width]="120"></ngx-datatable-column>
 
-      <ngx-datatable-column [name]="'SETUP_MODULE.CAN_APPROVE' | translate" prop="canApprove" [width]="120">
+      <ngx-datatable-column [name]="'SETUP_MODULE.CAN_APPROVE' | translate" prop="canApprove" [width]="130">
         <ng-template ngx-datatable-cell-template let-row="row">
           <span>{{ row.canApprove ? ('COMMON.YES' | translate) : ('COMMON.NO' | translate) }}</span>
         </ng-template>

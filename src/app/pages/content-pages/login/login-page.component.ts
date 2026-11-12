@@ -36,6 +36,7 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
   private lockoutTickSub?: Subscription;
   private blockedUntilMs = 0;
   private langSub?: Subscription;
+  private formSub?: Subscription;
 
   loginForm = new UntypedFormGroup({
     username: new UntypedFormControl('', [Validators.required]),
@@ -75,6 +76,13 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
     });
     this.loadErrSub = this.turnstileProtection.turnstileLoadError$.subscribe(err => {
       this.turnstileLoadError = err ?? '';
+    });
+
+    this.formSub = this.loginForm.valueChanges.subscribe(() => {
+      if (this.isLoginFailed) {
+        this.isLoginFailed = false;
+        this.cdr.markForCheck();
+      }
     });
 
     this.authService.getCaptchaConfig().subscribe(cfg => {
@@ -140,6 +148,7 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.isLoginFailed = true;
       this.errorMessage = error;
       console.error('❌ Azure SSO error:', error);
+      this.toastr.error(this.errorMessage);
       this.cdr.detectChanges();
       return;
     }
@@ -156,6 +165,7 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.langSub?.unsubscribe();
     this.tokenSub?.unsubscribe();
     this.loadErrSub?.unsubscribe();
+    this.formSub?.unsubscribe();
     this.clearLockoutCountdown();
     this.turnstileProtection.teardownOnNoCaptchaNeeded();
   }
@@ -212,6 +222,7 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
   // 🔹 Normal login
   onSubmit() {
     this.loginFormSubmitted = true;
+    this.isLoginFailed = false;
     // captcha
     // if (this.loginForm.controls['recaptchaReactive'].invalid) {
     //   this.toastr.warning('Please verify the CAPTCHA to proceed.');
@@ -238,6 +249,7 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
         if (!this.authService.isAuthenticated()) {
           this.isLoginFailed = true;
           this.errorMessage = 'Login succeeded but the session was not stored. Please try again.';
+          this.toastr.error(this.errorMessage);
           this.cdr.detectChanges();
           return;
         }
@@ -259,6 +271,7 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
           this.clearLockoutCountdown();
           this.errorMessage = raw || 'Invalid username or password';
         }
+        this.toastr.error(this.errorMessage);
         if (this.captchaRequired || this.turnstileVisible) {
           this.showTurnstile();
           this.turnstileProtection.resetTurnstile('#turnstile-container');
@@ -285,6 +298,7 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.isSSOLoading = false;
         this.errorMessage = 'Failed to connect to Microsoft SSO service.';
         this.isLoginFailed = true;
+        this.toastr.error(this.errorMessage);
         console.error('❌ SSO connection failed');
         this.cdr.detectChanges();
       }

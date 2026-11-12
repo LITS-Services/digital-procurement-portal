@@ -16,80 +16,64 @@
 
             <div>
               <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
-                <i class="ft-arrow-left"></i>
+                <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
               </button>
 
               <span class="vl"></span>
 
-              <button type="button" class="btn btn-sm cstm-ui-table-btn" [ngbTooltip]="'COMMON.CREATE_NEW_PR' | translate"
-                appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST" [appPermDisable]="'write'"
+              <button type="button" class="btn btn-sm cstm-ui-table-btn"
+                [ngbTooltip]="'COMMON.CREATE_NEW_PR' | translate" appPermission
+                [appPermFormId]="FORM_IDS.PURCHASE_REQUEST" [appPermDisable]="'write'" [appPermHide]="true"
                 (click)="openEmpDetails()">
-                <i class="ft-plus"></i><label class="ml-1 btn-label">{{ 'COMMON.CREATE' | translate }}</label>
-              </button>
-              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()" appPermission
-                [appPermFormId]="FORM_IDS.PURCHASE_REQUEST" [appPermDisable]="'write'">
-                <i class="ft-edit"></i><label class="ml-1 btn-label">{{ 'COMMON.UPDATE' | translate }}</label>
+                <img src="assets/img/svg-icons/create-icon.svg" class="btn-action-icon" alt="" />
+                <label class="btn-label">{{ 'COMMON.CREATE' | translate }}</label>
               </button>
 
-              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()"
-                [disabled]="isDeleteButtonDisabled" appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
-                [appPermDisable]="'delete'">
-                <i class="ft-trash"></i><label class="ml-1 btn-label">{{ 'COMMON.DELETE' | translate }}</label>
-              </button>
+              <ng-container *ngIf="chkBoxSelected?.length > 0">
+                <button *ngIf="!isEditButtonDisabled" type="button" class="btn btn-sm cstm-ui-table-btn"
+                  (click)="onUpdate()" appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                  [appPermDisable]="'write'" [appPermHide]="true">
+                  <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" />
+                  <label class="btn-label">{{ 'COMMON.UPDATE' | translate }}</label>
+                </button>
 
-              <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled" appPermission
-                [appPermFormId]="FORM_IDS.PURCHASE_REQUEST" [appPermDisable]="'read'" (click)="onView()">
-                <i class="ft-eye"></i><label class="ml-1 btn-label">{{ 'COMMON.REVIEW' | translate }}</label>
-              </button>
+                <button *ngIf="!isDeleteButtonDisabled" type="button" class="btn btn-sm cstm-ui-table-btn"
+                  (click)="openDeleteModal()" appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                  [appPermDisable]="'delete'" [appPermHide]="true">
+                  <img src="assets/img/svg-icons/delete-icon.svg" class="btn-action-icon" alt="" />
+                  <label class="btn-label">{{ 'COMMON.DELETE' | translate }}</label>
+                </button>
 
-              <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="syncLoading" (click)="onSyncNow()">
-                <i class="ft-refresh-cw"></i><label class="ml-1 btn-label">{{ 'COMMON.SYNC_NOW' | translate }}</label>
-              </button>
-              <button *ngIf="canShowSubmitForApprovalButton()" type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="!canSubmitForApprovalFromListUi()"
-                [ngbTooltip]="!chkBoxSelected?.length ? 'Select one request with status New'
-                  : chkBoxSelected.length > 1 ? 'Select exactly one row'
-                  : null"
-                (click)="onSubmitForApprovalFromList()">
-                <i class="ft-check"></i><label class="ml-1 btn-label">{{ 'COMMON.SUBMIT_FOR_APPROVAL' | translate }}</label>
-              </button>
-              <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="loadPurchaseRequests()"><label
-                class="ml-1 mt-1">All</label></button>
+                <button *ngIf="!syncLoading" type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onSyncNow()">
+                  <img src="assets/img/svg-icons/Sync_icon.svg" class="btn-action-icon" alt="" />
+                  <label class="btn-label">{{ 'COMMON.SYNC_NOW' | translate }}</label>
+                </button>
 
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="loadFilteredRequests('New')"><label
-                class="ml-1 mt-1">New</label></button>
-
-            <button type="button" class="btn btn-sm cstm-ui-table-btn"
-              (click)="loadFilteredRequests('InProgress')"><label class="ml-1 mt-1">InProgress</label></button>
-
-            <button type="button" class="btn btn-sm cstm-ui-table-btn"
-              (click)="loadFilteredRequests('Completed')"><label class="ml-1 mt-1">Completed</label></button> -->
-
-              <!-- <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
-              <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
-            </button> -->
+                <button *ngIf="canSubmitForApprovalFromListUi()" type="button" class="btn btn-sm cstm-ui-table-btn"
+                  (click)="onSubmitForApprovalFromList()">
+                  <img src="assets/img/svg-icons/Submit_icon.svg" class="btn-action-icon" alt="" />
+                  <label class="btn-label">{{ 'COMMON.SUBMIT_FOR_APPROVAL' | translate }}</label>
+                </button>
+              </ng-container>
 
             </div>
 
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center pr-actions-right me-2 mr-2">
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="toggleFilterBar()">
-                <i class="ft-sliders"></i><label class="ml-1 btn-label">{{ 'COMMON.FILTER' | translate }}</label>
+                <img src="assets/img/svg-icons/filter-icon.svg" class="btn-action-icon" alt="" />
+                <label class="btn-label">{{ 'COMMON.FILTER' | translate }}</label>
               </button>
 
-              <div class="dropdown" ngbDropdown>
-                <button type="button" class="btn dropdown-toggle more-btn" ngbDropdownToggle> <i
-                    class="ft-more-vertical"></i>
-                </button>
-                <div class="dropdown-menu" ngbDropdownMenu>
-                  <button type="button" class="btn btn-sm cstm-ui-table-btn dropdown-item " (click)="openAblModal()">
-                    <i class="ft-settings"></i><label class="ml-1">{{ 'COMMON.ACCOUNT_BUDGET_LOOKUP' | translate }}</label>
-                  </button>
-                  <button type="button" class="btn btn-sm cstm-ui-table-btn dropdown-item"
-                    (click)="openExceptionPolicyModal()">
-                    <i class="ft-alert-circle"></i><label class="ml-1">{{ 'COMMON.EXCEPTION_POLICY' | translate }}</label>
-                  </button>
-                </div>
-              </div>
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openExceptionPolicyModal()">
+                <img src="assets/img/svg-icons/Exception-Policy-icon.svg" class="btn-action-icon" alt="" />
+                <label class="btn-label">{{ 'COMMON.EXCEPTION_POLICY' | translate }}</label>
+              </button>
+
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openAblModal()">
+                <img src="assets/img/svg-icons/lockup-icon.svg" class="btn-action-icon" alt="" />
+                <label class="btn-label">{{ 'COMMON.ACCOUNT_BUDGET_LOOKUP' | translate }}</label>
+              </button>
 
             </div>
 
@@ -108,9 +92,11 @@
           </div>
 
           <div class="d-flex filter-btns-div">
-            <div class="dropdown filter-dropdown" ngbDropdown [ngbTooltip]="statusTouched ? ('COMMON.STATUS' | translate) : null">
+            <div class="dropdown filter-dropdown" ngbDropdown
+              [ngbTooltip]="statusTouched ? ('COMMON.STATUS' | translate) : null">
               <button class="btn btn-sm filter-btn dropdown-toggle" ngbDropdownToggle>
-                <span class="filter-label">{{ !statusTouched ? ("COMMON.STATUS" | translate) : (selectedStatusLabel | statusTranslate) }} </span>
+                <span class="filter-label">{{ !statusTouched ? ("COMMON.STATUS" | translate) : (selectedStatusLabel |
+                  statusTranslate) }} </span>
                 <i class="ft-chevron-down"></i>
               </button>
               <div class="dropdown-menu" ngbDropdownMenu>
@@ -128,235 +114,165 @@
 
         </div>
       </div>
-    <div  class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
-  <ngx-datatable
-    #datatable
-    class="bootstrap core-bootstrap"
-    [rows]="purchaseRequestData"
-    [columnMode]="'force'"
-    [headerHeight]="50"
-    [footerHeight]="50"
-    [rowHeight]="'auto'"
-     [scrollbarH]="isMobile"
-    [limit]="query.pageSize"
-    [count]="totalItems"
-    [externalPaging]="true"
-    [offset]="query.currentPage - 1"
-    (page)="onPageChange($event)"
-    [loadingIndicator]="loading"
-    [selected]="chkBoxSelected"
-    [selectionType]="SelectionType.checkbox"
-    (sort)="onSort($event)"
-    (select)="customChkboxOnSelect($event)">
+      <div class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
+        <ngx-datatable #datatable class="bootstrap core-bootstrap" [rows]="purchaseRequestData" [columnMode]="'force'"
+          [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="isMobile" [limit]="query.pageSize"
+          [count]="totalItems" [externalPaging]="true" [offset]="query.currentPage - 1" (page)="onPageChange($event)"
+          [loadingIndicator]="loading" [selected]="chkBoxSelected" [selectionType]="SelectionType.checkbox"
+          (sort)="onSort($event)" (select)="customChkboxOnSelect($event)">
 
-    <!-- Checkbox Column -->
-    <ngx-datatable-column
-      [width]="50"
-      [sortable]="false"
-      [canAutoResize]="false"
-      [draggable]="false"
-      [resizeable]="false"
-      cellClass="datatable-checkbox-cell"
-      headerClass="datatable-checkbox-cell"
-      >
-      <ng-template ngx-datatable-header-template>
-        <div class="custom-control cstm-checkbox-form">
-          <input
-            type="checkbox"
-            class="cstm-checkbox-form"
-            [checked]="isAllSelected"
-            (change)="toggleSelectAll($event)" />
-        </div>
-      </ng-template>
+          <!-- Checkbox Column -->
+          <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+            [resizeable]="false" cellClass="datatable-checkbox-cell" headerClass="datatable-checkbox-cell">
+            <ng-template ngx-datatable-header-template>
+              <div class="custom-control cstm-checkbox-form">
+                <input type="checkbox" class="cstm-checkbox-form" [checked]="isAllSelected"
+                  (change)="toggleSelectAll($event)" />
+              </div>
+            </ng-template>
 
-      <ng-template ngx-datatable-cell-template let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
-        <div class="custom-control cstm-checkbox-form custom-checkbox">
-          <input
-            type="checkbox"
-            class="cstm-checkbox-form"
-            [checked]="isSelected"
-            (change)="onCheckboxChangeFn($event)" />
-        </div>
-      </ng-template>
-    </ngx-datatable-column>
+            <ng-template ngx-datatable-cell-template let-isSelected="isSelected"
+              let-onCheckboxChangeFn="onCheckboxChangeFn">
+              <div class="custom-control cstm-checkbox-form custom-checkbox">
+                <input type="checkbox" class="cstm-checkbox-form" [checked]="isSelected"
+                  (change)="onCheckboxChangeFn($event)" />
+              </div>
+            </ng-template>
+          </ngx-datatable-column>
 
-    <!-- Sr. No -->
-    <ngx-datatable-column
-      [name]="'COMMON.SR_NO' | translate"
-      [width]="60"
-      [canAutoResize]="false"
-      [draggable]="false"
-      [resizeable]="false">
-      <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
-        <span>{{ rowIndex + 1 }}</span>
-      </ng-template>
-    </ngx-datatable-column>
+          <!-- Sr. No -->
+          <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="75" [canAutoResize]="false"
+            [draggable]="false" [resizeable]="false">
+            <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
+              <span>{{ rowIndex + 1 }}</span>
+            </ng-template>
+          </ngx-datatable-column>
 
-    <!-- Requisition No -->
-    <ngx-datatable-column
-      [name]="'COMMON.REQUISITION_NO' | translate"
-      prop="requisitionNo"
-      [flexGrow]="2"
-      [minWidth]="140">
-    </ngx-datatable-column>
+          <!-- Requisition No -->
+          <ngx-datatable-column [name]="'COMMON.REQUISITION_NO' | translate" prop="requisitionNo" [flexGrow]="2"
+            [minWidth]="140">
+            <ng-template ngx-datatable-cell-template let-row="row">
+              <a href="javascript:void(0)" (click)="openPr(row)" appPermission
+                [appPermFormId]="FORM_IDS.PURCHASE_REQUEST" [appPermDisable]="'read'">
+                {{ row.requisitionNo }}
+              </a>
+            </ng-template>
+          </ngx-datatable-column>
 
-    <!-- Status -->
-    <ngx-datatable-column
-      [name]="'COMMON.STATUS' | translate"
-      prop="requestStatus"
-      [flexGrow]="1"
-      [minWidth]="120">
-      <ng-template ngx-datatable-cell-template let-row="row">
-        <span [ngClass]="row.statusClass">
-          {{ row.requestStatus | statusTranslate }}
-        </span>
-      </ng-template>
-    </ngx-datatable-column>
+          <!-- Status -->
+          <ngx-datatable-column [name]="'COMMON.STATUS' | translate" prop="requestStatus" [flexGrow]="1"
+            [minWidth]="120">
+            <ng-template ngx-datatable-cell-template let-row="row">
+              <span [ngClass]="row.statusClass">
+                {{ row.requestStatus | statusTranslate }}
+              </span>
+            </ng-template>
+          </ngx-datatable-column>
 
-    <!-- Date -->
-    <ngx-datatable-column
-      [name]="'COMMON.DATE' | translate"
-      prop="submittedDate"
-      [flexGrow]="1"
-      [minWidth]="120">
-      <ng-template let-row="row" ngx-datatable-cell-template>
-        {{ row.submittedDate | date:'yyyy-MM-dd' }}
-      </ng-template>
-    </ngx-datatable-column>
+          <!-- Date -->
+          <ngx-datatable-column [name]="'COMMON.DATE' | translate" prop="submittedDate" [flexGrow]="1" [minWidth]="120">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+              {{ row.submittedDate | date:'yyyy-MM-dd' }}
+            </ng-template>
+          </ngx-datatable-column>
 
-    <!-- Entity -->
-    <ngx-datatable-column
-      [name]="'COMMON.ENTITY' | translate"
-      prop="entityName"
-      [flexGrow]="2"
-      [minWidth]="150">
-    </ngx-datatable-column>
+          <!-- Entity -->
+          <ngx-datatable-column [name]="'COMMON.ENTITY' | translate" prop="entityName" [flexGrow]="2" [minWidth]="150">
+          </ngx-datatable-column>
 
-    <!-- Department -->
-    <ngx-datatable-column
-      [name]="'COMMON.DEPARTMENT' | translate"
-      prop="department"
-      [flexGrow]="2"
-      [minWidth]="150">
-    </ngx-datatable-column>
+          <!-- Department -->
+          <ngx-datatable-column [name]="'COMMON.DEPARTMENT' | translate" prop="department" [flexGrow]="2"
+            [minWidth]="150">
+          </ngx-datatable-column>
 
-    <!-- Action -->
-    <ngx-datatable-column
-      [name]="'COMMON.ACTION' | translate"
-      [width]="90"
-      [canAutoResize]="false"
-      [draggable]="false"
-      [resizeable]="false">
-      <ng-template let-row="row" ngx-datatable-cell-template>
+          <!-- Action -->
+          <ngx-datatable-column [name]="'COMMON.ACTION' | translate" [width]="90" [canAutoResize]="false"
+            [draggable]="false" [resizeable]="false">
+            <ng-template let-row="row" ngx-datatable-cell-template>
 
-        <button
-          type="button"
-          class="btn btn-sm btn-primary"
-          [ngbPopover]="actionToolbar"
-          popoverClass="action-popover"
-          placement="auto bottom"
-          container="body">
-          <i class="ft-settings"></i>
-        </button>
+              <button type="button" class="btn btn-sm table-action-btn" [ngbPopover]="actionToolbar"
+                popoverClass="action-popover" placement="auto bottom" container="body">
+                <img src="assets/img/svg-icons/3-dots.svg" class="action-dots-icon" alt="" />
+              </button>
 
-        <!-- FULL POPOVER -->
-        <ng-template #actionToolbar>
-          <div class="d-flex justify-content-around flex-column">
+              <!-- FULL POPOVER -->
+              <ng-template #actionToolbar>
+                <div class="d-flex justify-content-around flex-column">
 
-            <!-- Approval History -->
-            <button
-              class="btn popover-btn btn-sm m-1"
-              [ngbTooltip]="'COMMON.APPROVAL_HISTORY' | translate"
-              appPermission
-              [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
-              [appPermDisable]="'read'"
-              (click)="openApprovalHistoryModal(row)">
-              <span class="popover-icon"><i class="ft-list"></i></span>
-              {{ 'COMMON.APPROVAL_HISTORY' | translate }}
-            </button>
+                  <!-- Approval History -->
+                  <button class="btn popover-btn btn-sm m-1" [ngbTooltip]="'COMMON.APPROVAL_HISTORY' | translate"
+                    appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST" [appPermDisable]="'read'"
+                    (click)="openApprovalHistoryModal(row)">
+                    <span class="popover-icon"><i class="ft-list"></i></span>
+                    {{ 'COMMON.APPROVAL_HISTORY' | translate }}
+                  </button>
 
-            <!-- Generate RFQ -->
-            <button
-              *ngIf="row.requestStatus === 'Completed' && row.isInventoryTransfer !== true; else rfqDisabled"
-              class="btn popover-btn btn-sm m-1"
-              [ngbTooltip]="'COMMON.GENERATE_RFQ' | translate"
-              (click)="generateRfq(row)"
-              appPermission
-              [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
-              [appPermDisable]="'write'">
-              <span class="popover-icon"><i class="ft-file-text"></i></span>
-              {{ 'COMMON.GENERATE_RFQ' | translate }}
-            </button>
+                  <!-- Generate RFQ -->
+                  <button
+                    *ngIf="row.requestStatus === 'Completed' && row.isInventoryTransfer !== true; else rfqDisabled"
+                    class="btn popover-btn btn-sm m-1" [ngbTooltip]="'COMMON.GENERATE_RFQ' | translate"
+                    (click)="generateRfq(row)" appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                    [appPermDisable]="'write'">
+                    <span class="popover-icon"><i class="ft-file-text"></i></span>
+                    {{ 'COMMON.GENERATE_RFQ' | translate }}
+                  </button>
 
-            <ng-template #rfqDisabled>
-              <button
-                class="btn popover-btn btn-sm m-1"
-                disabled
-                [ngbTooltip]="row.requestStatus !== 'Completed'
+                  <ng-template #rfqDisabled>
+                    <button class="btn popover-btn btn-sm m-1" disabled [ngbTooltip]="row.requestStatus !== 'Completed'
                   ? 'RFQ can only be generated when PR is Completed.'
                   : 'RFQ cannot be generated since Inventory Transfer is created.'">
-                <span class="popover-icon"><i class="ft-file-text" style="opacity: 0.5;"></i></span>
-                {{ 'COMMON.GENERATE_RFQ' | translate }}
-              </button>
-            </ng-template>
+                      <span class="popover-icon"><i class="ft-file-text" style="opacity: 0.5;"></i></span>
+                      {{ 'COMMON.GENERATE_RFQ' | translate }}
+                    </button>
+                  </ng-template>
 
-            <!-- Request / Create Purchase Order (conditional based on data source settings) -->
-            <button
-              *ngIf="row.requestStatus === 'Completed' && row.isInventoryTransfer !== true; else selectVendorDisabled"
-              class="btn popover-btn btn-sm m-1"
-              [ngbTooltip]="(useRequestPOMode ? 'COMMON.REQUEST_PO' : 'COMMON.CREATE_PO') | translate"
-              (click)="onPurchaseOrderAction(row)"
-              appPermission
-              [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
-              [appPermDisable]="'write'">
-              <span class="popover-icon"><i class="ft-shopping-cart"></i></span>
-              {{ (useRequestPOMode ? 'COMMON.REQUEST_PO' : 'COMMON.CREATE_PO') | translate }}
-            </button>
+                  <!-- Request / Create Purchase Order (conditional based on data source settings) -->
+                  <button
+                    *ngIf="row.requestStatus === 'Completed' && row.isInventoryTransfer !== true; else selectVendorDisabled"
+                    class="btn popover-btn btn-sm m-1"
+                    [ngbTooltip]="(useRequestPOMode ? 'COMMON.REQUEST_PO' : 'COMMON.CREATE_PO') | translate"
+                    (click)="onPurchaseOrderAction(row)" appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                    [appPermDisable]="'write'">
+                    <span class="popover-icon"><i class="ft-shopping-cart"></i></span>
+                    {{ (useRequestPOMode ? 'COMMON.REQUEST_PO' : 'COMMON.CREATE_PO') | translate }}
+                  </button>
 
-            <ng-template #selectVendorDisabled>
-              <button
-                class="btn popover-btn btn-sm m-1"
-                disabled
-                [ngbTooltip]="row.requestStatus !== 'Completed'
+                  <ng-template #selectVendorDisabled>
+                    <button class="btn popover-btn btn-sm m-1" disabled
+                      [ngbTooltip]="row.requestStatus !== 'Completed'
                   ? (useRequestPOMode ? 'Purchase Order can only be requested when PR is Completed.' : 'Purchase Order can only be created when PR is Completed.')
                   : (useRequestPOMode ? 'Purchase Order cannot be requested since Inventory Transfer is created.' : 'Purchase Order cannot be created since Inventory Transfer is created.')">
-                <span class="popover-icon"><i class="ft-shopping-cart" style="opacity: 0.5;"></i></span>
-                {{ (useRequestPOMode ? 'COMMON.REQUEST_PO' : 'COMMON.CREATE_PO') | translate }}
-              </button>
+                      <span class="popover-icon"><i class="ft-shopping-cart" style="opacity: 0.5;"></i></span>
+                      {{ (useRequestPOMode ? 'COMMON.REQUEST_PO' : 'COMMON.CREATE_PO') | translate }}
+                    </button>
+                  </ng-template>
+
+                  <!-- Inventory Transfer -->
+                  <button *ngIf="row.requestStatus === 'Completed'; else inventoryTransferWaitingTemplate"
+                    class="btn popover-btn btn-sm m-1" [ngbTooltip]="'COMMON.INVENTORY_TRANSFER' | translate"
+                    (click)="openPRInventoryManagement(row)" appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                    [appPermDisable]="'write'">
+                    <span class="popover-icon"><i class="ft-repeat"></i></span>
+                    {{ 'COMMON.INVENTORY_TRANSFER' | translate }}
+                  </button>
+
+                  <ng-template #inventoryTransferWaitingTemplate>
+                    <button class="btn popover-btn btn-sm m-1" disabled
+                      [ngbTooltip]="'PR_MODULE.INVENTORY_TRANSFER_WAITING_TOOLTIP' | translate">
+                      <span class="popover-icon"><i class="ft-repeat" style="opacity: 0.5;"></i></span>
+                      {{ 'COMMON.INVENTORY_TRANSFER' | translate }}
+                    </button>
+                  </ng-template>
+
+                </div>
+              </ng-template>
+              <!-- /FULL POPOVER -->
+
             </ng-template>
+          </ngx-datatable-column>
 
-            <!-- Inventory Transfer -->
-            <button
-              *ngIf="row.requestStatus === 'Completed'; else inventoryTransferWaitingTemplate"
-              class="btn popover-btn btn-sm m-1"
-              [ngbTooltip]="'COMMON.INVENTORY_TRANSFER' | translate"
-              (click)="openPRInventoryManagement(row)"
-              appPermission
-              [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
-              [appPermDisable]="'write'">
-              <span class="popover-icon"><i class="ft-repeat"></i></span>
-              {{ 'COMMON.INVENTORY_TRANSFER' | translate }}
-            </button>
-
-            <ng-template #inventoryTransferWaitingTemplate>
-              <button
-                class="btn popover-btn btn-sm m-1"
-                disabled
-                [ngbTooltip]="'PR_MODULE.INVENTORY_TRANSFER_WAITING_TOOLTIP' | translate">
-                <span class="popover-icon"><i class="ft-repeat" style="opacity: 0.5;"></i></span>
-                {{ 'COMMON.INVENTORY_TRANSFER' | translate }}
-              </button>
-            </ng-template>
-
-          </div>
-        </ng-template>
-        <!-- /FULL POPOVER -->
-
-      </ng-template>
-    </ngx-datatable-column>
-
-  </ngx-datatable>
-</div>
+        </ngx-datatable>
+      </div>
 
 
     </div>

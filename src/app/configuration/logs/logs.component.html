@@ -97,7 +97,7 @@
       (clickType)="'single'" appPermission [appPermFormId]="FORM_IDS.LOGS" [appPermDisable]="'write'">
 
       <!-- Sr. No -->
-      <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="50" [resizeable]="false">
+      <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="75" [minWidth]="75" [canAutoResize]="false" [resizeable]="false">
         <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
           <span>{{ ((currentPage - 1) * pageSize) + rowIndex + 1 }}</span>
         </ng-template>
@@ -132,7 +132,7 @@
       (clickType)="'single'" appPermission [appPermFormId]="FORM_IDS.LOGS" [appPermDisable]="'write'">
 
       <!-- Sr. No -->
-      <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="50" [resizeable]="false">
+      <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="75" [minWidth]="75" [canAutoResize]="false" [resizeable]="false">
         <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
           <span>{{ ((currentPage - 1) * pageSize) + rowIndex + 1 }}</span>
         </ng-template>
@@ -162,7 +162,7 @@
       [selectionType]="SelectionType.single" (rowClick)="onRowClick($event)" (activate)="onActivate($event)"
       (clickType)="'single'" appPermission [appPermFormId]="FORM_IDS.LOGS" [appPermDisable]="'write'">
 
-      <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="50" [resizeable]="false">
+      <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="75" [minWidth]="75" [canAutoResize]="false" [resizeable]="false">
         <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
           <span>{{ ((currentPage - 1) * pageSize) + rowIndex + 1 }}</span>
         </ng-template>

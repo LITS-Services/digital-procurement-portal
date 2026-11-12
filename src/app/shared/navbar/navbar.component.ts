@@ -43,6 +43,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   layoutSub: Subscription;
   configSub: Subscription;
   username: string;
+  userRole: string = '';
   profilePicture: string = "assets/img/profile/user.png"; // default avatar
   private sub!: Subscription;
 
@@ -54,6 +55,8 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren("searchResults") searchResults: QueryList<any>;
 
   @ViewChild("searchRoot", { static: true }) searchRoot!: ElementRef;
+  @ViewChild("navSearchInput", { static: false }) navSearchInput?: ElementRef<HTMLInputElement>;
+  searchExpanded = false;
 
   @Output() toggleHideSidebar = new EventEmitter<Object>();
   @Output() seachTextEmpty = new EventEmitter<boolean>();
@@ -149,6 +152,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     this.listItems = LISTITEMS;
     this.isSmallScreen = this.innerWidth < 1200;
+    this.userRole = this.getUserRole();
 
     // Fetch user data from AP
     if (userId) {
@@ -159,6 +163,10 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
               localStorage.setItem('userEmail', res.email);
             }
             this.username = res.fullName || this.authService.getUserName();
+            const apiRole = this.extractRoleFromResponse(res);
+            if (apiRole) {
+              this.userRole = apiRole;
+            }
             if (res.profilePicture && res.profilePicture !== 'string') {
               if (typeof res.profilePicture === 'string' && !res.profilePicture.startsWith('data:image')) {
                 this.profilePicture = `data:image/png;base64,${res.profilePicture}`;
@@ -174,6 +182,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
         },
         error: () => {
           this.username = this.authService.getUserName();
+          this.userRole = this.getUserRole();
           this.profilePicture = "assets/img/profile/user.png";
           this.isUserLoading = false;
           this.cdr.detectChanges();
@@ -181,6 +190,7 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     } else {
       this.username = this.authService.getUserName();
+      this.userRole = this.getUserRole();
       this.isUserLoading = false;
       this.cdr.detectChanges();
     }
@@ -239,6 +249,49 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   //     },
   //   });
   // }
+
+  private getUserRole(): string {
+    const storedRole = localStorage.getItem('role');
+    if (storedRole && storedRole.trim() && storedRole !== 'undefined' && storedRole !== 'null') {
+      try {
+        const parsed = JSON.parse(storedRole);
+        if (typeof parsed === 'string' && parsed.trim()) return parsed;
+        if (parsed?.name && typeof parsed.name === 'string') return parsed.name;
+      } catch {
+        return storedRole;
+      }
+    }
+
+    const singleRole = this.authService.getUserRole();
+    if (singleRole && typeof singleRole === 'string' && singleRole.trim()) {
+      return singleRole;
+    }
+
+    const roles = this.authService.getUserRoles();
+    if (Array.isArray(roles) && roles.length > 0) {
+      const first = roles[0];
+      if (typeof first === 'string' && first.trim()) return first;
+      if (first && typeof first === 'object' && (first as any).name) return (first as any).name;
+    }
+
+    return '';
+  }
+
+  private extractRoleFromResponse(res: any): string {
+    if (!res) return '';
+    const rawRoles = res.roles ?? res.Roles ?? res.role ?? res.Role ?? res.roleName;
+    if (!rawRoles) return '';
+    if (typeof rawRoles === 'string') return rawRoles;
+    const list = rawRoles.$values || rawRoles;
+    if (Array.isArray(list) && list.length > 0) {
+      const first = list[0];
+      if (typeof first === 'string') return first;
+      if (first && typeof first === 'object') {
+        return first.name || first.roleName || first.role || '';
+      }
+    }
+    return '';
+  }
 
   private loadProcUserCompanies(userId: string): void {
     this.lookupService.getProcCompaniesByProcUserId(userId).subscribe({
@@ -370,6 +423,30 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.activeIndex = -1;
   }
 
+  openSearch(ev?: Event): void {
+    if (ev) ev.stopPropagation();
+    this.searchExpanded = true;
+    setTimeout(() => {
+      this.navSearchInput?.nativeElement?.focus();
+    }, 50);
+  }
+
+  closeSearch(ev?: Event): void {
+    if (ev) ev.stopPropagation();
+    this.searchExpanded = false;
+    this.searchCtrl.setValue('');
+    this.closePanelsearch();
+  }
+
+  toggleSearch(ev?: Event): void {
+    if (ev) ev.stopPropagation();
+    if (this.searchExpanded) {
+      this.closeSearch(ev);
+    } else {
+      this.openSearch(ev);
+    }
+  }
+
   onKeyDown(ev: KeyboardEvent): void {
     if (!this.panelOpen) return;
     const max = this.results.length - 1;
@@ -439,7 +516,18 @@ export class NavbarComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
 
-    //  Search 
+    // Search
+    if (this.searchExpanded) {
+      const sroot = this.searchRoot?.nativeElement;
+      if (!sroot || !sroot.contains(target)) {
+        if (!this.searchCtrl.value) {
+          this.searchExpanded = false;
+        }
+        this.closePanelsearch();
+        this.cdr.detectChanges();
+      }
+    }
+
     if (this.panelOpen) {
       const sroot = this.searchRoot?.nativeElement;
       if (!sroot || !sroot.contains(target)) {

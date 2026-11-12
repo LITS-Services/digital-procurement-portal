@@ -15,29 +15,29 @@
           <div class="col-md-6 cstm-action-bar">
             <!-- Back -->
             <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
-              <i class="ft-arrow-left"></i>
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
             </button>
             <span class="vl"></span>
 
             <!-- Create -->
             <button type="button" [ngbTooltip]="'COMMON.CREATE' | translate" class="btn btn-sm  cstm-ui-table-btn"
-              (click)="openEmpDetails()" appPermission [appPermFormId]="FORM_IDS.ENTITIES" [appPermDisable]="'write'">
-              <i class="ft-plus"></i>
-              <label class="ml-1 btn-label">{{ 'COMMON.CREATE' | translate }}</label>
+              (click)="openEmpDetails()" appPermission [appPermFormId]="FORM_IDS.ENTITIES" [appPermDisable]="'write'" [appPermHide]="true">
+              <img src="assets/img/svg-icons/create-icon.svg" class="btn-action-icon" alt="" />
+              <label class="btn-label">{{ 'COMMON.CREATE' | translate }}</label>
             </button>
 
-            <!-- Update -->
-            <button type="button" class="btn btn-sm  cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
-              (click)="editSelectedRow()" appPermission [appPermFormId]="FORM_IDS.ENTITIES" [appPermDisable]="'write'">
-              <i class="ft-edit"></i>
-              <label class="ml-1 btn-label">{{ 'COMMON.EDIT' | translate }}</label>
+            <!-- Update (shown when row selected) -->
+            <button *ngIf="!isEditButtonDisabled" type="button" class="btn btn-sm  cstm-ui-table-btn"
+              (click)="editSelectedRow()" appPermission [appPermFormId]="FORM_IDS.ENTITIES" [appPermDisable]="'write'" [appPermHide]="true">
+              <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" />
+              <label class="btn-label">{{ 'COMMON.EDIT' | translate }}</label>
             </button>
 
-            <!-- Delete -->
-            <button type="button" class="btn btn-sm  cstm-ui-table-btn" [disabled]="isDeleteButtonDisabled"
-              (click)="openDeleteModal()" appPermission [appPermFormId]="FORM_IDS.ENTITIES" [appPermDisable]="'delete'">
-              <i class="ft-trash"></i>
-              <label class="ml-1 btn-label">{{ 'COMMON.DELETE' | translate }}</label>
+            <!-- Delete (shown when row selected) -->
+            <button *ngIf="!isDeleteButtonDisabled" type="button" class="btn btn-sm  cstm-ui-table-btn"
+              (click)="openDeleteModal()" appPermission [appPermFormId]="FORM_IDS.ENTITIES" [appPermDisable]="'delete'" [appPermHide]="true">
+              <img src="assets/img/svg-icons/delete-icon.svg" class="btn-action-icon" alt="" />
+              <label class="btn-label">{{ 'COMMON.DELETE' | translate }}</label>
             </button>
           </div>
         </div>

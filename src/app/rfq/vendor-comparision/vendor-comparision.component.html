@@ -98,15 +98,15 @@
 
   <div *ngIf="flatRows.length > 0; else noBids" class="vendor-comp-parent">
     <ngx-datatable #table class="bootstrap core-bootstrap" [rows]="flatRows" [columnMode]="'force'" [headerHeight]="50"
-      [footerHeight]="50" [rowHeight]="'auto'" style="border: 1px solid #dee2e6; border-radius: 6px;">
+      [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" style="border: 1px solid #dee2e6; border-radius: 6px;">
       <ngx-datatable-column [name]="'COMMON.ITEM' | translate" prop="itemName" [width]="220"></ngx-datatable-column>
       <ngx-datatable-column [name]="'COMMON.VENDOR' | translate" prop="vendorName" [width]="220"></ngx-datatable-column>
-      <ngx-datatable-column [name]="'COMMON.BUDGET_AMOUNT' | translate" prop="biddingAmount" [width]="140">
+      <ngx-datatable-column [name]="'COMMON.BUDGET_AMOUNT' | translate" prop="biddingAmount" [width]="150" [minWidth]="145">
         <ng-template ngx-datatable-cell-template let-value="value">
           {{ value | number:'1.0-2' }}
         </ng-template>
       </ngx-datatable-column>
-      <ngx-datatable-column [name]="'COMMON.DELIVERY_DATE' | translate" prop="deliveryDate" [width]="140">
+      <ngx-datatable-column [name]="'COMMON.DELIVERY_DATE' | translate" prop="deliveryDate" [width]="140" [minWidth]="135">
         <ng-template ngx-datatable-cell-template let-value="value">
           {{ value | date:'yyyy-MM-dd' }}
         </ng-template>
@@ -118,7 +118,7 @@
         </ng-template>
       </ngx-datatable-column>
 
-      <ngx-datatable-column [name]="'COMMON.ATTACHMENTS' | translate" [sortable]="false" [width]="120">
+      <ngx-datatable-column [name]="'COMMON.ATTACHMENTS' | translate" [sortable]="false" [width]="135" [minWidth]="135">
         <ng-template ngx-datatable-cell-template let-row="row">
           <button class="btn btn-link p-0 text-secondary" (click)="openAttachmentsModal(row)" [ngbTooltip]="'COMMON.VIEW' | translate">
             <i class="fa fa-paperclip fs-5"></i>

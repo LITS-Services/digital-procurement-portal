@@ -18,7 +18,7 @@
 }
 
 .vl {
-  border-left: 1.4px solid #cccccc;
+  border-left: 1px solid #D7D7D7;
   height: 100%;
   position: absolute;
   margin-left: -3px;
@@ -65,7 +65,7 @@
 }
 
 // .vl {
-//     border-left: 1.4px solid #cccccc;
+//     border-left: 1px solid #D7D7D7;
 //     height: 100%;
 //     position: absolute;
 //     margin-left: -3px;
@@ -130,38 +130,40 @@
 
 }
 
-/* In Progress (orange outline) */
-.status-pill--inprogress {
-  color: #DA8900;
-  border-color: #DA8900;
-  background: rgba(218, 137, 0, 0.07);
+/* In Progress / Pending */
+.status-pill--inprogress,
+.status-pill--pending {
+  color: #943800;
+  border-color: transparent;
+  background: #FEF2C9BF;
 
 }
 
-/* Completed (green outline) */
+/* Completed */
 .status-pill--completed {
-  color: #2EAF5E;
-  border-color: #2EAF5E;
-  background: rgba(46, 175, 94, 0.07);
+  color: #036147;
+  border-color: transparent;
+  background: #D3FAE6BF;
 }
 
-/* Fallback */
+/* Draft / Fallback */
+.status-pill--draft,
 .status-pill--default {
-  color: #616d89;
-  border-color: #cfd6e4;
-  background: rgba(97, 109, 137, 0.08);
+  color: #6C757D;
+  border-color: transparent;
+  background: #9CA3AF1C;
 }
 
 .status-pill--sendback {
-  color: #aeac12;
-  border-color: #fffc6f;
-  background: rgb(255 255 226);
+  color: #943800;
+  border-color: transparent;
+  background: #FEF2C9BF;
 }
 
 .status-pill--rejected {
-  color: #EF4444;
-  border-color: #EF4444;
-  background: rgba(239, 68, 68, 0.07);
+  color: #9B0012;
+  border-color: transparent;
+  background: #FEE1E2BF;
 }
 
 

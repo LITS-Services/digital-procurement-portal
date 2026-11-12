@@ -195,7 +195,7 @@ form label, .form-group label {
 }
 
 .ngx-datatable ::ng-deep .datatable-header-cell {
-  padding: 0.75rem 1.25rem;
+  padding: 0.75rem;
   border-bottom: 1px solid #e5e7eb;
 
 }
@@ -234,7 +234,7 @@ form label, .form-group label {
 }
 
 .ngx-datatable ::ng-deep .datatable-header-cell {
-  padding: 0.75rem 1.25rem;
+  padding: 0.75rem;
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -242,7 +242,7 @@ form label, .form-group label {
 .ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
 .ngx-datatable ::ng-deep .datatable-header-inner .sort-btn {
   color: #667085 !important;              /* muted header text */
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -258,7 +258,7 @@ form label, .form-group label {
 }
 .ngx-datatable ::ng-deep .datatable-header-inner .sort-btn {
   color: #667085 !important;              /* muted header text */
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -293,7 +293,7 @@ form label, .form-group label {
 /* CELLS */
 .ngx-datatable ::ng-deep .datatable-body .datatable-body-cell {
   text-align: left;
-  padding: 0.65rem 1.25rem;
+  padding: 0.65rem 0.75rem;
   vertical-align: middle;
   color: #334155;
 }

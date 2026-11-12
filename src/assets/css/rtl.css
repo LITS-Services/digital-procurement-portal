@@ -10,7 +10,7 @@ body[dir="rtl"],
 body.rtl {
   direction: rtl !important;
   text-align: right;
-  font-family: "Poppins", "Segoe UI", Tahoma, Arial, sans-serif !important;
+  font-family: "Onest", sans-serif !important;
   overflow-x: hidden !important;
 }
 
@@ -94,21 +94,38 @@ body.rtl .app-sidebar .navigation {
 html[dir="rtl"] .app-sidebar .navigation li a,
 html.rtl .app-sidebar .navigation li a {
   text-align: right;
-  padding-left: 15px !important;
-  padding-right: 18px !important;
+  margin: 0 12px 6px 12px !important;
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+  border-radius: 10px !important;
+  display: flex !important;
+  align-items: center !important;
 }
 
 html[dir="rtl"] .app-sidebar .navigation li a i,
 html.rtl .app-sidebar .navigation li a i {
-  float: right !important;
+  float: none !important;
   margin-left: 12px !important;
   margin-right: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+html[dir="rtl"] .app-sidebar .navigation li a i.sidebar-icon-svg,
+html.rtl .app-sidebar .navigation li a i.sidebar-icon-svg,
+body.rtl .app-sidebar .navigation li a i.sidebar-icon-svg {
+  float: none !important;
+  margin-left: 12px !important;
+  margin-right: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  flex-shrink: 0 !important;
 }
 
 html[dir="rtl"] .app-sidebar .navigation li.has-sub > a:after,
 html.rtl .app-sidebar .navigation li.has-sub > a:after {
   right: auto !important;
-  left: 18px !important;
+  left: 24px !important;
+  top: 13px !important;
   transform: rotate(180deg);
 }
 
@@ -122,6 +139,7 @@ html[dir="rtl"] .app-sidebar .sidebar-header,
 html.rtl .app-sidebar .sidebar-header {
   position: relative !important;
   z-index: 1001 !important;
+  margin-bottom: 14px !important;
 }
 
 html[dir="rtl"] .app-sidebar .sidebar-header .logo,
@@ -141,6 +159,7 @@ html.rtl .app-sidebar .sidebar-header .logo-text {
 
 html[dir="rtl"] .app-sidebar .sidebar-header .logo-img,
 html.rtl .app-sidebar .sidebar-header .logo-img {
+  max-height: none !important;
   margin-right: 0 !important;
   margin-left: 15px !important;
 }
@@ -176,12 +195,12 @@ html[dir="rtl"] .sidebar-header #sidebarToggle.nav-toggle-collapsed,
 html.rtl .sidebar-header #sidebarToggle.nav-toggle-collapsed,
 body.rtl.nav-collapsed .app-sidebar a.nav-toggle,
 body.rtl.nav-collapsed .sidebar-header #sidebarToggle {
-  left: 6px !important;
-  right: 6px !important;
+  left: 10px !important;
+  right: 10px !important;
   margin: 0 auto !important;
-  top: 100px !important;
-  width: 56px !important;
-  height: 48px !important;
+  top: 64px !important;
+  width: 48px !important;
+  height: 44px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -204,8 +223,8 @@ body.rtl.nav-collapsed .app-sidebar .sidebar-header .logo {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  padding: 0.5rem 0 !important;
-  margin: 0 auto 25px auto !important;
+  padding: 0.5rem 0 0 0 !important;
+  margin: 0 auto !important;
   float: none !important;
 }
 
@@ -236,7 +255,7 @@ html[dir="rtl"] body.nav-collapsed .app-sidebar .sidebar-header .logo-img .sideb
 html.rtl body.nav-collapsed .app-sidebar .sidebar-header .logo-img .sidebar-logo,
 body.rtl.nav-collapsed .app-sidebar .sidebar-header .logo-img .sidebar-logo {
   display: block !important;
-  margin: 15px auto 10px auto !important;
+  margin: 14px auto 0 auto !important;
   float: none !important;
   width: 36px !important;
 }
@@ -269,9 +288,9 @@ body.rtl .sidebar-content.collapsed .navigation li > a {
   text-align: center !important;
   padding: 0 !important;
   margin: 0 auto 6px auto !important;
-  width: 56px !important;
-  height: 48px !important;
-  min-height: 48px !important;
+  width: 48px !important;
+  height: 44px !important;
+  min-height: 44px !important;
   box-sizing: border-box !important;
   border-radius: 10px !important;
   position: relative !important;
@@ -287,14 +306,30 @@ body.rtl .sidebar-content.collapsed .navigation li > a i {
   float: none !important;
   margin: 0 !important;
   padding: 0 !important;
-  width: auto !important;
-  height: auto !important;
+  width: auto;
+  height: auto;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   text-align: center !important;
   line-height: 1 !important;
   font-size: 1.25rem !important;
+}
+
+html[dir="rtl"] body.nav-collapsed .app-sidebar .navigation li > a i.sidebar-icon-svg,
+html.rtl body.nav-collapsed .app-sidebar .navigation li > a i.sidebar-icon-svg,
+body.rtl.nav-collapsed .app-sidebar .navigation li > a i.sidebar-icon-svg,
+html[dir="rtl"] .sidebar-content.collapsed .navigation li > a i.sidebar-icon-svg,
+html.rtl .sidebar-content.collapsed .navigation li > a i.sidebar-icon-svg,
+body.rtl .sidebar-content.collapsed .navigation li > a i.sidebar-icon-svg {
+  display: inline-block !important;
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  min-height: 22px !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+  background-color: currentColor !important;
 }
 
 /* 3. Active / hover state in collapsed RTL mode */
@@ -304,6 +339,12 @@ body.rtl.nav-collapsed .app-sidebar .navigation li.active > a,
 html[dir="rtl"] .sidebar-content.collapsed .navigation li.active > a,
 html.rtl .sidebar-content.collapsed .navigation li.active > a,
 body.rtl .sidebar-content.collapsed .navigation li.active > a,
+html[dir="rtl"] .sidebar-content.collapsed .navigation li > a.collapsed-trigger-open,
+html.rtl .sidebar-content.collapsed .navigation li > a.collapsed-trigger-open,
+body.rtl .sidebar-content.collapsed .navigation li > a.collapsed-trigger-open,
+html[dir="rtl"] .sidebar-content.collapsed .navigation li > a.collapsed-parent-active,
+html.rtl .sidebar-content.collapsed .navigation li > a.collapsed-parent-active,
+body.rtl .sidebar-content.collapsed .navigation li > a.collapsed-parent-active,
 html[dir="rtl"] body.nav-collapsed .app-sidebar .navigation li > a:hover,
 html.rtl body.nav-collapsed .app-sidebar .navigation li > a:hover,
 body.rtl.nav-collapsed .app-sidebar .navigation li > a:hover,
@@ -321,6 +362,12 @@ body.rtl.nav-collapsed .app-sidebar .navigation li.active > a i,
 html[dir="rtl"] .sidebar-content.collapsed .navigation li.active > a i,
 html.rtl .sidebar-content.collapsed .navigation li.active > a i,
 body.rtl .sidebar-content.collapsed .navigation li.active > a i,
+html[dir="rtl"] .sidebar-content.collapsed .navigation li > a.collapsed-trigger-open i,
+html.rtl .sidebar-content.collapsed .navigation li > a.collapsed-trigger-open i,
+body.rtl .sidebar-content.collapsed .navigation li > a.collapsed-trigger-open i,
+html[dir="rtl"] .sidebar-content.collapsed .navigation li > a.collapsed-parent-active i,
+html.rtl .sidebar-content.collapsed .navigation li > a.collapsed-parent-active i,
+body.rtl .sidebar-content.collapsed .navigation li > a.collapsed-parent-active i,
 html[dir="rtl"] body.nav-collapsed .app-sidebar .navigation li > a:hover i,
 html.rtl body.nav-collapsed .app-sidebar .navigation li > a:hover i,
 body.rtl.nav-collapsed .app-sidebar .navigation li > a:hover i,
@@ -338,7 +385,7 @@ html[dir="rtl"] .sidebar-content.collapsed .collapsed-has-sub .submenu-dot,
 html.rtl .sidebar-content.collapsed .collapsed-has-sub .submenu-dot,
 body.rtl .sidebar-content.collapsed .collapsed-has-sub .submenu-dot {
   right: auto !important;
-  left: 6px !important;
+  left: 7px !important;
 }
 
 /* 5. Submenu Mat-Menu overlay panel in RTL mode */
@@ -346,7 +393,7 @@ html[dir="rtl"] .cdk-overlay-pane:has(.sidebar-collapsed-menu),
 html.rtl .cdk-overlay-pane:has(.sidebar-collapsed-menu),
 body.rtl .cdk-overlay-pane:has(.sidebar-collapsed-menu) {
   left: auto !important;
-  right: 68px !important;
+  right: 76px !important;
 }
 
 html[dir="rtl"] .sidebar-collapsed-menu,
@@ -356,21 +403,33 @@ body.rtl .sidebar-collapsed-menu {
   text-align: right !important;
 }
 
-html[dir="rtl"] .sidebar-collapsed-menu .mat-menu-item,
-html.rtl .sidebar-collapsed-menu .mat-menu-item,
-body.rtl .sidebar-collapsed-menu .mat-menu-item {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
+html[dir="rtl"] .sidebar-collapsed-menu .collapsed-menu-header,
+html.rtl .sidebar-collapsed-menu .collapsed-menu-header,
+body.rtl .sidebar-collapsed-menu .collapsed-menu-header,
+html[dir="rtl"] .sidebar-collapsed-menu .collapsed-submenu-item-content,
+html.rtl .sidebar-collapsed-menu .collapsed-submenu-item-content,
+body.rtl .sidebar-collapsed-menu .collapsed-submenu-item-content {
   direction: rtl !important;
   text-align: right !important;
 }
 
-html[dir="rtl"] .sidebar-collapsed-menu .mat-menu-item i,
-html.rtl .sidebar-collapsed-menu .mat-menu-item i,
-body.rtl .sidebar-collapsed-menu .mat-menu-item i {
-  margin-left: 10px !important;
-  margin-right: 0 !important;
+html[dir="rtl"] .sidebar-collapsed-menu .collapsed-submenu-item,
+html.rtl .sidebar-collapsed-menu .collapsed-submenu-item,
+body.rtl .sidebar-collapsed-menu .collapsed-submenu-item,
+html[dir="rtl"] .sidebar-collapsed-menu .mat-mdc-menu-item,
+html.rtl .sidebar-collapsed-menu .mat-mdc-menu-item,
+body.rtl .sidebar-collapsed-menu .mat-mdc-menu-item,
+html[dir="rtl"] .sidebar-collapsed-menu .mat-menu-item,
+html.rtl .sidebar-collapsed-menu .mat-menu-item,
+body.rtl .sidebar-collapsed-menu .mat-menu-item {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+html[dir="rtl"] .sidebar-collapsed-menu .collapsed-submenu-icon,
+html.rtl .sidebar-collapsed-menu .collapsed-submenu-icon,
+body.rtl .sidebar-collapsed-menu .collapsed-submenu-icon {
+  margin: 0 !important;
 }
 
 /* 6. Thin unobtrusive scrollbar for sidebar in RTL mode */

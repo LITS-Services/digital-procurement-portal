@@ -135,6 +135,33 @@ export class VerticalMenuComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
+  isSvg(icon: string): boolean {
+    return !!icon && (icon.endsWith('.svg') || icon.includes('/'));
+  }
+
+  getIconMaskUrl(icon: string): string {
+    if (!icon) return '';
+    return `url('${encodeURI(icon)}')`;
+  }
+
+  isMenuParentActive(menuItem: any): boolean {
+    if (!menuItem?.submenu?.length) return false;
+    const currentUrl = (this.router?.url || '').split('?')[0].split('#')[0];
+    if (!currentUrl) return false;
+    return menuItem.submenu.some((sub: any) => {
+      if (sub?.path && (currentUrl === sub.path || currentUrl.startsWith(sub.path + '/'))) {
+        return true;
+      }
+      if (sub?.submenu?.length) {
+        return sub.submenu.some(
+          (subSub: any) =>
+            subSub?.path && (currentUrl === subSub.path || currentUrl.startsWith(subSub.path + '/'))
+        );
+      }
+      return false;
+    });
+  }
+
   get tooltipPlacement(): string | string[] {
     return this.isRtl
       ? ['left', 'left-top', 'left-bottom']

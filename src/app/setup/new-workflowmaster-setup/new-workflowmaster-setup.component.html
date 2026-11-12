@@ -15,19 +15,20 @@
       <div class="card cstm-ui-card sticky-toolbar" [class.sticky]="isToolbarSticky">
         <div class="row">
           <div class="col-md-6">
-            <button class="btn btn-lg cstm-ui-table-btn mr-1" type="button" (click)="homePage()"><i
-                class="ft-arrow-left"></i></button>
+            <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
+            </button>
             <span class="vl"></span>
             <button type="submit" class="btn btn-sm cstm-ui-table-btn" [disabled]="workflowsetupform.invalid"
               *ngIf="mode !== 'Edit'" (click)="submitForm()">
-              <i class="ft-plus"></i><label class="ml-1">{{ 'COMMON.SAVE' | translate }}</label>
+              <img src="assets/img/svg-icons/save-icon.svg" class="btn-action-icon" alt="" /><label>{{ 'COMMON.SAVE' | translate }}</label>
             </button>
-            <button [disabled]="mode !== 'Edit'" type="reset" class="btn btn-sm cstm-ui-table-btn"
+            <button *ngIf="mode === 'Edit'" type="reset" class="btn btn-sm cstm-ui-table-btn"
               (click)="updateForm()">
-              <i class="ft-edit"></i><label class="ml-1">{{ (mode === 'Edit' ? 'COMMON.UPDATE' : 'COMMON.EDIT') | translate }}</label>
+              <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" /><label>{{ 'COMMON.UPDATE' | translate }}</label>
             </button>
-            <button [disabled]="mode !== 'Edit'" type="reset" class="btn btn-sm cstm-ui-table-btn">
-              <i class="ft-trash"></i><label class="ml-1">{{ 'COMMON.DELETE' | translate }}</label>
+            <button *ngIf="mode === 'Edit'" type="reset" class="btn btn-sm cstm-ui-table-btn">
+              <img src="assets/img/svg-icons/delete-icon.svg" class="btn-action-icon" alt="" /><label>{{ 'COMMON.DELETE' | translate }}</label>
             </button>
           </div>
         </div>
@@ -232,32 +233,32 @@
             <div style="position: relative;">
               <ngx-datatable class="bootstrap core-bootstrap" [rows]="newApproverData" [columnMode]="'force'"
                 [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
-                <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="50">
+                <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="75" [minWidth]="75" [canAutoResize]="false">
                   <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
                     <span>{{rowIndex + 1}}</span>
                   </ng-template>
                 </ngx-datatable-column>
-                <ngx-datatable-column [name]="'SETUP_MODULE.APPROVER' | translate" prop="approverName" [width]="70"></ngx-datatable-column>
-                <ngx-datatable-column [name]="'SETUP_MODULE.LEVEL' | translate" prop="approverLevel" [width]="70"></ngx-datatable-column>
+                <ngx-datatable-column [name]="'SETUP_MODULE.APPROVER' | translate" prop="approverName" [width]="120" [minWidth]="110"></ngx-datatable-column>
+                <ngx-datatable-column [name]="'SETUP_MODULE.LEVEL' | translate" prop="approverLevel" [width]="90" [minWidth]="85"></ngx-datatable-column>
 
                 <!-- Hide Amount From/To in table for Vendor Company Onboarding -->
-                <ngx-datatable-column [name]="'SETUP_MODULE.AMOUNT_FROM' | translate" prop="amountFrom" [width]="70"
+                <ngx-datatable-column [name]="'SETUP_MODULE.AMOUNT_FROM' | translate" prop="amountFrom" [width]="135" [minWidth]="130"
                   *ngIf="!hideConditionalFields"></ngx-datatable-column>
-                <ngx-datatable-column [name]="'SETUP_MODULE.AMOUNT_TO' | translate" prop="amountTo" [width]="70"
+                <ngx-datatable-column [name]="'SETUP_MODULE.AMOUNT_TO' | translate" prop="amountTo" [width]="125" [minWidth]="120"
                   *ngIf="!hideConditionalFields"></ngx-datatable-column>
 
-                <ngx-datatable-column [name]="'SETUP_MODULE.PROXY_APPROVER' | translate" prop="proxyApproverName"
-                  [width]="70"></ngx-datatable-column>
-                <ngx-datatable-column [name]="'SETUP_MODULE.GRACE_DAYS' | translate" prop="graceDays" [width]="70"></ngx-datatable-column>
+                <ngx-datatable-column [name]="'SETUP_MODULE.PROXY_APPROVER' | translate" prop="proxyApproverName" [width]="155" [minWidth]="150">
+                  </ngx-datatable-column>
+                <ngx-datatable-column [name]="'SETUP_MODULE.GRACE_DAYS' | translate" prop="graceDays" [width]="125" [minWidth]="120"></ngx-datatable-column>
 
-                <ngx-datatable-column [name]="'SETUP_MODULE.CAN_APPROVE' | translate" prop="canApprove" [width]="70"></ngx-datatable-column>
-                <ngx-datatable-column [name]="'SETUP_MODULE.CAN_REJECT' | translate" prop="canReject" [width]="70"></ngx-datatable-column>
-                <ngx-datatable-column [name]="'SETUP_MODULE.CAN_SEND_BACK' | translate" prop="canSendBack" [width]="70"></ngx-datatable-column>
-                <ngx-datatable-column [name]="'SETUP_MODULE.CAN_SUBMIT' | translate" prop="canSubmit" [width]="70"></ngx-datatable-column>
-                <ngx-datatable-column [name]="'SETUP_MODULE.IS_COMPULSORY' | translate" prop="isApprovalCompulsory"
-                  [width]="70"></ngx-datatable-column>
+                <ngx-datatable-column [name]="'SETUP_MODULE.CAN_APPROVE' | translate" prop="canApprove" [width]="130" [minWidth]="125"></ngx-datatable-column>
+                <ngx-datatable-column [name]="'SETUP_MODULE.CAN_REJECT' | translate" prop="canReject" [width]="120" [minWidth]="115"></ngx-datatable-column>
+                <ngx-datatable-column [name]="'SETUP_MODULE.CAN_SEND_BACK' | translate" prop="canSendBack" [width]="140" [minWidth]="135"></ngx-datatable-column>
+                <ngx-datatable-column [name]="'SETUP_MODULE.CAN_SUBMIT' | translate" prop="canSubmit" [width]="120" [minWidth]="115"></ngx-datatable-column>
+                <ngx-datatable-column [name]="'SETUP_MODULE.IS_COMPULSORY' | translate" prop="isApprovalCompulsory" [width]="145" [minWidth]="140">
+                  </ngx-datatable-column>
 
-                <ngx-datatable-column [name]="'COMMON.ACTIONS' | translate" [width]="70">
+                <ngx-datatable-column [name]="'COMMON.ACTIONS' | translate" [width]="100" [minWidth]="95" [canAutoResize]="false">
                   <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
                     <a matTooltip="Edit Approver" style="cursor: pointer; color: #d1d4d7;"
                       (click)="editRow(row, rowIndex)" [ngClass]="{'disabled': actionType === 'View'}">

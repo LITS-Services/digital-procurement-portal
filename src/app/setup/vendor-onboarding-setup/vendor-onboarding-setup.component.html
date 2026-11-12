@@ -14,23 +14,23 @@
         <div class="row">
           <div class="col-md-6">
             <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
-              <i class="ft-arrow-left"></i>
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
             </button>
             <span class="vl"></span>
             <button type="button" class="btn btn-sm cstm-ui-table-btn" [ngbTooltip]="'SETUP_MODULE.CREATE_WORKFLOW_TOOLTIP' | translate" appPermission
-              [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING" [appPermDisable]="'write'" (click)="NewVendorOnboarding()">
-              <i class="ft-plus"></i><label class="ml-1">{{ 'COMMON.CREATE' | translate }}</label>
+              [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING" [appPermDisable]="'write'" [appPermHide]="true" (click)="NewVendorOnboarding()">
+              <img src="assets/img/svg-icons/create-icon.svg" class="btn-action-icon" alt="" /><label>{{ 'COMMON.CREATE' | translate }}</label>
             </button>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" appPermission
-              [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING" [appPermDisable]="'write'" (click)="onUpdate()">
-              <i class="ft-edit"></i><label class="ml-1">{{ 'COMMON.EDIT' | translate }}</label>
+            <button *ngIf="chkBoxSelected?.length === 1" type="button" class="btn btn-sm cstm-ui-table-btn" appPermission
+              [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING" [appPermDisable]="'write'" [appPermHide]="true" (click)="onUpdate()">
+              <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" /><label>{{ 'COMMON.EDIT' | translate }}</label>
             </button>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" appPermission
-              [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING" [appPermDisable]="'delete'" (click)="openDeleteModal()">
-              <i class="ft-trash"></i><label class="ml-1">{{ 'COMMON.DELETE' | translate }}</label>
+            <button *ngIf="chkBoxSelected?.length > 0" type="button" class="btn btn-sm cstm-ui-table-btn" appPermission
+              [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING" [appPermDisable]="'delete'" [appPermHide]="true" (click)="openDeleteModal()">
+              <img src="assets/img/svg-icons/delete-icon.svg" class="btn-action-icon" alt="" /><label>{{ 'COMMON.DELETE' | translate }}</label>
             </button>
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="refreshData()">
-              <i class="ft-refresh-cw"></i><label class="ml-1">{{ 'COMMON.REFRESH' | translate }}</label>
+              <img src="assets/img/svg-icons/Sync_icon.svg" class="btn-action-icon" alt="" /><label>{{ 'COMMON.REFRESH' | translate }}</label>
             </button>
           </div>
         </div>
@@ -60,14 +60,14 @@
           </ngx-datatable-column>
 
           <!-- Sr. No -->
-          <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="50" [resizeable]="false">
+          <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="75" [minWidth]="75" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
             <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
               <span>{{ rowIndex + 1 }}</span>
             </ng-template>
           </ngx-datatable-column>
 
           <!-- Setup Name -->
-          <ngx-datatable-column [name]="'SETUP_MODULE.SETUP_NAME' | translate" prop="setupName" [flexGrow]="1" [minWidth]="100">
+          <ngx-datatable-column [name]="'SETUP_MODULE.SETUP_NAME' | translate" prop="setupName" [flexGrow]="1" [minWidth]="130">
             <ng-template ngx-datatable-cell-template let-value="value">
               <span>{{ value || 'N/A' }}</span>
             </ng-template>
@@ -89,7 +89,7 @@
             </ng-template>
           </ngx-datatable-column>
 
-          <ngx-datatable-column [name]="'SETUP_MODULE.RECEIVERS' | translate" prop="Receivers" [flexGrow]="1" [minWidth]="100" [maxWidth]="150">
+          <ngx-datatable-column [name]="'SETUP_MODULE.RECEIVERS' | translate" prop="Receivers" [flexGrow]="1" [minWidth]="115" [maxWidth]="150">
             <ng-template let-row="row" ngx-datatable-cell-template>
               <button class="btn btn-primary btn-sm position-relative" (click)="openReceiversModal(row)">
                 <i class="ft-users"></i>

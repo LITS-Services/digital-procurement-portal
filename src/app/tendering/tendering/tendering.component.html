@@ -63,7 +63,7 @@
                     </div>
                 </ng-template>
             </ngx-datatable-column>
-            <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="50" [resizeable]="false">
+            <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="75" [minWidth]="75" [canAutoResize]="false" [resizeable]="false">
                 <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
                     <span>{{rowIndex + 1}}</span>
                 </ng-template>

@@ -30,45 +30,45 @@
         <div class="row">
           <div class="col-md-6">
             <button class="btn btn-lg mr-1" type="button" (click)="goBack()">
-              <i class="ft-arrow-left"></i>
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
             </button>
             <span class="vl"></span>
 
             <!-- If isAssigned = true → show Submit for Approval -->
-            <button *ngIf="!isAssigned && workflowMasterId != 0 && mainApproverId == currentUserId"
-              class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
+            <button *ngIf="!isAssigned && workflowMasterId != 0 && mainApproverId == currentUserId && companyId && !isSubmitting"
+              class="btn btn-sm cstm-ui-table-btn"
               (click)="onActions('SendBackFromApproval')">
-              <i class="ft-arrow-left"></i>
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-action-icon btn-back-icon" alt="" />
               <label class="ml-1">{{ 'COMMON.SENDBACK' | translate }}</label>
             </button>
 
-            <button *ngIf="isAssigned && mainApproverId == currentUserId" class="btn btn-sm cstm-ui-table-btn"
-              [disabled]="!companyId || isSubmitting" (click)="onActions('sendforapproval')">
-              <i class="ft-check"></i>
-              <label class="ml-1">{{ 'COMMON.SUBMIT_FOR_APPROVAL' | translate }}</label>
+            <button *ngIf="isAssigned && mainApproverId == currentUserId && companyId && !isSubmitting" class="btn btn-sm cstm-ui-table-btn"
+              (click)="onActions('sendforapproval')">
+              <img src="assets/img/svg-icons/Submit_icon.svg" class="btn-action-icon" alt="" />
+              <label>{{ 'COMMON.SUBMIT_FOR_APPROVAL' | translate }}</label>
             </button>
 
 
             <!-- If isAssigned = false AND workflowMasterId != 0 AND mainApproverId == currentUserId → show Approve -->
-            <button *ngIf="!isAssigned && workflowMasterId != 0 && mainApproverId == currentUserId"
-              class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
+            <button *ngIf="!isAssigned && workflowMasterId != 0 && mainApproverId == currentUserId && companyId && !isSubmitting"
+              class="btn btn-sm cstm-ui-table-btn"
               (click)="onActions('Approve')">
               <i class="ft-check"></i>
               <label class="ml-1">{{ 'COMMON.APPROVE' | translate }}</label>
             </button>
 
 
-            <button *ngIf="(isAssigned || workflowMasterId != 0) && mainApproverId == currentUserId"
-              class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
+            <button *ngIf="(isAssigned || workflowMasterId != 0) && mainApproverId == currentUserId && companyId && !isSubmitting"
+              class="btn btn-sm cstm-ui-table-btn"
               (click)="onActions('Rejected')">
-              <i class="ft-x"></i>
-              <label class="ml-1">{{ 'COMMON.REJECT' | translate }}</label>
+              <img src="assets/img/svg-icons/cancel-icon.svg" class="btn-action-icon" alt="" />
+              <label>{{ 'COMMON.REJECT' | translate }}</label>
             </button>
 
-            <button *ngIf="isAssigned && workflowMasterId == 0 && mainApproverId == currentUserId"
-              class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
+            <button *ngIf="isAssigned && workflowMasterId == 0 && mainApproverId == currentUserId && companyId && !isSubmitting"
+              class="btn btn-sm cstm-ui-table-btn"
               (click)="onActions('SendBack')">
-              <i class="ft-arrow-left"></i>
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-action-icon btn-back-icon" alt="" />
               <label class="ml-1">{{ 'COMMON.SEND_BACK' | translate }}</label>
             </button>
 

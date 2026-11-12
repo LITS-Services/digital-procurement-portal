@@ -1,42 +1,35 @@
-<div class="d-flex flex-column justify-content-center align-items-center my-4 g-2">
+<div class="d-flex flex-column justify-content-center align-items-center my-3 g-2">
   <div class="login-title">{{ 'AUTH.LOGIN_TITLE' | translate }}</div>
   <div class="login-desc">{{ 'AUTH.LOGIN_DESC' | translate }}</div>
 </div>
 <!-- <h2 class="mb-2 text-center" style="color: #1E89B8;">Login</h2>
                 <p class="mb-2 text-center">Please enter credentials</p> -->
-<ngb-alert type="light-danger" class="mb-2" *ngIf="isLoginFailed" (close)="isLoginFailed = false">
-  <p class="mb-0">
-    <ng-container *ngIf="isLocked; else loginFailedText">
-      Account is locked. Try again in <strong>{{ lockoutRemainingText || '—' }}</strong>
-    </ng-container>
-    <ng-template #loginFailedText>{{ errorMessage || ('AUTH.LOGIN_FAILED' | translate) }}</ng-template>
-  </p>
-</ngb-alert>
 
 <div>
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
     <div class="form-group">
-      <input type="text" formControlName="username" class="form-control custom-input" [placeholder]="'AUTH.ENTER_USERNAME' | translate"
-        [ngClass]="{ 'is-invalid': loginFormSubmitted && lf.username.invalid, 'is-valid': loginFormSubmitted && !lf.username.invalid }"
-        (keyup.enter)="onSubmit()"
-        required>
+      <input type="text" formControlName="username" class="form-control custom-input"
+        [placeholder]="'AUTH.ENTER_USERNAME' | translate"
+        [ngClass]="{ 'is-invalid': (loginFormSubmitted && lf.username.invalid) || isLoginFailed }"
+        (keyup.enter)="onSubmit()" required>
       <div *ngIf="loginFormSubmitted && (lf.username.invalid || lf.username.errors?.required)"
-        class="help-block mt-1 text-danger"> <i class="ft-alert-circle align-middle"></i> {{ 'AUTH.REQUIRED_FIELD' | translate }}</div>
+        class="help-block mt-1 text-danger"> <i class="ft-alert-circle align-middle"></i> {{ 'AUTH.REQUIRED_FIELD' |
+        translate }}</div>
     </div>
     <div class="form-group cstm-pass-div">
 
       <div class="cstm-pass-input-wrap">
         <input type="{{ hidePassword ? 'password' : 'text' }}" formControlName="password"
           class="form-control custom-input" [placeholder]="'AUTH.ENTER_PASSWORD' | translate"
-          [ngClass]="{ 'is-invalid': loginFormSubmitted && lf.password.invalid, 'is-valid': loginFormSubmitted && !lf.password.invalid }"
-          (keyup.enter)="onSubmit()"
-          required>
+          [ngClass]="{ 'is-invalid': (loginFormSubmitted && lf.password.invalid) || isLoginFailed }"
+          (keyup.enter)="onSubmit()" required>
         <i class="eye-icon pass-icon" [ngClass]="hidePassword ? 'ft ft-eye-off' : 'ft ft-eye'"
           (click)="togglePasswordVisibility()"></i>
       </div>
 
       <div *ngIf="loginFormSubmitted && (lf.password.invalid || lf.password.errors?.required)"
-        class="help-block mt-1 text-danger"> <i class="ft-alert-circle align-middle"></i> {{ 'AUTH.REQUIRED_FIELD' | translate }}
+        class="help-block mt-1 text-danger"> <i class="ft-alert-circle align-middle"></i> {{ 'AUTH.REQUIRED_FIELD' |
+        translate }}
       </div>
     </div>
     <!-- <div class="d-sm-flex justify-content-between mb-3 font-small-2">
@@ -50,9 +43,11 @@
                     </div> -->
     <div class="d-flex justify-content-between align-items-center my-3">
       <div class="checkbox auth-checkbox">
-        <input type="checkbox" formControlName="rememberMe" class="form-control" id="rememberMe" (change)="rememberMe()">
+        <input type="checkbox" formControlName="rememberMe" class="form-control" id="rememberMe"
+          (change)="rememberMe()">
         <label for="rememberMe" class="mb-0">
-          <span class="font-small-2 font-weight-normal rm" style="color: #253E88;">{{ 'AUTH.REMEMBER_ME' | translate }}</span>
+          <span class="font-small-2 font-weight-normal rm" style="color: #253E88;">{{ 'AUTH.REMEMBER_ME' | translate
+            }}</span>
         </label>
       </div>
       <a (click)="forgotpassword()" class="fp link">{{ 'AUTH.FORGOT_PASSWORD' | translate }}</a>
@@ -80,7 +75,7 @@
 
     <div class="d-flex justify-content-between flex-sm-row">
       <!-- <a [routerLink]="['/pages/register']" class="btn bg-light-primary mb-2 mb-sm-0">Register</a> -->
-      <button type="submit" class="btn btn-primary login-btn w-100" [disabled]="isLocked">{{ 'AUTH.LOGIN' | translate }}</button>
+      <button type="submit" class="btn login-btn w-100" [disabled]="isLocked">{{ 'AUTH.LOGIN' | translate }}</button>
     </div>
 
     <!-- <div class="d-flex"><a  class="btn btn-primary" (click)="onSubmit()">Login</a></div> -->

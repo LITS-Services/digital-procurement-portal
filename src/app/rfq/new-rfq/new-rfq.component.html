@@ -6,7 +6,7 @@
       <div class="row">
         <div class="col-md-12" style=" margin-top: -0.25rem;">
           <h4 class="heading">
-            <button class="btn btn-lg" type="button" (click)="homePage()"><i class="ft-arrow-left"></i></button>
+            <button class="btn btn-lg" type="button" (click)="homePage()"><img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" /></button>
             <ng-container *ngIf="viewMode === false; else viewModeTitle">
               {{ (isNewForm ? 'RFQ_MODULE.CREATE_QUOTATION_REQUEST' : 'RFQ_MODULE.UPDATE_QUOTATION_REQUEST') | translate }}
             </ng-container>
@@ -135,7 +135,7 @@
           
             <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" (click)="goBack()"
               title="Back to RFQ Details">
-              <i class="ft-arrow-left"></i><label class="ml-1">{{ 'COMMON.BACK' | translate }}</label>
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-action-icon btn-back-icon" alt="" /><label class="ml-1">{{ 'COMMON.BACK' | translate }}</label>
             </button>
           
           </div>
@@ -152,40 +152,40 @@
           
                 <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" [disabled]="isLoading"
               (click)="saveAsDraftAndGoBack()">
-              <i class="ft-save"></i><label class="ml-1">{{ 'COMMON.SAVE_AS_DRAFT' | translate }}</label>
+              <img src="assets/img/svg-icons/draft-icon.svg" class="btn-action-icon" alt="" /><label>{{ 'COMMON.SAVE_AS_DRAFT' | translate }}</label>
             </button>
           
             <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" [disabled]="isLoading"
               (click)="submitForm(true)">
-              <i class="ft-check"></i><label class="ml-1">{{ 'COMMON.SAVE_AND_CONTINUE' | translate }}</label>
+              <img src="assets/img/svg-icons/save-icon.svg" class="btn-action-icon" alt="" /><label>{{ 'COMMON.SAVE_AND_CONTINUE' | translate }}</label>
             </button>
 
          
           
-            <button *ngIf="!isNewForm && (rfqTabs === 'details' || rfqTabs === 'items') && isSubmitter"
-              class="btn btn-sm cstm-ui-table-btn" [disabled]="newRfqForm.invalid || isStatusCompleted  || isStatusInProgress || !isSubmitter || viewMode"
+            <button *ngIf="!isNewForm && (rfqTabs === 'details' || rfqTabs === 'items') && isSubmitter && !isStatusCompleted && !isStatusInProgress && !viewMode"
+              class="btn btn-sm cstm-ui-table-btn" [disabled]="newRfqForm.invalid"
               (click)="submitForm()">
-              <i class="ft-edit-2"></i><label class="ml-1">{{ 'COMMON.UPDATE' | translate }}</label>
+              <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" /><label>{{ 'COMMON.UPDATE' | translate }}</label>
             </button>
 
               <button   [ngbTooltip]="(useRequestPOMode ? 'COMMON.REQUEST_PO' : 'COMMON.CREATE_PO') | translate" *ngIf="isStatusCompleted && (rfqTabs === 'details' || rfqTabs === 'items') && isSubmitter"
               class="btn btn-sm cstm-ui-table-btn"
               (click)="onPOButtonClick()">
-              <i class="ft-plus"></i><label class="ml-1">{{ (useRequestPOMode ? 'COMMON.REQUEST_PO' : 'COMMON.CREATE_PO') | translate }}</label>
+              <img src="assets/img/svg-icons/create-icon.svg" class="btn-action-icon" alt="" /><label>{{ (useRequestPOMode ? 'COMMON.REQUEST_PO' : 'COMMON.CREATE_PO') | translate }}</label>
             </button>
 
-            <ng-container *ngIf="viewMode && !isSubmitter">
-            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
+            <ng-container *ngIf="viewMode && !isSubmitter && isMainApprover && !isStatusCompleted">
+            <button class="btn btn-sm cstm-ui-table-btn"
               (click)="onAddRemarks('Approve')">
               <i class="ft-check"></i><label class="ml-1">{{ 'COMMON.APPROVE' | translate }}</label>
             </button>
-            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
+            <button class="btn btn-sm cstm-ui-table-btn"
               (click)="onAddRemarks('Reject')">
-              <i class="ft-x"></i><label class="ml-1">{{ 'COMMON.REJECT' | translate }}</label>
+              <img src="assets/img/svg-icons/cancel-icon.svg" class="btn-action-icon" alt="" /><label>{{ 'COMMON.REJECT' | translate }}</label>
             </button>
-            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
+            <button class="btn btn-sm cstm-ui-table-btn"
               (click)="onAddRemarks('SendBack')">
-              <i class="ft-arrow-left"></i><label class="ml-1">{{ 'COMMON.SEND_BACK' | translate }}</label>
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-action-icon btn-back-icon" alt="" /><label class="ml-1">{{ 'COMMON.SEND_BACK' | translate }}</label>
             </button>
             </ng-container>          
           
@@ -549,10 +549,10 @@
     <!-- Datatable -->
       @if(datatableVisible){
       <ngx-datatable class="bootstrap core-bootstrap" autoResize (autoResize)="onAutoResize()" [rows]="newQuotationItemData" [columnMode]="'force'"
-        [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5"   [scrollbarH]="isMobile">
+        [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
         <!-- Select -->
         <ngx-datatable-column *ngIf="purchaseRequestId" cellClass="datatable-checkbox-cell"
-          headerClass="datatable-checkbox-cell" [name]="'COMMON.SELECT' | translate" [width]="60" [sortable]="false" [canAutoResize]="false"
+          headerClass="datatable-checkbox-cell" [name]="'COMMON.SELECT' | translate" [width]="80" [sortable]="false" [canAutoResize]="false"
           [draggable]="false" [resizeable]="false">
           <!-- Header template with "Select All" -->
           <ng-template ngx-datatable-header-template let-value="value">
@@ -570,7 +570,7 @@
         </ngx-datatable-column>
     
         <!-- Sr. No. -->
-        <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="60" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+        <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="75" [minWidth]="75" [sortable]="false" [canAutoResize]="false" [draggable]="false"
           [resizeable]="false">
           <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
             <span>{{ rowIndex + 1 }}</span>
@@ -578,7 +578,7 @@
         </ngx-datatable-column>
     
         <!-- Type -->
-        <ngx-datatable-column [name]="'COMMON.ITEM_TYPE' | translate" prop="itemType">
+        <ngx-datatable-column [name]="'COMMON.ITEM_TYPE' | translate" prop="itemType" [minWidth]="115">
         </ngx-datatable-column>
 
         <!-- Project -->
@@ -589,7 +589,7 @@
         </ngx-datatable-column>
 
         <!-- Project Activity -->
-        <ngx-datatable-column [name]="'COMMON.PROJECT_ACTIVITY' | translate" prop="ActivityName">
+        <ngx-datatable-column [name]="'COMMON.PROJECT_ACTIVITY' | translate" prop="ActivityName" [minWidth]="160">
           <ng-template let-row="row" ngx-datatable-cell-template>
             <span>{{ row.ActivityName || row.activityName || getActivityNameById(row.projectActivityId) }}</span>
           </ng-template>
@@ -607,7 +607,7 @@
         </ngx-datatable-column>
     
         <!-- Amount -->
-        <ngx-datatable-column [name]="'COMMON.BUDGET_AMOUNT' | translate" prop="amount" [sortable]="false" [canAutoResize]="false"
+        <ngx-datatable-column [name]="'COMMON.BUDGET_AMOUNT' | translate" prop="amount" [width]="150" [minWidth]="145" [sortable]="false" [canAutoResize]="false"
           [draggable]="false" [resizeable]="false">
         </ngx-datatable-column>
     
@@ -623,7 +623,7 @@
         </ngx-datatable-column>
     
         <!-- Attachments -->
-        <ngx-datatable-column [name]="'COMMON.ATTACHMENTS' | translate" [sortable]="false" [canAutoResize]="false"
+        <ngx-datatable-column [name]="'COMMON.ATTACHMENTS' | translate" [width]="135" [minWidth]="135" [sortable]="false" [canAutoResize]="false"
           [draggable]="false" [resizeable]="false">
           <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex">
             <a [matTooltip]="'COMMON.ATTACHMENT' | translate" class="row-action-attachment" (click)="openNewEntityModal(rowIndex)"
@@ -710,9 +710,9 @@
       </div>
       
       <div>
-        <ng-container *ngIf="isSubmitter">
-          <button class="btn btn-sm submit-approval-btn shadow-sm" [disabled]="!allItemsFinalized || newRfqForm.invalid || isStatusCompleted || isStatusInProgress" (click)="onSubmitForApproval()">
-            <i class="ft-check" style="color: #1161cc;"></i><span class="ms-1">{{ 'COMMON.SUBMIT_FOR_APPROVAL' | translate }}</span>
+        <ng-container *ngIf="isSubmitter && allItemsFinalized && !newRfqForm.invalid && !isStatusCompleted && !isStatusInProgress">
+          <button class="btn btn-sm submit-approval-btn shadow-sm" (click)="onSubmitForApproval()">
+            <img src="assets/img/svg-icons/Submit_icon.svg" class="btn-action-icon" alt="" /><span class="ms-1">{{ 'COMMON.SUBMIT_FOR_APPROVAL' | translate }}</span>
           </button>
         </ng-container>
       </div>

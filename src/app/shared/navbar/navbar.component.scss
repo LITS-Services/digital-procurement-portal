@@ -1,78 +1,192 @@
-.search-bar-container {
+:host {
+  display: block;
+  background-color: #FFFFFF !important;
+}
+
+nav.header-navbar,
+.header-navbar,
+nav.navbar {
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
+  border-bottom: none !important;
+}
+.navbar-actions-container {
   position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #f5f5f5;
-  padding: 8px 12px;
-  border-radius: 12px;
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
 }
 
-.search-input {
+/* Base Navbar Icon Buttons (Clean, transparent, no background boxes) */
+.navbar-icon-btn {
+  background: transparent !important;
   border: none !important;
-  padding-left: 44px !important;
-}
-
-/* Input wrapper (with search icon) */
-.search-input-wrapper {
-  position: relative;
-  flex: 1;
-}
-
-.search-icon {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #606060;
-  font-size: 20px;
-}
-
-.icon-buttons {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.icon-btn {
-  background: white;
-  border: none;
-  height: 42px;
-  width: 42px;
-  border-radius: 10px;
-  cursor: pointer;
-  display: flex;
+  box-shadow: none !important;
+  outline: none !important;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.25s ease;
+  cursor: pointer;
+  padding: 0 !important;
+  color: #3D3D3D;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.05) !important;
+    color: #116AEF;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  .nav-icon-svg {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    display: block;
+  }
+
+  i {
+    font-size: 20px;
+    color: inherit;
+    line-height: 1;
+  }
+
+  &.xs {
+    width: 28px;
+    height: 28px;
+    i {
+      font-size: 14px;
+    }
+  }
 }
 
-.icon-btn:hover {
-  background: #f0f0f0;
+/* Expandable Search Input */
+.nav-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .search-input-wrapper {
+    position: relative;
+    width: 0;
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+    display: flex;
+    align-items: center;
+
+    &.expanded {
+      width: 250px;
+      max-width: 250px;
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 38px;
+      padding-left: 36px !important;
+      padding-right: 30px !important;
+      border: 1px solid #D7D7D7 !important;
+      border-radius: 10px !important;
+      background: #ffffff !important;
+      font-size: 13.5px;
+      color: #1f2937;
+      box-shadow: none !important;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+      &:focus {
+        border: 1px solid #116AEF !important;
+        box-shadow: none !important;
+      }
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .search-clear-btn {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      line-height: 1;
+
+      &:hover {
+        color: #ef4444;
+      }
+    }
+  }
 }
 
-.icon-btn i {
-  font-size: 22px;
-  color: #666;
+html[dir="rtl"] .nav-search-wrapper .search-input-wrapper {
+  .search-input {
+    padding-left: 30px !important;
+    padding-right: 36px !important;
+  }
+  .search-icon {
+    left: auto;
+    right: 10px;
+  }
+  .search-clear-btn {
+    right: auto;
+    left: 8px;
+  }
 }
 
 /* Notification dot */
 .notification-bell {
   position: relative;
-}
 
-.notification-bell .dot {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 14px;
-  height: 14px;
-  background: #007bff;
-  border-radius: 50%;
-  font-size: 10px;
-  color: white;
-}
+  .notif-nav-svg {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    display: block;
+  }
 
+  .dot {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    min-width: 8px;
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    background: #116aef;
+    border-radius: 50%;
+    color: transparent;
+    font-size: 0;
+    border: 1.5px solid #ffffff;
+  }
+}
 .user-text {
   font-weight: 500;
   color: #181818 !important;
@@ -171,7 +285,7 @@
   padding: 10px 12px;
   display: flex;
   gap: 6px;
-  justify-content: space-between;   /* ⬅️ key */
+  justify-content: space-between;   /* â¬…ï¸ key */
 
 
 .btn-markasread{
@@ -358,7 +472,7 @@
     gap: 6px;
   }
 
-  .header-navbar .search-bar-container {
+  .header-navbar .navbar-actions-container {
     background: transparent;
     padding: 0;
     gap: 6px;
@@ -375,13 +489,13 @@
     gap: 6px;
   }
 
-  .header-navbar .icon-btn {
+  .header-navbar .navbar-icon-btn {
     width: 32px;
     height: 32px;
     border-radius: 8px;
   }
 
-  .header-navbar .icon-btn i {
+  .header-navbar .navbar-icon-btn i {
     font-size: 18px;
   }
 
@@ -743,6 +857,13 @@
     margin-left: 0 !important;
     margin-right: 4px !important;
   }
+
+  .lang-dropdown-menu {
+    left: 0 !important;
+    right: auto !important;
+    direction: rtl !important;
+    text-align: right !important;
+  }
 }
 
 .profile-wrapper {
@@ -767,15 +888,17 @@
     justify-content: center;
     background: #ffffff;
     border-radius: 0px 24px 24px 0px;
-    padding: 9px 16px;
+    padding: 9px 10px 9px 20px;
     margin-left: -12px;
     /* box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12); */
     z-index: 1;
 }
 
 .pill-icon {
-  font-size: 16px;
-  color: #666;
+  width: 15px;
+  height: 8px;
+  object-fit: contain;
+  display: block;
 }
 
 
@@ -847,17 +970,17 @@
   .lang-dropdown-toggle {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     height: 42px;
     width: auto !important;
-    padding: 0 14px !important;
-    border-radius: 11px;
-    border: 1px solid #e5e7eb;
+    padding: 0 16px !important;
+    border-radius: 10px;
+    border: 1px solid #D7D7D7;
     background: #ffffff;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-    color: #1f2937;
-    font-weight: 600;
-    font-size: 13px;
+    color: #2B2F33;
+    font-weight: 400;
+    font-size: 15px;
     cursor: pointer;
     transition: all 0.2s ease;
 
@@ -883,38 +1006,44 @@
     }
 
     .lang-globe-icon {
-      font-size: 16px;
+      font-size: 22px;
+      line-height: 1;
       color: #116AEF;
       transition: color 0.2s ease;
     }
 
     .lang-code-text {
-      font-size: 13px;
-      font-weight: 600;
-      color: #1f2937;
+      font-size: 15px;
+      font-weight: 400;
+      color: #2B2F33;
       letter-spacing: 0.01em;
     }
 
     .lang-chevron-icon {
-      font-size: 11px;
-      color: #94a3b8;
-      transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.2s ease;
+      width: 15px;
+      height: 8px;
+      object-fit: contain;
+      display: block;
+      transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 
       &.rotate {
         transform: rotate(180deg);
-        color: #116AEF;
       }
     }
   }
 
   .lang-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    left: auto;
     min-width: 165px;
     padding: 0.5rem;
     border-radius: 12px;
     border: 1px solid #e5e7eb;
     background: #ffffff;
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-    margin-top: 6px !important;
+    margin: 0 !important;
     z-index: 1050;
 
     .lang-item {
@@ -978,7 +1107,8 @@
       }
     }
   }
-}
+}
+
 
 /* --- User Profile Dropdown Menu --- */
 .user-profile-menu {

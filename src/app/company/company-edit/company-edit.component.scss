@@ -158,20 +158,20 @@
 }
 
 .company-status-onboarded {
-  background-color: #dcfce7;
-  color: #15803d;
+  background-color: #D3FAE6BF;
+  color: #036147;
 }
 .company-status-onboarded .status-dot {
-  background-color: #16a34a;
+  background-color: #036147;
 }
 
 /* 🟡 In Progress – id 1 */
 .company-status-inprogress {
-  background-color: #fef3c7;
-  color: #92400e;
+  background-color: #FEF2C9BF;
+  color: #943800;
 }
 .company-status-inprogress .status-dot {
-  background-color: #f59e0b;
+  background-color: #943800;
 }
 
 .company-status-new {
@@ -183,11 +183,11 @@
 }
 
 .company-status-default {
-  background-color: #f3f4f6;
-  color: #4b5563;
+  background-color: #9CA3AF1C;
+  color: #6C757D;
 }
 .company-status-default .status-dot {
-  background-color: #9ca3af;
+  background-color: #6C757D;
 }
 
 .add-entity-link {
@@ -250,11 +250,16 @@
 }
 
 .status-onboarded {
-  background: #dcfce7;
-  color: #15803d;
+  background: #D3FAE6BF;
+  color: #036147;
 }
 
 .status-pending {
-  background: #fef3c7;
-  color: #92400e;
+  background: #FEF2C9BF;
+  color: #943800;
+}
+
+.status-default {
+  background: #9CA3AF1C;
+  color: #6C757D;
 }

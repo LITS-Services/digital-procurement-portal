@@ -61,14 +61,14 @@
     <div class="card-body p-0">
       <div class="items-table-wrapper">
         <ngx-datatable class="bootstrap core-bootstrap" [rows]="items" [columnMode]="'force'" [headerHeight]="45"
-          [footerHeight]="0" [rowHeight]="'auto'" [limit]="5">
+          [footerHeight]="0" [rowHeight]="'auto'" [limit]="5" [scrollbarH]="true">
 
           <!-- Sr No -->
-          <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" prop="srNo" [width]="40">
+          <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" prop="srNo" [width]="75" [minWidth]="75" [canAutoResize]="false">
           </ngx-datatable-column>
 
           <!-- Type -->
-          <ngx-datatable-column [name]="'COMMON.ITEM_TYPE' | translate" prop="type" [width]="70">
+          <ngx-datatable-column [name]="'COMMON.ITEM_TYPE' | translate" prop="type" [width]="115" [minWidth]="110">
                <ng-template let-row="row" ngx-datatable-cell-template>
                 <span class="cell-ellipsis" [ngbTooltip]="row.type" container="body">
                   {{ row.type }}
@@ -86,7 +86,7 @@
           </ngx-datatable-column>
 
           <!-- Description -->
-          <ngx-datatable-column [name]="'COMMON.DESCRIPTION' | translate" prop="description">
+          <ngx-datatable-column [name]="'COMMON.DESCRIPTION' | translate" prop="description" [minWidth]="140">
             <ng-template let-row="row" ngx-datatable-cell-template>
                 <span class="cell-ellipsis" [ngbTooltip]="row.description" container="body">
                   {{ row.description }}
@@ -95,14 +95,14 @@
           </ngx-datatable-column>
 
           <!-- Total Quantity -->
-          <ngx-datatable-column [name]="'COMMON.QUANTITY' | translate" prop="orderQuantity" [width]="70">
+          <ngx-datatable-column [name]="'COMMON.QUANTITY' | translate" prop="orderQuantity" [width]="110" [minWidth]="105">
             <ng-template let-row="row" ngx-datatable-cell-template>
               {{ row.orderQuantity }}
             </ng-template>
           </ngx-datatable-column>
 
           <!-- Amount -->
-          <ngx-datatable-column [name]="'COMMON.BUDGET_AMOUNT' | translate" prop="amount" [width]="70">
+          <ngx-datatable-column [name]="'COMMON.BUDGET_AMOUNT' | translate" prop="amount" [width]="150" [minWidth]="145">
             <ng-template let-row="row" ngx-datatable-cell-template>
               {{ row.amount | number }}
             </ng-template>
@@ -194,7 +194,7 @@
             </ngx-datatable-column>
 
 
-            <ngx-datatable-column [name]="'COMMON.ATTACHMENTS' | translate" [width]="100">
+            <ngx-datatable-column [name]="'COMMON.ATTACHMENTS' | translate" [width]="135" [minWidth]="135">
             <ng-template let-row="row" ngx-datatable-cell-template>
               <a [matTooltip]="'COMMON.ATTACHMENT' | translate" class="row-action-attachment" (click)="openAttachmentView(row)"
                 [ngClass]="{'disabled': !row.hasAttachment}">

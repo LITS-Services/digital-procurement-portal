@@ -1,11 +1,11 @@
 <!--Login Page Starts-->
 <section id="login">
-    <div class="auth-lang-switcher" ngbDropdown [display]="'dynamic'" (openChange)="langOpen = $event">
+    <div class="auth-lang-switcher" ngbDropdown display="static" (openChange)="langOpen = $event">
         <button type="button" class="auth-lang-dropdown-toggle" ngbDropdownToggle
             [title]="'SETTINGS.LANGUAGE' | translate">
             <i class="ft-globe auth-lang-globe-icon"></i>
             <span class="auth-lang-text">{{ currentLang === 'ar' ? 'العربية' : 'English' }}</span>
-            <i class="ft-chevron-down auth-lang-chevron-icon" [class.rotate]="langOpen"></i>
+            <img src="assets/img/svg-icons/downarrow-icon.svg" class="auth-lang-chevron-icon" [class.rotate]="langOpen" alt="" />
         </button>
 
         <div class="dropdown-menu dropdown-menu-right auth-lang-dropdown-menu" ngbDropdownMenu>
@@ -30,9 +30,10 @@
                             <!-- <div class="col-lg-6 d-none d-lg-flex justify-content-center align-items-center auth-img-bg p-3">
                 <img src="assets/img/gallery/login.png" alt="" class="img-fluid" width="300" height="230">
               </div> -->
-                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-12 px-4 py-3">
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-12 py-3">
                                 <div class="text-center mb-2">
-                                    <img class="login-logo" src="assets/img/logos/hts-logo.png" alt="HTS Procurement & Sourcing">
+                                    <img class="login-logo" src="assets/img/logos/hts-logo.png"
+                                        alt="HTS Procurement & Sourcing">
                                 </div>
 
                                 <router-outlet></router-outlet>

@@ -248,19 +248,24 @@ export class PurchaseRequestComponent implements OnInit {
   //   });
   // }
 
-  onView() {
+  onView(row?: any) {
     if(!this.permissionService.can(FORM_IDS.PURCHASE_REQUEST, 'read')) 
       return;
-    if (this.chkBoxSelected.length !== 1) {
+
+    const selectedId = row ? (row.requestId || row.id) : (this.chkBoxSelected[0]?.requestId || this.chkBoxSelected[0]?.id);
+
+    if (!selectedId) {
       this.toastr.info('Please select exactly one record to view.');
       return;
     }
 
-    const selectedId = this.chkBoxSelected[0].requestId;
-
     this.router.navigate(['/purchase-request/new-purchase-request'], {
       queryParams: { id: selectedId, mode: 'view' }
     });
+  }
+
+  openPr(row: any) {
+    this.onView(row);
   }
 
   /**
@@ -668,7 +673,7 @@ export class PurchaseRequestComponent implements OnInit {
     });
   }
 
-  private mapStatusKey(status: string): 'chip--success' | 'chip--pending' | 'chip--rejected' | 'chip--approved' {
+  private mapStatusKey(status: string): 'chip--success' | 'chip--pending' | 'chip--rejected' | 'chip--approved' | 'chip--draft' {
     const s = status?.toLowerCase();
 
     if (s === 'completed' || s === 'successful' || s === 'accepted'  || s === 'paid' || s === 'delivered' || s === 'active')
@@ -677,10 +682,13 @@ export class PurchaseRequestComponent implements OnInit {
     if (s === 'rejected')
       return 'chip--rejected';
 
-    if (s === 'pending for payment' || s === 'pending' || s === 'on hold' || s === 'inactive' || s === 'inprogress' || s === 'draft' || s === 'sendback')  
-    return 'chip--pending';
+    if (s === 'draft')
+      return 'chip--draft';
+
+    if (s === 'pending for payment' || s === 'pending' || s === 'on hold' || s === 'inactive' || s === 'inprogress' || s === 'in progress' || s === 'sendback')  
+      return 'chip--pending';
 
     if (s === 'approved for payment' || s === 'approved' || s === 'new' || s === 'awarded')
-    return 'chip--approved';
+      return 'chip--approved';
   }
 }

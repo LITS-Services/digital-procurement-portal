@@ -37,6 +37,7 @@ export interface PurchaseRequestsCountVM {
 export interface RecentPR {
   id: number;
   requisitionNo: string;
+  submittedDate?: string;
   requestDate?: string;
   createdDate?: string;
   requestStatus?: string;
@@ -58,6 +59,7 @@ export type ConsumedChartOptions = {
   theme: ApexTheme;
   legend: ApexLegend;
   markers: ApexMarkers;
+  colors: string[];
 };
 
 @Component({
@@ -178,48 +180,75 @@ export class EmployeeDashboardComponent implements OnInit, OnDestroy {
   private initConsumedChart(): void {
     this.consumedChartOptions = {
       series: [],
+      colors: ['#116AEF', '#60A5FA'],
       chart: {
         type: 'area',
-        height: 280,
+        height: 290,
+        fontFamily: 'Poppins, sans-serif',
         toolbar: { show: false },
         zoom: { enabled: false },
       },
       xaxis: {
         categories: [],
         labels: {
-          style: { fontSize: '11px', colors: '#64748b' },
+          rotate: 0,
+          rotateAlways: false,
+          hideOverlappingLabels: true,
+          offsetY: 6,
+          style: { fontSize: '12px', colors: '#64748B' },
         },
         axisBorder: { show: false },
         axisTicks: { show: false },
+        tooltip: { enabled: false },
       },
       yaxis: {
+        decimalsInFloat: 0,
         labels: {
+          offsetX: -10,
           formatter: (val: number) => {
             if (val >= 1000000) return (val / 1000000).toFixed(1) + 'M';
             if (val >= 1000) return (val / 1000).toFixed(1) + 'k';
-            return val ? val.toFixed(0) : '0';
+            return val ? Math.round(val).toString() : '0';
           },
-          style: { fontSize: '11px', colors: '#64748b' },
+          style: { fontSize: '12px', colors: '#64748B' },
         },
       },
       stroke: {
         curve: 'smooth',
-        width: 3,
+        width: 2,
+        lineCap: 'round',
       },
       dataLabels: { enabled: false },
       fill: {
         type: 'gradient',
+        colors: ['#116AEF', '#60A5FA'],
         gradient: {
-          shadeIntensity: 0.8,
-          opacityFrom: 0.25,
-          opacityTo: 0.05,
-          stops: [0, 90, 100],
+          type: 'vertical',
+          shadeIntensity: 0,
+          inverseColors: false,
+          opacityFrom: 0.3,
+          opacityTo: 0.0,
+          stops: [0, 100],
+          colorStops: [
+            [
+              { offset: 0, color: '#116AEF', opacity: 0.3 },
+              { offset: 65, color: '#116AEF', opacity: 0.1 },
+              { offset: 100, color: '#116AEF', opacity: 0.0 },
+            ],
+            [
+              { offset: 0, color: '#60A5FA', opacity: 0.22 },
+              { offset: 65, color: '#60A5FA', opacity: 0.07 },
+              { offset: 100, color: '#60A5FA', opacity: 0.0 },
+            ],
+          ],
         },
       },
       grid: {
-        borderColor: 'rgba(148, 163, 184, 0.3)',
-        strokeDashArray: 4,
-        padding: { left: 8, right: 12 },
+        borderColor: '#E2E8F0',
+        strokeDashArray: 6,
+        xaxis: { lines: { show: false } },
+        yaxis: { lines: { show: true } },
+        padding: { top: 8, left: 14, right: 16, bottom: 8 },
       },
       tooltip: {
         shared: true,
@@ -230,18 +259,19 @@ export class EmployeeDashboardComponent implements OnInit, OnDestroy {
       },
       legend: {
         horizontalAlign: 'left',
+        fontSize: '12px',
+        labels: {
+          colors: '#64748B',
+        },
       },
       markers: {
-        size: 5,
-        strokeWidth: 2,
-        strokeColors: '#ffffff',
+        size: 0,
         hover: {
-          size: 7,
+          size: 5,
         },
       },
       theme: {
         mode: 'light',
-        palette: 'palette2',
       },
     };
   }
@@ -285,6 +315,16 @@ export class EmployeeDashboardComponent implements OnInit, OnDestroy {
       this.selectedProjectName = 'All Projects';
     }
 
+    this.loadConsumedAmounts();
+  }
+
+  selectProject(projectId: number): void {
+    if (this.selectedProjectId === projectId) return;
+    this.selectedProjectId = projectId;
+    const proj = this.projectOptions.find(p => p.id === projectId);
+    if (proj) {
+      this.selectedProjectName = proj.name;
+    }
     this.loadConsumedAmounts();
   }
 
@@ -571,7 +611,8 @@ export class EmployeeDashboardComponent implements OnInit, OnDestroy {
 
   getStatusClass(status?: string): string {
     const s = (status || '').toLowerCase().trim();
-    if (s.includes('new') || s.includes('draft')) return 'badge-new';
+    if (s.includes('draft')) return 'badge-draft';
+    if (s.includes('new')) return 'badge-new';
     if (s.includes('progress') || s.includes('pending') || s.includes('submitted')) return 'badge-in-progress';
     if (s.includes('approved') || s.includes('complete')) return 'badge-completed';
     if (s.includes('rejected') || s.includes('cancel')) return 'badge-rejected';

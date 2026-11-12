@@ -6,21 +6,22 @@
         <!-- Back Button -->
         <div>
           <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
-            <i class="ft-arrow-left"></i>
+            <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
           </button>
 
           <span class="vl"></span>
 
           <!-- Reset Button -->
           <button *ngIf="!isEditMode" type="button" class="btn btn-sm cstm-ui-table-btn ms-2" (click)="resetForm()">
-            <label class="ft-refresh-ccw"> {{ 'COMMON.RESET' | translate }}</label>
+            <img src="assets/img/svg-icons/Sync_icon.svg" class="btn-action-icon" alt="" />
+            <label>{{ 'COMMON.RESET' | translate }}</label>
           </button>
 
           <!-- Save / Update Button -->
           <button type="button" class="btn btn-sm cstm-ui-table-btn ms-2" (click)="saveEmailTemplate()">
-            <i class="ft-save"></i>
-            <label class="ml-1">
-              <span class="ms-1">{{ isEditMode ? ('COMMON.UPDATE' | translate) : ('COMMON.SAVE' | translate) }}</span>
+            <img [src]="isEditMode ? 'assets/img/svg-icons/update-icon.svg' : 'assets/img/svg-icons/save-icon.svg'" class="btn-action-icon" alt="" />
+            <label>
+              <span>{{ isEditMode ? ('COMMON.UPDATE' | translate) : ('COMMON.SAVE' | translate) }}</span>
             </label>
           </button>
         </div>

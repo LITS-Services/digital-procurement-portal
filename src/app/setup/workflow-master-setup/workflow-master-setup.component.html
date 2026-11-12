@@ -14,21 +14,21 @@
         <div class="row">
           <div class="col-md-6">
             <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
-              <i class="ft-arrow-left"></i>
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
             </button>
             <span class="vl"></span>
             <button type="button" class="btn btn-sm cstm-ui-table-btn" [ngbTooltip]="'SETUP_MODULE.CREATE_WORKFLOW_TOOLTIP' | translate"
               (click)="setupnewWorkflow()" appPermission [appPermFormId]="FORM_IDS.WORKFLOW_SETUP"
-              [appPermDisable]="'write'">
-              <i class="ft-plus"></i><label class="ml-1">{{ 'COMMON.CREATE' | translate }}</label>
+              [appPermDisable]="'write'" [appPermHide]="true">
+              <img src="assets/img/svg-icons/create-icon.svg" class="btn-action-icon" alt="" /><label>{{ 'COMMON.CREATE' | translate }}</label>
             </button>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()" appPermission
-              [appPermFormId]="FORM_IDS.WORKFLOW_SETUP" [appPermDisable]="'write'">
-              <i class="ft-edit"></i><label class="ml-1">{{ 'COMMON.EDIT' | translate }}</label>
+            <button *ngIf="!isEditButtonDisabled" type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()" appPermission
+              [appPermFormId]="FORM_IDS.WORKFLOW_SETUP" [appPermDisable]="'write'" [appPermHide]="true">
+              <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" /><label>{{ 'COMMON.EDIT' | translate }}</label>
             </button>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()" appPermission
-              [appPermFormId]="FORM_IDS.WORKFLOW_SETUP" [appPermDisable]="'delete'">
-              <i class="ft-trash"></i><label class="ml-1">{{ 'COMMON.DELETE' | translate }}</label>
+            <button *ngIf="!isDeleteButtonDisabled" type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()" appPermission
+              [appPermFormId]="FORM_IDS.WORKFLOW_SETUP" [appPermDisable]="'delete'" [appPermHide]="true">
+              <img src="assets/img/svg-icons/delete-icon.svg" class="btn-action-icon" alt="" /><label>{{ 'COMMON.DELETE' | translate }}</label>
             </button>
           </div>
         </div>
@@ -58,7 +58,7 @@
           </ngx-datatable-column>
 
           <!-- Sr. No -->
-          <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="50" [resizeable]="false">
+          <ngx-datatable-column [name]="'COMMON.SR_NO' | translate" [width]="75" [minWidth]="75" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
             <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
               <span>{{ rowIndex + 1 }}</span>
             </ng-template>
@@ -81,7 +81,7 @@
             </ng-template>
           </ngx-datatable-column>
 
-          <ngx-datatable-column [name]="'SETUP_MODULE.APPROVER' | translate" prop="createdDate" [flexGrow]="1" [minWidth]="100" [maxWidth]="120">
+          <ngx-datatable-column [name]="'SETUP_MODULE.APPROVER' | translate" prop="createdDate" [flexGrow]="1" [minWidth]="115" [maxWidth]="135">
             <ng-template let-row="row" ngx-datatable-cell-template>
               <button class="btn btn-primary btn-sm position-relative" (click)="openApproverModal(row)">
                 <i class="ft-user-check"></i>

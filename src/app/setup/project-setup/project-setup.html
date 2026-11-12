@@ -12,25 +12,20 @@
           <div class="d-flex justify-content-between align-items-center cstm-action-bar">
             <div>
               <button class="btn btn-lg mr-1" type="button" routerLink="/dashboard/dashboard1">
-                <i class="ft-arrow-left"></i>
+                <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
               </button>
               <span class="vl"></span>
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn ml-2" (click)="openModal(formModal)">
-                <i class="ft-plus"></i>
-                <label class="ml-1">{{ 'SETUP_MODULE.CREATE_PROJECT' | translate }}</label>
+                <img src="assets/img/svg-icons/create-icon.svg" class="btn-action-icon" alt="" />
+                <label>{{ 'SETUP_MODULE.CREATE_PROJECT' | translate }}</label>
               </button>
 
-              <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="deleteSelected()"
-                [disabled]="!selected.length">
-                <i class="ft-trash-2"></i>
-                <label class="ml-1">Delete</label>
-              </button> -->
-
-              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="editSelected(formModal)"
+              <!-- Edit (shown when row selected) -->
+              <button *ngIf="selected?.length === 1" type="button" class="btn btn-sm cstm-ui-table-btn" (click)="editSelected(formModal)"
                 [disabled]="selected.length !== 1">
-                <i class="ft-edit"></i>
-                <label class="ml-1">{{ 'COMMON.EDIT' | translate }}</label>
+                <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" />
+                <label>{{ 'COMMON.EDIT' | translate }}</label>
               </button>
             </div>
           </div>
@@ -57,7 +52,7 @@
           <ngx-datatable-column [name]="'SETUP_MODULE.DEPARTMENT_NAME' | translate" prop="departmentName"></ngx-datatable-column>
           <ngx-datatable-column [name]="'SETUP_MODULE.ACTIVITY_COUNT' | translate" prop="activityCount"></ngx-datatable-column>
           <ngx-datatable-column [name]="'COMMON.DESCRIPTION' | translate" prop="description"></ngx-datatable-column>
-          <ngx-datatable-column [name]="'COMMON.ACTIONS' | translate" [width]="80" [sortable]="false" [canAutoResize]="false">
+          <ngx-datatable-column [name]="'COMMON.ACTIONS' | translate" [width]="100" [sortable]="false" [canAutoResize]="false">
             <ng-template ngx-datatable-cell-template let-row="row">
               <button type="button" class="btn btn-sm btn-icon" (click)="viewLogs(row)" [title]="'SETUP_MODULE.VIEW_LOGS' | translate">
                 <i class="ft-eye"></i>
