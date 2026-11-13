@@ -20,9 +20,20 @@ form label, .form-group label {
 }
 
 .hint-ellipsis {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  min-width: 0;       
+  gap: 4px;
+  min-width: 0;
+  flex-shrink: 1;
+  font-size: 11.5px;
+  line-height: 1.2;
+
+  i {
+    font-size: 13px;
+    line-height: 1;
+    flex-shrink: 0;
+    color: #53667f;
+  }
 }
 
 .hint-ellipsis .hint-text {
@@ -30,6 +41,8 @@ form label, .form-group label {
   text-overflow: ellipsis;
   white-space: nowrap;
   color: #53667f !important;
+  font-size: 11.5px;
+  line-height: 1.2;
 }
 
 
@@ -182,7 +195,7 @@ form label, .form-group label {
 }
 
 .ngx-datatable ::ng-deep .datatable-header-cell {
-  padding: 0.75rem 1.25rem;
+  padding: 0.75rem;
   border-bottom: 1px solid #e5e7eb;
 
 }
@@ -221,7 +234,7 @@ form label, .form-group label {
 }
 
 .ngx-datatable ::ng-deep .datatable-header-cell {
-  padding: 0.75rem 1.25rem;
+  padding: 0.75rem;
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -229,7 +242,7 @@ form label, .form-group label {
 .ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
 .ngx-datatable ::ng-deep .datatable-header-inner .sort-btn {
   color: #667085 !important;              /* muted header text */
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -245,7 +258,7 @@ form label, .form-group label {
 }
 .ngx-datatable ::ng-deep .datatable-header-inner .sort-btn {
   color: #667085 !important;              /* muted header text */
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -280,7 +293,7 @@ form label, .form-group label {
 /* CELLS */
 .ngx-datatable ::ng-deep .datatable-body .datatable-body-cell {
   text-align: left;
-  padding: 0.65rem 1.25rem;
+  padding: 0.65rem 0.75rem;
   vertical-align: middle;
   color: #334155;
 }

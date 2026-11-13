@@ -1,4 +1,5 @@
-<nav class="navbar navbar-expand-lg navbar-light header-navbar {{transparentBGClass}}"  [class.nav-scrolled]="isScrolled" [ngClass]="{'navbar-brand-center': menuPosition === 'Top', 'navbar-static': menuPosition === 'Side' &&
+<nav class="navbar navbar-expand-lg navbar-light header-navbar {{transparentBGClass}}" [class.nav-scrolled]="isScrolled"
+  [ngClass]="{'navbar-brand-center': menuPosition === 'Top', 'navbar-static': menuPosition === 'Side' &&
   config?.layout.navbar.type === 'Static' , 'navbar-sticky': menuPosition === 'Side' &&
   config?.layout.navbar.type === 'Fixed', 'fixed-top': isSmallScreen && menuPosition === 'Top'}">
   <div class="container-fluid navbar-wrapper">
@@ -8,43 +9,25 @@
         <i class="ft-menu font-medium-3"></i>
       </div>
       <ul class="navbar-nav" (clickOutside)="toggleSearchOpenClass(false)">
-        <!-- <li class="nav-item mr-1 d-none d-lg-block">
-          <a class="nav-link apptogglefullscreen" id="navbar-fullscreen" href="javascript:;" appToggleFullscreen
-            (click)="ToggleClass()"><i class=" {{toggleClass}} font-medium-3"></i></a>
-        </li> -->
-      <li   class="nav-item entity-switcher"
-  ngbDropdown
-  #entityDd="ngbDropdown"
-  [display]="'dynamic'"
-  [placement]="'bottom-start'"
-  (openChange)="entityOpen = $event">
-        <button class="entity-trigger" ngbDropdownToggle title="Switch entity/company">
-          <!-- label first -->
-          <span class="entity-label text-truncate">{{ selectedCompany?.description || 'Select entity' }}</span>
-      
-          <!-- sync icon after text -->
-          <span class="sync-icon" [class.rotate]="entityOpen">
-            <i class="ft-refresh-cw"></i>
-          </span>
-        </button>
-      
-        <div class="dropdown-menu dropdown-menu-right entity-menu" ngbDropdownMenu>
-          <button class="dropdown-item entity-item" *ngFor="let c of companies" [class.active]="c.id === selectedCompanyId"
-            (click)="selectCompany(c, entityDd)">
-            <span class="text-truncate">{{ c.description }}</span>
-            <i *ngIf="c.id === selectedCompanyId" class="ft-check ms-2 text-primary"></i>
-          </button>
-        </div>
-      </li>
-        <!-- <li>
-          <select class="form-control custom-input" style="min-width: 220px; height: 40px; font-size: 14px;"
-            [(ngModel)]="selectedCompanyId" (change)="onCompanyChange($event)">
-            <option *ngFor="let company of companies" [value]="company.id">
-              {{ company.description }}
-            </option>
-          </select>
-        </li> -->
+        <li class="nav-item entity-switcher" ngbDropdown #entityDd="ngbDropdown" display="static" (openChange)="entityOpen = $event">
+          <button class="entity-trigger" ngbDropdownToggle title="Switch entity/company">
+            <!-- label first -->
+            <span class="entity-label text-truncate">{{ (selectedCompany?.id === 'All' ? 'All Entities' : selectedCompany?.description) || 'Select entity' }}</span>
 
+            <!-- sync icon after text -->
+            <span class="sync-icon" [class.rotate]="entityOpen">
+              <i class="ft-refresh-cw"></i>
+            </span>
+          </button>
+
+          <div class="dropdown-menu entity-menu" ngbDropdownMenu>
+            <button class="dropdown-item entity-item" *ngFor="let c of companies"
+              [class.active]="c.id === selectedCompanyId" (click)="selectCompany(c, entityDd)">
+              <span class="text-truncate">{{ c.id === 'All' ? 'All Entities' : c.description }}</span>
+              <i *ngIf="c.id === selectedCompanyId" class="ft-check ms-2 text-primary"></i>
+            </button>
+          </div>
+        </li>
       </ul>
       <div class="navbar-brand-center">
         <div class="navbar-header">
@@ -60,140 +43,157 @@
       <div class="collapse navbar-collapse d-block" id="navbarSupportedContent">
         <ul class="navbar-nav">
 
-          <div class="search-bar-container"  #searchRoot>
-            <div class="search-input-wrapper">
-              <i class="ft-search search-icon"></i>
-              <input type="text" class="custom-input search-input" [formControl]="searchCtrl" (focus)="openPanel()"
-                (keydown)="onKeyDown($event)" placeholder="PR, RFQ or PO" />
-            </div>
+          <div class="navbar-actions-container" #searchRoot>
 
-          <div class="search-panel" *ngIf="panelOpen" (click)="$event.stopPropagation()">
-            <div class="search-panel__header">
-              <div class="search-panel__title">SEARCH</div>
-          
-              <div class="search-panel__shortcuts">
-                <span class="kbd">↑↓</span>
-                <span class="txt">to navigate</span>
-                <span class="kbd">Enter</span>
-                <span class="txt">to open</span>
-              </div>
-            </div>
-          
-            <div class="panel-body">
-              <div *ngIf="loading" class="loading">Searching…</div>
-          
-              <ng-container *ngIf="!loading">
-                <div *ngIf="results?.length; else emptyState">
-                  <div class="result-item" *ngFor="let r of results; let i = index; trackBy: trackById"
-                    [class.active]="i === activeIndex" (mouseenter)="activeIndex = i" (click)="selectResult(r)">
-             
-                    <div class="result-main">
-                      <div class="result-badge">
-                        {{ getBadgeLabel(r?.message) }}
-                      </div>
-          
-                      <div class="result-text">
-                      <div class="title text-ellipsis" [innerHTML]="highlightText(r?.message, searchCtrl.value || '')">
-                      </div>
-                        <div class="subtitle text-ellipsis">
-                          Click to open details
-                        </div>
-                      </div>
-                    </div>
-          
-                    <div class="result-arrow">
-                      <i class="ft-chevron-right"></i>
-                    </div>
-                  </div>
-                </div>
-          
-                <ng-template #emptyState>
-                  <div class="empty">No results</div>
-                </ng-template>
-              </ng-container>
-            </div>
-          </div>
-            
-            <div class="icon-buttons">
-              <!-- <button class="icon-btn">
-                 <i class="ft-moon"></i>
-                </button> -->
-              <div class="notification-wrapper" #notifRoot>
-                <button class="icon-btn notification-bell" (click)="togglePanel()" aria-haspopup="true"
-                  [attr.aria-expanded]="notifOpen">
-                  <i class="ft-bell"></i>
-                  <span class="dot" *ngIf="unreadCount > 0">{{unreadCount}}</span>
+            <!-- Expandable Search -->
+            <div class="nav-search-wrapper" [class.is-expanded]="searchExpanded">
+              <button *ngIf="!searchExpanded" type="button" class="navbar-icon-btn search-toggle-btn"
+                (click)="openSearch($event)" title="Search">
+                <img src="assets/img/svg-icons/search-nav-icon.svg" class="nav-icon-svg" alt="Search" />
+              </button>
+
+              <div class="search-input-wrapper" [class.expanded]="searchExpanded">
+                <img src="assets/img/svg-icons/search-nav-icon.svg" class="search-icon search-nav-svg" alt="Search" />
+                <input #navSearchInput type="text" class="custom-input search-input" [formControl]="searchCtrl"
+                  (focus)="openPanel()" (keydown)="onKeyDown($event)" placeholder="PR, RFQ or PO" />
+                <button type="button" class="search-clear-btn" (click)="closeSearch($event)" title="Close">
+                  <i class="ft-x"></i>
                 </button>
-                
-                <div class="notif-panel" *ngIf="notifOpen" [class.show]="notifOpen" (click)="$event.stopPropagation()">
-                  <div class="panel-header">
-                    <div class="panel-row">
-                      <span class="title">Notifications</span>
-                      <span *ngIf="notificationCount > 0" class="count-div">{{notificationCount}}</span>
+              </div>
+
+              <!-- Search Results Dropdown -->
+              <div class="search-panel" *ngIf="panelOpen && searchExpanded" (click)="$event.stopPropagation()">
+                <div class="search-panel__header">
+                  <div class="search-panel__title">Search</div>
+
+                  <div class="search-panel__shortcuts">
+                    <span class="kbd">↑↓</span>
+                    <span class="txt">To Navigate</span>
+                    <span class="kbd">Enter</span>
+                    <span class="txt">To Open</span>
+                  </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="search-panel__tabs">
+                  <button class="tab-btn" [class.active]="activeTab === 'ALL'" (click)="setTab('ALL')">
+                    All <span class="badge">{{ totalCount }}</span>
+                  </button>
+
+                  <button class="tab-btn" [class.active]="activeTab === 'PR'" (click)="setTab('PR')">
+                    PR <span class="badge">{{ counts.PR }}</span>
+                  </button>
+
+                  <button class="tab-btn" [class.active]="activeTab === 'RFQ'" (click)="setTab('RFQ')">
+                    RFQ <span class="badge">{{ counts.RFQ }}</span>
+                  </button>
+
+                  <button class="tab-btn" [class.active]="activeTab === 'PO'" (click)="setTab('PO')">
+                    PO <span class="badge">{{ counts.PO }}</span>
+                  </button>
+                </div>
+
+                <!-- Results list -->
+                <div class="search-panel__list" *ngIf="results?.length; else emptyResults">
+                  <div class="search-item" *ngFor="let item of results; let i = index"
+                    [class.search-item--active]="i === activeIndex" (click)="onItemClick(item)">
+                    <div class="search-item__main">
+                      <div class="title">{{ item.title }}</div>
+                      <div class="meta text-muted">{{ item.subtitle }}</div>
                     </div>
-                    <button class="icon-btn xs" (click)="closePanel()" aria-label="Close">
-                      <i class="ft-x"></i>
-                    </button>
+                    <span class="search-item__tag" [ngClass]="item.type?.toLowerCase()">
+                      {{ item.type }}
+                    </span>
                   </div>
+                </div>
 
-                  <div class="panel-body">
-                    <ng-container *ngIf="notifications?.length; else emptyState">
-                      <div class="notif-item" [ngClass]="{ 'unread-notif': n.status === 0 }"
-                        *ngFor="let n of notifications" (click)="onNotifClick(n)">
-                        <div class="row-1">
-                          <div class="title text-ellipsis d-flex align-items-center">{{ n.title }}
-                            <span *ngIf="n.status === 0" class="dot-unread ml-1"></span>
-                          </div>
-                          <span [container]="'body'" [ngbTooltip]="n.createdOn | date: 'short'" class="time">{{
-                            n.timeAgo }}</span>
+                <!-- Empty State -->
+                <ng-template #emptyResults>
+                  <div class="search-panel__empty" *ngIf="searchCtrl.value && !loading">
+                    No Results Found
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+
+            <!-- Notification Bell Icon Button -->
+            <div class="notification-wrapper" #notifRoot>
+              <button type="button" class="navbar-icon-btn notification-bell" (click)="togglePanel()"
+                aria-haspopup="true" [attr.aria-expanded]="notifOpen" title="Notifications">
+                <img src="assets/img/svg-icons/notification-nav-icon.svg" class="nav-icon-svg notif-nav-svg" alt="Notifications" />
+                <span class="dot" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+              </button>
+
+              <div class="notif-panel" *ngIf="notifOpen" [class.show]="notifOpen" (click)="$event.stopPropagation()">
+                <div class="panel-header">
+                  <div class="panel-row">
+                    <span class="title">Notifications</span>
+                    <span *ngIf="notificationCount > 0" class="count-div">{{ notificationCount }}</span>
+                  </div>
+                  <button type="button" class="navbar-icon-btn xs" (click)="closePanel()" aria-label="Close">
+                    <i class="ft-x"></i>
+                  </button>
+                </div>
+
+                <div class="panel-body">
+                  <ng-container *ngIf="notifications.length > 0; else emptyState">
+                    <div class="notif-item" [ngClass]="{ 'unread-notif': n.status === 0 }"
+                      *ngFor="let n of notifications" (click)="onNotifClick(n)">
+                      <div class="row-1">
+                        <div class="title text-ellipsis d-flex align-items-center">{{ n.title }}
+                          <span *ngIf="n.status === 0" class="dot-unread ml-1"></span>
                         </div>
-                        <div class="message text-ellipsis-2" *ngIf="n.message">{{ n.message }}</div>
+                        <span [container]="'body'" [ngbTooltip]="n.createdOn | date: 'short'" class="time">{{
+                          n.timeAgo }}</span>
                       </div>
-                    </ng-container>
+                      <div class="message text-ellipsis-2" *ngIf="n.message">{{ n.message }}</div>
+                    </div>
+                  </ng-container>
 
-                    <ng-template #emptyState>
-                      <div class="empty p-2">No Notifcation: You're all caught up</div>
-                    </ng-template>
-                  </div>
+                  <ng-template #emptyState>
+                    <div class="empty p-2">No notifications found.</div>
+                  </ng-template>
+                </div>
 
-                  <div class="panel-footer">
-                              <button class="btn btn-markasread" (click)="markAllAsRead()"><i class="ft ft-check ml-2"></i>Mark all as read</button>
-                              <button class="btn btn-clearall" (click)="clearAllNotification()"><i class="ft ft-trash-2 ml-2"></i>Clear All</button>
-                  </div>
+                <div class="panel-footer">
+                  <button class="btn btn-markasread" (click)="markAllAsRead()"><i class="ft ft-check ml-2"></i>Mark all as read</button>
+                  <button class="btn btn-clearall" (click)="clearAllNotification()"><i
+                      class="ft ft-trash-2 ml-2"></i>Clear all</button>
                 </div>
               </div>
             </div>
+
           </div>
 
-          <li class="dropdown nav-item me-1" placement="bottom-left" display="static" ngbDropdown [ngClass]="{ 'user-loading': isUserLoading }">
+          <li class="dropdown nav-item me-1" placement="bottom-left" display="static" ngbDropdown
+            [ngClass]="{ 'user-loading': isUserLoading }">
             <a class="nav-link dropdown-toggle user-dropdown d-flex align-items-end" id="dropdownBasic2"
               href="javascript:;" data-toggle="dropdown" ngbDropdownToggle>
               <div class="user d-md-flex d-none me-2">
-                <span class="text-end user-text">{{username}}</span><span
-                  class="text-end text-muted font-small-3">Available</span>
+                <span class="text-end user-text">{{username}}</span>
+                <span class="text-end text-muted font-small-3">{{ userRole || 'Available' }}</span>
               </div>
-              <!-- <img class="avatar" [src]="profilePicture || 'assets/img/profile/user.png'" alt="avatar" height="35"
-                width="35" /> -->
-                
-                  <div class="profile-wrapper">
-                    <img class="profile-avatar" [src]="profilePicture || 'assets/img/profile/user.png'" alt="avatar">
-                  
-                    <div class="profile-pill">
-                      <i class="ft-chevron-down pill-icon"></i>
-                    </div>
-                  </div>
+
+              <div class="profile-wrapper">
+                <img class="profile-avatar" [src]="profilePicture || 'assets/img/profile/user.png'" alt="avatar">
+
+                <div class="profile-pill">
+                  <img src="assets/img/svg-icons/downarrow-icon.svg" class="pill-icon" alt="" />
+                </div>
+              </div>
             </a>
-            <div class="dropdown-menu text-left dropdown-menu-right m-0 pb-0" aria-labelledby="dropdownBasic2"
+            <div class="dropdown-menu dropdown-menu-right user-profile-menu m-0" aria-labelledby="dropdownBasic2"
               ngbDropdownMenu>
 
-              <a class="dropdown-item" routerLink="/pages/profile">
+              <a class="dropdown-item user-profile-item" routerLink="/pages/profile">
                 <div class="d-flex align-items-center">
                   <i class="ft-edit me-2"></i><span>Edit Profile</span>
                 </div>
               </a>
 
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" (click)="logout()">
+
+              <a class="dropdown-item user-profile-item text-danger logout-item" (click)="logout()">
                 <div class="d-flex align-items-center">
                   <i class="ft-power me-2"></i>
                   <span>Logout</span>

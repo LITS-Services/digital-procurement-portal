@@ -12,6 +12,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { CustomSelectDirective } from 'app/shared/directives/custom-select.directive';
 
 
 @NgModule({
@@ -31,6 +32,7 @@ import { NgxSpinnerModule } from 'ngx-spinner';
     NgbDatepickerModule,
     ToastrModule.forRoot() ,
     NgxSpinnerModule,
+    CustomSelectDirective,
   ]
 })
 export class VendorRegistrationFormModule { }

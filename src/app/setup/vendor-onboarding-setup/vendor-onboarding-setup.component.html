@@ -14,23 +14,25 @@
         <div class="row">
           <div class="col-md-6">
             <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
-              <i class="ft-arrow-left"></i>
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
             </button>
             <span class="vl"></span>
             <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new workflow" appPermission
               [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING" [appPermDisable]="'write'" (click)="NewVendorOnboarding()">
-              <i class="ft-plus"></i><label class="ml-1">Create</label>
+              <img src="assets/img/svg-icons/create-icon.svg" class="btn-action-icon" alt="" /><label>Create</label>
             </button>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" appPermission
-              [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING" [appPermDisable]="'write'" (click)="onUpdate()">
-              <i class="ft-edit"></i><label class="ml-1">Edit</label>
-            </button>
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" appPermission
-              [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING" [appPermDisable]="'delete'" (click)="openDeleteModal()">
-              <i class="ft-trash"></i><label class="ml-1">Delete</label>
-            </button>
+            <ng-container *ngIf="chkBoxSelected?.length > 0">
+              <button *ngIf="chkBoxSelected.length === 1" type="button" class="btn btn-sm cstm-ui-table-btn" appPermission
+                [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING" [appPermDisable]="'write'" (click)="onUpdate()">
+                <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" /><label>Edit</label>
+              </button>
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" appPermission
+                [appPermFormId]="FORM_IDS.VENDOR_ONBOARDING" [appPermDisable]="'delete'" (click)="openDeleteModal()">
+                <img src="assets/img/svg-icons/delete-icon.svg" class="btn-action-icon" alt="" /><label>Delete</label>
+              </button>
+            </ng-container>
             <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="refreshData()">
-              <i class="ft-refresh-cw"></i><label class="ml-1">Refresh</label>
+              <img src="assets/img/svg-icons/Sync_icon.svg" class="btn-action-icon" alt="" /><label>Refresh</label>
             </button>
           </div>
         </div>
@@ -60,7 +62,7 @@
           </ngx-datatable-column>
 
           <!-- Sr. No -->
-          <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+          <ngx-datatable-column name="Sr. No." [width]="90" [minWidth]="90" [canAutoResize]="false" [resizeable]="false">
             <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
               <span>{{ rowIndex + 1 }}</span>
             </ng-template>
@@ -125,7 +127,7 @@
 
           <ngx-datatable-column name="Receivers" prop="Receivers" [flexGrow]="1" [minWidth]="100" [maxWidth]="150">
             <ng-template let-row="row" ngx-datatable-cell-template>
-              <button class="btn btn-primary btn-sm position-relative" (click)="openReceiversModal(row)">
+              <button type="button" class="btn btn-sm table-action-btn position-relative" (click)="openReceiversModal(row)">
                 <i class="ft-users"></i>
               </button>
             </ng-template>

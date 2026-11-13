@@ -94,11 +94,11 @@ $link-hover-decoration: none !default;
 //
 // Define common padding and border radius sizes and more.
 
-$border-color: #E0E0E0 !default;
+$border-color: #D7D7D7 !default;
 
-$border-radius: 0.35rem !default;
-$border-radius-lg: 0.6rem !default;
-$border-radius-sm: 0.25rem !default;
+$border-radius: 10px !default;
+$border-radius-lg: 10px !default;
+$border-radius-sm: 8px !default;
 
 
 // Typography
@@ -106,7 +106,7 @@ $border-radius-sm: 0.25rem !default;
 // Font, line-height, and color for body text, headings, and more.
 
 // stylelint-disable value-keyword-case
-$font-family-sans-serif: "Montserrat", "Segoe UI", Roboto, "Helvetica Neue",Arial, sans-serif;
+$font-family-sans-serif: "Onest", sans-serif;
 
 $headings-font-family: $font-family-sans-serif !default;
 $headings-line-height: 1.1 !default;

@@ -34,9 +34,13 @@
           <i class="ft-chevron-down"></i>
         </button>
         <div class="dropdown-menu w-100" ngbDropdownMenu>
-          <button class="dropdown-item" (click)="selectedItem=''; applyFiltersSort()">All Items</button>
-          <button class="dropdown-item" *ngFor="let it of items" (click)="selectedItem = it; applyFiltersSort()">
-            {{ it }}
+          <button type="button" class="dropdown-item" [class.active]="!selectedItem" (click)="selectedItem=''; applyFiltersSort()">
+            <span>All Items</span>
+            <i *ngIf="!selectedItem" class="ft ft-check chart-check-icon"></i>
+          </button>
+          <button type="button" class="dropdown-item" *ngFor="let it of items" [class.active]="selectedItem === it" (click)="selectedItem = it; applyFiltersSort()">
+            <span>{{ it }}</span>
+            <i *ngIf="selectedItem === it" class="ft ft-check chart-check-icon"></i>
           </button>
         </div>
       </div>
@@ -55,10 +59,15 @@
           <i class="ft-chevron-down"></i>
         </button>
         <div class="dropdown-menu w-100" ngbDropdownMenu>
-          <button class="dropdown-item" (click)="selectedVendorId=''; applyFiltersSort()">All Vendors</button>
-          <button class="dropdown-item" *ngFor="let v of vendors"
+          <button type="button" class="dropdown-item" [class.active]="!selectedVendorId" (click)="selectedVendorId=''; applyFiltersSort()">
+            <span>All Vendors</span>
+            <i *ngIf="!selectedVendorId" class="ft ft-check chart-check-icon"></i>
+          </button>
+          <button type="button" class="dropdown-item" *ngFor="let v of vendors"
+            [class.active]="selectedVendorId === v.vendorUserId"
             (click)="selectedVendorId = v.vendorUserId; applyFiltersSort()">
-            {{ v.vendorName }}
+            <span>{{ v.vendorName }}</span>
+            <i *ngIf="selectedVendorId === v.vendorUserId" class="ft ft-check chart-check-icon"></i>
           </button>
         </div>
       </div>
@@ -80,9 +89,18 @@
           <i class="ft-chevron-down"></i>
         </button>
         <div class="dropdown-menu" ngbDropdownMenu>
-          <button class="dropdown-item" (click)="amountSort='none'; applyFiltersSort()">None</button>
-          <button class="dropdown-item" (click)="amountSort='asc'; applyFiltersSort()">Lowest</button>
-          <button class="dropdown-item" (click)="amountSort='desc'; applyFiltersSort()">Highest</button>
+          <button type="button" class="dropdown-item" [class.active]="amountSort !== 'asc' && amountSort !== 'desc'" (click)="amountSort='none'; applyFiltersSort()">
+            <span>None</span>
+            <i *ngIf="amountSort !== 'asc' && amountSort !== 'desc'" class="ft ft-check chart-check-icon"></i>
+          </button>
+          <button type="button" class="dropdown-item" [class.active]="amountSort === 'asc'" (click)="amountSort='asc'; applyFiltersSort()">
+            <span>Lowest</span>
+            <i *ngIf="amountSort === 'asc'" class="ft ft-check chart-check-icon"></i>
+          </button>
+          <button type="button" class="dropdown-item" [class.active]="amountSort === 'desc'" (click)="amountSort='desc'; applyFiltersSort()">
+            <span>Highest</span>
+            <i *ngIf="amountSort === 'desc'" class="ft ft-check chart-check-icon"></i>
+          </button>
         </div>
       </div>
     </div>
@@ -98,15 +116,15 @@
 
   <div *ngIf="flatRows.length > 0; else noBids" class="vendor-comp-parent">
     <ngx-datatable #table class="bootstrap core-bootstrap" [rows]="flatRows" [columnMode]="'force'" [headerHeight]="50"
-      [footerHeight]="50" [rowHeight]="'auto'" style="border: 1px solid #dee2e6; border-radius: 6px;">
+      [footerHeight]="50" [rowHeight]="'auto'" [scrollbarH]="true" style="border: 1px solid #dee2e6; border-radius: 6px;">
       <ngx-datatable-column name="Item" prop="itemName" [width]="220"></ngx-datatable-column>
       <ngx-datatable-column name="Vendor" prop="vendorName" [width]="220"></ngx-datatable-column>
-      <ngx-datatable-column name="Amount" prop="biddingAmount" [width]="140">
+      <ngx-datatable-column name="Amount" prop="biddingAmount" [width]="150" [minWidth]="145">
         <ng-template ngx-datatable-cell-template let-value="value">
           {{ value | number:'1.0-2' }}
         </ng-template>
       </ngx-datatable-column>
-      <ngx-datatable-column name="Delivery Date" prop="deliveryDate" [width]="140">
+      <ngx-datatable-column name="Delivery Date" prop="deliveryDate" [width]="140" [minWidth]="135">
         <ng-template ngx-datatable-cell-template let-value="value">
           {{ value | date:'yyyy-MM-dd' }}
         </ng-template>
@@ -114,10 +132,10 @@
       <ngx-datatable-column name="Comment" prop="comment" [width]="300"></ngx-datatable-column>
       <ngx-datatable-column name="Status" prop="requestStatus" [width]="150"></ngx-datatable-column>
 
-      <ngx-datatable-column name="Attachments" [sortable]="false" [width]="120">
+      <ngx-datatable-column name="Attachments" [sortable]="false" [width]="135" [minWidth]="135">
         <ng-template ngx-datatable-cell-template let-row="row">
-          <button class="btn btn-link p-0 text-secondary" (click)="openAttachmentsModal(row)" ngbTooltip="View">
-            <i class="fa fa-paperclip fs-5"></i>
+          <button type="button" class="btn btn-sm table-action-btn" (click)="openAttachmentsModal(row)" ngbTooltip="View">
+            <i class="fa fa-paperclip"></i>
           </button>
         </ng-template>
       </ngx-datatable-column>

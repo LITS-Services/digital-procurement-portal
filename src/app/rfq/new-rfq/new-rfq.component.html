@@ -6,7 +6,7 @@
       <div class="row">
         <div class="col-md-12" style=" margin-top: -0.25rem;">
           <h4 class="heading">
-            <button class="btn btn-lg" type="button" (click)="homePage()"><i class="ft-arrow-left"></i></button>
+            <button class="btn btn-lg" type="button" (click)="homePage()"><img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" /></button>
             <ng-container *ngIf="viewMode === false; else viewModeTitle">
               {{ isNewForm ? 'Create Quotation Request' : 'Update Quotation Request' }}
             </ng-container>
@@ -135,7 +135,7 @@
           
             <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" (click)="goBack()"
               title="Back to RFQ Details">
-              <i class="ft-arrow-left"></i><label class="ml-1">Back</label>
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-action-icon btn-back-icon" alt="" /><label>Back</label>
             </button>
           
           </div>
@@ -152,12 +152,12 @@
           
                 <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" [disabled]="isLoading"
               (click)="saveAsDraftAndGoBack()">
-              <i class="ft-save"></i><label class="ml-1">Save As Draft</label>
+              <img src="assets/img/svg-icons/draft-icon.svg" class="btn-action-icon" alt="" /><label class="ml-1">Save As Draft</label>
             </button>
           
             <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" [disabled]="isLoading"
               (click)="submitForm(true)">
-              <i class="ft-check"></i><label class="ml-1">Save & Continue</label>
+              <img src="assets/img/svg-icons/save-icon.svg" class="btn-action-icon" alt="" /><label class="ml-1">Save & Continue</label>
             </button>
 
          
@@ -165,13 +165,13 @@
             <button *ngIf="!isNewForm && (rfqTabs === 'details' || rfqTabs === 'items') && isSubmitter"
               class="btn btn-sm cstm-ui-table-btn" [disabled]="newRfqForm.invalid || isStatusCompleted  || isStatusInProgress || !isSubmitter || viewMode"
               (click)="submitForm()">
-              <i class="ft-edit-2"></i><label class="ml-1">Update</label>
+              <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" /><label class="ml-1">Update</label>
             </button>
 
               <button   ngbTooltip="Request Purchase Order" *ngIf="isStatusCompleted && (rfqTabs === 'details' || rfqTabs === 'items') && isSubmitter"
               class="btn btn-sm cstm-ui-table-btn"
               (click)="requestPO()">
-              <i class="ft-plus"></i><label class="ml-1">Request PO</label>
+              <img src="assets/img/svg-icons/create-icon.svg" class="btn-action-icon" alt="" /><label>Request PO</label>
             </button>
 
             <ng-container *ngIf="viewMode && !isSubmitter">
@@ -181,11 +181,11 @@
             </button>
             <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
               (click)="onAddRemarks('Reject')">
-              <i class="ft-x"></i><label class="ml-1">Reject</label>
+              <img src="assets/img/svg-icons/cancel-icon.svg" class="btn-action-icon" alt="" /><label>Reject</label>
             </button>
             <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
               (click)="onAddRemarks('SendBack')">
-              <i class="ft-arrow-left"></i><label class="ml-1">Send Back</label>
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-action-icon btn-back-icon" alt="" /><label>Send Back</label>
             </button>
             </ng-container>          
           
@@ -568,7 +568,7 @@
         </ngx-datatable-column>
     
         <!-- Sr. No. -->
-        <ngx-datatable-column name="Sr. No." [width]="60" [sortable]="false" [canAutoResize]="false" [draggable]="false"
+        <ngx-datatable-column name="Sr. No." [width]="90" [minWidth]="90" [sortable]="false" [canAutoResize]="false" [draggable]="false"
           [resizeable]="false">
           <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
             <span>{{ rowIndex + 1 }}</span>
@@ -696,7 +696,7 @@
       <div>
         <ng-container *ngIf="isSubmitter">
           <button class="btn btn-sm submit-approval-btn shadow-sm" [disabled]="!allItemsFinalized || newRfqForm.invalid || isStatusCompleted || isStatusInProgress" (click)="onSubmitForApproval()">
-            <i class="ft-check" style="color: #1161cc;"></i><label class="ml-1">Submit for Approval</label>
+            <img src="assets/img/svg-icons/Submit_icon.svg" class="btn-action-icon" alt="" /><label class="ml-1">Submit for Approval</label>
           </button>
         </ng-container>
       </div>

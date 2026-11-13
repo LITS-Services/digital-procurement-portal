@@ -1,23 +1,22 @@
 <div class="row">
   <div class="col-12">
-    <div class="d-flex justify-content-between align-items-center">
-      <ul class="nav nav-tabs custom-tabs">
-        <li class="nav-item">
-          <a class="nav-link" [class.active]="selectedTab === 'exception'" (click)="selectTab('exception')">
-            Exception Logs <!-- Keep original name -->
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" [class.active]="selectedTab === 'audit-trails'" (click)="selectTab('audit-trails')">
-            Audit Trails
-          </a>
-        </li>
-        <li class="nav-item" *ngIf="canViewSecurityAudit">
-          <a class="nav-link" [class.active]="selectedTab === 'security-audit'" (click)="selectTab('security-audit')">
-            Security Audit
-          </a>
-        </li>
-      </ul>
+    <div class="d-flex justify-content-between align-items-end">
+      <div class="custom-tabs">
+        <nav>
+          <button type="button" class="custom-style-tab" [ngClass]="{ 'tab-current': selectedTab === 'exception' }"
+            (click)="selectTab('exception')">
+            <span>Exception Logs</span>
+          </button>
+          <button type="button" class="custom-style-tab" [ngClass]="{ 'tab-current': selectedTab === 'audit-trails' }"
+            (click)="selectTab('audit-trails')">
+            <span>Audit Trails</span>
+          </button>
+          <button type="button" class="custom-style-tab" *ngIf="canViewSecurityAudit"
+            [ngClass]="{ 'tab-current': selectedTab === 'security-audit' }" (click)="selectTab('security-audit')">
+            <span>Security Audit</span>
+          </button>
+        </nav>
+      </div>
 
 
       
@@ -58,28 +57,79 @@
           <i class="ft-chevron-down"></i>
         </button>
         <div class="dropdown-menu" ngbDropdownMenu>
-          <button class="dropdown-item" (click)="filterByStatus('All')">All</button>
+          <button type="button" class="dropdown-item" [class.active]="!statusTouched || selectedStatusLabel === 'All'" (click)="filterByStatus('All')">
+            <span>All</span>
+            <i *ngIf="!statusTouched || selectedStatusLabel === 'All'" class="ft ft-check chart-check-icon"></i>
+          </button>
           <ng-container *ngIf="selectedTab === 'audit-trails'">
-            <button class="dropdown-item" (click)="filterByStatus('UPDATE')">UPDATE</button>
-            <button class="dropdown-item" (click)="filterByStatus('INSERT')">INSERT</button>
-            <button class="dropdown-item" (click)="filterByStatus('DELETE')">DELETE</button>
+            <button type="button" class="dropdown-item" [class.active]="statusTouched && selectedStatusLabel === 'UPDATE'" (click)="filterByStatus('UPDATE')">
+              <span>UPDATE</span>
+              <i *ngIf="statusTouched && selectedStatusLabel === 'UPDATE'" class="ft ft-check chart-check-icon"></i>
+            </button>
+            <button type="button" class="dropdown-item" [class.active]="statusTouched && selectedStatusLabel === 'INSERT'" (click)="filterByStatus('INSERT')">
+              <span>INSERT</span>
+              <i *ngIf="statusTouched && selectedStatusLabel === 'INSERT'" class="ft ft-check chart-check-icon"></i>
+            </button>
+            <button type="button" class="dropdown-item" [class.active]="statusTouched && selectedStatusLabel === 'DELETE'" (click)="filterByStatus('DELETE')">
+              <span>DELETE</span>
+              <i *ngIf="statusTouched && selectedStatusLabel === 'DELETE'" class="ft ft-check chart-check-icon"></i>
+            </button>
           </ng-container>
           <ng-container *ngIf="selectedTab === 'security-audit'">
-            <button class="dropdown-item" (click)="filterByStatus('LOGIN_SUCCESS')">LOGIN_SUCCESS</button>
-            <button class="dropdown-item" (click)="filterByStatus('LOGIN_FAILED')">LOGIN_FAILED</button>
-            <button class="dropdown-item" (click)="filterByStatus('LOCKOUT')">LOCKOUT</button>
-            <button class="dropdown-item" (click)="filterByStatus('LOGOUT')">LOGOUT</button>
-            <button class="dropdown-item" (click)="filterByStatus('REFRESH')">REFRESH</button>
-            <button class="dropdown-item" (click)="filterByStatus('PASSWORD_CHANGE')">PASSWORD_CHANGE</button>
-            <button class="dropdown-item" (click)="filterByStatus('FORBIDDEN')">FORBIDDEN</button>
-            <button class="dropdown-item" (click)="filterByStatus('RATE_LIMITED')">RATE_LIMITED</button>
+            <button type="button" class="dropdown-item" [class.active]="statusTouched && selectedStatusLabel === 'LOGIN_SUCCESS'" (click)="filterByStatus('LOGIN_SUCCESS')">
+              <span>LOGIN_SUCCESS</span>
+              <i *ngIf="statusTouched && selectedStatusLabel === 'LOGIN_SUCCESS'" class="ft ft-check chart-check-icon"></i>
+            </button>
+            <button type="button" class="dropdown-item" [class.active]="statusTouched && selectedStatusLabel === 'LOGIN_FAILED'" (click)="filterByStatus('LOGIN_FAILED')">
+              <span>LOGIN_FAILED</span>
+              <i *ngIf="statusTouched && selectedStatusLabel === 'LOGIN_FAILED'" class="ft ft-check chart-check-icon"></i>
+            </button>
+            <button type="button" class="dropdown-item" [class.active]="statusTouched && selectedStatusLabel === 'LOCKOUT'" (click)="filterByStatus('LOCKOUT')">
+              <span>LOCKOUT</span>
+              <i *ngIf="statusTouched && selectedStatusLabel === 'LOCKOUT'" class="ft ft-check chart-check-icon"></i>
+            </button>
+            <button type="button" class="dropdown-item" [class.active]="statusTouched && selectedStatusLabel === 'LOGOUT'" (click)="filterByStatus('LOGOUT')">
+              <span>LOGOUT</span>
+              <i *ngIf="statusTouched && selectedStatusLabel === 'LOGOUT'" class="ft ft-check chart-check-icon"></i>
+            </button>
+            <button type="button" class="dropdown-item" [class.active]="statusTouched && selectedStatusLabel === 'REFRESH'" (click)="filterByStatus('REFRESH')">
+              <span>REFRESH</span>
+              <i *ngIf="statusTouched && selectedStatusLabel === 'REFRESH'" class="ft ft-check chart-check-icon"></i>
+            </button>
+            <button type="button" class="dropdown-item" [class.active]="statusTouched && selectedStatusLabel === 'PASSWORD_CHANGE'" (click)="filterByStatus('PASSWORD_CHANGE')">
+              <span>PASSWORD_CHANGE</span>
+              <i *ngIf="statusTouched && selectedStatusLabel === 'PASSWORD_CHANGE'" class="ft ft-check chart-check-icon"></i>
+            </button>
+            <button type="button" class="dropdown-item" [class.active]="statusTouched && selectedStatusLabel === 'FORBIDDEN'" (click)="filterByStatus('FORBIDDEN')">
+              <span>FORBIDDEN</span>
+              <i *ngIf="statusTouched && selectedStatusLabel === 'FORBIDDEN'" class="ft ft-check chart-check-icon"></i>
+            </button>
+            <button type="button" class="dropdown-item" [class.active]="statusTouched && selectedStatusLabel === 'RATE_LIMITED'" (click)="filterByStatus('RATE_LIMITED')">
+              <span>RATE_LIMITED</span>
+              <i *ngIf="statusTouched && selectedStatusLabel === 'RATE_LIMITED'" class="ft ft-check chart-check-icon"></i>
+            </button>
           </ng-container>
           <ng-container *ngIf="selectedTab === 'exception'">
-            <button class="dropdown-item" (click)="filterByStatus('GET')">GET</button>
-            <button class="dropdown-item" (click)="filterByStatus('POST')">POST</button>
-            <button class="dropdown-item" (click)="filterByStatus('PUT')">PUT</button>
-            <button class="dropdown-item" (click)="filterByStatus('DELETE')">DELETE</button>
-            <button class="dropdown-item" (click)="filterByStatus('PATCH')">PATCH</button>
+            <button type="button" class="dropdown-item" [class.active]="statusTouched && selectedStatusLabel === 'GET'" (click)="filterByStatus('GET')">
+              <span>GET</span>
+              <i *ngIf="statusTouched && selectedStatusLabel === 'GET'" class="ft ft-check chart-check-icon"></i>
+            </button>
+            <button type="button" class="dropdown-item" [class.active]="statusTouched && selectedStatusLabel === 'POST'" (click)="filterByStatus('POST')">
+              <span>POST</span>
+              <i *ngIf="statusTouched && selectedStatusLabel === 'POST'" class="ft ft-check chart-check-icon"></i>
+            </button>
+            <button type="button" class="dropdown-item" [class.active]="statusTouched && selectedStatusLabel === 'PUT'" (click)="filterByStatus('PUT')">
+              <span>PUT</span>
+              <i *ngIf="statusTouched && selectedStatusLabel === 'PUT'" class="ft ft-check chart-check-icon"></i>
+            </button>
+            <button type="button" class="dropdown-item" [class.active]="statusTouched && selectedStatusLabel === 'DELETE'" (click)="filterByStatus('DELETE')">
+              <span>DELETE</span>
+              <i *ngIf="statusTouched && selectedStatusLabel === 'DELETE'" class="ft ft-check chart-check-icon"></i>
+            </button>
+            <button type="button" class="dropdown-item" [class.active]="statusTouched && selectedStatusLabel === 'PATCH'" (click)="filterByStatus('PATCH')">
+              <span>PATCH</span>
+              <i *ngIf="statusTouched && selectedStatusLabel === 'PATCH'" class="ft ft-check chart-check-icon"></i>
+            </button>
           </ng-container>
         </div>
       </div>
@@ -100,7 +150,7 @@
       (clickType)="'single'" appPermission [appPermFormId]="FORM_IDS.LOGS" [appPermDisable]="'write'">
 
       <!-- Sr. No -->
-      <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+      <ngx-datatable-column name="Sr. No." [width]="90" [minWidth]="90" [canAutoResize]="false" [resizeable]="false">
         <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
           <span>{{ ((currentPage - 1) * pageSize) + rowIndex + 1 }}</span>
         </ng-template>
@@ -135,7 +185,7 @@
       (clickType)="'single'" appPermission [appPermFormId]="FORM_IDS.LOGS" [appPermDisable]="'write'">
 
       <!-- Sr. No -->
-      <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+      <ngx-datatable-column name="Sr. No." [width]="90" [minWidth]="90" [canAutoResize]="false" [resizeable]="false">
         <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
           <span>{{ ((currentPage - 1) * pageSize) + rowIndex + 1 }}</span>
         </ng-template>
@@ -165,7 +215,7 @@
       [selectionType]="SelectionType.single" (rowClick)="onRowClick($event)" (activate)="onActivate($event)"
       (clickType)="'single'" appPermission [appPermFormId]="FORM_IDS.LOGS" [appPermDisable]="'write'">
 
-      <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+      <ngx-datatable-column name="Sr. No." [width]="90" [minWidth]="90" [canAutoResize]="false" [resizeable]="false">
         <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
           <span>{{ ((currentPage - 1) * pageSize) + rowIndex + 1 }}</span>
         </ng-template>

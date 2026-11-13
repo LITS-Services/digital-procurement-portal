@@ -13,7 +13,7 @@
 }
 
 .vl {
-    border-left: 1.4px solid #cccccc;
+    border-left: 1px solid #D7D7D7;
     height: 100%;
     position: absolute;
     margin-left: -3px;
@@ -74,9 +74,7 @@
     margin: 0px 12px;
 }
 
-.filter-dropdown .dropdown-menu .dropdown-item:active {
-    background-color: #4188f2 !important;
-}
+
 
 @media (max-width: 576px) {
     .filter-search {

@@ -1,26 +1,28 @@
-
-::ng-deep .ngx-datatable{
+::ng-deep .ngx-datatable {
   .sortable .sort-btn:before {
-      // font-family: data-table;
-      // content: "c";
-      display: none !important;
+    // font-family: data-table;
+    // content: "c";
+    display: none !important;
   }
+
   .sortable .sort-btn.datatable-icon-down:before {
-      // content: "f";
-      display: none !important;
+    // content: "f";
+    display: none !important;
 
   }
+
   .sortable .sort-btn.datatable-icon-up:before {
-      // content: "e";
-      display: none !important;
+    // content: "e";
+    display: none !important;
   }
 }
 
 
-  ::ng-deep .pr-inv-modal .modal-dialog { 
-     max-width: 90%;
-     width: 90%;
+::ng-deep .pr-inv-modal .modal-dialog {
+  max-width: 90%;
+  width: 90%;
 }
+
 // .vl {
 //     border-left: 1.4px solid #cccccc;
 //     height: 100% !important;
@@ -28,29 +30,51 @@
 //     margin-left: -3px;
 //     top: 0 !important;
 //   }
-  .heading{
-    color: #1E89B8;
-    margin-top: 1rem;
-    margin-bottom: -0.5rem;
-    font-weight: 700;
-  }
+.heading {
+  color: #1E89B8;
+  margin-top: 1rem;
+  margin-bottom: -0.5rem;
+  font-weight: 700;
+}
 
-  :host ::ng-deep .datatable-body,
+:host ::ng-deep .datatable-body,
 :host ::ng-deep .datatable-header,
 :host ::ng-deep .datatable-scroll {
   width: 100% !important;
 }
 
 .parent-flex-container {
-  min-width: 0; /* IMPORTANT */
+  min-width: 0;
+  /* IMPORTANT */
 }
 
 
-.more-btn{
+.more-btn {
   margin-top: 4px !important;
 }
+
 .more-btn.dropdown-toggle::after {
   display: none !important;
+}
+
+.pr-actions-right {
+  margin-right: 0.5rem;
+  margin-inline-end: 0.5rem;
+}
+
+html[dir="rtl"] .pr-actions-right,
+html.rtl .pr-actions-right,
+body.rtl .pr-actions-right {
+  margin-right: 0 !important;
+  margin-left: 0.5rem !important;
+}
+
+@media (max-width: 576px) {
+  .pr-actions-right {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+    margin-inline-end: 0 !important;
+  }
 }
 
 
@@ -76,27 +100,27 @@
 //   text-align: left;
 //   padding: 0.75rem;
 //   vertical-align:baseline;
-  
+
 // }
 
-::ng-deep .action-popover .popover-body{
-    padding: 0.4rem 0rem;
-    color: #342E49;
+::ng-deep .action-popover .popover-body {
+  padding: 0.4rem 0rem;
+  color: #342E49;
 }
 
-.popover-btn{
+.popover-btn {
   display: flex;
   align-items: center;
   justify-content: start;
   gap: 8px;
 }
 
-.popover-icon{
-    background: #efefef;
-    padding: 0px 8px;
-    border-radius: 6px;
-    color: black;
-    font-weight: 600;
+.popover-icon {
+  background: #efefef;
+  padding: 0px 8px;
+  border-radius: 6px;
+  color: black;
+  font-weight: 600;
 }
 
 
@@ -138,24 +162,30 @@
 }
 
 .chip--success {
-  background: #ecfdf5;
-  border-color: #bbf7d0;
-  color: #047857;
+  background: #D3FAE6BF;
+  border-color: transparent;
+  color: #036147;
 }
 
 .chip--pending {
-  background: #fffbeb;
-  border-color: #fed7aa;
-  color: #b45309;
+  background: #FEF2C9BF;
+  border-color: transparent;
+  color: #943800;
 }
 
 .chip--rejected {
-  background: #fef2f2;
-  border-color: #fecaca;
-  color: #b91c1c;
+  background: #FEE1E2BF;
+  border-color: transparent;
+  color: #9B0012;
 }
 
-.chip--approved{
+.chip--draft {
+  background: #9CA3AF1C;
+  border-color: transparent;
+  color: #6C757D;
+}
+
+.chip--approved {
   color: #3B82F6;
   border-color: #3B82F6;
   background: rgba(59, 130, 246, 0.07);

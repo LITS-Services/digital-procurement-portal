@@ -16,80 +16,63 @@
 
             <div>
               <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
-                <i class="ft-arrow-left"></i>
+                <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
               </button>
 
               <span class="vl"></span>
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn" ngbTooltip="Create new Purchase Request"
-                appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST" [appPermDisable]="'write'"
+                appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST" [appPermDisable]="'write'" [appPermHide]="true"
                 (click)="openEmpDetails()">
-                <i class="ft-plus"></i><label class="ml-1 btn-label">Create</label>
-              </button>
-              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()" appPermission
-                [appPermFormId]="FORM_IDS.PURCHASE_REQUEST" [appPermDisable]="'write'">
-                <i class="ft-edit"></i><label class="ml-1 btn-label">Update</label>
+                <img src="assets/img/svg-icons/create-icon.svg" class="btn-action-icon" alt="" />
+                <label class="btn-label">Create</label>
               </button>
 
-              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()"
-                [disabled]="isDeleteButtonDisabled" appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
-                [appPermDisable]="'delete'">
-                <i class="ft-trash"></i><label class="ml-1 btn-label">Delete</label>
-              </button>
+              <ng-container *ngIf="chkBoxSelected?.length > 0">
+                <button *ngIf="!isEditButtonDisabled" type="button" class="btn btn-sm cstm-ui-table-btn"
+                  (click)="onUpdate()" appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                  [appPermDisable]="'write'" [appPermHide]="true">
+                  <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" />
+                  <label class="btn-label">Update</label>
+                </button>
 
-              <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled" appPermission
-                [appPermFormId]="FORM_IDS.PURCHASE_REQUEST" [appPermDisable]="'read'" (click)="onView()">
-                <i class="ft-eye"></i><label class="ml-1 btn-label">Review</label>
-              </button>
+                <button *ngIf="!isDeleteButtonDisabled" type="button" class="btn btn-sm cstm-ui-table-btn"
+                  (click)="openDeleteModal()" appPermission [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                  [appPermDisable]="'delete'" [appPermHide]="true">
+                  <img src="assets/img/svg-icons/delete-icon.svg" class="btn-action-icon" alt="" />
+                  <label class="btn-label">Delete</label>
+                </button>
+
+                <button *ngIf="canSubmitForApprovalFromListUi()" type="button" class="btn btn-sm cstm-ui-table-btn"
+                  (click)="onSubmitForApprovalFromList()">
+                  <img src="assets/img/svg-icons/Submit_icon.svg" class="btn-action-icon" alt="" />
+                  <label class="btn-label">Submit for Approval</label>
+                </button>
+              </ng-container>
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="syncLoading" (click)="onSyncNow()">
-                <i class="ft-refresh-cw"></i><label class="ml-1 btn-label">Sync Now</label>
+                <img src="assets/img/svg-icons/Sync_icon.svg" class="btn-action-icon" alt="" />
+                <label class="btn-label">Sync Now</label>
               </button>
-              <button *ngIf="canShowSubmitForApprovalButton()" type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="!canSubmitForApprovalFromListUi()"
-                [ngbTooltip]="!chkBoxSelected?.length ? 'Select one request with status New'
-                  : chkBoxSelected.length > 1 ? 'Select exactly one row'
-                  : null"
-                (click)="onSubmitForApprovalFromList()">
-                <i class="ft-check"></i><label class="ml-1 btn-label">Submit for Approval</label>
-              </button>
-              <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="loadPurchaseRequests()"><label
-                class="ml-1 mt-1">All</label></button>
-
-            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="loadFilteredRequests('New')"><label
-                class="ml-1 mt-1">New</label></button>
-
-            <button type="button" class="btn btn-sm cstm-ui-table-btn"
-              (click)="loadFilteredRequests('InProgress')"><label class="ml-1 mt-1">InProgress</label></button>
-
-            <button type="button" class="btn btn-sm cstm-ui-table-btn"
-              (click)="loadFilteredRequests('Completed')"><label class="ml-1 mt-1">Completed</label></button> -->
-
-              <!-- <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
-              <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
-            </button> -->
 
             </div>
 
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center pr-actions-right">
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="toggleFilterBar()">
-                <i class="ft-sliders"></i><label class="ml-1 btn-label">Filter</label>
+                <img src="assets/img/svg-icons/filter-icon.svg" class="btn-action-icon" alt="" />
+                <label class="btn-label">Filter</label>
               </button>
 
-              <div class="dropdown" ngbDropdown>
-                <button type="button" class="btn dropdown-toggle more-btn" ngbDropdownToggle> <i
-                    class="ft-more-vertical"></i>
-                </button>
-                <div class="dropdown-menu" ngbDropdownMenu>
-                  <button type="button" class="btn btn-sm cstm-ui-table-btn dropdown-item " (click)="openAblModal()">
-                    <i class="ft-settings"></i><label class="ml-1">Account Budget Lookup</label>
-                  </button>
-                  <button type="button" class="btn btn-sm cstm-ui-table-btn dropdown-item"
-                    (click)="openExceptionPolicyModal()">
-                    <i class="ft-alert-circle"></i><label class="ml-1">Exception Policy</label>
-                  </button>
-                </div>
-              </div>
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openExceptionPolicyModal()">
+                <img src="assets/img/svg-icons/Exception-Policy-icon.svg" class="btn-action-icon" alt="" />
+                <label class="btn-label">Exception Policy</label>
+              </button>
+
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openAblModal()">
+                <img src="assets/img/svg-icons/lockup-icon.svg" class="btn-action-icon" alt="" />
+                <label class="btn-label">Account Budget Lookup</label>
+              </button>
 
             </div>
 
@@ -102,9 +85,6 @@
       <div *ngIf="showFilterBar" class="filter-bar">
         <div class="d-flex align-items-center justify-content-between pl-3 pr-1 py-2 filter-wrapper">
           <div class="filter-search">
-            <!-- <i class="ft-filter search-icon"></i>
-            <input type="text" placeholder="Search by keywords" class="form-control form-control-sm search-input"
-              [(ngModel)]="searchText"> -->
           </div>
 
           <div class="d-flex filter-btns-div">
@@ -114,11 +94,13 @@
                 <i class="ft-chevron-down"></i>
               </button>
               <div class="dropdown-menu" ngbDropdownMenu>
-                <button class="dropdown-item" (click)="onStatusChange('All')">
-                  All
+                <button type="button" class="dropdown-item" [class.active]="!statusTouched || selectedStatusLabel === 'All'" (click)="onStatusChange('All')">
+                  <span>All</span>
+                  <i *ngIf="!statusTouched || selectedStatusLabel === 'All'" class="ft ft-check chart-check-icon"></i>
                 </button>
-                <button class="dropdown-item" *ngFor="let s of status" (click)="onStatusChange(s)">
-                  {{ s.description }}
+                <button type="button" class="dropdown-item" *ngFor="let s of status" [class.active]="statusTouched && selectedStatusLabel === s.description" (click)="onStatusChange(s)">
+                  <span>{{ s.description }}</span>
+                  <i *ngIf="statusTouched && selectedStatusLabel === s.description" class="ft ft-check chart-check-icon"></i>
                 </button>
               </div>
             </div>
@@ -128,236 +110,241 @@
 
         </div>
       </div>
-    <div  class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
-  <ngx-datatable
-    #datatable
-    class="bootstrap core-bootstrap"
-    [rows]="purchaseRequestData"
-    [columnMode]="'force'"
-    [headerHeight]="50"
-    [footerHeight]="50"
-    [rowHeight]="'auto'"
-     [scrollbarH]="isMobile"
-    [limit]="query.pageSize"
-    [count]="totalItems"
-    [externalPaging]="true"
-    [offset]="query.currentPage - 1"
-    (page)="onPageChange($event)"
-    [loadingIndicator]="loading"
-    [selected]="chkBoxSelected"
-    [selectionType]="SelectionType.checkbox"
-    (sort)="onSort($event)"
-    (select)="customChkboxOnSelect($event)">
+      <div class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
+        <ngx-datatable
+          #datatable
+          class="bootstrap core-bootstrap"
+          [rows]="purchaseRequestData"
+          [columnMode]="'force'"
+          [headerHeight]="50"
+          [footerHeight]="50"
+          [rowHeight]="'auto'"
+          [scrollbarH]="isMobile"
+          [limit]="query.pageSize"
+          [count]="totalItems"
+          [externalPaging]="true"
+          [offset]="query.currentPage - 1"
+          (page)="onPageChange($event)"
+          [loadingIndicator]="loading"
+          [selected]="chkBoxSelected"
+          [selectionType]="SelectionType.checkbox"
+          (sort)="onSort($event)"
+          (select)="customChkboxOnSelect($event)">
 
-    <!-- Checkbox Column -->
-    <ngx-datatable-column
-      [width]="50"
-      [sortable]="false"
-      [canAutoResize]="false"
-      [draggable]="false"
-      [resizeable]="false"
-      cellClass="datatable-checkbox-cell"
-      headerClass="datatable-checkbox-cell"
-      >
-      <ng-template ngx-datatable-header-template>
-        <div class="custom-control cstm-checkbox-form">
-          <input
-            type="checkbox"
-            class="cstm-checkbox-form"
-            [checked]="isAllSelected"
-            (change)="toggleSelectAll($event)" />
-        </div>
-      </ng-template>
-
-      <ng-template ngx-datatable-cell-template let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
-        <div class="custom-control cstm-checkbox-form custom-checkbox">
-          <input
-            type="checkbox"
-            class="cstm-checkbox-form"
-            [checked]="isSelected"
-            (change)="onCheckboxChangeFn($event)" />
-        </div>
-      </ng-template>
-    </ngx-datatable-column>
-
-    <!-- Sr. No -->
-    <ngx-datatable-column
-      name="Sr. No."
-      [width]="60"
-      [canAutoResize]="false"
-      [draggable]="false"
-      [resizeable]="false">
-      <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
-        <span>{{ rowIndex + 1 }}</span>
-      </ng-template>
-    </ngx-datatable-column>
-
-    <!-- Requisition No -->
-    <ngx-datatable-column
-      name="Requisition No."
-      prop="requisitionNo"
-      [flexGrow]="2"
-      [minWidth]="140">
-    </ngx-datatable-column>
-
-    <!-- Status -->
-    <ngx-datatable-column
-      name="Status"
-      prop="requestStatus"
-      [flexGrow]="1"
-      [minWidth]="120">
-      <ng-template ngx-datatable-cell-template let-row="row">
-        <span [ngClass]="row.statusClass">
-          {{ row.requestStatus }}
-        </span>
-      </ng-template>
-    </ngx-datatable-column>
-
-    <!-- Date -->
-    <ngx-datatable-column
-      name="Date"
-      prop="submittedDate"
-      [flexGrow]="1"
-      [minWidth]="120">
-      <ng-template let-row="row" ngx-datatable-cell-template>
-        {{ row.submittedDate | date:'yyyy-MM-dd' }}
-      </ng-template>
-    </ngx-datatable-column>
-
-    <!-- Entity -->
-    <ngx-datatable-column
-      name="Entity"
-      prop="entityName"
-      [flexGrow]="2"
-      [minWidth]="150">
-    </ngx-datatable-column>
-
-    <!-- Department -->
-    <ngx-datatable-column
-      name="Department"
-      prop="department"
-      [flexGrow]="2"
-      [minWidth]="150">
-    </ngx-datatable-column>
-
-    <!-- Action -->
-    <ngx-datatable-column
-      name="Action"
-      [width]="90"
-      [canAutoResize]="false"
-      [draggable]="false"
-      [resizeable]="false">
-      <ng-template let-row="row" ngx-datatable-cell-template>
-
-        <button
-          type="button"
-          class="btn btn-sm btn-primary"
-          [ngbPopover]="actionToolbar"
-          popoverClass="action-popover"
-          placement="auto bottom"
-          container="body">
-          <i class="ft-settings"></i>
-        </button>
-
-        <!-- FULL POPOVER -->
-        <ng-template #actionToolbar>
-          <div class="d-flex justify-content-around flex-column">
-
-            <!-- Approval History -->
-            <button
-              class="btn popover-btn btn-sm m-1"
-              ngbTooltip="Approval History"
-              appPermission
-              [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
-              [appPermDisable]="'read'"
-              (click)="openApprovalHistoryModal(row)">
-              <span class="popover-icon"><i class="ft-list"></i></span>
-              Approval History
-            </button>
-
-            <!-- Generate RFQ -->
-            <button
-              *ngIf="row.requestStatus === 'Completed' && row.isInventoryTransfer !== true; else rfqDisabled"
-              class="btn popover-btn btn-sm m-1"
-              ngbTooltip="Generate RFQ"
-              (click)="generateRfq(row)"
-              appPermission
-              [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
-              [appPermDisable]="'write'">
-              <span class="popover-icon"><i class="ft-file-text"></i></span>
-              Generate RFQ
-            </button>
-
-            <ng-template #rfqDisabled>
-              <button
-                class="btn popover-btn btn-sm m-1"
-                disabled
-                [ngbTooltip]="row.requestStatus !== 'Completed'
-                  ? 'RFQ can only be generated when PR is Completed.'
-                  : 'RFQ cannot be generated since Inventory Transfer is created.'">
-                <span class="popover-icon"><i class="ft-file-text" style="opacity: 0.5;"></i></span>
-                Generate RFQ
-              </button>
+          <!-- Checkbox Column -->
+          <ngx-datatable-column
+            [width]="50"
+            [sortable]="false"
+            [canAutoResize]="false"
+            [draggable]="false"
+            [resizeable]="false"
+            cellClass="datatable-checkbox-cell"
+            headerClass="datatable-checkbox-cell">
+            <ng-template ngx-datatable-header-template>
+              <div class="custom-control cstm-checkbox-form">
+                <input
+                  type="checkbox"
+                  class="cstm-checkbox-form"
+                  [checked]="isAllSelected"
+                  (change)="toggleSelectAll($event)" />
+              </div>
             </ng-template>
 
-            <!-- Request Purchase Order -->
-            <button
-              *ngIf="row.requestStatus === 'Completed' && row.isInventoryTransfer !== true; else selectVendorDisabled"
-              class="btn popover-btn btn-sm m-1"
-              ngbTooltip="Request Purchase Order"
-              (click)="selectFinalVendor(row)"
-              appPermission
-              [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
-              [appPermDisable]="'write'">
-              <span class="popover-icon"><i class="ft-shopping-cart"></i></span>
-              Request Purchase Order
-            </button>
-
-            <ng-template #selectVendorDisabled>
-              <button
-                class="btn popover-btn btn-sm m-1"
-                disabled
-                [ngbTooltip]="row.requestStatus !== 'Completed'
-                  ? 'Purchase Order can only be requested when PR is Completed.'
-                  : 'Purchase Order cannot be requested since Inventory Transfer is created.'">
-                <span class="popover-icon"><i class="ft-shopping-cart" style="opacity: 0.5;"></i></span>
-                Create Purchase Order
-              </button>
+            <ng-template ngx-datatable-cell-template let-isSelected="isSelected" let-onCheckboxChangeFn="onCheckboxChangeFn">
+              <div class="custom-control cstm-checkbox-form custom-checkbox">
+                <input
+                  type="checkbox"
+                  class="cstm-checkbox-form"
+                  [checked]="isSelected"
+                  (change)="onCheckboxChangeFn($event)" />
+              </div>
             </ng-template>
+          </ngx-datatable-column>
 
-            <!-- Inventory Transfer -->
-            <button
-              *ngIf="row.requestStatus === 'Completed'; else inventoryTransferWaitingTemplate"
-              class="btn popover-btn btn-sm m-1"
-              ngbTooltip="Create Inventory Transfer"
-              (click)="openPRInventoryManagement(row)"
-              appPermission
-              [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
-              [appPermDisable]="'write'">
-              <span class="popover-icon"><i class="ft-repeat"></i></span>
-              Inventory Transfer
-            </button>
-
-            <ng-template #inventoryTransferWaitingTemplate>
-              <button
-                class="btn popover-btn btn-sm m-1"
-                disabled
-                ngbTooltip="Inventory Transfer can only be created when PR is Completed.">
-                <span class="popover-icon"><i class="ft-repeat" style="opacity: 0.5;"></i></span>
-                Inventory Transfer
-              </button>
+          <!-- Sr. No -->
+          <ngx-datatable-column
+            name="Sr. No."
+            [width]="90"
+            [minWidth]="90"
+            [canAutoResize]="false"
+            [draggable]="false"
+            [resizeable]="false">
+            <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
+              <span>{{ rowIndex + 1 }}</span>
             </ng-template>
+          </ngx-datatable-column>
 
-          </div>
-        </ng-template>
-        <!-- /FULL POPOVER -->
+          <!-- Requisition No -->
+          <ngx-datatable-column
+            name="Requisition No."
+            prop="requisitionNo"
+            [flexGrow]="2"
+            [minWidth]="140">
+            <ng-template ngx-datatable-cell-template let-row="row">
+              <a href="javascript:void(0)" (click)="openPr(row)" appPermission
+                [appPermFormId]="FORM_IDS.PURCHASE_REQUEST" [appPermDisable]="'read'">
+                {{ row.requisitionNo }}
+              </a>
+            </ng-template>
+          </ngx-datatable-column>
 
-      </ng-template>
-    </ngx-datatable-column>
+          <!-- Status -->
+          <ngx-datatable-column
+            name="Status"
+            prop="requestStatus"
+            [flexGrow]="1"
+            [minWidth]="120">
+            <ng-template ngx-datatable-cell-template let-row="row">
+              <span [ngClass]="row.statusClass">
+                {{ row.requestStatus }}
+              </span>
+            </ng-template>
+          </ngx-datatable-column>
 
-  </ngx-datatable>
-</div>
+          <!-- Date -->
+          <ngx-datatable-column
+            name="Date"
+            prop="submittedDate"
+            [flexGrow]="1"
+            [minWidth]="120">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+              {{ row.submittedDate | date:'yyyy-MM-dd' }}
+            </ng-template>
+          </ngx-datatable-column>
 
+          <!-- Entity -->
+          <ngx-datatable-column
+            name="Entity"
+            prop="entityName"
+            [flexGrow]="2"
+            [minWidth]="150">
+          </ngx-datatable-column>
+
+          <!-- Department -->
+          <ngx-datatable-column
+            name="Department"
+            prop="department"
+            [flexGrow]="2"
+            [minWidth]="150">
+          </ngx-datatable-column>
+
+          <!-- Action -->
+          <ngx-datatable-column
+            name="Action"
+            [width]="90"
+            [canAutoResize]="false"
+            [draggable]="false"
+            [resizeable]="false">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+
+              <button
+                type="button"
+                class="btn btn-sm table-action-btn"
+                [ngbPopover]="actionToolbar"
+                popoverClass="action-popover"
+                placement="auto bottom"
+                container="body">
+                <img src="assets/img/svg-icons/3-dots.svg" class="action-dots-icon" alt="" />
+              </button>
+
+              <!-- FULL POPOVER -->
+              <ng-template #actionToolbar>
+                <div class="d-flex justify-content-around flex-column">
+
+                  <!-- Approval History -->
+                  <button
+                    class="btn popover-btn btn-sm m-1"
+                    ngbTooltip="Approval History"
+                    appPermission
+                    [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                    [appPermDisable]="'read'"
+                    (click)="openApprovalHistoryModal(row)">
+                    <span class="popover-icon"><i class="ft-list"></i></span>
+                    Approval History
+                  </button>
+
+                  <!-- Generate RFQ -->
+                  <button
+                    *ngIf="row.requestStatus === 'Completed' && row.isInventoryTransfer !== true; else rfqDisabled"
+                    class="btn popover-btn btn-sm m-1"
+                    ngbTooltip="Generate RFQ"
+                    (click)="generateRfq(row)"
+                    appPermission
+                    [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                    [appPermDisable]="'write'">
+                    <span class="popover-icon"><i class="ft-file-text"></i></span>
+                    Generate RFQ
+                  </button>
+
+                  <ng-template #rfqDisabled>
+                    <button
+                      class="btn popover-btn btn-sm m-1"
+                      disabled
+                      [ngbTooltip]="row.requestStatus !== 'Completed'
+                        ? 'RFQ can only be generated when PR is Completed.'
+                        : 'RFQ cannot be generated since Inventory Transfer is created.'">
+                      <span class="popover-icon"><i class="ft-file-text" style="opacity: 0.5;"></i></span>
+                      Generate RFQ
+                    </button>
+                  </ng-template>
+
+                  <!-- Request / Create Purchase Order (conditional based on data source settings) -->
+                  <button
+                    *ngIf="row.requestStatus === 'Completed' && row.isInventoryTransfer !== true; else selectVendorDisabled"
+                    class="btn popover-btn btn-sm m-1"
+                    [ngbTooltip]="useRequestPOMode ? 'Request Purchase Order' : 'Create Purchase Order'"
+                    (click)="onPurchaseOrderAction(row)"
+                    appPermission
+                    [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                    [appPermDisable]="'write'">
+                    <span class="popover-icon"><i class="ft-shopping-cart"></i></span>
+                    {{ useRequestPOMode ? 'Request Purchase Order' : 'Create Purchase Order' }}
+                  </button>
+
+                  <ng-template #selectVendorDisabled>
+                    <button
+                      class="btn popover-btn btn-sm m-1"
+                      disabled
+                      [ngbTooltip]="row.requestStatus !== 'Completed'
+                        ? (useRequestPOMode ? 'Purchase Order can only be requested when PR is Completed.' : 'Purchase Order can only be created when PR is Completed.')
+                        : (useRequestPOMode ? 'Purchase Order cannot be requested since Inventory Transfer is created.' : 'Purchase Order cannot be created since Inventory Transfer is created.')">
+                      <span class="popover-icon"><i class="ft-shopping-cart" style="opacity: 0.5;"></i></span>
+                      {{ useRequestPOMode ? 'Request Purchase Order' : 'Create Purchase Order' }}
+                    </button>
+                  </ng-template>
+
+                  <!-- Inventory Transfer -->
+                  <button
+                    *ngIf="row.requestStatus === 'Completed'; else inventoryTransferWaitingTemplate"
+                    class="btn popover-btn btn-sm m-1"
+                    ngbTooltip="Create Inventory Transfer"
+                    (click)="openPRInventoryManagement(row)"
+                    appPermission
+                    [appPermFormId]="FORM_IDS.PURCHASE_REQUEST"
+                    [appPermDisable]="'write'">
+                    <span class="popover-icon"><i class="ft-repeat"></i></span>
+                    Inventory Transfer
+                  </button>
+
+                  <ng-template #inventoryTransferWaitingTemplate>
+                    <button
+                      class="btn popover-btn btn-sm m-1"
+                      disabled
+                      ngbTooltip="Inventory Transfer can only be created when PR is Completed.">
+                      <span class="popover-icon"><i class="ft-repeat" style="opacity: 0.5;"></i></span>
+                      Inventory Transfer
+                    </button>
+                  </ng-template>
+
+                </div>
+              </ng-template>
+              <!-- /FULL POPOVER -->
+
+            </ng-template>
+          </ngx-datatable-column>
+
+        </ngx-datatable>
+      </div>
 
     </div>
   </div>
@@ -365,34 +352,20 @@
 
 <!-- Sync Now Modal -->
 <ng-template #syncModal let-modal>
-  <div class="modal-header">
-    <h5 class="modal-title">Sync</h5>
-    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  <div class="modal-header d-flex align-items-center justify-content-between">
+    <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
+      <i class="ft-refresh-cw mr-2 text-white"></i> Sync Now
+    </h5>
+    <button type="button" class="modal-close-btn" aria-label="Close" (click)="modal.dismiss()">
+      <i class="ft-x"></i>
+    </button>
   </div>
   <div class="modal-body">
     <p>{{ syncMessage }}</p>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-primary" (click)="modal.close()">OK</button>
-  </div>
-</ng-template>
-
-<!-- Delete Modal -->
-<!-- <ng-template #deleteModal let-c="close" let-d="dismiss">
-  <div class="modal-header">
-    <h4 class="modal-title">Delete Confirmation</h4>
-    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
-      <span aria-hidden="true">&times;</span>
+    <button type="button" class="modal-btn-save" (click)="modal.close()">
+      <i class="fa fa-check mr-1"></i> OK
     </button>
   </div>
-  <div class="modal-body">
-    <p>Are you sure you want to delete the selected records?</p>
-    <ul>
-      <li *ngFor="let id of idsToDelete">{{ id }}</li>
-    </ul>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" (click)="c('Cancel click')">Cancel</button>
-    <button type="button" class="btn btn-danger" (click)="confirmDelete()">Delete</button>
-  </div>
-</ng-template> -->
+</ng-template>

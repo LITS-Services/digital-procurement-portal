@@ -4,52 +4,52 @@ import { RouteInfo } from './vertical-menu.metadata';
 // Sidebar menu Routes and data
 export const ROUTES: RouteInfo[] = [
   {
-    path: '/dashboard/dashboard1', title: 'Dashboard', icon: 'ft-grid', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+    path: '/dashboard/dashboard1', title: 'Dashboard', icon: 'assets/img/sidebar-icons/Dashboard_icon.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
     formTypeId: FORM_IDS.DASHBOARD
   },
   {
-    path: '/purchase-request', title: 'Purchase Request', icon: 'ft-file-plus', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+    path: '/purchase-request', title: 'Purchase Request', icon: 'assets/img/sidebar-icons/Purchase Request_icon.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
     formTypeId: FORM_IDS.PURCHASE_REQUEST
   },
   {
-    path: '/rfq', title: 'RFQ', icon: 'fa fa-envelope-o', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+    path: '/rfq', title: 'RFQ', icon: 'assets/img/sidebar-icons/RFQ_icon.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
     formTypeId: FORM_IDS.REQUEST_FOR_QUOTATION
   },
   {
-    path: '/purchase-order', title: 'Purchase Order', icon: 'fa fa-file-invoice', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+    path: '/purchase-order', title: 'Purchase Order', icon: 'assets/img/sidebar-icons/Purchase Order.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
     formTypeId: FORM_IDS.PURCHASE_ORDER
   },
   {
-    path: '/inventory-transfer', title: 'Inventory Transfer', icon: 'fa fa-dolly', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+    path: '/inventory-transfer', title: 'Inventory Transfer', icon: 'assets/img/sidebar-icons/Inventory Transfer_icon.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
     formTypeId: FORM_IDS.INVENTORY_TRANSFER
   },
 
   // { path: '/tendering', title: 'Tendering', icon: 'fa fa-handshake-o', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
   {
-    path: '/company', title: 'Sourcing Companies', icon: 'fa fa-briefcase', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+    path: '/company', title: 'Sourcing Companies', icon: 'assets/img/sidebar-icons/Sourcing Companies_icon.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
     formTypeId: FORM_IDS.VENDOR_COMPANIES
   },
   {
-    path: '/employee-list', title: 'Procurement Users', icon: 'fa fa-users', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+    path: '/employee-list', title: 'Procurement Users', icon: 'assets/img/sidebar-icons/Procurement Users_icon.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
     formTypeId: FORM_IDS.PROCUREMENT_USERS
   },
   // Only Vendor role can see this
   {
-    path: '/procurment-companies', title: 'Entities', icon: 'fa fa-building', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+    path: '/procurment-companies', title: 'Entities', icon: 'assets/img/sidebar-icons/Entities_icon.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
     formTypeId: FORM_IDS.ENTITIES
   },
 
   {
-    path: '', title: 'Configuration', icon: 'fa fa-sliders-h', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false,
+    path: '', title: 'Configuration', icon: 'assets/img/sidebar-icons/Configuration_icon.svg', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false,
     submenu: [
       {
-        path: '/configuration/global', title: 'Global Configuration', icon: 'fa fa-cogs', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        path: '/configuration/global', title: 'Global Configuration', icon: 'assets/img/sidebar-icons/childmenu-icons/Global Configurations_icon.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         formTypeId: FORM_IDS.GLOBAL_CONFIGURATION
       },
       // { path: '/configuration/exception-logs', title: 'Exception Logs', icon: 'fa fa-bug', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
       // { path: '/configuration/http-logs', title: 'Http Logs', icon: 'fa fa-globe', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
       {
-        path: '/configuration/logs', title: 'Logs', icon: 'fa fa-globe', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        path: '/configuration/logs', title: 'Logs', icon: 'assets/img/sidebar-icons/childmenu-icons/Logs_icon.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         formTypeId: FORM_IDS.LOGS
       },
     ],
@@ -65,46 +65,46 @@ export const ROUTES: RouteInfo[] = [
   //   ]
   // },
   {
-    path: '', title: 'Setup', icon: 'ft-settings', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false,
+    path: '', title: 'Setup', icon: 'assets/img/sidebar-icons/Setup_icon.svg', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false,
     submenu: [
       {
-        path: '/setup/acl', title: 'ACL', icon: 'ft-shield submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        path: '/setup/acl', title: 'ACL', icon: 'assets/img/sidebar-icons/childmenu-icons/ACL.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         formTypeId: FORM_IDS.ACL
       },
       {
-        path: '/setup/super-acl', title: 'Super ACL', icon: 'fa fa-unlock-alt submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        path: '/setup/super-acl', title: 'Super ACL', icon: 'assets/img/sidebar-icons/childmenu-icons/Super ACL_icon.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         roles: ['Super Admin']
       },
       {
-        path: '/setup/turnstile', title: 'Turnstile', icon: 'fa fa-lock submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        path: '/setup/turnstile', title: 'Turnstile', icon: 'assets/img/sidebar-icons/childmenu-icons/Turnstile_icon.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         formTypeId: FORM_IDS.TURNSTILE
       },
       {
-        path: '/setup/data-source', title: 'Data Source', icon: 'fa fa-database submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        path: '/setup/data-source', title: 'Data Source', icon: 'assets/img/sidebar-icons/childmenu-icons/Data Source_icon.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         formTypeId: FORM_IDS.DATA_SOURCE
       },
       {
-        path: '/setup/workflow', title: 'Workflow Setup', icon: 'ft-git-pull-request submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        path: '/setup/workflow', title: 'Workflow Setup', icon: 'assets/img/sidebar-icons/childmenu-icons/Workflow Setup_icon.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         formTypeId: FORM_IDS.WORKFLOW_SETUP
       },
       {
-        path: '/setup/vendor-onboarding-setup', title: 'Vendor Onboarding', icon: 'fa fa-handshake submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        path: '/setup/vendor-onboarding-setup', title: 'Vendor Onboarding', icon: 'assets/img/sidebar-icons/childmenu-icons/Vendor Onboarding_icon.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         formTypeId: FORM_IDS.VENDOR_ONBOARDING
       },
       {
-        path: '/setup/email-setup', title: 'Invitation', icon: 'ft-mail submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        path: '/setup/email-setup', title: 'Invitation', icon: 'assets/img/sidebar-icons/childmenu-icons/Invitation_icon.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         formTypeId: FORM_IDS.INVITATION
       },
       {
-        path: '/setup/email-templatelist', title: 'Email Template List', icon: 'fa fa-envelope-open-text submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        path: '/setup/email-templatelist', title: 'Email Template List', icon: 'assets/img/sidebar-icons/childmenu-icons/Email Template List_icon.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         formTypeId: FORM_IDS.EMAIL_TEMPLATE_LIST
       },
       {
-        path: '/setup/bulk-vendor-onboarding', title: 'Bulk Company Onboarding', icon: 'fa fa-folder-plus submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        path: '/setup/bulk-vendor-onboarding', title: 'Bulk Company Onboarding', icon: 'assets/img/sidebar-icons/childmenu-icons/Bulk Company Onboarding_icon.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         formTypeId: FORM_IDS.BULK_COMPANY_ONBOARDING
       },
       {
-        path: '/setup/integration-manager', title: 'Integrations', icon: 'fa fa-link submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        path: '/setup/integration-manager', title: 'Integrations', icon: 'assets/img/sidebar-icons/childmenu-icons/Integration_icon.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
         formTypeId: FORM_IDS.INTEGRATION_MANAGER
       },
 

@@ -17,9 +17,18 @@
             <i class="ft-chevron-down"></i>
           </button>
           <div class="dropdown-menu" ngbDropdownMenu>
-            <button class="dropdown-item" (click)="onOfferFilterChange('all')">All</button>
-            <button class="dropdown-item" (click)="onOfferFilterChange('offers')">Offers</button>
-            <button class="dropdown-item" (click)="onOfferFilterChange('nooffers')">No offers</button>
+            <button type="button" class="dropdown-item" [class.active]="selectedOfferFilterLabel === 'All'" (click)="onOfferFilterChange('all')">
+              <span>All</span>
+              <i *ngIf="selectedOfferFilterLabel === 'All'" class="ft ft-check chart-check-icon"></i>
+            </button>
+            <button type="button" class="dropdown-item" [class.active]="selectedOfferFilterLabel === 'Offers'" (click)="onOfferFilterChange('offers')">
+              <span>Offers</span>
+              <i *ngIf="selectedOfferFilterLabel === 'Offers'" class="ft ft-check chart-check-icon"></i>
+            </button>
+            <button type="button" class="dropdown-item" [class.active]="selectedOfferFilterLabel === 'No offers'" (click)="onOfferFilterChange('nooffers')">
+              <span>No offers</span>
+              <i *ngIf="selectedOfferFilterLabel === 'No offers'" class="ft ft-check chart-check-icon"></i>
+            </button>
           </div>
         </div>
       </div>
@@ -112,22 +121,31 @@
           [limit]="5"
           [scrollbarH]="true"
           [loadingIndicator]="loading"
+          style="border: 1px solid #dee2e6; border-radius: 6px;"
         >
-          <ngx-datatable-column name="Item" prop="itemName"></ngx-datatable-column>
-          <ngx-datatable-column name="Description" prop="itemDescription"></ngx-datatable-column>
-          <ngx-datatable-column name="Req By Date" prop="reqByDate">
+          <ngx-datatable-column name="Item" prop="itemName" [width]="180"></ngx-datatable-column>
+          <ngx-datatable-column name="Description" prop="itemDescription" [width]="180"></ngx-datatable-column>
+          <ngx-datatable-column name="Req By Date" prop="reqByDate" [width]="135" [minWidth]="130">
             <ng-template let-row="row" ngx-datatable-cell-template>
-              {{ row.reqByDate | date:'yyyy-MM-dd' }}
+              {{ row.reqByDate ? (row.reqByDate | date:'yyyy-MM-dd') : '—' }}
             </ng-template>
           </ngx-datatable-column>
-          <ngx-datatable-column name="Bid Price" prop="biddingAmount"></ngx-datatable-column>
-          <ngx-datatable-column name="Delivery Date" prop="deliveryDate">
+          <ngx-datatable-column name="Bid Price" prop="biddingAmount" [width]="125" [minWidth]="120">
             <ng-template let-row="row" ngx-datatable-cell-template>
-              {{ row.deliveryDate | date:'yyyy-MM-dd' }}
+              {{ (row.biddingAmount || 0) | number:'1.0-2' }}
             </ng-template>
           </ngx-datatable-column>
-          <ngx-datatable-column name="Comment" prop="comment"></ngx-datatable-column>
-          <ngx-datatable-column name="Status" prop="bidRequestStatus"></ngx-datatable-column>
+          <ngx-datatable-column name="Delivery Date" prop="deliveryDate" [width]="140" [minWidth]="135">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+              {{ row.deliveryDate ? (row.deliveryDate | date:'yyyy-MM-dd') : '—' }}
+            </ng-template>
+          </ngx-datatable-column>
+          <ngx-datatable-column name="Comment" prop="comment" [width]="160">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+              {{ row.comment || '—' }}
+            </ng-template>
+          </ngx-datatable-column>
+          <ngx-datatable-column name="Status" prop="bidRequestStatus" [width]="120"></ngx-datatable-column>
         </ngx-datatable>
 
         <div *ngIf="itemsData.length > 0" class="d-flex mt-2 gap-footer">

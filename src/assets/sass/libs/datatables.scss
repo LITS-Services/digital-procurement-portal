@@ -67,64 +67,48 @@
                 margin: 0;
               }
 
-              &:first-child,
-              &:last-child,
-              &:nth-child(2),
-              &:nth-last-child(2) {
-                a {
-                  padding: 1.1rem 1.035rem;
-
-                  i {
-                    position: absolute;
-                    top: 0.55rem;
-                    left: 0.4rem;
-                  }
-                }
-              }
-
               &.disabled {
                 a {
-                  color: map.get($grey-color, darken-1);
-                  background-color: $pagination-disabled-bg;
+                  background-color: transparent !important;
+                  cursor: not-allowed !important;
                 }
               }
 
               &:not(.disabled) {
                 a {
-                  color: $pagination-color;
+                  color: #606060;
 
                   &:hover {
-                    background-color: $pagination-hover-bg !important;
-                    border-color: $pagination-hover-border-color;
+                    background-color: #F0F8FF !important;
+                    color: #116AEF !important;
                   }
                 }
 
                 &.active {
                   a {
                     z-index: 3;
-                    color: $white;
-                    background-color: $primary !important;
-                    border-color: $primary;
-                    font-weight: inherit;
+                    color: #116AEF !important;
+                    background-color: #F0F8FF !important;
+                    border: 1px solid transparent !important;
+                    font-weight: 500;
                   }
-                }
-
-                &:hover a {
-                  background-color: $pagination-bg;
-                  font-weight: inherit;
                 }
               }
 
               a {
                 position: relative;
-                display: block;
-                padding: 1.1rem $pagination-padding-x;
-                margin: 0 0 0 5px;
-                line-height: 0.1;
-                background-color: $pagination-bg;
-                border: $pagination-border-width solid $pagination-border-color;
-                border-radius: $border-radius;
-                font-size: $font-size-root;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 30px;
+                height: 30px;
+                padding: 0;
+                margin: 0 3px;
+                line-height: 1;
+                background-color: transparent;
+                border: 1px solid transparent;
+                border-radius: 6px;
+                box-sizing: border-box;
 
                 i {
                   padding: 0;

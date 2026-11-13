@@ -18,14 +18,14 @@
       <div class="card cstm-ui-card">
         <div class="row">
           <div class="col-md-6">
-            <button class="btn btn-lg mr-1" type="button" (click)="homePage()"><i class="ft-arrow-left"></i></button>
+            <button class="btn btn-lg mr-1" type="button" (click)="homePage()"><img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" /></button>
             <span class="vl"></span>
 
             <!-- Create Mode: Save + Save as Draft -->
             <ng-container *ngIf="isNewForm && !viewMode">
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="newGlobalConfigForm.invalid"
                 (click)="onSubmit()">
-                <i class="ft-plus"></i><label class="ml-1">Save</label>
+                <img src="assets/img/svg-icons/save-icon.svg" class="btn-action-icon" alt="" /><label>Save</label>
               </button>
 
             </ng-container>
@@ -34,7 +34,7 @@
             <ng-container *ngIf="!isNewForm && !viewMode">
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="newGlobalConfigForm.invalid"
                 (click)="onSubmit()">
-                <i class="ft-edit-2"></i><label class="ml-1">Update</label>
+                <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" /><label>Update</label>
               </button>
             </ng-container>
 

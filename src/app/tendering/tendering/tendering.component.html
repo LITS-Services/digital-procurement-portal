@@ -18,19 +18,22 @@
             <div class="card  cstm-ui-card">
                 <div class="row">
                     <div class="col-md-6">
-                        <button class="btn btn-lg mr-1" type="button" (click)="homePage()"><i
-                                class="ft-arrow-left"></i></button>
+                        <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+                            <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
+                        </button>
                         <span class="vl"></span>
                         <button type="reset" ngbTooltip="{{ 'Create new Tendering Request' }}" class="btn btn-sm  cstm-ui-table-btn"
                             (click)="openEmpDetails()">
-                            <i class="ft-plus"></i><label class="ml-1 mt-1" for="">Create</label>
+                            <img src="assets/img/svg-icons/create-icon.svg" class="btn-action-icon" alt="" /><label class="mt-1" for="">Create</label>
                         </button>
-                        <button type="reset" class="btn btn-sm  cstm-ui-table-btn">
-                            <i class="ft-edit"></i><label class="ml-1 mt-1" for="">Update</label>
-                        </button>
-                        <button type="reset" class="btn btn-sm  cstm-ui-table-btn">
-                            <i class="ft-trash"></i><label class="ml-1 mt-1" for="">Delete</label>
-                        </button>
+                        <ng-container *ngIf="chkBoxSelected?.length > 0">
+                            <button *ngIf="!isEditButtonDisabled" type="reset" class="btn btn-sm  cstm-ui-table-btn">
+                                <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" /><label class="mt-1" for="">Update</label>
+                            </button>
+                            <button *ngIf="!isDeleteButtonDisabled" type="reset" class="btn btn-sm  cstm-ui-table-btn">
+                                <img src="assets/img/svg-icons/delete-icon.svg" class="btn-action-icon" alt="" /><label class="mt-1" for="">Delete</label>
+                            </button>
+                        </ng-container>
                         <button type="reset" class="btn btn-sm  cstm-ui-table-btn">
                             <i class="ft-check"></i><label class="ml-1 mt-1" for="">Approval</label>
                         </button>
@@ -63,7 +66,7 @@
                     </div>
                 </ng-template>
             </ngx-datatable-column>
-            <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+            <ngx-datatable-column name="Sr. No." [width]="90" [minWidth]="90" [canAutoResize]="false" [resizeable]="false">
                 <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
                     <span>{{rowIndex + 1}}</span>
                 </ng-template>

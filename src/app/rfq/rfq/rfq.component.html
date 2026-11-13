@@ -17,7 +17,7 @@
                         <div>
 
                             <button class="btn btn-lg mr-1 " type="button" (click)="homePage()">
-                                <i class="ft-arrow-left"></i>
+                                <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
                             </button>
                             <span class="vl"></span>
 
@@ -29,11 +29,14 @@
                                 <i class="ft-edit"></i><label class="ml-1 mt-1">Update</label>
                             </button> -->
 
-                            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()"
-                                appPermission [appPermFormId]="FORM_IDS.REQUEST_FOR_QUOTATION"
-                                [appPermDisable]="'delete'" [disabled]="isDeleteButtonDisabled">
-                                <i class="ft-trash"></i><label class="ml-1 btn-label">Delete</label>
-                            </button>
+                            <ng-container *ngIf="chkBoxSelected?.length > 0">
+                                <button *ngIf="!isDeleteButtonDisabled" type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()"
+                                    appPermission [appPermFormId]="FORM_IDS.REQUEST_FOR_QUOTATION"
+                                    [appPermDisable]="'delete'" [appPermHide]="true">
+                                    <img src="assets/img/svg-icons/delete-icon.svg" class="btn-action-icon" alt="" />
+                                    <label class="btn-label">Delete</label>
+                                </button>
+                            </ng-container>
 
                             <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
                                 (click)="onView()">
@@ -42,7 +45,8 @@
                         </div>
                         <div class="d-flex align-items-center">
                             <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
-                                <i class="ft-sliders"></i><label class="ml-1 btn-label">Filter</label>
+                                <img src="assets/img/svg-icons/filter-icon.svg" class="btn-action-icon" alt="" />
+                                <label class="btn-label">Filter</label>
                             </button>
                         </div>
                         <!-- <button type="reset" class="btn btn-sm" [disabled]="isOpenButtonDisabled">
@@ -68,11 +72,13 @@
                                 <i class="ft-chevron-down"></i>
                             </button>
                             <div class="dropdown-menu" ngbDropdownMenu>
-                                <button class="dropdown-item" (click)="onStatusChange('All')">
-                                    All
+                                <button type="button" class="dropdown-item" [class.active]="!statusTouched || selectedStatusLabel === 'All'" (click)="onStatusChange('All')">
+                                    <span>All</span>
+                                    <i *ngIf="!statusTouched || selectedStatusLabel === 'All'" class="ft ft-check chart-check-icon"></i>
                                 </button>
-                                <button class="dropdown-item" *ngFor="let s of status" (click)="onStatusChange(s)">
-                                    {{ s.description }}
+                                <button type="button" class="dropdown-item" *ngFor="let s of status" [class.active]="statusTouched && selectedStatusLabel === s.description" (click)="onStatusChange(s)">
+                                    <span>{{ s.description }}</span>
+                                    <i *ngIf="statusTouched && selectedStatusLabel === s.description" class="ft ft-check chart-check-icon"></i>
                                 </button>
                             </div>
                         </div>
@@ -108,7 +114,7 @@
                 </ngx-datatable-column>
 
                 <!-- Sr. No -->
-                <ngx-datatable-column name="SR #" [width]="50" [canAutoResize]="false" [resizeable]="false">
+                <ngx-datatable-column name="SR #" [width]="80" [minWidth]="80" [canAutoResize]="false" [resizeable]="false">
                     <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
                         <span>{{ rowIndex + 1 }}</span>
                     </ng-template>

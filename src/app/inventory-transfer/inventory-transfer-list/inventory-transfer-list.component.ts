@@ -300,7 +300,7 @@ export class InventoryTransferListComponent implements OnInit {
     this.loadPurchaseRequests();
   }
 
-  private mapStatusKey(status: string): 'chip--success' | 'chip--pending' | 'chip--rejected' | 'chip--approved' {
+  private mapStatusKey(status: string): 'chip--success' | 'chip--pending' | 'chip--rejected' | 'chip--approved' | 'chip--draft' {
     const s = status?.toLowerCase();
 
     if (s === 'completed' || s === 'successful' || s === 'accepted'  || s === 'paid' || s === 'delivered' || s === 'active')
@@ -309,11 +309,14 @@ export class InventoryTransferListComponent implements OnInit {
     if (s === 'rejected')
       return 'chip--rejected';
 
-    if (s === 'pending for payment' || s === 'pending' || s === 'on hold' || s === 'inactive')
-    return 'chip--pending';
+    if (s === 'draft')
+      return 'chip--draft';
+
+    if (s === 'pending for payment' || s === 'pending' || s === 'on hold' || s === 'inactive' || s === 'inprogress' || s === 'in progress' || s === 'sendback')
+      return 'chip--pending';
 
     if (s === 'approved for payment' || s === 'approved' || s === 'new' || s === 'awarded')
-    return 'chip--approved';
+      return 'chip--approved';
   }
 
   onSearchChange(text: string) {

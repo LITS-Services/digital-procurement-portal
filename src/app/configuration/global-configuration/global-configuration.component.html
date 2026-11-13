@@ -16,17 +16,17 @@
                     <div class="col-md-12 row">
                         <div class="col-md-5">
                             <button class="btn btn-lg mr-1 " type="button" (click)="homePage()">
-                                <i class="ft-arrow-left"></i></button>
+                                <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" /></button>
                             <span class="vl"></span>
                             <button type="button" class="btn btn-sm cstm-ui-table-btn"
                                 ngbTooltip="Create new Global Configuration" (click)="openEmpDetails()" appPermission
                                 [appPermFormId]="FORM_IDS.GLOBAL_CONFIGURATION" [appPermDisable]="'write'">
-                                <i class="ft-plus"></i><label class="ml-1">Create</label>
+                                <img src="assets/img/svg-icons/create-icon.svg" class="btn-action-icon" alt="" /><label>Create</label>
                             </button>
-                            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()"
+                            <button *ngIf="!isEditButtonDisabled" type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()"
                                 appPermission [appPermFormId]="FORM_IDS.GLOBAL_CONFIGURATION"
-                                [appPermDisable]="'write'">
-                                <i class="ft-edit"></i><label class="ml-1">Update</label>
+                                [appPermDisable]="'write'" [appPermHide]="true">
+                                <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" /><label>Update</label>
                             </button>
 
                             <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()"
@@ -73,7 +73,7 @@
                     </ngx-datatable-column>
 
                     <!-- Sr. No -->
-                    <ngx-datatable-column name="Sr. No." [maxWidth]="60" [resizeable]="false">
+                    <ngx-datatable-column name="Sr. No." [width]="90" [minWidth]="90" [canAutoResize]="false" [resizeable]="false">
                         <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
                             <span>{{ rowIndex + 1 }}</span>
                         </ng-template>

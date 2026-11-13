@@ -20,9 +20,20 @@ form label, .form-group label {
 }
 
 .hint-ellipsis {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  min-width: 0;       
+  gap: 4px;
+  min-width: 0;
+  flex-shrink: 1;
+  font-size: 11.5px;
+  line-height: 1.2;
+
+  i {
+    font-size: 13px;
+    line-height: 1;
+    flex-shrink: 0;
+    color: #53667f;
+  }
 }
 
 .hint-ellipsis .hint-text {
@@ -30,6 +41,8 @@ form label, .form-group label {
   text-overflow: ellipsis;
   white-space: nowrap;
   color: #53667f !important;
+  font-size: 11.5px;
+  line-height: 1.2;
 }
 
 
@@ -189,7 +202,7 @@ form label, .form-group label {
 }
 
 .ngx-datatable ::ng-deep .datatable-header-cell {
-  padding: 0.75rem 1.25rem;
+  padding: 0.75rem;
   border-bottom: 1px solid #e5e7eb;
 
 }
@@ -228,7 +241,7 @@ form label, .form-group label {
 }
 
 .ngx-datatable ::ng-deep .datatable-header-cell {
-  padding: 0.75rem 1.25rem;
+  padding: 0.75rem;
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -250,7 +263,7 @@ form label, .form-group label {
 .ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
 .ngx-datatable ::ng-deep .datatable-header-inner .sort-btn {
   color: #667085 !important;              /* muted header text */
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -266,7 +279,7 @@ form label, .form-group label {
 }
 .ngx-datatable ::ng-deep .datatable-header-inner .sort-btn {
   color: #667085 !important;              /* muted header text */
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -301,7 +314,7 @@ form label, .form-group label {
 /* CELLS */
 .ngx-datatable ::ng-deep .datatable-body .datatable-body-cell {
   text-align: left;
-  padding: 0.65rem 1.25rem;
+  padding: 0.65rem 0.75rem;
   vertical-align: middle;
   color: #334155;
 }
@@ -329,7 +342,7 @@ form label, .form-group label {
 
   .ngx-datatable ::ng-deep .datatable-header-inner .datatable-header-cell-label,
   .ngx-datatable ::ng-deep .datatable-header-inner .sort-btn {
-    font-size: 11px;
+    font-size: 14px;
     letter-spacing: 0.02em;
   }
 }
@@ -417,6 +430,12 @@ form label, .form-group label {
   line-height: 1;
   white-space: nowrap;
 }
+
+:host-context([dir="rtl"]) .phone-error,
+:host-context(.rtl) .phone-error {
+  right: 0;
+  left: auto;
+}
 /* Breakpoints tuned for your case:
    >1600px   → 5 cols (desktop 1920 @100%)
    1300–1600 → 4 cols (1920 @125%)
@@ -424,8 +443,67 @@ form label, .form-group label {
    576–992   → 2 cols (tablets)
    <576      → 1 col (mobile) */
 
+.items-form-grid {
+  --form-grid-cols: 4;
+  align-items: start;
+
+  .form-grid__item {
+    min-width: 0;
+  }
+
+  .form-group {
+    margin-bottom: 0.5rem;
+    display: flex;
+    flex-direction: column;
+
+    label {
+      margin-bottom: 8px !important;
+      min-height: 20px;
+      height: 20px;
+      line-height: 20px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #262626 !important;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .form-control,
+    .custom-input {
+      height: 38px !important;
+      min-height: 38px !important;
+      max-height: 38px !important;
+      box-sizing: border-box !important;
+      padding-top: 6px !important;
+      padding-bottom: 6px !important;
+      font-size: 14px !important;
+      line-height: 24px !important;
+      margin: 0 !important;
+    }
+
+    select.custom-input {
+      height: 38px !important;
+      min-height: 38px !important;
+      max-height: 38px !important;
+      box-sizing: border-box !important;
+      padding: 6px 32px 6px 16px !important;
+      line-height: 24px !important;
+    }
+
+    textarea.custom-input {
+      height: auto !important;
+      max-height: none !important;
+      min-height: 60px !important;
+      padding: 8px 12px !important;
+      line-height: 1.5 !important;
+    }
+  }
+}
+
 @media (min-width: 1600px) {
   .form-grid { --form-grid-cols: 5; }
+  .items-form-grid { --form-grid-cols: 4 !important; }
 }
 
 @media (min-width: 1300px) and (max-width: 1599.98px) {
@@ -562,6 +640,12 @@ border-bottom: none !important;
 
 :host ::ng-deep ngx-intl-tel-input {
   display: block;
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+:host ::ng-deep ngx-intl-tel-input * {
+  box-sizing: border-box;
 }
 
 :host ::ng-deep ngx-intl-tel-input .iti {
@@ -575,6 +659,9 @@ border-bottom: none !important;
   border: 1px solid #D7D7D7;
   background-color: #ffffff;
   padding-right: 12px;
+  padding-left: 0;
+  direction: ltr !important;
+  text-align: left !important;
 }
 
 :host ::ng-deep ngx-intl-tel-input .iti input:disabled {
@@ -585,30 +672,33 @@ border-bottom: none !important;
   background-color: #f5f5f5 !important;
 }
 
-
 :host ::ng-deep ngx-intl-tel-input .iti__flag-container {
   position: relative;
   display: flex;
   align-items: center;
   height: 100%;
   padding: 0 10px;
-  border-right: 1px solid #e0e3e8;
+  border-right: 1px solid #e0e3e8 !important;
+  border-left: none !important;
   margin: 0;
+  direction: ltr !important;
 }
-
 
 :host ::ng-deep ngx-intl-tel-input .iti__selected-flag {
   margin: 0;
   display: flex;
-    align-items: center;
-    width: 100% !important;
+  align-items: center;
+  width: 100% !important;
+  direction: ltr !important;
 }
 
-
-
+:host ::ng-deep ngx-intl-tel-input .selected-dial-code,
 :host ::ng-deep ngx-intl-tel-input .iti__selected-dial-code {
   margin-left: 6px;
+  margin-right: 0 !important;
   font-size: 14px;
+  direction: ltr !important;
+  unicode-bidi: isolate !important;
 }
 
 :host ::ng-deep ngx-intl-tel-input .iti input {
@@ -620,6 +710,8 @@ border-bottom: none !important;
   box-shadow: none;
   padding: 10px !important;
   font-size: 14px;
+  direction: ltr !important;
+  text-align: left !important;
 }
 
 :host ::ng-deep ngx-intl-tel-input .iti__divider {
@@ -635,7 +727,6 @@ border-bottom: none !important;
   box-shadow: none;
 }
 
-
 :host ::ng-deep ngx-intl-tel-input .iti__country-list {
   max-height: 260px;
   margin: 0;
@@ -644,16 +735,30 @@ border-bottom: none !important;
   overflow-x: hidden !important;
   -webkit-overflow-scrolling: touch;
   z-index: 9999 !important;
+  direction: ltr !important;
+  text-align: left !important;
 }
 
-:host ::ng-deep ngx-intl-tel-input .iti__country-container {
-  width: 100% !important;            
+:host ::ng-deep ngx-intl-tel-input .iti__country-list li.iti__country {
+  direction: ltr !important;
+  text-align: left !important;
+
+  .iti__dial-code {
+    direction: ltr !important;
+    unicode-bidi: isolate !important;
+  }
+}
+
+:host ::ng-deep ngx-intl-tel-input .iti__country-container,
+:host ::ng-deep ngx-intl-tel-input .dropdown-menu.iti__dropdown-content {
   position: absolute !important;
   top: calc(100% + 4px) !important;
   left: 0 !important;
+  right: auto !important;
   margin-top: 0 !important;          
   z-index: 9999 !important;
-
+  direction: ltr !important;
+  text-align: left !important;
 }
 
 :host ::ng-deep ngx-intl-tel-input .iti__dropdown-content {
@@ -663,6 +768,10 @@ border-bottom: none !important;
   border: 1px solid #e5e7eb;
   box-shadow: 0 10px 24px rgba(2, 6, 23, 0.16);
   background: #fff;
+  direction: ltr !important;
+  text-align: left !important;
+  left: 0 !important;
+  right: auto !important;
 }
 
 :host ::ng-deep ngx-intl-tel-input .iti__search-container {
@@ -671,6 +780,7 @@ border-bottom: none !important;
   z-index: auto;
   padding: 8px 10px 6px;
   background: #fff;
+  direction: ltr !important;
 }
 
 :host ::ng-deep ngx-intl-tel-input .iti__search-input {
@@ -682,6 +792,8 @@ border-bottom: none !important;
   border-radius: 8px;
   background: #fff;
   pointer-events: auto !important;
+  direction: ltr !important;
+  text-align: left !important;
 }
 
 /* --- Simple Item Status Cards Styles --- */
@@ -709,4 +821,162 @@ border-bottom: none !important;
 .stat-icon-wrapper-simple i {
   font-size: 1.5rem;
   opacity: 0.8;
+}
+
+/* Fix budget amount number input validation icon cutting & stepper overlap */
+input[type="number"].custom-input {
+  -moz-appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+.custom-input.is-invalid,
+input[type="number"].custom-input.is-invalid {
+  background-position: right 0.75rem center !important;
+  background-size: 16px 16px !important;
+  padding-right: 2.25rem !important;
+}
+
+/* Custom ng-select styling to match form-control and custom-input */
+::ng-deep .custom-select-ui {
+  &.ng-select {
+    width: 100%;
+
+    .ng-select-container {
+      height: 38px !important;
+      min-height: 38px !important;
+      max-height: 38px !important;
+      border: 1.5px solid #D7D7D7 !important;
+      border-radius: 8px !important;
+      padding: 0 10px !important;
+      font-size: 14px !important;
+      background-color: #ffffff !important;
+      color: #2B2F33 !important;
+      box-sizing: border-box !important;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+
+      &:hover {
+        border-color: #b5b5b5 !important;
+      }
+    }
+
+    &.ng-select-opened > .ng-select-container,
+    &.ng-select-focused:not(.ng-select-opened) > .ng-select-container {
+      border: 1px solid #116AEF !important;
+      background-color: #fcfdff !important;
+      box-shadow: none !important;
+      outline: none;
+    }
+
+    &.ng-select-disabled > .ng-select-container {
+      background-color: #e9ecef !important;
+      border-color: #d1d5db !important;
+      cursor: not-allowed;
+      opacity: 0.8;
+
+      .ng-value-container .ng-value {
+        color: #6c757d !important;
+      }
+    }
+
+    .ng-value-container {
+      padding: 0 !important;
+      font-size: 14px !important;
+      display: flex;
+      align-items: center;
+
+      .ng-value {
+        color: #2B2F33 !important;
+        font-size: 14px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+
+      .ng-placeholder {
+        color: #A8A9AC !important;
+        font-size: 13.5px !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .ng-input {
+        padding: 0 !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        display: flex;
+        align-items: center;
+
+        > input {
+          font-size: 14px !important;
+          color: #2B2F33 !important;
+          height: 100% !important;
+        }
+      }
+    }
+
+    .ng-clear-wrapper {
+      align-self: center;
+      padding-right: 4px;
+      color: #9ca3af;
+
+      &:hover {
+        color: #4b5563;
+      }
+    }
+
+    .ng-arrow-wrapper {
+      align-self: center;
+      width: 20px;
+      padding-right: 5px;
+
+      .ng-arrow {
+        border-color: #6b7280 transparent transparent;
+        border-width: 5px 5px 2.5px;
+      }
+    }
+
+    &.ng-select-opened .ng-arrow-wrapper .ng-arrow {
+      border-color: transparent transparent #6b7280;
+      border-width: 0 5px 5px;
+    }
+  }
+}
+
+::ng-deep .ng-dropdown-panel {
+  z-index: 1100 !important;
+  border-radius: 10px !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04) !important;
+  background: #ffffff !important;
+  padding: 6px !important;
+
+  .ng-dropdown-panel-items {
+    max-height: 220px !important;
+  }
+
+  .ng-option {
+    padding: 7px 10px !important;
+    border-radius: 6px !important;
+    font-size: 13.5px !important;
+
+    &.ng-option-marked {
+      background-color: #f3f4f6 !important;
+      color: #111827 !important;
+    }
+
+    &.ng-option-selected {
+      background-color: #eff6ff !important;
+      color: #116aef !important;
+      font-weight: 600 !important;
+    }
+  }
 }

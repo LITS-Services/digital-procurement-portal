@@ -413,9 +413,10 @@ export class CompanyListingComponent implements OnInit {
     const s = (status ?? '').toString().trim().toLowerCase();
 
     if (s === 'new') return 'status-pill--new';
-    if (s === 'inprogress' || s === 'in progress' || s === 'in_progress') return 'status-pill--inprogress';
+    if (s === 'draft') return 'status-pill--draft';
+    if (s === 'inprogress' || s === 'in progress' || s === 'in_progress' || s === 'pending') return 'status-pill--inprogress';
     if (s === 'sendback') return 'status-pill--sendback';
-    if (s === 'rejected') return 'status-pill--rejected'; // Added rejected style if available, or map to danger in CSS
+    if (s === 'rejected') return 'status-pill--rejected';
     if (s === 'onboarded' || s === 'completed') return 'status-pill--completed';
 
     return 'status-pill--default';

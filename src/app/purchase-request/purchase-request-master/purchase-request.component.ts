@@ -19,6 +19,7 @@ import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PrInventoryManagementComponent } from '../pr-inventory-management/pr-inventory-management.component';
 import { LayoutService } from 'app/shared/services/layout.service';
 import { ConfigService } from 'app/shared/services/config.service';
+import { DataSourceService } from 'app/shared/services/data-source.service';
 
 @Component({
   selector: 'app-purchase-request',
@@ -88,10 +89,25 @@ export class PurchaseRequestComponent implements OnInit {
     public lookupService: LookupService,
     private purchaseOrderService: PurchaseOrderService,
     private permissionService: PermissionService,
-    private configService:ConfigService,
+    private configService: ConfigService,
+    private dataSourceService: DataSourceService,
     public zone: NgZone
 
   ) { }
+
+  /**
+   * Returns true when the system is in BusinessCentral mode AND 'purchase-order'
+   * is listed in businessCentralForms — meaning PO creation goes via the portal
+   * request flow (not a direct create). If local or BC without purchase-order,
+   * we use the direct Create PO flow.
+   */
+  get useRequestPOMode(): boolean {
+    const state = this.dataSourceService.currentState;
+    return (
+      state.mode === 'businessCentral' &&
+      state.businessCentralForms.includes('purchase-order')
+    );
+  }
 
   ngOnInit(): void {
     this.loadCanInitiatePurchaseRequest();
@@ -232,19 +248,24 @@ export class PurchaseRequestComponent implements OnInit {
   //   });
   // }
 
-  onView() {
+  onView(row?: any) {
     if(!this.permissionService.can(FORM_IDS.PURCHASE_REQUEST, 'read')) 
       return;
-    if (this.chkBoxSelected.length !== 1) {
+
+    const selectedId = row ? (row.requestId || row.id) : (this.chkBoxSelected[0]?.requestId || this.chkBoxSelected[0]?.id);
+
+    if (!selectedId) {
       this.toastr.info('Please select exactly one record to view.');
       return;
     }
 
-    const selectedId = this.chkBoxSelected[0].requestId;
-
     this.router.navigate(['/purchase-request/new-purchase-request'], {
       queryParams: { id: selectedId, mode: 'view' }
     });
+  }
+
+  openPr(row: any) {
+    this.onView(row);
   }
 
   /**
@@ -617,7 +638,7 @@ export class PurchaseRequestComponent implements OnInit {
     }
 
     this.router.navigate(['/rfq/new-rfq'], {
-      queryParams: { prId: row.requestId }
+      queryParams: { prId: row.requestId || row.id }
     });
   }
 
@@ -626,42 +647,16 @@ export class PurchaseRequestComponent implements OnInit {
     this.loadPurchaseRequests();
   }
 
-  // openCreatePoModal(row: any): void {
-  //   console.log('Opening modal for PR ID:', row); // for debugging
-  //   const modalRef = this.modalService.open(CreatePurchaseOrderComponent, { size: 'lg', backdrop: 'static', centered: true });
-  //   modalRef.componentInstance.purchaseRequestId = row.requestId;
-
-  //   modalRef.closed.subscribe((result) => {
-  //     if (result) {
-  //       this.loadPurchaseRequests(); // refresh main list
-  //     }
-  //   });
-  // }
-  // createPO(row: any) {
-
-  //   Swal.fire({
-  //     title: 'Create Purchase Order?',
-  //     text: 'This will generate PO(s) automatically for all items based on vendor assignment.',
-  //     icon: 'question',
-  //     showCancelButton: true,
-  //     confirmButtonText: 'Yes, Create PO',
-  //     cancelButtonText: 'Cancel',
-  //   }).then((result) => {
-  //     if (result.isConfirmed) {
-
-  //       this.purchaseOrderService.createPurchaseOrderFromPR(row.requestId).subscribe({
-  //         next: () => {
-  //           console.log("Successfully created PO");
-  //           this.loadPurchaseRequests();
-  //         },
-  //         error: () => {
-  //           this.toastr.error('Something went wrong while creating PO.');
-  //         }
-  //       });
-
-  //     }
-  //   });
-  // }
+  /**
+   * Navigates to the vendor-selection form for this PR.
+   * Once there, the form's button label ("Request PO" or "Create PO") and
+   * the actual submission behaviour are determined by useRequestPOMode in
+   * new-purchase-request.component.ts — so both modes share the same
+   * vendor-selection step before acting.
+   */
+  onPurchaseOrderAction(row: any): void {
+    this.selectFinalVendor(row);
+  }
 
   selectFinalVendor(row: any): void {
     if (row.requestStatus !== 'Completed') {
@@ -678,7 +673,7 @@ export class PurchaseRequestComponent implements OnInit {
     });
   }
 
-  private mapStatusKey(status: string): 'chip--success' | 'chip--pending' | 'chip--rejected' | 'chip--approved' {
+  private mapStatusKey(status: string): 'chip--success' | 'chip--pending' | 'chip--rejected' | 'chip--approved' | 'chip--draft' {
     const s = status?.toLowerCase();
 
     if (s === 'completed' || s === 'successful' || s === 'accepted'  || s === 'paid' || s === 'delivered' || s === 'active')
@@ -687,10 +682,13 @@ export class PurchaseRequestComponent implements OnInit {
     if (s === 'rejected')
       return 'chip--rejected';
 
-    if (s === 'pending for payment' || s === 'pending' || s === 'on hold' || s === 'inactive' || s === 'inprogress' || s === 'draft' || s === 'sendback')  
-    return 'chip--pending';
+    if (s === 'draft')
+      return 'chip--draft';
+
+    if (s === 'pending for payment' || s === 'pending' || s === 'on hold' || s === 'inactive' || s === 'inprogress' || s === 'in progress' || s === 'sendback')  
+      return 'chip--pending';
 
     if (s === 'approved for payment' || s === 'approved' || s === 'new' || s === 'awarded')
-    return 'chip--approved';
+      return 'chip--approved';
   }
 }

@@ -1,12 +1,12 @@
 html {
   font-size: $font-size-root;
-  // font-family: "Poppins", sans-serif;
+  font-family: "Onest", sans-serif;
 }
 
 body {
   min-height: 100vh;
   min-height: calc(var(--vh, 1vh) * 100);
-  // font-family: "Poppins", sans-serif;
+  font-family: "Onest", sans-serif;
 }
 
 .wrapper {
@@ -22,7 +22,7 @@ body {
 }
 
 .serif-font {
-  font-family: "Poppins", sans-serif;
+  font-family: "Onest", sans-serif;
 }
 
 a {

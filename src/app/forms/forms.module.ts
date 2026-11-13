@@ -27,6 +27,7 @@ import { TimepickerComponent } from './elements/timepicker/timepicker.component'
 import { TagsInputComponent } from './elements/tags-input/tags-input.component';
 import { EditorComponent } from './elements/editor/editor.component';
 import { SelectComponent } from './elements/select/select.component';
+import { CustomSelectDirective } from 'app/shared/directives/custom-select.directive';
 @NgModule({
     imports: [
         CommonModule,
@@ -41,6 +42,7 @@ import { SelectComponent } from './elements/select/select.component';
         // UiSwitchModule, // Incompatible with Angular 21
         QuillModule.forRoot(),
         NgSelectModule,
+        CustomSelectDirective,
         // TagInputModule // Incompatible with Angular 21
     ],
     declarations: [
