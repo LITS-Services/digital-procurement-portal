@@ -10,6 +10,7 @@ import { ExtendedTableComponent } from "./extended/extended-table.component";
 import { BasicComponent } from './basic/basic.component';
 import { TablesComponent } from './angular/tables.component';
 import { NgbdSortableHeader } from './angular/sortable.directive';
+import { CustomSelectDirective } from 'app/shared/directives/custom-select.directive';
 
 @NgModule({
     imports: [
@@ -17,7 +18,8 @@ import { NgbdSortableHeader } from './angular/sortable.directive';
         NgbModule,
         FormsModule,
         ReactiveFormsModule,
-        TablesRoutingModule
+        TablesRoutingModule,
+        CustomSelectDirective
     ],
     declarations: [
         ExtendedTableComponent,

@@ -11,6 +11,7 @@ import { PermissionDirective } from 'app/shared/permissions/permission.directive
 import { HasPermissionDirective } from 'app/shared/auth/has-permission.directive';
 import { NgbDropdownModule, NgbModalModule, NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
+import { CustomSelectDirective } from 'app/shared/directives/custom-select.directive';
 
 
 @NgModule({
@@ -31,7 +32,8 @@ import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-au
       NgbTooltipModule,
       DatatableAutoResizeDirective,
     PermissionDirective,
-    HasPermissionDirective
+    HasPermissionDirective,
+    CustomSelectDirective
 ]
 })
 export class ConfigurationModule { }

@@ -15,37 +15,37 @@
           <div class="d-flex justify-content-between align-items-center cstm-action-bar">
             <div>
               <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
-                <i class="ft-arrow-left"></i>
+                <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
               </button>
               <span class="vl"></span>
 
               <!-- Create Template Button -->
               <button type="button" class="btn btn-sm cstm-ui-table-btn ml-2" appPermission
                 [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST" [appPermDisable]="'write'" (click)="createTemplate()">
-                <i class="ft-edit"></i>
-                <label class="ml-1">Create Email Template</label>
+                <img src="assets/img/svg-icons/create-icon.svg" class="btn-action-icon" alt="" />
+                <label>Create Email Template</label>
               </button>
 
-              <!-- Delete Template Button -->
-              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="confirmDelete()" appPermission
-                [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST" [appPermDisable]="'delete'"
-                [disabled]="isDeleteButtonDisabled">
-                <i class="ft-trash-2"></i>
-                <label class="ml-1">Delete</label>
-              </button>
+              <ng-container *ngIf="chkBoxSelected?.length > 0">
+                <!-- Delete Template Button -->
+                <button *ngIf="!isDeleteButtonDisabled" type="button" class="btn btn-sm cstm-ui-table-btn" (click)="confirmDelete()" appPermission
+                  [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST" [appPermDisable]="'delete'">
+                  <img src="assets/img/svg-icons/delete-icon.svg" class="btn-action-icon" alt="" />
+                  <label>Delete</label>
+                </button>
 
-              <!-- Edit Template Button -->
-              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="editTemplate()" appPermission
-                [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST" [appPermDisable]="'write'"
-                [disabled]="isEditButtonDisabled">
-                <i class="ft-edit"></i>
-                <label class="ml-1">Edit</label>
-              </button>
+                <!-- Edit Template Button -->
+                <button *ngIf="!isEditButtonDisabled" type="button" class="btn btn-sm cstm-ui-table-btn" (click)="editTemplate()" appPermission
+                  [appPermFormId]="FORM_IDS.EMAIL_TEMPLATE_LIST" [appPermDisable]="'write'">
+                  <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" />
+                  <label>Edit</label>
+                </button>
+              </ng-container>
             </div>
 
             <div class="d-flex align-items-center">
               <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
-                <i class="ft-sliders"></i><label class="ml-1 btn-label">Filter</label>
+                <img src="assets/img/svg-icons/filter-icon.svg" class="btn-action-icon" alt="" /><label class="btn-label">Filter</label>
               </button>
             </div>
           </div>
@@ -68,14 +68,22 @@
                 <i class="ft-chevron-down"></i>
               </button>
               <div class="dropdown-menu" ngbDropdownMenu>
-                <button class="dropdown-item" (click)="filterByWorkFlowType('All')">All</button>
-                <button class="dropdown-item" (click)="filterByWorkFlowType('Vendor Company Onboarding')">Sourcing
-                  Company
-                  Onboarding</button>
-                <button class="dropdown-item" (click)="filterByWorkFlowType('Request for quotation')">Request for
-                  quotation</button>
-                <button class="dropdown-item" (click)="filterByWorkFlowType('Purchase Request')">Purchase
-                  Request</button>
+                <button type="button" class="dropdown-item" [class.active]="!statusTouched || selectedStatusLabel === 'All'" (click)="filterByWorkFlowType('All')">
+                  <span>All</span>
+                  <i *ngIf="!statusTouched || selectedStatusLabel === 'All'" class="ft ft-check chart-check-icon"></i>
+                </button>
+                <button type="button" class="dropdown-item" [class.active]="statusTouched && selectedStatusLabel === 'Sourcing Company Onboarding'" (click)="filterByWorkFlowType('Vendor Company Onboarding')">
+                  <span>Sourcing Company Onboarding</span>
+                  <i *ngIf="statusTouched && selectedStatusLabel === 'Sourcing Company Onboarding'" class="ft ft-check chart-check-icon"></i>
+                </button>
+                <button type="button" class="dropdown-item" [class.active]="statusTouched && selectedStatusLabel === 'Request for quotation'" (click)="filterByWorkFlowType('Request for quotation')">
+                  <span>Request for quotation</span>
+                  <i *ngIf="statusTouched && selectedStatusLabel === 'Request for quotation'" class="ft ft-check chart-check-icon"></i>
+                </button>
+                <button type="button" class="dropdown-item" [class.active]="statusTouched && selectedStatusLabel === 'Purchase Request'" (click)="filterByWorkFlowType('Purchase Request')">
+                  <span>Purchase Request</span>
+                  <i *ngIf="statusTouched && selectedStatusLabel === 'Purchase Request'" class="ft ft-check chart-check-icon"></i>
+                </button>
               </div>
             </div>
 
@@ -111,7 +119,7 @@
         </ngx-datatable-column>
 
         <!-- Sr No -->
-        <ngx-datatable-column name="Sr. No." [width]="50" [resizeable]="false">
+        <ngx-datatable-column name="Sr. No." [width]="90" [minWidth]="90" [canAutoResize]="false" [resizeable]="false">
           <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
             <span>{{ rowIndex + 1 }}</span>
           </ng-template>

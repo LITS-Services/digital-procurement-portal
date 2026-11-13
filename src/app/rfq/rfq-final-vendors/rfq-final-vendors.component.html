@@ -48,7 +48,7 @@
       [rowHeight]="'auto'" [scrollbarH]="true" [footerHeight]="50">
 
       <!-- Sr. No. -->
-      <ngx-datatable-column name="Sr. No." [width]="10" [sortable]="false">
+      <ngx-datatable-column name="Sr. No." [width]="90" [minWidth]="90" [canAutoResize]="false" [resizeable]="false" [sortable]="false">
         <ng-template let-rowIndex="rowIndex" let-row="row" ngx-datatable-cell-template>
           <span *ngIf="row.itemName !== 'Total'">{{rowIndex + 1}}</span>
         </ng-template>

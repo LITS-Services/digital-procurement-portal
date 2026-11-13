@@ -16,20 +16,20 @@
                 <div class="row">
                     <div class="col-md-12">
                         <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
-                            <i class="ft-arrow-left"></i>
-                        </button>
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
+            </button>
                         <span class="vl"></span>
 
                         <button type="submit" class="btn btn-sm cstm-ui-table-btn ml-2"
                             [disabled]="vendorOnboardingForm.invalid || receiverRows.length === 0"
                             *ngIf="mode !== 'Edit'" (click)="submitForm()">
-                            <i class="ft-plus"></i><label class="ml-1 mb-0 pointer">Save</label>
+                            <img src="assets/img/svg-icons/save-icon.svg" class="btn-action-icon" alt="" /><label class="mb-0 pointer">Save</label>
                         </button>
 
                         <button type="button" class="btn btn-sm cstm-ui-table-btn ml-2"
                             [disabled]="vendorOnboardingForm.invalid || receiverRows.length === 0"
                             *ngIf="mode === 'Edit'" (click)="updateForm()">
-                            <i class="ft-edit"></i><label class="ml-1 mb-0 pointer">Update</label>
+                            <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" /><label class="mb-0 pointer">Update</label>
                         </button>
                     </div>
                 </div>

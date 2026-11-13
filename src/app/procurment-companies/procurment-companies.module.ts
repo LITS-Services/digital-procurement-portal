@@ -21,6 +21,7 @@ import { ProcurmentCompaniesEditComponent } from './procurment-companies-edit/pr
 import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-resize.directive';
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
+import { CustomSelectDirective } from 'app/shared/directives/custom-select.directive';
 
 
 @NgModule({
@@ -51,7 +52,8 @@ import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-au
         NgxSpinnerModule,
         AutoResizeDatatableDirective,
         PermissionDirective,
-        DatatableAutoResizeDirective
+        DatatableAutoResizeDirective,
+        CustomSelectDirective
   ],
   schemas: [NO_ERRORS_SCHEMA]
 })

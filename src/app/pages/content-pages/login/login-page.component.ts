@@ -8,6 +8,7 @@ import { ToastrService } from 'ngx-toastr';
 import { environment } from 'environments/environment';
 import { LoginTurnstileProtectionService } from 'app/shared/auth/login-turnstile-protection.service';
 import { Subscription, interval } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login-page',
@@ -19,6 +20,7 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   loginFormSubmitted = false;
   isLoginFailed = false;
+  isSubmitting = false;
   isSSOLoading = false;
   errorMessage = '';
   hidePassword: boolean = true;
@@ -33,6 +35,7 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
   private loadErrSub?: Subscription;
   private lockoutTickSub?: Subscription;
   private blockedUntilMs = 0;
+  private formSub?: Subscription;
 
   loginForm = new UntypedFormGroup({
     username: new UntypedFormControl('', [Validators.required]),
@@ -59,6 +62,13 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
     });
     this.loadErrSub = this.turnstileProtection.turnstileLoadError$.subscribe(err => {
       this.turnstileLoadError = err ?? '';
+    });
+
+    this.formSub = this.loginForm.valueChanges.subscribe(() => {
+      if (this.isLoginFailed) {
+        this.isLoginFailed = false;
+        this.cdr.markForCheck();
+      }
     });
 
     this.authService.getCaptchaConfig().subscribe(cfg => {
@@ -124,6 +134,7 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.isLoginFailed = true;
       this.errorMessage = error;
       console.error('❌ Azure SSO error:', error);
+      this.toastr.error(this.errorMessage);
       this.cdr.detectChanges();
       return;
     }
@@ -139,6 +150,7 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
   ngOnDestroy(): void {
     this.tokenSub?.unsubscribe();
     this.loadErrSub?.unsubscribe();
+    this.formSub?.unsubscribe();
     this.clearLockoutCountdown();
     this.turnstileProtection.teardownOnNoCaptchaNeeded();
   }
@@ -194,7 +206,10 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   // 🔹 Normal login
   onSubmit() {
+    if (this.isSubmitting) return;
+
     this.loginFormSubmitted = true;
+    this.isLoginFailed = false;
     // captcha
     // if (this.loginForm.controls['recaptchaReactive'].invalid) {
     //   this.toastr.warning('Please verify the CAPTCHA to proceed.');
@@ -208,19 +223,26 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
       return;
     }
 
+    this.isSubmitting = true;
     this.spinner.show();
 
     this.authService.signinUser(
       this.loginForm.value.username,
       this.loginForm.value.password,
       this.turnstileToken
+    ).pipe(
+      finalize(() => {
+        this.isSubmitting = false;
+        this.spinner.hide();
+        this.cdr.detectChanges();
+      })
     ).subscribe(
       (res: any) => {
-        this.spinner.hide();
         this.turnstileProtection.recordLoginSuccess();
         if (!this.authService.isAuthenticated()) {
           this.isLoginFailed = true;
           this.errorMessage = 'Login succeeded but the session was not stored. Please try again.';
+          this.toastr.error(this.errorMessage);
           this.cdr.detectChanges();
           return;
         }
@@ -229,7 +251,6 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
       },
       (err: any) => {
         this.isLoginFailed = true;
-        this.spinner.hide();
         const body = err?.error;
         this.captchaRequired = !!body?.captchaRequired;
         this.isLocked = !!body?.isBlocked || err?.status === 429;
@@ -242,6 +263,7 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
           this.clearLockoutCountdown();
           this.errorMessage = raw || 'Invalid username or password';
         }
+        this.toastr.error(this.errorMessage);
         if (this.captchaRequired || this.turnstileVisible) {
           this.showTurnstile();
           this.turnstileProtection.resetTurnstile('#turnstile-container');
@@ -268,6 +290,7 @@ export class LoginPageComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.isSSOLoading = false;
         this.errorMessage = 'Failed to connect to Microsoft SSO service.';
         this.isLoginFailed = true;
+        this.toastr.error(this.errorMessage);
         console.error('❌ SSO connection failed');
         this.cdr.detectChanges();
       }

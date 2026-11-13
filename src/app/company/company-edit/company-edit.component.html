@@ -30,7 +30,7 @@
         <div class="row">
           <div class="col-md-6">
             <button class="btn btn-lg mr-1" type="button" (click)="goBack()">
-              <i class="ft-arrow-left"></i>
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
             </button>
             <span class="vl"></span>
 
@@ -52,14 +52,14 @@
             <button *ngIf="!isAssigned && workflowMasterId != 0 && mainApproverId == currentUserId"
               class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
               (click)="onActions('SendBackFromApproval')">
-              <i class="ft-arrow-left"></i>
-              <label class="ml-1">Sendback</label>
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-action-icon btn-back-icon" alt="" />
+              <label>Sendback</label>
             </button>
 
             <button *ngIf="isAssigned && mainApproverId == currentUserId" class="btn btn-sm cstm-ui-table-btn"
               [disabled]="!companyId || isSubmitting" (click)="onActions('sendforapproval')">
-              <i class="ft-check"></i>
-              <label class="ml-1">Submit for Approval</label>
+              <img src="assets/img/svg-icons/Submit_icon.svg" class="btn-action-icon" alt="" />
+              <label>Submit for Approval</label>
             </button>
 
 
@@ -75,14 +75,14 @@
             <button *ngIf="(isAssigned || workflowMasterId != 0) && mainApproverId == currentUserId"
               class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
               (click)="onActions('Rejected')">
-              <i class="ft-x"></i>
-              <label class="ml-1">Reject</label>
+              <img src="assets/img/svg-icons/cancel-icon.svg" class="btn-action-icon" alt="" />
+              <label>Reject</label>
             </button>
 
             <button *ngIf="isAssigned && workflowMasterId == 0 && mainApproverId == currentUserId"
               class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
               (click)="onActions('SendBack')">
-              <i class="ft-arrow-left"></i>
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-action-icon btn-back-icon" alt="" />
               <label class="ml-1">Send Back</label>
             </button>
 

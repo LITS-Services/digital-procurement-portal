@@ -6,21 +6,21 @@
         <!-- Back Button -->
         <div>
           <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
-            <i class="ft-arrow-left"></i>
-          </button>
+                <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
+              </button>
 
           <span class="vl"></span>
 
           <!-- Reset Button -->
           <button *ngIf="!isEditMode" type="button" class="btn btn-sm cstm-ui-table-btn ms-2" (click)="resetForm()">
-            <label class="ft-refresh-ccw"> Reset</label>
+            <img src="assets/img/svg-icons/Sync_icon.svg" class="btn-action-icon" alt="" /><label>Reset</label>
           </button>
 
           <!-- Save / Update Button -->
           <button type="button" class="btn btn-sm cstm-ui-table-btn ms-2" (click)="saveEmailTemplate()">
-            <i class="ft-save"></i>
-            <label class="ml-1">
-              <span class="ms-1">{{ isEditMode ? 'Update' : 'Save' }}</span>
+            <img [src]="isEditMode ? 'assets/img/svg-icons/update-icon.svg' : 'assets/img/svg-icons/save-icon.svg'" class="btn-action-icon" alt="" />
+            <label>
+              <span>{{ isEditMode ? 'Update' : 'Save' }}</span>
             </label>
           </button>
         </div>
@@ -50,18 +50,20 @@
         <div class="col-md-3 mb-3 position-relative">
           <label class="form-label">Action <span class="text-danger">*</span></label>
 
-          <div ngbDropdown class="w-100">
+          <div ngbDropdown class="w-100 app-ngb-select">
             <button ngbDropdownToggle type="button"
-              class="form-control text-start d-flex justify-content-between align-items-center" [disabled]="isEditMode"
+              class="form-control custom-input text-start d-flex justify-content-between align-items-center" [disabled]="isEditMode"
               [ngClass]="{ 'is-invalid': submitted && f['emailActionId'].errors }" style="cursor: pointer;">
-              {{ selectedAction?.description || 'Select Action' }}
-              <!-- <span class="dropdown-arrow">&#9662;</span> -->
+              <span class="app-select-trigger__text">{{ selectedAction?.description || 'Select Action' }}</span>
+              <i class="ft ft-chevron-down app-select-trigger__icon"></i>
             </button>
 
             <div ngbDropdownMenu class="w-100 custom-dropdown">
-              <div *ngFor="let action of actionOptions" class="dropdown-item" (click)="selectAction(action)">
-                {{ action.description }}
-              </div>
+              <button type="button" *ngFor="let action of actionOptions" class="dropdown-item"
+                [class.active]="selectedAction?.id === action.id" (click)="selectAction(action)">
+                <span>{{ action.description }}</span>
+                <i *ngIf="selectedAction?.id === action.id" class="ft ft-check chart-check-icon"></i>
+              </button>
             </div>
           </div>
 
@@ -74,18 +76,20 @@
         <div class="col-md-3 mb-3 position-relative">
           <label class="form-label">Entity</label>
 
-          <div ngbDropdown class="w-100">
+          <div ngbDropdown class="w-100 app-ngb-select">
             <button ngbDropdownToggle type="button"
-              class="form-control text-start d-flex justify-content-between align-items-center" [disabled]="isEditMode"
+              class="form-control custom-input text-start d-flex justify-content-between align-items-center" [disabled]="isEditMode"
               [ngClass]="{ 'is-invalid': submitted && f['procurementCompanyId'].errors }" style="cursor: pointer;">
-              {{ selectedCompany?.description || 'Select Company' }}
-              <!-- <span class="dropdown-arrow">&#9662;</span> -->
+              <span class="app-select-trigger__text">{{ selectedCompany?.description || 'Select Company' }}</span>
+              <i class="ft ft-chevron-down app-select-trigger__icon"></i>
             </button>
 
             <div ngbDropdownMenu class="w-100 custom-dropdown">
-              <div *ngFor="let company of companies" class="dropdown-item" (click)="selectCompany(company)">
-                {{ company.description }}
-              </div>
+              <button type="button" *ngFor="let company of companies" class="dropdown-item"
+                [class.active]="selectedCompany?.id === company.id" (click)="selectCompany(company)">
+                <span>{{ company.description }}</span>
+                <i *ngIf="selectedCompany?.id === company.id" class="ft ft-check chart-check-icon"></i>
+              </button>
             </div>
           </div>
 
@@ -98,18 +102,20 @@
         <div class="col-md-3 mb-3 position-relative">
           <label class="form-label">Type <span class="text-danger">*</span></label>
 
-          <div ngbDropdown class="w-100">
+          <div ngbDropdown class="w-100 app-ngb-select">
             <button ngbDropdownToggle type="button"
-              class="form-control text-start d-flex justify-content-between align-items-center" [disabled]="isEditMode"
+              class="form-control custom-input text-start d-flex justify-content-between align-items-center" [disabled]="isEditMode"
               [ngClass]="{ 'is-invalid': submitted && f['workFlowTypeId'].errors }" style="cursor: pointer;">
-              {{ selectedType?.description || 'Select Type' }}
-              <!-- <span class="dropdown-arrow">&#9662;</span> -->
+              <span class="app-select-trigger__text">{{ selectedType?.description || 'Select Type' }}</span>
+              <i class="ft ft-chevron-down app-select-trigger__icon"></i>
             </button>
 
             <div ngbDropdownMenu class="w-100 custom-dropdown">
-              <div *ngFor="let type of workFlowTypes" class="dropdown-item" (click)="selectType(type)">
-                {{ type.description }}
-              </div>
+              <button type="button" *ngFor="let type of workFlowTypes" class="dropdown-item"
+                [class.active]="selectedType?.id === type.id" (click)="selectType(type)">
+                <span>{{ type.description }}</span>
+                <i *ngIf="selectedType?.id === type.id" class="ft ft-check chart-check-icon"></i>
+              </button>
             </div>
           </div>
 

@@ -26,7 +26,7 @@
         <div class="row align-items-center" *ngIf="!loading">
           <div class="col-md-6 col-6 cstm-action-bar">
             <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
-              <i class="ft-arrow-left"></i>
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
             </button>
 
             <span class="vl"></span>
@@ -35,18 +35,18 @@
             <ng-container *ngIf="isNewForm && !viewMode">
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="newPurchaseRequestForm.invalid"
                 (click)="submitForm()">
-                <i class="ft-plus"></i><label class="ml-1 btn-label">Save</label>
+                <img src="assets/img/svg-icons/save-icon.svg" class="btn-action-icon" alt="" /><label class="btn-label">Save</label>
               </button>
 
               <button class="btn btn-sm cstm-ui-table-btn" (click)="saveAsDraftAndGoBack()">
-                <i class="ft-save"></i><label class="ml-1 btn-label">Save as Draft</label>
+                <img src="assets/img/svg-icons/draft-icon.svg" class="btn-action-icon" alt="" /><label class="btn-label">Save as Draft</label>
               </button>
             </ng-container>
 
             <!-- Edit Draft Mode: keep both Update and Save as Draft -->
             <ng-container *ngIf="!isNewForm && !viewMode && !isSelectingFinalVendor && isStatusDraft">
               <button class="btn btn-sm cstm-ui-table-btn" (click)="saveAsDraftAndGoBack()">
-                <i class="ft-save"></i><label class="ml-1 btn-label">Save as Draft</label>
+                <img src="assets/img/svg-icons/draft-icon.svg" class="btn-action-icon" alt="" /><label class="btn-label">Save as Draft</label>
               </button>
             </ng-container>
 
@@ -55,22 +55,22 @@
               <button *ngIf="!isNewForm && !isSelectingFinalVendor" class="btn btn-sm cstm-ui-table-btn"
                 [disabled]="newPurchaseRequestForm.invalid || (isStatusCompleted && !isSelectingFinalVendor) || !isSubmitter || isStatusInProgress"
                 (click)="submitForm()">
-                <i class="ft-edit-2"></i><label class="ml-1 btn-label">Update</label>
+                <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" /><label class="btn-label">Update</label>
               </button>
 
               <button *ngIf="isSelectingFinalVendor" class="btn btn-sm cstm-ui-table-btn"
                 (click)="onPOButtonClick(selectedRow)">
-                <i class="ft-plus"></i>
-                <label class="ml-1 btn-label">{{ useRequestPOMode ? 'Request PO' : 'Create PO' }}</label>
+                <img src="assets/img/svg-icons/create-icon.svg" class="btn-action-icon" alt="" />
+                <label class="btn-label">{{ useRequestPOMode ? 'Request PO' : 'Create PO' }}</label>
               </button>
             </ng-container>
 
             <!-- Submit for approval -->
             <ng-container *ngIf="viewMode && isSubmitter">
-              <button class="btn btn-sm"
+              <button class="btn btn-sm cstm-ui-table-btn"
                 [disabled]="newPurchaseRequestForm.invalid || isStatusCompleted || isStatusRejected || isStatusInProgress || isStatusDraft"
                 (click)="onSubmitForApproval()">
-                <i class="ft-edit-2"></i><label class="ml-1 btn-label">Submit For Approval</label>
+                <img src="assets/img/svg-icons/Submit_icon.svg" class="btn-action-icon" alt="" /><label class="btn-label">Submit For Approval</label>
               </button>
             </ng-container>
 
@@ -83,12 +83,12 @@
 
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || !isMainApprover"
                 (click)="onAddRemarks('Reject')">
-                <i class="ft-x"></i><label class="ml-1 btn-label">Reject</label>
+                <img src="assets/img/svg-icons/cancel-icon.svg" class="btn-action-icon" alt="" /><label class="btn-label">Reject</label>
               </button>
 
               <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || !isMainApprover"
                 (click)="onAddRemarks('SendBack')">
-                <i class="ft-arrow-left"></i><label class="ml-1 btn-label">Send Back</label>
+                <img src="assets/img/svg-icons/back-icon.svg" class="btn-action-icon btn-back-icon" alt="" /><label class="btn-label">Send Back</label>
               </button>
             </ng-container>
           </div>
@@ -804,7 +804,7 @@
                 [columnMode]="'flex'" [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5"
                 [scrollbarH]="true" (activate)="selectRow($event.row)">
 
-                <ngx-datatable-column name="Sr. No." [minWidth]="70" [flexGrow]="0.7">
+                <ngx-datatable-column name="Sr. No." [minWidth]="90" [flexGrow]="0.7">
                   <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
                     <span>{{ rowIndex + 1 }}</span>
                   </ng-template>

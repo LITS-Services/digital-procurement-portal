@@ -104,3 +104,49 @@ html body.layout-dark {
     }
   }
 }
+
+
+// --------------------------------------------------
+// SweetAlert2 RTL & Internationalization Styles
+// --------------------------------------------------
+html[dir="rtl"] .swal2-container,
+body.rtl .swal2-container,
+.swal2-rtl-container,
+.swal2-container .swal2-popup.swal2-rtl {
+  direction: rtl;
+
+  .swal2-popup {
+    direction: rtl;
+    text-align: right;
+    font-family: inherit;
+  }
+
+  .swal2-title {
+    direction: rtl;
+    text-align: center;
+    unicode-bidi: embed;
+  }
+
+  .swal2-html-container {
+    direction: rtl;
+    text-align: center;
+    unicode-bidi: embed;
+  }
+
+  .swal2-actions {
+    flex-direction: row-reverse;
+    justify-content: center;
+    gap: 12px;
+
+    .swal2-confirm,
+    .swal2-cancel,
+    .swal2-deny {
+      margin: 0;
+    }
+  }
+
+  .swal2-close {
+    left: 8px;
+    right: auto;
+  }
+}

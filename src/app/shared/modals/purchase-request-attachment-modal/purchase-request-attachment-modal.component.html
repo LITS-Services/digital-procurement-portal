@@ -70,9 +70,9 @@
       </div> -->
       <div class="col-12 form-group mt-3" *ngIf="uploadedFiles.length > 0">
         <ngx-datatable class="bootstrap core-bootstrap" [rows]="uploadedFiles" [columnMode]="'standard'"
-          [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5">
+          [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5" [scrollbarH]="true">
 
-          <ngx-datatable-column name="Sr. No.">
+          <ngx-datatable-column name="Sr. No." [width]="90" [minWidth]="90">
             <ng-template let-rowIndex="rowIndex" let-value="value" ngx-datatable-cell-template>
               <span>{{rowIndex + 1}}</span>
             </ng-template>

@@ -63,6 +63,45 @@
         margin-left: $menu-expanded-width-lg;
       }
     }
+
+    // RTL / Arabic Layout Support
+    html[dir="rtl"] &,
+    html.rtl &,
+    body.rtl &,
+    [dir="rtl"] & {
+      .main-panel .main-content,
+      footer.footer {
+        margin-right: $menu-expanded-width;
+        margin-left: 0 !important;
+      }
+
+      &.sidebar-lg {
+        .navbar,
+        .main-panel .main-content,
+        footer.footer {
+          margin-right: $menu-expanded-width-lg;
+          margin-left: 0 !important;
+        }
+      }
+
+      &.sidebar-sm {
+        .navbar,
+        .main-panel .main-content,
+        footer.footer {
+          margin-right: $menu-expanded-width-sm;
+          margin-left: 0 !important;
+        }
+      }
+
+      &.nav-collapsed {
+        .navbar,
+        .main-panel .main-content,
+        footer.footer {
+          margin-right: $menu-collapsed-width;
+          margin-left: 0 !important;
+        }
+      }
+    }
   }
   footer.footer {
     margin-top: 10px !important;

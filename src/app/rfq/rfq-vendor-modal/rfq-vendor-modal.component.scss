@@ -80,8 +80,9 @@
        height: auto !important;
     }
 
-    .modal-body{
-        padding: 0 !important;
+    .modal-body.vendor-picker {
+        padding: 16px !important;
+        border-radius: 10px;
     }
 
 

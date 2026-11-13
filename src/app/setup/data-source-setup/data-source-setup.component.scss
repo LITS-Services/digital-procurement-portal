@@ -113,13 +113,13 @@
 }
 
 .status-active {
-  background: #ecfdf5;
-  color: #047857;
+  background: #D3FAE6BF;
+  color: #036147;
 }
 
 .status-inactive {
-  background: #f3f4f6;
-  color: #6b7280;
+  background: #9CA3AF1C;
+  color: #6C757D;
 }
 
 /* Modal UI improvements */
@@ -293,29 +293,32 @@
   /* Dropdown Panel rendering */
   .data-source-modal .ng-dropdown-panel {
     z-index: 1070 !important;
-    border-radius: 8px !important;
+    border-radius: 10px !important;
     border: 1px solid #e5e7eb !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04) !important;
     background: #ffffff !important;
+    padding: 6px !important;
 
     .ng-dropdown-panel-items {
       max-height: 220px !important;
 
       .ng-option {
-        padding: 9px 12px !important;
+        padding: 7px 10px !important;
+        border-radius: 6px !important;
         cursor: pointer !important;
 
         &.ng-option-marked {
-          background-color: #eff6ff !important;
-          color: #1d4ed8 !important;
+          background-color: #f3f4f6 !important;
+          color: #111827 !important;
         }
 
         &.ng-option-selected {
-          background-color: #2563eb !important;
-          color: #fff !important;
+          background-color: #eff6ff !important;
+          color: #116aef !important;
+          font-weight: 600 !important;
 
           .text-muted {
-            color: rgba(255, 255, 255, 0.75) !important;
+            color: #4b5563 !important;
           }
         }
       }

@@ -173,8 +173,7 @@ body {
 }
 
 .app-sidebar {
-  // font-family: $font-family-base;
-  font-family: "Poppins", sans-serif;
+  font-family: "Onest", sans-serif;
   position: fixed;
   top: 0;
   bottom: 0;
@@ -200,7 +199,53 @@ body {
     z-index: 4;
 
     &.collapsed {
-      padding-top: 80px;
+      padding-top: 64px;
+
+      .navigation li {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+
+        >a {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          padding: 0 !important;
+          margin: 0 auto 6px auto !important;
+          width: 48px !important;
+          height: 44px !important;
+          min-height: 44px !important;
+          box-sizing: border-box !important;
+
+          i {
+            float: none;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: auto;
+            height: auto;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1 !important;
+
+            &.sidebar-icon-svg {
+              display: inline-block !important;
+              width: 22px !important;
+              height: 22px !important;
+              min-width: 22px !important;
+              min-height: 22px !important;
+              margin: 0 !important;
+              flex-shrink: 0 !important;
+              background-color: currentColor !important;
+            }
+          }
+        }
+      }
     }
 
     // Perfect Scrollbar
@@ -228,63 +273,75 @@ body {
   .logo-img {
     width: auto;
     display: inline-block;
-    max-height: 50px;
+    max-height: none;
     margin-right: 15px;
   }
 
   .navigation {
     margin-bottom: 0;
     padding-left: 0;
+    padding-right: 0;
     list-style: none;
+    width: 100%;
 
     li {
       position: relative;
       display: block;
+      width: 100%;
 
       &.has-sub {
+        >a {
+          position: relative;
+          padding-right: 36px;
+          margin-bottom: 6px !important;
+        }
+
         >a:after {
           content: "\e844";
           font-family: "feather";
           font-size: 1.2rem;
-          display: inline-block;
+          line-height: 1;
+          width: 1.2rem;
+          height: 1.2rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
           position: absolute;
-          right: 26px;
-          top: 10px;
-          -webkit-transform: rotate(0);
-          -moz-transform: rotate(0);
-          -ms-transform: rotate(0);
-          -o-transform: rotate(0);
-          transform: rotate(0);
-          transition: all 200ms linear;
-        }
-
-        >a {
-          margin-bottom: 0;
+          right: 12px;
+          top: 50%;
+          -webkit-transform: translateY(-50%) rotate(0);
+          -moz-transform: translateY(-50%) rotate(0);
+          -ms-transform: translateY(-50%) rotate(0);
+          -o-transform: translateY(-50%) rotate(0);
+          transform: translateY(-50%) rotate(0);
+          transition: transform 200ms linear;
         }
       }
 
       &.open {
         >a:after {
-          -webkit-transform: rotate(90deg);
-          -moz-transform: rotate(90deg);
-          -ms-transform: rotate(90deg);
-          -o-transform: rotate(90deg);
-          transform: rotate(90deg);
+          -webkit-transform: translateY(-50%) rotate(90deg);
+          -moz-transform: translateY(-50%) rotate(90deg);
+          -ms-transform: translateY(-50%) rotate(90deg);
+          -o-transform: translateY(-50%) rotate(90deg);
+          transform: translateY(-50%) rotate(90deg);
         }
       }
 
       >a {
-        display: block;
+        display: flex;
+        align-items: center;
         overflow: hidden;
         line-height: $font-size-base * 2;
-        margin: 0px 6px 6px 6px !important;
-        padding: 10px 0px 10px 8px;
+        margin: 0px 12px 6px 12px !important;
+        padding: 6px 14px;
         background-color: transparent;
         color: $white;
         transition: all 300ms linear;
         white-space: nowrap;
-        overflow: hidden;
         text-overflow: ellipsis;
+        border-radius: 10px;
+        box-sizing: border-box;
       }
 
       &:not(.open) {
@@ -294,12 +351,18 @@ body {
       }
 
       // Hover the row's own link only — not the parent when a child is hovered.
-      > a:hover,
-      &.active > a {
-        background: white;
-        border-radius: 10px;
+      >a:hover,
+      >a.collapsed-trigger-open,
+      >a.collapsed-parent-active,
+      &.active>a {
+        background: white !important;
+        border-radius: 10px !important;
         color: #116AEF !important;
         font-weight: 500;
+
+        i.sidebar-icon-svg {
+          opacity: 1;
+        }
       }
 
       &.active {
@@ -316,8 +379,14 @@ body {
 
         li {
           a {
-            display: block;
-            padding: 8px 18px 8px 40px;
+            display: flex;
+            align-items: center;
+            padding: 8px 18px 8px 26px;
+
+            i.sidebar-icon-svg {
+              width: 18px;
+              height: 18px;
+            }
           }
 
           ul {
@@ -358,16 +427,40 @@ body {
 
     i {
       font-size: 1.2rem;
-      float: left;
-      margin-right: 10px;
-      line-height: 2rem;
-      width: 30px;
+      float: none;
+      margin-right: 12px;
+      margin-left: 0;
+      line-height: 1;
+      width: 22px;
       text-align: center;
-      opacity: 0.8;
+      opacity: 0.9;
+      flex-shrink: 0;
 
       &.submenu-icon {
         font-size: 0.8rem;
         width: inherit;
+      }
+
+      &.sidebar-icon-svg {
+        display: inline-block;
+        width: 22px;
+        height: 22px;
+        margin-left: 0;
+        margin-right: 12px;
+        margin-top: 0;
+        margin-bottom: 0;
+        flex-shrink: 0;
+        background-color: currentColor;
+        -webkit-mask-image: var(--svg-icon);
+        mask-image: var(--svg-icon);
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        opacity: 0.95;
+        transition: opacity 0.2s ease, background-color 0.2s ease;
       }
     }
   }
@@ -398,9 +491,9 @@ body {
 
   .logo {
     position: relative;
-    padding: 0.5rem 0 0.5rem .95rem;
+    padding: 0.5rem 0 0 .95rem;
     z-index: 4;
-    margin-bottom: 25px;
+    margin-bottom: 0px !important;
 
     p {
       float: left;
@@ -408,7 +501,7 @@ body {
       margin: 10px 10px;
       color: $white;
       line-height: 20px;
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-family: "Onest", sans-serif;
     }
 
     .logo-text {
@@ -511,6 +604,21 @@ body {
   &.menu-native-scroll {
     .main-menu-content {
       overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+
+      &::-webkit-scrollbar {
+        width: 5px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 4px;
+      }
     }
   }
 }
@@ -518,8 +626,7 @@ body {
 
 @media (min-width: 1921px) {
   .app-sidebar .navigation li>a {
-    margin: 0 4px 6px 6px !important;
-    /* your custom margin here */
+    margin: 0 12px 6px 12px !important;
   }
 }
 
@@ -546,22 +653,43 @@ body {
 .sidebar-header {
   z-index: 1001;
   position: relative;
+  margin-bottom: 14px;
+
+  body.nav-collapsed & {
+    margin-bottom: 8px;
+
+    .logo {
+      display: flex;
+      justify-content: center;
+      padding: 0.5rem 0 0 0 !important;
+    }
+
+    .logo-text {
+      float: none !important;
+      padding: 0;
+    }
+  }
 
   .logo-img {
     width: auto;
     display: inline-block;
-    max-height: 50px;
+    max-height: none;
     margin-right: 15px;
+
+    body.nav-collapsed & {
+      margin-right: 0;
+    }
 
     .sidebar-logo {
       margin-left: 9px;
-      margin-top: 15px;
-      margin-bottom: 10px;
+      margin-top: 14px;
+      margin-bottom: 0px !important;
       transition: width 0.3s ease;
       width: 96px;
 
       body.nav-collapsed & {
         width: 36px;
+        margin-left: 0;
       }
     }
   }
@@ -574,7 +702,7 @@ body {
     width: 32px;
     height: 32px;
     right: 15px;
-    top: 32px;
+    top: 24px;
     border-radius: 6px;
     background-color: transparent;
     transition: all 0.3s cubic-bezier(0, 0, 0.2, 1);
@@ -588,13 +716,14 @@ body {
     &.nav-toggle-collapsed {
       background-color: transparent;
       border-radius: 10px;
-      width: 56px;
-      height: 48px;
-      top: 100px;
-      right: 6px;
+      width: 48px;
+      height: 44px;
+      top: 64px;
+      right: 10px;
 
       &:hover {
         background-color: #fff;
+
         .toggle-icon img {
           filter: invert(34%) sepia(91%) saturate(2256%) hue-rotate(205deg) brightness(97%) contrast(92%);
         }
@@ -614,6 +743,7 @@ body {
     justify-content: center;
     width: 100%;
     height: 100%;
+
     img {
       width: 24px;
       height: 24px;

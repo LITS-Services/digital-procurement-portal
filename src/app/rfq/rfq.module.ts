@@ -31,6 +31,7 @@ import { RfqFinalVendorsComponent } from './rfq-final-vendors/rfq-final-vendors.
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
 import { NgxIntlTelInputComponent, NgxIntlTelInputModule } from 'ngx-intl-tel-input';
+import { CustomSelectDirective } from 'app/shared/directives/custom-select.directive';
 
 
 @NgModule({
@@ -71,7 +72,8 @@ import { NgxIntlTelInputComponent, NgxIntlTelInputModule } from 'ngx-intl-tel-in
     AutoResizeDatatableDirective,
     DatatableAutoResizeDirective,
     PermissionDirective,
-    NgxIntlTelInputModule
+    NgxIntlTelInputModule,
+    CustomSelectDirective
 ],
 schemas: [NO_ERRORS_SCHEMA]
 })

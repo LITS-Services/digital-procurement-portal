@@ -8,6 +8,7 @@ import { MatchHeightModule } from "../shared/directives/match-height.directive";
 
 import { AdvancedCardsComponent } from "./advanced/advanced-cards.component";
 import { BasicCardsComponent } from "./basic/basic-cards.component";
+import { CustomSelectDirective } from 'app/shared/directives/custom-select.directive';
 
 @NgModule({
     imports: [
@@ -15,7 +16,8 @@ import { BasicCardsComponent } from "./basic/basic-cards.component";
         CardsRoutingModule,
         NgxChartsModule,
         NgbModule,
-        MatchHeightModule
+        MatchHeightModule,
+        CustomSelectDirective
     ],
     declarations: [
         BasicCardsComponent,

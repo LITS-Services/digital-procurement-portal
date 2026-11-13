@@ -16,7 +16,7 @@
 
             <div class="position-relative">
               <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
-                <i class="ft-arrow-left"></i>
+                <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
               </button>
 
               <span class="vl"></span>
@@ -39,7 +39,8 @@
             </div>
             <div class="d-flex align-items-center">
                             <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="toggleFilterBar()">
-                                <i class="ft-sliders"></i><label class="ml-1 btn-label">Filter</label>
+                                <img src="assets/img/svg-icons/filter-icon.svg" class="btn-action-icon" alt="" />
+                <label class="btn-label">Filter</label>
                             </button>
                         </div>
 
@@ -68,7 +69,7 @@
 
 
         <!-- Sr. No -->
-        <ngx-datatable-column name="Sr. No." [width]="60" [canAutoResize]="false" [resizeable]="false" [sortable]="false">
+        <ngx-datatable-column name="Sr. No." [width]="90" [minWidth]="90" [canAutoResize]="false" [resizeable]="false" [sortable]="false">
           <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
             <span>{{ rowIndex + 1 }}</span>
           </ng-template>
@@ -81,14 +82,14 @@
                     </a>
                 </ng-template>
             </ngx-datatable-column>
-        <ngx-datatable-column name="Status" prop="requestStatus"  [flexGrow]="1" [minWidth]="100" [sortable]="false">
+        <ngx-datatable-column name="Status" prop="requestStatus" [flexGrow]="1" [minWidth]="120" [sortable]="false">
           <ng-template ngx-datatable-cell-template let-row="row">
             <span [ngClass]="row.statusClass">
               {{ row.requestStatus }}
             </span>
           </ng-template>
         </ngx-datatable-column>
-        <ngx-datatable-column name="Date" prop="submittedDate" [flexGrow]="1" [minWidth]="100" [sortable]="false">
+        <ngx-datatable-column name="Date" prop="submittedDate" [flexGrow]="1" [minWidth]="120" [sortable]="false">
           <ng-template let-row="row" ngx-datatable-cell-template>
             {{ row.submittedDate | date:'yyyy-MM-dd' }}
           </ng-template>

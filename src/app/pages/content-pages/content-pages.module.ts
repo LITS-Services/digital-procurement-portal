@@ -18,6 +18,7 @@ import { TranslateHttpLoader, TRANSLATE_HTTP_LOADER_CONFIG } from '@ngx-translat
 import { MainLayoutComponent } from './main-layout/main-layout.component';
 import { NgOtpInputModule } from 'ng-otp-input';
 import { NgHcaptchaModule } from 'ng-hcaptcha';
+import { CustomSelectDirective } from 'app/shared/directives/custom-select.directive';
 
 
 @NgModule({
@@ -41,7 +42,8 @@ import { NgHcaptchaModule } from 'ng-hcaptcha';
         useClass: TranslateHttpLoader
       }
     }),
-    NgxSpinnerModule
+    NgxSpinnerModule,
+    CustomSelectDirective
   ],
   declarations: [
     ComingSoonPageComponent,

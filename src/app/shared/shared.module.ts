@@ -37,6 +37,7 @@ import { PurchaseRequestExceptionPolicyComponent } from './modals/purchase-reque
 import { MatMenuModule } from '@angular/material/menu';
 import { HasPermissionDirective } from './auth/has-permission.directive';
 import { PermissionDirective } from './permissions/permission.directive';
+import { CustomSelectDirective } from './directives/custom-select.directive';
 
 @NgModule({
     exports: [
@@ -54,6 +55,7 @@ import { PermissionDirective } from './permissions/permission.directive';
         TranslateModule,
         HasPermissionDirective,
         PermissionDirective,
+        CustomSelectDirective,
     ],
     imports: [
         RouterModule,
@@ -72,6 +74,7 @@ import { PermissionDirective } from './permissions/permission.directive';
         MatMenuModule,
         HasPermissionDirective,
         PermissionDirective,
+        CustomSelectDirective,
     ],
     declarations: [
         FooterComponent,

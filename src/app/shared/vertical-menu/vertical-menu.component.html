@@ -1,5 +1,5 @@
 <!-- Sidebar Header starts -->
-<div class="sidebar-header mb-2" *ngIf="config?.layout.menuPosition === 'Side'">
+<div class="sidebar-header" *ngIf="config?.layout.menuPosition === 'Side'">
   <div class="logo clearfix">
     <a class="logo-text float-left">
       <div class="logo-img">
@@ -17,7 +17,7 @@
   <a class="nav-toggle d-none d-lg-none d-xl-block" id="sidebarToggle" href="javascript:;" (click)="toggleSidebar()"
     [class.nav-toggle-collapsed]="config.layout.sidebar.collapsed">
     <span class="toggle-icon">
-      <img [src]="config.layout.sidebar.collapsed ? 'assets/img/icons/Open.png' : 'assets/img/icons/Collaps.png'" />
+      <img [src]="config.layout.sidebar.collapsed ? 'assets/img/sidebar-icons/Open.svg' : 'assets/img/sidebar-icons/Collaps.svg'" />
     </span>
   </a>
 </div>
@@ -43,7 +43,8 @@
         <a appSidebarAnchorToggle
           *ngIf="menuItem.submenu.length > 0 && !menuItem.isExternalLink && !config.layout.sidebar.collapsed"
           [ngbTooltip]="null" triggers="mouseenter:mouseleave">
-          <i [ngClass]="[menuItem.icon]"></i>
+          <i *ngIf="!isSvg(menuItem.icon)" [ngClass]="[menuItem.icon]"></i>
+          <i *ngIf="isSvg(menuItem.icon)" class="sidebar-icon-svg" [style.--svg-icon]="getIconMaskUrl(menuItem.icon)"></i>
 
           <span class="menu-title">
             {{ menuItem.title | translate }}
@@ -52,20 +53,47 @@
 
         <a class="collapsed-has-sub"
           *ngIf="menuItem.submenu.length > 0 && !menuItem.isExternalLink && config.layout.sidebar.collapsed"
-          [matMenuTriggerFor]="collapsedMenu" (click)="$event.preventDefault(); $event.stopPropagation();"
-          [ngbTooltip]="menuItem.title | translate" triggers="mouseenter:mouseleave" container="body" placement="right"
+          #collapsedMenuTrigger="matMenuTrigger"
+          #collapsedTooltip="ngbTooltip"
+          [matMenuTriggerFor]="collapsedMenu"
+          [class.collapsed-trigger-open]="collapsedMenuTrigger.menuOpen"
+          [class.collapsed-parent-active]="isMenuParentActive(menuItem)"
+          (menuOpened)="collapsedTooltip.close()"
+          (click)="$event.preventDefault(); $event.stopPropagation();"
+          [ngbTooltip]="collapsedMenuTrigger.menuOpen ? null : (menuItem.title | translate)"
+          triggers="mouseenter:mouseleave" container="body" [placement]="tooltipPlacement"
           tooltipClass="sidebar-collapsed-tooltip">
-          <i [ngClass]="[menuItem.icon]"></i>
+          <i *ngIf="!isSvg(menuItem.icon)" [ngClass]="[menuItem.icon]"></i>
+          <i *ngIf="isSvg(menuItem.icon)" class="sidebar-icon-svg" [style.--svg-icon]="getIconMaskUrl(menuItem.icon)"></i>
           <span class="submenu-dot"></span>
         </a>
 
         <!-- COLLAPSED SIDEBAR: menu -->
-        <mat-menu #collapsedMenu="matMenu" xPosition="after" yPosition="below" overlapTrigger="true"
+        <mat-menu #collapsedMenu="matMenu" [xPosition]="isRtl ? 'before' : 'after'" yPosition="below" overlapTrigger="true"
           class="sidebar-collapsed-menu">
-          <button mat-menu-item *ngFor="let menuSubItem of menuItem.submenu" [routerLink]="menuSubItem.path">
-            <i [ngClass]="[menuSubItem.icon]"></i>
-            <span class="ml-2">{{ menuSubItem.title | translate }}</span>
-          </button>
+          <div class="collapsed-menu-header" (click)="$event.stopPropagation()">
+            <span class="collapsed-menu-header-icon">
+              <i *ngIf="!isSvg(menuItem.icon)" [ngClass]="[menuItem.icon]"></i>
+              <i *ngIf="isSvg(menuItem.icon)" class="sidebar-icon-svg" [style.--svg-icon]="getIconMaskUrl(menuItem.icon)"></i>
+            </span>
+            <span class="collapsed-menu-header-title">{{ menuItem.title | translate }}</span>
+          </div>
+
+          <div class="collapsed-menu-items">
+            <button mat-menu-item *ngFor="let menuSubItem of menuItem.submenu"
+              [routerLink]="menuSubItem.path"
+              routerLinkActive="active-sub-item"
+              [routerLinkActiveOptions]="{ exact: false }"
+              class="collapsed-submenu-item">
+              <span class="collapsed-submenu-item-content">
+                <span class="collapsed-submenu-icon-wrap">
+                  <i *ngIf="!isSvg(menuSubItem.icon)" [ngClass]="[menuSubItem.icon]" class="collapsed-submenu-icon"></i>
+                  <i *ngIf="isSvg(menuSubItem.icon)" class="sidebar-icon-svg collapsed-submenu-icon" [style.--svg-icon]="getIconMaskUrl(menuSubItem.icon)"></i>
+                </span>
+                <span class="collapsed-submenu-label">{{ menuSubItem.title | translate }}</span>
+              </span>
+            </button>
+          </div>
         </mat-menu>
 
         <!-- ======================= -->
@@ -74,8 +102,9 @@
         <a appSidebarAnchorToggle routerLink="{{ menuItem.path }}"
           *ngIf="menuItem.submenu.length === 0 && !menuItem.isExternalLink"
           [ngbTooltip]="config?.layout?.sidebar?.collapsed ? (menuItem.title | translate) : null"
-          triggers="mouseenter:mouseleave" container="body" placement="right" tooltipClass="sidebar-collapsed-tooltip">
-          <i [ngClass]="[menuItem.icon]"></i>
+          triggers="mouseenter:mouseleave" container="body" [placement]="tooltipPlacement" tooltipClass="sidebar-collapsed-tooltip">
+          <i *ngIf="!isSvg(menuItem.icon)" [ngClass]="[menuItem.icon]"></i>
+          <i *ngIf="isSvg(menuItem.icon)" class="sidebar-icon-svg" [style.--svg-icon]="getIconMaskUrl(menuItem.icon)"></i>
 
           <span class="menu-title" *ngIf="!config.layout.sidebar.collapsed">
             {{ menuItem.title | translate }}
@@ -90,8 +119,11 @@
         <!-- ======================= -->
         <!-- CASE 3: EXTERNAL LINK   -->
         <!-- ======================= -->
-        <a [href]="[menuItem.path]" target="_blank" *ngIf="menuItem.isExternalLink">
-          <i [ngClass]="[menuItem.icon]"></i>
+        <a [href]="[menuItem.path]" target="_blank" *ngIf="menuItem.isExternalLink"
+          [ngbTooltip]="config?.layout?.sidebar?.collapsed ? (menuItem.title | translate) : null"
+          triggers="mouseenter:mouseleave" container="body" [placement]="tooltipPlacement" tooltipClass="sidebar-collapsed-tooltip">
+          <i *ngIf="!isSvg(menuItem.icon)" [ngClass]="[menuItem.icon]"></i>
+          <i *ngIf="isSvg(menuItem.icon)" class="sidebar-icon-svg" [style.--svg-icon]="getIconMaskUrl(menuItem.icon)"></i>
           <span class="menu-title" *ngIf="!config.layout.sidebar.collapsed">
             {{ menuItem.title | translate }}
           </span>
@@ -113,7 +145,8 @@
             [routerLinkActive]="menuSubItem.submenu.length != 0 ? 'open' : 'active'">
 
             <a appSidebarAnchorToggle *ngIf="menuSubItem.submenu.length > 0 && !menuSubItem.isExternalLink">
-              <i [ngClass]="[menuSubItem.icon]"></i>
+              <i *ngIf="!isSvg(menuSubItem.icon)" [ngClass]="[menuSubItem.icon]"></i>
+              <i *ngIf="isSvg(menuSubItem.icon)" class="sidebar-icon-svg" [style.--svg-icon]="getIconMaskUrl(menuSubItem.icon)"></i>
               <span class="menu-title">{{ menuSubItem.title | translate }}</span>
               <span *ngIf="menuSubItem.badge && menuSubItem.badge != ''" [ngClass]="[menuSubItem.badgeClass]">
                 {{ menuSubItem.badge }}
@@ -122,7 +155,8 @@
 
             <a appSidebarAnchorToggle routerLink="{{ menuSubItem.path }}"
               *ngIf="menuSubItem.submenu.length === 0 && !menuSubItem.isExternalLink">
-              <i [ngClass]="[menuSubItem.icon]"></i>
+              <i *ngIf="!isSvg(menuSubItem.icon)" [ngClass]="[menuSubItem.icon]"></i>
+              <i *ngIf="isSvg(menuSubItem.icon)" class="sidebar-icon-svg" [style.--svg-icon]="getIconMaskUrl(menuSubItem.icon)"></i>
               <span class="menu-title">{{ menuSubItem.title | translate }}</span>
               <span *ngIf="menuSubItem.badge && menuSubItem.badge != ''" [ngClass]="[menuSubItem.badgeClass]">
                 {{ menuSubItem.badge }}
@@ -130,7 +164,8 @@
             </a>
 
             <a routerLink="{{ menuSubItem.path }}" target="_blank" *ngIf="menuSubItem.isExternalLink">
-              <i [ngClass]="[menuSubItem.icon]"></i>
+              <i *ngIf="!isSvg(menuSubItem.icon)" [ngClass]="[menuSubItem.icon]"></i>
+              <i *ngIf="isSvg(menuSubItem.icon)" class="sidebar-icon-svg" [style.--svg-icon]="getIconMaskUrl(menuSubItem.icon)"></i>
               <span class="menu-title">{{ menuSubItem.title | translate }}</span>
               <span *ngIf="menuSubItem.badge && menuSubItem.badge != ''" [ngClass]="[menuSubItem.badgeClass]">
                 {{ menuSubItem.badge }}
@@ -145,7 +180,8 @@
                 [ngClass]="config.layout.menuPosition === 'Side' ? menuSubsubItem.class : ''">
                 <a appSidebarAnchorToggle routerLink="{{ menuSubsubItem.path }}"
                   *ngIf="!menuSubsubItem.isExternalLink; else externalSubSubLinkBlock">
-                  <i [ngClass]="[menuSubsubItem.icon]"></i>
+                  <i *ngIf="!isSvg(menuSubsubItem.icon)" [ngClass]="[menuSubsubItem.icon]"></i>
+                  <i *ngIf="isSvg(menuSubsubItem.icon)" class="sidebar-icon-svg" [style.--svg-icon]="getIconMaskUrl(menuSubsubItem.icon)"></i>
                   <span class="menu-title">
                     {{ menuSubsubItem.title | translate }}
                   </span>
@@ -157,7 +193,8 @@
 
                 <ng-template #externalSubSubLinkBlock>
                   <a routerLink="{{ menuSubsubItem.path }}" target="_blank">
-                    <i [ngClass]="[menuSubsubItem.icon]"></i>
+                    <i *ngIf="!isSvg(menuSubsubItem.icon)" [ngClass]="[menuSubsubItem.icon]"></i>
+                    <i *ngIf="isSvg(menuSubsubItem.icon)" class="sidebar-icon-svg" [style.--svg-icon]="getIconMaskUrl(menuSubsubItem.icon)"></i>
                     <span class="menu-title">
                       {{ menuSubsubItem.title | translate }}
                     </span>

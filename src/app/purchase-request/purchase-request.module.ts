@@ -27,6 +27,7 @@ import { PermissionDirective } from 'app/shared/permissions/permission.directive
 import { PrInventoryManagementComponent } from './pr-inventory-management/pr-inventory-management.component';
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
 import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
+import { CustomSelectDirective } from 'app/shared/directives/custom-select.directive';
 
 
 @NgModule({
@@ -54,7 +55,8 @@ import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
     NgxIntlTelInputModule,
     AutoResizeDatatableDirective,
     DatatableAutoResizeDirective,
-    PermissionDirective
+    PermissionDirective,
+    CustomSelectDirective
   ],
   declarations: [
     PurchaseRequestComponent,
