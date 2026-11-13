@@ -64,7 +64,7 @@
               <!-- Search Results Dropdown -->
               <div class="search-panel" *ngIf="panelOpen && searchExpanded" (click)="$event.stopPropagation()">
                 <div class="search-panel__header">
-                  <div class="search-panel__title">Search</div>
+                  <div class="search-panel__title">SEARCH</div>
 
                   <div class="search-panel__shortcuts">
                     <span class="kbd">↑↓</span>
@@ -74,45 +74,39 @@
                   </div>
                 </div>
 
-                <!-- Tabs -->
-                <div class="search-panel__tabs">
-                  <button class="tab-btn" [class.active]="activeTab === 'ALL'" (click)="setTab('ALL')">
-                    All <span class="badge">{{ totalCount }}</span>
-                  </button>
+                <div class="panel-body">
+                  <div *ngIf="loading" class="loading">Searching…</div>
 
-                  <button class="tab-btn" [class.active]="activeTab === 'PR'" (click)="setTab('PR')">
-                    PR <span class="badge">{{ counts.PR }}</span>
-                  </button>
+                  <ng-container *ngIf="!loading">
+                    <div *ngIf="results?.length; else emptyState">
+                      <div class="result-item" *ngFor="let r of results; let i = index; trackBy: trackById"
+                        [class.active]="i === activeIndex" (mouseenter)="activeIndex = i" (click)="selectResult(r)">
 
-                  <button class="tab-btn" [class.active]="activeTab === 'RFQ'" (click)="setTab('RFQ')">
-                    RFQ <span class="badge">{{ counts.RFQ }}</span>
-                  </button>
+                        <div class="result-main">
+                          <div class="result-badge">
+                            {{ getBadgeLabel(r?.message) }}
+                          </div>
 
-                  <button class="tab-btn" [class.active]="activeTab === 'PO'" (click)="setTab('PO')">
-                    PO <span class="badge">{{ counts.PO }}</span>
-                  </button>
-                </div>
+                          <div class="result-text">
+                            <div class="title text-ellipsis" [innerHTML]="highlightText(r?.message, searchCtrl.value || '')">
+                            </div>
+                            <div class="subtitle text-ellipsis">
+                              Click to open details
+                            </div>
+                          </div>
+                        </div>
 
-                <!-- Results list -->
-                <div class="search-panel__list" *ngIf="results?.length; else emptyResults">
-                  <div class="search-item" *ngFor="let item of results; let i = index"
-                    [class.search-item--active]="i === activeIndex" (click)="onItemClick(item)">
-                    <div class="search-item__main">
-                      <div class="title">{{ item.title }}</div>
-                      <div class="meta text-muted">{{ item.subtitle }}</div>
+                        <div class="result-arrow">
+                          <i class="ft-chevron-right"></i>
+                        </div>
+                      </div>
                     </div>
-                    <span class="search-item__tag" [ngClass]="item.type?.toLowerCase()">
-                      {{ item.type }}
-                    </span>
-                  </div>
-                </div>
 
-                <!-- Empty State -->
-                <ng-template #emptyResults>
-                  <div class="search-panel__empty" *ngIf="searchCtrl.value && !loading">
-                    No Results Found
-                  </div>
-                </ng-template>
+                    <ng-template #emptyState>
+                      <div class="empty">No results</div>
+                    </ng-template>
+                  </ng-container>
+                </div>
               </div>
             </div>
 
