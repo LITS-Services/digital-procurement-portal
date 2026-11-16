@@ -1140,6 +1140,12 @@ html[dir="rtl"] .nav-search-wrapper .search-input-wrapper {
       transition: color 0.15s ease;
     }
 
+    img {
+      width: 16px;
+      height: 16px;
+      object-fit: contain;
+    }
+
     &:hover,
     &:focus {
       background-color: #f8fafc !important;
