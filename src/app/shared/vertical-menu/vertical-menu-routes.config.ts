@@ -8,7 +8,6 @@ export const ROUTES: RouteInfo[] = [
     formTypeId: FORM_IDS.DASHBOARD
   },
   {
-  {
     path: '/employee-dashboard', title: 'Employee Dashboard', icon: 'assets/img/sidebar-icons/Employee Dashboard_icon.svg', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
     formTypeId: FORM_IDS.EMPLOYEE_DASHBOARD
   },
