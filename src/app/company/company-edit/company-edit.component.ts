@@ -56,6 +56,10 @@ export class CompanyEditComponent implements OnInit {
   companyLogoUrl: string | null = null;
   companyWebsite: string | null = null;
   trnNumber: string = '';
+  procurementOfficer: any = null;
+  financeOfficer: any = null;
+  procurementOfficers: any[] = [];
+  financeOfficers: any[] = [];
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -170,6 +174,10 @@ export class CompanyEditComponent implements OnInit {
           this.companyWebsite = company.websiteUrl || null;
           this.workflowMasterId = company.workflowMasterId || 0;
           this.mainApproverId = company.mainApproverId || '';
+          this.procurementOfficer = company.procurementOfficer || (company.procurementOfficers && company.procurementOfficers[0]) || null;
+          this.financeOfficer = company.financeOfficer || (company.financeOfficers && company.financeOfficers[0]) || null;
+          this.procurementOfficers = company.procurementOfficers || (this.procurementOfficer ? [this.procurementOfficer] : []);
+          this.financeOfficers = company.financeOfficers || (this.financeOfficer ? [this.financeOfficer] : []);
 
           // If vendorEntityAssociationId is missing from query params, try to get it from API response
           if (!this.vendorEntityAssociationId) {

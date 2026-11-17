@@ -47,10 +47,10 @@
                     <form [formGroup]="vendorOnboardingForm" (ngSubmit)="submitForm()">
                         <div class="row gx-2">
 
-                            <!-- Row 1: Setup and Receivers -->
-                            <div class="col-lg-4 mb-2">
+                            <!-- Row 1: Setup Name, Onboarding Type, Receivers, and Add Button -->
+                            <div class="col-lg-3 mb-2">
                                 <label class="form-label mb-1">Setup Name</label>
-                                <input type="text" class="form-control custom-input" formControlName="SetupName"
+                                <input type="text" class="form-control custom-input py-1" formControlName="SetupName"
                                     placeholder="Setup name" required>
                                 <div *ngIf="vendorOnboardingForm.get('SetupName')?.invalid && vendorOnboardingForm.get('SetupName')?.touched"
                                     class="text-danger xsmall mt-1">
@@ -58,7 +58,19 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-6 mb-2">
+                            <div class="col-lg-3 mb-2">
+                                <label class="form-label mb-1">Onboarding Type</label>
+                                <ng-select class="custom-style compact-select" [items]="onboardingTypes"
+                                    bindLabel="typeName" bindValue="typeCode" [clearable]="false" [searchable]="true"
+                                    placeholder="Select Onboarding Type" formControlName="OnboardingType">
+                                </ng-select>
+                                <div *ngIf="vendorOnboardingForm.get('OnboardingType')?.invalid && vendorOnboardingForm.get('OnboardingType')?.touched"
+                                    class="text-danger xsmall mt-1">
+                                    Required
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 mb-2">
                                 <label class="form-label mb-1">Select Receivers</label>
                                 <ng-select [items]="filteredReceivers"
                                     bindLabel="userName" bindValue="userId" [multiple]="true" [searchable]="false" [closeOnSelect]="false"

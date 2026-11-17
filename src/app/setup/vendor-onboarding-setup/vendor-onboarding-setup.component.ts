@@ -158,6 +158,23 @@ export class VendorOnboardingSetupComponent implements OnInit {
     }, 200);
   }
 
+  getOnboardingTypeDisplayName(row: any): string {
+    if (row?.vendorCompanyOnboardingType?.typeName) {
+      return row.vendorCompanyOnboardingType.typeName;
+    }
+    if (row?.onboardingTypeName) {
+      return row.onboardingTypeName;
+    }
+    if (row?.onboardingType) {
+      const type = (row.onboardingType || '').toString().toLowerCase();
+      if (type === 'companyonboarding') return 'Company Onboarding';
+      if (type === 'procurementofficer') return 'Procurement Officer';
+      if (type === 'financeofficer') return 'Finance Officer';
+      return row.onboardingType;
+    }
+    return 'Company Onboarding';
+  }
+
   onUpdate() {
     if(!this.permissionService.can(FORM_IDS.VENDOR_ONBOARDING, 'write'))
       return;

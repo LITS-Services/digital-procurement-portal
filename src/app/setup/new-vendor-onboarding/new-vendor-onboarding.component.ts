@@ -20,6 +20,7 @@ export class NewVendorOnboardingComponent implements OnInit {
   vendorOnboardingForm: FormGroup;
   // entitiesList: any[] = []; // Removed
   roles: any[] = [];
+  onboardingTypes: any[] = [];
   filteredReceivers: any[] = [];
   allReceivers: any[] = [];
   receiverSearchTerm: string = '';
@@ -50,8 +51,7 @@ export class NewVendorOnboardingComponent implements OnInit {
 
     this.vendorOnboardingForm = this.fb.group({
       SetupName: ['', Validators.required],
-      // entities: ['', Validators.required], // Removed
-      // Roles: ['', Validators.required],   // Removed
+      OnboardingType: ['companyonboarding', Validators.required],
       Receivers: [[]],
       Description: ['', Validators.required],
       status: [false],
@@ -70,6 +70,8 @@ export class NewVendorOnboardingComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadOnboardingTypes();
+
     // Load roles and then fetch receivers for Admin
     this.loadRoles(() => {
       this.fetchReceiversForAdmin();
@@ -83,6 +85,39 @@ export class NewVendorOnboardingComponent implements OnInit {
 
       if (this.mode === 'Edit' && this.onboardingId) {
         this.loadOnboardingSetupById(this.onboardingId);
+      }
+    });
+  }
+
+  loadOnboardingTypes() {
+    this.companyService.GetVendorCompanyOnboardingTypes().subscribe({
+      next: (res: any) => {
+        const list = res?.$values || res?.value || res?.data || res || [];
+        if (Array.isArray(list) && list.length > 0) {
+          this.onboardingTypes = list;
+        } else {
+          this.onboardingTypes = [
+            { id: 1, typeName: 'Company Onboarding', typeCode: 'companyonboarding', description: 'Company Onboarding' },
+            { id: 2, typeName: 'Procurement Officer', typeCode: 'procurementofficer', description: 'Procurement Officer' },
+            { id: 3, typeName: 'Finance Officer', typeCode: 'financeofficer', description: 'Finance Officer' }
+          ];
+        }
+        if (!this.vendorOnboardingForm.get('OnboardingType')?.value) {
+          this.vendorOnboardingForm.patchValue({ OnboardingType: 'companyonboarding' });
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading onboarding types:', err);
+        this.onboardingTypes = [
+          { id: 1, typeName: 'Company Onboarding', typeCode: 'companyonboarding', description: 'Company Onboarding' },
+          { id: 2, typeName: 'Procurement Officer', typeCode: 'procurementofficer', description: 'Procurement Officer' },
+          { id: 3, typeName: 'Finance Officer', typeCode: 'financeofficer', description: 'Finance Officer' }
+        ];
+        if (!this.vendorOnboardingForm.get('OnboardingType')?.value) {
+          this.vendorOnboardingForm.patchValue({ OnboardingType: 'companyonboarding' });
+        }
+        this.cdr.detectChanges();
       }
     });
   }
@@ -228,10 +263,12 @@ export class NewVendorOnboardingComponent implements OnInit {
   populateForm(data: any) {
     console.log('Populating form with data:', data);
 
+    const typeCode = data.onboardingType || data.vendorCompanyOnboardingType?.typeCode || 'companyonboarding';
+
     // First patch the basic fields
     this.vendorOnboardingForm.patchValue({
       SetupName: data.setupName || '',
-      //   entities: data.entityId || '', // Removed
+      OnboardingType: typeCode,
       Description: data.description || '',
       status: data.status !== undefined ? data.status : false
     });
@@ -289,10 +326,15 @@ export class NewVendorOnboardingComponent implements OnInit {
       entityName: receiver.entityName || ''
     }));
 
+    const selectedTypeCode = formData.OnboardingType || 'companyonboarding';
+    const matchedType = this.onboardingTypes.find(t => t.typeCode === selectedTypeCode || t.id === selectedTypeCode);
+
     // Prepare the data for API with correct format
     const apiData: any = {
       id: this.mode === 'Edit' ? this.onboardingId : 0,
       setupName: formData.SetupName,
+      onboardingType: matchedType ? matchedType.typeCode : selectedTypeCode,
+      onboardingTypeId: matchedType ? matchedType.id : null,
       entityId: 0, // Default to 0 or null as requested
       rolesId: this.adminRoleId, // Send Admin Role ID
       receivers: selectedReceivers,

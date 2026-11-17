@@ -131,6 +131,10 @@ export class CompanyService {
     });
   }
 
+  GetVendorCompanyOnboardingTypes(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/Workflow/get-vendor-company-onboarding-types`);
+  }
+
   GetAllCompanyOnboardingSetup(): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiUrl}/Workflow/get-all-company-onboarding-setup`);
   }
@@ -223,3 +227,5 @@ export class CompanyService {
     return this.http.get<any>(`${environment.apiUrl}/Workflow/${setupId}/users`);
   }
 }
+
+

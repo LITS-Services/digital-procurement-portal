@@ -190,6 +190,43 @@
 
             <hr />
 
+            <!-- Onboarding Officers Section (Procurement & Finance Officers) -->
+            <div class="row mt-3" *ngIf="procurementOfficers?.length || financeOfficers?.length">
+              <!-- Procurement Officers -->
+              <div class="col-md-6 mb-3" *ngIf="procurementOfficers?.length">
+                <div class="card p-3 border shadow-none bg-light h-100">
+                  <div class="d-flex align-items-center mb-2">
+                    <i class="ft-user mr-2 text-primary font-medium-3"></i>
+                    <h6 class="font-weight-bold text-primary mb-0">
+                      Procurement Officer{{ procurementOfficers.length > 1 ? 's' : '' }} ({{ procurementOfficers.length }})
+                    </h6>
+                  </div>
+                  <div *ngFor="let officer of procurementOfficers; let last = last" [class.mb-2]="!last" [class.border-bottom]="!last" [class.pb-2]="!last">
+                    <div class="font-weight-bold text-dark">{{ officer.fullName || officer.userName || 'N/A' }}</div>
+                    <div class="text-muted small" *ngIf="officer.email"><i class="ft-mail mr-1"></i>{{ officer.email }}</div>
+                    <div class="text-muted small" *ngIf="officer.phoneNumber || officer.phoneNo"><i class="ft-phone mr-1"></i>{{ officer.phoneNumber || officer.phoneNo }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Finance Officers -->
+              <div class="col-md-6 mb-3" *ngIf="financeOfficers?.length">
+                <div class="card p-3 border shadow-none bg-light h-100">
+                  <div class="d-flex align-items-center mb-2">
+                    <i class="ft-dollar-sign mr-2 text-success font-medium-3"></i>
+                    <h6 class="font-weight-bold text-success mb-0">
+                      Finance Officer{{ financeOfficers.length > 1 ? 's' : '' }} ({{ financeOfficers.length }})
+                    </h6>
+                  </div>
+                  <div *ngFor="let officer of financeOfficers; let last = last" [class.mb-2]="!last" [class.border-bottom]="!last" [class.pb-2]="!last">
+                    <div class="font-weight-bold text-dark">{{ officer.fullName || officer.userName || 'N/A' }}</div>
+                    <div class="text-muted small" *ngIf="officer.email"><i class="ft-mail mr-1"></i>{{ officer.email }}</div>
+                    <div class="text-muted small" *ngIf="officer.phoneNumber || officer.phoneNo"><i class="ft-phone mr-1"></i>{{ officer.phoneNumber || officer.phoneNo }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Associated entities header -->
             <!-- <div class="d-flex justify-content-between align-items-center mb-1">
               <div class="d-flex align-items-center">
