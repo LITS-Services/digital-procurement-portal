@@ -50,7 +50,7 @@
                             <!-- Row 1: Setup and Receivers -->
                             <div class="col-lg-4 mb-2">
                                 <label class="form-label mb-1">Setup Name</label>
-                                <input type="text" class="form-control custom-input py-1" formControlName="SetupName"
+                                <input type="text" class="form-control custom-input" formControlName="SetupName"
                                     placeholder="Setup name" required>
                                 <div *ngIf="vendorOnboardingForm.get('SetupName')?.invalid && vendorOnboardingForm.get('SetupName')?.touched"
                                     class="text-danger xsmall mt-1">
@@ -60,15 +60,27 @@
 
                             <div class="col-lg-6 mb-2">
                                 <label class="form-label mb-1">Select Receivers</label>
-                                <ng-select class="custom-style compact-select" [items]="filteredReceivers"
-                                    bindLabel="userName" bindValue="userId" [multiple]="true" [searchable]="true"
-                                    placeholder="Select user(s)" formControlName="Receivers">
+                                <ng-select [items]="filteredReceivers"
+                                    bindLabel="userName" bindValue="userId" [multiple]="true" [searchable]="false" [closeOnSelect]="false"
+                                    placeholder="Select user(s)" formControlName="Receivers"
+                                    (open)="onReceiverDropdownOpen()">
+                                    <ng-template ng-header-tmp>
+                                        <div class="dropdown-search-wrapper">
+                                            <i class="ft-search dropdown-search-icon"></i>
+                                            <input type="text" class="dropdown-search-input"
+                                                placeholder="Search user..."
+                                                [value]="receiverSearchTerm"
+                                                (input)="onSearchReceivers($event)"
+                                                (click)="$event.stopPropagation()"
+                                                (keydown)="$event.stopPropagation()" />
+                                        </div>
+                                    </ng-template>
                                 </ng-select>
                             </div>
 
                             <div class="col-lg-2 mb-2">
                                 <label class="form-label mb-1">&nbsp;</label>
-                                <button type="button" class="btn btn-block user-add-btn h-34px mb-0"
+                                <button type="button" class="btn btn-block user-add-btn mb-0"
                                     [disabled]="!isAddButtonEnabled" (click)="addReceiversToTable()">
                                     <i class="ft-user-plus mr-1"></i>
                                     Add
@@ -78,7 +90,7 @@
                             <!-- Row 2: Description and Status -->
                             <div class="col-lg-10 mb-2">
                                 <label class="form-label mb-1">Description</label>
-                                <textarea class="form-control custom-input py-1" rows="1"
+                                <textarea class="form-control custom-input" rows="1"
                                     placeholder="Enter description" formControlName="Description"></textarea>
                                 <div *ngIf="vendorOnboardingForm.get('Description')?.invalid && vendorOnboardingForm.get('Description')?.touched"
                                     class="text-danger xsmall mt-1">

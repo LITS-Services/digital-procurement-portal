@@ -21,6 +21,8 @@ export class NewVendorOnboardingComponent implements OnInit {
   // entitiesList: any[] = []; // Removed
   roles: any[] = [];
   filteredReceivers: any[] = [];
+  allReceivers: any[] = [];
+  receiverSearchTerm: string = '';
   mode: string = 'Create';
   onboardingId: number | null = null;
   adminRoleId: string | null = null; // Store Admin Role ID
@@ -118,8 +120,9 @@ export class NewVendorOnboardingComponent implements OnInit {
       return;
     }
 
-    // Get receiver details from filteredReceivers
-    const selectedReceivers = this.filteredReceivers.filter(receiver =>
+    // Get receiver details from allReceivers (fallback to filteredReceivers)
+    const sourceList = this.allReceivers.length > 0 ? this.allReceivers : this.filteredReceivers;
+    const selectedReceivers = sourceList.filter(receiver =>
       selectedReceiverIds.includes(receiver.userId) || selectedReceiverIds.includes(receiver.id)
     );
 
@@ -358,15 +361,39 @@ export class NewVendorOnboardingComponent implements OnInit {
       )
       .subscribe({
         next: (res: any) => {
-          this.filteredReceivers = res?.$values || res || [];
+          this.allReceivers = res?.$values || res || [];
+          this.filteredReceivers = [...this.allReceivers];
           console.log('Filtered receivers loaded:', this.filteredReceivers);
         },
         error: (err) => {
           console.error('Error loading filtered receivers:', err);
           this.toastr.error('Failed to load receivers. Please try again.');
+          this.allReceivers = [];
           this.filteredReceivers = [];
         }
       });
+  }
+
+  onSearchReceivers(event: Event): void {
+    const query = (event.target as HTMLInputElement).value?.toLowerCase().trim() || '';
+    this.receiverSearchTerm = query;
+    if (!query) {
+      this.filteredReceivers = [...this.allReceivers];
+    } else {
+      this.filteredReceivers = this.allReceivers.filter(r =>
+        (r.userName && r.userName.toLowerCase().includes(query)) ||
+        (r.email && r.email.toLowerCase().includes(query))
+      );
+    }
+  }
+
+  onReceiverDropdownOpen(): void {
+    this.receiverSearchTerm = '';
+    this.filteredReceivers = [...this.allReceivers];
+    setTimeout(() => {
+      const input = document.querySelector('.ng-dropdown-panel .dropdown-search-input') as HTMLInputElement;
+      input?.focus();
+    }, 50);
   }
 
   // Helper method to check if add button should be enabled
