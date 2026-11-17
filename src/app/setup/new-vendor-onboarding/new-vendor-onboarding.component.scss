@@ -119,8 +119,14 @@ textarea.custom-input {
     padding: 1rem !important;
 }
 
+.custom-input:focus {
+    border-color: #116aef !important;
+    box-shadow: 0 0 0 3px rgba(17, 106, 239, 0.12) !important;
+}
+
 .row.gx-2>.col-lg-12,
 .row.gx-2>.col-lg-9,
+.row.gx-2>.col-lg-4,
 .row.gx-2>.col-lg-3,
 .row.gx-2>.col-lg-10,
 .row.gx-2>.col-lg-2 {

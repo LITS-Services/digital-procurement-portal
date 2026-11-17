@@ -21,6 +21,9 @@ export class NewVendorOnboardingComponent implements OnInit {
   // entitiesList: any[] = []; // Removed
   roles: any[] = [];
   onboardingTypes: any[] = [];
+  allOnboardingTypes: any[] = [];
+  filteredOnboardingTypes: any[] = [];
+  onboardingTypeSearchTerm: string = '';
   filteredReceivers: any[] = [];
   allReceivers: any[] = [];
   receiverSearchTerm: string = '';
@@ -94,14 +97,16 @@ export class NewVendorOnboardingComponent implements OnInit {
       next: (res: any) => {
         const list = res?.$values || res?.value || res?.data || res || [];
         if (Array.isArray(list) && list.length > 0) {
-          this.onboardingTypes = list;
+          this.allOnboardingTypes = list;
         } else {
-          this.onboardingTypes = [
+          this.allOnboardingTypes = [
             { id: 1, typeName: 'Company Onboarding', typeCode: 'companyonboarding', description: 'Company Onboarding' },
             { id: 2, typeName: 'Procurement Officer', typeCode: 'procurementofficer', description: 'Procurement Officer' },
             { id: 3, typeName: 'Finance Officer', typeCode: 'financeofficer', description: 'Finance Officer' }
           ];
         }
+        this.onboardingTypes = [...this.allOnboardingTypes];
+        this.filteredOnboardingTypes = [...this.allOnboardingTypes];
         if (!this.vendorOnboardingForm.get('OnboardingType')?.value) {
           this.vendorOnboardingForm.patchValue({ OnboardingType: 'companyonboarding' });
         }
@@ -109,17 +114,42 @@ export class NewVendorOnboardingComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading onboarding types:', err);
-        this.onboardingTypes = [
+        this.allOnboardingTypes = [
           { id: 1, typeName: 'Company Onboarding', typeCode: 'companyonboarding', description: 'Company Onboarding' },
           { id: 2, typeName: 'Procurement Officer', typeCode: 'procurementofficer', description: 'Procurement Officer' },
           { id: 3, typeName: 'Finance Officer', typeCode: 'financeofficer', description: 'Finance Officer' }
         ];
+        this.onboardingTypes = [...this.allOnboardingTypes];
+        this.filteredOnboardingTypes = [...this.allOnboardingTypes];
         if (!this.vendorOnboardingForm.get('OnboardingType')?.value) {
           this.vendorOnboardingForm.patchValue({ OnboardingType: 'companyonboarding' });
         }
         this.cdr.detectChanges();
       }
     });
+  }
+
+  onSearchOnboardingTypes(event: Event): void {
+    const query = (event.target as HTMLInputElement).value?.toLowerCase().trim() || '';
+    this.onboardingTypeSearchTerm = query;
+    if (!query) {
+      this.filteredOnboardingTypes = [...this.allOnboardingTypes];
+    } else {
+      this.filteredOnboardingTypes = this.allOnboardingTypes.filter(t =>
+        (t.typeName && t.typeName.toLowerCase().includes(query)) ||
+        (t.description && t.description.toLowerCase().includes(query)) ||
+        (t.typeCode && t.typeCode.toLowerCase().includes(query))
+      );
+    }
+  }
+
+  onOnboardingTypeDropdownOpen(): void {
+    this.onboardingTypeSearchTerm = '';
+    this.filteredOnboardingTypes = [...this.allOnboardingTypes];
+    setTimeout(() => {
+      const input = document.querySelector('.ng-dropdown-panel .dropdown-search-input') as HTMLInputElement;
+      input?.focus();
+    }, 50);
   }
 
   @HostListener('window:scroll', [])
