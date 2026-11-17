@@ -55,15 +55,13 @@ export const ROUTES: RouteInfo[] = [
     ],
   },
 
-  // {
-  //   path: '', title: 'Reports', icon: 'ft-clipboard', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false,
-  //   submenu: [
-  //     { path: '/uikit/grids', title: 'Grid', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-  //     { path: '/uikit/typography', title: 'Typography', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-  //     { path: '/uikit/syntaxhighlighter', title: 'Syntax Highlighter', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-  //     { path: '/uikit/helperclasses', title: 'Helper Classes', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-  //   ]
-  // },
+  {
+    path: '', title: 'Reports', icon: 'ft-bar-chart-2', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false,
+    submenu: [
+      { path: '/reports/spend-analysis', title: 'Spend Analysis', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
+      { path: '/reports/po-delivery-tracking', title: 'PO & Delivery Tracking', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] }
+    ]
+  },
   {
     path: '', title: 'Setup', icon: 'assets/img/sidebar-icons/Setup_icon.svg', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false,
     submenu: [

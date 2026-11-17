@@ -1,0 +1,388 @@
+<div class="proc-reports-page">
+  <!-- Header -->
+  <div class="reports-header d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div>
+      <h1 class="reports-title m-0">Purchase Order &amp; Delivery Tracking Report</h1>
+      <p class="reports-subtitle m-0 text-muted mt-1">
+        Order fulfillment &amp; Goods Receipt (GRN) tracking for
+        <span class="badge badge-subtle-primary">{{ summary?.periodLabel || selectedPreset }}</span>
+        <span class="badge badge-subtle-info ms-2" style="margin-left: 8px;">
+          <i class="ft-briefcase me-1"></i>{{ activeEntityLabel }}
+        </span>
+      </p>
+    </div>
+
+    <!-- Export Actions -->
+    <div class="reports-actions d-flex align-items-center gap-2 mt-2 mt-md-0">
+      <div ngbDropdown class="d-inline-block">
+        <button type="button" class="btn btn-primary d-flex align-items-center gap-2" id="poDelivExportDd" ngbDropdownToggle [disabled]="exportingPdf">
+          <i class="ft-download" *ngIf="!exportingPdf"></i>
+          <span class="spinner-border spinner-border-sm" *ngIf="exportingPdf" role="status"></span>
+          <span>{{ exportingPdf ? 'Generating PDF...' : 'Export PDF' }}</span>
+        </button>
+        <div ngbDropdownMenu aria-labelledby="poDelivExportDd" class="dropdown-menu-end shadow-sm">
+          <button ngbDropdownItem (click)="exportPdf('summary')" class="d-flex align-items-center justify-content-start text-start py-2" style="justify-content: flex-start !important; gap: 10px;">
+            <i class="ft-file-text text-primary flex-shrink-0"></i>
+            <div>
+              <div class="fw-bold">Summary PDF</div>
+              <small class="text-muted">KPIs, vendor performance &amp; overdue alerts</small>
+            </div>
+          </button>
+          <div class="dropdown-divider"></div>
+          <button ngbDropdownItem (click)="exportPdf('detailed')" class="d-flex align-items-center justify-content-start text-start py-2" style="justify-content: flex-start !important; gap: 10px;">
+            <i class="ft-layers text-success flex-shrink-0"></i>
+            <div>
+              <div class="fw-bold">Detailed PDF</div>
+              <small class="text-muted">Includes full PO &amp; delivery tables</small>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Alert -->
+  <div class="alert alert-danger d-flex justify-content-between align-items-center mb-3" *ngIf="errorMessage">
+    <span><i class="ft-alert-circle me-2"></i>{{ errorMessage }}</span>
+    <button type="button" class="btn btn-sm btn-outline-danger" (click)="applyFilters()">Retry</button>
+  </div>
+
+  <!-- Filters Card -->
+  <div class="card filter-card mb-4 shadow-sm border-0">
+    <div class="card-body p-3">
+      <div class="row g-2 align-items-end">
+        <div class="col-xl-2 col-md-3 col-sm-6">
+          <label class="form-label text-xs fw-semibold text-muted mb-1">DATE PERIOD</label>
+          <select class="form-select form-select-sm custom-select" [(ngModel)]="selectedPreset" (change)="selectedPreset !== 'Custom' && applyFilters()">
+            <option *ngFor="let p of presets" [value]="p.value">{{ p.label }}</option>
+          </select>
+        </div>
+
+        <div class="col-xl-2 col-md-3 col-sm-6" *ngIf="selectedPreset === 'Custom'">
+          <label class="form-label text-xs fw-semibold text-muted mb-1">FROM DATE</label>
+          <input type="date" class="form-control form-control-sm" [(ngModel)]="customFromDate" />
+        </div>
+
+        <div class="col-xl-2 col-md-3 col-sm-6" *ngIf="selectedPreset === 'Custom'">
+          <label class="form-label text-xs fw-semibold text-muted mb-1">TO DATE</label>
+          <input type="date" class="form-control form-control-sm" [(ngModel)]="customToDate" />
+        </div>
+
+        <div class="col-xl-2 col-md-4 col-sm-6">
+          <label class="form-label text-xs fw-semibold text-muted mb-1">PROCUREMENT ENTITY</label>
+          <select class="form-select form-select-sm custom-select" [(ngModel)]="selectedEntityId" (change)="onEntityFilterChange()">
+            <option [ngValue]="null">All Procurement Entities ({{ metadata.entities.length }})</option>
+            <option *ngFor="let e of metadata.entities" [ngValue]="e.id">{{ e.name }}</option>
+          </select>
+        </div>
+
+        <div class="col-xl-2 col-md-4 col-sm-6">
+          <label class="form-label text-xs fw-semibold text-muted mb-1">VENDOR</label>
+          <select class="form-select form-select-sm custom-select" [(ngModel)]="selectedVendorId">
+            <option value="">All Vendors ({{ metadata.vendors.length }})</option>
+            <option *ngFor="let v of metadata.vendors" [value]="v.value">{{ v.label }}</option>
+          </select>
+        </div>
+
+        <div class="col-xl-1 col-md-3 col-sm-6">
+          <label class="form-label text-xs fw-semibold text-muted mb-1">PO STATUS</label>
+          <select class="form-select form-select-sm custom-select" [(ngModel)]="selectedPoStatus">
+            <option value="">All</option>
+            <option *ngFor="let s of metadata.poStatuses" [value]="s.value">{{ s.label }}</option>
+          </select>
+        </div>
+
+        <div class="col-xl-2 col-md-3 col-sm-6">
+          <label class="form-label text-xs fw-semibold text-muted mb-1">DELIVERY STATUS</label>
+          <select class="form-select form-select-sm custom-select" [(ngModel)]="selectedDeliveryStatus">
+            <option value="">All Delivery Statuses</option>
+            <option *ngFor="let d of metadata.deliveryStatuses" [value]="d.value">{{ d.label }}</option>
+          </select>
+        </div>
+
+        <div class="col-xl-1 col-md-3 col-sm-6">
+          <label class="form-label text-xs fw-semibold text-muted mb-1">TIMELINESS</label>
+          <select class="form-select form-select-sm custom-select" [(ngModel)]="selectedTimeliness">
+            <option value="">All</option>
+            <option value="On-Time">On-Time</option>
+            <option value="Delayed">Delayed</option>
+          </select>
+        </div>
+
+        <div class="col-xl-2 col-md-4 col-sm-12 d-flex gap-2 justify-content-end ms-auto">
+          <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" (click)="resetFilters()">
+            <i class="ft-rotate-ccw"></i>
+            <span>Reset</span>
+          </button>
+          <button type="button" class="btn btn-sm btn-primary d-flex align-items-center gap-1 px-3" (click)="applyFilters()">
+            <i class="ft-filter"></i>
+            <span>Apply</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10 KPI Cards -->
+  <div class="kpi-grid mb-4">
+    <!-- 1. Total POs -->
+    <div class="kpi-card">
+      <div class="kpi-card__top">
+        <span class="kpi-card__title">Total Purchase Orders</span>
+        <div class="kpi-card__icon kpi-card__icon--primary"><i class="ft-shopping-cart"></i></div>
+      </div>
+      <div class="kpi-card__value">{{ summary?.totalPurchaseOrders | number }}</div>
+      <div class="kpi-card__footer">
+        <span class="trend-badge" *ngIf="summary?.poCountGrowthPercentage !== null" [ngClass]="(summary?.poCountGrowthPercentage || 0) >= 0 ? 'trend-badge--up' : 'trend-badge--down'">
+          {{ summary?.poCountGrowthPercentage | number:'1.1-1' }}%
+        </span>
+        <span class="text-muted text-xs ms-1">vs {{ summary?.previousPeriodLabel }}</span>
+      </div>
+    </div>
+
+    <!-- 2. Total PO Value -->
+    <div class="kpi-card">
+      <div class="kpi-card__top">
+        <span class="kpi-card__title">Total PO Value</span>
+        <div class="kpi-card__icon kpi-card__icon--blue">
+          <span class="fw-bold" style="font-size: 11px; line-height: 1;">SAR</span>
+        </div>
+      </div>
+      <div class="kpi-card__value">{{ summary?.totalPoValue | number:'1.2-2' }} <span class="kpi-card__currency">{{ summary?.currency }}</span></div>
+      <div class="kpi-card__footer">
+        <span class="trend-badge" *ngIf="summary?.poValueGrowthPercentage !== null" [ngClass]="(summary?.poValueGrowthPercentage || 0) >= 0 ? 'trend-badge--up' : 'trend-badge--down'">
+          {{ summary?.poValueGrowthPercentage | number:'1.1-1' }}%
+        </span>
+        <span class="text-muted text-xs ms-1">Confirmed PO commitment</span>
+      </div>
+    </div>
+
+    <!-- 3. Open POs -->
+    <div class="kpi-card">
+      <div class="kpi-card__top">
+        <span class="kpi-card__title">Open Purchase Orders</span>
+        <div class="kpi-card__icon kpi-card__icon--cyan"><i class="ft-folder"></i></div>
+      </div>
+      <div class="kpi-card__value text-primary">{{ summary?.openPurchaseOrders | number }}</div>
+      <div class="kpi-card__footer"><span class="text-muted text-xs">Active POs awaiting full receipt</span></div>
+    </div>
+
+    <!-- 4. Delivered POs -->
+    <div class="kpi-card">
+      <div class="kpi-card__top">
+        <span class="kpi-card__title">Delivered POs</span>
+        <div class="kpi-card__icon kpi-card__icon--success"><i class="ft-check-circle"></i></div>
+      </div>
+      <div class="kpi-card__value text-success">{{ summary?.deliveredPurchaseOrders | number }}</div>
+      <div class="kpi-card__footer"><span class="text-muted text-xs">Fully received via GRN</span></div>
+    </div>
+
+    <!-- 5. Partially Delivered POs -->
+    <div class="kpi-card">
+      <div class="kpi-card__top">
+        <span class="kpi-card__title">Partially Delivered</span>
+        <div class="kpi-card__icon kpi-card__icon--purple"><i class="ft-pie-chart"></i></div>
+      </div>
+      <div class="kpi-card__value">{{ summary?.partiallyDeliveredPurchaseOrders | number }}</div>
+      <div class="kpi-card__footer"><span class="text-muted text-xs">Partial GRN receipt recorded</span></div>
+    </div>
+
+    <!-- 6. Pending Deliveries -->
+    <div class="kpi-card">
+      <div class="kpi-card__top">
+        <span class="kpi-card__title">Pending Deliveries</span>
+        <div class="kpi-card__icon kpi-card__icon--amber"><i class="ft-clock"></i></div>
+      </div>
+      <div class="kpi-card__value text-warning">{{ summary?.pendingDeliveries | number }}</div>
+      <div class="kpi-card__footer"><span class="text-muted text-xs">Unique POs awaiting completion</span></div>
+    </div>
+
+    <!-- 7. Overdue POs -->
+    <div class="kpi-card">
+      <div class="kpi-card__top">
+        <span class="kpi-card__title">Overdue POs</span>
+        <div class="kpi-card__icon kpi-card__icon--danger"><i class="ft-alert-triangle"></i></div>
+      </div>
+      <div class="kpi-card__value text-danger">{{ summary?.overduePurchaseOrders | number }}</div>
+      <div class="kpi-card__footer"><span class="text-muted text-xs">Past valid expected delivery date</span></div>
+    </div>
+
+    <!-- 8. On-Time Delivery Rate -->
+    <div class="kpi-card">
+      <div class="kpi-card__top">
+        <span class="kpi-card__title">On-Time Delivery Rate</span>
+        <div class="kpi-card__icon kpi-card__icon--success"><i class="ft-target"></i></div>
+      </div>
+      <div class="kpi-card__value text-success">
+        {{ summary?.onTimeDeliveryRate !== null && summary?.onTimeDeliveryRate !== undefined ? (summary?.onTimeDeliveryRate | number:'1.1-1') + '%' : 'N/A' }}
+      </div>
+      <div class="kpi-card__footer">
+        <span class="text-muted text-xs">{{ summary?.onTimeDeliveriesCount || 0 }} / {{ summary?.eligibleCompletedDeliveriesCount || 0 }} eligible completed</span>
+      </div>
+    </div>
+
+    <!-- 9. Delivery Completion % -->
+    <div class="kpi-card">
+      <div class="kpi-card__top">
+        <span class="kpi-card__title">Delivery Completion</span>
+        <div class="kpi-card__icon kpi-card__icon--primary"><i class="ft-activity"></i></div>
+      </div>
+      <div class="kpi-card__value">{{ summary?.deliveryCompletionPercentage | number:'1.1-1' }}%</div>
+      <div class="kpi-card__footer">
+        <span class="text-muted text-xs">{{ summary?.totalDeliveredQuantity | number:'1.0-1' }} / {{ summary?.totalOrderedQuantity | number:'1.0-1' }} units</span>
+      </div>
+    </div>
+
+    <!-- 10. Pending Delivery Value -->
+    <div class="kpi-card">
+      <div class="kpi-card__top">
+        <span class="kpi-card__title">Pending Delivery Value</span>
+        <div class="kpi-card__icon kpi-card__icon--amber">
+          <span class="fw-bold" style="font-size: 11px; line-height: 1;">SAR</span>
+        </div>
+      </div>
+      <div class="kpi-card__value text-warning">{{ summary?.pendingDeliveryValue | number:'1.2-2' }} <span class="kpi-card__currency">{{ summary?.currency }}</span></div>
+      <div class="kpi-card__footer"><span class="text-muted text-xs">Proportional undelivered PO value</span></div>
+    </div>
+  </div>
+
+  <!-- Charts Row 1: 3 Donuts (PO Status, Delivery Status, On-Time vs Delayed) -->
+  <div class="row g-3 mb-4">
+    <div class="col-lg-4">
+      <div class="card chart-card h-100 shadow-sm border-0">
+        <div class="card-header bg-white border-0 py-3">
+          <h6 class="chart-card__title m-0 fw-bold">Purchase Order Status Distribution</h6>
+        </div>
+        <div class="card-body p-3 d-flex align-items-center justify-content-center">
+          <apx-chart *ngIf="!loadingCharts && poStatusDonut.series?.length"
+            [series]="poStatusDonut.series" [chart]="poStatusDonut.chart" [labels]="poStatusDonut.labels"
+            [colors]="poStatusDonut.colors" [plotOptions]="poStatusDonut.plotOptions"
+            [legend]="poStatusDonut.legend" [dataLabels]="poStatusDonut.dataLabels">
+          </apx-chart>
+          <div *ngIf="!loadingCharts && !poStatusDonut.series?.length" class="empty-chart"><p>No PO data.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card chart-card h-100 shadow-sm border-0">
+        <div class="card-header bg-white border-0 py-3">
+          <h6 class="chart-card__title m-0 fw-bold">Delivery Status Distribution (GRN)</h6>
+        </div>
+        <div class="card-body p-3 d-flex align-items-center justify-content-center">
+          <apx-chart *ngIf="!loadingCharts && deliveryStatusDonut.series?.length"
+            [series]="deliveryStatusDonut.series" [chart]="deliveryStatusDonut.chart" [labels]="deliveryStatusDonut.labels"
+            [colors]="deliveryStatusDonut.colors" [plotOptions]="deliveryStatusDonut.plotOptions"
+            [legend]="deliveryStatusDonut.legend" [dataLabels]="deliveryStatusDonut.dataLabels">
+          </apx-chart>
+          <div *ngIf="!loadingCharts && !deliveryStatusDonut.series?.length" class="empty-chart"><p>No delivery data.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card chart-card h-100 shadow-sm border-0">
+        <div class="card-header bg-white border-0 py-3">
+          <h6 class="chart-card__title m-0 fw-bold">On-Time vs Delayed Deliveries</h6>
+        </div>
+        <div class="card-body p-3 d-flex align-items-center justify-content-center">
+          <apx-chart *ngIf="!loadingCharts && onTimeVsDelayedDonut.series?.length"
+            [series]="onTimeVsDelayedDonut.series" [chart]="onTimeVsDelayedDonut.chart" [labels]="onTimeVsDelayedDonut.labels"
+            [colors]="onTimeVsDelayedDonut.colors" [plotOptions]="onTimeVsDelayedDonut.plotOptions"
+            [legend]="onTimeVsDelayedDonut.legend" [dataLabels]="onTimeVsDelayedDonut.dataLabels">
+          </apx-chart>
+          <div *ngIf="!loadingCharts && !onTimeVsDelayedDonut.series?.length" class="empty-chart text-center">
+            <p class="mb-1">No records with valid expected/actual delivery dates.</p>
+            <small class="text-muted">({{ chartsData?.onTimeVsDelayed?.missingDateCount || 0 }} POs missing delivery dates)</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 2: PO Trend + Delivery Performance Trend -->
+  <div class="row g-3 mb-4">
+    <div class="col-lg-6">
+      <div class="card chart-card h-100 shadow-sm border-0">
+        <div class="card-header bg-white border-0 py-3">
+          <h6 class="chart-card__title m-0 fw-bold">Purchase Order Value Trend</h6>
+        </div>
+        <div class="card-body p-3">
+          <apx-chart *ngIf="!loadingCharts && poTrendChart.series?.length"
+            [series]="poTrendChart.series" [chart]="poTrendChart.chart" [xaxis]="poTrendChart.xaxis"
+            [yaxis]="poTrendChart.yaxis" [stroke]="poTrendChart.stroke" [colors]="poTrendChart.colors"
+            [fill]="poTrendChart.fill" [grid]="poTrendChart.grid" [tooltip]="poTrendChart.tooltip"
+            [legend]="poTrendChart.legend" [dataLabels]="poTrendChart.dataLabels">
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card chart-card h-100 shadow-sm border-0">
+        <div class="card-header bg-white border-0 py-3">
+          <h6 class="chart-card__title m-0 fw-bold">Delivery Performance Trend</h6>
+        </div>
+        <div class="card-body p-3">
+          <apx-chart *ngIf="!loadingCharts && deliveryTrendChart.series?.length"
+            [series]="deliveryTrendChart.series" [chart]="deliveryTrendChart.chart" [xaxis]="deliveryTrendChart.xaxis"
+            [yaxis]="deliveryTrendChart.yaxis" [stroke]="deliveryTrendChart.stroke" [colors]="deliveryTrendChart.colors"
+            [grid]="deliveryTrendChart.grid" [legend]="deliveryTrendChart.legend" [dataLabels]="deliveryTrendChart.dataLabels">
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 3: Vendor Delivery Performance + Entity PO Analysis -->
+  <div class="row g-3 mb-4">
+    <div class="col-lg-6">
+      <div class="card chart-card h-100 shadow-sm border-0">
+        <div class="card-header bg-white border-0 py-3">
+          <h6 class="chart-card__title m-0 fw-bold">Vendor-wise Delivery Performance</h6>
+        </div>
+        <div class="card-body p-3">
+          <apx-chart *ngIf="!loadingCharts && chartsData?.vendorDeliveryPerformance?.length"
+            [series]="vendorDeliveryChart.series" [chart]="vendorDeliveryChart.chart"
+            [xaxis]="vendorDeliveryChart.xaxis" [plotOptions]="vendorDeliveryChart.plotOptions"
+            [colors]="vendorDeliveryChart.colors" [grid]="vendorDeliveryChart.grid"
+            [legend]="vendorDeliveryChart.legend" [dataLabels]="vendorDeliveryChart.dataLabels">
+          </apx-chart>
+          <div *ngIf="!loadingCharts && !chartsData?.vendorDeliveryPerformance?.length" class="empty-chart"><p>No vendor data.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card chart-card h-100 shadow-sm border-0">
+        <div class="card-header bg-white border-0 py-3">
+          <h6 class="chart-card__title m-0 fw-bold">Procurement Entity-wise PO Analysis</h6>
+        </div>
+        <div class="card-body p-3">
+          <apx-chart *ngIf="!loadingCharts && chartsData?.entityPoAnalysis?.length"
+            [series]="entityPoChart.series" [chart]="entityPoChart.chart" [xaxis]="entityPoChart.xaxis"
+            [plotOptions]="entityPoChart.plotOptions" [colors]="entityPoChart.colors"
+            [grid]="entityPoChart.grid" [legend]="entityPoChart.legend" [dataLabels]="entityPoChart.dataLabels">
+          </apx-chart>
+          <div *ngIf="!loadingCharts && !chartsData?.entityPoAnalysis?.length" class="empty-chart"><p>No entity PO data.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 4: Outstanding Delivery Value by Vendor -->
+  <div class="card chart-card mb-4 shadow-sm border-0" *ngIf="chartsData?.outstandingDeliveryAnalysis?.length">
+    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center py-3">
+      <h6 class="chart-card__title m-0 fw-bold">Outstanding Delivery Value by Vendor</h6>
+      <span class="text-muted text-xs">Undelivered PO value ({{ summary?.currency || 'SAR' }})</span>
+    </div>
+    <div class="card-body p-3">
+      <apx-chart *ngIf="!loadingCharts"
+        [series]="outstandingVendorChart.series" [chart]="outstandingVendorChart.chart"
+        [xaxis]="outstandingVendorChart.xaxis" [plotOptions]="outstandingVendorChart.plotOptions"
+        [colors]="outstandingVendorChart.colors" [grid]="outstandingVendorChart.grid"
+        [tooltip]="outstandingVendorChart.tooltip" [dataLabels]="outstandingVendorChart.dataLabels">
+      </apx-chart>
+    </div>
+  </div>
+</div>

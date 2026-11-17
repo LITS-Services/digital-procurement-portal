@@ -1,0 +1,414 @@
+<div class="proc-reports-page">
+  <!-- Header -->
+  <div class="reports-header d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div>
+      <h1 class="reports-title m-0">Spend Analysis Report</h1>
+      <p class="reports-subtitle m-0 text-muted mt-1">
+        Vendor &amp; Procurement Entity expenditure intelligence for
+        <span class="badge badge-subtle-primary">{{ summary?.periodLabel || selectedPreset }}</span>
+        <span class="badge badge-subtle-info ms-2" style="margin-left: 8px;">
+          <i class="ft-briefcase me-1"></i>{{ activeEntityLabel }}
+        </span>
+      </p>
+    </div>
+
+    <!-- Export Actions -->
+    <div class="reports-actions d-flex align-items-center gap-2 mt-2 mt-md-0">
+      <div ngbDropdown class="d-inline-block">
+        <button type="button" class="btn btn-primary d-flex align-items-center gap-2" id="spendExportDd" ngbDropdownToggle [disabled]="exportingPdf">
+          <i class="ft-download" *ngIf="!exportingPdf"></i>
+          <span class="spinner-border spinner-border-sm" *ngIf="exportingPdf" role="status"></span>
+          <span>{{ exportingPdf ? 'Generating PDF...' : 'Export PDF' }}</span>
+        </button>
+        <div ngbDropdownMenu aria-labelledby="spendExportDd" class="dropdown-menu-end shadow-sm">
+          <button ngbDropdownItem (click)="exportPdf('summary')" class="d-flex align-items-center justify-content-start text-start py-2" style="justify-content: flex-start !important; gap: 10px;">
+            <i class="ft-file-text text-primary flex-shrink-0"></i>
+            <div>
+              <div class="fw-bold">Summary PDF</div>
+              <small class="text-muted">KPIs, vendor &amp; entity breakdown</small>
+            </div>
+          </button>
+          <div class="dropdown-divider"></div>
+          <button ngbDropdownItem (click)="exportPdf('detailed')" class="d-flex align-items-center justify-content-start text-start py-2" style="justify-content: flex-start !important; gap: 10px;">
+            <i class="ft-layers text-success flex-shrink-0"></i>
+            <div>
+              <div class="fw-bold">Detailed PDF</div>
+              <small class="text-muted">Includes full Purchase Order listing</small>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Alert -->
+  <div class="alert alert-danger d-flex justify-content-between align-items-center mb-3" *ngIf="errorMessage">
+    <span><i class="ft-alert-circle me-2"></i>{{ errorMessage }}</span>
+    <button type="button" class="btn btn-sm btn-outline-danger" (click)="applyFilters()">Retry</button>
+  </div>
+
+  <!-- Multi-Currency Advisory -->
+  <div class="alert alert-warning py-2 px-3 mb-3 text-xs d-flex align-items-center" *ngIf="summary?.hasMultipleCurrencies && !selectedCurrency">
+    <i class="ft-info me-2"></i>
+    <span>Multiple currencies detected ({{ summary?.currenciesPresent?.join(', ') }}). Select a specific currency filter to isolate spend without cross-currency mixing.</span>
+  </div>
+
+  <!-- Filters Card -->
+  <div class="card filter-card mb-4 shadow-sm border-0">
+    <div class="card-body p-3">
+      <div class="row g-2 align-items-end">
+        <!-- Date Preset -->
+        <div class="col-xl-2 col-md-3 col-sm-6">
+          <label class="form-label text-xs fw-semibold text-muted mb-1">DATE PERIOD</label>
+          <select class="form-select form-select-sm custom-select" [(ngModel)]="selectedPreset" (change)="selectedPreset !== 'Custom' && applyFilters()">
+            <option *ngFor="let p of presets" [value]="p.value">{{ p.label }}</option>
+          </select>
+        </div>
+
+        <!-- Custom From Date -->
+        <div class="col-xl-2 col-md-3 col-sm-6" *ngIf="selectedPreset === 'Custom'">
+          <label class="form-label text-xs fw-semibold text-muted mb-1">FROM DATE</label>
+          <input type="date" class="form-control form-control-sm" [(ngModel)]="customFromDate" />
+        </div>
+
+        <!-- Custom To Date -->
+        <div class="col-xl-2 col-md-3 col-sm-6" *ngIf="selectedPreset === 'Custom'">
+          <label class="form-label text-xs fw-semibold text-muted mb-1">TO DATE</label>
+          <input type="date" class="form-control form-control-sm" [(ngModel)]="customToDate" />
+        </div>
+
+        <!-- Procurement Entity Filter (Authorized Companies Only) -->
+        <div class="col-xl-2 col-md-4 col-sm-6">
+          <label class="form-label text-xs fw-semibold text-muted mb-1">PROCUREMENT ENTITY</label>
+          <select class="form-select form-select-sm custom-select" [(ngModel)]="selectedEntityId" (change)="onEntityFilterChange()">
+            <option [ngValue]="null">All Procurement Entities ({{ metadata.entities.length }})</option>
+            <option *ngFor="let e of metadata.entities" [ngValue]="e.id">{{ e.name }}</option>
+          </select>
+        </div>
+
+        <!-- Vendor Filter -->
+        <div class="col-xl-2 col-md-4 col-sm-6">
+          <label class="form-label text-xs fw-semibold text-muted mb-1">VENDOR</label>
+          <select class="form-select form-select-sm custom-select" [(ngModel)]="selectedVendorId">
+            <option value="">All Vendors ({{ metadata.vendors.length }})</option>
+            <option *ngFor="let v of metadata.vendors" [value]="v.value">{{ v.label }}</option>
+          </select>
+        </div>
+
+        <!-- PO Status -->
+        <div class="col-xl-1 col-md-3 col-sm-6">
+          <label class="form-label text-xs fw-semibold text-muted mb-1">PO STATUS</label>
+          <select class="form-select form-select-sm custom-select" [(ngModel)]="selectedPoStatus">
+            <option value="">All</option>
+            <option *ngFor="let s of metadata.poStatuses" [value]="s.value">{{ s.label }}</option>
+          </select>
+        </div>
+
+        <!-- Currency -->
+        <div class="col-xl-1 col-md-2 col-sm-6">
+          <label class="form-label text-xs fw-semibold text-muted mb-1">CURRENCY</label>
+          <select class="form-select form-select-sm custom-select" [(ngModel)]="selectedCurrency">
+            <option value="">All</option>
+            <option *ngFor="let c of metadata.currencies" [value]="c.value">{{ c.label }}</option>
+          </select>
+        </div>
+
+        <!-- Category (if available in DB) -->
+        <div class="col-xl-2 col-md-3 col-sm-6" *ngIf="metadata.categories.length > 0">
+          <label class="form-label text-xs fw-semibold text-muted mb-1">CATEGORY</label>
+          <select class="form-select form-select-sm custom-select" [(ngModel)]="selectedCategory">
+            <option value="">All Categories</option>
+            <option *ngFor="let cat of metadata.categories" [value]="cat.value">{{ cat.label }}</option>
+          </select>
+        </div>
+
+        <!-- Actions -->
+        <div class="col-xl-2 col-md-4 col-sm-12 d-flex gap-2 justify-content-end ms-auto">
+          <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" (click)="resetFilters()">
+            <i class="ft-rotate-ccw"></i>
+            <span>Reset</span>
+          </button>
+          <button type="button" class="btn btn-sm btn-primary d-flex align-items-center gap-1 px-3" (click)="applyFilters()">
+            <i class="ft-filter"></i>
+            <span>Apply</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Cards Grid (9 Cards) -->
+  <div class="kpi-grid mb-4">
+    <!-- 1. Total Procurement Spend -->
+    <div class="kpi-card">
+      <div class="kpi-card__top">
+        <span class="kpi-card__title">Total Procurement Spend</span>
+        <div class="kpi-card__icon kpi-card__icon--primary">
+          <span class="fw-bold" style="font-size: 11px; line-height: 1;">SAR</span>
+        </div>
+      </div>
+      <div class="kpi-card__value">
+        {{ summary?.totalProcurementSpend | number:'1.2-2' }} <span class="kpi-card__currency">{{ summary?.currency }}</span>
+      </div>
+      <div class="kpi-card__footer">
+        <span class="trend-badge" *ngIf="summary?.spendGrowthPercentage !== null" [ngClass]="(summary?.spendGrowthPercentage || 0) >= 0 ? 'trend-badge--up' : 'trend-badge--down'">
+          <i [class]="(summary?.spendGrowthPercentage || 0) >= 0 ? 'ft-arrow-up-right' : 'ft-arrow-down-right'"></i>
+          {{ summary?.spendGrowthPercentage | number:'1.1-1' }}%
+        </span>
+        <span class="text-muted text-xs ms-1">{{ summary?.spendGrowthPercentage !== null ? 'vs ' + summary?.previousPeriodLabel : 'Confirmed PO value' }}</span>
+      </div>
+    </div>
+
+    <!-- 2. Total Vendors -->
+    <div class="kpi-card">
+      <div class="kpi-card__top">
+        <span class="kpi-card__title">Active Vendors</span>
+        <div class="kpi-card__icon kpi-card__icon--purple">
+          <i class="ft-users"></i>
+        </div>
+      </div>
+      <div class="kpi-card__value">{{ summary?.totalVendors | number }}</div>
+      <div class="kpi-card__footer">
+        <span class="trend-badge" *ngIf="summary?.vendorsGrowthPercentage !== null" [ngClass]="(summary?.vendorsGrowthPercentage || 0) >= 0 ? 'trend-badge--up' : 'trend-badge--down'">
+          {{ summary?.vendorsGrowthPercentage | number:'1.1-1' }}%
+        </span>
+        <span class="text-muted text-xs ms-1">Distinct vendors with POs</span>
+      </div>
+    </div>
+
+    <!-- 3. Total Purchase Orders -->
+    <div class="kpi-card">
+      <div class="kpi-card__top">
+        <span class="kpi-card__title">Total Purchase Orders</span>
+        <div class="kpi-card__icon kpi-card__icon--cyan">
+          <i class="ft-shopping-cart"></i>
+        </div>
+      </div>
+      <div class="kpi-card__value">{{ summary?.totalPurchaseOrders | number }}</div>
+      <div class="kpi-card__footer">
+        <span class="trend-badge" *ngIf="summary?.poGrowthPercentage !== null" [ngClass]="(summary?.poGrowthPercentage || 0) >= 0 ? 'trend-badge--up' : 'trend-badge--down'">
+          {{ summary?.poGrowthPercentage | number:'1.1-1' }}%
+        </span>
+        <span class="text-muted text-xs ms-1">vs {{ summary?.previousPeriodLabel }}</span>
+      </div>
+    </div>
+
+    <!-- 4. Average PO Value -->
+    <div class="kpi-card">
+      <div class="kpi-card__top">
+        <span class="kpi-card__title">Average PO Value</span>
+        <div class="kpi-card__icon kpi-card__icon--blue">
+          <i class="ft-bar-chart-2"></i>
+        </div>
+      </div>
+      <div class="kpi-card__value">
+        {{ summary?.averagePoValue | number:'1.2-2' }} <span class="kpi-card__currency">{{ summary?.currency }}</span>
+      </div>
+      <div class="kpi-card__footer">
+        <span class="text-muted text-xs">Total Spend / PO Count</span>
+      </div>
+    </div>
+
+    <!-- 5. Highest Spending Vendor -->
+    <div class="kpi-card">
+      <div class="kpi-card__top">
+        <span class="kpi-card__title">Highest Spending Vendor</span>
+        <div class="kpi-card__icon kpi-card__icon--amber">
+          <i class="ft-award"></i>
+        </div>
+      </div>
+      <div class="kpi-card__value kpi-card__value--sm text-truncate" [title]="summary?.highestSpendingVendorName || '-'">
+        {{ summary?.highestSpendingVendorName || '-' }}
+      </div>
+      <div class="kpi-card__footer">
+        <span class="fw-bold text-primary">{{ summary?.highestSpendingVendorAmount | number:'1.0-0' }} {{ summary?.currency }}</span>
+        <span class="text-muted text-xs ms-1">({{ summary?.highestSpendingVendorShare | number:'1.1-1' }}% share)</span>
+      </div>
+    </div>
+
+    <!-- 6. Highest Spending Entity -->
+    <div class="kpi-card">
+      <div class="kpi-card__top">
+        <span class="kpi-card__title">Top Procurement Entity</span>
+        <div class="kpi-card__icon kpi-card__icon--primary">
+          <i class="ft-briefcase"></i>
+        </div>
+      </div>
+      <div class="kpi-card__value kpi-card__value--sm text-truncate" [title]="summary?.highestSpendingEntityName || '-'">
+        {{ summary?.highestSpendingEntityName || '-' }}
+      </div>
+      <div class="kpi-card__footer">
+        <span class="fw-bold text-primary">{{ summary?.highestSpendingEntityAmount | number:'1.0-0' }} {{ summary?.currency }}</span>
+        <span class="text-muted text-xs ms-1">({{ summary?.highestSpendingEntityShare | number:'1.1-1' }}% share)</span>
+      </div>
+    </div>
+
+    <!-- 7. Total Invoiced Amount -->
+    <div class="kpi-card">
+      <div class="kpi-card__top">
+        <span class="kpi-card__title">Total Invoiced Amount</span>
+        <div class="kpi-card__icon kpi-card__icon--purple">
+          <i class="ft-file-text"></i>
+        </div>
+      </div>
+      <div class="kpi-card__value">
+        {{ summary?.totalInvoicedAmount | number:'1.2-2' }} <span class="kpi-card__currency">{{ summary?.currency }}</span>
+      </div>
+      <div class="kpi-card__footer">
+        <span class="text-muted text-xs">Submitted invoices linked to POs</span>
+      </div>
+    </div>
+
+    <!-- 8. Total Paid Amount -->
+    <div class="kpi-card">
+      <div class="kpi-card__top">
+        <span class="kpi-card__title">Total Paid Amount</span>
+        <div class="kpi-card__icon kpi-card__icon--success">
+          <i class="ft-check-circle"></i>
+        </div>
+      </div>
+      <div class="kpi-card__value text-success">
+        {{ summary?.totalPaidAmount | number:'1.2-2' }} <span class="kpi-card__currency">{{ summary?.currency }}</span>
+      </div>
+      <div class="kpi-card__footer">
+        <span class="text-muted text-xs">Confirmed paid invoices</span>
+      </div>
+    </div>
+
+    <!-- 9. Outstanding Amount -->
+    <div class="kpi-card">
+      <div class="kpi-card__top">
+        <span class="kpi-card__title">Outstanding Amount</span>
+        <div class="kpi-card__icon kpi-card__icon--danger">
+          <i class="ft-alert-circle"></i>
+        </div>
+      </div>
+      <div class="kpi-card__value text-danger">
+        {{ summary?.outstandingAmount | number:'1.2-2' }} <span class="kpi-card__currency">{{ summary?.currency }}</span>
+      </div>
+      <div class="kpi-card__footer">
+        <span class="text-muted text-xs">Unpaid invoiced balance</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 1: Spend Trend + Entity Spend Donut -->
+  <div class="row g-3 mb-4">
+    <div class="col-lg-8">
+      <div class="card chart-card h-100 shadow-sm border-0">
+        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center py-3">
+          <h6 class="chart-card__title m-0 fw-bold">Procurement Spend Trend Analysis</h6>
+          <span class="badge badge-subtle-primary">{{ summary?.currency || 'SAR' }}</span>
+        </div>
+        <div class="card-body p-3">
+          <div *ngIf="loadingCharts" class="chart-loader"><span class="spinner-border text-primary"></span></div>
+          <apx-chart *ngIf="!loadingCharts && spendTrendChart.series?.length"
+            [series]="spendTrendChart.series" [chart]="spendTrendChart.chart" [xaxis]="spendTrendChart.xaxis"
+            [yaxis]="spendTrendChart.yaxis" [stroke]="spendTrendChart.stroke" [colors]="spendTrendChart.colors"
+            [fill]="spendTrendChart.fill" [grid]="spendTrendChart.grid" [tooltip]="spendTrendChart.tooltip"
+            [legend]="spendTrendChart.legend" [dataLabels]="spendTrendChart.dataLabels">
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card chart-card h-100 shadow-sm border-0">
+        <div class="card-header bg-white border-0 py-3">
+          <h6 class="chart-card__title m-0 fw-bold">Procurement Entity Spend Distribution</h6>
+        </div>
+        <div class="card-body p-3 d-flex align-items-center justify-content-center">
+          <div *ngIf="loadingCharts" class="chart-loader"><span class="spinner-border text-primary"></span></div>
+          <apx-chart *ngIf="!loadingCharts && entityDonutChart.series?.length"
+            [series]="entityDonutChart.series" [chart]="entityDonutChart.chart" [labels]="entityDonutChart.labels"
+            [colors]="entityDonutChart.colors" [plotOptions]="entityDonutChart.plotOptions"
+            [legend]="entityDonutChart.legend" [dataLabels]="entityDonutChart.dataLabels">
+          </apx-chart>
+          <div *ngIf="!loadingCharts && !entityDonutChart.series?.length" class="empty-chart">
+            <p>No entity spend data for this period.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 2: Vendor-wise Spend Distribution (with All Vendors toggle) -->
+  <div class="card chart-card mb-4 shadow-sm border-0">
+    <div class="card-header bg-white border-0 d-flex flex-wrap justify-content-between align-items-center py-3 gap-2">
+      <div>
+        <h6 class="chart-card__title m-0 fw-bold">Vendor-wise Spend Distribution</h6>
+      </div>
+      <button type="button" class="btn btn-sm btn-outline-primary"
+        *ngIf="(chartsData?.totalDistinctVendors || 0) > 10"
+        (click)="toggleAllVendorsChart()">
+        {{ showAllVendorsChart ? 'Show Top 10 Vendors' : 'View All ' + chartsData?.totalDistinctVendors + ' Vendors' }}
+      </button>
+    </div>
+    <div class="card-body p-3">
+      <div *ngIf="loadingCharts" class="chart-loader"><span class="spinner-border text-primary"></span></div>
+      <apx-chart *ngIf="!loadingCharts && chartsData?.vendorSpendDistribution?.length"
+        [series]="vendorSpendChart.series" [chart]="vendorSpendChart.chart" [xaxis]="vendorSpendChart.xaxis"
+        [plotOptions]="vendorSpendChart.plotOptions" [colors]="vendorSpendChart.colors"
+        [grid]="vendorSpendChart.grid" [tooltip]="vendorSpendChart.tooltip" [dataLabels]="vendorSpendChart.dataLabels">
+      </apx-chart>
+      <div *ngIf="!loadingCharts && !chartsData?.vendorSpendDistribution?.length" class="empty-chart">
+        <p>No vendor spend transactions found for the selected filters.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 3: Entity Comparison + PO Status + Spend Composition -->
+  <div class="row g-3 mb-4">
+    <div class="col-lg-5">
+      <div class="card chart-card h-100 shadow-sm border-0">
+        <div class="card-header bg-white border-0 py-3">
+          <h6 class="chart-card__title m-0 fw-bold">Procurement Entity Comparison</h6>
+        </div>
+        <div class="card-body p-3">
+          <apx-chart *ngIf="!loadingCharts && chartsData?.entityComparison?.length"
+            [series]="entityComparisonChart.series" [chart]="entityComparisonChart.chart"
+            [xaxis]="entityComparisonChart.xaxis" [yaxis]="entityComparisonChart.yaxis"
+            [colors]="entityComparisonChart.colors" [plotOptions]="entityComparisonChart.plotOptions"
+            [grid]="entityComparisonChart.grid" [legend]="entityComparisonChart.legend"
+            [tooltip]="entityComparisonChart.tooltip" [dataLabels]="entityComparisonChart.dataLabels">
+          </apx-chart>
+          <div *ngIf="!loadingCharts && !chartsData?.entityComparison?.length" class="empty-chart"><p>No data available.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-3">
+      <div class="card chart-card h-100 shadow-sm border-0">
+        <div class="card-header bg-white border-0 py-3">
+          <h6 class="chart-card__title m-0 fw-bold">Purchase Order Status</h6>
+        </div>
+        <div class="card-body p-3 d-flex align-items-center justify-content-center">
+          <apx-chart *ngIf="!loadingCharts && poStatusDonutChart.series?.length"
+            [series]="poStatusDonutChart.series" [chart]="poStatusDonutChart.chart"
+            [labels]="poStatusDonutChart.labels" [colors]="poStatusDonutChart.colors"
+            [plotOptions]="poStatusDonutChart.plotOptions" [legend]="poStatusDonutChart.legend"
+            [dataLabels]="poStatusDonutChart.dataLabels">
+          </apx-chart>
+          <div *ngIf="!loadingCharts && !poStatusDonutChart.series?.length" class="empty-chart"><p>No PO statuses.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card chart-card h-100 shadow-sm border-0">
+        <div class="card-header bg-white border-0 py-3">
+          <h6 class="chart-card__title m-0 fw-bold">Spend Composition ({{ summary?.currency || 'SAR' }})</h6>
+        </div>
+        <div class="card-body p-3">
+          <apx-chart *ngIf="!loadingCharts && spendCompositionChart.series?.length"
+            [series]="spendCompositionChart.series" [chart]="spendCompositionChart.chart"
+            [xaxis]="spendCompositionChart.xaxis" [yaxis]="spendCompositionChart.yaxis"
+            [colors]="spendCompositionChart.colors" [plotOptions]="spendCompositionChart.plotOptions"
+            [grid]="spendCompositionChart.grid" [legend]="spendCompositionChart.legend"
+            [tooltip]="spendCompositionChart.tooltip" [dataLabels]="spendCompositionChart.dataLabels">
+          </apx-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
