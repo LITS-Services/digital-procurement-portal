@@ -58,8 +58,14 @@ export const ROUTES: RouteInfo[] = [
   {
     path: '', title: 'Reports', icon: 'ft-bar-chart-2', class: 'has-sub', badge: '', badgeClass: '', isExternalLink: false,
     submenu: [
-      { path: '/reports/spend-analysis', title: 'Spend Analysis', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] },
-      { path: '/reports/po-delivery-tracking', title: 'PO and Delivery Tracking', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [] }
+      {
+        path: '/reports/spend-analysis', title: 'Spend Analysis', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        formTypeId: FORM_IDS.SPEND_ANALYSIS_REPORT
+      },
+      {
+        path: '/reports/po-delivery-tracking', title: 'PO and Delivery Tracking', icon: 'ft-arrow-right submenu-icon', class: '', badge: '', badgeClass: '', isExternalLink: false, submenu: [],
+        formTypeId: FORM_IDS.PO_DELIVERY_TRACKING_REPORT
+      }
     ]
   },
   {
