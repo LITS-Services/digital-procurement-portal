@@ -1,5 +1,4 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import {
   ProcurementReportsService,
@@ -114,7 +113,6 @@ export class PoDeliveryTrackingComponent implements OnInit {
   constructor(
     private reportsService: ProcurementReportsService,
     private toastr: ToastrService,
-    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -326,11 +324,6 @@ export class PoDeliveryTrackingComponent implements OnInit {
       ],
       xaxis: { ...this.deliveryTrendChart.xaxis, categories: data.deliveryPerformanceTrend.map(t => t.period) }
     };
-  }
-
-  viewPo(poId: number | null): void {
-    if (!poId) return;
-    this.router.navigate(['/purchase-order'], { queryParams: { id: poId } });
   }
 
   printReport(): void {

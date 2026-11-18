@@ -202,9 +202,9 @@
           <tbody>
             <tr *ngFor="let r of poTable.items; let i = index">
               <td class="col-idx">{{ (poTable.pageNumber - 1) * poTable.pageSize + i + 1 }}</td>
-              <td><a href="javascript:void(0)" class="fw-bold text-primary text-decoration-none" (click)="viewPo(r.id)">{{ r.purchaseOrderNo }}</a></td>
-              <td>{{ r.entityName }}</td>
-              <td>{{ r.vendorName }}</td>
+              <td class="fw-bold col-code" [title]="r.purchaseOrderNo">{{ r.purchaseOrderNo }}</td>
+              <td class="cell-truncate" [title]="r.entityName">{{ r.entityName }}</td>
+              <td class="cell-truncate" [title]="r.vendorName">{{ r.vendorName }}</td>
               <td class="text-nowrap">{{ r.poDate | date:'dd MMM yyyy' }}</td>
               <td class="text-nowrap">{{ r.expectedDeliveryDate ? (r.expectedDeliveryDate | date:'dd MMM yyyy') : '—' }}</td>
               <td class="num fw-bold">{{ r.poAmount | number:'1.2-2' }}</td>
@@ -244,10 +244,10 @@
           <tbody>
             <tr *ngFor="let r of deliveryTable.items; let i = index">
               <td class="col-idx">{{ (deliveryTable.pageNumber - 1) * deliveryTable.pageSize + i + 1 }}</td>
-              <td class="fw-bold">{{ r.deliveryReference }}</td>
-              <td><a href="javascript:void(0)" class="text-primary fw-semibold text-decoration-none" (click)="viewPo(r.purchaseOrderId)">{{ r.purchaseOrderNo }}</a></td>
-              <td>{{ r.entityName }}</td>
-              <td>{{ r.vendorName }}</td>
+              <td class="fw-bold col-code" [title]="r.deliveryReference">{{ r.deliveryReference }}</td>
+              <td class="fw-semibold col-code" [title]="r.purchaseOrderNo">{{ r.purchaseOrderNo }}</td>
+              <td class="cell-truncate" [title]="r.entityName">{{ r.entityName }}</td>
+              <td class="cell-truncate" [title]="r.vendorName">{{ r.vendorName }}</td>
               <td class="text-nowrap">{{ r.deliveryDate | date:'dd MMM yyyy' }}</td>
               <td class="text-nowrap">{{ r.expectedDeliveryDate ? (r.expectedDeliveryDate | date:'dd MMM yyyy') : '—' }}</td>
               <td class="num fw-bold">{{ r.deliveredQuantity | number:'1.0-2' }}</td>
@@ -288,9 +288,9 @@
           <tbody>
             <tr *ngFor="let r of pendingTable.items; let i = index">
               <td class="col-idx">{{ (pendingTable.pageNumber - 1) * pendingTable.pageSize + i + 1 }}</td>
-              <td><a href="javascript:void(0)" class="fw-bold text-primary text-decoration-none" (click)="viewPo(r.purchaseOrderId)">{{ r.purchaseOrderNo }}</a></td>
-              <td>{{ r.entityName }}</td>
-              <td>{{ r.vendorName }}</td>
+              <td class="fw-bold col-code" [title]="r.purchaseOrderNo">{{ r.purchaseOrderNo }}</td>
+              <td class="cell-truncate" [title]="r.entityName">{{ r.entityName }}</td>
+              <td class="cell-truncate" [title]="r.vendorName">{{ r.vendorName }}</td>
               <td class="text-nowrap">{{ r.poDate | date:'dd MMM yyyy' }}</td>
               <td class="text-nowrap">{{ r.expectedDeliveryDate ? (r.expectedDeliveryDate | date:'dd MMM yyyy') : '—' }}</td>
               <td class="num fw-bold text-warning">{{ r.pendingValue | number:'1.2-2' }}</td>

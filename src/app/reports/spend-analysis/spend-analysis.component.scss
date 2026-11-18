@@ -466,6 +466,13 @@
 
   .num { text-align: right; white-space: nowrap; }
   .col-idx { width: 38px; text-align: center; color: var(--ink-muted); font-weight: 600; }
+  .col-code { white-space: nowrap; }
+  .cell-truncate {
+    max-width: 190px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 .ledger-pagination {

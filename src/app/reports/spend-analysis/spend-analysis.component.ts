@@ -1,5 +1,4 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import {
   ProcurementReportsService,
@@ -133,7 +132,6 @@ export class SpendAnalysisComponent implements OnInit {
   constructor(
     private reportsService: ProcurementReportsService,
     private toastr: ToastrService,
-    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -366,10 +364,6 @@ export class SpendAnalysisComponent implements OnInit {
       this.sortDirection = 'desc';
     }
     this.loadPoLedger(1);
-  }
-
-  viewPo(poId: number): void {
-    this.router.navigate(['/purchase-order'], { queryParams: { id: poId } });
   }
 
   printReport(): void {
