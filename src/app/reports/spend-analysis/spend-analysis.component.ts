@@ -1,11 +1,16 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import {
   ProcurementReportsService,
   ProcurementReportFilter,
   ProcurementReportsMetadata,
   SpendAnalysisSummary,
-  SpendAnalysisCharts
+  SpendAnalysisCharts,
+  VendorSpendItem,
+  EntitySpendItem,
+  SpendPurchaseOrderRow,
+  PaginatedReportResult
 } from '../services/procurement-reports.service';
 import {
   ApexAxisChartSeries,
@@ -45,7 +50,7 @@ export type ChartOptions = {
   standalone: false
 })
 export class SpendAnalysisComponent implements OnInit {
-  // Filters
+  // Report Parameters
   selectedPreset: string = 'ThisYear';
   customFromDate: string = '';
   customToDate: string = '';
@@ -54,7 +59,7 @@ export class SpendAnalysisComponent implements OnInit {
   selectedPoStatus: string = '';
   selectedCurrency: string = '';
   selectedCategory: string = '';
-  showAllVendorsChart: boolean = false;
+  generatedAt: Date = new Date();
 
   presets = [
     { value: 'Today', label: 'Today' },
@@ -75,143 +80,73 @@ export class SpendAnalysisComponent implements OnInit {
     dataLimitations: []
   };
 
-  // Summary & Charts
+  // Report Data
   summary: SpendAnalysisSummary | null = null;
   chartsData: SpendAnalysisCharts | null = null;
+
+  // Report Schedules & Transaction Ledger
+  vendorSchedule: VendorSpendItem[] = [];
+  entitySchedule: EntitySpendItem[] = [];
+  poLedger: PaginatedReportResult<SpendPurchaseOrderRow> = this.emptyPage();
+
+  searchTerm: string = '';
+  sortBy: string = 'podate';
+  sortDirection: 'asc' | 'desc' = 'desc';
 
   // Loading states
   loadingSummary = false;
   loadingCharts = false;
+  loadingSchedules = false;
+  loadingLedger = false;
   exportingPdf = false;
   errorMessage = '';
 
-  // ApexCharts configs
+  // Exhibit 2.1: Spend Trend
   spendTrendChart: ChartOptions = {
     series: [],
-    chart: { type: 'area', height: 290, toolbar: { show: false } },
+    chart: { type: 'area', height: 225, toolbar: { show: false } },
     dataLabels: { enabled: false },
-    stroke: { curve: 'smooth', width: 2.5 },
+    stroke: { curve: 'smooth', width: 2 },
     colors: ['#116aef', '#94a3b8'],
-    fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.35, opacityTo: 0.05 } },
-    xaxis: { categories: [], labels: { style: { colors: '#64748b', fontSize: '11px' } } },
-    yaxis: { labels: { formatter: (val: any) => this.formatShortNum(val), style: { colors: '#64748b' } } },
-    grid: { strokeDashArray: 4, borderColor: '#f1f5f9' },
-    tooltip: { y: { formatter: (val: any) => `${(Number(val) || 0).toLocaleString()} ${this.summary?.currency || 'SAR'}` } },
-    legend: { position: 'top', horizontalAlign: 'right', fontWeight: 600 }
+    fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.22, opacityTo: 0.02 } },
+    xaxis: { categories: [], labels: { style: { colors: '#64748b', fontSize: '10.5px' } } },
+    yaxis: { labels: { formatter: (val: any) => this.formatShortNum(val), style: { colors: '#64748b', fontSize: '10.5px' } } },
+    grid: { strokeDashArray: 3, borderColor: '#e2e8f0' },
+    tooltip: { y: { formatter: (val: any) => `${(Number(val) || 0).toLocaleString()} SAR` } },
+    legend: { position: 'top', horizontalAlign: 'right', fontWeight: 600, fontSize: '11px' }
   };
 
-  entityDonutChart: ChartOptions = {
-    series: [],
-    chart: { type: 'donut', height: 270 },
-    labels: [],
-    colors: ['#116aef', '#0ea5e9', '#22c55e', '#f59e0b', '#8b5cf6', '#ec4899', '#64748b'],
-    legend: { position: 'bottom', horizontalAlign: 'center', fontWeight: 600 },
-    dataLabels: { enabled: false },
-    plotOptions: {
-      pie: {
-        donut: {
-          size: '70%',
-          labels: {
-            show: true,
-            name: { show: true, fontSize: '13px', fontWeight: 700, color: '#334155' },
-            value: { show: true, fontSize: '18px', fontWeight: 800, color: '#0f172a', formatter: (val: any) => `${this.formatShortNum(val)}` },
-            total: {
-              show: true,
-              label: 'Total Spend',
-              fontSize: '13px',
-              fontWeight: 700,
-              color: '#0f172a',
-              formatter: () => `${this.formatShortNum(this.summary?.totalProcurementSpend ?? 0)}`
-            }
-          }
-        }
-      }
-    }
-  };
-
-  vendorSpendChart: ChartOptions = {
-    series: [],
-    chart: {
-      type: 'bar',
-      height: 300,
-      toolbar: { show: false }
-    },
-    plotOptions: { bar: { horizontal: true, barHeight: '60%', borderRadius: 4 } },
-    dataLabels: { enabled: false },
-    colors: ['#116aef'],
-    xaxis: { categories: [], labels: { formatter: (val: any) => this.formatShortNum(val) } },
-    grid: { strokeDashArray: 4, borderColor: '#f1f5f9' },
-    tooltip: { y: { formatter: (val: any) => `${(Number(val) || 0).toLocaleString()} ${this.summary?.currency || 'SAR'}` } }
-  };
-
-  entityComparisonChart: ChartOptions = {
-    series: [],
-    chart: { type: 'bar', height: 280, toolbar: { show: false } },
-    plotOptions: { bar: { horizontal: false, columnWidth: '52%', borderRadius: 4 } },
-    dataLabels: { enabled: false },
-    colors: ['#116aef', '#0ea5e9', '#22c55e'],
-    xaxis: { categories: [], labels: { style: { colors: '#64748b', fontSize: '11px' } } },
-    yaxis: { labels: { formatter: (val: any) => this.formatShortNum(val) } },
-    grid: { strokeDashArray: 4, borderColor: '#f1f5f9' },
-    legend: { position: 'top', horizontalAlign: 'right', fontWeight: 600 },
-    tooltip: { y: { formatter: (val: any) => `${(Number(val) || 0).toLocaleString()} ${this.summary?.currency || 'SAR'}` } }
-  };
-
-  poStatusDonutChart: ChartOptions = {
-    series: [],
-    chart: { type: 'donut', height: 265 },
-    labels: [],
-    colors: ['#116aef', '#22c55e', '#f59e0b', '#ef4444', '#64748b'],
-    legend: { position: 'bottom', horizontalAlign: 'center', fontWeight: 600 },
-    dataLabels: { enabled: false },
-    plotOptions: {
-      pie: {
-        donut: {
-          size: '70%',
-          labels: {
-            show: true,
-            name: { show: true, fontSize: '13px', fontWeight: 700, color: '#334155' },
-            value: { show: true, fontSize: '20px', fontWeight: 800, color: '#0f172a' },
-            total: {
-              show: true,
-              label: 'Total POs',
-              fontSize: '13px',
-              fontWeight: 700,
-              color: '#0f172a',
-              formatter: () => `${this.summary?.totalPurchaseOrders ?? 0}`
-            }
-          }
-        }
-      }
-    }
-  };
-
+  // Exhibit 2.2: Spend Composition
   spendCompositionChart: ChartOptions = {
     series: [],
-    chart: { type: 'bar', height: 265, toolbar: { show: false } },
-    plotOptions: { bar: { horizontal: false, columnWidth: '45%', borderRadius: 5, distributed: true } },
+    chart: { type: 'bar', height: 225, toolbar: { show: false } },
+    plotOptions: { bar: { horizontal: false, columnWidth: '42%', borderRadius: 3, distributed: true } },
     dataLabels: { enabled: false },
-    colors: ['#116aef', '#0ea5e9', '#22c55e', '#f59e0b'],
-    xaxis: { categories: ['PO Amount', 'Invoiced', 'Paid', 'Outstanding'], labels: { style: { colors: '#64748b', fontSize: '11px' } } },
-    yaxis: { labels: { formatter: (val: any) => this.formatShortNum(val) } },
-    grid: { strokeDashArray: 4, borderColor: '#f1f5f9' },
+    colors: ['#116aef', '#0284c7', '#16a34a', '#d97706'],
+    xaxis: { categories: ['PO Spend', 'Invoiced', 'Paid', 'Outstanding'], labels: { style: { colors: '#475569', fontSize: '11px', fontWeight: 600 } } },
+    yaxis: { labels: { formatter: (val: any) => this.formatShortNum(val), style: { colors: '#64748b', fontSize: '10.5px' } } },
+    grid: { strokeDashArray: 3, borderColor: '#e2e8f0' },
     legend: { show: false },
-    tooltip: { y: { formatter: (val: any) => `${(Number(val) || 0).toLocaleString()} ${this.summary?.currency || 'SAR'}` } }
+    tooltip: { y: { formatter: (val: any) => `${(Number(val) || 0).toLocaleString()} SAR` } }
   };
 
   constructor(
     private reportsService: ProcurementReportsService,
     private toastr: ToastrService,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    // Sync initial Procurement Entity with navbar switcher if present
     const savedEntity = localStorage.getItem('selectedCompanyId');
     if (savedEntity && savedEntity !== 'All' && !isNaN(Number(savedEntity))) {
       this.selectedEntityId = Number(savedEntity);
     }
     this.loadMetadata();
+  }
+
+  private emptyPage<T>(): PaginatedReportResult<T> {
+    return { items: [], totalCount: 0, pageNumber: 1, pageSize: 15, totalPages: 0, hasPreviousPage: false, hasNextPage: false };
   }
 
   private formatShortNum(val: any): string {
@@ -225,7 +160,6 @@ export class SpendAnalysisComponent implements OnInit {
     this.reportsService.getMetadata(this.selectedEntityId).subscribe({
       next: (meta) => {
         this.metadata = meta;
-        // Validate savedEntity against user's authorized entities
         if (this.selectedEntityId !== null && !meta.entities.some(e => e.id === this.selectedEntityId)) {
           this.selectedEntityId = null;
         }
@@ -263,7 +197,10 @@ export class SpendAnalysisComponent implements OnInit {
       poStatus: this.selectedPoStatus || undefined,
       currency: this.selectedCurrency || undefined,
       category: this.selectedCategory || undefined,
-      showAllVendors: this.showAllVendorsChart
+      showAllVendors: true,
+      searchTerm: this.searchTerm || undefined,
+      sortBy: this.sortBy || undefined,
+      sortDirection: this.sortDirection
     };
 
     if (this.selectedPreset === 'Custom') {
@@ -287,8 +224,11 @@ export class SpendAnalysisComponent implements OnInit {
       }
     }
 
+    this.generatedAt = new Date();
     this.loadSummary();
     this.loadCharts();
+    this.loadSchedules();
+    this.loadPoLedger(1);
   }
 
   resetFilters(): void {
@@ -300,13 +240,10 @@ export class SpendAnalysisComponent implements OnInit {
     this.selectedPoStatus = '';
     this.selectedCurrency = '';
     this.selectedCategory = '';
-    this.showAllVendorsChart = false;
+    this.searchTerm = '';
+    this.sortBy = 'podate';
+    this.sortDirection = 'desc';
     this.loadMetadata();
-  }
-
-  toggleAllVendorsChart(): void {
-    this.showAllVendorsChart = !this.showAllVendorsChart;
-    this.loadCharts();
   }
 
   loadSummary(): void {
@@ -342,60 +279,71 @@ export class SpendAnalysisComponent implements OnInit {
     });
   }
 
+  loadSchedules(): void {
+    this.loadingSchedules = true;
+    const baseFilter = this.getFilterParams();
+    baseFilter.searchTerm = undefined;
+    baseFilter.pageNumber = 1;
+    baseFilter.pageSize = 50;
+
+    this.reportsService.getVendorSpendTable(baseFilter).subscribe({
+      next: (res) => {
+        this.vendorSchedule = res.items || [];
+        this.loadingSchedules = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.vendorSchedule = [];
+        this.loadingSchedules = false;
+        this.cdr.detectChanges();
+      }
+    });
+
+    this.reportsService.getEntitySpendTable(baseFilter).subscribe({
+      next: (res) => {
+        this.entitySchedule = res.items || [];
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.entitySchedule = [];
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  loadPoLedger(page: number = 1): void {
+    this.loadingLedger = true;
+    const params = this.getFilterParams();
+    params.pageNumber = page;
+    params.pageSize = this.poLedger.pageSize;
+
+    this.reportsService.getSpendPurchaseOrders(params).subscribe({
+      next: (res) => {
+        this.poLedger = res;
+        this.loadingLedger = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.loadingLedger = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   private bindCharts(data: SpendAnalysisCharts): void {
-    // 1. Spend Trend
     this.spendTrendChart = {
       ...this.spendTrendChart,
       series: [
-        { name: 'Current Period Spend', data: data.spendTrend.map(t => t.currentSpend) },
-        { name: 'Previous Period Spend', data: data.spendTrend.map(t => t.previousSpend) }
+        { name: 'Current Period', data: data.spendTrend.map(t => t.currentSpend) },
+        { name: 'Prior Period', data: data.spendTrend.map(t => t.previousSpend) }
       ],
       xaxis: { ...this.spendTrendChart.xaxis, categories: data.spendTrend.map(t => t.period) }
     };
 
-    // 2. Entity Spend Donut
-    this.entityDonutChart = {
-      ...this.entityDonutChart,
-      series: data.entitySpendDistribution.map(e => e.totalSpend),
-      labels: data.entitySpendDistribution.map(e => `${e.entityName} (${e.percentageContribution}%)`)
-    };
-
-    // 3. Vendor Spend Distribution (Horizontal Bar)
-    const chartHeight = Math.max(270, data.vendorSpendDistribution.length * 36);
-    this.vendorSpendChart = {
-      ...this.vendorSpendChart,
-      chart: { ...this.vendorSpendChart.chart, height: chartHeight },
-      series: [{ name: 'Procurement Spend', data: data.vendorSpendDistribution.map(v => v.totalSpend) }],
-      xaxis: {
-        ...this.vendorSpendChart.xaxis,
-        categories: data.vendorSpendDistribution.map(v => `${v.vendorName} (${v.purchaseOrderCount} POs, ${v.percentageContribution}%)`)
-      }
-    };
-
-    // 4. Entity Comparison
-    this.entityComparisonChart = {
-      ...this.entityComparisonChart,
-      series: [
-        { name: 'PO Spend', data: data.entityComparison.map(e => e.totalSpend) },
-        { name: 'Invoiced', data: data.entityComparison.map(e => e.totalInvoicedAmount) },
-        { name: 'Paid', data: data.entityComparison.map(e => e.totalPaidAmount) }
-      ],
-      xaxis: { ...this.entityComparisonChart.xaxis, categories: data.entityComparison.map(e => e.entityName) }
-    };
-
-    // 5. PO Status Donut
-    this.poStatusDonutChart = {
-      ...this.poStatusDonutChart,
-      series: data.poStatusDistribution.map(s => s.count),
-      labels: data.poStatusDistribution.map(s => s.status),
-      colors: data.poStatusDistribution.map(s => s.color)
-    };
-
-    // 6. Spend Composition
     this.spendCompositionChart = {
       ...this.spendCompositionChart,
       series: [{
-        name: 'Amount',
+        name: 'Amount (SAR)',
         data: [
           data.spendComposition.poAmount,
           data.spendComposition.invoicedAmount,
@@ -406,34 +354,72 @@ export class SpendAnalysisComponent implements OnInit {
     };
   }
 
-  exportPdf(type: 'summary' | 'detailed'): void {
+  onSearchLedger(): void {
+    this.loadPoLedger(1);
+  }
+
+  onSortLedger(column: string): void {
+    if (this.sortBy === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = column;
+      this.sortDirection = 'desc';
+    }
+    this.loadPoLedger(1);
+  }
+
+  viewPo(poId: number): void {
+    this.router.navigate(['/purchase-order'], { queryParams: { id: poId } });
+  }
+
+  printReport(): void {
+    window.print();
+  }
+
+  exportPdf(): void {
     this.exportingPdf = true;
-    this.toastr.info(`Generating ${type === 'summary' ? 'Summary' : 'Detailed'} Spend Analysis PDF...`);
+    this.toastr.info('Generating Spend Analysis Report PDF...');
     const params = this.getFilterParams();
 
-    this.reportsService.exportSpendPdf(params, type).subscribe({
+    this.reportsService.exportSpendPdf(params, 'detailed').subscribe({
       next: (blob) => {
         this.exportingPdf = false;
-        const filename = `Spend_Analysis_${type}_${params.preset || 'Report'}_${new Date().toISOString().slice(0, 10)}.pdf`;
+        const filename = `Spend_Analysis_Report_${params.preset || 'Report'}_${new Date().toISOString().slice(0, 10)}.pdf`;
         this.reportsService.downloadPdfBlob(blob, filename);
         this.toastr.success('PDF exported successfully.');
         this.cdr.detectChanges();
       },
       error: () => {
         this.exportingPdf = false;
-        this.toastr.error('Failed to generate Spend Analysis PDF.');
+        this.toastr.error('Failed to generate Spend Analysis Report PDF.');
         this.cdr.detectChanges();
       }
     });
   }
 
-  getStatusBadgeClass(status: string): string {
+  // Schedule Totals
+  get vendorTotalPos(): number { return this.vendorSchedule.reduce((s, r) => s + r.purchaseOrderCount, 0); }
+  get vendorTotalSpend(): number { return this.vendorSchedule.reduce((s, r) => s + r.totalSpend, 0); }
+  get vendorTotalInvoiced(): number { return this.vendorSchedule.reduce((s, r) => s + r.totalInvoicedAmount, 0); }
+  get vendorTotalPaid(): number { return this.vendorSchedule.reduce((s, r) => s + r.totalPaidAmount, 0); }
+  get vendorTotalOutstanding(): number { return this.vendorSchedule.reduce((s, r) => s + r.outstandingAmount, 0); }
+
+  get entityTotalPos(): number { return this.entitySchedule.reduce((s, r) => s + r.purchaseOrderCount, 0); }
+  get entityTotalSpend(): number { return this.entitySchedule.reduce((s, r) => s + r.totalSpend, 0); }
+  get entityTotalInvoiced(): number { return this.entitySchedule.reduce((s, r) => s + r.totalInvoicedAmount, 0); }
+  get entityTotalPaid(): number { return this.entitySchedule.reduce((s, r) => s + r.totalPaidAmount, 0); }
+  get entityTotalOutstanding(): number { return this.entitySchedule.reduce((s, r) => s + r.outstandingAmount, 0); }
+
+  get poPageTotalAmount(): number { return this.poLedger.items.reduce((s, r) => s + r.poAmount, 0); }
+  get poPageTotalInvoiced(): number { return this.poLedger.items.reduce((s, r) => s + r.invoicedAmount, 0); }
+
+  getStatusPillClass(status: string): string {
     const s = (status || '').toLowerCase();
-    if (s.includes('paid') || s.includes('delivered') || s.includes('completed')) return 'badge-success';
-    if (s.includes('approved') || s.includes('open') || s.includes('new')) return 'badge-info';
-    if (s.includes('pending') || s.includes('partial')) return 'badge-warning';
-    if (s.includes('cancel') || s.includes('reject')) return 'badge-danger';
-    return 'badge-secondary';
+    if (s.includes('paid') || s.includes('delivered') || s.includes('completed')) return 'status-pill--success';
+    if (s.includes('approved') || s.includes('open') || s.includes('new')) return 'status-pill--info';
+    if (s.includes('pending') || s.includes('partial')) return 'status-pill--warning';
+    if (s.includes('cancel') || s.includes('reject')) return 'status-pill--danger';
+    return 'status-pill--neutral';
   }
 
   get activeEntityLabel(): string {

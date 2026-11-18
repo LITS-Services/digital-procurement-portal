@@ -15,7 +15,7 @@ const routes: Routes = [
       {
         path: 'po-delivery-tracking',
         component: PoDeliveryTrackingComponent,
-        data: { title: 'Purchase Order & Delivery Tracking' }
+        data: { title: 'PO and Delivery Tracking Report' }
       },
       {
         path: '',

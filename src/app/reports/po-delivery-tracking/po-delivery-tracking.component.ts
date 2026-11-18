@@ -1,11 +1,16 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import {
   ProcurementReportsService,
   ProcurementReportFilter,
   ProcurementReportsMetadata,
   PoDeliverySummary,
-  PoDeliveryCharts
+  PoDeliveryCharts,
+  PoTrackingRow,
+  DeliveryTrackingRow,
+  PendingDeliveryRow,
+  PaginatedReportResult
 } from '../services/procurement-reports.service';
 import { ChartOptions } from '../spend-analysis/spend-analysis.component';
 
@@ -16,7 +21,7 @@ import { ChartOptions } from '../spend-analysis/spend-analysis.component';
   standalone: false
 })
 export class PoDeliveryTrackingComponent implements OnInit {
-  // Filters
+  // Report Parameters
   selectedPreset: string = 'ThisYear';
   customFromDate: string = '';
   customToDate: string = '';
@@ -25,7 +30,6 @@ export class PoDeliveryTrackingComponent implements OnInit {
   selectedPoStatus: string = '';
   selectedDeliveryStatus: string = '';
   selectedTimeliness: string = '';
-  selectedCurrency: string = '';
 
   presets = [
     { value: 'Today', label: 'Today' },
@@ -49,54 +53,43 @@ export class PoDeliveryTrackingComponent implements OnInit {
   summary: PoDeliverySummary | null = null;
   chartsData: PoDeliveryCharts | null = null;
 
-  loadingSummary = false;
+  // Section 2: Operational Transactions
+  activeSection: 'pos' | 'deliveries' | 'pending' = 'pos';
+  searchTerm: string = '';
+  sortBy: string = '';
+  sortDirection: 'asc' | 'desc' = 'desc';
+
+  poTable: PaginatedReportResult<PoTrackingRow> = this.emptyPage();
+  deliveryTable: PaginatedReportResult<DeliveryTrackingRow> = this.emptyPage();
+  pendingTable: PaginatedReportResult<PendingDeliveryRow> = this.emptyPage();
+
   loadingCharts = false;
+  loadingTable = false;
   exportingPdf = false;
   errorMessage = '';
 
-  // 8 Charts
-  poStatusDonut: ChartOptions = {
-    series: [],
-    chart: { type: 'donut', height: 260 },
-    labels: [],
-    colors: ['#116aef', '#22c55e', '#f59e0b', '#ef4444', '#64748b'],
-    legend: { position: 'bottom', horizontalAlign: 'center', fontWeight: 600 },
-    dataLabels: { enabled: false },
-    plotOptions: {
-      pie: {
-        donut: {
-          size: '70%',
-          labels: {
-            show: true,
-            name: { show: true, fontSize: '13px', fontWeight: 700, color: '#334155' },
-            value: { show: true, fontSize: '20px', fontWeight: 800, color: '#0f172a' },
-            total: {
-              show: true, label: 'Total POs', fontSize: '13px', fontWeight: 700, color: '#0f172a',
-              formatter: () => `${this.summary?.totalPurchaseOrders ?? 0}`
-            }
-          }
-        }
-      }
-    }
-  };
-
+  // Exhibit 1.1: Delivery Status Donut (compact)
   deliveryStatusDonut: ChartOptions = {
     series: [],
-    chart: { type: 'donut', height: 260 },
+    chart: { type: 'donut', height: 225 },
     labels: [],
-    colors: ['#22c55e', '#0ea5e9', '#f59e0b', '#ef4444'],
-    legend: { position: 'bottom', horizontalAlign: 'center', fontWeight: 600 },
+    colors: ['#16a34a', '#0284c7', '#d97706', '#dc2626'],
+    legend: { position: 'bottom', horizontalAlign: 'center', fontWeight: 600, fontSize: '11px' },
     dataLabels: { enabled: false },
     plotOptions: {
       pie: {
         donut: {
-          size: '70%',
+          size: '68%',
           labels: {
             show: true,
-            name: { show: true, fontSize: '13px', fontWeight: 700, color: '#334155' },
-            value: { show: true, fontSize: '20px', fontWeight: 800, color: '#0f172a' },
+            name: { show: true, fontSize: '12px', fontWeight: 700, color: '#334155' },
+            value: { show: true, fontSize: '18px', fontWeight: 800, color: '#0f172a' },
             total: {
-              show: true, label: 'Completion', fontSize: '13px', fontWeight: 700, color: '#0f172a',
+              show: true,
+              label: 'Completion',
+              fontSize: '11.5px',
+              fontWeight: 700,
+              color: '#0f172a',
               formatter: () => `${this.summary?.deliveryCompletionPercentage ?? 0}%`
             }
           }
@@ -105,93 +98,23 @@ export class PoDeliveryTrackingComponent implements OnInit {
     }
   };
 
-  onTimeVsDelayedDonut: ChartOptions = {
-    series: [],
-    chart: { type: 'donut', height: 260 },
-    labels: ['On-Time', 'Delayed'],
-    colors: ['#22c55e', '#ef4444'],
-    legend: { position: 'bottom', horizontalAlign: 'center', fontWeight: 600 },
-    dataLabels: { enabled: false },
-    plotOptions: {
-      pie: {
-        donut: {
-          size: '70%',
-          labels: {
-            show: true,
-            name: { show: true, fontSize: '13px', fontWeight: 700, color: '#334155' },
-            value: { show: true, fontSize: '20px', fontWeight: 800, color: '#0f172a' },
-            total: {
-              show: true, label: 'On-Time %', fontSize: '13px', fontWeight: 700, color: '#0f172a',
-              formatter: () => this.summary?.onTimeDeliveryRate !== null && this.summary?.onTimeDeliveryRate !== undefined ? `${this.summary.onTimeDeliveryRate}%` : 'N/A'
-            }
-          }
-        }
-      }
-    }
-  };
-
-  poTrendChart: ChartOptions = {
-    series: [],
-    chart: { type: 'area', height: 270, toolbar: { show: false } },
-    stroke: { curve: 'smooth', width: 2.5 },
-    colors: ['#116aef', '#0ea5e9'],
-    fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.3, opacityTo: 0.05 } },
-    dataLabels: { enabled: false },
-    xaxis: { categories: [], labels: { style: { colors: '#64748b', fontSize: '11px' } } },
-    yaxis: { labels: { formatter: (val: any) => this.formatShortNum(val) } },
-    grid: { strokeDashArray: 4, borderColor: '#f1f5f9' },
-    legend: { position: 'top', horizontalAlign: 'right', fontWeight: 600 },
-    tooltip: { y: { formatter: (val: any) => `${(Number(val) || 0).toLocaleString()}` } }
-  };
-
+  // Exhibit 1.2: Delivery Performance Trend (compact)
   deliveryTrendChart: ChartOptions = {
     series: [],
-    chart: { type: 'line', height: 270, toolbar: { show: false } },
-    stroke: { curve: 'smooth', width: 2.5 },
-    colors: ['#22c55e', '#f59e0b', '#ef4444'],
+    chart: { type: 'line', height: 225, toolbar: { show: false } },
+    stroke: { curve: 'smooth', width: 2.2 },
+    colors: ['#16a34a', '#d97706', '#dc2626'],
     dataLabels: { enabled: false },
-    xaxis: { categories: [], labels: { style: { colors: '#64748b', fontSize: '11px' } } },
-    yaxis: { labels: { style: { colors: '#64748b' } } },
-    grid: { strokeDashArray: 4, borderColor: '#f1f5f9' },
-    legend: { position: 'top', horizontalAlign: 'right', fontWeight: 600 }
-  };
-
-  vendorDeliveryChart: ChartOptions = {
-    series: [],
-    chart: { type: 'bar', height: 280, stacked: true, toolbar: { show: false } },
-    plotOptions: { bar: { horizontal: true, barHeight: '55%', borderRadius: 4 } },
-    colors: ['#22c55e', '#0ea5e9', '#f59e0b', '#ef4444'],
-    dataLabels: { enabled: false },
-    xaxis: { categories: [] },
-    grid: { strokeDashArray: 4, borderColor: '#f1f5f9' },
-    legend: { position: 'top', horizontalAlign: 'right', fontWeight: 600 }
-  };
-
-  entityPoChart: ChartOptions = {
-    series: [],
-    chart: { type: 'bar', height: 280, toolbar: { show: false } },
-    plotOptions: { bar: { horizontal: false, columnWidth: '50%', borderRadius: 4 } },
-    colors: ['#116aef', '#22c55e', '#f59e0b', '#ef4444'],
-    dataLabels: { enabled: false },
-    xaxis: { categories: [], labels: { style: { colors: '#64748b', fontSize: '11px' } } },
-    grid: { strokeDashArray: 4, borderColor: '#f1f5f9' },
-    legend: { position: 'top', horizontalAlign: 'right', fontWeight: 600 }
-  };
-
-  outstandingVendorChart: ChartOptions = {
-    series: [],
-    chart: { type: 'bar', height: 260, toolbar: { show: false } },
-    plotOptions: { bar: { horizontal: true, barHeight: '55%', borderRadius: 4 } },
-    colors: ['#f59e0b'],
-    dataLabels: { enabled: false },
-    xaxis: { categories: [], labels: { formatter: (val: any) => this.formatShortNum(val) } },
-    grid: { strokeDashArray: 4, borderColor: '#f1f5f9' },
-    tooltip: { y: { formatter: (val: any) => `${(Number(val) || 0).toLocaleString()} ${this.summary?.currency || 'SAR'}` } }
+    xaxis: { categories: [], labels: { style: { colors: '#64748b', fontSize: '10.5px' } } },
+    yaxis: { labels: { style: { colors: '#64748b', fontSize: '10.5px' } } },
+    grid: { strokeDashArray: 3, borderColor: '#e2e8f0' },
+    legend: { position: 'top', horizontalAlign: 'right', fontWeight: 600, fontSize: '11px' }
   };
 
   constructor(
     private reportsService: ProcurementReportsService,
     private toastr: ToastrService,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -203,11 +126,8 @@ export class PoDeliveryTrackingComponent implements OnInit {
     this.loadMetadata();
   }
 
-  private formatShortNum(val: any): string {
-    const n = Number(val) || 0;
-    if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-    if (n >= 1_000) return `${(n / 1_000).toFixed(0)}k`;
-    return n.toFixed(0);
+  private emptyPage<T>(): PaginatedReportResult<T> {
+    return { items: [], totalCount: 0, pageNumber: 1, pageSize: 15, totalPages: 0, hasPreviousPage: false, hasNextPage: false };
   }
 
   loadMetadata(): void {
@@ -251,7 +171,9 @@ export class PoDeliveryTrackingComponent implements OnInit {
       poStatus: this.selectedPoStatus || undefined,
       deliveryStatus: this.selectedDeliveryStatus || undefined,
       deliveryTimeliness: this.selectedTimeliness || undefined,
-      currency: this.selectedCurrency || undefined
+      searchTerm: this.searchTerm || undefined,
+      sortBy: this.sortBy || undefined,
+      sortDirection: this.sortDirection
     };
 
     if (this.selectedPreset === 'Custom') {
@@ -277,6 +199,7 @@ export class PoDeliveryTrackingComponent implements OnInit {
 
     this.loadSummary();
     this.loadCharts();
+    this.loadAllCountsAndActiveTable(1);
   }
 
   resetFilters(): void {
@@ -288,24 +211,19 @@ export class PoDeliveryTrackingComponent implements OnInit {
     this.selectedPoStatus = '';
     this.selectedDeliveryStatus = '';
     this.selectedTimeliness = '';
-    this.selectedCurrency = '';
+    this.searchTerm = '';
+    this.sortBy = '';
+    this.sortDirection = 'desc';
     this.loadMetadata();
   }
 
   loadSummary(): void {
-    this.loadingSummary = true;
     this.reportsService.getPoDeliverySummary(this.getFilterParams()).subscribe({
       next: (data) => {
         this.summary = data;
-        this.loadingSummary = false;
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        this.loadingSummary = false;
-        this.errorMessage = err?.error?.message || 'Failed to load PO & Delivery summary.';
-        this.toastr.error(this.errorMessage);
-        this.cdr.detectChanges();
-      }
+      error: () => {}
     });
   }
 
@@ -325,14 +243,73 @@ export class PoDeliveryTrackingComponent implements OnInit {
     });
   }
 
-  private bindCharts(data: PoDeliveryCharts): void {
-    this.poStatusDonut = {
-      ...this.poStatusDonut,
-      series: data.poStatusDistribution.map(s => s.count),
-      labels: data.poStatusDistribution.map(s => s.status),
-      colors: data.poStatusDistribution.map(s => s.color)
-    };
+  loadAllCountsAndActiveTable(page: number = 1): void {
+    this.loadTable(page);
+    const countParams = this.getFilterParams();
+    countParams.pageNumber = 1;
+    countParams.pageSize = 1;
+    if (this.activeSection !== 'deliveries') {
+      this.reportsService.getDeliveryTrackingTable(countParams).subscribe({
+        next: (res) => { this.deliveryTable.totalCount = res.totalCount; this.cdr.detectChanges(); },
+        error: () => {}
+      });
+    }
+    if (this.activeSection !== 'pending') {
+      this.reportsService.getPendingDeliveriesTable(countParams).subscribe({
+        next: (res) => { this.pendingTable.totalCount = res.totalCount; this.cdr.detectChanges(); },
+        error: () => {}
+      });
+    }
+  }
 
+  switchSection(sec: 'pos' | 'deliveries' | 'pending'): void {
+    this.activeSection = sec;
+    this.searchTerm = '';
+    this.sortBy = '';
+    this.loadTable(1);
+  }
+
+  loadTable(page: number = 1): void {
+    this.loadingTable = true;
+    const params = this.getFilterParams();
+    params.pageNumber = page;
+
+    if (this.activeSection === 'pos') {
+      params.pageSize = this.poTable.pageSize;
+      this.reportsService.getPoTrackingTable(params).subscribe({
+        next: (res) => { this.poTable = res; this.loadingTable = false; this.cdr.detectChanges(); },
+        error: () => { this.loadingTable = false; this.cdr.detectChanges(); }
+      });
+    } else if (this.activeSection === 'deliveries') {
+      params.pageSize = this.deliveryTable.pageSize;
+      this.reportsService.getDeliveryTrackingTable(params).subscribe({
+        next: (res) => { this.deliveryTable = res; this.loadingTable = false; this.cdr.detectChanges(); },
+        error: () => { this.loadingTable = false; this.cdr.detectChanges(); }
+      });
+    } else {
+      params.pageSize = this.pendingTable.pageSize;
+      this.reportsService.getPendingDeliveriesTable(params).subscribe({
+        next: (res) => { this.pendingTable = res; this.loadingTable = false; this.cdr.detectChanges(); },
+        error: () => { this.loadingTable = false; this.cdr.detectChanges(); }
+      });
+    }
+  }
+
+  onSearchTable(): void {
+    this.loadTable(1);
+  }
+
+  onSortTable(column: string): void {
+    if (this.sortBy === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = column;
+      this.sortDirection = 'desc';
+    }
+    this.loadTable(1);
+  }
+
+  private bindCharts(data: PoDeliveryCharts): void {
     this.deliveryStatusDonut = {
       ...this.deliveryStatusDonut,
       series: data.deliveryStatusDistribution.map(s => s.count),
@@ -340,98 +317,59 @@ export class PoDeliveryTrackingComponent implements OnInit {
       colors: data.deliveryStatusDistribution.map(s => s.color)
     };
 
-    const hasTimelinessData = (data.onTimeVsDelayed.onTimeCount + data.onTimeVsDelayed.delayedCount) > 0;
-    this.onTimeVsDelayedDonut = {
-      ...this.onTimeVsDelayedDonut,
-      series: hasTimelinessData ? [data.onTimeVsDelayed.onTimeCount, data.onTimeVsDelayed.delayedCount] : [],
-      labels: ['On-Time Deliveries', 'Delayed / Overdue']
-    };
-
-    this.poTrendChart = {
-      ...this.poTrendChart,
-      series: [
-        { name: `PO Value (${this.summary?.currency || 'SAR'})`, data: data.poTrend.map(t => t.poValue) }
-      ],
-      xaxis: { ...this.poTrendChart.xaxis, categories: data.poTrend.map(t => `${t.period} (${t.poCount})`) }
-    };
-
     this.deliveryTrendChart = {
       ...this.deliveryTrendChart,
       series: [
-        { name: 'Completed Deliveries', data: data.deliveryPerformanceTrend.map(t => t.completedDeliveries) },
-        { name: 'Pending Deliveries', data: data.deliveryPerformanceTrend.map(t => t.pendingDeliveries) },
+        { name: 'Completed (GRN)', data: data.deliveryPerformanceTrend.map(t => t.completedDeliveries) },
+        { name: 'Pending', data: data.deliveryPerformanceTrend.map(t => t.pendingDeliveries) },
         { name: 'Delayed / Overdue', data: data.deliveryPerformanceTrend.map(t => t.delayedDeliveries) }
       ],
       xaxis: { ...this.deliveryTrendChart.xaxis, categories: data.deliveryPerformanceTrend.map(t => t.period) }
     };
-
-    this.vendorDeliveryChart = {
-      ...this.vendorDeliveryChart,
-      series: [
-        { name: 'Delivered', data: data.vendorDeliveryPerformance.map(v => v.deliveredPos) },
-        { name: 'Partial', data: data.vendorDeliveryPerformance.map(v => v.partiallyDeliveredPos) },
-        { name: 'Pending', data: data.vendorDeliveryPerformance.map(v => v.pendingPos) },
-        { name: 'Delayed', data: data.vendorDeliveryPerformance.map(v => v.delayedPos) }
-      ],
-      xaxis: { ...this.vendorDeliveryChart.xaxis, categories: data.vendorDeliveryPerformance.map(v => v.vendorName) }
-    };
-
-    this.entityPoChart = {
-      ...this.entityPoChart,
-      series: [
-        { name: 'Total POs', data: data.entityPoAnalysis.map(e => e.totalPos) },
-        { name: 'Delivered', data: data.entityPoAnalysis.map(e => e.deliveredPos) },
-        { name: 'Pending', data: data.entityPoAnalysis.map(e => e.pendingPos) },
-        { name: 'Overdue', data: data.entityPoAnalysis.map(e => e.overduePos) }
-      ],
-      xaxis: { ...this.entityPoChart.xaxis, categories: data.entityPoAnalysis.map(e => e.entityName) }
-    };
-
-    this.outstandingVendorChart = {
-      ...this.outstandingVendorChart,
-      series: [{ name: 'Pending Delivery Value', data: data.outstandingDeliveryAnalysis.map(v => v.pendingDeliveryValue) }],
-      xaxis: {
-        ...this.outstandingVendorChart.xaxis,
-        categories: data.outstandingDeliveryAnalysis.map(v => `${v.vendorName} (${v.pendingPos} pending)`)
-      }
-    };
   }
 
-  exportPdf(type: 'summary' | 'detailed'): void {
+  viewPo(poId: number | null): void {
+    if (!poId) return;
+    this.router.navigate(['/purchase-order'], { queryParams: { id: poId } });
+  }
+
+  printReport(): void {
+    window.print();
+  }
+
+  exportPdf(): void {
     this.exportingPdf = true;
-    this.toastr.info(`Generating ${type === 'summary' ? 'Summary' : 'Detailed'} PO & Delivery PDF...`);
+    this.toastr.info('Generating PO and Delivery Tracking Report PDF...');
     const params = this.getFilterParams();
 
-    this.reportsService.exportPoDeliveryPdf(params, type).subscribe({
+    this.reportsService.exportPoDeliveryPdf(params, 'detailed').subscribe({
       next: (blob) => {
         this.exportingPdf = false;
-        const filename = `PO_Delivery_Tracking_${type}_${params.preset || 'Report'}_${new Date().toISOString().slice(0, 10)}.pdf`;
+        const filename = `PO_and_Delivery_Tracking_Report_${params.preset || 'Report'}_${new Date().toISOString().slice(0, 10)}.pdf`;
         this.reportsService.downloadPdfBlob(blob, filename);
         this.toastr.success('PDF exported successfully.');
         this.cdr.detectChanges();
       },
       error: () => {
         this.exportingPdf = false;
-        this.toastr.error('Failed to generate PO & Delivery Tracking PDF.');
+        this.toastr.error('Failed to generate PO and Delivery Tracking Report PDF.');
         this.cdr.detectChanges();
       }
     });
   }
 
-  getStatusBadgeClass(status: string): string {
-    const s = (status || '').toLowerCase();
-    if (s.includes('delivered') && !s.includes('partial')) return 'badge-success';
-    if (s.includes('on-time') || s.includes('completed')) return 'badge-success';
-    if (s.includes('partial') || s.includes('open') || s.includes('new')) return 'badge-info';
-    if (s.includes('pending')) return 'badge-warning';
-    if (s.includes('delay') || s.includes('overdue') || s.includes('cancel') || s.includes('reject')) return 'badge-danger';
-    return 'badge-secondary';
-  }
+  get poPageTotal(): number { return this.poTable.items.reduce((s, r) => s + r.poAmount, 0); }
+  get grnPageQty(): number { return this.deliveryTable.items.reduce((s, r) => s + r.deliveredQuantity, 0); }
+  get pendingPageVal(): number { return this.pendingTable.items.reduce((s, r) => s + r.pendingValue, 0); }
+  get pendingPageQty(): number { return this.pendingTable.items.reduce((s, r) => s + r.pendingQuantity, 0); }
 
-  get activeEntityLabel(): string {
-    if (!this.selectedEntityId) {
-      return `All Authorized Entities (${this.metadata.entities.length})`;
-    }
-    return this.metadata.entities.find(e => e.id === this.selectedEntityId)?.name || 'Selected Entity';
+  getStatusPillClass(status: string): string {
+    const s = (status || '').toLowerCase();
+    if (s.includes('delivered') && !s.includes('partial')) return 'status-pill--success';
+    if (s.includes('on-time') || s.includes('completed')) return 'status-pill--success';
+    if (s.includes('partial') || s.includes('open') || s.includes('new')) return 'status-pill--info';
+    if (s.includes('pending')) return 'status-pill--warning';
+    if (s.includes('delay') || s.includes('overdue') || s.includes('cancel') || s.includes('reject')) return 'status-pill--danger';
+    return 'status-pill--neutral';
   }
 }

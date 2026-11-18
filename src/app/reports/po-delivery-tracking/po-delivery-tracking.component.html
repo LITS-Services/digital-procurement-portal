@@ -1,388 +1,350 @@
-<div class="proc-reports-page">
-  <!-- Header -->
-  <div class="reports-header d-flex flex-wrap justify-content-between align-items-center mb-3">
-    <div>
-      <h1 class="reports-title m-0">Purchase Order &amp; Delivery Tracking Report</h1>
-      <p class="reports-subtitle m-0 text-muted mt-1">
-        Order fulfillment &amp; Goods Receipt (GRN) tracking for
-        <span class="badge badge-subtle-primary">{{ summary?.periodLabel || selectedPreset }}</span>
-        <span class="badge badge-subtle-info ms-2" style="margin-left: 8px;">
-          <i class="ft-briefcase me-1"></i>{{ activeEntityLabel }}
-        </span>
-      </p>
-    </div>
-
-    <!-- Export Actions -->
-    <div class="reports-actions d-flex align-items-center gap-2 mt-2 mt-md-0">
-      <div ngbDropdown class="d-inline-block">
-        <button type="button" class="btn btn-primary d-flex align-items-center gap-2" id="poDelivExportDd" ngbDropdownToggle [disabled]="exportingPdf">
+<div class="report-workspace">
+  <!-- Non-Print Report Parameter & Export Bar -->
+  <div class="report-toolbar no-print">
+    <div class="report-toolbar__top">
+      <div class="report-toolbar__label">
+        <i class="ft-sliders text-primary"></i>
+        <span>Report Parameters &amp; Output Controls</span>
+      </div>
+      <div class="report-toolbar__actions">
+        <button type="button" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1" (click)="resetFilters()">
+          <i class="ft-rotate-ccw"></i> Reset
+        </button>
+        <button type="button" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1 px-3" (click)="applyFilters()">
+          <i class="ft-play"></i> Generate Report
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-dark d-inline-flex align-items-center gap-1" (click)="printReport()">
+          <i class="ft-printer"></i> Print
+        </button>
+        <button type="button" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1" (click)="exportPdf()" [disabled]="exportingPdf">
           <i class="ft-download" *ngIf="!exportingPdf"></i>
           <span class="spinner-border spinner-border-sm" *ngIf="exportingPdf" role="status"></span>
-          <span>{{ exportingPdf ? 'Generating PDF...' : 'Export PDF' }}</span>
+          <span>{{ exportingPdf ? 'Exporting PDF...' : 'Export PDF' }}</span>
         </button>
-        <div ngbDropdownMenu aria-labelledby="poDelivExportDd" class="dropdown-menu-end shadow-sm">
-          <button ngbDropdownItem (click)="exportPdf('summary')" class="d-flex align-items-center justify-content-start text-start py-2" style="justify-content: flex-start !important; gap: 10px;">
-            <i class="ft-file-text text-primary flex-shrink-0"></i>
-            <div>
-              <div class="fw-bold">Summary PDF</div>
-              <small class="text-muted">KPIs, vendor performance &amp; overdue alerts</small>
+      </div>
+    </div>
+
+    <div class="row g-2 align-items-end">
+      <div class="col-xl-2 col-md-4 col-sm-6">
+        <label class="param-label">Reporting Period</label>
+        <select class="form-select form-select-sm" [(ngModel)]="selectedPreset" (change)="selectedPreset !== 'Custom' && applyFilters()">
+          <option *ngFor="let p of presets" [value]="p.value">{{ p.label }}</option>
+        </select>
+      </div>
+      <div class="col-xl-2 col-md-4 col-sm-6" *ngIf="selectedPreset === 'Custom'">
+        <label class="param-label">From Date</label>
+        <input type="date" class="form-control form-control-sm" [(ngModel)]="customFromDate" />
+      </div>
+      <div class="col-xl-2 col-md-4 col-sm-6" *ngIf="selectedPreset === 'Custom'">
+        <label class="param-label">To Date</label>
+        <input type="date" class="form-control form-control-sm" [(ngModel)]="customToDate" />
+      </div>
+      <div class="col-xl-2 col-md-4 col-sm-6">
+        <label class="param-label">Procurement Entity</label>
+        <select class="form-select form-select-sm" [(ngModel)]="selectedEntityId" (change)="onEntityFilterChange()">
+          <option [ngValue]="null">All Authorized ({{ metadata.entities.length }})</option>
+          <option *ngFor="let e of metadata.entities" [ngValue]="e.id">{{ e.name }}</option>
+        </select>
+      </div>
+      <div class="col-xl-2 col-md-4 col-sm-6">
+        <label class="param-label">Vendor</label>
+        <select class="form-select form-select-sm" [(ngModel)]="selectedVendorId">
+          <option value="">All Vendors</option>
+          <option *ngFor="let v of metadata.vendors" [value]="v.value">{{ v.label }}</option>
+        </select>
+      </div>
+      <div class="col-xl-2 col-md-4 col-sm-6">
+        <label class="param-label">PO Status</label>
+        <select class="form-select form-select-sm" [(ngModel)]="selectedPoStatus">
+          <option value="">All PO Statuses</option>
+          <option *ngFor="let s of metadata.poStatuses" [value]="s.value">{{ s.label }}</option>
+        </select>
+      </div>
+      <div class="col-xl-2 col-md-4 col-sm-6">
+        <label class="param-label">Delivery Status (GRN)</label>
+        <select class="form-select form-select-sm" [(ngModel)]="selectedDeliveryStatus">
+          <option value="">All Delivery Statuses</option>
+          <option *ngFor="let d of metadata.deliveryStatuses" [value]="d.value">{{ d.label }}</option>
+        </select>
+      </div>
+      <div class="col-xl-2 col-md-4 col-sm-6">
+        <label class="param-label">Timeliness</label>
+        <select class="form-select form-select-sm" [(ngModel)]="selectedTimeliness">
+          <option value="">All Timeliness</option>
+          <option value="On-Time">On-Time</option>
+          <option value="Delayed">Delayed / Overdue</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Banner -->
+  <div class="alert alert-danger py-2 px-3 mb-3" *ngIf="errorMessage">
+    <i class="ft-alert-circle me-1"></i> {{ errorMessage }}
+  </div>
+
+  <!-- ==================== FORMAL REPORT DOCUMENT SHEET ==================== -->
+  <div class="report-sheet">
+    <!-- Document Masthead -->
+    <div class="report-masthead">
+      <div class="report-masthead__left">
+        <div class="report-masthead__eyebrow">Digital Procurement Portal &middot; Operational BI Report &middot; Ref: DPP-RPT-02</div>
+        <h1 class="report-masthead__title">PO and Delivery Tracking Report</h1>
+        <p class="report-masthead__desc">
+          Formal operational status of Purchase Orders, Goods Receipt Note (GRN) fulfillment completion, on-time delivery compliance, and overdue exposure.
+        </p>
+      </div>
+    </div>
+
+    <!-- ==================== CHARTS & ANALYTICS ==================== -->
+    <section class="report-section">
+      <div class="report-section__header">
+        <h2 class="report-section__title">Charts &amp; Analytics</h2>
+        <span class="report-section__meta">Delivery fulfillment breakdown and monthly GRN performance trend</span>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-lg-5">
+          <div class="exhibit-box">
+            <div class="exhibit-box__head">
+              <h3 class="exhibit-box__title">Delivery Status Distribution (GRN)</h3>
+              <span class="exhibit-box__tag">PO Count</span>
             </div>
-          </button>
-          <div class="dropdown-divider"></div>
-          <button ngbDropdownItem (click)="exportPdf('detailed')" class="d-flex align-items-center justify-content-start text-start py-2" style="justify-content: flex-start !important; gap: 10px;">
-            <i class="ft-layers text-success flex-shrink-0"></i>
-            <div>
-              <div class="fw-bold">Detailed PDF</div>
-              <small class="text-muted">Includes full PO &amp; delivery tables</small>
+            <div class="exhibit-box__body d-flex align-items-center justify-content-center">
+              <apx-chart *ngIf="!loadingCharts && deliveryStatusDonut.series?.length"
+                [series]="deliveryStatusDonut.series" [chart]="deliveryStatusDonut.chart"
+                [labels]="deliveryStatusDonut.labels" [colors]="deliveryStatusDonut.colors"
+                [plotOptions]="deliveryStatusDonut.plotOptions" [legend]="deliveryStatusDonut.legend"
+                [dataLabels]="deliveryStatusDonut.dataLabels">
+              </apx-chart>
+              <div *ngIf="!loadingCharts && !deliveryStatusDonut.series?.length" class="exhibit-empty">No delivery status records found.</div>
             </div>
-          </button>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Error Alert -->
-  <div class="alert alert-danger d-flex justify-content-between align-items-center mb-3" *ngIf="errorMessage">
-    <span><i class="ft-alert-circle me-2"></i>{{ errorMessage }}</span>
-    <button type="button" class="btn btn-sm btn-outline-danger" (click)="applyFilters()">Retry</button>
-  </div>
-
-  <!-- Filters Card -->
-  <div class="card filter-card mb-4 shadow-sm border-0">
-    <div class="card-body p-3">
-      <div class="row g-2 align-items-end">
-        <div class="col-xl-2 col-md-3 col-sm-6">
-          <label class="form-label text-xs fw-semibold text-muted mb-1">DATE PERIOD</label>
-          <select class="form-select form-select-sm custom-select" [(ngModel)]="selectedPreset" (change)="selectedPreset !== 'Custom' && applyFilters()">
-            <option *ngFor="let p of presets" [value]="p.value">{{ p.label }}</option>
-          </select>
-        </div>
-
-        <div class="col-xl-2 col-md-3 col-sm-6" *ngIf="selectedPreset === 'Custom'">
-          <label class="form-label text-xs fw-semibold text-muted mb-1">FROM DATE</label>
-          <input type="date" class="form-control form-control-sm" [(ngModel)]="customFromDate" />
-        </div>
-
-        <div class="col-xl-2 col-md-3 col-sm-6" *ngIf="selectedPreset === 'Custom'">
-          <label class="form-label text-xs fw-semibold text-muted mb-1">TO DATE</label>
-          <input type="date" class="form-control form-control-sm" [(ngModel)]="customToDate" />
-        </div>
-
-        <div class="col-xl-2 col-md-4 col-sm-6">
-          <label class="form-label text-xs fw-semibold text-muted mb-1">PROCUREMENT ENTITY</label>
-          <select class="form-select form-select-sm custom-select" [(ngModel)]="selectedEntityId" (change)="onEntityFilterChange()">
-            <option [ngValue]="null">All Procurement Entities ({{ metadata.entities.length }})</option>
-            <option *ngFor="let e of metadata.entities" [ngValue]="e.id">{{ e.name }}</option>
-          </select>
-        </div>
-
-        <div class="col-xl-2 col-md-4 col-sm-6">
-          <label class="form-label text-xs fw-semibold text-muted mb-1">VENDOR</label>
-          <select class="form-select form-select-sm custom-select" [(ngModel)]="selectedVendorId">
-            <option value="">All Vendors ({{ metadata.vendors.length }})</option>
-            <option *ngFor="let v of metadata.vendors" [value]="v.value">{{ v.label }}</option>
-          </select>
-        </div>
-
-        <div class="col-xl-1 col-md-3 col-sm-6">
-          <label class="form-label text-xs fw-semibold text-muted mb-1">PO STATUS</label>
-          <select class="form-select form-select-sm custom-select" [(ngModel)]="selectedPoStatus">
-            <option value="">All</option>
-            <option *ngFor="let s of metadata.poStatuses" [value]="s.value">{{ s.label }}</option>
-          </select>
-        </div>
-
-        <div class="col-xl-2 col-md-3 col-sm-6">
-          <label class="form-label text-xs fw-semibold text-muted mb-1">DELIVERY STATUS</label>
-          <select class="form-select form-select-sm custom-select" [(ngModel)]="selectedDeliveryStatus">
-            <option value="">All Delivery Statuses</option>
-            <option *ngFor="let d of metadata.deliveryStatuses" [value]="d.value">{{ d.label }}</option>
-          </select>
-        </div>
-
-        <div class="col-xl-1 col-md-3 col-sm-6">
-          <label class="form-label text-xs fw-semibold text-muted mb-1">TIMELINESS</label>
-          <select class="form-select form-select-sm custom-select" [(ngModel)]="selectedTimeliness">
-            <option value="">All</option>
-            <option value="On-Time">On-Time</option>
-            <option value="Delayed">Delayed</option>
-          </select>
-        </div>
-
-        <div class="col-xl-2 col-md-4 col-sm-12 d-flex gap-2 justify-content-end ms-auto">
-          <button type="button" class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" (click)="resetFilters()">
-            <i class="ft-rotate-ccw"></i>
-            <span>Reset</span>
-          </button>
-          <button type="button" class="btn btn-sm btn-primary d-flex align-items-center gap-1 px-3" (click)="applyFilters()">
-            <i class="ft-filter"></i>
-            <span>Apply</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 10 KPI Cards -->
-  <div class="kpi-grid mb-4">
-    <!-- 1. Total POs -->
-    <div class="kpi-card">
-      <div class="kpi-card__top">
-        <span class="kpi-card__title">Total Purchase Orders</span>
-        <div class="kpi-card__icon kpi-card__icon--primary"><i class="ft-shopping-cart"></i></div>
-      </div>
-      <div class="kpi-card__value">{{ summary?.totalPurchaseOrders | number }}</div>
-      <div class="kpi-card__footer">
-        <span class="trend-badge" *ngIf="summary?.poCountGrowthPercentage !== null" [ngClass]="(summary?.poCountGrowthPercentage || 0) >= 0 ? 'trend-badge--up' : 'trend-badge--down'">
-          {{ summary?.poCountGrowthPercentage | number:'1.1-1' }}%
-        </span>
-        <span class="text-muted text-xs ms-1">vs {{ summary?.previousPeriodLabel }}</span>
-      </div>
-    </div>
-
-    <!-- 2. Total PO Value -->
-    <div class="kpi-card">
-      <div class="kpi-card__top">
-        <span class="kpi-card__title">Total PO Value</span>
-        <div class="kpi-card__icon kpi-card__icon--blue">
-          <span class="fw-bold" style="font-size: 11px; line-height: 1;">SAR</span>
-        </div>
-      </div>
-      <div class="kpi-card__value">{{ summary?.totalPoValue | number:'1.2-2' }} <span class="kpi-card__currency">{{ summary?.currency }}</span></div>
-      <div class="kpi-card__footer">
-        <span class="trend-badge" *ngIf="summary?.poValueGrowthPercentage !== null" [ngClass]="(summary?.poValueGrowthPercentage || 0) >= 0 ? 'trend-badge--up' : 'trend-badge--down'">
-          {{ summary?.poValueGrowthPercentage | number:'1.1-1' }}%
-        </span>
-        <span class="text-muted text-xs ms-1">Confirmed PO commitment</span>
-      </div>
-    </div>
-
-    <!-- 3. Open POs -->
-    <div class="kpi-card">
-      <div class="kpi-card__top">
-        <span class="kpi-card__title">Open Purchase Orders</span>
-        <div class="kpi-card__icon kpi-card__icon--cyan"><i class="ft-folder"></i></div>
-      </div>
-      <div class="kpi-card__value text-primary">{{ summary?.openPurchaseOrders | number }}</div>
-      <div class="kpi-card__footer"><span class="text-muted text-xs">Active POs awaiting full receipt</span></div>
-    </div>
-
-    <!-- 4. Delivered POs -->
-    <div class="kpi-card">
-      <div class="kpi-card__top">
-        <span class="kpi-card__title">Delivered POs</span>
-        <div class="kpi-card__icon kpi-card__icon--success"><i class="ft-check-circle"></i></div>
-      </div>
-      <div class="kpi-card__value text-success">{{ summary?.deliveredPurchaseOrders | number }}</div>
-      <div class="kpi-card__footer"><span class="text-muted text-xs">Fully received via GRN</span></div>
-    </div>
-
-    <!-- 5. Partially Delivered POs -->
-    <div class="kpi-card">
-      <div class="kpi-card__top">
-        <span class="kpi-card__title">Partially Delivered</span>
-        <div class="kpi-card__icon kpi-card__icon--purple"><i class="ft-pie-chart"></i></div>
-      </div>
-      <div class="kpi-card__value">{{ summary?.partiallyDeliveredPurchaseOrders | number }}</div>
-      <div class="kpi-card__footer"><span class="text-muted text-xs">Partial GRN receipt recorded</span></div>
-    </div>
-
-    <!-- 6. Pending Deliveries -->
-    <div class="kpi-card">
-      <div class="kpi-card__top">
-        <span class="kpi-card__title">Pending Deliveries</span>
-        <div class="kpi-card__icon kpi-card__icon--amber"><i class="ft-clock"></i></div>
-      </div>
-      <div class="kpi-card__value text-warning">{{ summary?.pendingDeliveries | number }}</div>
-      <div class="kpi-card__footer"><span class="text-muted text-xs">Unique POs awaiting completion</span></div>
-    </div>
-
-    <!-- 7. Overdue POs -->
-    <div class="kpi-card">
-      <div class="kpi-card__top">
-        <span class="kpi-card__title">Overdue POs</span>
-        <div class="kpi-card__icon kpi-card__icon--danger"><i class="ft-alert-triangle"></i></div>
-      </div>
-      <div class="kpi-card__value text-danger">{{ summary?.overduePurchaseOrders | number }}</div>
-      <div class="kpi-card__footer"><span class="text-muted text-xs">Past valid expected delivery date</span></div>
-    </div>
-
-    <!-- 8. On-Time Delivery Rate -->
-    <div class="kpi-card">
-      <div class="kpi-card__top">
-        <span class="kpi-card__title">On-Time Delivery Rate</span>
-        <div class="kpi-card__icon kpi-card__icon--success"><i class="ft-target"></i></div>
-      </div>
-      <div class="kpi-card__value text-success">
-        {{ summary?.onTimeDeliveryRate !== null && summary?.onTimeDeliveryRate !== undefined ? (summary?.onTimeDeliveryRate | number:'1.1-1') + '%' : 'N/A' }}
-      </div>
-      <div class="kpi-card__footer">
-        <span class="text-muted text-xs">{{ summary?.onTimeDeliveriesCount || 0 }} / {{ summary?.eligibleCompletedDeliveriesCount || 0 }} eligible completed</span>
-      </div>
-    </div>
-
-    <!-- 9. Delivery Completion % -->
-    <div class="kpi-card">
-      <div class="kpi-card__top">
-        <span class="kpi-card__title">Delivery Completion</span>
-        <div class="kpi-card__icon kpi-card__icon--primary"><i class="ft-activity"></i></div>
-      </div>
-      <div class="kpi-card__value">{{ summary?.deliveryCompletionPercentage | number:'1.1-1' }}%</div>
-      <div class="kpi-card__footer">
-        <span class="text-muted text-xs">{{ summary?.totalDeliveredQuantity | number:'1.0-1' }} / {{ summary?.totalOrderedQuantity | number:'1.0-1' }} units</span>
-      </div>
-    </div>
-
-    <!-- 10. Pending Delivery Value -->
-    <div class="kpi-card">
-      <div class="kpi-card__top">
-        <span class="kpi-card__title">Pending Delivery Value</span>
-        <div class="kpi-card__icon kpi-card__icon--amber">
-          <span class="fw-bold" style="font-size: 11px; line-height: 1;">SAR</span>
-        </div>
-      </div>
-      <div class="kpi-card__value text-warning">{{ summary?.pendingDeliveryValue | number:'1.2-2' }} <span class="kpi-card__currency">{{ summary?.currency }}</span></div>
-      <div class="kpi-card__footer"><span class="text-muted text-xs">Proportional undelivered PO value</span></div>
-    </div>
-  </div>
-
-  <!-- Charts Row 1: 3 Donuts (PO Status, Delivery Status, On-Time vs Delayed) -->
-  <div class="row g-3 mb-4">
-    <div class="col-lg-4">
-      <div class="card chart-card h-100 shadow-sm border-0">
-        <div class="card-header bg-white border-0 py-3">
-          <h6 class="chart-card__title m-0 fw-bold">Purchase Order Status Distribution</h6>
-        </div>
-        <div class="card-body p-3 d-flex align-items-center justify-content-center">
-          <apx-chart *ngIf="!loadingCharts && poStatusDonut.series?.length"
-            [series]="poStatusDonut.series" [chart]="poStatusDonut.chart" [labels]="poStatusDonut.labels"
-            [colors]="poStatusDonut.colors" [plotOptions]="poStatusDonut.plotOptions"
-            [legend]="poStatusDonut.legend" [dataLabels]="poStatusDonut.dataLabels">
-          </apx-chart>
-          <div *ngIf="!loadingCharts && !poStatusDonut.series?.length" class="empty-chart"><p>No PO data.</p></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-lg-4">
-      <div class="card chart-card h-100 shadow-sm border-0">
-        <div class="card-header bg-white border-0 py-3">
-          <h6 class="chart-card__title m-0 fw-bold">Delivery Status Distribution (GRN)</h6>
-        </div>
-        <div class="card-body p-3 d-flex align-items-center justify-content-center">
-          <apx-chart *ngIf="!loadingCharts && deliveryStatusDonut.series?.length"
-            [series]="deliveryStatusDonut.series" [chart]="deliveryStatusDonut.chart" [labels]="deliveryStatusDonut.labels"
-            [colors]="deliveryStatusDonut.colors" [plotOptions]="deliveryStatusDonut.plotOptions"
-            [legend]="deliveryStatusDonut.legend" [dataLabels]="deliveryStatusDonut.dataLabels">
-          </apx-chart>
-          <div *ngIf="!loadingCharts && !deliveryStatusDonut.series?.length" class="empty-chart"><p>No delivery data.</p></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-lg-4">
-      <div class="card chart-card h-100 shadow-sm border-0">
-        <div class="card-header bg-white border-0 py-3">
-          <h6 class="chart-card__title m-0 fw-bold">On-Time vs Delayed Deliveries</h6>
-        </div>
-        <div class="card-body p-3 d-flex align-items-center justify-content-center">
-          <apx-chart *ngIf="!loadingCharts && onTimeVsDelayedDonut.series?.length"
-            [series]="onTimeVsDelayedDonut.series" [chart]="onTimeVsDelayedDonut.chart" [labels]="onTimeVsDelayedDonut.labels"
-            [colors]="onTimeVsDelayedDonut.colors" [plotOptions]="onTimeVsDelayedDonut.plotOptions"
-            [legend]="onTimeVsDelayedDonut.legend" [dataLabels]="onTimeVsDelayedDonut.dataLabels">
-          </apx-chart>
-          <div *ngIf="!loadingCharts && !onTimeVsDelayedDonut.series?.length" class="empty-chart text-center">
-            <p class="mb-1">No records with valid expected/actual delivery dates.</p>
-            <small class="text-muted">({{ chartsData?.onTimeVsDelayed?.missingDateCount || 0 }} POs missing delivery dates)</small>
+        <div class="col-lg-7">
+          <div class="exhibit-box">
+            <div class="exhibit-box__head">
+              <h3 class="exhibit-box__title">Monthly Delivery Performance Trend</h3>
+              <span class="exhibit-box__tag">Completed / Pending / Delayed</span>
+            </div>
+            <div class="exhibit-box__body">
+              <apx-chart *ngIf="!loadingCharts && deliveryTrendChart.series?.length"
+                [series]="deliveryTrendChart.series" [chart]="deliveryTrendChart.chart"
+                [xaxis]="deliveryTrendChart.xaxis" [yaxis]="deliveryTrendChart.yaxis"
+                [stroke]="deliveryTrendChart.stroke" [colors]="deliveryTrendChart.colors"
+                [grid]="deliveryTrendChart.grid" [legend]="deliveryTrendChart.legend"
+                [dataLabels]="deliveryTrendChart.dataLabels">
+              </apx-chart>
+              <div *ngIf="!loadingCharts && !deliveryTrendChart.series?.length" class="exhibit-empty">No monthly delivery trend data.</div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- Charts Row 2: PO Trend + Delivery Performance Trend -->
-  <div class="row g-3 mb-4">
-    <div class="col-lg-6">
-      <div class="card chart-card h-100 shadow-sm border-0">
-        <div class="card-header bg-white border-0 py-3">
-          <h6 class="chart-card__title m-0 fw-bold">Purchase Order Value Trend</h6>
+    <!-- ==================== OPERATIONAL TRANSACTIONS ==================== -->
+    <section class="report-section">
+      <div class="report-section__header">
+        <h2 class="report-section__title">Operational Transactions</h2>
+        <span class="report-section__meta">Auditable Purchase Order, GRN Receipt, and Pending/Overdue Schedules</span>
+      </div>
+
+      <div class="ledger-controls no-print">
+        <div class="register-switcher">
+          <button type="button" [class.active]="activeSection === 'pos'" (click)="switchSection('pos')">
+            Purchase Orders ({{ poTable.totalCount }})
+          </button>
+          <button type="button" [class.active]="activeSection === 'deliveries'" (click)="switchSection('deliveries')">
+            Goods Receipt (GRN) Log ({{ deliveryTable.totalCount }})
+          </button>
+          <button type="button" [class.active]="activeSection === 'pending'" (click)="switchSection('pending')">
+            Pending &amp; Overdue ({{ pendingTable.totalCount }})
+          </button>
         </div>
-        <div class="card-body p-3">
-          <apx-chart *ngIf="!loadingCharts && poTrendChart.series?.length"
-            [series]="poTrendChart.series" [chart]="poTrendChart.chart" [xaxis]="poTrendChart.xaxis"
-            [yaxis]="poTrendChart.yaxis" [stroke]="poTrendChart.stroke" [colors]="poTrendChart.colors"
-            [fill]="poTrendChart.fill" [grid]="poTrendChart.grid" [tooltip]="poTrendChart.tooltip"
-            [legend]="poTrendChart.legend" [dataLabels]="poTrendChart.dataLabels">
-          </apx-chart>
+
+        <div class="d-flex align-items-center gap-2">
+          <div class="ledger-search">
+            <i class="ft-search"></i>
+            <input type="text" class="form-control form-control-sm" placeholder="Search PO, GRN, vendor..." [(ngModel)]="searchTerm" (keyup.enter)="onSearchTable()" />
+          </div>
+          <select class="form-select form-select-sm w-auto"
+            [ngModel]="activeSection === 'pos' ? poTable.pageSize : (activeSection === 'deliveries' ? deliveryTable.pageSize : pendingTable.pageSize)"
+            (ngModelChange)="activeSection === 'pos' ? poTable.pageSize = $event : (activeSection === 'deliveries' ? deliveryTable.pageSize = $event : pendingTable.pageSize = $event); loadTable(1)">
+            <option [value]="10">10 rows</option>
+            <option [value]="15">15 rows</option>
+            <option [value]="25">25 rows</option>
+            <option [value]="50">50 rows</option>
+          </select>
         </div>
       </div>
-    </div>
 
-    <div class="col-lg-6">
-      <div class="card chart-card h-100 shadow-sm border-0">
-        <div class="card-header bg-white border-0 py-3">
-          <h6 class="chart-card__title m-0 fw-bold">Delivery Performance Trend</h6>
+      <div class="ledger-table-wrap">
+        <div *ngIf="loadingTable" class="text-center py-4">
+          <div class="spinner-border spinner-border-sm text-primary"></div>
         </div>
-        <div class="card-body p-3">
-          <apx-chart *ngIf="!loadingCharts && deliveryTrendChart.series?.length"
-            [series]="deliveryTrendChart.series" [chart]="deliveryTrendChart.chart" [xaxis]="deliveryTrendChart.xaxis"
-            [yaxis]="deliveryTrendChart.yaxis" [stroke]="deliveryTrendChart.stroke" [colors]="deliveryTrendChart.colors"
-            [grid]="deliveryTrendChart.grid" [legend]="deliveryTrendChart.legend" [dataLabels]="deliveryTrendChart.dataLabels">
-          </apx-chart>
+
+        <!-- 2A: Purchase Orders -->
+        <table class="report-ledger-table" *ngIf="!loadingTable && activeSection === 'pos'">
+          <thead>
+            <tr>
+              <th class="col-idx">#</th>
+              <th (click)="onSortTable('purchaseorderno')" class="sortable">PO Number</th>
+              <th>Procurement Entity</th>
+              <th>Vendor</th>
+              <th (click)="onSortTable('podate')" class="sortable">PO Date</th>
+              <th>Expected Date</th>
+              <th (click)="onSortTable('poamount')" class="sortable num">PO Amount (SAR)</th>
+              <th class="text-center">PO Status</th>
+              <th class="text-center">Delivery Status</th>
+              <th (click)="onSortTable('completion')" class="sortable num">Completion</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of poTable.items; let i = index">
+              <td class="col-idx">{{ (poTable.pageNumber - 1) * poTable.pageSize + i + 1 }}</td>
+              <td><a href="javascript:void(0)" class="fw-bold text-primary text-decoration-none" (click)="viewPo(r.id)">{{ r.purchaseOrderNo }}</a></td>
+              <td>{{ r.entityName }}</td>
+              <td>{{ r.vendorName }}</td>
+              <td class="text-nowrap">{{ r.poDate | date:'dd MMM yyyy' }}</td>
+              <td class="text-nowrap">{{ r.expectedDeliveryDate ? (r.expectedDeliveryDate | date:'dd MMM yyyy') : '—' }}</td>
+              <td class="num fw-bold">{{ r.poAmount | number:'1.2-2' }}</td>
+              <td class="text-center"><span class="status-pill" [ngClass]="getStatusPillClass(r.poStatus)">{{ r.poStatus }}</span></td>
+              <td class="text-center"><span class="status-pill" [ngClass]="getStatusPillClass(r.deliveryStatus)">{{ r.deliveryStatus }}</span></td>
+              <td class="num fw-semibold">{{ r.deliveryCompletionPercentage | number:'1.0-1' }}%</td>
+            </tr>
+            <tr *ngIf="poTable.items.length === 0">
+              <td colspan="10" class="text-center py-4 text-muted">No Purchase Orders found for the selected parameters.</td>
+            </tr>
+          </tbody>
+          <tfoot *ngIf="poTable.items.length > 0">
+            <tr>
+              <td colspan="6">PAGE SUBTOTAL ({{ poTable.items.length }} POs shown)</td>
+              <td class="num">{{ poPageTotal | number:'1.2-2' }} SAR</td>
+              <td colspan="3"></td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- 2B: GRN Delivery Log -->
+        <table class="report-ledger-table" *ngIf="!loadingTable && activeSection === 'deliveries'">
+          <thead>
+            <tr>
+              <th class="col-idx">#</th>
+              <th (click)="onSortTable('deliveryreference')" class="sortable">GRN Reference</th>
+              <th>PO Number</th>
+              <th>Procurement Entity</th>
+              <th>Vendor</th>
+              <th (click)="onSortTable('deliverydate')" class="sortable">Receipt Date</th>
+              <th>Expected Date</th>
+              <th (click)="onSortTable('quantity')" class="sortable num">Received Qty</th>
+              <th class="text-center">Status</th>
+              <th class="text-center">Timeliness</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of deliveryTable.items; let i = index">
+              <td class="col-idx">{{ (deliveryTable.pageNumber - 1) * deliveryTable.pageSize + i + 1 }}</td>
+              <td class="fw-bold">{{ r.deliveryReference }}</td>
+              <td><a href="javascript:void(0)" class="text-primary fw-semibold text-decoration-none" (click)="viewPo(r.purchaseOrderId)">{{ r.purchaseOrderNo }}</a></td>
+              <td>{{ r.entityName }}</td>
+              <td>{{ r.vendorName }}</td>
+              <td class="text-nowrap">{{ r.deliveryDate | date:'dd MMM yyyy' }}</td>
+              <td class="text-nowrap">{{ r.expectedDeliveryDate ? (r.expectedDeliveryDate | date:'dd MMM yyyy') : '—' }}</td>
+              <td class="num fw-bold">{{ r.deliveredQuantity | number:'1.0-2' }}</td>
+              <td class="text-center"><span class="status-pill" [ngClass]="getStatusPillClass(r.deliveryStatus)">{{ r.deliveryStatus }}</span></td>
+              <td class="text-center"><span class="status-pill" [ngClass]="getStatusPillClass(r.timelinessStatus)">{{ r.timelinessStatus }}</span></td>
+            </tr>
+            <tr *ngIf="deliveryTable.items.length === 0">
+              <td colspan="10" class="text-center py-4 text-muted">No Goods Receipt Note (GRN) records found for this period.</td>
+            </tr>
+          </tbody>
+          <tfoot *ngIf="deliveryTable.items.length > 0">
+            <tr>
+              <td colspan="7">PAGE SUBTOTAL ({{ deliveryTable.items.length }} GRNs shown)</td>
+              <td class="num">{{ grnPageQty | number:'1.0-2' }} units</td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- 2C: Pending & Overdue Schedule -->
+        <table class="report-ledger-table" *ngIf="!loadingTable && activeSection === 'pending'">
+          <thead>
+            <tr>
+              <th class="col-idx">#</th>
+              <th>PO Number</th>
+              <th>Procurement Entity</th>
+              <th>Vendor</th>
+              <th (click)="onSortTable('podate')" class="sortable">PO Date</th>
+              <th>Expected Date</th>
+              <th (click)="onSortTable('pendingvalue')" class="sortable num">Pending Value (SAR)</th>
+              <th class="num">Ordered</th>
+              <th class="num">Received</th>
+              <th class="num">Pending Qty</th>
+              <th (click)="onSortTable('daysoverdue')" class="sortable num">Days Overdue</th>
+              <th class="text-center">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of pendingTable.items; let i = index">
+              <td class="col-idx">{{ (pendingTable.pageNumber - 1) * pendingTable.pageSize + i + 1 }}</td>
+              <td><a href="javascript:void(0)" class="fw-bold text-primary text-decoration-none" (click)="viewPo(r.purchaseOrderId)">{{ r.purchaseOrderNo }}</a></td>
+              <td>{{ r.entityName }}</td>
+              <td>{{ r.vendorName }}</td>
+              <td class="text-nowrap">{{ r.poDate | date:'dd MMM yyyy' }}</td>
+              <td class="text-nowrap">{{ r.expectedDeliveryDate ? (r.expectedDeliveryDate | date:'dd MMM yyyy') : '—' }}</td>
+              <td class="num fw-bold text-warning">{{ r.pendingValue | number:'1.2-2' }}</td>
+              <td class="num">{{ r.orderedQuantity | number:'1.0-1' }}</td>
+              <td class="num">{{ r.deliveredQuantity | number:'1.0-1' }}</td>
+              <td class="num fw-semibold">{{ r.pendingQuantity | number:'1.0-1' }}</td>
+              <td class="num fw-bold text-danger">{{ r.daysOverdue !== null ? r.daysOverdue + ' d' : '—' }}</td>
+              <td class="text-center"><span class="status-pill" [ngClass]="getStatusPillClass(r.deliveryStatus)">{{ r.deliveryStatus }}</span></td>
+            </tr>
+            <tr *ngIf="pendingTable.items.length === 0">
+              <td colspan="12" class="text-center py-4 text-muted">No pending or overdue deliveries found.</td>
+            </tr>
+          </tbody>
+          <tfoot *ngIf="pendingTable.items.length > 0">
+            <tr>
+              <td colspan="6">PAGE SUBTOTAL ({{ pendingTable.items.length }} pending POs shown)</td>
+              <td class="num text-warning">{{ pendingPageVal | number:'1.2-2' }} SAR</td>
+              <td colspan="2"></td>
+              <td class="num">{{ pendingPageQty | number:'1.0-1' }}</td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="ledger-pagination no-print"
+        *ngIf="(activeSection === 'pos' && poTable.totalPages > 1) || (activeSection === 'deliveries' && deliveryTable.totalPages > 1) || (activeSection === 'pending' && pendingTable.totalPages > 1)">
+        <span>
+          Page {{ activeSection === 'pos' ? poTable.pageNumber : (activeSection === 'deliveries' ? deliveryTable.pageNumber : pendingTable.pageNumber) }}
+          of {{ activeSection === 'pos' ? poTable.totalPages : (activeSection === 'deliveries' ? deliveryTable.totalPages : pendingTable.totalPages) }}
+        </span>
+        <div class="d-flex gap-1">
+          <button type="button" class="btn btn-sm btn-outline-secondary"
+            [disabled]="activeSection === 'pos' ? !poTable.hasPreviousPage : (activeSection === 'deliveries' ? !deliveryTable.hasPreviousPage : !pendingTable.hasPreviousPage)"
+            (click)="loadTable((activeSection === 'pos' ? poTable.pageNumber : (activeSection === 'deliveries' ? deliveryTable.pageNumber : pendingTable.pageNumber)) - 1)">
+            Prev
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-secondary"
+            [disabled]="activeSection === 'pos' ? !poTable.hasNextPage : (activeSection === 'deliveries' ? !deliveryTable.hasNextPage : !pendingTable.hasNextPage)"
+            (click)="loadTable((activeSection === 'pos' ? poTable.pageNumber : (activeSection === 'deliveries' ? deliveryTable.pageNumber : pendingTable.pageNumber)) + 1)">
+            Next
+          </button>
         </div>
       </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- Charts Row 3: Vendor Delivery Performance + Entity PO Analysis -->
-  <div class="row g-3 mb-4">
-    <div class="col-lg-6">
-      <div class="card chart-card h-100 shadow-sm border-0">
-        <div class="card-header bg-white border-0 py-3">
-          <h6 class="chart-card__title m-0 fw-bold">Vendor-wise Delivery Performance</h6>
-        </div>
-        <div class="card-body p-3">
-          <apx-chart *ngIf="!loadingCharts && chartsData?.vendorDeliveryPerformance?.length"
-            [series]="vendorDeliveryChart.series" [chart]="vendorDeliveryChart.chart"
-            [xaxis]="vendorDeliveryChart.xaxis" [plotOptions]="vendorDeliveryChart.plotOptions"
-            [colors]="vendorDeliveryChart.colors" [grid]="vendorDeliveryChart.grid"
-            [legend]="vendorDeliveryChart.legend" [dataLabels]="vendorDeliveryChart.dataLabels">
-          </apx-chart>
-          <div *ngIf="!loadingCharts && !chartsData?.vendorDeliveryPerformance?.length" class="empty-chart"><p>No vendor data.</p></div>
-        </div>
+    <!-- Formal Document Footer -->
+    <div class="report-footer">
+      <div class="report-footer__end">&mdash; End of PO and Delivery Tracking Report &mdash;</div>
+      <div class="report-footer__notes">
+        <span><strong>Methodology:</strong> Delivery status &amp; quantities verified exclusively via Goods Receipt Notes (GRN). All monetary values in SAR.</span>
+        <span>Confidential &middot; Internal Management Use Only</span>
       </div>
-    </div>
-
-    <div class="col-lg-6">
-      <div class="card chart-card h-100 shadow-sm border-0">
-        <div class="card-header bg-white border-0 py-3">
-          <h6 class="chart-card__title m-0 fw-bold">Procurement Entity-wise PO Analysis</h6>
-        </div>
-        <div class="card-body p-3">
-          <apx-chart *ngIf="!loadingCharts && chartsData?.entityPoAnalysis?.length"
-            [series]="entityPoChart.series" [chart]="entityPoChart.chart" [xaxis]="entityPoChart.xaxis"
-            [plotOptions]="entityPoChart.plotOptions" [colors]="entityPoChart.colors"
-            [grid]="entityPoChart.grid" [legend]="entityPoChart.legend" [dataLabels]="entityPoChart.dataLabels">
-          </apx-chart>
-          <div *ngIf="!loadingCharts && !chartsData?.entityPoAnalysis?.length" class="empty-chart"><p>No entity PO data.</p></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Charts Row 4: Outstanding Delivery Value by Vendor -->
-  <div class="card chart-card mb-4 shadow-sm border-0" *ngIf="chartsData?.outstandingDeliveryAnalysis?.length">
-    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center py-3">
-      <h6 class="chart-card__title m-0 fw-bold">Outstanding Delivery Value by Vendor</h6>
-      <span class="text-muted text-xs">Undelivered PO value ({{ summary?.currency || 'SAR' }})</span>
-    </div>
-    <div class="card-body p-3">
-      <apx-chart *ngIf="!loadingCharts"
-        [series]="outstandingVendorChart.series" [chart]="outstandingVendorChart.chart"
-        [xaxis]="outstandingVendorChart.xaxis" [plotOptions]="outstandingVendorChart.plotOptions"
-        [colors]="outstandingVendorChart.colors" [grid]="outstandingVendorChart.grid"
-        [tooltip]="outstandingVendorChart.tooltip" [dataLabels]="outstandingVendorChart.dataLabels">
-      </apx-chart>
     </div>
   </div>
 </div>
