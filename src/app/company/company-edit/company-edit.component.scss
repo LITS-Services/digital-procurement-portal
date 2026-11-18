@@ -12,16 +12,16 @@
     background: #fff !important;
 }
 
-/* Auto-adjusting tabs for Company Review (no scroll, all 9 tabs visible) */
+/* Auto-adjusting tabs for Company Review */
 .custom-tabs {
   width: 100% !important;
   max-width: 100% !important;
-  overflow-x: hidden !important;
+  overflow-x: auto !important;
 
   nav {
     display: flex !important;
     width: 100% !important;
-    min-width: 100% !important;
+    min-width: max-content !important;
     justify-content: space-between !important;
   }
 

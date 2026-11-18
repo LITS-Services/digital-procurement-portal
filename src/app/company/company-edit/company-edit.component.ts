@@ -73,6 +73,39 @@ export class CompanyEditComponent implements OnInit {
   procurementOfficers: any[] = [];
   financeOfficers: any[] = [];
 
+  // Section A: Background Information
+  postalAddress: string = '';
+  organizationType: string = '';
+  geographicalAreaOfOperations: string = '';
+  companyRegistrationNo: string = '';
+  dateOfRegistration: string = '';
+  durationOfBusinessOperations: string = '';
+  descriptionOfGoodsServices: string = '';
+  totalWorkForce: string = '';
+
+  // Section C: References & Credit Period
+  clienteleList: any[] = [];
+  refereeList: any[] = [];
+  hasCreditPeriod30Days: boolean | null = null;
+  creditPeriod: string = '';
+
+  // Section D: Technical Competence
+  proofOfProfessionalism: string = '';
+  keyPersonnelQualifications: string = '';
+
+  // Section E: Management Policies
+  hasEmploymentPolicy: boolean | null = null;
+  employeeScreeningExplanation: string = '';
+  hasCodeOfConduct: boolean | null = null;
+  codeOfConductDetails: string = '';
+  employeeIntegrityMeasures: string = '';
+  hasEmployeeTrainingProgram: boolean | null = null;
+
+  splitGeographicalAreas(areasStr?: string): string[] {
+    if (!areasStr) return [];
+    return areasStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+  }
+
   getInitials(name?: string): string {
     if (!name) return 'OF';
     const baseName = name.replace(/_[A-Za-z0-9]+$/, '').trim();
@@ -205,6 +238,52 @@ export class CompanyEditComponent implements OnInit {
           this.vatBusinessPostingGroup = company.vatBusinessPostingGroup || '';
           this.generalBusinessPostingGroup = company.generalBusinessPostingGroup || '';
 
+          // Section A: Background Information
+          this.postalAddress = company.postalAddress || '';
+          this.organizationType = company.organizationType || '';
+          this.geographicalAreaOfOperations = company.geographicalAreaOfOperations || '';
+          this.companyRegistrationNo = company.companyRegistrationNo || '';
+          this.dateOfRegistration = company.dateOfRegistration ? company.dateOfRegistration.substring(0, 10) : '';
+          this.durationOfBusinessOperations = company.durationOfBusinessOperations || '';
+          this.descriptionOfGoodsServices = company.descriptionOfGoodsServices || '';
+          this.totalWorkForce = company.totalWorkForce || '';
+
+          // Section C: References & Credit Period
+          this.hasCreditPeriod30Days = company.hasCreditPeriod30Days !== undefined ? company.hasCreditPeriod30Days : null;
+          this.creditPeriod = company.creditPeriod || '';
+          const rawClientele = company.clientele?.$values || company.clientele || [];
+          this.clienteleList = rawClientele.map((c: any) => ({
+            id: c.id,
+            clientName: c.clientName || '',
+            supplies: c.supplies || '',
+            duration: c.duration || '',
+            totalContractValue: c.totalContractValue || ''
+          }));
+          const rawReferees = company.referees?.$values || company.referees || [];
+          this.refereeList = rawReferees.map((r: any) => ({
+            id: r.id,
+            organization: r.organization || '',
+            contactName: r.contactName || '',
+            position: r.position || '',
+            telephoneNo: r.telephoneNo || '',
+            emailAddress: r.emailAddress || '',
+            hasOfficialStamp: r.hasOfficialStamp || false,
+            hasSignature: r.hasSignature || false,
+            lpoAttachmentUrl: r.lpoAttachmentUrl || ''
+          }));
+
+          // Section D: Technical Competence
+          this.proofOfProfessionalism = company.proofOfProfessionalism || '';
+          this.keyPersonnelQualifications = company.keyPersonnelQualifications || '';
+
+          // Section E: Management Policies
+          this.hasEmploymentPolicy = company.hasEmploymentPolicy !== undefined ? company.hasEmploymentPolicy : null;
+          this.employeeScreeningExplanation = company.employeeScreeningExplanation || '';
+          this.hasCodeOfConduct = company.hasCodeOfConduct !== undefined ? company.hasCodeOfConduct : null;
+          this.codeOfConductDetails = company.codeOfConductDetails || '';
+          this.employeeIntegrityMeasures = company.employeeIntegrityMeasures || '';
+          this.hasEmployeeTrainingProgram = company.hasEmployeeTrainingProgram !== undefined ? company.hasEmployeeTrainingProgram : null;
+
           this.pendingUpdate = company.pendingUpdate || null;
           this.updateHistory = company.updateHistory || [];
           console.log('Pending update info:', this.pendingUpdate);
@@ -307,6 +386,10 @@ export class CompanyEditComponent implements OnInit {
           const rawAddresses = company.vendorCompanyAddresses || [];
           this.addressList = rawAddresses.map((a: any) => ({
             id: a.id,
+            town: a.town || '',
+            building: a.building || '',
+            floor: a.floor || '',
+            postalAddress: a.postalAddress || '',
             street: a.street,
             city: a.city,
             state: a.state,
@@ -319,6 +402,10 @@ export class CompanyEditComponent implements OnInit {
           const rawContacts = company.vendorCompanyContactDetails || [];
           this.contactList = rawContacts.map((c: any) => ({
             id: c.id,
+            contactRole: c.contactRole || '',
+            contactPerson: c.contactPerson || '',
+            designation: c.designation || '',
+            email: c.email || '',
             description: c.description,
             type: c.type,
             contactNumber: c.contactNumber,
@@ -335,6 +422,7 @@ export class CompanyEditComponent implements OnInit {
             attachedBy: f.attachedBy,
             remarks: f.remarks,
             attachedAt: f.attachedAt,
+            documentType: f.documentType || '',
           }));
 
           // --- Vendor Entities (Procurement Companies) ---
