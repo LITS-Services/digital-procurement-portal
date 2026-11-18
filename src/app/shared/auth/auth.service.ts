@@ -1,4 +1,4 @@
-import { Router } from '@angular/router';
+﻿import { Router } from '@angular/router';
 import { Injectable, Injector } from '@angular/core';
 import { AngularFireAuth } from "@angular/fire/compat/auth";
 import firebase from 'firebase/compat/app';
@@ -291,7 +291,10 @@ export class AuthService {
       })
       .pipe(
         tap((resp) => this._applySessionFromRefresh(resp)),
-        map((resp) => resp?.token ?? this.tokenStorage.getAccessToken()),
+        map((resp) => {
+          const auth = unwrapAuthPayload(resp);
+          return authToken(auth) || this.tokenStorage.getAccessToken();
+        }),
         catchError(() => of(null)),
         finalize(() => this.tokenStorage.completeRefresh(this.accessToken))
       );
@@ -357,45 +360,47 @@ export class AuthService {
   }
 
   private _applySessionFromRefresh(res: any): void {
+    if (!res) return;
+    const auth = unwrapAuthPayload(res);
+    const token = authToken(auth);
+    const refresh = authRefreshToken(auth);
     if (this.useCookieAuth()) {
       this.tokenStorage.clear();
     } else {
-      if (res?.token || res?.refreshToken) {
-        this.tokenStorage.setTokens(res.token || this.tokenStorage.getAccessToken() || '', res.refreshToken || this.tokenStorage.getRefreshToken() || '');
+      if (token || refresh) {
+        this.tokenStorage.setTokens(token || this.tokenStorage.getAccessToken() || '', refresh || this.tokenStorage.getRefreshToken() || '');
       }
     }
 
-    this.accessExpiresAt = res?.expiresAt ?? res?.ExpiresAt ?? this.accessExpiresAt;
-    this.refreshExpiresAt = res?.refreshExpiresAt ?? res?.RefreshExpiresAt ?? this.refreshExpiresAt;
+    this.accessExpiresAt = auth?.expiresAt ?? auth?.ExpiresAt ?? this.accessExpiresAt;
+    this.refreshExpiresAt = auth?.refreshExpiresAt ?? auth?.RefreshExpiresAt ?? this.refreshExpiresAt;
 
-    if (res?.userId) localStorage.setItem('userId', res.userId);
-    if (res?.userName) localStorage.setItem('userName', res.userName);
-    let email = res?.email || res?.Email;
-    if (!email && (res?.token || this.tokenStorage.getAccessToken())) {
-      email = extractEmailFromJwt(res?.token || this.tokenStorage.getAccessToken());
+    if (auth?.userId) localStorage.setItem('userId', auth.userId);
+    if (auth?.userName) localStorage.setItem('userName', auth.userName);
+    let email = auth?.email || auth?.Email;
+    if (!email && (token || this.tokenStorage.getAccessToken())) {
+      email = extractEmailFromJwt(token || this.tokenStorage.getAccessToken());
     }
     if (email) localStorage.setItem('userEmail', email);
 
-    if (res?.roles) {
-      const role = Array.isArray(res.roles) && res.roles.length > 0 ? res.roles[0] : '';
+    if (auth?.roles) {
+      const role = Array.isArray(auth.roles) && auth.roles.length > 0 ? auth.roles[0] : '';
       localStorage.setItem('role', role);
-      localStorage.setItem('roles', JSON.stringify(res.roles || []));
+      localStorage.setItem('roles', JSON.stringify(auth.roles || []));
     }
-    if (res?.companyIds) {
-      const companyIds = res?.companyIds?.$values || res.companyIds || [];
-      localStorage.setItem('companyIds', JSON.stringify(companyIds));
-    }
-
-    if (res?.rolePermissions) {
-      this.permissionService.setPermissions(res.rolePermissions);
-      const auth = JSON.parse(localStorage.getItem('auth') || '{}');
-      localStorage.setItem('auth', JSON.stringify({ ...auth, rolePermissions: res.rolePermissions }));
+    if (auth?.companyIds) {
+      const companyIds = auth?.companyIds?.$values || auth.companyIds || [];
+      localStorage.setItem('companyIds', JSON.stringify(Array.isArray(companyIds) ? companyIds : []));
     }
 
-    if (res?.userId || res?.token || this.useCookieAuth()) {
-      localStorage.setItem('isAuthenticated', 'true');
+    const rolePermissions = auth?.rolePermissions || auth?.RolePermissions;
+    if (rolePermissions) {
+      this.permissionService.setPermissions(rolePermissions);
+      const authObj = JSON.parse(localStorage.getItem('auth') || '{}');
+      localStorage.setItem('auth', JSON.stringify({ ...authObj, rolePermissions }));
     }
 
+    localStorage.setItem('isAuthenticated', 'true');
     this.scheduleSessionExpiry(this.refreshExpiresAt);
     this.bumpIdleTimer();
     this._notifyAuthStateChange();

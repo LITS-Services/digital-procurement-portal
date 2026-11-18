@@ -25,28 +25,12 @@
 
       <div class="card cstm-ui-card mb-2">
 
-
-
         <div class="row">
           <div class="col-md-6">
             <button class="btn btn-lg mr-1" type="button" (click)="goBack()">
               <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
             </button>
             <span class="vl"></span>
-
-            <!-- <button class="btn btn-sm" [disabled]="!companyId" (click)="openRemarkModal(2, remarkModal)">
-              <i class="fa fa-circle-check"></i> Approve
-            </button>
-
-            <button class="btn btn-sm" [disabled]="!companyId" (click)="openRemarkModal(4, remarkModal)">
-              <i class="fa fa-rotate-left"></i> Recall
-            </button> -->
-
-            <!-- <button class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId"
-                (click)="onActions('Approve')">
-                <i class="ft-check"></i><label class="ml-1 mt-1">Approve</label>
-              </button> -->
-
 
             <!-- If isAssigned = true → show Submit for Approval -->
             <button *ngIf="!isAssigned && workflowMasterId != 0 && mainApproverId == currentUserId"
@@ -62,7 +46,6 @@
               <label>Submit for Approval</label>
             </button>
 
-
             <!-- If isAssigned = false AND workflowMasterId != 0 AND mainApproverId == currentUserId → show Approve -->
             <button *ngIf="!isAssigned && workflowMasterId != 0 && mainApproverId == currentUserId"
               class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
@@ -70,7 +53,6 @@
               <i class="ft-check"></i>
               <label class="ml-1">Approve</label>
             </button>
-
 
             <button *ngIf="(isAssigned || workflowMasterId != 0) && mainApproverId == currentUserId"
               class="btn btn-sm cstm-ui-table-btn" [disabled]="!companyId || isSubmitting"
@@ -85,8 +67,6 @@
               <img src="assets/img/svg-icons/back-icon.svg" class="btn-action-icon btn-back-icon" alt="" />
               <label class="ml-1">Send Back</label>
             </button>
-
-
 
           </div>
         </div>
@@ -125,6 +105,11 @@
             <button (click)="selectTab('attachments')" [ngClass]="{ 'tab-current': selectedTab === 'attachments' }"
               class="custom-style-tab">
               <span>ATTACHMENTS</span>
+            </button>
+
+            <button (click)="selectTab('changes-diff')" [ngClass]="{ 'tab-current': selectedTab === 'changes-diff' }"
+              class="custom-style-tab">
+              <span>CHANGES<br>DIFF</span>
             </button>
 
             <button (click)="selectTab('setup-history')" [ngClass]="{ 'tab-current': selectedTab === 'setup-history' }"
@@ -178,6 +163,7 @@
                 </div>
                 }
               </div>
+
               @if (companyWebsite) {
               <div class="company-website mt-1 d-flex align-items-center">
                 <i class="ft-globe mr-1"></i>
@@ -228,44 +214,6 @@
             </div>
 
             <!-- Associated entities header -->
-            <!-- <div class="d-flex justify-content-between align-items-center mb-1">
-              <div class="d-flex align-items-center">
-                <h5 class="mb-0 mr-2">Associated Entities</h5>
-                <span class="badge badge-light rounded-pill">
-                  {{ associatedEntities.length }}
-                </span>
-              </div>
-            </div> -->
-
-
-
-            <!-- Entity list -->
-            <!-- <div class="entity-card mb-2" *ngFor="let entity of associatedEntities">
-              <div class="d-flex align-items-center justify-content-between"> -->
-            <!-- Left: icon + name + meta -->
-            <!-- <div class="d-flex align-items-center">
-                  <div class="entity-avatar mr-3 entity-avatar--blue">
-                    <i class="fa fa-building"></i>
-                  </div>
-
-                  <div>
-                    <div class="entity-name">{{ entity.name }}</div> -->
-            <!-- <div class="entity-meta text-muted small">
-                    <i class="ft-map-pin mr-1"></i>
-                    {{ entity.city }}, {{ entity.country }}
-                    <span class="mx-1">•</span>
-                    {{ entity.industry }}
-                  </div> -->
-            <!-- </div>
-                </div> -->
-
-            <!-- Right: status + chevron -->
-            <!-- <div class="d-flex align-items-center">
-                  <span class="entity-status-pill" [ngClass]="entity.statusClass">
-                    {{ entity.statusLabel }}
-                  </span>
-
-                </div> -->
           </div>
         </div>
 
@@ -322,8 +270,6 @@
               prop="primaryCurrency"></ngx-datatable-column>
             <ngx-datatable-column [sortable]="false" name="Line of Business"
               prop="lineOfBusiness"></ngx-datatable-column>
-            <!-- <ngx-datatable-column [sortable]="false" name="Employee Responsible"
-              prop="employeeResponsible"></ngx-datatable-column> -->
             <ngx-datatable-column [sortable]="false" name="Note" prop="note"></ngx-datatable-column>
           </ngx-datatable>
         </div>
@@ -373,6 +319,343 @@
 
           <div *ngIf="attachedFiles && attachedFiles.length === 0" class="text-muted p-2">
             No attachments found.
+          </div>
+        </div>
+
+        <!-- Changes Diff Tab -->
+        <div *ngIf="selectedTab === 'changes-diff'">
+          <div class="card mt-0 p-3 company-profile">
+
+            <!-- Compact Top Review Header with Progress Tracker -->
+            <div class="diff-master-topbar mb-3" *ngIf="pendingUpdate">
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pb-2 border-bottom">
+                
+                <!-- Left: Submitter Profile -->
+                <div class="d-flex align-items-center">
+                  <div class="diff-topbar-avatar mr-2">
+                    <span>{{ (pendingUpdate.updatedByName || pendingUpdate.updatedBy || 'VU').substring(0, 2).toUpperCase() }}</span>
+                  </div>
+                  <div>
+                    <div class="d-flex align-items-center flex-wrap gap-2">
+                      <span class="font-weight-bold text-dark font-small-3">
+                        {{ pendingUpdate.updatedByName || pendingUpdate.updatedBy || 'Vendor User' }}
+                      </span>
+                      <span class="status-pill status-in-process font-small-1">
+                        {{ pendingUpdate.status || 'Pending Review' }}
+                      </span>
+                      <span class="text-muted font-small-1">
+                        • {{ pendingUpdate.updateDate | date:'medium' }}
+                      </span>
+                    </div>
+                    <div *ngIf="pendingUpdate.remarks" class="text-muted font-small-1 font-italic text-truncate" style="max-width: 520px;" [title]="pendingUpdate.remarks">
+                      <i class="ft-message-square mr-1 text-primary"></i>“{{ pendingUpdate.remarks }}”
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right: Review Progress & Stats -->
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                  <div class="diff-progress-badge" *ngIf="uniqueSectionsWithChanges.length > 0">
+                    <span class="text-muted font-small-1 mr-1">Progress:</span>
+                    <strong class="text-primary font-small-1">{{ reviewedSectionCount }}/{{ uniqueSectionsWithChanges.length }}</strong>
+                    <span class="text-muted font-small-1">Sections</span>
+                  </div>
+
+                  <span class="badge badge-primary px-2 py-1 font-small-2">
+                    {{ totalPendingChangesCount }} Changes
+                  </span>
+                  <span class="badge badge-light border text-muted px-2 py-1 font-small-2" *ngIf="modifiedChangesCount > 0">
+                    {{ modifiedChangesCount }} Modified
+                  </span>
+                  <span class="badge badge-light border text-muted px-2 py-1 font-small-2" *ngIf="addedChangesCount > 0">
+                    {{ addedChangesCount }} Added
+                  </span>
+                  <span class="badge badge-light border text-muted px-2 py-1 font-small-2" *ngIf="removedChangesCount > 0">
+                    {{ removedChangesCount }} Removed
+                  </span>
+                </div>
+
+              </div>
+
+              <!-- Thin Progress Bar (0 to 100%) -->
+              <div class="diff-review-progress-bar" *ngIf="uniqueSectionsWithChanges.length > 0">
+                <div class="diff-progress-fill" [style.width.%]="reviewProgressPercent"></div>
+              </div>
+            </div>
+
+            <!-- Zero Page Scroll: Master-Detail Split Workspace -->
+            <div class="diff-workspace-container" *ngIf="totalPendingChangesCount > 0 || (updateHistory && updateHistory.length > 0)">
+              
+              <!-- Left Master Navigation Rail (260px) -->
+              <div class="diff-master-rail">
+                <div class="diff-rail-header d-flex align-items-center justify-content-between">
+                  <span>SECTIONS TO REVIEW</span>
+                  <span class="badge badge-pill badge-light border font-small-1">{{ uniqueSectionsWithChanges.length }}</span>
+                </div>
+
+                <div class="diff-rail-nav">
+                  <!-- Section Items -->
+                  <div *ngFor="let sec of uniqueSectionsWithChanges"
+                    class="diff-rail-item"
+                    [class.active]="currentDiffSection === sec"
+                    (click)="selectDiffSection(sec)">
+                    <div class="d-flex align-items-center">
+                      <div class="diff-rail-icon">
+                        <i [ngClass]="getSectionFeatherIcon(sec)"></i>
+                      </div>
+                      <div class="diff-rail-text">
+                        <div class="d-flex align-items-center">
+                          <span class="diff-rail-title">{{ sec }}</span>
+                          <i *ngIf="reviewedSections.has(sec)" class="ft-check text-success ml-1 font-small-1" title="Section inspected"></i>
+                        </div>
+                        <span class="diff-rail-sub">{{ getSectionCountByName(sec) }} modification{{ getSectionCountByName(sec) > 1 ? 's' : '' }}</span>
+                      </div>
+                    </div>
+                    <span class="diff-rail-counter">{{ getSectionCountByName(sec) }}</span>
+                  </div>
+
+                  <!-- All Changes Item -->
+                  <div class="diff-rail-item"
+                    [class.active]="currentDiffSection === 'All'"
+                    (click)="selectDiffSection('All')">
+                    <div class="d-flex align-items-center">
+                      <div class="diff-rail-icon">
+                        <i class="ft-layers"></i>
+                      </div>
+                      <div class="diff-rail-text">
+                        <span class="diff-rail-title">All Sections</span>
+                        <span class="diff-rail-sub">Combined list</span>
+                      </div>
+                    </div>
+                    <span class="diff-rail-counter">{{ totalPendingChangesCount }}</span>
+                  </div>
+
+                  <!-- Audit History Log Item -->
+                  <div *ngIf="updateHistory && updateHistory.length > 0"
+                    class="diff-rail-item diff-rail-item--audit"
+                    [class.active]="currentDiffSection === 'Audit Log'"
+                    (click)="selectDiffSection('Audit Log')">
+                    <div class="d-flex align-items-center">
+                      <div class="diff-rail-icon">
+                        <i class="ft-clock"></i>
+                      </div>
+                      <div class="diff-rail-text">
+                        <span class="diff-rail-title">Audit History</span>
+                        <span class="diff-rail-sub">Past submissions</span>
+                      </div>
+                    </div>
+                    <span class="diff-rail-counter">{{ updateHistory.length }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Detail Content Workspace (Flex 1) -->
+              <div class="diff-detail-pane">
+                
+                <!-- Detail Pane Header with Search, Tab Link, and Prev/Next Controls -->
+                <div class="diff-detail-header d-flex align-items-center justify-content-between flex-wrap gap-2 pb-2 mb-3 border-bottom">
+                  <div class="d-flex align-items-center">
+                    <div class="diff-detail-icon-box mr-2">
+                      <i [ngClass]="currentDiffSection === 'Audit Log' ? 'ft-clock' : currentDiffSection === 'All' ? 'ft-layers' : getSectionFeatherIcon(currentDiffSection)"></i>
+                    </div>
+                    <div>
+                      <div class="d-flex align-items-center gap-2">
+                        <h6 class="font-weight-bold text-dark mb-0">{{ currentDiffSection }}</h6>
+                        <!-- Open in full section tab shortcut -->
+                        <button *ngIf="currentDiffSection !== 'Audit Log' && currentDiffSection !== 'All'"
+                          type="button" class="btn btn-xs btn-outline-primary py-0 px-2 font-small-1 diff-jump-btn"
+                          (click)="navigateToSection(currentDiffSection)"
+                          title="View this section in its full profile tab">
+                          <i class="ft-external-link mr-1"></i> View Full Tab
+                        </button>
+                      </div>
+                      <span class="text-muted font-small-1" *ngIf="currentDiffSection !== 'Audit Log'">
+                        {{ filteredActiveSectionChanges.length }} modification{{ filteredActiveSectionChanges.length !== 1 ? 's' : '' }} to review
+                      </span>
+                      <span class="text-muted font-small-1" *ngIf="currentDiffSection === 'Audit Log'">
+                        Historical log of {{ updateHistory.length }} past vendor update submissions
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Controls: Field Search & Step-by-Step Pager -->
+                  <div class="d-flex align-items-center gap-2">
+                    <!-- Mini Search within active section -->
+                    <div class="diff-search-input-box" *ngIf="currentDiffSection !== 'Audit Log' && activeSectionChanges.length > 2">
+                      <i class="ft-search diff-search-icon"></i>
+                      <input type="text" [(ngModel)]="diffSearchQuery" placeholder="Filter fields..." class="diff-search-field" />
+                      <i *ngIf="diffSearchQuery" (click)="diffSearchQuery = ''" class="ft-x diff-search-clear"></i>
+                    </div>
+
+                    <!-- Prev / Next Section Nav Buttons -->
+                    <div class="d-flex align-items-center gap-1" *ngIf="currentDiffSection !== 'Audit Log' && currentDiffSection !== 'All'">
+                      <button type="button" class="btn btn-sm btn-outline-secondary py-1 px-2 font-small-2"
+                        [disabled]="!hasPreviousSection"
+                        (click)="goToPreviousSection()"
+                        title="Go to previous section">
+                        <i class="ft-chevron-left mr-1"></i> Prev
+                      </button>
+                      <button type="button" class="btn btn-sm btn-primary py-1 px-2 font-small-2"
+                        (click)="goToNextSection()"
+                        title="Go to next section">
+                        {{ hasNextSection ? 'Next' : 'Audit Log' }} <i class="ft-chevron-right ml-1"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Detail Body (Scrollable inside pane only) -->
+                <div class="diff-detail-scroll">
+                  
+                  <!-- CASE 1: Standard Field Changes (Compact Split Cards) -->
+                  <div *ngIf="currentDiffSection !== 'Audit Log'">
+                    <div *ngFor="let c of filteredActiveSectionChanges" class="diff-compact-row">
+                      
+                      <!-- Row Header -->
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="d-flex align-items-center flex-wrap gap-2">
+                          <span *ngIf="currentDiffSection === 'All'" class="badge badge-light border mr-1 font-small-1">
+                            {{ c.section }}
+                          </span>
+                          <span class="font-weight-bold text-dark font-small-3">{{ c.field }}</span>
+                          <span *ngIf="c.itemIdentifier" class="diff-item-identifier">
+                            <i class="ft-tag mr-1 font-small-1"></i>{{ c.itemIdentifier }}
+                          </span>
+                        </div>
+                        <span class="status-pill font-small-1" [ngClass]="getChangeStatusClass(c.changeType)">
+                          {{ c.changeType }}
+                        </span>
+                      </div>
+
+                      <!-- Side-by-Side Split Bar -->
+                      <div class="diff-split-bar">
+                        <!-- Before (Current) -->
+                        <div class="diff-split-side diff-split-side--old">
+                          <span class="diff-side-tag text-danger"><i class="ft-minus font-small-1"></i> Current Record</span>
+                          <div class="diff-side-val--old">
+                            <span *ngIf="c.oldValue">{{ c.oldValue }}</span>
+                            <span *ngIf="!c.oldValue" class="text-muted font-italic font-small-2">— Empty (none)</span>
+                          </div>
+                        </div>
+
+                        <!-- Arrow Connector -->
+                        <div class="diff-split-mid">
+                          <i class="ft-arrow-right text-primary"></i>
+                        </div>
+
+                        <!-- After (New) with Copy Button -->
+                        <div class="diff-split-side diff-split-side--new">
+                          <div class="d-flex align-items-center justify-content-between">
+                            <span class="diff-side-tag text-success"><i class="ft-plus font-small-1"></i> Proposed Update</span>
+                            <button *ngIf="c.newValue" type="button" class="btn btn-xs diff-copy-btn"
+                              (click)="copyToClipboard(c.newValue, c.field)"
+                              title="Copy updated value to clipboard">
+                              <i class="ft-copy"></i>
+                            </button>
+                          </div>
+                          <div class="diff-side-val--new">
+                            <span *ngIf="c.newValue">{{ c.newValue }}</span>
+                            <span *ngIf="!c.newValue" class="text-muted font-italic font-small-2">— Removed</span>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <!-- Empty state if search filter has no matches -->
+                    <div *ngIf="filteredActiveSectionChanges.length === 0 && diffSearchQuery" class="text-center py-4 text-muted">
+                      <i class="ft-search text-muted font-large-1 mb-2 d-block"></i>
+                      No fields matching "{{ diffSearchQuery }}" in {{ currentDiffSection }}.
+                    </div>
+
+                    <div *ngIf="activeSectionChanges.length === 0" class="text-center py-4 text-muted">
+                      <i class="ft-check-circle text-success font-large-1 mb-2 d-block"></i>
+                      No pending changes for this section.
+                    </div>
+                  </div>
+
+                  <!-- CASE 2: Audit Trail Log (Clean Non-Truncated Timeline Cards) -->
+                  <div *ngIf="currentDiffSection === 'Audit Log'">
+                    <div class="diff-audit-timeline">
+                      <div *ngFor="let h of updateHistory" class="diff-audit-entry-card mb-3">
+                        
+                        <!-- Top Bar: Submitter, Date & Status -->
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pb-2 border-bottom">
+                          <div class="d-flex align-items-center">
+                            <div class="diff-audit-icon-box mr-2">
+                              <i class="ft-file-text"></i>
+                            </div>
+                            <div>
+                              <span class="font-weight-bold text-dark font-small-3 d-block">
+                                {{ h.updatedByName || h.updatedBy || 'Vendor User' }}
+                              </span>
+                              <span class="text-muted font-small-1">
+                                <i class="ft-calendar mr-1"></i>{{ h.createdDate | date:'medium' }}
+                              </span>
+                            </div>
+                          </div>
+
+                          <span class="status-pill font-small-1" [ngClass]="getAuditStatusClass(h.status)">
+                            {{ h.status }}
+                          </span>
+                        </div>
+
+                        <!-- Middle: Remarks & Summary -->
+                        <div class="pt-2">
+                          <div class="row align-items-center">
+                            <div class="col-md-7 mb-2 mb-md-0">
+                              <span class="text-muted font-small-1 font-weight-600 d-block mb-1">VENDOR REMARKS</span>
+                              <span class="font-italic text-dark font-small-2">
+                                “{{ h.remarks || 'No remarks provided' }}”
+                              </span>
+                            </div>
+
+                            <div class="col-md-5">
+                              <span class="text-muted font-small-1 font-weight-600 d-block mb-1">CHANGES SUMMARY</span>
+                              <span class="badge badge-light border font-small-2">
+                                <i class="ft-layers mr-1 text-primary"></i>
+                                {{ h.summary || (h.changes?.length + ' fields modified') }}
+                              </span>
+                            </div>
+                          </div>
+
+                          <!-- Reviewer Feedback (if reviewed) -->
+                          <div *ngIf="h.reviewedDate || h.reviewedBy || h.reviewRemarks" class="diff-reviewer-feedback-box mt-2 pt-2 border-top">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                              <span class="text-muted font-small-1">
+                                <i class="ft-check-square mr-1 text-primary"></i>
+                                Reviewed by <strong>{{ h.reviewedBy || 'Admin' }}</strong> on {{ h.reviewedDate | date:'medium' }}
+                              </span>
+                              <span *ngIf="h.reviewRemarks" class="font-italic text-dark font-small-2">
+                                Note: “{{ h.reviewRemarks }}”
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+
+                    <div *ngIf="!updateHistory || updateHistory.length === 0" class="text-center py-5 text-muted">
+                      <i class="ft-clock text-muted font-large-2 mb-2 d-block"></i>
+                      <h6 class="font-weight-bold">No Previous Submissions</h6>
+                      <p class="font-small-2">There is no historical update log available for this company.</p>
+                    </div>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- Empty State when nothing to review -->
+            <div *ngIf="totalPendingChangesCount === 0 && (!updateHistory || updateHistory.length === 0)" class="empty-state text-center p-4">
+              <i class="ft-check-circle text-success font-large-2 mb-2"></i>
+              <h5 class="empty-message font-weight-bold">All Profile Fields Up To Date</h5>
+              <p class="empty-submessage text-muted">No pending modifications waiting for review.</p>
+            </div>
+
           </div>
         </div>
 

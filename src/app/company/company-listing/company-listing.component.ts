@@ -163,7 +163,9 @@ export class CompanyListingComponent implements OnInit {
         workflowMasterId: c.workflowMasterId || 0,
         assignedUserName: c.approverName || '',
         assignedUserRemarks: c.remarks || '',
-        showAssignMe: false // Initialize to false
+        showAssignMe: false,
+        hasPendingUpdates: c.hasPendingUpdates || false,
+        updateSummary: c.updateSummary || ''
       };
     } else {
       // Fallback to the original nested structure
@@ -188,7 +190,9 @@ export class CompanyListingComponent implements OnInit {
         isAssigned: selectedEntity?.isAssigned || false,
         setUpId: selectedEntity?.setUpId || null,
         workflowMasterId: selectedEntity?.workflowMasterId || 0,
-        showAssignMe: false // Initialize to false
+        showAssignMe: false,
+        hasPendingUpdates: c.hasPendingUpdates || false,
+        updateSummary: c.updateSummary || ''
       };
     }
   }

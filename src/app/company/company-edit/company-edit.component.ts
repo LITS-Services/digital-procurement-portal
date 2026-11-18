@@ -53,6 +53,18 @@ export class CompanyEditComponent implements OnInit {
 
   associatedEntities: any[] = [];
 
+  paymentMethod: string = '';
+  paymentTerm: string = '';
+  vendorPostingGroup: string = '';
+  vatBusinessPostingGroup: string = '';
+  generalBusinessPostingGroup: string = '';
+
+  // Pending updates & Diff tracking
+  pendingUpdate: any = null;
+  updateHistory: any[] = [];
+  diffFilterSection: string = 'All';
+  diffViewMode: 'cards' | 'table' = 'cards';
+
   companyLogoUrl: string | null = null;
   companyWebsite: string | null = null;
   trnNumber: string = '';
@@ -177,6 +189,15 @@ export class CompanyEditComponent implements OnInit {
           this.procurementOfficer = company.procurementOfficer || (company.procurementOfficers && company.procurementOfficers[0]) || null;
           this.financeOfficer = company.financeOfficer || (company.financeOfficers && company.financeOfficers[0]) || null;
           this.procurementOfficers = company.procurementOfficers || (this.procurementOfficer ? [this.procurementOfficer] : []);
+          this.paymentMethod = company.paymentMethod || '';
+          this.paymentTerm = company.paymentTerm || '';
+          this.vendorPostingGroup = company.vendorPostingGroup || '';
+          this.vatBusinessPostingGroup = company.vatBusinessPostingGroup || '';
+          this.generalBusinessPostingGroup = company.generalBusinessPostingGroup || '';
+
+          this.pendingUpdate = company.pendingUpdate || null;
+          this.updateHistory = company.updateHistory || [];
+          console.log('Pending update info:', this.pendingUpdate);
           this.financeOfficers = company.financeOfficers || (this.financeOfficer ? [this.financeOfficer] : []);
 
           // If vendorEntityAssociationId is missing from query params, try to get it from API response
@@ -558,6 +579,255 @@ export class CompanyEditComponent implements OnInit {
         this.toastr.error('Failed to download attachment.');
       },
     });
+  }
+
+  get totalPendingChangesCount(): number {
+    return this.pendingUpdate?.changes?.length || 0;
+  }
+
+  get modifiedChangesCount(): number {
+    if (!this.pendingUpdate?.changes) return 0;
+    return this.pendingUpdate.changes.filter((c: any) => (c.changeType || '').toLowerCase() === 'modified').length;
+  }
+
+  get addedChangesCount(): number {
+    if (!this.pendingUpdate?.changes) return 0;
+    return this.pendingUpdate.changes.filter((c: any) => (c.changeType || '').toLowerCase() === 'added').length;
+  }
+
+  get removedChangesCount(): number {
+    if (!this.pendingUpdate?.changes) return 0;
+    return this.pendingUpdate.changes.filter((c: any) => (c.changeType || '').toLowerCase() === 'removed').length;
+  }
+
+  getChangesForSection(sectionName: string): any[] {
+    if (!this.pendingUpdate?.changes) return [];
+    return this.pendingUpdate.changes.filter((c: any) => c.section === sectionName);
+  }
+
+  getSectionChangeCount(sectionKey: string): number {
+    if (!this.pendingUpdate?.sectionChangeCounts) return 0;
+    return this.pendingUpdate.sectionChangeCounts[sectionKey] || 0;
+  }
+
+  getSectionCountByName(sectionName: string): number {
+    if (!this.pendingUpdate?.changes) return 0;
+    return this.pendingUpdate.changes.filter((c: any) => c.section === sectionName).length;
+  }
+
+  getSectionChanges(sectionKey: string): any[] {
+    if (!this.pendingUpdate?.changes) return [];
+    return this.pendingUpdate.changes.filter((c: any) => c.sectionKey === sectionKey);
+  }
+
+  getFieldChange(sectionKey: string, fieldKey: string, itemIndex?: number): any {
+    if (!this.pendingUpdate?.changes) return null;
+    return this.pendingUpdate.changes.find((c: any) =>
+      c.sectionKey === sectionKey &&
+      c.fieldKey?.toLowerCase() === fieldKey?.toLowerCase() &&
+      (itemIndex === undefined || c.itemIndex === itemIndex || c.itemIndex === null || c.itemIndex === undefined)
+    );
+  }
+
+  isFieldChanged(sectionKey: string, fieldKey: string, itemIndex?: number): boolean {
+    return !!this.getFieldChange(sectionKey, fieldKey, itemIndex);
+  }
+
+  getBankItemChanges(index: number): any[] {
+    if (!this.pendingUpdate?.changes) return [];
+    return this.pendingUpdate.changes.filter((c: any) =>
+      c.sectionKey === 'bank-details' && (c.itemIndex === index || (c.itemIndex === undefined && this.bankDetailsList.length === 1))
+    );
+  }
+
+  isBankItemChanged(index: number): boolean {
+    return this.getBankItemChanges(index).length > 0;
+  }
+
+  getBankItemChangeType(index: number): string {
+    const changes = this.getBankItemChanges(index);
+    if (!changes.length) return '';
+    const addChange = changes.find((c: any) => c.changeType === 'Added');
+    if (addChange) return 'Added';
+    const remChange = changes.find((c: any) => c.changeType === 'Removed');
+    if (remChange) return 'Removed';
+    return 'Modified';
+  }
+
+  navigateToSection(sectionName: string): void {
+    const map: { [key: string]: string } = {
+      'General Information': 'general-info',
+      'Bank Details': 'bank-details',
+      'Addresses': 'addresses',
+      'Contact Details': 'company-contacts',
+      'Demographics': 'purchasing-demo',
+      'Attachments': 'attachments'
+    };
+    const tabKey = map[sectionName] || 'general-info';
+    this.selectTab(tabKey);
+  }
+
+  get filteredDiffChanges(): any[] {
+    if (!this.pendingUpdate?.changes) return [];
+    if (this.diffFilterSection === 'All') return this.pendingUpdate.changes;
+    return this.pendingUpdate.changes.filter((c: any) => c.section === this.diffFilterSection || c.sectionKey === this.diffFilterSection);
+  }
+
+  get uniqueSectionsWithChanges(): string[] {
+    if (!this.pendingUpdate?.changes) return [];
+    const set = new Set<string>();
+    this.pendingUpdate.changes.forEach((c: any) => {
+      if (c.section) set.add(c.section);
+    });
+    return Array.from(set);
+  }
+
+  selectedDiffSection: string = '';
+  diffSearchQuery: string = '';
+  reviewedSections: Set<string> = new Set<string>();
+
+  get currentDiffSection(): string {
+    if (this.selectedDiffSection) return this.selectedDiffSection;
+    if (this.uniqueSectionsWithChanges.length > 0) {
+      const first = this.uniqueSectionsWithChanges[0];
+      this.reviewedSections.add(first);
+      return first;
+    }
+    return 'Audit Log';
+  }
+
+  selectDiffSection(sec: string): void {
+    this.selectedDiffSection = sec;
+    this.diffSearchQuery = '';
+    if (sec && sec !== 'All' && sec !== 'Audit Log') {
+      this.reviewedSections.add(sec);
+    }
+  }
+
+  get reviewedSectionCount(): number {
+    return this.reviewedSections.size;
+  }
+
+  get reviewProgressPercent(): number {
+    const total = this.uniqueSectionsWithChanges.length;
+    if (total === 0) return 100;
+    return Math.min(100, Math.round((this.reviewedSections.size / total) * 100));
+  }
+
+  get activeSectionChanges(): any[] {
+    if (this.currentDiffSection === 'All') {
+      return this.pendingUpdate?.changes || [];
+    }
+    if (this.currentDiffSection === 'Audit Log') {
+      return [];
+    }
+    return this.getChangesForSection(this.currentDiffSection);
+  }
+
+  get filteredActiveSectionChanges(): any[] {
+    const changes = this.activeSectionChanges;
+    if (!this.diffSearchQuery || !this.diffSearchQuery.trim()) {
+      return changes;
+    }
+    const q = this.diffSearchQuery.toLowerCase().trim();
+    return changes.filter((c: any) =>
+      (c.field && c.field.toLowerCase().includes(q)) ||
+      (c.oldValue && c.oldValue.toLowerCase().includes(q)) ||
+      (c.newValue && c.newValue.toLowerCase().includes(q)) ||
+      (c.section && c.section.toLowerCase().includes(q)) ||
+      (c.itemIdentifier && c.itemIdentifier.toLowerCase().includes(q))
+    );
+  }
+
+  copyToClipboard(val: string, label: string): void {
+    if (!val) return;
+    if (navigator && navigator.clipboard) {
+      navigator.clipboard.writeText(val).then(() => {
+        this.toastr.success(`Copied ${label || 'value'} to clipboard`);
+      }).catch(() => {
+        this.toastr.info(`Value: ${val}`);
+      });
+    } else {
+      this.toastr.info(`Value: ${val}`);
+    }
+  }
+
+  get currentSectionIndex(): number {
+    return this.uniqueSectionsWithChanges.indexOf(this.currentDiffSection);
+  }
+
+  get hasPreviousSection(): boolean {
+    return this.currentSectionIndex > 0;
+  }
+
+  get hasNextSection(): boolean {
+    return this.currentSectionIndex >= 0 && this.currentSectionIndex < this.uniqueSectionsWithChanges.length - 1;
+  }
+
+  goToPreviousSection(): void {
+    if (this.hasPreviousSection) {
+      this.selectDiffSection(this.uniqueSectionsWithChanges[this.currentSectionIndex - 1]);
+    }
+  }
+
+  goToNextSection(): void {
+    if (this.hasNextSection) {
+      this.selectDiffSection(this.uniqueSectionsWithChanges[this.currentSectionIndex + 1]);
+    } else if (this.updateHistory?.length > 0) {
+      this.selectDiffSection('Audit Log');
+    }
+  }
+
+  getChangeTypeBadgeClass(changeType: string): string {
+    switch ((changeType || '').toLowerCase()) {
+      case 'added': return 'badge-diff-added';
+      case 'removed': return 'badge-diff-removed';
+      case 'modified': return 'badge-diff-modified';
+      default: return 'badge-diff-default';
+    }
+  }
+
+  getSectionFeatherIcon(section: string): string {
+    switch ((section || '').toLowerCase()) {
+      case 'general information': return 'ft-briefcase';
+      case 'bank details': return 'ft-credit-card';
+      case 'addresses': return 'ft-map-pin';
+      case 'contact details': return 'ft-phone';
+      case 'demographics': return 'ft-pie-chart';
+      case 'attachments': return 'ft-paperclip';
+      default: return 'ft-file-text';
+    }
+  }
+
+  getChangeStatusClass(changeType: string): string {
+    switch ((changeType || '').toLowerCase()) {
+      case 'added': return 'status-onboarded';
+      case 'removed': return 'diff-status-removed';
+      case 'modified': return 'status-in-process';
+      default: return 'status-default';
+    }
+  }
+
+  getAuditStatusClass(status: string): string {
+    switch ((status || '').toLowerCase()) {
+      case 'approved': return 'status-onboarded';
+      case 'rejected': return 'diff-status-removed';
+      case 'sendback': return 'status-in-process';
+      case 'pending': return 'status-pending';
+      default: return 'status-default';
+    }
+  }
+
+  getSectionIcon(section: string): string {
+    switch ((section || '').toLowerCase()) {
+      case 'bank details': return 'fa fa-university text-warning';
+      case 'general information': return 'fa fa-building text-primary';
+      case 'addresses': return 'fa fa-map-marker text-danger';
+      case 'contact details': return 'fa fa-phone text-info';
+      case 'demographics': return 'fa fa-chart-pie text-success';
+      case 'attachments': return 'fa fa-paperclip text-secondary';
+      default: return 'fa fa-edit text-dark';
+    }
   }
 
   goBack() {
