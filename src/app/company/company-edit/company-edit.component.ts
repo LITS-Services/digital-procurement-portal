@@ -72,6 +72,19 @@ export class CompanyEditComponent implements OnInit {
   financeOfficer: any = null;
   procurementOfficers: any[] = [];
   financeOfficers: any[] = [];
+
+  getInitials(name?: string): string {
+    if (!name) return 'OF';
+    const baseName = name.replace(/_[A-Za-z0-9]+$/, '').trim();
+    const words = baseName.replace(/([a-z])([A-Z])/g, '$1 $2').split(/[.\s_-]+/).filter(w => w.length > 0);
+    if (words.length >= 2) {
+      return (words[0][0] + words[1][0]).toUpperCase();
+    }
+    if (words.length === 1 && words[0].length >= 2) {
+      return words[0].substring(0, 2).toUpperCase();
+    }
+    return (name.substring(0, 2) || 'OF').toUpperCase();
+  }
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -155,8 +168,8 @@ export class CompanyEditComponent implements OnInit {
         next: (res: any) => {
           console.log('API Response (loadCompanyById):', res);
 
-          // Handle potential 'result' wrapper from API
-          const company = res?.result?.vendorCompany || res?.result || res?.vendorCompany || res;
+          // Handle potential wrappers from API (e.g. value, result, data)
+          const company = res?.value?.vendorCompany || res?.value || res?.result?.vendorCompany || res?.result || res?.vendorCompany || res?.data || res;
           console.log('Resolved Company Object:', company);
 
           if (!company) {
@@ -186,9 +199,6 @@ export class CompanyEditComponent implements OnInit {
           this.companyWebsite = company.websiteUrl || null;
           this.workflowMasterId = company.workflowMasterId || 0;
           this.mainApproverId = company.mainApproverId || '';
-          this.procurementOfficer = company.procurementOfficer || (company.procurementOfficers && company.procurementOfficers[0]) || null;
-          this.financeOfficer = company.financeOfficer || (company.financeOfficers && company.financeOfficers[0]) || null;
-          this.procurementOfficers = company.procurementOfficers || (this.procurementOfficer ? [this.procurementOfficer] : []);
           this.paymentMethod = company.paymentMethod || '';
           this.paymentTerm = company.paymentTerm || '';
           this.vendorPostingGroup = company.vendorPostingGroup || '';
@@ -198,7 +208,50 @@ export class CompanyEditComponent implements OnInit {
           this.pendingUpdate = company.pendingUpdate || null;
           this.updateHistory = company.updateHistory || [];
           console.log('Pending update info:', this.pendingUpdate);
-          this.financeOfficers = company.financeOfficers || (this.financeOfficer ? [this.financeOfficer] : []);
+
+          // Normalize Procurement Officers
+          const rawProcOfficers = company.procurementOfficers?.$values || company.procurementOfficers;
+          if (Array.isArray(rawProcOfficers) && rawProcOfficers.length > 0) {
+            this.procurementOfficers = rawProcOfficers.map((o: any) => ({
+              fullName: o.fullName || o.FullName || o.userName || o.UserName || '',
+              email: o.email || o.Email || '',
+              phoneNumber: o.phoneNumber || o.PhoneNumber || o.phoneNo || o.PhoneNo || '',
+              type: o.type || o.Type || 'Procurement Officer'
+            }));
+          } else if (company.procurementOfficer) {
+            const o = company.procurementOfficer;
+            this.procurementOfficers = [{
+              fullName: o.fullName || o.FullName || o.userName || o.UserName || '',
+              email: o.email || o.Email || '',
+              phoneNumber: o.phoneNumber || o.PhoneNumber || o.phoneNo || o.PhoneNo || '',
+              type: o.type || o.Type || 'Procurement Officer'
+            }];
+          } else {
+            this.procurementOfficers = [];
+          }
+          this.procurementOfficer = this.procurementOfficers[0] || null;
+
+          // Normalize Finance Officers
+          const rawFinOfficers = company.financeOfficers?.$values || company.financeOfficers;
+          if (Array.isArray(rawFinOfficers) && rawFinOfficers.length > 0) {
+            this.financeOfficers = rawFinOfficers.map((o: any) => ({
+              fullName: o.fullName || o.FullName || o.userName || o.UserName || '',
+              email: o.email || o.Email || '',
+              phoneNumber: o.phoneNumber || o.PhoneNumber || o.phoneNo || o.PhoneNo || '',
+              type: o.type || o.Type || 'Finance Officer'
+            }));
+          } else if (company.financeOfficer) {
+            const o = company.financeOfficer;
+            this.financeOfficers = [{
+              fullName: o.fullName || o.FullName || o.userName || o.UserName || '',
+              email: o.email || o.Email || '',
+              phoneNumber: o.phoneNumber || o.PhoneNumber || o.phoneNo || o.PhoneNo || '',
+              type: o.type || o.Type || 'Finance Officer'
+            }];
+          } else {
+            this.financeOfficers = [];
+          }
+          this.financeOfficer = this.financeOfficers[0] || null;
 
           // If vendorEntityAssociationId is missing from query params, try to get it from API response
           if (!this.vendorEntityAssociationId) {

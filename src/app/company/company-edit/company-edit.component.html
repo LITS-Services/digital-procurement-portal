@@ -174,40 +174,175 @@
               }
             </div>
 
-            <hr />
+            <hr class="my-2" />
 
             <!-- Onboarding Officers Section (Procurement & Finance Officers) -->
-            <div class="row mt-3" *ngIf="procurementOfficers?.length || financeOfficers?.length">
-              <!-- Procurement Officers -->
-              <div class="col-md-6 mb-3" *ngIf="procurementOfficers?.length">
-                <div class="card p-3 border shadow-none bg-light h-100">
-                  <div class="d-flex align-items-center mb-2">
-                    <i class="ft-user mr-2 text-primary font-medium-3"></i>
-                    <h6 class="font-weight-bold text-primary mb-0">
-                      Procurement Officer{{ procurementOfficers.length > 1 ? 's' : '' }} ({{ procurementOfficers.length }})
-                    </h6>
+            <div class="officers-review-section mt-1" *ngIf="procurementOfficers?.length || financeOfficers?.length">
+              <!-- Section Header -->
+              <div class="officers-section-header mb-3 d-flex flex-wrap align-items-center justify-content-between">
+                <div>
+                  <div class="d-flex align-items-center" style="gap: 8px;">
+                    <h5 class="section-main-title mb-0">Assigned Officers</h5>
+                    <span class="officer-total-pill">
+                      {{ (procurementOfficers?.length || 0) + (financeOfficers?.length || 0) }} Assigned
+                    </span>
                   </div>
-                  <div *ngFor="let officer of procurementOfficers; let last = last" [class.mb-2]="!last" [class.border-bottom]="!last" [class.pb-2]="!last">
-                    <div class="font-weight-bold text-dark">{{ officer.fullName || officer.userName || 'N/A' }}</div>
-                    <div class="text-muted small" *ngIf="officer.email"><i class="ft-mail mr-1"></i>{{ officer.email }}</div>
-                    <div class="text-muted small" *ngIf="officer.phoneNumber || officer.phoneNo"><i class="ft-phone mr-1"></i>{{ officer.phoneNumber || officer.phoneNo }}</div>
-                  </div>
+                  <p class="section-main-sub mb-0">Direct procurement and finance representatives assigned to this vendor.</p>
                 </div>
               </div>
 
-              <!-- Finance Officers -->
-              <div class="col-md-6 mb-3" *ngIf="financeOfficers?.length">
-                <div class="card p-3 border shadow-none bg-light h-100">
-                  <div class="d-flex align-items-center mb-2">
-                    <i class="ft-dollar-sign mr-2 text-success font-medium-3"></i>
-                    <h6 class="font-weight-bold text-success mb-0">
-                      Finance Officer{{ financeOfficers.length > 1 ? 's' : '' }} ({{ financeOfficers.length }})
-                    </h6>
+              <div class="row">
+                <!-- Procurement Officers Column -->
+                <div class="col-12 col-xl-6 mb-3">
+                  <div class="officer-panel procurement-panel">
+                    <div class="officer-panel-header d-flex align-items-center justify-content-between">
+                      <div class="d-flex align-items-center" style="gap: 12px;">
+                        <div class="officer-panel-icon procurement-icon">
+                          <i class="fa fa-briefcase"></i>
+                        </div>
+                        <div>
+                          <div class="d-flex align-items-center" style="gap: 8px;">
+                            <h6 class="officer-panel-title mb-0">Procurement Officers</h6>
+                            <span class="officer-count-tag procurement-count" *ngIf="procurementOfficers?.length">
+                              {{ procurementOfficers.length }}
+                            </span>
+                          </div>
+                          <span class="officer-panel-sub">Sourcing, contracts & operations</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="officer-panel-body">
+                      <div *ngIf="procurementOfficers && procurementOfficers.length > 0; else noProcOfficers" class="officer-card-stack">
+                        <div *ngFor="let officer of procurementOfficers" class="officer-card procurement-card">
+                          <!-- Top Row: Avatar, Identity, Action -->
+                          <div class="officer-card-head d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center" style="gap: 12px; min-width: 0;">
+                              <div class="officer-avatar procurement-avatar">
+                                {{ getInitials(officer.fullName) }}
+                              </div>
+                              <div class="officer-info text-truncate">
+                                <span class="officer-name" [title]="officer.fullName">{{ officer.fullName || '-' }}</span>
+                                <span class="officer-role-chip procurement-chip">
+                                  <i class="fa fa-id-badge me-1 mr-1"></i>{{ officer.type || 'Procurement Officer' }}
+                                </span>
+                              </div>
+                            </div>
+                            <div class="officer-quick-actions" *ngIf="officer.email">
+                              <a [href]="'mailto:' + officer.email" class="quick-action-btn email-action" [title]="'Send email to ' + officer.fullName">
+                                <i class="fa fa-envelope"></i>
+                              </a>
+                            </div>
+                          </div>
+
+                          <!-- Contact Bar -->
+                          <div class="officer-contact-bar">
+                            <div class="contact-pill email-pill" [class.is-empty]="!officer.email">
+                              <i class="fa fa-at pill-icon"></i>
+                              <a *ngIf="officer.email" [href]="'mailto:' + officer.email" class="pill-link" [title]="officer.email">
+                                {{ officer.email }}
+                              </a>
+                              <span *ngIf="!officer.email" class="pill-empty">No email</span>
+                            </div>
+
+                            <div class="contact-pill phone-pill" [class.is-empty]="!officer.phoneNumber">
+                              <i class="fa fa-phone pill-icon"></i>
+                              <a *ngIf="officer.phoneNumber" [href]="'tel:' + officer.phoneNumber" class="pill-link">
+                                {{ officer.phoneNumber }}
+                              </a>
+                              <span *ngIf="!officer.phoneNumber" class="pill-empty">No phone</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <ng-template #noProcOfficers>
+                        <div class="empty-state text-center py-4">
+                          <div class="empty-state-icon mb-2">
+                            <i class="fa fa-user-slash"></i>
+                          </div>
+                          <h6 class="empty-state-title mb-1">No Procurement Officers</h6>
+                          <p class="empty-state-text mb-0">No procurement officers are currently assigned.</p>
+                        </div>
+                      </ng-template>
+                    </div>
                   </div>
-                  <div *ngFor="let officer of financeOfficers; let last = last" [class.mb-2]="!last" [class.border-bottom]="!last" [class.pb-2]="!last">
-                    <div class="font-weight-bold text-dark">{{ officer.fullName || officer.userName || 'N/A' }}</div>
-                    <div class="text-muted small" *ngIf="officer.email"><i class="ft-mail mr-1"></i>{{ officer.email }}</div>
-                    <div class="text-muted small" *ngIf="officer.phoneNumber || officer.phoneNo"><i class="ft-phone mr-1"></i>{{ officer.phoneNumber || officer.phoneNo }}</div>
+                </div>
+
+                <!-- Finance Officers Column -->
+                <div class="col-12 col-xl-6 mb-3">
+                  <div class="officer-panel finance-panel">
+                    <div class="officer-panel-header d-flex align-items-center justify-content-between">
+                      <div class="d-flex align-items-center" style="gap: 12px;">
+                        <div class="officer-panel-icon finance-icon">
+                          <i class="fa fa-calculator"></i>
+                        </div>
+                        <div>
+                          <div class="d-flex align-items-center" style="gap: 8px;">
+                            <h6 class="officer-panel-title mb-0">Finance Officers</h6>
+                            <span class="officer-count-tag finance-count" *ngIf="financeOfficers?.length">
+                              {{ financeOfficers.length }}
+                            </span>
+                          </div>
+                          <span class="officer-panel-sub">Invoices, payments & accounts</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="officer-panel-body">
+                      <div *ngIf="financeOfficers && financeOfficers.length > 0; else noFinOfficers" class="officer-card-stack">
+                        <div *ngFor="let officer of financeOfficers" class="officer-card finance-card">
+                          <!-- Top Row: Avatar, Identity, Action -->
+                          <div class="officer-card-head d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center" style="gap: 12px; min-width: 0;">
+                              <div class="officer-avatar finance-avatar">
+                                {{ getInitials(officer.fullName) }}
+                              </div>
+                              <div class="officer-info text-truncate">
+                                <span class="officer-name" [title]="officer.fullName">{{ officer.fullName || '-' }}</span>
+                                <span class="officer-role-chip finance-chip">
+                                  <i class="fa fa-id-badge me-1 mr-1"></i>{{ officer.type || 'Finance Officer' }}
+                                </span>
+                              </div>
+                            </div>
+                            <div class="officer-quick-actions" *ngIf="officer.email">
+                              <a [href]="'mailto:' + officer.email" class="quick-action-btn email-action" [title]="'Send email to ' + officer.fullName">
+                                <i class="fa fa-envelope"></i>
+                              </a>
+                            </div>
+                          </div>
+
+                          <!-- Contact Bar -->
+                          <div class="officer-contact-bar">
+                            <div class="contact-pill email-pill" [class.is-empty]="!officer.email">
+                              <i class="fa fa-at pill-icon"></i>
+                              <a *ngIf="officer.email" [href]="'mailto:' + officer.email" class="pill-link" [title]="officer.email">
+                                {{ officer.email }}
+                              </a>
+                              <span *ngIf="!officer.email" class="pill-empty">No email</span>
+                            </div>
+
+                            <div class="contact-pill phone-pill" [class.is-empty]="!officer.phoneNumber">
+                              <i class="fa fa-phone pill-icon"></i>
+                              <a *ngIf="officer.phoneNumber" [href]="'tel:' + officer.phoneNumber" class="pill-link">
+                                {{ officer.phoneNumber }}
+                              </a>
+                              <span *ngIf="!officer.phoneNumber" class="pill-empty">No phone</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <ng-template #noFinOfficers>
+                        <div class="empty-state text-center py-4">
+                          <div class="empty-state-icon mb-2">
+                            <i class="fa fa-user-slash"></i>
+                          </div>
+                          <h6 class="empty-state-title mb-1">No Finance Officers</h6>
+                          <p class="empty-state-text mb-0">No finance officers are currently assigned.</p>
+                        </div>
+                      </ng-template>
+                    </div>
                   </div>
                 </div>
               </div>
