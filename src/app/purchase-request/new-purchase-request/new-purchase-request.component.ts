@@ -85,6 +85,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
   // new work
   itemList: any[] = [];
+  categoryList: any[] = [];
+  selectedCategoryId: number | null = null;
   unitsOfMeasurementList: any[] = [];
   uomMasterList: any[] = [];
   vatProdPostingGroups: any[] = [];
@@ -254,6 +256,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       vendorCompanyId: [null],
       accountId: [1],
       remarks: [''],
+      categoryId: [null],
       attachments: this.fb.group([])
     });
 
@@ -570,6 +573,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       }
       this.cdr.markForCheck();
       this.loadItemsForSelectedEntity();
+      this.loadCategoriesForSelectedEntity();
       this.loadDimensionsForSelectedEntity(false);
     };
 
@@ -668,6 +672,9 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     this.loadAddressOnEntityChanges();
     this.resetItemAndUomSelection();
     this.loadItemsForSelectedEntity();
+    this.loadCategoriesForSelectedEntity();
+    this.selectedCategoryId = null;
+    this.itemForm.patchValue({ categoryId: null }, { emitEvent: false });
     this.loadDimensionsForSelectedEntity(true);
   }
 
@@ -713,7 +720,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   }
 
   private fetchEntityLookups(entityGuid: string): void {
-    this.purchaseRequestService.getItems(entityGuid).subscribe({
+    this.purchaseRequestService.getItems(entityGuid, this.selectedCategoryId).subscribe({
       next: (res) => {
         this.itemList = res ?? [];
         this.cdr.markForCheck();
@@ -727,6 +734,81 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       },
       error: (err) => console.error('Failed to load VAT prod posting groups:', err)
     });
+  }
+
+  loadCategoriesForSelectedEntity(targetEntityId?: number): void {
+    const entityId = targetEntityId ?? Number(this.newPurchaseRequestForm.get('entityId')?.value);
+    if (!entityId) {
+      this.categoryList = [];
+      this.selectedCategoryId = null;
+      return;
+    }
+    this.purchaseRequestService.getCategories(entityId).subscribe({
+      next: (res: any) => {
+        const data = this.extractList(res);
+        this.categoryList = Array.isArray(data) ? data : [];
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Failed to load categories:', err);
+        this.categoryList = [];
+      }
+    });
+  }
+
+  onCategoryChanged(): void {
+    const categoryId = this.itemForm.get('categoryId')?.value ? Number(this.itemForm.get('categoryId')?.value) : null;
+    this.selectedCategoryId = categoryId;
+    this.fetchItemsWithFilters();
+  }
+
+  private fetchItemsWithFilters(): void {
+    const entityId = Number(this.newPurchaseRequestForm.get('entityId')?.value);
+    if (!entityId) {
+      this.itemList = [];
+      return;
+    }
+    const guid = this.getSelectedEntityGuid();
+    const categoryId = this.selectedCategoryId;
+
+    if (guid) {
+      this.purchaseRequestService.getItems(guid, categoryId).subscribe({
+        next: (res) => {
+          this.itemList = res ?? [];
+          this.cdr.markForCheck();
+        },
+        error: (err) => console.error('Failed to load items:', err)
+      });
+    }
+  }
+
+  getCategoryNameById(id: any): string {
+    if (!id) return '';
+    const numId = Number(id);
+    const found = this.categoryList?.find(c => Number(c.id) === numId);
+    return found ? (found.name || found.Name || '') : '';
+  }
+
+  getCategoryName(row: any): string {
+    if (!row) return '';
+    if (row.categoryName) return row.categoryName;
+    if (row.procurementCategoryName) return row.procurementCategoryName;
+    const catId = row.categoryId || row.procurementCategoryId;
+    if (catId) {
+      const byId = this.getCategoryNameById(catId);
+      if (byId) return byId;
+    }
+    if (row.itemId) {
+      const item = this.itemList?.find(i => Number(i.id) === Number(row.itemId));
+      if (item) {
+        if (item.categoryId) {
+          const byCatId = this.getCategoryNameById(item.categoryId);
+          if (byCatId) return byCatId;
+        }
+        if (item.category) return item.category;
+      }
+    }
+    return '';
   }
 
   onItemSelected(itemId: any): void {
@@ -744,6 +826,9 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       this.itemForm.patchValue({ unitCost: unitPrice }, { emitEvent: false });
       if (!this.isPatchingRow) {
         this.recalculateBudgetAmount();
+      }
+      if (selectedItem.categoryId && !this.itemForm.get('categoryId')?.value) {
+        this.itemForm.patchValue({ categoryId: Number(selectedItem.categoryId) }, { emitEvent: false });
       }
     }
 
@@ -1632,8 +1717,13 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       ? Number(this.selectedActivityInfo.allowedPercentage)
       : this.getActivityAllowedPercentageById(projectActivityId);
 
+    const categoryId = this.itemForm.get('categoryId')?.value ? Number(this.itemForm.get('categoryId')?.value) : (selectedItem?.categoryId ? Number(selectedItem.categoryId) : null);
+    const categoryName = this.getCategoryNameById(categoryId) || selectedItem?.category || '';
+
     const normalizedItem = {
       ...newItem,
+      categoryId,
+      categoryName,
       amount,
       unitCost,
       projectId,
@@ -1819,6 +1909,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       this.selectedActivityInfo = null;
     }
 
+    const rowCatId = row.categoryId || row.procurementCategoryId || (row.itemId ? this.itemList?.find(i => Number(i.id) === Number(row.itemId))?.categoryId : null) || null;
+
     // patch form values from the selected row
     this.itemForm.patchValue({
       id: row.id || null,
@@ -1836,8 +1928,10 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       vendorCompanyId: row.vendorCompanyId || null,
       accountId: Number(row.accountId) || 1,
       remarks: row.remarks || '',
+      categoryId: rowCatId ? Number(rowCatId) : null,
       attachments: row.attachments || []
     });
+    this.selectedCategoryId = rowCatId ? Number(rowCatId) : null;
     this.selectedUomLabel = this.resolveUomSymbol(row) || '';
     this.checkBudgetLimit();
     this.syncFinalVendorControlState();
@@ -2020,6 +2114,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
             activityAllowedPercentage: this.getActivityAllowedPercentageById(item.projectActivityId),
             exceededBudgetAmount: item.exceededBudgetAmount || null,
             departmentId: item.departmentId || null,
+            categoryId: item.procurementCategoryId || item.categoryId || null,
+            categoryName: item.procurementCategoryName || item.categoryName || null,
             attachments: (item.attachments || []).map((a: any) => ({
               id: a.id,
               content: a.content || '',
@@ -2040,6 +2136,9 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         this.showExceptionPolicyView = !!this.exceptionPolicyData && !!this.newPurchaseRequestForm.get('exceptionPolicy')?.value;
 
         const prEntityId = Number(requestData.entityId) || null;
+        if (prEntityId) {
+          this.loadCategoriesForSelectedEntity(prEntityId);
+        }
         // Pass prEntityId twice: once as prId for control state, once for direct loading bypass
         this.applyEntity(prEntityId, prEntityId);
 
@@ -2515,6 +2614,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       vendorCompanyId: null,
       accountId: 1,
       remarks: '',
+      categoryId: null,
       attachments: []
     });
 

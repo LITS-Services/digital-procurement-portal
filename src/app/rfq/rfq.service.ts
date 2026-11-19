@@ -126,8 +126,12 @@ export class RfqService {
     return this.http.post<any>(`${this.baseUrl}/addRemarksWithActionTaken`, data);
   }
 
-  getVendorsAndCompaniesForRfq(): Observable<any[]> {
-    return this.http.get<any>(`${this.baseUrl}/get-all-vendors-companies-for-rfq`);
+  getVendorsAndCompaniesForRfq(quotationRequestId?: number): Observable<any[]> {
+    let params = new HttpParams();
+    if (quotationRequestId) {
+      params = params.set('quotationRequestId', quotationRequestId.toString());
+    }
+    return this.http.get<any>(`${this.baseUrl}/get-all-vendors-companies-for-rfq`, { params });
   }
 
   getAllQuotationsByStatus(status: string, currentPage: number, pageSize: number): Observable<any> {
