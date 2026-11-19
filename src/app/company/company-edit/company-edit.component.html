@@ -79,7 +79,7 @@
           <nav>
             <button (click)="selectTab('general-info')" [ngClass]="{ 'tab-current': selectedTab === 'general-info' }"
               class="custom-style-tab">
-              <span>GENERAL<br>INFORMATION</span>
+              <span>GENERAL INFORMATION</span>
             </button>
 
             <button (click)="selectTab('addresses')" [ngClass]="{ 'tab-current': selectedTab === 'addresses' }"
@@ -109,7 +109,7 @@
 
             <button (click)="selectTab('technical')" [ngClass]="{ 'tab-current': selectedTab === 'technical' }"
               class="custom-style-tab">
-              <span>TECHNICAL &<br>POLICIES</span>
+              <span>TECHNICAL & POLICIES</span>
             </button>
 
             <button (click)="selectTab('attachments')" [ngClass]="{ 'tab-current': selectedTab === 'attachments' }"
@@ -119,22 +119,22 @@
 
             <button (click)="selectTab('changes-diff')" [ngClass]="{ 'tab-current': selectedTab === 'changes-diff' }"
               class="custom-style-tab">
-              <span>CHANGES<br>DIFF</span>
+              <span>CHANGES DIFF</span>
             </button>
 
             <button (click)="selectTab('setup-history')" [ngClass]="{ 'tab-current': selectedTab === 'setup-history' }"
               class="custom-style-tab">
-              <span>SETUP<br>HISTORY</span>
+              <span>SETUP HISTORY</span>
             </button>
 
             <button (click)="selectTab('approval-history')"
               [ngClass]="{ 'tab-current': selectedTab === 'approval-history' }" class="custom-style-tab">
-              <span>APPROVAL<br>HISTORY</span>
+              <span>APPROVAL HISTORY</span>
             </button>
 
             <button (click)="selectTab('vendor-rating')" [ngClass]="{ 'tab-current': selectedTab === 'vendor-rating' }"
               class="custom-style-tab">
-              <span>VENDOR<br>RATING</span>
+              <span>VENDOR RATING</span>
             </button>
           </nav>
         </div>
@@ -358,19 +358,11 @@
               </div>
             </div>
 
-            <!-- Section A: Background & Operational Information -->
+            <!-- Background & Operational Information -->
             <div class="officers-review-section mt-3">
               <div class="officer-panel">
                 <div class="officer-panel-header d-flex align-items-center justify-content-between">
-                  <div class="d-flex align-items-center" style="gap: 12px;">
-                    <div class="officer-panel-icon procurement-icon">
-                      <i class="ft-briefcase"></i>
-                    </div>
-                    <div>
-                      <h6 class="officer-panel-title mb-0">Background & Operational Information</h6>
-                      <span class="officer-panel-sub">Registration, operations & geographical presence</span>
-                    </div>
-                  </div>
+                  <h6 class="officer-panel-title mb-0">Background & Operational Information</h6>
                 </div>
 
                 <div class="officer-panel-body">
@@ -430,9 +422,19 @@
                       <span class="font-weight-bold text-dark font-small-3">{{ generalBusinessPostingGroup || '-' }}</span>
                     </div>
 
-                    <div class="col-12 mb-3">
-                      <span class="text-muted extra-small d-block text-uppercase">Description of Goods / Services / Works Offered</span>
-                      <p class="text-dark mb-0 font-small-3">{{ descriptionOfGoodsServices || '-' }}</p>
+                    <div class="col-md-4 col-12 mb-3">
+                      <span class="text-muted extra-small d-block text-uppercase">Description of Goods Offered</span>
+                      <span class="font-weight-bold text-dark font-small-3 d-block mt-1">{{ descriptionOfGoods || '-' }}</span>
+                    </div>
+
+                    <div class="col-md-4 col-12 mb-3">
+                      <span class="text-muted extra-small d-block text-uppercase">Description of Services Offered</span>
+                      <span class="font-weight-bold text-dark font-small-3 d-block mt-1">{{ descriptionOfServices || '-' }}</span>
+                    </div>
+
+                    <div class="col-md-4 col-12 mb-3">
+                      <span class="text-muted extra-small d-block text-uppercase">Description of Works Offered</span>
+                      <span class="font-weight-bold text-dark font-small-3 d-block mt-1">{{ descriptionOfWorks || '-' }}</span>
                     </div>
 
                     <div class="col-12">
@@ -544,137 +546,147 @@
         </div>
 
         <!-- ==================== References Tab ==================== -->
-        <div *ngIf="selectedTab === 'references'">
-          <!-- Section 14: List of Clientele (Min. 4) -->
-          <div class="card p-3 mb-3">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <div>
-                <h5 class="mb-0 font-weight-bold text-dark"><i class="ft-users mr-1 text-primary"></i> 14. List of Clientele</h5>
-                <span class="text-muted extra-small">Minimum 4 previous or current major clients</span>
-              </div>
+        <div *ngIf="selectedTab === 'references'" class="officers-review-section">
+          <!-- List of Clientele -->
+          <div class="officer-panel mb-3">
+            <div class="officer-panel-header d-flex align-items-center justify-content-between">
+              <h6 class="officer-panel-title mb-0">List of Clientele</h6>
               <span class="badge badge-primary px-2 py-1 font-small-2">{{ clienteleList.length }} Client{{ clienteleList.length === 1 ? '' : 's' }}</span>
             </div>
 
-            <ngx-datatable *ngIf="clienteleList && clienteleList.length > 0" class="bootstrap" [rows]="clienteleList"
-              [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="5" [columnMode]="'force'">
-              <ngx-datatable-column [sortable]="false" name="Client Name" prop="clientName"></ngx-datatable-column>
-              <ngx-datatable-column [sortable]="false" name="Supplies / Services Delivered" prop="supplies"></ngx-datatable-column>
-              <ngx-datatable-column [sortable]="false" name="Duration" prop="duration"></ngx-datatable-column>
-              <ngx-datatable-column [sortable]="false" name="Total Contract Value" prop="totalContractValue"></ngx-datatable-column>
-            </ngx-datatable>
-            <div *ngIf="clienteleList && clienteleList.length === 0" class="text-muted p-2">
-              No clientele provided.
+            <div class="officer-panel-body">
+              <ngx-datatable *ngIf="clienteleList && clienteleList.length > 0" class="bootstrap" [rows]="clienteleList"
+                [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="5" [columnMode]="'force'">
+                <ngx-datatable-column [sortable]="false" name="Client Name" prop="clientName"></ngx-datatable-column>
+                <ngx-datatable-column [sortable]="false" name="Supplies / Services Delivered" prop="supplies"></ngx-datatable-column>
+                <ngx-datatable-column [sortable]="false" name="Duration" prop="duration"></ngx-datatable-column>
+                <ngx-datatable-column [sortable]="false" name="Total Contract Value" prop="totalContractValue"></ngx-datatable-column>
+              </ngx-datatable>
+              <div *ngIf="clienteleList && clienteleList.length === 0" class="text-muted py-2">
+                No clientele provided.
+              </div>
             </div>
           </div>
 
-          <!-- Section 15: Referees (3 Referees) -->
-          <div class="card p-3 mb-3">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <div>
-                <h5 class="mb-0 font-weight-bold text-dark"><i class="ft-award mr-1 text-primary"></i> 15. Referees</h5>
-                <span class="text-muted extra-small">Contact details for 3 referees for similar work</span>
-              </div>
+          <!-- Referees -->
+          <div class="officer-panel mb-3">
+            <div class="officer-panel-header d-flex align-items-center justify-content-between">
+              <h6 class="officer-panel-title mb-0">Referees</h6>
               <span class="badge badge-primary px-2 py-1 font-small-2">{{ refereeList.length }} Referee{{ refereeList.length === 1 ? '' : 's' }}</span>
             </div>
 
-            <ngx-datatable *ngIf="refereeList && refereeList.length > 0" class="bootstrap" [rows]="refereeList"
-              [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="5" [columnMode]="'force'">
-              <ngx-datatable-column [sortable]="false" name="Organization" prop="organization"></ngx-datatable-column>
-              <ngx-datatable-column [sortable]="false" name="Contact Name" prop="contactName"></ngx-datatable-column>
-              <ngx-datatable-column [sortable]="false" name="Position" prop="position"></ngx-datatable-column>
-              <ngx-datatable-column [sortable]="false" name="Telephone" prop="telephoneNo"></ngx-datatable-column>
-              <ngx-datatable-column [sortable]="false" name="Email" prop="emailAddress"></ngx-datatable-column>
-              <ngx-datatable-column [sortable]="false" name="Official Stamp" prop="hasOfficialStamp">
-                <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span class="badge" [ngClass]="value ? 'badge-success' : 'badge-light border'">{{ value ? 'Yes' : 'No' }}</span>
-                </ng-template>
-              </ngx-datatable-column>
-              <ngx-datatable-column [sortable]="false" name="Signature" prop="hasSignature">
-                <ng-template let-value="value" ngx-datatable-cell-template>
-                  <span class="badge" [ngClass]="value ? 'badge-success' : 'badge-light border'">{{ value ? 'Yes' : 'No' }}</span>
-                </ng-template>
-              </ngx-datatable-column>
-            </ngx-datatable>
-            <div *ngIf="refereeList && refereeList.length === 0" class="text-muted p-2">
-              No referees provided.
+            <div class="officer-panel-body">
+              <ngx-datatable *ngIf="refereeList && refereeList.length > 0" class="bootstrap" [rows]="refereeList"
+                [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="5" [columnMode]="'force'">
+                <ngx-datatable-column [sortable]="false" name="Organization" prop="organization"></ngx-datatable-column>
+                <ngx-datatable-column [sortable]="false" name="Contact Name" prop="contactName"></ngx-datatable-column>
+                <ngx-datatable-column [sortable]="false" name="Position" prop="position"></ngx-datatable-column>
+                <ngx-datatable-column [sortable]="false" name="Telephone" prop="telephoneNo"></ngx-datatable-column>
+                <ngx-datatable-column [sortable]="false" name="Email" prop="emailAddress"></ngx-datatable-column>
+                <ngx-datatable-column [sortable]="false" name="Official Stamp" prop="hasOfficialStamp">
+                  <ng-template let-value="value" ngx-datatable-cell-template>
+                    <span class="badge" [ngClass]="value ? 'badge-success' : 'badge-light border'">{{ value ? 'Yes' : 'No' }}</span>
+                  </ng-template>
+                </ngx-datatable-column>
+                <ngx-datatable-column [sortable]="false" name="Signature" prop="hasSignature">
+                  <ng-template let-value="value" ngx-datatable-cell-template>
+                    <span class="badge" [ngClass]="value ? 'badge-success' : 'badge-light border'">{{ value ? 'Yes' : 'No' }}</span>
+                  </ng-template>
+                </ngx-datatable-column>
+              </ngx-datatable>
+              <div *ngIf="refereeList && refereeList.length === 0" class="text-muted py-2">
+                No referees provided.
+              </div>
             </div>
           </div>
 
-          <!-- Section 16: Credit Period -->
-          <div class="card p-3">
-            <h5 class="mb-2 font-weight-bold text-dark"><i class="ft-calendar mr-1 text-primary"></i> 16. Credit Period</h5>
-            <div class="row">
-              <div class="col-md-6 mb-2">
-                <span class="text-muted extra-small d-block text-uppercase">Can firm offer Credit Period of 30 Days and above?</span>
-                <span class="badge font-medium-1 px-3 py-1" [ngClass]="hasCreditPeriod30Days ? 'badge-success' : 'badge-warning'">
-                  {{ hasCreditPeriod30Days ? 'YES [Y]' : (hasCreditPeriod30Days === false ? 'NO [N]' : 'Not Specified') }}
-                </span>
-              </div>
-              <div class="col-md-6 mb-2">
-                <span class="text-muted extra-small d-block text-uppercase">Credit Period Terms / Details</span>
-                <span class="font-weight-bold text-dark font-small-3">{{ creditPeriod || '-' }}</span>
+          <!-- Credit Period -->
+          <div class="officer-panel">
+            <div class="officer-panel-header d-flex align-items-center justify-content-between">
+              <h6 class="officer-panel-title mb-0">Credit Period</h6>
+            </div>
+            <div class="officer-panel-body">
+              <div class="row">
+                <div class="col-md-6 mb-2">
+                  <span class="text-muted extra-small d-block text-uppercase">Can firm offer Credit Period of 30 Days and above?</span>
+                  <span class="badge font-small-2 px-2 py-1 mt-1 d-inline-block" [ngClass]="hasCreditPeriod30Days ? 'badge-success' : (hasCreditPeriod30Days === false ? 'badge-danger' : 'badge-light border text-muted')">
+                    {{ hasCreditPeriod30Days ? 'YES' : (hasCreditPeriod30Days === false ? 'NO' : 'Not Specified') }}
+                  </span>
+                </div>
+                <div class="col-md-6 mb-2">
+                  <span class="text-muted extra-small d-block text-uppercase">Credit Period Terms / Details</span>
+                  <span class="font-weight-bold text-dark font-small-3 d-block mt-1">{{ creditPeriod || '-' }}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- ==================== Technical & Policies Tab ==================== -->
-        <div *ngIf="selectedTab === 'technical'">
-          <!-- Section D: Technical Competence -->
-          <div class="card p-3 mb-3">
-            <h5 class="mb-3 font-weight-bold text-dark"><i class="ft-check-circle mr-1 text-primary"></i> Section D: Technical Competence</h5>
-            <div class="row">
-              <div class="col-12 mb-3">
-                <span class="text-muted extra-small d-block text-uppercase">17. Proof of Professionalism, Accreditation</span>
-                <p class="text-dark bg-light p-2 rounded mb-0 font-small-3" style="white-space: pre-wrap;">{{ proofOfProfessionalism || 'No information provided.' }}</p>
-              </div>
-              <div class="col-12">
-                <span class="text-muted extra-small d-block text-uppercase">Qualifications of KEY Management and Technical Personnel</span>
-                <p class="text-dark bg-light p-2 rounded mb-0 font-small-3" style="white-space: pre-wrap;">{{ keyPersonnelQualifications || 'No information provided.' }}</p>
+        <div *ngIf="selectedTab === 'technical'" class="officers-review-section">
+          <!-- Technical Competence -->
+          <div class="officer-panel mb-3">
+            <div class="officer-panel-header d-flex align-items-center justify-content-between">
+              <h6 class="officer-panel-title mb-0">Technical Competence</h6>
+            </div>
+            <div class="officer-panel-body">
+              <div class="row">
+                <div class="col-12 mb-3">
+                  <span class="text-muted extra-small d-block text-uppercase">Proof of Professionalism, Accreditation</span>
+                  <span class="font-weight-bold text-dark font-small-3 d-block mt-1" style="white-space: pre-wrap;">{{ proofOfProfessionalism || '-' }}</span>
+                </div>
+                <div class="col-12">
+                  <span class="text-muted extra-small d-block text-uppercase">Qualifications of Key Management and Technical Personnel</span>
+                  <span class="font-weight-bold text-dark font-small-3 d-block mt-1" style="white-space: pre-wrap;">{{ keyPersonnelQualifications || '-' }}</span>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- Section E: Management Policies -->
-          <div class="card p-3 mb-3">
-            <h5 class="mb-3 font-weight-bold text-dark"><i class="ft-shield mr-1 text-primary"></i> Section E: Management Policies</h5>
-            <div class="row">
-              <!-- i) Employment Policy -->
-              <div class="col-md-6 mb-3">
-                <span class="text-muted extra-small d-block text-uppercase">18. i) Does the firm have an Employment Policy?</span>
-                <span class="badge font-medium-1 px-3 py-1" [ngClass]="hasEmploymentPolicy ? 'badge-success' : 'badge-warning'">
-                  {{ hasEmploymentPolicy ? 'YES' : (hasEmploymentPolicy === false ? 'NO' : 'Not Specified') }}
-                </span>
-                <div *ngIf="hasEmploymentPolicy === false" class="mt-2">
-                  <span class="text-danger extra-small d-block font-weight-bold">Employee screening / background checks explanation:</span>
-                  <p class="text-dark small mb-0">{{ employeeScreeningExplanation || '-' }}</p>
+          <!-- Management Policies -->
+          <div class="officer-panel mb-3">
+            <div class="officer-panel-header d-flex align-items-center justify-content-between">
+              <h6 class="officer-panel-title mb-0">Management Policies</h6>
+            </div>
+            <div class="officer-panel-body">
+              <div class="row">
+                <!-- Employment Policy -->
+                <div class="col-md-6 mb-3">
+                  <span class="text-muted extra-small d-block text-uppercase">Does the firm have an Employment Policy?</span>
+                  <span class="badge font-small-2 px-2 py-1 mt-1 d-inline-block" [ngClass]="hasEmploymentPolicy ? 'badge-success' : (hasEmploymentPolicy === false ? 'badge-danger' : 'badge-light border text-muted')">
+                    {{ hasEmploymentPolicy ? 'YES' : (hasEmploymentPolicy === false ? 'NO' : 'Not Specified') }}
+                  </span>
+                  <div *ngIf="hasEmploymentPolicy === false && employeeScreeningExplanation" class="mt-2">
+                    <span class="text-danger extra-small d-block font-weight-bold">Employee screening / background checks explanation:</span>
+                    <span class="font-weight-bold text-dark font-small-3">{{ employeeScreeningExplanation || '-' }}</span>
+                  </div>
                 </div>
-              </div>
 
-              <!-- ii) Code of Conduct -->
-              <div class="col-md-6 mb-3">
-                <span class="text-muted extra-small d-block text-uppercase">ii) Does the firm have a Code of Conduct / Professional Body?</span>
-                <span class="badge font-medium-1 px-3 py-1" [ngClass]="hasCodeOfConduct ? 'badge-success' : 'badge-warning'">
-                  {{ hasCodeOfConduct ? 'YES' : (hasCodeOfConduct === false ? 'NO' : 'Not Specified') }}
-                </span>
-                <div *ngIf="hasCodeOfConduct === true" class="mt-2">
-                  <span class="text-muted extra-small d-block font-weight-bold">Professional body / details:</span>
-                  <p class="text-dark small mb-0">{{ codeOfConductDetails || '-' }}</p>
+                <!-- Code of Conduct -->
+                <div class="col-md-6 mb-3">
+                  <span class="text-muted extra-small d-block text-uppercase">Does the firm have a Code of Conduct / subscribe to a professional body?</span>
+                  <span class="badge font-small-2 px-2 py-1 mt-1 d-inline-block" [ngClass]="hasCodeOfConduct ? 'badge-success' : (hasCodeOfConduct === false ? 'badge-danger' : 'badge-light border text-muted')">
+                    {{ hasCodeOfConduct ? 'YES' : (hasCodeOfConduct === false ? 'NO' : 'Not Specified') }}
+                  </span>
+                  <div *ngIf="hasCodeOfConduct === true && codeOfConductDetails" class="mt-2">
+                    <span class="text-muted extra-small d-block font-weight-bold">Professional body / details:</span>
+                    <span class="font-weight-bold text-dark font-small-3">{{ codeOfConductDetails || '-' }}</span>
+                  </div>
                 </div>
-              </div>
 
-              <!-- iii) Employee Integrity -->
-              <div class="col-12 mb-3">
-                <span class="text-muted extra-small d-block text-uppercase">iii) How does the firm ensure integrity of its employees?</span>
-                <p class="text-dark bg-light p-2 rounded mb-0 font-small-3" style="white-space: pre-wrap;">{{ employeeIntegrityMeasures || 'No information provided.' }}</p>
-              </div>
+                <!-- Employee Integrity -->
+                <div class="col-12 mb-3">
+                  <span class="text-muted extra-small d-block text-uppercase">How does the firm ensure integrity of its employees?</span>
+                  <span class="font-weight-bold text-dark font-small-3 d-block mt-1" style="white-space: pre-wrap;">{{ employeeIntegrityMeasures || '-' }}</span>
+                </div>
 
-              <!-- iv) Employee Training Program -->
-              <div class="col-md-6 mb-2">
-                <span class="text-muted extra-small d-block text-uppercase">iv) Does the firm have an Employee Training Program?</span>
-                <span class="badge font-medium-1 px-3 py-1" [ngClass]="hasEmployeeTrainingProgram ? 'badge-success' : 'badge-warning'">
-                  {{ hasEmployeeTrainingProgram ? 'YES' : (hasEmployeeTrainingProgram === false ? 'NO' : 'Not Specified') }}
-                </span>
+                <!-- Employee Training Program -->
+                <div class="col-md-6 mb-2">
+                  <span class="text-muted extra-small d-block text-uppercase">Does the firm have an Employee Training Program?</span>
+                  <span class="badge font-small-2 px-2 py-1 mt-1 d-inline-block" [ngClass]="hasEmployeeTrainingProgram ? 'badge-success' : (hasEmployeeTrainingProgram === false ? 'badge-danger' : 'badge-light border text-muted')">
+                    {{ hasEmployeeTrainingProgram ? 'YES' : (hasEmployeeTrainingProgram === false ? 'NO' : 'Not Specified') }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

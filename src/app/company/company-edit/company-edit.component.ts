@@ -81,6 +81,9 @@ export class CompanyEditComponent implements OnInit {
   dateOfRegistration: string = '';
   durationOfBusinessOperations: string = '';
   descriptionOfGoodsServices: string = '';
+  descriptionOfGoods: string = '';
+  descriptionOfServices: string = '';
+  descriptionOfWorks: string = '';
   totalWorkForce: string = '';
 
   // Section C: References & Credit Period
@@ -104,6 +107,28 @@ export class CompanyEditComponent implements OnInit {
   splitGeographicalAreas(areasStr?: string): string[] {
     if (!areasStr) return [];
     return areasStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+  }
+
+  parseGoodsServicesWorks(raw: string) {
+    if (!raw) {
+      this.descriptionOfGoods = '';
+      this.descriptionOfServices = '';
+      this.descriptionOfWorks = '';
+      return;
+    }
+    const goodsMatch = raw.match(/Goods:\s*([\s\S]*?)(?=(?:Services:|Works:|$))/i);
+    const servicesMatch = raw.match(/Services:\s*([\s\S]*?)(?=(?:Goods:|Works:|$))/i);
+    const worksMatch = raw.match(/Works:\s*([\s\S]*?)(?=(?:Goods:|Services:|$))/i);
+
+    if (goodsMatch || servicesMatch || worksMatch) {
+      this.descriptionOfGoods = goodsMatch ? goodsMatch[1].trim() : '';
+      this.descriptionOfServices = servicesMatch ? servicesMatch[1].trim() : '';
+      this.descriptionOfWorks = worksMatch ? worksMatch[1].trim() : '';
+    } else {
+      this.descriptionOfGoods = raw;
+      this.descriptionOfServices = '';
+      this.descriptionOfWorks = '';
+    }
   }
 
   getInitials(name?: string): string {
@@ -246,6 +271,12 @@ export class CompanyEditComponent implements OnInit {
           this.dateOfRegistration = company.dateOfRegistration ? company.dateOfRegistration.substring(0, 10) : '';
           this.durationOfBusinessOperations = company.durationOfBusinessOperations || '';
           this.descriptionOfGoodsServices = company.descriptionOfGoodsServices || '';
+          this.descriptionOfGoods = company.descriptionOfGoods || '';
+          this.descriptionOfServices = company.descriptionOfServices || '';
+          this.descriptionOfWorks = company.descriptionOfWorks || '';
+          if (!this.descriptionOfGoods && !this.descriptionOfServices && !this.descriptionOfWorks && this.descriptionOfGoodsServices) {
+            this.parseGoodsServicesWorks(this.descriptionOfGoodsServices);
+          }
           this.totalWorkForce = company.totalWorkForce || '';
 
           // Section C: References & Credit Period

@@ -12,63 +12,46 @@
     background: #fff !important;
 }
 
-/* Auto-adjusting tabs for Company Review */
+/* Wrapped Auto-adjusting tabs for Company Review */
 .custom-tabs {
   width: 100% !important;
   max-width: 100% !important;
-  overflow-x: auto !important;
+  overflow: visible !important;
+  margin-bottom: 1rem !important;
 
   nav {
     display: flex !important;
+    flex-wrap: wrap !important;
     width: 100% !important;
-    min-width: max-content !important;
-    justify-content: space-between !important;
+    min-width: 0 !important;
+    gap: 8px 6px !important;
+    justify-content: flex-start !important;
   }
 
   .custom-style-tab {
-    flex: 1 1 0% !important;
-    min-width: 0 !important;
+    flex: 0 0 auto !important;
     width: auto !important;
-    height: 42px !important;
-    min-height: 42px !important;
-    padding: 6px 14px 6px 10px !important;
-    font-size: clamp(10px, 0.74vw, 12px) !important;
+    min-width: auto !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    padding: 8px 36px 8px 16px !important;
+    font-size: 12px !important;
     font-weight: 600 !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     text-align: center !important;
-    white-space: normal !important;
-    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    line-height: 1 !important;
+    margin-bottom: 4px !important;
 
     span {
-      white-space: normal !important;
-      display: block !important;
+      white-space: nowrap !important;
+      display: inline-block !important;
       text-align: center !important;
-      line-height: 1.2 !important;
+      line-height: 1 !important;
       font-size: inherit !important;
     }
-  }
-}
-
-@media (max-width: 1400px) {
-  .custom-tabs .custom-style-tab {
-    padding: 5px 12px 5px 8px !important;
-    font-size: 11px !important;
-  }
-}
-
-@media (max-width: 1200px) {
-  .custom-tabs .custom-style-tab {
-    padding: 4px 10px 4px 6px !important;
-    font-size: 10px !important;
-  }
-}
-
-@media (max-width: 1024px) {
-  .custom-tabs .custom-style-tab {
-    padding: 4px 8px 4px 5px !important;
-    font-size: 9.5px !important;
   }
 }
 
