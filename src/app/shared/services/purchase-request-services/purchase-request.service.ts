@@ -187,12 +187,19 @@ export class PurchaseRequestService {
     return this.http.get<any>(`${this.baseUrl}/${purchaseRequestId}/item-status-count`);
   }
 
-  getItems(entityGuid?: string | null): Observable<any[]> {
+  getItems(entityGuid?: string | null, categoryId?: number | null): Observable<any[]> {
     let params = new HttpParams();
     if (entityGuid) {
       params = params.set('entityGuid', entityGuid);
     }
+    if (categoryId) {
+      params = params.set('categoryId', categoryId.toString());
+    }
     return this.http.get<any[]>(`${this.baseUrl}/get-items`, { params });
+  }
+
+  getCategories(entityId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/ProcurementCategory/get-by-entity/${entityId}`);
   }
 
   getActivityBudgetUtilization(params: {

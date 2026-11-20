@@ -636,6 +636,28 @@
                             </div>
                           </div>
 
+                          <!-- Category Dropdown -->
+                          <div class="form-grid__item">
+                            <div class="form-group mb-2">
+                              <label>Category</label>
+                              <ng-select #categorySelect class="custom-select-ui" formControlName="categoryId"
+                                [items]="categoryList" bindLabel="name" bindValue="id"
+                                [searchable]="false" [clearable]="true" [appendTo]="'body'"
+                                placeholder="-- Select Category --"
+                                (open)="onDropdownOpen(categorySelect)" (close)="onDropdownClose(categorySelect)"
+                                (change)="onCategoryChanged()" (clear)="onCategoryChanged()"
+                                [readonly]="viewMode">
+                                <ng-template ng-header-tmp>
+                                  <div class="dropdown-search-wrapper">
+                                    <i class="ft-search dropdown-search-icon"></i>
+                                    <input #categorySearch type="text" class="dropdown-search-input" placeholder="Search category..."
+                                      (input)="categorySelect.filter(categorySearch.value)" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+                                  </div>
+                                </ng-template>
+                              </ng-select>
+                            </div>
+                          </div>
+
                           <div class="form-grid__item">
                             <div class="form-group mb-2">
                               <label>Item <span class="text-danger">*</span></label>
@@ -824,10 +846,18 @@
                   </ng-template>
                 </ngx-datatable-column>
 
+                <ngx-datatable-column name="Category" [minWidth]="130" [flexGrow]="1.2">
+                  <ng-template let-row="row" ngx-datatable-cell-template>
+                    <span class="cell-ellipsis" [ngbTooltip]="getCategoryName(row)" container="body">
+                      {{ getCategoryName(row) || '-' }}
+                    </span>
+                  </ng-template>
+                </ngx-datatable-column>
+
                 <ngx-datatable-column name="Item" [minWidth]="160" [flexGrow]="1.8">
                   <ng-template let-row="row" ngx-datatable-cell-template>
-                    <span class="cell-ellipsis" [ngbTooltip]="getItemNameById(row.itemId)" container="body">
-                      {{ getItemNameById(row.itemId) }}
+                    <span class="cell-ellipsis" [ngbTooltip]="getItemName(row)" container="body">
+                      {{ getItemName(row) }}
                     </span>
                   </ng-template>
                 </ngx-datatable-column>

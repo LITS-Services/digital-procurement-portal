@@ -51,31 +51,38 @@ export class RfqVendorModalComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // this.quotationRequestId = this.data?.quotationId;
-    // this.loadRfqVendors(this.quotationRequestId);
+    if (this.data) {
+      this.quotationRequestId = this.data.quotationId ?? this.data.id ?? null;
+      if (this.quotationRequestId) {
+        this.loadRfqVendors(this.quotationRequestId);
+        this.loadQuotedVendors(this.quotationRequestId);
+      }
+    }
   }
 
-    ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes['data'] && changes['data'].currentValue) {
-      this.quotationRequestId = this.data.quotationId;
-      this.loadRfqVendors(this.quotationRequestId);
-       this.loadQuotedVendors(this.quotationRequestId);
+      this.quotationRequestId = this.data.quotationId ?? this.data.id ?? null;
+      if (this.quotationRequestId) {
+        this.loadRfqVendors(this.quotationRequestId);
+        this.loadQuotedVendors(this.quotationRequestId);
+      }
     }
   }
 
   fetchVendorsAndCompaniesForRfq() {
     this.spinner.show();
-    this.rfqService.getVendorsAndCompaniesForRfq()
+    this.rfqService.getVendorsAndCompaniesForRfq(this.quotationRequestId || undefined)
       .subscribe({
         next: (res: any) => {
           this.allVendorsandCompanies = res ?? res?.$values ?? [];
           this.gridSelected = this.allVendorsandCompanies.filter(r => this.persistedIds.has(this.getKey(r)));
-                  this.recomputeLists();
-                  this.spinner.hide();
-             this.cdr.detectChanges()
+          this.recomputeLists();
+          this.spinner.hide();
+          this.cdr.detectChanges();
         },
         error: (err) => {
-              this.spinner.hide();
+          this.spinner.hide();
           console.error('Error fetching vendors', err);
         }
       });

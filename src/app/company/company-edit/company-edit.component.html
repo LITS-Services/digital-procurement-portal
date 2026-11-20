@@ -82,6 +82,11 @@
               <span>GENERAL INFORMATION</span>
             </button>
 
+            <button (click)="selectTab('officers')" [ngClass]="{ 'tab-current': selectedTab === 'officers' }"
+              class="custom-style-tab">
+              <span>OFFICERS</span>
+            </button>
+
             <button (click)="selectTab('addresses')" [ngClass]="{ 'tab-current': selectedTab === 'addresses' }"
               class="custom-style-tab">
               <span>ADDRESSES</span>
@@ -186,274 +191,465 @@
 
             <hr class="my-2" />
 
-            <!-- Onboarding Officers Section (Procurement & Finance Officers) -->
-            <div class="officers-review-section mt-1" *ngIf="procurementOfficers?.length || financeOfficers?.length">
-              <!-- Section Header -->
-              <div class="officers-section-header mb-3 d-flex flex-wrap align-items-center justify-content-between">
-                <div>
-                  <div class="d-flex align-items-center" style="gap: 8px;">
-                    <h5 class="section-main-title mb-0">Assigned Officers</h5>
-                    <span class="officer-total-pill">
-                      {{ (procurementOfficers?.length || 0) + (financeOfficers?.length || 0) }} Assigned
-                    </span>
-                  </div>
-                  <p class="section-main-sub mb-0">Direct procurement and finance representatives assigned to this vendor.</p>
-                </div>
-              </div>
-
-              <div class="row">
-                <!-- Procurement Officers Column -->
-                <div class="col-12 col-xl-6 mb-3">
-                  <div class="officer-panel procurement-panel">
-                    <div class="officer-panel-header d-flex align-items-center justify-content-between">
-                      <div class="d-flex align-items-center" style="gap: 12px;">
-                        <div class="officer-panel-icon procurement-icon">
-                          <i class="fa fa-briefcase"></i>
-                        </div>
-                        <div>
-                          <div class="d-flex align-items-center" style="gap: 8px;">
-                            <h6 class="officer-panel-title mb-0">Procurement Officers</h6>
-                            <span class="officer-count-tag procurement-count" *ngIf="procurementOfficers?.length">
-                              {{ procurementOfficers.length }}
-                            </span>
-                          </div>
-                          <span class="officer-panel-sub">Sourcing, contracts & operations</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="officer-panel-body">
-                      <div *ngIf="procurementOfficers && procurementOfficers.length > 0; else noProcOfficers" class="officer-card-stack">
-                        <div *ngFor="let officer of procurementOfficers" class="officer-card procurement-card">
-                          <!-- Top Row: Avatar, Identity, Action -->
-                          <div class="officer-card-head d-flex align-items-center justify-content-between">
-                            <div class="d-flex align-items-center" style="gap: 12px; min-width: 0;">
-                              <div class="officer-avatar procurement-avatar">
-                                {{ getInitials(officer.fullName) }}
-                              </div>
-                              <div class="officer-info text-truncate">
-                                <span class="officer-name" [title]="officer.fullName">{{ officer.fullName || '-' }}</span>
-                                <span class="officer-role-chip procurement-chip">
-                                  <i class="fa fa-id-badge me-1 mr-1"></i>{{ officer.type || 'Procurement Officer' }}
-                                </span>
-                              </div>
-                            </div>
-                            <div class="officer-quick-actions" *ngIf="officer.email">
-                              <a [href]="'mailto:' + officer.email" class="quick-action-btn email-action" [title]="'Send email to ' + officer.fullName">
-                                <i class="fa fa-envelope"></i>
-                              </a>
-                            </div>
-                          </div>
-
-                          <!-- Contact Bar -->
-                          <div class="officer-contact-bar">
-                            <div class="contact-pill email-pill" [class.is-empty]="!officer.email">
-                              <i class="fa fa-at pill-icon"></i>
-                              <a *ngIf="officer.email" [href]="'mailto:' + officer.email" class="pill-link" [title]="officer.email">
-                                {{ officer.email }}
-                              </a>
-                              <span *ngIf="!officer.email" class="pill-empty">No email</span>
-                            </div>
-
-                            <div class="contact-pill phone-pill" [class.is-empty]="!officer.phoneNumber">
-                              <i class="fa fa-phone pill-icon"></i>
-                              <a *ngIf="officer.phoneNumber" [href]="'tel:' + officer.phoneNumber" class="pill-link">
-                                {{ officer.phoneNumber }}
-                              </a>
-                              <span *ngIf="!officer.phoneNumber" class="pill-empty">No phone</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <ng-template #noProcOfficers>
-                        <div class="empty-state text-center py-4">
-                          <div class="empty-state-icon mb-2">
-                            <i class="fa fa-user-slash"></i>
-                          </div>
-                          <h6 class="empty-state-title mb-1">No Procurement Officers</h6>
-                          <p class="empty-state-text mb-0">No procurement officers are currently assigned.</p>
-                        </div>
-                      </ng-template>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Finance Officers Column -->
-                <div class="col-12 col-xl-6 mb-3">
-                  <div class="officer-panel finance-panel">
-                    <div class="officer-panel-header d-flex align-items-center justify-content-between">
-                      <div class="d-flex align-items-center" style="gap: 12px;">
-                        <div class="officer-panel-icon finance-icon">
-                          <i class="fa fa-calculator"></i>
-                        </div>
-                        <div>
-                          <div class="d-flex align-items-center" style="gap: 8px;">
-                            <h6 class="officer-panel-title mb-0">Finance Officers</h6>
-                            <span class="officer-count-tag finance-count" *ngIf="financeOfficers?.length">
-                              {{ financeOfficers.length }}
-                            </span>
-                          </div>
-                          <span class="officer-panel-sub">Invoices, payments & accounts</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="officer-panel-body">
-                      <div *ngIf="financeOfficers && financeOfficers.length > 0; else noFinOfficers" class="officer-card-stack">
-                        <div *ngFor="let officer of financeOfficers" class="officer-card finance-card">
-                          <!-- Top Row: Avatar, Identity, Action -->
-                          <div class="officer-card-head d-flex align-items-center justify-content-between">
-                            <div class="d-flex align-items-center" style="gap: 12px; min-width: 0;">
-                              <div class="officer-avatar finance-avatar">
-                                {{ getInitials(officer.fullName) }}
-                              </div>
-                              <div class="officer-info text-truncate">
-                                <span class="officer-name" [title]="officer.fullName">{{ officer.fullName || '-' }}</span>
-                                <span class="officer-role-chip finance-chip">
-                                  <i class="fa fa-id-badge me-1 mr-1"></i>{{ officer.type || 'Finance Officer' }}
-                                </span>
-                              </div>
-                            </div>
-                            <div class="officer-quick-actions" *ngIf="officer.email">
-                              <a [href]="'mailto:' + officer.email" class="quick-action-btn email-action" [title]="'Send email to ' + officer.fullName">
-                                <i class="fa fa-envelope"></i>
-                              </a>
-                            </div>
-                          </div>
-
-                          <!-- Contact Bar -->
-                          <div class="officer-contact-bar">
-                            <div class="contact-pill email-pill" [class.is-empty]="!officer.email">
-                              <i class="fa fa-at pill-icon"></i>
-                              <a *ngIf="officer.email" [href]="'mailto:' + officer.email" class="pill-link" [title]="officer.email">
-                                {{ officer.email }}
-                              </a>
-                              <span *ngIf="!officer.email" class="pill-empty">No email</span>
-                            </div>
-
-                            <div class="contact-pill phone-pill" [class.is-empty]="!officer.phoneNumber">
-                              <i class="fa fa-phone pill-icon"></i>
-                              <a *ngIf="officer.phoneNumber" [href]="'tel:' + officer.phoneNumber" class="pill-link">
-                                {{ officer.phoneNumber }}
-                              </a>
-                              <span *ngIf="!officer.phoneNumber" class="pill-empty">No phone</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <ng-template #noFinOfficers>
-                        <div class="empty-state text-center py-4">
-                          <div class="empty-state-icon mb-2">
-                            <i class="fa fa-user-slash"></i>
-                          </div>
-                          <h6 class="empty-state-title mb-1">No Finance Officers</h6>
-                          <p class="empty-state-text mb-0">No finance officers are currently assigned.</p>
-                        </div>
-                      </ng-template>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <!-- Background & Operational Information -->
-            <div class="officers-review-section mt-3">
-              <div class="officer-panel">
-                <div class="officer-panel-header d-flex align-items-center justify-content-between">
-                  <h6 class="officer-panel-title mb-0">Background & Operational Information</h6>
+            <div class="background-info-section mt-2">
+              <!-- Header -->
+              <div class="background-info-header d-flex flex-wrap align-items-center justify-content-between mb-3">
+                <div class="d-flex align-items-center">
+                  <div class="officer-header-icon procurement-icon mr-3">
+                    <i class="ft-briefcase"></i>
+                  </div>
+                  <div>
+                    <h5 class="officer-name mb-0">Background & Operational Information</h5>
+                    <span class="officer-header-sub">Corporate registration, financial posting groups, and operational scope.</span>
+                  </div>
                 </div>
+                <div class="d-flex align-items-center mt-2 mt-sm-0" *ngIf="organizationType">
+                  <span class="badge-theme badge-theme-yes">
+                    <i class="ft-shield mr-1"></i>{{ organizationType }}
+                  </span>
+                </div>
+              </div>
 
-                <div class="officer-panel-body">
-                  <div class="row">
-                    <div class="col-md-3 col-sm-6 mb-3">
-                      <span class="text-muted extra-small d-block text-uppercase">Organization Type</span>
-                      <span class="font-weight-bold text-dark font-small-3">{{ organizationType || '-' }}</span>
+              <div class="background-info-body">
+                  <!-- Subsection 1: Corporate & Legal Information -->
+                  <div class="review-sub-section">
+                    <div class="review-section-subtitle mb-2">
+                      <span>Corporate & Registration Details</span>
                     </div>
 
-                    <div class="col-md-3 col-sm-6 mb-3">
-                      <span class="text-muted extra-small d-block text-uppercase">Postal Address</span>
-                      <span class="font-weight-bold text-dark font-small-3">{{ postalAddress || '-' }}</span>
+                    <div class="row">
+                      <div class="col-lg-4 col-md-6 mb-3">
+                        <div class="modern-data-tile">
+                          <div class="tile-icon-box">
+                            <i class="ft-briefcase"></i>
+                          </div>
+                          <div class="tile-content">
+                            <span class="tile-label">Organization Type</span>
+                            <span class="tile-value">{{ organizationType || '-' }}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-lg-4 col-md-6 mb-3">
+                        <div class="modern-data-tile">
+                          <div class="tile-icon-box">
+                            <i class="ft-file-text"></i>
+                          </div>
+                          <div class="tile-content">
+                            <span class="tile-label">Registration No.</span>
+                            <span class="tile-value">{{ companyRegistrationNo || '-' }}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-lg-4 col-md-6 mb-3">
+                        <div class="modern-data-tile">
+                          <div class="tile-icon-box">
+                            <i class="ft-calendar"></i>
+                          </div>
+                          <div class="tile-content">
+                            <span class="tile-label">Date of Registration</span>
+                            <span class="tile-value">{{ (dateOfRegistration | date:'mediumDate') || '-' }}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-lg-4 col-md-6 mb-3">
+                        <div class="modern-data-tile">
+                          <div class="tile-icon-box">
+                            <i class="ft-clock"></i>
+                          </div>
+                          <div class="tile-content">
+                            <span class="tile-label">Duration of Operations</span>
+                            <span class="tile-value">{{ durationOfBusinessOperations || '-' }}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-lg-4 col-md-6 mb-3">
+                        <div class="modern-data-tile">
+                          <div class="tile-icon-box">
+                            <i class="ft-users"></i>
+                          </div>
+                          <div class="tile-content">
+                            <span class="tile-label">Total Work Force</span>
+                            <span class="tile-value">{{ totalWorkForce || '-' }}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-lg-4 col-md-6 mb-3">
+                        <div class="modern-data-tile">
+                          <div class="tile-icon-box">
+                            <i class="ft-map-pin"></i>
+                          </div>
+                          <div class="tile-content">
+                            <span class="tile-label">Postal Address</span>
+                            <span class="tile-value">{{ postalAddress || '-' }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Subsection 2: Commercial & Financial Terms -->
+                  <div class="review-sub-section">
+                    <div class="review-section-subtitle mb-2">
+                      <span>Commercial & Accounting Setup</span>
                     </div>
 
-                    <div class="col-md-3 col-sm-6 mb-3">
-                      <span class="text-muted extra-small d-block text-uppercase">Registration No.</span>
-                      <span class="font-weight-bold text-dark font-small-3">{{ companyRegistrationNo || '-' }}</span>
+                    <div class="row">
+                      <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="modern-data-tile">
+                          <div class="tile-icon-box">
+                            <i class="ft-credit-card"></i>
+                          </div>
+                          <div class="tile-content">
+                            <span class="tile-label">Payment Method</span>
+                            <span class="tile-value">{{ paymentMethod || '-' }}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="modern-data-tile">
+                          <div class="tile-icon-box">
+                            <i class="ft-calendar"></i>
+                          </div>
+                          <div class="tile-content">
+                            <span class="tile-label">Payment Term</span>
+                            <span class="tile-value">{{ paymentTerm || '-' }}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="modern-data-tile">
+                          <div class="tile-icon-box">
+                            <i class="ft-tag"></i>
+                          </div>
+                          <div class="tile-content">
+                            <span class="tile-label">Vendor Posting Group</span>
+                            <div>
+                              <span class="posting-group-pill" *ngIf="vendorPostingGroup; else noVpg">{{ vendorPostingGroup }}</span>
+                              <ng-template #noVpg><span class="tile-value">-</span></ng-template>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="modern-data-tile">
+                          <div class="tile-icon-box">
+                            <i class="ft-tag"></i>
+                          </div>
+                          <div class="tile-content">
+                            <span class="tile-label">VAT Business Posting Group</span>
+                            <div>
+                              <span class="posting-group-pill" *ngIf="vatBusinessPostingGroup; else noVat">{{ vatBusinessPostingGroup }}</span>
+                              <ng-template #noVat><span class="tile-value">-</span></ng-template>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="modern-data-tile">
+                          <div class="tile-icon-box">
+                            <i class="ft-tag"></i>
+                          </div>
+                          <div class="tile-content">
+                            <span class="tile-label">General Bus Posting Group</span>
+                            <div>
+                              <span class="posting-group-pill" *ngIf="generalBusinessPostingGroup; else noGen">{{ generalBusinessPostingGroup }}</span>
+                              <ng-template #noGen><span class="tile-value">-</span></ng-template>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Subsection 3: Scope of Offerings -->
+                  <div class="review-sub-section">
+                    <div class="review-section-subtitle mb-2">
+                      <span>Scope of Offerings</span>
                     </div>
 
-                    <div class="col-md-3 col-sm-6 mb-3">
-                      <span class="text-muted extra-small d-block text-uppercase">Date of Registration</span>
-                      <span class="font-weight-bold text-dark font-small-3">{{ (dateOfRegistration | date:'mediumDate') || '-' }}</span>
+                    <div class="row">
+                      <div class="col-md-4 mb-3">
+                        <div class="offering-card">
+                          <div class="offering-header">
+                            <div class="offering-icon-badge">
+                              <i class="ft-package"></i>
+                            </div>
+                            <span class="offering-title">Description of Goods Offered</span>
+                          </div>
+                          <div class="offering-body">
+                            {{ descriptionOfGoods || '-' }}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-4 mb-3">
+                        <div class="offering-card">
+                          <div class="offering-header">
+                            <div class="offering-icon-badge">
+                              <i class="ft-activity"></i>
+                            </div>
+                            <span class="offering-title">Description of Services Offered</span>
+                          </div>
+                          <div class="offering-body">
+                            {{ descriptionOfServices || '-' }}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-md-4 mb-3">
+                        <div class="offering-card">
+                          <div class="offering-header">
+                            <div class="offering-icon-badge">
+                              <i class="ft-layers"></i>
+                            </div>
+                            <span class="offering-title">Description of Works Offered</span>
+                          </div>
+                          <div class="offering-body">
+                            {{ descriptionOfWorks || '-' }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Subsection 4: Geographical Area of Operations -->
+                  <div class="review-sub-section">
+                    <div class="review-section-subtitle mb-2">
+                      <span>Geographical Coverage</span>
                     </div>
 
-                    <div class="col-md-3 col-sm-6 mb-3">
-                      <span class="text-muted extra-small d-block text-uppercase">Duration of Operations</span>
-                      <span class="font-weight-bold text-dark font-small-3">{{ durationOfBusinessOperations || '-' }}</span>
-                    </div>
-
-                    <div class="col-md-3 col-sm-6 mb-3">
-                      <span class="text-muted extra-small d-block text-uppercase">Total Work Force</span>
-                      <span class="font-weight-bold text-dark font-small-3">{{ totalWorkForce || '-' }}</span>
-                    </div>
-
-                    <div class="col-md-3 col-sm-6 mb-3">
-                      <span class="text-muted extra-small d-block text-uppercase">Payment Method</span>
-                      <span class="font-weight-bold text-dark font-small-3">{{ paymentMethod || '-' }}</span>
-                    </div>
-
-                    <div class="col-md-3 col-sm-6 mb-3">
-                      <span class="text-muted extra-small d-block text-uppercase">Payment Term</span>
-                      <span class="font-weight-bold text-dark font-small-3">{{ paymentTerm || '-' }}</span>
-                    </div>
-
-                    <div class="col-md-4 col-sm-6 mb-3">
-                      <span class="text-muted extra-small d-block text-uppercase">Vendor Posting Group</span>
-                      <span class="font-weight-bold text-dark font-small-3">{{ vendorPostingGroup || '-' }}</span>
-                    </div>
-
-                    <div class="col-md-4 col-sm-6 mb-3">
-                      <span class="text-muted extra-small d-block text-uppercase">VAT Business Posting Group</span>
-                      <span class="font-weight-bold text-dark font-small-3">{{ vatBusinessPostingGroup || '-' }}</span>
-                    </div>
-
-                    <div class="col-md-4 col-sm-6 mb-3">
-                      <span class="text-muted extra-small d-block text-uppercase">General Bus Posting Group</span>
-                      <span class="font-weight-bold text-dark font-small-3">{{ generalBusinessPostingGroup || '-' }}</span>
-                    </div>
-
-                    <div class="col-md-4 col-12 mb-3">
-                      <span class="text-muted extra-small d-block text-uppercase">Description of Goods Offered</span>
-                      <span class="font-weight-bold text-dark font-small-3 d-block mt-1">{{ descriptionOfGoods || '-' }}</span>
-                    </div>
-
-                    <div class="col-md-4 col-12 mb-3">
-                      <span class="text-muted extra-small d-block text-uppercase">Description of Services Offered</span>
-                      <span class="font-weight-bold text-dark font-small-3 d-block mt-1">{{ descriptionOfServices || '-' }}</span>
-                    </div>
-
-                    <div class="col-md-4 col-12 mb-3">
-                      <span class="text-muted extra-small d-block text-uppercase">Description of Works Offered</span>
-                      <span class="font-weight-bold text-dark font-small-3 d-block mt-1">{{ descriptionOfWorks || '-' }}</span>
-                    </div>
-
-                    <div class="col-12">
-                      <span class="text-muted extra-small d-block text-uppercase mb-1">Geographical Area of Operations</span>
-                      <div class="d-flex flex-wrap" style="gap: 6px;" *ngIf="geographicalAreaOfOperations; else noGeo">
-                        <span *ngFor="let area of splitGeographicalAreas(geographicalAreaOfOperations)" class="badge badge-light border text-dark px-2 py-1">
-                          <i class="ft-map-pin text-primary mr-1"></i>{{ area }}
+                    <div class="geo-coverage-card p-3">
+                      <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted small font-weight-bold">
+                          <i class="ft-map-pin text-primary mr-1"></i> Area of Operations
+                        </span>
+                        <span class="badge-theme badge-theme-yes" *ngIf="geographicalAreaOfOperations">
+                          {{ splitGeographicalAreas(geographicalAreaOfOperations).length }} Region{{ splitGeographicalAreas(geographicalAreaOfOperations).length === 1 ? '' : 's' }}
+                        </span>
+                      </div>
+                      <div class="d-flex flex-wrap" style="gap: 8px;" *ngIf="geographicalAreaOfOperations; else noGeo">
+                        <span *ngFor="let area of splitGeographicalAreas(geographicalAreaOfOperations)" class="geo-region-chip">
+                          <i class="ft-map-pin"></i>{{ area }}
                         </span>
                       </div>
                       <ng-template #noGeo>
-                        <span class="text-muted font-small-3">-</span>
+                        <span class="text-muted small fst-italic">No geographical areas specified</span>
                       </ng-template>
                     </div>
+                  </div>
+
+                </div>
+              </div>
+
+            <!-- Associated entities header -->
+          </div>
+        </div>
+
+        <!-- Assigned Officers Tab -->
+        <div *ngIf="selectedTab === 'officers'" class="officers-review-section">
+          <!-- Section Header -->
+          <div class="officers-section-header mb-3 d-flex flex-wrap align-items-center justify-content-between">
+            <div>
+              <div class="d-flex align-items-center" style="gap: 8px;">
+                <h5 class="section-main-title mb-0">Assigned Officers</h5>
+                <span class="officer-total-pill">
+                  {{ (procurementOfficers?.length || 0) + (financeOfficers?.length || 0) }} Assigned
+                </span>
+              </div>
+              <p class="section-main-sub mb-0">Direct procurement and finance representatives assigned to this vendor.</p>
+            </div>
+          </div>
+
+          <div class="officers-tab-container p-0">
+            <div class="row">
+              <!-- Procurement Officers Card -->
+              <div class="col-12 col-xl-6 mb-4">
+                <div class="officer-group-card procurement-group">
+                  <div class="officer-group-header d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-3" style="gap: 12px;">
+                      <div class="officer-header-icon procurement-icon">
+                        <i class="fa fa-briefcase"></i>
+                      </div>
+                      <div>
+                        <h5 class="mb-0 font-weight-bold text-dark">Procurement Officers</h5>
+                        <span class="officer-header-sub">Authorized procurement & sourcing contacts</span>
+                      </div>
+                    </div>
+                    <span class="officer-count-badge procurement-count" *ngIf="procurementOfficers?.length">
+                      <i class="fa fa-users me-1"></i>
+                      {{ procurementOfficers.length }} {{ procurementOfficers.length === 1 ? 'Officer' : 'Officers' }}
+                    </span>
+                  </div>
+
+                  <div class="officer-group-body">
+                    <div *ngIf="procurementOfficers && procurementOfficers.length > 0; else noProcOfficers">
+                      <div *ngFor="let officer of procurementOfficers; let i = index"
+                        class="officer-profile-card procurement-card"
+                        [class.mb-3]="i < procurementOfficers.length - 1">
+                        <!-- Top: Avatar, Name & Type -->
+                        <div class="officer-card-header d-flex align-items-center justify-content-between">
+                          <div class="d-flex align-items-center gap-3" style="gap: 12px;">
+                            <div class="officer-avatar-box procurement-avatar">
+                              {{ getInitials(officer.fullName) }}
+                            </div>
+                            <div class="officer-identity">
+                              <h6 class="officer-name mb-1">{{ officer.fullName || '-' }}</h6>
+                              <span class="officer-role-pill procurement-pill">
+                                <i class="fa fa-id-badge me-1"></i>{{ officer.type || 'Procurement Officer' }}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Contact details: Email & Phone Number -->
+                        <div class="officer-contact-grid mt-3">
+                          <!-- Email -->
+                          <div class="contact-tile">
+                            <div class="contact-tile-icon email-icon">
+                              <i class="fa fa-envelope"></i>
+                            </div>
+                            <div class="contact-tile-content">
+                              <span class="contact-tile-label">Email</span>
+                              <div class="contact-tile-value text-break">
+                                <a *ngIf="officer.email" [href]="'mailto:' + officer.email" class="contact-anchor" [title]="officer.email">
+                                  {{ officer.email }}
+                                </a>
+                                <span *ngIf="!officer.email" class="text-muted fst-italic">Not provided</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Phone -->
+                          <div class="contact-tile">
+                            <div class="contact-tile-icon phone-icon">
+                              <i class="fa fa-phone"></i>
+                            </div>
+                            <div class="contact-tile-content">
+                              <span class="contact-tile-label">Phone Number</span>
+                              <div class="contact-tile-value">
+                                <a *ngIf="officer.phoneNumber" [href]="'tel:' + officer.phoneNumber" class="contact-anchor">
+                                  {{ officer.phoneNumber }}
+                                </a>
+                                <span *ngIf="!officer.phoneNumber" class="text-muted fst-italic">Not provided</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <ng-template #noProcOfficers>
+                      <div class="empty-officer-state text-center py-5">
+                        <div class="empty-icon-wrap mb-3">
+                          <i class="fa fa-user-times"></i>
+                        </div>
+                        <h6 class="text-dark font-weight-bold mb-1">No Procurement Officers</h6>
+                        <p class="text-muted small mb-0">No procurement officers are currently assigned to this company.</p>
+                      </div>
+                    </ng-template>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Finance Officers Card -->
+              <div class="col-12 col-xl-6 mb-4">
+                <div class="officer-group-card finance-group">
+                  <div class="officer-group-header d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-3" style="gap: 12px;">
+                      <div class="officer-header-icon finance-icon">
+                        <i class="fa fa-calculator"></i>
+                      </div>
+                      <div>
+                        <h5 class="mb-0 font-weight-bold text-dark">Finance Officers</h5>
+                        <span class="officer-header-sub">Authorized finance & payment contacts</span>
+                      </div>
+                    </div>
+                    <span class="officer-count-badge finance-count" *ngIf="financeOfficers?.length">
+                      <i class="fa fa-users me-1"></i>
+                      {{ financeOfficers.length }} {{ financeOfficers.length === 1 ? 'Officer' : 'Officers' }}
+                    </span>
+                  </div>
+
+                  <div class="officer-group-body">
+                    <div *ngIf="financeOfficers && financeOfficers.length > 0; else noFinOfficers">
+                      <div *ngFor="let officer of financeOfficers; let i = index"
+                        class="officer-profile-card finance-card"
+                        [class.mb-3]="i < financeOfficers.length - 1">
+                        <!-- Top: Avatar, Name & Type -->
+                        <div class="officer-card-header d-flex align-items-center justify-content-between">
+                          <div class="d-flex align-items-center gap-3" style="gap: 12px;">
+                            <div class="officer-avatar-box finance-avatar">
+                              {{ getInitials(officer.fullName) }}
+                            </div>
+                            <div class="officer-identity">
+                              <h6 class="officer-name mb-1">{{ officer.fullName || '-' }}</h6>
+                              <span class="officer-role-pill finance-pill">
+                                <i class="fa fa-id-badge me-1"></i>{{ officer.type || 'Finance Officer' }}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Contact details: Email & Phone Number -->
+                        <div class="officer-contact-grid mt-3">
+                          <!-- Email -->
+                          <div class="contact-tile">
+                            <div class="contact-tile-icon email-icon">
+                              <i class="fa fa-envelope"></i>
+                            </div>
+                            <div class="contact-tile-content">
+                              <span class="contact-tile-label">Email</span>
+                              <div class="contact-tile-value text-break">
+                                <a *ngIf="officer.email" [href]="'mailto:' + officer.email" class="contact-anchor" [title]="officer.email">
+                                  {{ officer.email }}
+                                </a>
+                                <span *ngIf="!officer.email" class="text-muted fst-italic">Not provided</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <!-- Phone -->
+                          <div class="contact-tile">
+                            <div class="contact-tile-icon phone-icon">
+                              <i class="fa fa-phone"></i>
+                            </div>
+                            <div class="contact-tile-content">
+                              <span class="contact-tile-label">Phone Number</span>
+                              <div class="contact-tile-value">
+                                <a *ngIf="officer.phoneNumber" [href]="'tel:' + officer.phoneNumber" class="contact-anchor">
+                                  {{ officer.phoneNumber }}
+                                </a>
+                                <span *ngIf="!officer.phoneNumber" class="text-muted fst-italic">Not provided</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <ng-template #noFinOfficers>
+                      <div class="empty-officer-state text-center py-5">
+                        <div class="empty-icon-wrap mb-3">
+                          <i class="fa fa-user-times"></i>
+                        </div>
+                        <h6 class="text-dark font-weight-bold mb-1">No Finance Officers</h6>
+                        <p class="text-muted small mb-0">No finance officers are currently assigned to this company.</p>
+                      </div>
+                    </ng-template>
                   </div>
                 </div>
               </div>
             </div>
-
-            <!-- Associated entities header -->
           </div>
         </div>
 
@@ -585,12 +781,20 @@
                 <ngx-datatable-column [sortable]="false" name="Email" prop="emailAddress"></ngx-datatable-column>
                 <ngx-datatable-column [sortable]="false" name="Official Stamp" prop="hasOfficialStamp">
                   <ng-template let-value="value" ngx-datatable-cell-template>
-                    <span class="badge" [ngClass]="value ? 'badge-success' : 'badge-light border'">{{ value ? 'Yes' : 'No' }}</span>
+                    <span class="badge-theme" [ngClass]="value ? 'badge-theme-yes' : 'badge-theme-na'">
+                      <i class="ft-check mr-1" *ngIf="value"></i>
+                      <i class="ft-x mr-1" *ngIf="!value"></i>
+                      {{ value ? 'YES' : 'NO' }}
+                    </span>
                   </ng-template>
                 </ngx-datatable-column>
                 <ngx-datatable-column [sortable]="false" name="Signature" prop="hasSignature">
                   <ng-template let-value="value" ngx-datatable-cell-template>
-                    <span class="badge" [ngClass]="value ? 'badge-success' : 'badge-light border'">{{ value ? 'Yes' : 'No' }}</span>
+                    <span class="badge-theme" [ngClass]="value ? 'badge-theme-yes' : 'badge-theme-na'">
+                      <i class="ft-check mr-1" *ngIf="value"></i>
+                      <i class="ft-x mr-1" *ngIf="!value"></i>
+                      {{ value ? 'YES' : 'NO' }}
+                    </span>
                   </ng-template>
                 </ngx-datatable-column>
               </ngx-datatable>
@@ -601,21 +805,50 @@
           </div>
 
           <!-- Credit Period -->
-          <div class="officer-panel">
-            <div class="officer-panel-header d-flex align-items-center justify-content-between">
-              <h6 class="officer-panel-title mb-0">Credit Period</h6>
-            </div>
-            <div class="officer-panel-body">
-              <div class="row">
-                <div class="col-md-6 mb-2">
-                  <span class="text-muted extra-small d-block text-uppercase">Can firm offer Credit Period of 30 Days and above?</span>
-                  <span class="badge font-small-2 px-2 py-1 mt-1 d-inline-block" [ngClass]="hasCreditPeriod30Days ? 'badge-success' : (hasCreditPeriod30Days === false ? 'badge-danger' : 'badge-light border text-muted')">
-                    {{ hasCreditPeriod30Days ? 'YES' : (hasCreditPeriod30Days === false ? 'NO' : 'Not Specified') }}
-                  </span>
+          <div class="officer-group-card">
+            <div class="officer-group-header d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <div class="officer-header-icon procurement-icon mr-3">
+                  <i class="ft-clock"></i>
                 </div>
-                <div class="col-md-6 mb-2">
-                  <span class="text-muted extra-small d-block text-uppercase">Credit Period Terms / Details</span>
-                  <span class="font-weight-bold text-dark font-small-3 d-block mt-1">{{ creditPeriod || '-' }}</span>
+                <div>
+                  <h5 class="officer-name mb-0">Credit Period</h5>
+                  <span class="officer-header-sub">Payment terms and eligibility for credit terms of 30+ days.</span>
+                </div>
+              </div>
+            </div>
+            <div class="officer-group-body">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <div class="policy-card">
+                    <div class="d-flex align-items-start justify-content-between mb-2">
+                      <div class="d-flex align-items-center">
+                        <div class="policy-icon-box mr-2">
+                          <i class="ft-credit-card"></i>
+                        </div>
+                        <span class="policy-title">30+ Days Credit Facility</span>
+                      </div>
+                      <span class="badge-theme" [ngClass]="hasCreditPeriod30Days ? 'badge-theme-yes' : (hasCreditPeriod30Days === false ? 'badge-theme-no' : 'badge-theme-na')">
+                        <i class="ft-check mr-1" *ngIf="hasCreditPeriod30Days"></i>
+                        <i class="ft-x mr-1" *ngIf="hasCreditPeriod30Days === false"></i>
+                        {{ hasCreditPeriod30Days ? 'YES' : (hasCreditPeriod30Days === false ? 'NO' : 'Not Specified') }}
+                      </span>
+                    </div>
+                    <p class="policy-desc mb-0">Can the firm offer a Credit Period of 30 Days and above?</p>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <div class="content-response-panel h-100">
+                    <div class="response-header">
+                      <div class="response-icon-badge">
+                        <i class="ft-file-text"></i>
+                      </div>
+                      <span class="response-title">Credit Period Terms / Details</span>
+                    </div>
+                    <div class="response-body">
+                      {{ creditPeriod || 'No specific terms provided' }}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -623,69 +856,163 @@
         </div>
 
         <!-- ==================== Technical & Policies Tab ==================== -->
-        <div *ngIf="selectedTab === 'technical'" class="officers-review-section">
-          <!-- Technical Competence -->
-          <div class="officer-panel mb-3">
-            <div class="officer-panel-header d-flex align-items-center justify-content-between">
-              <h6 class="officer-panel-title mb-0">Technical Competence</h6>
-            </div>
-            <div class="officer-panel-body">
-              <div class="row">
-                <div class="col-12 mb-3">
-                  <span class="text-muted extra-small d-block text-uppercase">Proof of Professionalism, Accreditation</span>
-                  <span class="font-weight-bold text-dark font-small-3 d-block mt-1" style="white-space: pre-wrap;">{{ proofOfProfessionalism || '-' }}</span>
+        <div *ngIf="selectedTab === 'technical'">
+          <div class="card mt-0 p-3 company-profile">
+            <!-- Technical Competence -->
+            <div class="officer-group-card officer-group-card--flat mb-3">
+              <div class="officer-group-header d-flex flex-wrap align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                  <div class="officer-header-icon procurement-icon mr-3">
+                    <i class="ft-award"></i>
+                  </div>
+                  <div>
+                    <h5 class="officer-name mb-0">Technical Competence</h5>
+                    <span class="officer-header-sub">Professional accreditation, industry certifications, and key personnel qualifications.</span>
+                  </div>
                 </div>
-                <div class="col-12">
-                  <span class="text-muted extra-small d-block text-uppercase">Qualifications of Key Management and Technical Personnel</span>
-                  <span class="font-weight-bold text-dark font-small-3 d-block mt-1" style="white-space: pre-wrap;">{{ keyPersonnelQualifications || '-' }}</span>
+              </div>
+
+              <div class="officer-group-body">
+                <div class="row">
+                  <div class="col-12 mb-3">
+                    <div class="content-response-panel">
+                      <div class="response-header">
+                        <div class="response-icon-badge">
+                          <i class="ft-check-circle"></i>
+                        </div>
+                        <span class="response-title">Proof of Professionalism, Accreditation</span>
+                      </div>
+                      <div class="response-body">
+                        {{ proofOfProfessionalism || 'Not specified' }}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <div class="content-response-panel">
+                      <div class="response-header">
+                        <div class="response-icon-badge">
+                          <i class="ft-users"></i>
+                        </div>
+                        <span class="response-title">Qualifications of Key Management and Technical Personnel</span>
+                      </div>
+                      <div class="response-body">
+                        {{ keyPersonnelQualifications || 'Not specified' }}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- Management Policies -->
-          <div class="officer-panel mb-3">
-            <div class="officer-panel-header d-flex align-items-center justify-content-between">
-              <h6 class="officer-panel-title mb-0">Management Policies</h6>
-            </div>
-            <div class="officer-panel-body">
-              <div class="row">
-                <!-- Employment Policy -->
-                <div class="col-md-6 mb-3">
-                  <span class="text-muted extra-small d-block text-uppercase">Does the firm have an Employment Policy?</span>
-                  <span class="badge font-small-2 px-2 py-1 mt-1 d-inline-block" [ngClass]="hasEmploymentPolicy ? 'badge-success' : (hasEmploymentPolicy === false ? 'badge-danger' : 'badge-light border text-muted')">
-                    {{ hasEmploymentPolicy ? 'YES' : (hasEmploymentPolicy === false ? 'NO' : 'Not Specified') }}
-                  </span>
-                  <div *ngIf="hasEmploymentPolicy === false && employeeScreeningExplanation" class="mt-2">
-                    <span class="text-danger extra-small d-block font-weight-bold">Employee screening / background checks explanation:</span>
-                    <span class="font-weight-bold text-dark font-small-3">{{ employeeScreeningExplanation || '-' }}</span>
+            <hr class="my-3" />
+
+            <!-- Management Policies -->
+            <div class="officer-group-card officer-group-card--flat mb-0">
+              <div class="officer-group-header d-flex flex-wrap align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                  <div class="officer-header-icon procurement-icon mr-3">
+                    <i class="ft-shield"></i>
+                  </div>
+                  <div>
+                    <h5 class="officer-name mb-0">Management Policies & Governance</h5>
+                    <span class="officer-header-sub">Compliance standards, ethical codes of conduct, employment policy, and workforce training.</span>
                   </div>
                 </div>
+              </div>
 
-                <!-- Code of Conduct -->
-                <div class="col-md-6 mb-3">
-                  <span class="text-muted extra-small d-block text-uppercase">Does the firm have a Code of Conduct / subscribe to a professional body?</span>
-                  <span class="badge font-small-2 px-2 py-1 mt-1 d-inline-block" [ngClass]="hasCodeOfConduct ? 'badge-success' : (hasCodeOfConduct === false ? 'badge-danger' : 'badge-light border text-muted')">
-                    {{ hasCodeOfConduct ? 'YES' : (hasCodeOfConduct === false ? 'NO' : 'Not Specified') }}
-                  </span>
-                  <div *ngIf="hasCodeOfConduct === true && codeOfConductDetails" class="mt-2">
-                    <span class="text-muted extra-small d-block font-weight-bold">Professional body / details:</span>
-                    <span class="font-weight-bold text-dark font-small-3">{{ codeOfConductDetails || '-' }}</span>
+              <div class="officer-group-body">
+                <div class="row">
+
+                  <!-- Employment Policy -->
+                  <div class="col-md-6 mb-3">
+                    <div class="policy-card">
+                      <div class="d-flex align-items-start justify-content-between mb-2">
+                        <div class="d-flex align-items-center">
+                          <div class="policy-icon-box mr-2">
+                            <i class="ft-briefcase"></i>
+                          </div>
+                          <span class="policy-title">Employment Policy</span>
+                        </div>
+                        <span class="badge-theme" [ngClass]="hasEmploymentPolicy ? 'badge-theme-yes' : (hasEmploymentPolicy === false ? 'badge-theme-no' : 'badge-theme-na')">
+                          <i class="ft-check mr-1" *ngIf="hasEmploymentPolicy"></i>
+                          <i class="ft-x mr-1" *ngIf="hasEmploymentPolicy === false"></i>
+                          {{ hasEmploymentPolicy ? 'YES' : (hasEmploymentPolicy === false ? 'NO' : 'Not Specified') }}
+                        </span>
+                      </div>
+                      <p class="policy-desc mb-0">Does the firm maintain an official Employment Policy?</p>
+
+                      <div *ngIf="hasEmploymentPolicy === false && employeeScreeningExplanation" class="policy-sub-detail warning-tint mt-2">
+                        <span class="sub-label d-block text-danger font-weight-bold">
+                          <i class="ft-alert-circle mr-1"></i> Screening & Background Checks Explanation:
+                        </span>
+                        <span class="sub-value">{{ employeeScreeningExplanation }}</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                <!-- Employee Integrity -->
-                <div class="col-12 mb-3">
-                  <span class="text-muted extra-small d-block text-uppercase">How does the firm ensure integrity of its employees?</span>
-                  <span class="font-weight-bold text-dark font-small-3 d-block mt-1" style="white-space: pre-wrap;">{{ employeeIntegrityMeasures || '-' }}</span>
-                </div>
+                  <!-- Code of Conduct -->
+                  <div class="col-md-6 mb-3">
+                    <div class="policy-card">
+                      <div class="d-flex align-items-start justify-content-between mb-2">
+                        <div class="d-flex align-items-center">
+                          <div class="policy-icon-box mr-2">
+                            <i class="ft-shield"></i>
+                          </div>
+                          <span class="policy-title">Code of Conduct</span>
+                        </div>
+                        <span class="badge-theme" [ngClass]="hasCodeOfConduct ? 'badge-theme-yes' : (hasCodeOfConduct === false ? 'badge-theme-no' : 'badge-theme-na')">
+                          <i class="ft-check mr-1" *ngIf="hasCodeOfConduct"></i>
+                          <i class="ft-x mr-1" *ngIf="hasCodeOfConduct === false"></i>
+                          {{ hasCodeOfConduct ? 'YES' : (hasCodeOfConduct === false ? 'NO' : 'Not Specified') }}
+                        </span>
+                      </div>
+                      <p class="policy-desc mb-0">Does the firm subscribe to a professional code of conduct?</p>
 
-                <!-- Employee Training Program -->
-                <div class="col-md-6 mb-2">
-                  <span class="text-muted extra-small d-block text-uppercase">Does the firm have an Employee Training Program?</span>
-                  <span class="badge font-small-2 px-2 py-1 mt-1 d-inline-block" [ngClass]="hasEmployeeTrainingProgram ? 'badge-success' : (hasEmployeeTrainingProgram === false ? 'badge-danger' : 'badge-light border text-muted')">
-                    {{ hasEmployeeTrainingProgram ? 'YES' : (hasEmployeeTrainingProgram === false ? 'NO' : 'Not Specified') }}
-                  </span>
+                      <div *ngIf="hasCodeOfConduct === true && codeOfConductDetails" class="policy-sub-detail info-tint mt-2">
+                        <span class="sub-label d-block text-primary font-weight-bold">
+                          <i class="ft-info mr-1"></i> Professional Body / Details:
+                        </span>
+                        <span class="sub-value">{{ codeOfConductDetails }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Employee Training Program -->
+                  <div class="col-md-6 mb-3">
+                    <div class="policy-card">
+                      <div class="d-flex align-items-start justify-content-between mb-2">
+                        <div class="d-flex align-items-center">
+                          <div class="policy-icon-box mr-2">
+                            <i class="ft-award"></i>
+                          </div>
+                          <span class="policy-title">Employee Training Program</span>
+                        </div>
+                        <span class="badge-theme" [ngClass]="hasEmployeeTrainingProgram ? 'badge-theme-yes' : (hasEmployeeTrainingProgram === false ? 'badge-theme-no' : 'badge-theme-na')">
+                          <i class="ft-check mr-1" *ngIf="hasEmployeeTrainingProgram"></i>
+                          <i class="ft-x mr-1" *ngIf="hasEmployeeTrainingProgram === false"></i>
+                          {{ hasEmployeeTrainingProgram ? 'YES' : (hasEmployeeTrainingProgram === false ? 'NO' : 'Not Specified') }}
+                        </span>
+                      </div>
+                      <p class="policy-desc mb-0">Does the firm provide active employee skill training programs?</p>
+                    </div>
+                  </div>
+
+                  <!-- Employee Integrity Measures -->
+                  <div class="col-12">
+                    <div class="content-response-panel">
+                      <div class="response-header">
+                        <div class="response-icon-badge">
+                          <i class="ft-check"></i>
+                        </div>
+                        <span class="response-title">How does the firm ensure integrity of its employees?</span>
+                      </div>
+                      <div class="response-body">
+                        {{ employeeIntegrityMeasures || 'Not specified' }}
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </div>
