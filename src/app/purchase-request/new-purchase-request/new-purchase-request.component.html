@@ -856,8 +856,8 @@
 
                 <ngx-datatable-column name="Item" [minWidth]="160" [flexGrow]="1.8">
                   <ng-template let-row="row" ngx-datatable-cell-template>
-                    <span class="cell-ellipsis" [ngbTooltip]="getItemNameById(row.itemId)" container="body">
-                      {{ getItemNameById(row.itemId) }}
+                    <span class="cell-ellipsis" [ngbTooltip]="getItemName(row)" container="body">
+                      {{ getItemName(row) }}
                     </span>
                   </ng-template>
                 </ngx-datatable-column>

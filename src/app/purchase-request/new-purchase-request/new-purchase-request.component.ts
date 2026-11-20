@@ -85,6 +85,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
   // new work
   itemList: any[] = [];
+  allEntityItems: any[] = [];
+  itemCache = new Map<number, any>();
   categoryList: any[] = [];
   selectedCategoryId: number | null = null;
   unitsOfMeasurementList: any[] = [];
@@ -720,10 +722,15 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   }
 
   private fetchEntityLookups(entityGuid: string): void {
-    this.purchaseRequestService.getItems(entityGuid, this.selectedCategoryId).subscribe({
+    this.purchaseRequestService.getItems(entityGuid).subscribe({
       next: (res) => {
-        this.itemList = res ?? [];
-        this.cdr.markForCheck();
+        this.allEntityItems = res ?? [];
+        for (const it of this.allEntityItems) {
+          if (it && it.id) {
+            this.itemCache.set(Number(it.id), it);
+          }
+        }
+        this.updateFilteredItems();
       },
       error: (err) => console.error('Failed to load items for entity:', err)
     });
@@ -734,6 +741,18 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       },
       error: (err) => console.error('Failed to load VAT prod posting groups:', err)
     });
+  }
+
+  updateFilteredItems(): void {
+    if (this.selectedCategoryId) {
+      const catId = Number(this.selectedCategoryId);
+      this.itemList = (this.allEntityItems || []).filter(i =>
+        Number(i.categoryId) === catId || Number(i.procurementCategoryId) === catId
+      );
+    } else {
+      this.itemList = [...(this.allEntityItems || [])];
+    }
+    this.cdr.markForCheck();
   }
 
   loadCategoriesForSelectedEntity(targetEntityId?: number): void {
@@ -759,7 +778,22 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   onCategoryChanged(): void {
     const categoryId = this.itemForm.get('categoryId')?.value ? Number(this.itemForm.get('categoryId')?.value) : null;
     this.selectedCategoryId = categoryId;
-    this.fetchItemsWithFilters();
+    if (this.allEntityItems && this.allEntityItems.length > 0) {
+      this.updateFilteredItems();
+    } else {
+      this.fetchItemsWithFilters();
+    }
+
+    const currentItemId = Number(this.itemForm.get('itemId')?.value);
+    if (currentItemId && categoryId) {
+      const item = this.itemCache.get(currentItemId) || this.allEntityItems.find(i => Number(i.id) === currentItemId);
+      const itemCat = item ? (item.categoryId || item.procurementCategoryId) : null;
+      if (itemCat && Number(itemCat) !== categoryId) {
+        this.itemForm.patchValue({ itemId: null, unitCost: 0 }, { emitEvent: false });
+        this.unitsOfMeasurementList = [];
+        this.selectedUomLabel = '';
+      }
+    }
   }
 
   private fetchItemsWithFilters(): void {
@@ -769,13 +803,16 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       return;
     }
     const guid = this.getSelectedEntityGuid();
-    const categoryId = this.selectedCategoryId;
-
     if (guid) {
-      this.purchaseRequestService.getItems(guid, categoryId).subscribe({
+      this.purchaseRequestService.getItems(guid).subscribe({
         next: (res) => {
-          this.itemList = res ?? [];
-          this.cdr.markForCheck();
+          this.allEntityItems = res ?? [];
+          for (const it of this.allEntityItems) {
+            if (it && it.id) {
+              this.itemCache.set(Number(it.id), it);
+            }
+          }
+          this.updateFilteredItems();
         },
         error: (err) => console.error('Failed to load items:', err)
       });
@@ -799,10 +836,14 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       if (byId) return byId;
     }
     if (row.itemId) {
-      const item = this.itemList?.find(i => Number(i.id) === Number(row.itemId));
+      const numItemId = Number(row.itemId);
+      const item = this.itemCache.get(numItemId)
+        || this.allEntityItems?.find(i => Number(i.id) === numItemId)
+        || this.itemList?.find(i => Number(i.id) === numItemId);
       if (item) {
-        if (item.categoryId) {
-          const byCatId = this.getCategoryNameById(item.categoryId);
+        const itemCatId = item.categoryId || item.procurementCategoryId;
+        if (itemCatId) {
+          const byCatId = this.getCategoryNameById(itemCatId);
           if (byCatId) return byCatId;
         }
         if (item.category) return item.category;
@@ -820,15 +861,20 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       return;
     }
 
-    const selectedItem = this.itemList?.find(i => Number(i.id) === id);
+    const selectedItem = this.itemCache.get(id)
+      || this.allEntityItems?.find(i => Number(i.id) === id)
+      || this.itemList?.find(i => Number(i.id) === id);
+
     if (selectedItem) {
       const unitPrice = Number(selectedItem.unitPrice) || 0;
       this.itemForm.patchValue({ unitCost: unitPrice }, { emitEvent: false });
       if (!this.isPatchingRow) {
         this.recalculateBudgetAmount();
       }
-      if (selectedItem.categoryId && !this.itemForm.get('categoryId')?.value) {
-        this.itemForm.patchValue({ categoryId: Number(selectedItem.categoryId) }, { emitEvent: false });
+      const itemCatId = selectedItem.categoryId || selectedItem.procurementCategoryId;
+      if (itemCatId && !this.itemForm.get('categoryId')?.value) {
+        this.itemForm.patchValue({ categoryId: Number(itemCatId) }, { emitEvent: false });
+        this.selectedCategoryId = Number(itemCatId);
       }
     }
 
@@ -854,7 +900,10 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     const itemId = Number(this.itemForm.get('itemId')?.value);
     if (!itemId) return;
 
-    const selectedItem = this.itemList?.find(i => Number(i.id) === itemId);
+    const selectedItem = this.itemCache.get(itemId)
+      || this.allEntityItems?.find(i => Number(i.id) === itemId)
+      || this.itemList?.find(i => Number(i.id) === itemId);
+
     const unitPrice = selectedItem?.unitPrice != null
       ? Number(selectedItem.unitPrice)
       : (Number(this.itemForm.get('unitCost')?.value) || 0);
@@ -891,6 +940,9 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   private resetItemAndUomSelection(): void {
     this.itemForm.patchValue({ itemId: 0, unitOfMeasurementId: 0 }, { emitEvent: false });
     this.itemList = [];
+    this.allEntityItems = [];
+    this.itemCache.clear();
+    this.selectedCategoryId = null;
     this.unitsOfMeasurementList = [];
     this.selectedUomLabel = '';
     this.itemForm.get('unitOfMeasurementId')?.disable({ emitEvent: false });
@@ -1606,9 +1658,32 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     const found = this.accountList.find(a => a.id === id);
     return found ? found.description : '';
   }
+  getItemName(row: any): string {
+    if (!row) return '';
+    if (row.itemName && typeof row.itemName === 'string' && row.itemName.trim() !== '') {
+      return row.itemName;
+    }
+    const id = Number(row.itemId);
+    if (id) {
+      const name = this.getItemNameById(id);
+      if (name) return name;
+    }
+    if (row.itemDescription && typeof row.itemDescription === 'string' && row.itemDescription.trim() !== '') {
+      return row.itemDescription;
+    }
+    return '';
+  }
+
   getItemNameById(id: number): string {
-    const found = this.itemList.find(i => i.id === id);
-    return found ? found.description : '';
+    if (!id) return '';
+    const numId = Number(id);
+    const cached = this.itemCache.get(numId);
+    if (cached) return cached.description || cached.itemName || '';
+    const inAll = this.allEntityItems?.find(i => Number(i.id) === numId);
+    if (inAll) return inAll.description || inAll.itemName || '';
+    const inCurrent = this.itemList?.find(i => Number(i.id) === numId);
+    if (inCurrent) return inCurrent.description || inCurrent.itemName || '';
+    return '';
   }
 
   // insertItem(): void {
@@ -1708,7 +1783,13 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     const newItemId = Number(newItem.itemId);
     const projectId = this.itemForm.get('projectId')?.value ? Number(this.itemForm.get('projectId')?.value) : null;
     const projectActivityId = this.itemForm.get('projectActivityId')?.value ? Number(this.itemForm.get('projectActivityId')?.value) : null;
-    const selectedItem = this.itemList?.find(i => Number(i.id) === newItemId);
+    const selectedItem = this.itemCache.get(newItemId)
+      || this.allEntityItems?.find(i => Number(i.id) === newItemId)
+      || this.itemList?.find(i => Number(i.id) === newItemId);
+    if (selectedItem && !this.itemCache.has(newItemId)) {
+      this.itemCache.set(newItemId, selectedItem);
+    }
+    const itemName = selectedItem?.description || selectedItem?.itemName || '';
     const unitCost = Number(newItem.unitCost) || Number(selectedItem?.unitPrice) || 0;
     const activityBudget = this.selectedActivityInfo?.budgetAmount != null
       ? Number(this.selectedActivityInfo.budgetAmount)
@@ -1722,6 +1803,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
     const normalizedItem = {
       ...newItem,
+      itemName,
       categoryId,
       categoryName,
       amount,
@@ -1853,6 +1935,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       const merged = {
         ...existing,
         ...normalizedItem,
+        itemName: itemName || existing.itemName || '',
         itemId: existing.itemId,
         vatProdPostingGroup: existing.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
         unitOfMeasurementSymbol: this.selectedUomLabel || this.resolveUomSymbol(normalizedItem) || this.resolveUomSymbol(existing),
@@ -1870,6 +1953,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       //  Always append a new manual row (no duplicate restriction)
       const withEmptyAttachments = {
         ...normalizedItem,
+        itemName,
         itemId: newItemId,
         vatProdPostingGroup: this.resolveVatProdPostingGroup(),
         unitOfMeasurementSymbol: this.resolveUomSymbol(normalizedItem),
@@ -1909,7 +1993,9 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       this.selectedActivityInfo = null;
     }
 
-    const rowCatId = row.categoryId || row.procurementCategoryId || (row.itemId ? this.itemList?.find(i => Number(i.id) === Number(row.itemId))?.categoryId : null) || null;
+    const rowCatId = row.categoryId || row.procurementCategoryId || (row.itemId ? (this.itemCache.get(Number(row.itemId))?.categoryId || this.allEntityItems?.find(i => Number(i.id) === Number(row.itemId))?.categoryId || this.itemList?.find(i => Number(i.id) === Number(row.itemId))?.categoryId) : null) || null;
+    this.selectedCategoryId = rowCatId ? Number(rowCatId) : null;
+    this.updateFilteredItems();
 
     // patch form values from the selected row
     this.itemForm.patchValue({
@@ -1931,7 +2017,6 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       categoryId: rowCatId ? Number(rowCatId) : null,
       attachments: row.attachments || []
     });
-    this.selectedCategoryId = rowCatId ? Number(rowCatId) : null;
     this.selectedUomLabel = this.resolveUomSymbol(row) || '';
     this.checkBudgetLimit();
     this.syncFinalVendorControlState();
@@ -2083,53 +2168,69 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         if (requestData.purchaseItems) {
           const itemList = requestData.purchaseItems || [];
 
-          this.newPurchaseItemData = itemList.map((item: any) => ({
-            id: item.id,
-            requisitionNo: item.requisitionNo,
-            itemType: item.itemType,
-            itemId: item.itemId,
-            itemDescription: item.itemDescription,
-            amount: item.amount,
-            unitCost: item.unitCost,
-            unitOfMeasurementId: item.unitOfMeasurementId,
-            unitOfMeasurementSymbol: this.resolveUomSymbol(item),
-            orderQuantity: item.orderQuantity,
-            reqByDate: this.toDateInputValue(item.reqByDate),
-            vendorUserId: item.vendorUserId,
-            vendorCompanyId: item.vendorCompanyId,
-            accountId: item.accountId,
-            remarks: item.remarks,
-            vatProdPostingGroup: item.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
-            createdBy: item.createdBy,
-            purchaseRequestId: item.purchaseRequestId,
-            isPoCreated: item.isPoCreated,
-            isPoRequested: item.isPoRequested,
-            isRfqCreated: item.isRfqCreated,
-            isInventoryTransfer: item.isInventoryTransfer,
-            projectId: item.projectId || null,
-            projectName: item.projectName || this.getProjectNameById(item.projectId),
-            projectActivityId: item.projectActivityId || null,
-            projectActivityName: item.projectActivityName || this.getActivityNameById(item.projectActivityId),
-            activityBudgetAmount: this.getActivityBudgetById(item.projectActivityId),
-            activityAllowedPercentage: this.getActivityAllowedPercentageById(item.projectActivityId),
-            exceededBudgetAmount: item.exceededBudgetAmount || null,
-            departmentId: item.departmentId || null,
-            categoryId: item.procurementCategoryId || item.categoryId || null,
-            categoryName: item.procurementCategoryName || item.categoryName || null,
-            attachments: (item.attachments || []).map((a: any) => ({
-              id: a.id,
-              content: a.content || '',
-              contentType: a.contentType || '',
-              fileName: a.fileName || '',
-              fromForm: a.fromForm || '',
-              createdDate: a.createdDate,
-              modifiedDate: a.modifiedDate,
-              createdBy: a.createdBy || 'current-user',
-              isDeleted: a.isDeleted || false,
-              purchaseItemId: a.purchaseItemId || 0,
-              isNew: false
-            }))
-          }));
+          this.newPurchaseItemData = itemList.map((item: any) => {
+            const rowItemName = item.itemName || item.itemDescription || '';
+            const rowCatId = item.procurementCategoryId || item.categoryId || null;
+            if (item.itemId) {
+              const numItemId = Number(item.itemId);
+              if (!this.itemCache.has(numItemId)) {
+                this.itemCache.set(numItemId, {
+                  id: numItemId,
+                  itemName: item.itemName,
+                  description: rowItemName,
+                  categoryId: rowCatId
+                });
+              }
+            }
+            return {
+              id: item.id,
+              requisitionNo: item.requisitionNo,
+              itemType: item.itemType,
+              itemId: item.itemId,
+              itemName: rowItemName,
+              itemDescription: item.itemDescription,
+              amount: item.amount,
+              unitCost: item.unitCost,
+              unitOfMeasurementId: item.unitOfMeasurementId,
+              unitOfMeasurementSymbol: this.resolveUomSymbol(item),
+              orderQuantity: item.orderQuantity,
+              reqByDate: this.toDateInputValue(item.reqByDate),
+              vendorUserId: item.vendorUserId,
+              vendorCompanyId: item.vendorCompanyId,
+              accountId: item.accountId,
+              remarks: item.remarks,
+              vatProdPostingGroup: item.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
+              createdBy: item.createdBy,
+              purchaseRequestId: item.purchaseRequestId,
+              isPoCreated: item.isPoCreated,
+              isPoRequested: item.isPoRequested,
+              isRfqCreated: item.isRfqCreated,
+              isInventoryTransfer: item.isInventoryTransfer,
+              projectId: item.projectId || null,
+              projectName: item.projectName || this.getProjectNameById(item.projectId),
+              projectActivityId: item.projectActivityId || null,
+              projectActivityName: item.projectActivityName || this.getActivityNameById(item.projectActivityId),
+              activityBudgetAmount: this.getActivityBudgetById(item.projectActivityId),
+              activityAllowedPercentage: this.getActivityAllowedPercentageById(item.projectActivityId),
+              exceededBudgetAmount: item.exceededBudgetAmount || null,
+              departmentId: item.departmentId || null,
+              categoryId: rowCatId,
+              categoryName: item.procurementCategoryName || item.categoryName || this.getCategoryNameById(rowCatId) || null,
+              attachments: (item.attachments || []).map((a: any) => ({
+                id: a.id,
+                content: a.content || '',
+                contentType: a.contentType || '',
+                fileName: a.fileName || '',
+                fromForm: a.fromForm || '',
+                createdDate: a.createdDate,
+                modifiedDate: a.modifiedDate,
+                createdBy: a.createdBy || 'current-user',
+                isDeleted: a.isDeleted || false,
+                purchaseItemId: a.purchaseItemId || 0,
+                isNew: false
+              }))
+            };
+          });
         }
         console.log('list item data:', this.newPurchaseItemData);
         this.exceptionPolicyData = requestData.prExceptionPolicy ?? null;
@@ -2617,6 +2718,9 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       categoryId: null,
       attachments: []
     });
+
+    this.selectedCategoryId = null;
+    this.updateFilteredItems();
 
     this.editingRowIndex = null;
     this.selectedRow = null;
