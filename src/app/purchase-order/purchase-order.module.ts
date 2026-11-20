@@ -10,9 +10,11 @@ import { PurchaseOrderDetailsComponent } from './purchase-order-details/purchase
 import { ShipmentDetailsComponent } from './purchase-order-details/shipment-details/shipment-details.component';
 import { GrnDetailsComponent } from './purchase-order-details/grn-details/grn-details.component';
 import { InvoiceComponent } from './purchase-order-details/invoice/invoice.component';
+import { PoApprovalHistoryComponent } from './po-approval-history/po-approval-history.component';
+import { PoRemarksComponent } from './po-remarks/po-remarks.component';
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
 import { VendorRating } from './purchase-order-details/vendor-rating/vendor-rating';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 
@@ -24,7 +26,9 @@ import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
     PurchaseOrderDetailsComponent,
     ShipmentDetailsComponent,
     GrnDetailsComponent,
-    InvoiceComponent
+    InvoiceComponent,
+    PoApprovalHistoryComponent,
+    PoRemarksComponent
   ],
   imports: [
     CommonModule,
@@ -32,6 +36,7 @@ import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
     NgxDatatableModule,
     AutoResizeDatatableDirective,
     PermissionDirective,
+    FormsModule,
     ReactiveFormsModule,
     DatatableAutoResizeDirective,
     NgbModule

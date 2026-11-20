@@ -94,4 +94,17 @@ export class PurchaseOrderService {
       `${this.baseUrl}/avg-vendor-rating?vendorUserId=${vendorUserId}`
     );
   }
+
+  submitForApproval(purchaseOrderId: number): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/submit-for-approval`, { purchaseOrderId });
+  }
+
+  getApprovalHistory(purchaseOrderId: number): Observable<any> {
+    const params = new HttpParams().set('purchaseOrderId', purchaseOrderId.toString());
+    return this.http.get<any>(`${this.baseUrl}/get-approval-history`, { params });
+  }
+
+  addRemarksWithActionTaken(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/addRemarksWithActionTaken`, payload);
+  }
 }
