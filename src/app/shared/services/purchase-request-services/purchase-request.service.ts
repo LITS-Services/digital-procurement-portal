@@ -212,4 +212,8 @@ export class PurchaseRequestService {
     }
     return this.http.get<any>(`${this.baseUrl}/get-activity-budget-utilization`, { params: httpParams });
   }
+
+  downloadPurchaseRequestPdf(id: number): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/download-pdf/${id}`, { responseType: 'blob' });
+  }
 }

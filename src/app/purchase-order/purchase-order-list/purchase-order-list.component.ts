@@ -9,6 +9,7 @@ import { PurchaseOrderService } from 'app/shared/services/purchase-order.service
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs/operators';
+import { PdfExportService } from 'app/shared/services/pdf-export.service';
 
 @Component({
   selector: 'app-purchase-order-list',
@@ -56,7 +57,8 @@ export class PurchaseOrderListComponent implements OnInit {
     private permissionService: PermissionService,
     private lookupService: LookupService,
     private spinner: NgxSpinnerService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private pdfExportService: PdfExportService
   ) { }
 
   get isMobile(): boolean {
@@ -65,13 +67,14 @@ export class PurchaseOrderListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadStatus();
-    // this.loadPurchaseOrders();
+    this.loadPurchaseOrders();
     this.cdr.detectChanges();
   }
 
   loadPurchaseOrders() {
     const userId = localStorage.getItem('userId');
-    const entityId = Number(localStorage.getItem('selectedCompanyId'));
+    const lsEntity = localStorage.getItem('selectedCompanyId');
+    const entityId = (!lsEntity || lsEntity === 'All' || isNaN(Number(lsEntity))) ? null : Number(lsEntity);
     
     this.loading = true;
     this.spinner.show();
@@ -169,8 +172,8 @@ export class PurchaseOrderListComponent implements OnInit {
 
   onActivate(event: any) {
     if (event.type === 'click') {
-      if(!this.permissionService.can(FORM_IDS.REQUEST_FOR_QUOTATION, 'write'))
-      return;
+      if(!this.permissionService.can(FORM_IDS.PURCHASE_ORDER, 'read'))
+        return;
       const poId = event.row.id;
       this.router.navigate(['/purchase-order/details'], { queryParams: { id: poId }, skipLocationChange: true });
 
@@ -178,13 +181,84 @@ export class PurchaseOrderListComponent implements OnInit {
   }
 
   onRowClick(row: any) {
-    if(!this.permissionService.can(FORM_IDS.REQUEST_FOR_QUOTATION, 'write'))
+    if(!this.permissionService.can(FORM_IDS.PURCHASE_ORDER, 'read'))
       return;
     const id = row?.id;
     if (id) {
       this.router.navigate(['/purchase-order/details'], { queryParams: { id: id }, skipLocationChange: true });
 
     }
+  }
+
+  downloadPoPdf(row: any): void {
+    const id = row?.id;
+    const poNo = row?.purchaseOrderNo || id;
+    if (!id) return;
+
+    this.spinner.show();
+    this.purchaseOrderService.downloadPurchaseOrderPdf(id).subscribe({
+      next: (blob: Blob) => {
+        this.spinner.hide();
+        this.pdfExportService.downloadBlob(blob, `PO_${poNo}.pdf`);
+      },
+      error: () => {
+        this.spinner.hide();
+        const statusText = row.requestStatus || 'Active';
+        const statusClass = String(statusText).toLowerCase().includes('approv')
+          ? 'status-approved'
+          : (String(statusText).toLowerCase().includes('reject')
+              ? 'status-rejected'
+              : (String(statusText).toLowerCase().includes('prog') || String(statusText).toLowerCase().includes('pend')
+                  ? 'status-inprogress'
+                  : 'status-draft'));
+
+        const html = `
+          <div class="header-bar">
+            <div>
+              <h1>Purchase Order</h1>
+              <div class="subtitle">${row.entityName || 'Procurement Portal'}</div>
+            </div>
+            <div class="meta-box">
+              <div class="doc-number">PO #: ${poNo}</div>
+              <div class="doc-date">Date: ${row.createdDate || '-'}</div>
+              <div class="status-badge ${statusClass}">${statusText}</div>
+            </div>
+          </div>
+
+          <div class="info-cards info-cards-3">
+            <div class="info-card">
+              <div class="info-card-header">Vendor & Entity</div>
+              <div class="info-card-body">
+                <div class="info-row"><span class="info-label">Vendor Name</span><span class="info-value">${row.vendorCompanyName || '-'}</span></div>
+                <div class="info-row"><span class="info-label">Order Date</span><span class="info-value">${row.createdDate || '-'}</span></div>
+                <div class="info-row"><span class="info-label">Status</span><span class="info-value">${statusText}</span></div>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-card-header">Shipment & Delivery</div>
+              <div class="info-card-body">
+                <div class="info-row"><span class="info-label">Ship To</span><span class="info-value">${row.shipToName || row.receiverName || '-'}</span></div>
+                <div class="info-row"><span class="info-label">Loc. Code</span><span class="info-value">${row.locationCode || '-'}</span></div>
+                <div class="info-row"><span class="info-label">Destination</span><span class="info-value">${[row.shipToCity, row.shipToCountry].filter(Boolean).join(', ') || '-'}</span></div>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-card-header">Procurement References</div>
+              <div class="info-card-body">
+                <div class="info-row"><span class="info-label">PR Reference</span><span class="info-value">${row.requisitionNo || '-'}</span></div>
+                <div class="info-row"><span class="info-label">RFQ Reference</span><span class="info-value">${row.rfqNo || '-'}</span></div>
+                <div class="info-row"><span class="info-label">Total Items</span><span class="info-value">${row.itemsCount || '1'} Items</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 14px; text-align: center; color: #64748b; font-size: 11.5px; margin-top: 15px;">
+            Open the purchase order details to view and download full line items, delivery schedules, and payment terms.
+          </div>
+        `;
+        this.pdfExportService.printFormattedDocument(`PO_${poNo}`, html);
+      }
+    });
   }
 
   private mapStatusKey(status: string): 'chip--success' | 'chip--pending' | 'chip--rejected' | 'chip--approved' | 'chip--draft' {

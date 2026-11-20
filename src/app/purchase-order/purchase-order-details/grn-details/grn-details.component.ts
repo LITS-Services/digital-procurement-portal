@@ -6,6 +6,7 @@ import { PurchaseOrderService } from 'app/shared/services/purchase-order.service
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
+import { PdfExportService } from 'app/shared/services/pdf-export.service';
 
 @Component({
   selector: 'app-grn-details',
@@ -53,7 +54,8 @@ export class GrnDetailsComponent implements OnInit {
     private spinner: NgxSpinnerService,
     private fb: FormBuilder,
     private toastr: ToastrService,
-    private router: Router
+    private router: Router,
+    private pdfExportService: PdfExportService
   ) {}
 
   ngOnInit(): void {
@@ -288,5 +290,111 @@ export class GrnDetailsComponent implements OnInit {
           this.savingRating = false;
         }
       });
+  }
+
+  downloadGrnPdf(): void {
+    if (!this.poId) {
+      this.toastr.warning('PO ID not found.');
+      return;
+    }
+    this.spinner.show();
+    this.purchaseOrderService.downloadGrnPdf(this.poId).subscribe({
+      next: (blob: Blob) => {
+        this.spinner.hide();
+        const grNo = this.form.get('grNumber')?.value || this.poId;
+        this.pdfExportService.downloadBlob(blob, `GRN_${grNo}.pdf`);
+      },
+      error: () => {
+        this.spinner.hide();
+        this.fallbackPrintGrn();
+      }
+    });
+  }
+
+  private fallbackPrintGrn(): void {
+    const formVal = this.form.value;
+    const grNo = formVal.grNumber || `GRN-${this.poId}`;
+    const items = this.itemsForm?.controls || [];
+    let itemsRows = '';
+    items.forEach((control: any, idx: number) => {
+      const itm = control.value;
+      itemsRows += `
+        <tr>
+          <td>${idx + 1}</td>
+          <td><strong>${itm.itemName || '-'}</strong></td>
+          <td class="text-end">${itm.orderedQty || 0}</td>
+          <td class="text-end">${itm.receivedQuantity || 0}</td>
+          <td>${itm.receivedDate || '-'}</td>
+          <td>${itm.remarks || '-'}</td>
+        </tr>
+      `;
+    });
+
+    const statusText = formVal.requestStatus || 'Received';
+    const statusClass = String(statusText).toLowerCase().includes('receiv') || String(statusText).toLowerCase().includes('approv')
+      ? 'status-completed'
+      : 'status-approved';
+
+    const html = `
+      <div class="header-bar">
+        <div>
+          <h1>Goods Received Note (GRN)</h1>
+          <div class="subtitle">Procurement Portal</div>
+        </div>
+        <div class="meta-box">
+          <div class="doc-number">GRN #: ${grNo}</div>
+          <div class="status-badge ${statusClass}">${statusText}</div>
+        </div>
+      </div>
+
+      <div class="info-cards info-cards-2">
+        <div class="info-card">
+          <div class="info-card-header">Order & Vendor Reference</div>
+          <div class="info-card-body">
+            <div class="info-row"><span class="info-label">PO Reference</span><span class="info-value">${formVal.purchaseOrderNo || '-'}</span></div>
+            <div class="info-row"><span class="info-label">Vendor Name</span><span class="info-value">${formVal.vendorName || '-'}</span></div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-header">Receiving Inspection Details</div>
+          <div class="info-card-body">
+            <div class="info-row"><span class="info-label">Receiver</span><span class="info-value">${formVal.receiverName || '-'}</span></div>
+            <div class="info-row"><span class="info-label">Inspection Note</span><span class="info-value">${formVal.remarks || 'Accepted in good condition'}</span></div>
+          </div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 32px;" class="text-center">#</th>
+            <th>Item & Description</th>
+            <th style="width: 100px;" class="text-end">Ordered Qty</th>
+            <th style="width: 100px;" class="text-end">Received Qty</th>
+            <th style="width: 120px;">Receipt Date</th>
+            <th>Verification Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${itemsRows || '<tr><td colspan="6" class="text-center" style="padding: 20px; color: #94a3b8;">No receipt items recorded</td></tr>'}
+        </tbody>
+      </table>
+
+      <div class="footer-section">
+        <div class="signature-block">
+          <div class="signature-title">Received & Inspected By</div>
+          <div class="signature-line"></div>
+          <div class="signature-name">${formVal.receiverName || 'Warehouse Inspector'}</div>
+          <div class="signature-role">Quality & Quantity Check</div>
+        </div>
+        <div class="signature-block">
+          <div class="signature-title">Store / Warehouse Incharge</div>
+          <div class="signature-line"></div>
+          <div class="signature-name">Store Manager</div>
+          <div class="signature-role">Inventory Receipt Confirmation</div>
+        </div>
+      </div>
+    `;
+    this.pdfExportService.printFormattedDocument(`GRN_${grNo}`, html);
   }
 }

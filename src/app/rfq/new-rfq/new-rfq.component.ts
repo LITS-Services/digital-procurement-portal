@@ -20,6 +20,7 @@ import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-
 import { PhoneNumberUtil, PhoneNumberFormat as LibPhoneNumberFormat } from 'google-libphonenumber';
 import { ProjectService, ProjectItem, ProjectActivityItem } from 'app/shared/services/project.service';
 import { DataSourceService } from 'app/shared/services/data-source.service';
+import { PdfExportService } from 'app/shared/services/pdf-export.service';
 
 @Component({
   selector: 'app-new-rfq',
@@ -159,7 +160,8 @@ export class NewRfqComponent implements OnInit {
     private purchaseOrderService: PurchaseOrderService,
     private spinner: NgxSpinnerService,
     private projectService: ProjectService,
-    private dataSourceService: DataSourceService
+    private dataSourceService: DataSourceService,
+    private pdfExportService: PdfExportService
   ) {}
 
   ngOnInit(): void {
@@ -295,6 +297,216 @@ export class NewRfqComponent implements OnInit {
   get isMobile(): boolean {
     return window.innerWidth <= 768;
   }
+
+  downloadPdf(): void {
+    if (!this.currentQuotationId) {
+      this.toastr.warning('Please select an RFQ first.');
+      return;
+    }
+    this.spinner.show();
+    this.rfqService.downloadRfqPdf(this.currentQuotationId).subscribe({
+      next: (blob: Blob) => {
+        this.spinner.hide();
+        const rfqNo = this.newRfqForm.get('rfqNo')?.value || this.currentQuotationId;
+        this.pdfExportService.downloadBlob(blob, `RFQ_${rfqNo}.pdf`);
+      },
+      error: () => {
+        this.spinner.hide();
+        this.fallbackPrintRfq();
+      }
+    });
+  }
+
+  private fallbackPrintRfq(): void {
+    const formVal = this.newRfqForm.value;
+    const rfqNo = formVal.rfqNo || `RFQ-${this.currentQuotationId || 'Draft'}`;
+    const items = (this.newQuotationItemData && this.newQuotationItemData.length > 0) ? this.newQuotationItemData : (this.rows || []);
+    let itemsRows = '';
+    items.forEach((item: any, idx: number) => {
+      const qty = item.quantity || item.orderQuantity || 0;
+      const uom = item.unitOfMeasurementSymbol || item.unitOfMeasurementCode || item.uom || 'EA';
+      const reqDate = item.reqByDate ? new Date(item.reqByDate).toLocaleDateString() : (item.reqByDate || '-');
+      const projectActivity = [item.projectName, item.activityName || item.projectActivityName].filter(Boolean).join(' / ') || '-';
+      itemsRows += `
+        <tr>
+          <td class="text-center">${idx + 1}</td>
+          <td>
+            <strong>${item.itemName || item.itemDescription || '-'}</strong>
+            ${item.itemDescription && item.itemDescription !== item.itemName ? `<br><small style="color:#64748b">${item.itemDescription}</small>` : ''}
+          </td>
+          <td>${projectActivity}</td>
+          <td class="text-center">${uom}</td>
+          <td class="text-end"><strong>${qty}</strong></td>
+          <td>${reqDate}</td>
+          <td>${item.remarks || '-'}</td>
+        </tr>
+      `;
+    });
+
+    const vendors = this.selectedVendorsData || [];
+    let vendorsRows = '';
+    vendors.forEach((v: any, idx: number) => {
+      const compName = v.companyName || v.company || '-';
+      const contact = v.vendorName || v.fullName || v.contactPerson || '-';
+      const contactInfo = [v.email, v.phoneNumber].filter(Boolean).join(' / ') || v.email || v.contact || '-';
+      const invDate = v.createdDate ? new Date(v.createdDate).toLocaleDateString() : '-';
+      vendorsRows += `
+        <tr>
+          <td class="text-center">${idx + 1}</td>
+          <td><strong>${compName}</strong></td>
+          <td>${contact}</td>
+          <td>${contactInfo}</td>
+          <td class="text-center">${invDate}</td>
+          <td class="text-center"><span class="status-badge status-inprogress" style="padding: 2px 8px; font-size: 9.5px;">Invited</span></td>
+        </tr>
+      `;
+    });
+
+    const entityName = this.entities?.find(e => e.id === Number(formVal.entityId))?.description || 'Procurement Portal';
+    const deptName = this.departmentName || formVal.department || '-';
+    const statusText = this.newRfqForm.get('status')?.value || 'Open';
+    const subDate = formVal.date ? new Date(formVal.date).toLocaleDateString() : '-';
+    const deadlineDate = formVal.endDate ? new Date(formVal.endDate).toLocaleDateString() : '-';
+    const deliveryDate = formVal.startDate ? new Date(formVal.startDate).toLocaleDateString() : '-';
+
+    let contactPhone = '-';
+    if (formVal.contact) {
+      contactPhone = typeof formVal.contact === 'object'
+        ? (formVal.contact.e164Number || formVal.contact.internationalNumber || formVal.contact.number || '-')
+        : String(formVal.contact);
+    }
+
+    const html = `
+      <div class="header-bar">
+        <div>
+          <h1>Request For Quotation (RFQ)</h1>
+          <div class="subtitle">${entityName}</div>
+        </div>
+        <div class="meta-box">
+          <div class="doc-number">RFQ #: ${rfqNo}</div>
+          <div class="doc-date">Issue Date: ${subDate}</div>
+          <div class="status-badge status-open">${statusText}</div>
+        </div>
+      </div>
+
+      ${formVal.title ? `
+        <div class="purpose-banner">
+          <span class="purpose-label">Scope / Title:</span>
+          <span class="purpose-text">${formVal.title}</span>
+        </div>
+      ` : ''}
+
+      <div class="info-cards info-cards-3">
+        <div class="info-card">
+          <div class="info-card-header">RFQ Overview</div>
+          <div class="info-card-body">
+            <div class="info-row"><span class="info-label">Entity</span><span class="info-value">${entityName}</span></div>
+            <div class="info-row"><span class="info-label">Department</span><span class="info-value">${deptName}</span></div>
+            <div class="info-row"><span class="info-label">PR Reference</span><span class="info-value">${formVal.purchaseRequestNo || '-'}</span></div>
+            <div class="info-row"><span class="info-label">RFQ Number</span><span class="info-value">${rfqNo}</span></div>
+            <div class="info-row"><span class="info-label">Issue Date</span><span class="info-value">${subDate}</span></div>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-card-header">Timeline & Terms</div>
+          <div class="info-card-body">
+            <div class="info-row"><span class="info-label">Deadline</span><span class="info-value">${deadlineDate}</span></div>
+            <div class="info-row"><span class="info-label">Exp. Delivery</span><span class="info-value">${deliveryDate}</span></div>
+            <div class="info-row"><span class="info-label">Payment Terms</span><span class="info-value">${formVal.paymentTerms || 'Standard Terms'}</span></div>
+            <div class="info-row"><span class="info-label">Status</span><span class="info-value">${statusText}</span></div>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-card-header">Delivery & Contact</div>
+          <div class="info-card-body">
+            <div class="info-row"><span class="info-label">Location</span><span class="info-value">${formVal.deliveryLocation || '-'}</span></div>
+            <div class="info-row"><span class="info-label">Contact Person</span><span class="info-value">${formVal.owner || formVal.contact || '-'}</span></div>
+            <div class="info-row"><span class="info-label">Contact Phone</span><span class="info-value">${contactPhone}</span></div>
+            ${(formVal.community || formVal.building) ? `<div class="info-row"><span class="info-label">Site / Building</span><span class="info-value">${[formVal.community, formVal.building].filter(Boolean).join(' / ')}</span></div>` : ''}
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 10px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: baseline;">
+        <h4 style="margin: 0; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px; color: #1e3a8a; font-weight: 700;">
+          Quotation Items & Specifications <small style="color: #64748b; font-weight: 500;">(${items.length} Items)</small>
+        </h4>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 32px;" class="text-center">#</th>
+            <th>Item & Description</th>
+            <th>Project / Activity</th>
+            <th style="width: 60px;" class="text-center">UOM</th>
+            <th style="width: 65px;" class="text-end">Qty</th>
+            <th style="width: 110px;">Required Date</th>
+            <th>Specifications / Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${itemsRows || '<tr><td colspan="7" class="text-center" style="padding: 20px; color: #94a3b8;">No RFQ items found</td></tr>'}
+        </tbody>
+      </table>
+
+      <div style="margin-top: 18px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: baseline;">
+        <h4 style="margin: 0; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px; color: #1e3a8a; font-weight: 700;">
+          Invited / Participating Vendors <small style="color: #64748b; font-weight: 500;">(${vendors.length} Registered Bidders)</small>
+        </h4>
+      </div>
+
+      ${vendorsRows ? `
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 32px;" class="text-center">#</th>
+              <th>Vendor Company</th>
+              <th>Contact Person</th>
+              <th>Contact Details</th>
+              <th style="width: 110px;" class="text-center">Invited Date</th>
+              <th style="width: 80px;" class="text-center">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${vendorsRows}
+          </tbody>
+        </table>
+      ` : `
+        <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 12px; text-align: center; color: #64748b; font-size: 11px; margin-bottom: 20px;">
+          No invited vendors registered for this quotation request yet.
+        </div>
+      `}
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 14px; margin-top: 15px; margin-bottom: 20px;">
+        <div style="font-size: 10.5px; font-weight: 700; color: #1e3a8a; text-transform: uppercase; margin-bottom: 4px;">Terms & Instructions:</div>
+        <div style="font-size: 11px; color: #475569; line-height: 1.5;">
+          1. Please submit your lowest competitive quotation before the stated deadline.<br>
+          2. Prices must be inclusive of delivery to the specified location.<br>
+          3. State warranty period, validity, and delivery lead time with the quote.
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <div class="signature-block">
+          <div class="signature-title">Authorized Sourcing Officer</div>
+          <div class="signature-line"></div>
+          <div class="signature-name">${formVal.owner || 'Procurement Department'}</div>
+          <div class="signature-role">Prepared & Issued</div>
+        </div>
+        <div class="signature-block">
+          <div class="signature-title">Procurement Authority</div>
+          <div class="signature-line"></div>
+          <div class="signature-name">Head of Procurement</div>
+          <div class="signature-role">Official Issuance & Approval</div>
+        </div>
+      </div>
+    `;
+    this.pdfExportService.printFormattedDocument(`RFQ_${rfqNo}`, html);
+  }
+
   homePage() {
     if (this.isNewForm && this.isFormDirty) {
       Swal.fire({

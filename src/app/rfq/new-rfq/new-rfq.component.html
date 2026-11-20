@@ -189,7 +189,10 @@
             </button>
             </ng-container>          
           
-          
+            <button *ngIf="!isNewForm && currentQuotationId" type="button" class="btn btn-sm cstm-ui-table-btn"
+              (click)="downloadPdf()" [disabled]="isLoading" title="Download RFQ PDF">
+              <img src="assets/img/svg-icons/pdf-icon.svg" class="btn-action-icon" alt="" /><label>Download PDF</label>
+            </button>
           
           </div>
         </div>

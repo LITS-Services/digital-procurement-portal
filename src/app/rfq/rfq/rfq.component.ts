@@ -15,6 +15,7 @@ import { LookupService } from 'app/shared/services/lookup.service';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { FORM_IDS } from 'app/shared/permissions/form-ids';
 import { PermissionService } from 'app/shared/permissions/permission.service';
+import { PdfExportService } from 'app/shared/services/pdf-export.service';
 
 @Component({
   selector: 'app-rfq',
@@ -81,7 +82,7 @@ export class RfqComponent implements OnInit {
     private route: ActivatedRoute, private rfqService: RfqService,
     private cdr: ChangeDetectorRef, public toastr: ToastrService,
     public lookupService: LookupService, private purchaseOrderService: PurchaseOrderService,
-    private permissionService: PermissionService
+    private permissionService: PermissionService, private pdfExportService: PdfExportService
   ) { }
 
   ngOnInit(): void {
@@ -202,6 +203,77 @@ export class RfqComponent implements OnInit {
 
     this.router.navigate(['/rfq/new-rfq'], {
       queryParams: { id: selectedId, mode: 'view' }, skipLocationChange: true
+    });
+  }
+
+  downloadSelectedPdf(): void {
+    if (!this.chkBoxSelected || this.chkBoxSelected.length !== 1) {
+      this.toastr.warning('Please select exactly one RFQ.');
+      return;
+    }
+    const row = this.chkBoxSelected[0];
+    const id = row.quotationId || row.id;
+    const rfqNo = row.rfqNo || id;
+
+    this.rfqService.downloadRfqPdf(id).subscribe({
+      next: (blob: Blob) => {
+        this.pdfExportService.downloadBlob(blob, `RFQ_${rfqNo}.pdf`);
+      },
+      error: () => {
+        const html = `
+          <div class="header-bar">
+            <div>
+              <h1>Request For Quotation (RFQ)</h1>
+              <div class="subtitle">${row.entityName || 'Procurement Portal'}</div>
+            </div>
+            <div class="meta-box">
+              <div class="doc-number">RFQ #: ${rfqNo}</div>
+              <div class="doc-date">Date: ${row.date || '-'}</div>
+              <div class="status-badge status-open">${row.requestStatus || 'Open'}</div>
+            </div>
+          </div>
+
+          ${row.title ? `
+            <div class="purpose-banner">
+              <span class="purpose-label">Scope / Title:</span>
+              <span class="purpose-text">${row.title}</span>
+            </div>
+          ` : ''}
+
+          <div class="info-cards info-cards-3">
+            <div class="info-card">
+              <div class="info-card-header">RFQ Overview</div>
+              <div class="info-card-body">
+                <div class="info-row"><span class="info-label">Entity</span><span class="info-value">${row.entityName || 'Procurement Portal'}</span></div>
+                <div class="info-row"><span class="info-label">Department</span><span class="info-value">${row.department || '-'}</span></div>
+                <div class="info-row"><span class="info-label">PR Reference</span><span class="info-value">${row.purchaseRequestNo || '-'}</span></div>
+                <div class="info-row"><span class="info-label">Issue Date</span><span class="info-value">${row.date || '-'}</span></div>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-card-header">Timeline & Scope</div>
+              <div class="info-card-body">
+                <div class="info-row"><span class="info-label">Deadline</span><span class="info-value">${row.endDate || '-'}</span></div>
+                <div class="info-row"><span class="info-label">Line Items</span><span class="info-value">${row.itemsCount || '1'} Items</span></div>
+                <div class="info-row"><span class="info-label">Invited Vendors</span><span class="info-value">${row.vendorsCount || 'Competitive'}</span></div>
+                <div class="info-row"><span class="info-label">Status</span><span class="info-value">${row.requestStatus || 'Open'}</span></div>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-card-header">Delivery & Contact</div>
+              <div class="info-card-body">
+                <div class="info-row"><span class="info-label">Delivery Location</span><span class="info-value">${row.deliveryLocation || '-'}</span></div>
+                <div class="info-row"><span class="info-label">Contact Person</span><span class="info-value">${row.contact || row.owner || '-'}</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 14px; text-align: center; color: #64748b; font-size: 11.5px; margin-top: 15px;">
+            Open the RFQ details to view and download full quotation line items, technical specifications, and vendor comparisons.
+          </div>
+        `;
+        this.pdfExportService.printFormattedDocument(`RFQ_${rfqNo}`, html);
+      }
     });
   }
 

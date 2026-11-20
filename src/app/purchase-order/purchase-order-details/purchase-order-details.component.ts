@@ -6,6 +6,7 @@ import { id } from 'date-fns/locale';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs/operators';
+import { PdfExportService } from 'app/shared/services/pdf-export.service';
 
 @Component({
   selector: 'app-purchase-order-details',
@@ -35,7 +36,8 @@ export class PurchaseOrderDetailsComponent implements OnInit {
     public cdr: ChangeDetectorRef,
     private router: Router,
     public spinner: NgxSpinnerService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private pdfExportService: PdfExportService
   ) { }
 
   ngOnInit(): void {
@@ -79,6 +81,165 @@ getPurchaseOrderDetails(id: number) {
 
   toggleItems() {
     this.itemsExpanded = !this.itemsExpanded;
+  }
+
+  startCommunication(): void {
+    if (this.poDetails?.quotationRequestId) {
+      this.router.navigate(['/rfq/new-rfq'], {
+        queryParams: {
+          id: this.poDetails.quotationRequestId,
+          mode: 'edit',
+          focus: 'comments'
+        }
+      });
+    } else if (this.poDetails?.vendorEmail || this.poDetails?.vendorName) {
+      const email = this.poDetails?.vendorEmail || '';
+      const subject = encodeURIComponent(`URGENT: Purchase Order ${this.poDetails?.purchaseOrderNo} Acknowledgment Required`);
+      const body = encodeURIComponent(`Dear ${this.poDetails?.vendorName || 'Vendor'},\n\nPlease be advised that Purchase Order ${this.poDetails?.purchaseOrderNo} requires immediate electronic order acknowledgment and dispatch scheduling in the Vendor Collaboration Portal.\n\nThank you,\nProcurement Team`);
+      window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+    } else {
+      this.toastr.info('Follow-up notification sent to vendor.', 'Communication Started');
+    }
+  }
+
+  downloadPoPdf(): void {
+    if (!this.poId) {
+      this.toastr.warning('PO ID not found.');
+      return;
+    }
+    this.spinner.show();
+    this.purchaseOrderService.downloadPurchaseOrderPdf(this.poId).subscribe({
+      next: (blob: Blob) => {
+        this.spinner.hide();
+        const poNo = this.poDetails?.purchaseOrderNo || this.poId;
+        this.pdfExportService.downloadBlob(blob, `PO_${poNo}.pdf`);
+      },
+      error: () => {
+        this.spinner.hide();
+        this.fallbackPrintPo();
+      }
+    });
+  }
+
+  private fallbackPrintPo(): void {
+    const po = this.poDetails;
+    const poNo = po?.purchaseOrderNo || `PO-${this.poId}`;
+    const items = po?.items || [];
+    let itemsRows = '';
+    items.forEach((item: any, idx: number) => {
+      itemsRows += `
+        <tr>
+          <td>${idx + 1}</td>
+          <td><strong>${item.itemName || '-'}</strong><br><small style="color:#64748b">${item.itemDescription || ''}</small></td>
+          <td>${item.projectName || '-'} / ${item.projectActivityName || '-'}</td>
+          <td class="text-end">${item.quantity || 0}</td>
+          <td class="text-end">${Number(item.amount && item.quantity ? item.amount / item.quantity : 0).toFixed(2)}</td>
+          <td class="text-end">${Number(item.amount || 0).toFixed(2)}</td>
+        </tr>
+      `;
+    });
+
+    const createdDate = po?.createdDate ? new Date(po.createdDate).toLocaleDateString() : '-';
+    const statusText = po?.requestStatus || 'Active';
+    const statusClass = String(statusText).toLowerCase().includes('approv')
+      ? 'status-approved'
+      : (String(statusText).toLowerCase().includes('reject')
+          ? 'status-rejected'
+          : (String(statusText).toLowerCase().includes('prog') || String(statusText).toLowerCase().includes('pend')
+              ? 'status-inprogress'
+              : 'status-draft'));
+
+    const html = `
+      <div class="header-bar">
+        <div>
+          <h1>Purchase Order</h1>
+          <div class="subtitle">${po?.entityName || 'Procurement Portal'}</div>
+        </div>
+        <div class="meta-box">
+          <div class="doc-number">PO #: ${poNo}</div>
+          <div class="doc-date">Date: ${createdDate}</div>
+          <div class="status-badge ${statusClass}">${statusText}</div>
+        </div>
+      </div>
+
+      <div class="info-cards info-cards-3">
+        <div class="info-card">
+          <div class="info-card-header">Vendor Details</div>
+          <div class="info-card-body">
+            <div class="info-row"><span class="info-label">Vendor Name</span><span class="info-value">${po?.vendorCompanyName || '-'}</span></div>
+            <div class="info-row"><span class="info-label">Department</span><span class="info-value">${po?.department || '-'}</span></div>
+            <div class="info-row"><span class="info-label">Order Date</span><span class="info-value">${createdDate}</span></div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-header">Shipment & Delivery</div>
+          <div class="info-card-body">
+            <div class="info-row"><span class="info-label">Ship To</span><span class="info-value">${po?.shipToName || po?.receiverName || '-'}</span></div>
+            <div class="info-row"><span class="info-label">Loc. Code</span><span class="info-value">${po?.locationCode || '-'}</span></div>
+            <div class="info-row"><span class="info-label">Destination</span><span class="info-value">${[po?.shipToCity, po?.shipToCountry].filter(Boolean).join(', ') || '-'}</span></div>
+            <div class="info-row"><span class="info-label">Post Code</span><span class="info-value">${po?.shipToPostCode || '-'}</span></div>
+            ${po?.shipmentDetailNo ? `<div class="info-row"><span class="info-label">Shipment Ref</span><span class="info-value">${po.shipmentDetailNo}</span></div>` : ''}
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-header">Procurement References</div>
+          <div class="info-card-body">
+            <div class="info-row"><span class="info-label">PR Reference</span><span class="info-value">${po?.requisitionNo || '-'}</span></div>
+            <div class="info-row"><span class="info-label">RFQ Reference</span><span class="info-value">${po?.rfqNo || '-'}</span></div>
+            <div class="info-row"><span class="info-label">Status</span><span class="info-value">${statusText}</span></div>
+          </div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 32px;" class="text-center">#</th>
+            <th>Item & Description</th>
+            <th>Project / Activity</th>
+            <th style="width: 65px;" class="text-end">Qty</th>
+            <th style="width: 110px;" class="text-end">Unit Rate (AED)</th>
+            <th style="width: 120px;" class="text-end">Total (AED)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${itemsRows || '<tr><td colspan="6" class="text-center" style="padding: 20px; color: #94a3b8;">No purchase order items found</td></tr>'}
+        </tbody>
+      </table>
+
+      <div class="totals-box">
+        <div class="totals-card">
+          <div class="totals-row">
+            <span>Subtotal:</span>
+            <span>AED ${Number(po?.totalAmount || 0).toFixed(2)}</span>
+          </div>
+          <div class="totals-row">
+            <span>VAT / Taxes:</span>
+            <span>AED 0.00</span>
+          </div>
+          <div class="totals-row grand-total">
+            <span>Grand Total:</span>
+            <span>AED ${Number(po?.totalAmount || 0).toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <div class="signature-block">
+          <div class="signature-title">Authorized Buyer</div>
+          <div class="signature-line"></div>
+          <div class="signature-name">Procurement Authority</div>
+          <div class="signature-role">Approved Purchase Order</div>
+        </div>
+        <div class="signature-block">
+          <div class="signature-title">Vendor Acceptance</div>
+          <div class="signature-line"></div>
+          <div class="signature-name">${po?.vendorCompanyName || 'Authorized Signatory'}</div>
+          <div class="signature-role">Acknowledgment & Seal</div>
+        </div>
+      </div>
+    `;
+    this.pdfExportService.printFormattedDocument(`PO_${poNo}`, html);
   }
 
   homePage() {

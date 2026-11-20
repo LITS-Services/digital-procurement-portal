@@ -84,7 +84,7 @@
         [rows]="purchaseOrderData" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [columns]="columns"
         [rowHeight]="'auto'" [limit]="pageSize" [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1"
         (page)="onPageChange($event)" [scrollbarH]="isMobile" [loadingIndicator]="loading" [selected]="chkBoxSelected"
-        [swapColumns]="false" (sort)="onSort($event)" appPermission [appPermFormId]="FORM_IDS.PURCHASE_ORDER" [appPermDisable]="'write'">>
+        [swapColumns]="false" (sort)="onSort($event)">
         <!-- <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
                     [resizeable]="false">
                     <ng-template ngx-datatable-header-template>
@@ -111,7 +111,7 @@
         <ngx-datatable-column name="PO No." prop="purchaseOrderNo" [flexGrow]="1" [minWidth]="100" [sortable]="false">
           <ng-template ngx-datatable-cell-template let-row="row">
             <a href="javascript:void(0)" (click)="onRowClick(row)" appPermission [appPermFormId]="FORM_IDS.PURCHASE_ORDER"
-              [appPermDisable]="'write'">
+              [appPermDisable]="'read'">
               {{ row.purchaseOrderNo }}
             </a>
           </ng-template>
@@ -121,6 +121,20 @@
           <ng-template ngx-datatable-cell-template let-row="row">
             <span [ngClass]="row.statusClass">
               {{ row.requestStatus }}
+            </span>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Acknowledgment" [sortable]="false" [flexGrow]="1" [minWidth]="130">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <span *ngIf="row.isAcknowledged" class="badge bg-light-success text-success border border-success px-2 py-1 font-small-2">
+              <i class="ft-check me-1"></i>Acknowledged
+            </span>
+            <span *ngIf="!row.isAcknowledged && (row.isOverdue || row.isReminderSent)" class="badge bg-light-danger text-danger border border-danger px-2 py-1 font-small-2" title="Order acknowledgment deadline has passed">
+              <i class="ft-alert-octagon me-1"></i>Overdue
+            </span>
+            <span *ngIf="!row.isAcknowledged && !row.isOverdue && !row.isReminderSent" class="badge bg-light-warning text-warning-emphasis border border-warning px-2 py-1 font-small-2" title="Pending electronic acknowledgment">
+              <i class="ft-clock me-1"></i>Pending
             </span>
           </ng-template>
         </ngx-datatable-column>
@@ -146,6 +160,14 @@
         <ngx-datatable-column name="Date" prop="createdDate" [sortable]="false" [flexGrow]="1" [minWidth]="115">
           <ng-template let-row="row" ngx-datatable-cell-template>
             {{ row.createdDate | date:'yyyy-MM-dd' }}
+          </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="PDF" [sortable]="false" [width]="70">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <button class="btn btn-sm btn-link p-0 text-dark" (click)="downloadPoPdf(row)" title="Download PO PDF">
+              <img src="assets/img/svg-icons/pdf-icon.svg" class="btn-action-icon" alt="PDF" style="width: 16px; height: 16px;" />
+            </button>
           </ng-template>
         </ngx-datatable-column>
         <!-- <ngx-datatable-column name="Amount" prop="amount" [sortable]="false">

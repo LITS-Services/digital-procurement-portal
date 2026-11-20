@@ -24,6 +24,7 @@ import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-
 import { PhoneNumberUtil, PhoneNumberFormat as LibPhoneNumberFormat } from 'google-libphonenumber';
 import { DataSourceService } from 'app/shared/services/data-source.service';
 import { NgSelectComponent } from '@ng-select/ng-select';
+import { PdfExportService } from 'app/shared/services/pdf-export.service';
 
 @Component({
   selector: 'app-new-purchase-request',
@@ -180,7 +181,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     private purchaseOrderService: PurchaseOrderService,
     private projectService: ProjectService,
     private renderer: Renderer2,
-    private dataSourceService: DataSourceService
+    private dataSourceService: DataSourceService,
+    private pdfExportService: PdfExportService
 
   ) { }
 
@@ -2067,6 +2069,194 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     });
   }
 
+  downloadPdf(): void {
+    if (!this.currentRequestId) {
+      this.toastr.warning('Please select a purchase request first.');
+      return;
+    }
+    this.spinner.show();
+    this.purchaseRequestService.downloadPurchaseRequestPdf(this.currentRequestId).subscribe({
+      next: (blob: Blob) => {
+        this.spinner.hide();
+        const reqNo = this.newPurchaseRequestForm.get('requisitionNo')?.value || this.currentRequestId;
+        this.pdfExportService.downloadBlob(blob, `PR_${reqNo}.pdf`);
+      },
+      error: () => {
+        this.spinner.hide();
+        this.fallbackPrintPr();
+      }
+    });
+  }
+
+  private fallbackPrintPr(): void {
+    const formVal = this.newPurchaseRequestForm.value;
+    const reqNo = formVal.requisitionNo || `PR-${this.currentRequestId || 'Draft'}`;
+    const items = (this.newPurchaseItemData && this.newPurchaseItemData.length > 0) ? this.newPurchaseItemData : (this.rows || []);
+    let itemsRows = '';
+    let grandTotal = 0;
+    items.forEach((item: any, idx: number) => {
+      const qty = Number(item.orderQuantity || item.quantity || 0);
+      const unitCost = Number(item.unitCost || 0);
+      const lineTotal = Number(item.amount || (qty * unitCost) || 0);
+      grandTotal += lineTotal;
+      itemsRows += `
+        <tr>
+          <td>${idx + 1}</td>
+          <td><strong>${item.itemName || item.itemDescription || '-'}</strong></td>
+          <td>${item.projectName || '-'} / ${item.projectActivityName || '-'}</td>
+          <td>${item.unitOfMeasurementSymbol || 'EA'}</td>
+          <td class="text-end">${qty}</td>
+          <td class="text-end">${unitCost.toFixed(2)}</td>
+          <td class="text-end">${lineTotal.toFixed(2)}</td>
+        </tr>
+      `;
+    });
+
+    const entityName = this.entities?.find(e => e.id === Number(formVal.entityId))?.description || 'Procurement Portal';
+    const deptName = this.departmentList?.find(d => d.id === Number(formVal.department) || d.name === formVal.department)?.name || formVal.department || '-';
+    const statusText = formVal.status || formVal.requestStatus || 'Active';
+    const subDate = formVal.submittedDate ? new Date(formVal.submittedDate).toLocaleDateString() : '-';
+
+    let receiverPhone = '-';
+    if (formVal.receiverContact) {
+      receiverPhone = typeof formVal.receiverContact === 'object'
+        ? (formVal.receiverContact.e164Number || formVal.receiverContact.internationalNumber || formVal.receiverContact.number || '-')
+        : String(formVal.receiverContact);
+    }
+
+    const dimName = this.dimensionList?.find(d => d.id === Number(formVal.dimensionId))?.description || '';
+    const dimValName = this.dimensionValueList?.find(dv => dv.id === Number(formVal.dimensionValueId))?.description || '';
+
+    const addressObj = this.addresses?.find(a => a.id === Number(formVal.addressId));
+    const addressCode = addressObj?.addressCode || formVal.addressCode || '';
+    const address1 = formVal.address || addressObj?.address || '';
+    const address2 = formVal.address2 || addressObj?.address2 || '';
+    const city = formVal.city || addressObj?.city || '';
+    const region = formVal.region || addressObj?.region || '';
+    const country = formVal.country || addressObj?.country || '';
+    const postCode = formVal.postCode || addressObj?.postCode || '';
+
+    const statusClass = String(statusText).toLowerCase().includes('approv')
+      ? 'status-approved'
+      : (String(statusText).toLowerCase().includes('reject')
+          ? 'status-rejected'
+          : (String(statusText).toLowerCase().includes('prog') || String(statusText).toLowerCase().includes('pend')
+              ? 'status-inprogress'
+              : 'status-draft'));
+
+    const html = `
+      <div class="header-bar">
+        <div>
+          <h1>Purchase Requisition</h1>
+          <div class="subtitle">${entityName}</div>
+        </div>
+        <div class="meta-box">
+          <div class="doc-number">PR #: ${reqNo}</div>
+          <div class="doc-date">Date: ${subDate}</div>
+          <div class="status-badge ${statusClass}">${statusText}</div>
+        </div>
+      </div>
+
+      ${formVal.subject ? `
+        <div class="purpose-banner">
+          <span class="purpose-label">Purpose / Subject:</span>
+          <span class="purpose-text">${formVal.subject}</span>
+        </div>
+      ` : ''}
+
+      <div class="info-cards info-cards-3">
+        <div class="info-card">
+          <div class="info-card-header">Requisition Overview</div>
+          <div class="info-card-body">
+            <div class="info-row"><span class="info-label">Entity</span><span class="info-value">${entityName}</span></div>
+            <div class="info-row"><span class="info-label">Department</span><span class="info-value">${deptName}</span></div>
+            <div class="info-row"><span class="info-label">Requisition Date</span><span class="info-value">${subDate}</span></div>
+            ${dimName ? `<div class="info-row"><span class="info-label">Dimension</span><span class="info-value">${dimName}${dimValName ? ' / ' + dimValName : ''}</span></div>` : ''}
+            <div class="info-row"><span class="info-label">Requisition Type</span><span class="info-value">Standard Item</span></div>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-card-header">Delivery & Receiver</div>
+          <div class="info-card-body">
+            <div class="info-row"><span class="info-label">Receiver Name</span><span class="info-value">${formVal.receiverName || '-'}</span></div>
+            <div class="info-row"><span class="info-label">Receiver Contact</span><span class="info-value">${receiverPhone}</span></div>
+            <div class="info-row"><span class="info-label">Delivery Location</span><span class="info-value">${formVal.deliveryLocation || '-'}</span></div>
+            <div class="info-row"><span class="info-label">Partial Delivery</span><span class="info-value">${formVal.partialDeliveryAcceptable ? 'Acceptable' : 'No'}</span></div>
+            <div class="info-row"><span class="info-label">Exception Policy</span><span class="info-value">${formVal.exceptionPolicy ? 'Applied' : 'Standard'}</span></div>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <div class="info-card-header">Receiving Address</div>
+          <div class="info-card-body">
+            ${addressCode ? `<div class="info-row"><span class="info-label">Address Code</span><span class="info-value">${addressCode}</span></div>` : ''}
+            ${address1 ? `<div class="info-row"><span class="info-label">Address Line 1</span><span class="info-value">${address1}</span></div>` : ''}
+            ${address2 ? `<div class="info-row"><span class="info-label">Address Line 2</span><span class="info-value">${address2}</span></div>` : ''}
+            ${(city || region) ? `<div class="info-row"><span class="info-label">City / Region</span><span class="info-value">${[city, region].filter(Boolean).join(', ')}</span></div>` : ''}
+            ${(country || postCode) ? `<div class="info-row"><span class="info-label">Country / Post</span><span class="info-value">${[country, postCode].filter(Boolean).join(' ')}</span></div>` : ''}
+            ${(!addressCode && !address1) ? `<div class="info-row"><span class="info-label">Destination</span><span class="info-value">${formVal.deliveryLocation || 'Same as Delivery Location'}</span></div>` : ''}
+          </div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 32px;" class="text-center">#</th>
+            <th>Item & Description</th>
+            <th>Project / Activity</th>
+            <th style="width: 60px;" class="text-center">UOM</th>
+            <th style="width: 65px;" class="text-end">Qty</th>
+            <th style="width: 110px;" class="text-end">Unit Cost (AED)</th>
+            <th style="width: 120px;" class="text-end">Total (AED)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${itemsRows || '<tr><td colspan="7" class="text-center" style="padding: 20px; color: #94a3b8;">No requisition items found</td></tr>'}
+        </tbody>
+      </table>
+
+      <div class="totals-box">
+        <div class="totals-card">
+          <div class="totals-row">
+            <span>Items Subtotal:</span>
+            <span>AED ${grandTotal.toFixed(2)}</span>
+          </div>
+          <div class="totals-row">
+            <span>Estimated VAT / Tax:</span>
+            <span>AED 0.00</span>
+          </div>
+          <div class="totals-row grand-total">
+            <span>Estimated Total:</span>
+            <span>AED ${grandTotal.toFixed(2)}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-section">
+        <div class="signature-block">
+          <div class="signature-title">Requested By</div>
+          <div class="signature-line"></div>
+          <div class="signature-name">Requisition Submitter</div>
+          <div class="signature-role">Prepared & Submitted</div>
+        </div>
+        <div class="signature-block">
+          <div class="signature-title">Department Approval</div>
+          <div class="signature-line"></div>
+          <div class="signature-name">Department Head</div>
+          <div class="signature-role">Authorized Signatory</div>
+        </div>
+        <div class="signature-block">
+          <div class="signature-title">Procurement Review</div>
+          <div class="signature-line"></div>
+          <div class="signature-name">Procurement Officer</div>
+          <div class="signature-role">Verification & Sourcing</div>
+        </div>
+      </div>
+    `;
+    this.pdfExportService.printFormattedDocument(`PR_${reqNo}`, html);
+  }
 
   homePage() {
     if (this.isNewForm && this.isFormDirty) {

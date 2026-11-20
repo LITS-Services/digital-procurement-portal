@@ -3,15 +3,23 @@
   <div class="card-body">
 
     <!-- Header Row -->
-    <div class="d-flex justify-content-end align-items-start mb-3">
+    <div class="d-flex justify-content-end align-items-center mb-3 gap-2">
       <button
-  class="btn btn-primary"
-  (click)="save()"
-  [disabled]="isGrnSubmitted"
->
-  {{ isGrnSubmitted ? 'GRN Submitted' : 'Submit GRN' }}
-</button>
+        type="button"
+        class="btn btn-outline-secondary btn-sm"
+        (click)="downloadGrnPdf()"
+        [disabled]="!form.get('grNumber')?.value"
+        ngbTooltip="Download GRN PDF">
+        <img src="assets/img/svg-icons/pdf-icon.svg" class="btn-action-icon me-1" alt="" style="width: 16px; height: 16px;" /> Download GRN PDF
+      </button>
 
+      <button
+        class="btn btn-primary"
+        (click)="save()"
+        [disabled]="isGrnSubmitted"
+      >
+        {{ isGrnSubmitted ? 'GRN Submitted' : 'Submit GRN' }}
+      </button>
     </div>
 
     <div class="row mb-3">

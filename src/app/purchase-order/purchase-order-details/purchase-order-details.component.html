@@ -54,20 +54,72 @@
         </div>
 
         <div *ngIf="selectedTab === 'po-details'">
-            <!-- Action Bar -->
-            <!-- <div class="card cstm-ui-card mb-3 py-2 px-3 d-flex justify-content-between flex-wrap">
-            <div class="d-flex align-items-center">
-                <button class="btn btn-lg" type="button" (click)="homePage()">
-                    <i class="ft-arrow-left"></i>
-                </button>
+            <!-- Acknowledgment Status Alerts -->
+            <div *ngIf="!poDetails?.isAcknowledged">
+                <!-- Overdue Alert -->
+                <div *ngIf="poDetails?.isOverdue || poDetails?.isReminderSent" class="alert alert-danger d-flex align-items-center justify-content-between p-3 mb-3 rounded shadow-sm border border-danger">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="ft-alert-octagon font-large-1 text-danger me-2"></i>
+                        <div>
+                            <h6 class="mb-1 text-danger fw-bold">
+                                Vendor Order Acknowledgment Overdue!
+                                <span *ngIf="poDetails?.reminderCount && poDetails?.reminderCount > 0" class="badge bg-danger text-white ms-1 font-small-2">
+                                    {{ poDetails?.reminderCount === 1 ? '1st Reminder Sent' : (poDetails?.reminderCount + ' Reminders Sent') }}
+                                </span>
+                            </h6>
+                            <p class="mb-0 text-muted small">
+                                The vendor has not submitted electronic order acknowledgment within the configured {{ poDetails?.reminderMinutes ? (poDetails?.reminderMinutes + ' minutes') : '48 hours' }} deadline. Automatic recurring reminders are being sent to the vendor, and follow-up communication has been initiated.
+                            </p>
+                        </div>
+                    </div>
+                    <button class="btn btn-danger btn-sm text-nowrap d-inline-flex align-items-center gap-1 shadow-sm" (click)="startCommunication()">
+                        <i class="ft-message-circle"></i>
+                        <span>Start Communication</span>
+                    </button>
+                </div>
 
-                <h5 class="mt-2 fw-bold heading">Purchase Order Details</h5>
+                <!-- Pending Alert -->
+                <div *ngIf="!poDetails?.isOverdue && !poDetails?.isReminderSent" class="alert alert-warning d-flex align-items-center justify-content-between p-3 mb-3 rounded shadow-sm" style="background-color: #fffbe6; border: 1px solid #ffe58f;">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="ft-clock font-large-1 text-warning me-2"></i>
+                        <div>
+                            <h6 class="mb-1 text-dark fw-bold">Pending Vendor Acknowledgment</h6>
+                            <p class="mb-0 text-muted small">
+                                Vendor has been awarded this Purchase Order and must electronically acknowledge it with estimated dispatch date within {{ poDetails?.reminderMinutes ? (poDetails?.reminderMinutes + ' minutes') : '48 hours' }}.
+                            </p>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline-warning btn-sm text-nowrap d-inline-flex align-items-center gap-1 text-dark" (click)="startCommunication()">
+                        <i class="ft-message-square"></i>
+                        <span>Contact Vendor</span>
+                    </button>
+                </div>
             </div>
-        </div> -->
 
             <!-- PO Info Card -->
             <div class="card cstm-ui-card mb-4">
                 <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <span *ngIf="poDetails?.isAcknowledged" class="badge bg-light-success text-success border border-success px-3 py-2 font-small-3 d-inline-flex align-items-center gap-1">
+                                <i class="ft-check-circle"></i> Order Acknowledged by Vendor
+                            </span>
+                            <span *ngIf="!poDetails?.isAcknowledged && (poDetails?.isOverdue || poDetails?.isReminderSent)" class="badge bg-light-danger text-danger border border-danger px-3 py-2 font-small-3 d-inline-flex align-items-center gap-1">
+                                <i class="ft-alert-octagon"></i> Acknowledgment Overdue <span *ngIf="poDetails?.reminderCount && poDetails?.reminderCount > 1">({{ poDetails?.reminderCount }}x)</span>
+                            </span>
+                            <span *ngIf="!poDetails?.isAcknowledged && !poDetails?.isOverdue && !poDetails?.isReminderSent" class="badge bg-light-warning text-warning border border-warning px-3 py-2 font-small-3 d-inline-flex align-items-center gap-1">
+                                <i class="ft-clock"></i> Pending Acknowledgment
+                            </span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <button *ngIf="!poDetails?.isAcknowledged" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1" (click)="startCommunication()" ngbTooltip="Contact Vendor / Message">
+                                <i class="ft-message-square"></i> Contact Vendor
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" (click)="downloadPoPdf()" ngbTooltip="Download Purchase Order PDF">
+                                <img src="assets/img/svg-icons/pdf-icon.svg" class="btn-action-icon me-1" alt="" style="width: 16px; height: 16px;" /> Download PO PDF
+                            </button>
+                        </div>
+                    </div>
 
                     <div class="row">
 
@@ -113,6 +165,40 @@
                         </div>
 
                     </div>
+
+                    <!-- Order Acknowledgment Details Card (When Acknowledged) -->
+                    <div *ngIf="poDetails?.isAcknowledged" class="mt-3 p-3 rounded" style="background-color: #f6ffed; border: 1px solid #b7eb8f;">
+                        <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom">
+                            <h6 class="fw-bold mb-0 text-success d-flex align-items-center gap-1">
+                                <i class="ft-shield"></i> Electronic Order Acknowledgment & Dispatch Schedule
+                            </h6>
+                            <span class="badge bg-success text-white px-2 py-1 font-small-2">
+                                <i class="ft-check me-1"></i> Formal Contractual Acceptance Confirmed
+                            </span>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-3 col-md-6 mb-2">
+                                <label class="small text-muted mb-0">Acknowledged Date</label>
+                                <div class="fw-bold text-dark">{{ poDetails?.acknowledgedDate | date:'yyyy-MM-dd HH:mm' }}</div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-2">
+                                <label class="small text-muted mb-0">Acknowledged By</label>
+                                <div class="fw-bold text-dark">{{ poDetails?.acknowledgedBy || 'Vendor' }}</div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-2">
+                                <label class="small text-muted mb-0">Estimated Dispatch Date</label>
+                                <div class="fw-bold text-primary">{{ poDetails?.estimatedDispatchDate | date:'yyyy-MM-dd' }}</div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-2">
+                                <label class="small text-muted mb-0">Transport Carrier</label>
+                                <div class="fw-bold text-dark">{{ poDetails?.transportCarrier || '-' }}</div>
+                            </div>
+                            <div class="col-12 mt-1" *ngIf="poDetails?.acknowledgmentRemarks">
+                                <label class="small text-muted mb-0">Acknowledgment Remarks</label>
+                                <div class="small fst-italic text-dark">{{ poDetails?.acknowledgmentRemarks }}</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- Items Section -->
@@ -134,6 +220,7 @@
                                         <th>Description</th>
                                         <th>Project</th>
                                         <th>Activity</th>
+                                        <th class="text-center">Delivery Milestone</th>
                                         <th class="text-end">Quantity</th>
                                         <th class="text-end">Amount</th>
                                     </tr>
@@ -144,6 +231,7 @@
                                         <td>{{ item.itemDescription }}</td>
                                         <td>{{ item.projectName || '-' }}</td>
                                         <td>{{ item.projectActivityName || '-' }}</td>
+                                        <td class="text-center font-weight-bold text-primary">{{ item.deliveryDate ? (item.deliveryDate | date:'yyyy-MM-dd') : 'Pending' }}</td>
                                         <td class="text-end">{{ item.quantity }}</td>
                                         <td class="text-end fw-semibold">{{ item.amount | number:'1.2-2' }}</td>
                                     </tr>

@@ -93,11 +93,11 @@
             </ng-container>
           </div>
 
-          <!-- <div class="col-md-6 col-6 text-end cstm-action-bar" style="margin-top: 0.3rem;">
-            <button type="reset" class="btn btn-sm cstm-ui-table-btn mr-2">
-              <i class="ft-printer"></i><label class="ml-1 btn-label">Print</label>
+          <div class="col-md-6 col-6 text-end cstm-action-bar" style="margin-top: 0.3rem;">
+            <button *ngIf="!isNewForm" type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="downloadPdf()" [disabled]="loading" title="Download PR PDF">
+              <img src="assets/img/svg-icons/pdf-icon.svg" class="btn-action-icon" alt="" /><label class="btn-label">Download PDF</label>
             </button>
-          </div> -->
+          </div>
         </div>
       </div>
 

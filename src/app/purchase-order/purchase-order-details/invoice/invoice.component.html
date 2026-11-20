@@ -11,11 +11,12 @@
 <div class="card cstm-ui-card mb-4">
   <div class="card-body">
 
-    <div class="d-flex justify-content-end align-items-end mb-3">
-    <button class="btn btn-primary btn-large" (click)="downloadInvoice(invoiceDetails.id, invoiceDetails.invoiceNo)" ngbTooltip="View/Download Invoice">
-      <i class="fa-regular fa-file-pdf"></i>
-    </button>
-  </div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold mb-0">Invoice & Payment Details</h5>
+      <button class="btn btn-outline-secondary btn-sm" (click)="downloadInvoice(invoiceDetails.id, invoiceDetails.invoiceNo)" ngbTooltip="Download formatted Invoice & Payment PDF">
+        <img src="assets/img/svg-icons/pdf-icon.svg" class="btn-action-icon me-1" alt="" style="width: 16px; height: 16px;" /> Download Invoice PDF
+      </button>
+    </div>
 
     <div class="row">
       <div class="col-lg-4 col-md-6 mb-3">
@@ -43,11 +44,6 @@
         <input class="form-control form-control-sm" [value]="invoiceDetails?.grNumber" disabled>
       </div>
 
-      <!-- <div class="col-lg-4 col-md-6 mb-3">
-          <label>Delivery Challan No</label>
-          <input class="form-control form-control-sm" [value]="invoiceDetails?.deliveryChallan" disabled>
-        </div> -->
-
       <div class="col-lg-4 col-md-6 mb-3">
         <label>Payment Terms</label>
         <input class="form-control form-control-sm" [value]="invoiceDetails?.paymentTerms" disabled>
@@ -61,6 +57,21 @@
       <div class="col-lg-4 col-md-6 mb-3">
         <label>Status</label>
         <input class="form-control form-control-sm" [value]="invoiceDetails?.requestStatus" disabled>
+      </div>
+
+      <div class="col-lg-4 col-md-6 mb-3" *ngIf="invoiceDetails?.paymentMethod">
+        <label>Payment Method</label>
+        <input class="form-control form-control-sm" [value]="invoiceDetails?.paymentMethod" disabled>
+      </div>
+
+      <div class="col-lg-4 col-md-6 mb-3" *ngIf="invoiceDetails?.paymentDate">
+        <label>Payment Date</label>
+        <input class="form-control form-control-sm" [value]="invoiceDetails?.paymentDate | date:'yyyy-MM-dd'" disabled>
+      </div>
+
+      <div class="col-lg-4 col-md-6 mb-3" *ngIf="invoiceDetails?.approvalDate">
+        <label>Approval Date</label>
+        <input class="form-control form-control-sm" [value]="invoiceDetails?.approvalDate | date:'yyyy-MM-dd'" disabled>
       </div>
 
       <div class="col-lg-8 col-md-6 mb-3">

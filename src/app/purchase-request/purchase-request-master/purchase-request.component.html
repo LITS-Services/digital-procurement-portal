@@ -48,6 +48,12 @@
                   <img src="assets/img/svg-icons/Submit_icon.svg" class="btn-action-icon" alt="" />
                   <label class="btn-label">Submit for Approval</label>
                 </button>
+
+                <button *ngIf="chkBoxSelected?.length === 1" type="button" class="btn btn-sm cstm-ui-table-btn"
+                  (click)="downloadSelectedPdf()" title="Download Selected PR PDF">
+                  <img src="assets/img/svg-icons/pdf-icon.svg" class="btn-action-icon" alt="" />
+                  <label class="btn-label">Download PDF</label>
+                </button>
               </ng-container>
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="syncLoading" (click)="onSyncNow()">

@@ -25,13 +25,13 @@ export class PurchaseOrderService {
   }
 
   // Fetch all Purchase Orders
-  getAllPurchaseOrders(currentPage: number, pageSize: number, entityId: number, userId: string, status?: string): Observable<any> {
-    let params = new HttpParams()
-        if (currentPage) params = params.set("currentPage", currentPage);
-        if (pageSize) params = params.set("pageSize", pageSize);
-        if (entityId) params = params.set("entityId", entityId);
-        if (userId) params = params.set("userId", userId);
-        if (status) params = params.set("status", status);
+  getAllPurchaseOrders(currentPage: number, pageSize: number, entityId?: number | null, userId?: string | null, status?: string | null): Observable<any> {
+    let params = new HttpParams();
+    if (currentPage) params = params.set("currentPage", currentPage);
+    if (pageSize) params = params.set("pageSize", pageSize);
+    if (entityId != null && !isNaN(Number(entityId))) params = params.set("entityId", entityId);
+    if (userId) params = params.set("userId", userId);
+    if (status) params = params.set("status", status);
     return this.http.get<any>(
       `${this.baseUrl}/get-all-purchase-orders`, { params } 
     );
@@ -85,6 +85,14 @@ export class PurchaseOrderService {
     return this.http.get(`${this.baseUrl}/download-pdf/${invoiceId}`, { responseType: 'blob' });
   }
 
+  downloadPurchaseOrderPdf(id: number): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/download-po-pdf/${id}`, { responseType: 'blob' });
+  }
+
+  downloadGrnPdf(purchaseOrderId: number): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/download-grn-pdf/${purchaseOrderId}`, { responseType: 'blob' });
+  }
+
   createGoodsReceiptNote(data: any) {
     return this.http.post(`${this.baseUrl}/create-grn`, data);
   }
@@ -93,5 +101,9 @@ export class PurchaseOrderService {
     return this.http.get<AvgVendorRatingVM[]>(
       `${this.baseUrl}/avg-vendor-rating?vendorUserId=${vendorUserId}`
     );
+  }
+
+  triggerPoReminders(): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/trigger-po-reminders`, {});
   }
 }

@@ -151,4 +151,8 @@ export class RfqService {
   askAiVendorComparison(payload: { rfqId: number }) {
     return this.http.post<any>(`${this.baseUrl}/ai-vendorcomparison`, payload);
   }
+
+  downloadRfqPdf(id: number): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/download-pdf/${id}`, { responseType: 'blob' });
+  }
 }

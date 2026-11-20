@@ -20,6 +20,7 @@ import { PrInventoryManagementComponent } from '../pr-inventory-management/pr-in
 import { LayoutService } from 'app/shared/services/layout.service';
 import { ConfigService } from 'app/shared/services/config.service';
 import { DataSourceService } from 'app/shared/services/data-source.service';
+import { PdfExportService } from 'app/shared/services/pdf-export.service';
 
 @Component({
   selector: 'app-purchase-request',
@@ -91,7 +92,8 @@ export class PurchaseRequestComponent implements OnInit {
     private permissionService: PermissionService,
     private configService: ConfigService,
     private dataSourceService: DataSourceService,
-    public zone: NgZone
+    public zone: NgZone,
+    private pdfExportService: PdfExportService
 
   ) { }
 
@@ -266,6 +268,81 @@ export class PurchaseRequestComponent implements OnInit {
 
   openPr(row: any) {
     this.onView(row);
+  }
+
+  downloadSelectedPdf(): void {
+    if (!this.chkBoxSelected || this.chkBoxSelected.length !== 1) {
+      this.toastr.warning('Please select exactly one purchase request.');
+      return;
+    }
+    const row = this.chkBoxSelected[0];
+    const id = row.requestId || row.id;
+    const reqNo = row.requisitionNo || id;
+
+    this.purchaseRequestService.downloadPurchaseRequestPdf(id).subscribe({
+      next: (blob: Blob) => {
+        this.pdfExportService.downloadBlob(blob, `PR_${reqNo}.pdf`);
+      },
+      error: () => {
+        const subDate = row.submittedDate ? new Date(row.submittedDate).toLocaleDateString() : (row.date || row.createdDate || '-');
+        const statusText = row.requestStatus || 'Active';
+        const statusClass = String(statusText).toLowerCase().includes('approv')
+          ? 'status-approved'
+          : (String(statusText).toLowerCase().includes('reject')
+              ? 'status-rejected'
+              : (String(statusText).toLowerCase().includes('prog') || String(statusText).toLowerCase().includes('pend')
+                  ? 'status-inprogress'
+                  : 'status-draft'));
+
+        const html = `
+          <div class="header-bar">
+            <div>
+              <h1>Purchase Requisition</h1>
+              <div class="subtitle">${row.entityName || row.entity || 'Procurement Portal'}</div>
+            </div>
+            <div class="meta-box">
+              <div class="doc-number">PR #: ${reqNo}</div>
+              <div class="doc-date">Date: ${subDate}</div>
+              <div class="status-badge ${statusClass}">${statusText}</div>
+            </div>
+          </div>
+
+          ${row.subject ? `
+            <div class="purpose-banner">
+              <span class="purpose-label">Purpose / Subject:</span>
+              <span class="purpose-text">${row.subject}</span>
+            </div>
+          ` : ''}
+
+          <div class="info-cards info-cards-2">
+            <div class="info-card">
+              <div class="info-card-header">Requisition Overview</div>
+              <div class="info-card-body">
+                <div class="info-row"><span class="info-label">Entity</span><span class="info-value">${row.entityName || row.entity || '-'}</span></div>
+                <div class="info-row"><span class="info-label">Department</span><span class="info-value">${row.department || '-'}</span></div>
+                <div class="info-row"><span class="info-label">Requested By</span><span class="info-value">${row.createdBy || '-'}</span></div>
+                <div class="info-row"><span class="info-label">Requisition Date</span><span class="info-value">${subDate}</span></div>
+              </div>
+            </div>
+
+            <div class="info-card">
+              <div class="info-card-header">Delivery & Items Summary</div>
+              <div class="info-card-body">
+                <div class="info-row"><span class="info-label">Receiver</span><span class="info-value">${row.receiverName || '-'}</span></div>
+                <div class="info-row"><span class="info-label">Delivery Location</span><span class="info-value">${row.deliveryLocation || '-'}</span></div>
+                <div class="info-row"><span class="info-label">Line Items</span><span class="info-value">${row.totalItems || '1'} Items</span></div>
+                <div class="info-row"><span class="info-label">Status</span><span class="info-value">${statusText}</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; padding: 14px; text-align: center; color: #64748b; font-size: 11.5px; margin-top: 15px;">
+            Open the specific Purchase Request details view to see and download the full line-item specifications, pricing breakdown, and authorizations.
+          </div>
+        `;
+        this.pdfExportService.printFormattedDocument(`PR_${reqNo}`, html);
+      }
+    });
   }
 
   /**
