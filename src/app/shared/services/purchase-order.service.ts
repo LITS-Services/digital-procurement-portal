@@ -119,5 +119,4 @@ export class PurchaseOrderService {
   addRemarksWithActionTaken(payload: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/addRemarksWithActionTaken`, payload);
   }
-  }
 }
