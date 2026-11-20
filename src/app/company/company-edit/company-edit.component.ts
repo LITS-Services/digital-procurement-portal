@@ -829,6 +829,8 @@ export class CompanyEditComponent implements OnInit {
   navigateToSection(sectionName: string): void {
     const map: { [key: string]: string } = {
       'General Information': 'general-info',
+      'Officers': 'officers',
+      'Assigned Officers': 'officers',
       'Bank Details': 'bank-details',
       'Addresses': 'addresses',
       'Contact Details': 'company-contacts',
