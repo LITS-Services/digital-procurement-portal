@@ -54,6 +54,29 @@
         </div>
 
         <div *ngIf="selectedTab === 'po-details'">
+            <!-- Action Bar -->
+            <div class="card cstm-ui-card mb-3 py-2 px-3 d-flex justify-content-between align-items-center flex-row flex-wrap">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+                        <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
+                    </button>
+                    <span class="vl" style="position: static !important; display: inline-block !important; height: 22px !important; border-left: 1px solid #D7D7D7 !important; margin: 0 12px 0 8px !important; vertical-align: middle !important;"></span>
+                    <h5 class="mb-0 fw-bold heading">Purchase Order Details</h5>
+                </div>
+
+                <!-- Approver Action Buttons -->
+                <div class="d-flex align-items-center" *ngIf="isMainApprover && isStatusInProgress">
+                    <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="onAddRemarks('Approve')">
+                        <i class="ft-check text-success mr-1"></i>
+                        <label class="btn-label">Approve</label>
+                    </button>
+                    <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onAddRemarks('Reject')">
+                        <img src="assets/img/svg-icons/cancel-icon.svg" class="btn-action-icon" alt="" />
+                        <label class="btn-label">Reject</label>
+                    </button>
+                </div>
+            </div>
+
             <!-- Acknowledgment Status Alerts -->
             <div *ngIf="!poDetails?.isAcknowledged">
                 <!-- Overdue Alert -->
@@ -92,6 +115,9 @@
                     <button class="btn btn-outline-warning btn-sm text-nowrap d-inline-flex align-items-center gap-1 text-dark" (click)="startCommunication()">
                         <i class="ft-message-square"></i>
                         <span>Contact Vendor</span>
+                    </button>
+                </div>
+            </div>
                     </button>
                 </div>
             </div>

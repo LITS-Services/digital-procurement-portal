@@ -10,6 +10,9 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs/operators';
 import { PdfExportService } from 'app/shared/services/pdf-export.service';
+import { PoApprovalHistoryComponent } from '../po-approval-history/po-approval-history.component';
+import { PoRemarksComponent } from '../po-remarks/po-remarks.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-purchase-order-list',
@@ -65,6 +68,10 @@ export class PurchaseOrderListComponent implements OnInit {
     return window.innerWidth <= 1400;
   }
 
+  get currentUserId(): string {
+    return (localStorage.getItem('userId') || '').trim();
+  }
+
   ngOnInit(): void {
     this.loadStatus();
     this.loadPurchaseOrders();
@@ -74,11 +81,15 @@ export class PurchaseOrderListComponent implements OnInit {
   loadPurchaseOrders() {
     const userId = localStorage.getItem('userId');
     const lsEntity = localStorage.getItem('selectedCompanyId');
-    const entityId = (!lsEntity || lsEntity === 'All' || isNaN(Number(lsEntity))) ? null : Number(lsEntity);
+    let entityId: number | null = null;
+    if (lsEntity && lsEntity !== 'All') {
+      const parsed = Number(lsEntity);
+      entityId = Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+    }
     
     this.loading = true;
     this.spinner.show();
-    this.purchaseOrderService.getAllPurchaseOrders(this.currentPage, this.pageSize, entityId, userId, this.selectedStatus)
+    this.purchaseOrderService.getAllPurchaseOrders(this.currentPage, this.pageSize, entityId as any, userId, this.selectedStatus)
       .pipe(
         finalize(() => {
           this.loading = false;
@@ -167,16 +178,195 @@ export class PurchaseOrderListComponent implements OnInit {
     this.isOpenButtonDisabled = selectedCount === 0;
 
     // Check "Select All" toggle
-    this.isAllSelected = this.purchaseOrderData.length === this.chkBoxSelected.length;
+    this.isAllSelected = this.purchaseOrderData.length > 0 && this.purchaseOrderData.length === this.chkBoxSelected.length;
+  }
+
+  isSubmitter(row: any): boolean {
+    if (!row) return false;
+    const currentUserId = (localStorage.getItem('userId') || '').trim().toLowerCase();
+    const submitterId = (row.submitterId || '').toString().trim().toLowerCase();
+    if (!submitterId) return false;
+
+    // Check if the current user is the submitter of that PO, or if main approver is the submitter
+    const isUserSubmitter = !!currentUserId && currentUserId === submitterId;
+    const isApproverSubmitter = !!row.mainApproverId && row.mainApproverId.toString().trim().toLowerCase() === submitterId;
+
+    return isUserSubmitter || isApproverSubmitter;
+  }
+
+  canShowSubmitForApproval(): boolean {
+    if (!this.chkBoxSelected || this.chkBoxSelected.length !== 1) {
+      return false;
+    }
+    const row = this.chkBoxSelected[0];
+    const status = (row?.requestStatus || row?.status || '')
+      .toString()
+      .trim()
+      .toLowerCase();
+    return status === 'new' && this.isSubmitter(row);
+  }
+
+  canSubmitForApproval(): boolean {
+    return this.canShowSubmitForApproval();
+  }
+
+  getSubmitButtonTooltip(): string {
+    if (!this.chkBoxSelected || this.chkBoxSelected.length === 0) {
+      return 'Select a Purchase Order to submit for approval';
+    }
+    if (this.chkBoxSelected.length > 1) {
+      return 'Only one Purchase Order can be sent for approval at once';
+    }
+    const row = this.chkBoxSelected[0];
+    const status = (row?.requestStatus || row?.status || '')
+      .toString()
+      .trim()
+      .toLowerCase();
+    if (status !== 'new') {
+      return 'Only Purchase Orders in "New" status can be submitted for approval';
+    }
+    if (!this.isSubmitter(row)) {
+      return 'Only the submitter of the Purchase Order can submit it for approval';
+    }
+    return 'Submit selected Purchase Order for approval';
+  }
+
+  onSubmitForApproval(): void {
+    if (!this.canSubmitForApproval()) {
+      if (this.chkBoxSelected.length > 1) {
+        this.toastr.warning('Only one Purchase Order can be sent for approval at once.');
+      } else {
+        this.toastr.warning('Please select a Purchase Order in "New" status that you submitted.');
+      }
+      return;
+    }
+
+    const row = this.chkBoxSelected[0];
+
+    Swal.fire({
+      title: 'Submit for Approval?',
+      text: `Are you sure you want to submit Purchase Order "${row.purchaseOrderNo}" for approval?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, submit it',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+
+      this.spinner.show();
+      this.purchaseOrderService.submitForApproval(row.id).subscribe({
+        next: (res: any) => {
+          this.spinner.hide();
+          this.toastr.success(res?.message || 'Purchase Order submitted for approval successfully.');
+          this.chkBoxSelected = [];
+          this.enableDisableButtons();
+          this.loadPurchaseOrders();
+        },
+        error: (err: any) => {
+          this.spinner.hide();
+          const errorMsg =
+            err?.error?.message ||
+            (Array.isArray(err?.error?.errors) && err.error.errors[0]) ||
+            err?.statusText ||
+            'Failed to submit Purchase Order for approval.';
+          this.toastr.error(errorMsg);
+        }
+      });
+    });
+  }
+
+  openApprovalHistoryModal(row: any): void {
+    const modalRef = this.modalService.open(PoApprovalHistoryComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      centered: true
+    });
+    modalRef.componentInstance.purchaseOrderId = row.id;
+    modalRef.componentInstance.purchaseOrderNo = row.purchaseOrderNo;
+  }
+
+  isMainApprover(row: any): boolean {
+    if (!row) return false;
+    const userId = this.currentUserId.toLowerCase();
+    const approverId = (row.mainApproverId || '').toString().trim().toLowerCase();
+    return !!userId && !!approverId && userId === approverId;
+  }
+
+  isStatusInProgress(row: any): boolean {
+    if (!row) return false;
+    const s = (row.requestStatus || row.status || '').toString().toLowerCase().replace(/[\s_-]/g, '');
+    return s === 'inprogress';
+  }
+
+  canTakeApproverAction(row: any): boolean {
+    return this.isMainApprover(row) && this.isStatusInProgress(row);
+  }
+
+  canTakeApproverActionOnSelected(): boolean {
+    if (!this.chkBoxSelected || this.chkBoxSelected.length !== 1) {
+      return false;
+    }
+    return this.canTakeApproverAction(this.chkBoxSelected[0]);
+  }
+
+  onApproverAction(action: 'Approve' | 'Reject', row?: any): void {
+    const targetRow = row || (this.chkBoxSelected && this.chkBoxSelected.length === 1 ? this.chkBoxSelected[0] : null);
+    if (!targetRow) {
+      this.toastr.warning('Please select a Purchase Order to take action.');
+      return;
+    }
+
+    const modalRef = this.modalService.open(PoRemarksComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      centered: true
+    });
+    modalRef.componentInstance.action = action;
+    modalRef.componentInstance.purchaseOrderNo = targetRow.purchaseOrderNo;
+
+    modalRef.result.then((result) => {
+      if (result) {
+        const payload = {
+          PurchaseOrderId: targetRow.id,
+          PurchaseOrderNo: targetRow.purchaseOrderNo,
+          Remarks: result.remarks || '',
+          ActionTaken: action,
+          ApproverId: localStorage.getItem('userId')
+        };
+
+        this.spinner.show();
+        this.purchaseOrderService.addRemarksWithActionTaken(payload)
+          .pipe(finalize(() => this.spinner.hide()))
+          .subscribe({
+            next: (res: any) => {
+              this.toastr.success(res?.message || `Purchase Order ${action}d successfully.`);
+              this.chkBoxSelected = [];
+              this.enableDisableButtons();
+              this.loadPurchaseOrders();
+            },
+            error: (err: any) => {
+              const errorMsg =
+                err?.error?.message ||
+                (Array.isArray(err?.error?.errors) && err.error.errors[0]) ||
+                err?.statusText ||
+                `Failed to ${action.toLowerCase()} Purchase Order.`;
+              this.toastr.error(errorMsg);
+            }
+          });
+      }
+    }).catch(() => {});
   }
 
   onActivate(event: any) {
     if (event.type === 'click') {
       if(!this.permissionService.can(FORM_IDS.PURCHASE_ORDER, 'read'))
         return;
-      const poId = event.row.id;
-      this.router.navigate(['/purchase-order/details'], { queryParams: { id: poId }, skipLocationChange: true });
-
+      const poId = event.row?.id;
+      if (poId) {
+        this.router.navigate(['/purchase-order/details'], { queryParams: { id: poId }, skipLocationChange: true });
+      }
     }
   }
 
@@ -186,7 +376,6 @@ export class PurchaseOrderListComponent implements OnInit {
     const id = row?.id;
     if (id) {
       this.router.navigate(['/purchase-order/details'], { queryParams: { id: id }, skipLocationChange: true });
-
     }
   }
 

@@ -14,27 +14,38 @@
       <div class="card cstm-ui-card">
         <div>
           <div class="d-flex justify-content-between align-items-center cstm-action-bar">
-            <div>
+            <div class="d-flex align-items-center">
               <button class="btn btn-lg mr-1 " type="button" (click)="homePage()">
                 <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" /></button>
-              <span class="vl"></span>
-              <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn"
-                                ngbTooltip="Create new Global Configuration" (click)="openEmpDetails()">
-                                <i class="ft-plus"></i><label class="ml-1 mt-1">Create</label>
-                            </button>
-                            <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="onUpdate()">
-                                <i class="ft-edit"></i><label class="ml-1 mt-1">Update</label>
-                            </button> -->
+              <span class="vl" style="position: static !important; display: inline-block !important; height: 22px !important; border-left: 1px solid #D7D7D7 !important; margin: 0 12px 0 8px !important; vertical-align: middle !important;"></span>
 
-              <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openDeleteModal()"
-                                [disabled]="isDeleteButtonDisabled">
-                                <i class="ft-trash"></i><label class="ml-1 mt-1">Delete</label>
-                            </button> -->
+              <!-- Submit for Approval Button (Shown only when selected PO's submitter matches logged-in user / main approver is submitter) -->
+              <ng-container *ngIf="canShowSubmitForApproval()">
+                <button type="button" class="btn btn-sm cstm-ui-table-btn"
+                  [disabled]="!canSubmitForApproval()"
+                  (click)="onSubmitForApproval()"
+                  [ngbTooltip]="getSubmitButtonTooltip()">
+                  <img src="assets/img/svg-icons/Submit_icon.svg" class="btn-action-icon" alt="Submit for Approval" />
+                  <label class="btn-label">Submit for Approval</label>
+                </button>
+              </ng-container>
 
-              <!-- <button type="button" class="btn btn-sm cstm-ui-table-btn" [disabled]="isEditButtonDisabled"
-                                (click)="onView()">
-                                <i class="ft-eye"></i><label class="ml-1 mt-1">View</label>
-                            </button> -->
+              <!-- Approver Action Buttons (When selected PO awaits current user's approval) -->
+              <ng-container *ngIf="canTakeApproverActionOnSelected()">
+                <button type="button" class="btn btn-sm cstm-ui-table-btn"
+                  (click)="onApproverAction('Approve')"
+                  ngbTooltip="Approve selected Purchase Order">
+                  <i class="ft-check text-success mr-1"></i>
+                  <label class="btn-label">Approve</label>
+                </button>
+
+                <button type="button" class="btn btn-sm cstm-ui-table-btn"
+                  (click)="onApproverAction('Reject')"
+                  ngbTooltip="Reject selected Purchase Order">
+                  <img src="assets/img/svg-icons/cancel-icon.svg" class="btn-action-icon" alt="Reject" />
+                  <label class="btn-label">Reject</label>
+                </button>
+              </ng-container>
             </div>
 
             <div class="d-flex align-items-center me-2">
@@ -84,25 +95,33 @@
         [rows]="purchaseOrderData" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [columns]="columns"
         [rowHeight]="'auto'" [limit]="pageSize" [count]="totalItems" [externalPaging]="true" [offset]="currentPage - 1"
         (page)="onPageChange($event)" [scrollbarH]="isMobile" [loadingIndicator]="loading" [selected]="chkBoxSelected"
+        [selectionType]="SelectionType.checkbox" (select)="customChkboxOnSelect($event)"
         [swapColumns]="false" (sort)="onSort($event)">
-        <!-- <ngx-datatable-column [width]="50" [sortable]="false" [canAutoResize]="false" [draggable]="false"
-                    [resizeable]="false">
-                    <ng-template ngx-datatable-header-template>
-                        <div class="custom-control cstm-checkbox-form">
-                            <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
-                        </div>
-                    </ng-template>
-                    <ng-template ngx-datatable-cell-template let-value="value" let-isSelected="isSelected"
-                        let-onCheckboxChangeFn="onCheckboxChangeFn">
 
-                        <div class="custom-control cstm-checkbox-form custom-checkbox">
-                            <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
-                        </div>
-                    </ng-template>
-                </ngx-datatable-column> -->
+        <!-- Checkbox / Selection Column -->
+        <ngx-datatable-column
+          [width]="50"
+          [sortable]="false"
+          [canAutoResize]="false"
+          [draggable]="false"
+          [resizeable]="false"
+          cellClass="datatable-checkbox-cell"
+          headerClass="datatable-checkbox-cell">
+          <ng-template ngx-datatable-header-template>
+            <div class="custom-control cstm-checkbox-form">
+              <input type="checkbox" [checked]="isAllSelected" (change)="toggleSelectAll($event)" />
+            </div>
+          </ng-template>
+          <ng-template ngx-datatable-cell-template let-row="row" let-isSelected="isSelected"
+            let-onCheckboxChangeFn="onCheckboxChangeFn">
+            <div class="custom-control cstm-checkbox-form custom-checkbox">
+              <input type="checkbox" [checked]="isSelected" (change)="onCheckboxChangeFn($event)" />
+            </div>
+          </ng-template>
+        </ngx-datatable-column>
 
         <!-- Sr. No -->
-        <ngx-datatable-column name="Sr. No." [width]="90" [minWidth]="90" [canAutoResize]="false" [resizeable]="false" [sortable]="false">
+        <ngx-datatable-column name="Sr. No." [width]="80" [minWidth]="80" [canAutoResize]="false" [resizeable]="false" [sortable]="false">
           <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
             <span>{{ rowIndex + 1 }}</span>
           </ng-template>
@@ -167,6 +186,15 @@
           <ng-template let-row="row" ngx-datatable-cell-template>
             <button class="btn btn-sm btn-link p-0 text-dark" (click)="downloadPoPdf(row)" title="Download PO PDF">
               <img src="assets/img/svg-icons/pdf-icon.svg" class="btn-action-icon" alt="PDF" style="width: 16px; height: 16px;" />
+            </button>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Action Column with Icon to View Approval History -->
+        <ngx-datatable-column name="Action" [sortable]="false" [width]="80" [minWidth]="80" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <button type="button" class="btn btn-sm table-action-btn" (click)="openApprovalHistoryModal(row)" ngbTooltip="Approval History">
+              <i class="ft-list"></i>
             </button>
           </ng-template>
         </ngx-datatable-column>

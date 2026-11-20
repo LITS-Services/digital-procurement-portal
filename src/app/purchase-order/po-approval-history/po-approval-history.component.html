@@ -1,0 +1,54 @@
+<div class="modal-header d-flex align-items-center justify-content-between">
+    <h5 class="modal-title text-white font-weight-bold mb-0 d-flex align-items-center">
+        <i class="ft-clock mr-2 text-white"></i> Approval History - {{ purchaseOrderNo }}
+    </h5>
+    <button type="button" class="modal-close-btn" aria-label="Close" (click)="closeDialog()">
+        <i class="ft-x"></i>
+    </button>
+</div>
+
+<div class="modal-body">
+    <ngx-datatable class="bootstrap core-bootstrap" [rows]="approvalHistory" [columnMode]="'force'" [headerHeight]="50"
+        [footerHeight]="40" [rowHeight]="50" [limit]="5">
+
+        <ngx-datatable-column name="Approver" prop="approverName">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.approverName || row.approverId || '-' }}
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Status" prop="status">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                <span class="badge" [ngClass]="{
+                    'badge-success': row.status === 'Approve' || row.status === 'Open',
+                    'badge-danger': row.status === 'Rejected',
+                    'badge-info': row.status === 'InProgress'
+                }">
+                    {{ row.status || '-' }}
+                </span>
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Remarks" prop="remarks">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.remarks || '-' }}
+            </ng-template>
+        </ngx-datatable-column>
+
+        <ngx-datatable-column name="Approval Date" prop="createdDate">
+            <ng-template let-row="row" ngx-datatable-cell-template>
+                {{ row.createdDate | date:'yyyy-MM-dd HH:mm' }}
+            </ng-template>
+        </ngx-datatable-column>
+    </ngx-datatable>
+
+    <div *ngIf="!loading && (!approvalHistory || approvalHistory.length === 0)" class="text-center text-muted my-3">
+        No approval history found.
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="modal-btn-cancel" (click)="closeDialog()">
+        <i class="ft-x mr-1"></i> Close
+    </button>
+</div>
