@@ -68,6 +68,14 @@ export class LookupService {
     return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=status`);
   }
 
+  getPaymentMethods() {
+    return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=payment-methods`);
+  }
+
+  getPaymentTerms() {
+    return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=payment-terms`);
+  }
+
   getProcCompaniesByProcUserId(userId: string) {
     const url = `${this.baseUrl}/dropdowns`;
     const params = {

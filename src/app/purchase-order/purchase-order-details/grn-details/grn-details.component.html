@@ -1,56 +1,267 @@
-@if (poDetails?.shipmentDetailNo) {
-<div class="card cstm-ui-card mb-4" [formGroup]="form">
-  <div class="card-body">
+<div class="grn-container">
 
-    <!-- Header Row -->
-    <div class="d-flex justify-content-end align-items-center mb-3 gap-2">
-      <button
-        type="button"
-        class="btn btn-outline-secondary btn-sm"
-        (click)="downloadGrnPdf()"
-        [disabled]="!form.get('grNumber')?.value"
-        ngbTooltip="Download GRN PDF">
-        <img src="assets/img/svg-icons/pdf-icon.svg" class="btn-action-icon me-1" alt="" style="width: 16px; height: 16px;" /> Download GRN PDF
-      </button>
+  <!-- ==================== 1. LIST VIEW ==================== -->
+  <div *ngIf="viewMode === 'list'">
 
-      <button
-        class="btn btn-primary"
-        (click)="save()"
-        [disabled]="isGrnSubmitted"
-      >
-        {{ isGrnSubmitted ? 'GRN Submitted' : 'Submit GRN' }}
-      </button>
+    <!-- Action Bar -->
+    <div class="card cstm-ui-card po-action-bar mb-3 py-2 px-3 d-flex justify-content-between align-items-center flex-row flex-wrap">
+      <div class="d-flex align-items-center">
+        <button class="btn btn-lg mr-1" type="button" (click)="goBackToPoList()">
+          <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
+        </button>
+        <span class="vl"></span>
+
+        <ng-container *ngIf="isLocalMode">
+          <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="openAddGrn()">
+            <img src="assets/img/svg-icons/create-icon.svg" class="btn-action-icon" alt="" />
+            <label class="btn-label">Add GRN</label>
+          </button>
+        </ng-container>
+      </div>
     </div>
 
-    <div class="row mb-3">
-        <div class="col-md-4 mb-3">
-        <label class="form-label small">GRN No</label>
-        <input class="form-control form-control-sm" formControlName="grNumber" disabled>
+    <!-- Filter Bar -->
+    <div *ngIf="showFilterBar" class="filter-bar">
+      <div class="d-flex align-items-center justify-content-between pl-3 pr-1 py-2 filter-wrapper">
+        <div class="filter-search"></div>
+        <div class="d-flex filter-btns-div">
+          <button class="btn px-1 btn-sm" (click)="showFilterBar = false">✕</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRN Datatable -->
+    <div class="pr-table-wrapper" appDatatableAutoResize [datatable]="datatable">
+      <ngx-datatable #datatable class="bootstrap core-bootstrap"
+        [rows]="grnList"
+        [columnMode]="'force'"
+        [headerHeight]="50"
+        [footerHeight]="50"
+        [rowHeight]="'auto'"
+        [limit]="pageSize"
+        [count]="totalItems"
+        [externalPaging]="false"
+        [offset]="0"
+        [scrollbarH]="isMobile"
+        [loadingIndicator]="loading"
+        [swapColumns]="false">
+
+        <!-- Sr. No -->
+        <ngx-datatable-column name="Sr. No." [width]="80" [minWidth]="80" [canAutoResize]="false" [resizeable]="false" [sortable]="false">
+          <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
+            <span>{{ rowIndex + 1 }}</span>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- GRN No -->
+        <ngx-datatable-column name="GRN No." prop="grNumber" [flexGrow]="1" [minWidth]="120" [sortable]="false">
+          <ng-template ngx-datatable-cell-template let-row="row">
+            <a href="javascript:void(0)" class="table-link" (click)="viewGrn(row)">
+              {{ row.grNumber || '-' }}
+            </a>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Status -->
+        <ngx-datatable-column name="Status" prop="requestStatus" [sortable]="false" [flexGrow]="1" [minWidth]="120">
+          <ng-template ngx-datatable-cell-template let-row="row">
+            <span [ngClass]="'chip ' + mapStatusKey(row.requestStatus)">
+              {{ row.requestStatus || 'Delivered' }}
+            </span>
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- PO No -->
+        <ngx-datatable-column name="PO No." prop="purchaseOrderNo" [sortable]="false" [flexGrow]="1" [minWidth]="120">
+        </ngx-datatable-column>
+
+        <!-- Vendor No -->
+        <ngx-datatable-column name="Vendor No." prop="vendorNo" [sortable]="false" [flexGrow]="1" [minWidth]="100">
+        </ngx-datatable-column>
+
+        <!-- Vendor -->
+        <ngx-datatable-column name="Vendor" prop="vendorName" [sortable]="false" [flexGrow]="2" [minWidth]="140">
+        </ngx-datatable-column>
+
+        <!-- Receiver -->
+        <ngx-datatable-column name="Receiver" prop="receiverName" [sortable]="false" [flexGrow]="1" [minWidth]="120">
+        </ngx-datatable-column>
+
+        <!-- Posting Date -->
+        <ngx-datatable-column name="Posting Date" prop="postingDate" [sortable]="false" [flexGrow]="1" [minWidth]="115">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            {{ row.postingDate | date:'yyyy-MM-dd' }}
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Total Items -->
+        <ngx-datatable-column name="Total Items" [sortable]="false" [flexGrow]="1" [minWidth]="100">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            {{ row.totalItemsCount || row.goodsReceiptItems?.length || 0 }}
+          </ng-template>
+        </ngx-datatable-column>
+
+        <!-- Action -->
+        <ngx-datatable-column name="Action" [sortable]="false" [width]="80" [minWidth]="80" [canAutoResize]="false" [draggable]="false" [resizeable]="false">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <button type="button" class="btn btn-sm table-action-btn" (click)="viewGrn(row)" ngbTooltip="View Details">
+              <i class="ft-list"></i>
+            </button>
+          </ng-template>
+        </ngx-datatable-column>
+
+      </ngx-datatable>
+    </div>
+
+  </div>
+
+
+  <!-- ==================== 2. ADD GRN VIEW ==================== -->
+  <div *ngIf="viewMode === 'add'" [formGroup]="form">
+
+    <!-- Action Bar -->
+    <div class="card cstm-ui-card po-action-bar mb-3 py-2 px-3 d-flex justify-content-between align-items-center flex-row flex-wrap">
+      <div class="d-flex align-items-center">
+        <button class="btn btn-lg mr-1" type="button" (click)="backToList()">
+          <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
+        </button>
+        <span class="vl"></span>
+        <h5 class="mb-0 fw-bold heading">Add Goods Receipt Note</h5>
       </div>
 
-      <div class="col-md-4 mb-3">
-        <label class="form-label small">PO No</label>
-        <input class="form-control form-control-sm" formControlName="purchaseOrderNo" disabled>
+      <div class="d-flex align-items-center">
+        <button type="button" class="btn btn-sm cstm-ui-table-btn mr-2" (click)="backToList()">
+          <img src="assets/img/svg-icons/cancel-icon.svg" class="btn-action-icon" alt="" />
+          <label class="btn-label">Cancel</label>
+        </button>
+        <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="save()" [disabled]="saving">
+          <img src="assets/img/svg-icons/Submit_icon.svg" class="btn-action-icon" alt="" />
+          <label class="btn-label">Submit GRN</label>
+        </button>
       </div>
+    </div>
 
-      <div class="col-md-4 mb-3">
-        <label class="form-label small">Vendor Name</label>
-        <input class="form-control form-control-sm" formControlName="vendorName" disabled>
-      </div>
+    <!-- Header Info Card -->
+    <div class="card cstm-ui-card mb-4">
+      <div class="card-body">
+        <div class="row">
 
-      <div class="col-md-4 mb-3">
-        <label class="form-label small">Receiver Name</label>
-        <input class="form-control form-control-sm" formControlName="receiverName" disabled>
-      </div>
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>GRN No</label>
+            <input class="form-control custom-input" formControlName="grNumber" disabled>
+          </div>
 
-      <div class="col-md-4 mb-3">
-        <label class="form-label small">Status</label>
-        <input class="form-control form-control-sm" formControlName="requestStatus" disabled>
-      </div>
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>PO Number</label>
+            <input class="form-control custom-input" formControlName="purchaseOrderNo" disabled>
+          </div>
 
-      <div class="col-md-8 mb-3">
-        <label class="form-label small">Remarks</label>
-        <textarea class="form-control form-control-sm" rows="2" formControlName="remarks"></textarea>
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Vendor No</label>
+            <input class="form-control custom-input" formControlName="vendorNo" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Vendor</label>
+            <input class="form-control custom-input" formControlName="vendorName" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Receiver Name</label>
+            <input class="form-control custom-input" formControlName="receiverName" placeholder="Receiver Name">
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Posting Date <span class="text-danger">*</span></label>
+            <input type="date" class="form-control custom-input" formControlName="postingDate">
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Document Date <span class="text-danger">*</span></label>
+            <input type="date" class="form-control custom-input" formControlName="documentDate">
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Due Date</label>
+            <input type="date" class="form-control custom-input" formControlName="dueDate">
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Order Date</label>
+            <input type="date" class="form-control custom-input" formControlName="orderDate">
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Vendor Currency</label>
+            <input class="form-control custom-input" formControlName="vendorCurrency" placeholder="SAR">
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Payment Method</label>
+            <select class="form-control custom-input" formControlName="paymentMethod">
+              <option value="">Select Payment Method</option>
+              <option *ngFor="let pm of paymentMethods" [value]="pm.stringId || pm.code || pm.description">
+                {{ pm.description || pm.code || pm.stringId }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Payment Terms</label>
+            <select class="form-control custom-input" formControlName="paymentTerms">
+              <option value="">Select Payment Terms</option>
+              <option *ngFor="let pt of paymentTerms" [value]="pt.stringId || pt.code || pt.description">
+                {{ pt.description || pt.code || pt.stringId }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Location Code</label>
+            <input class="form-control custom-input" formControlName="locationCode" placeholder="Location Code">
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Ship-To Name</label>
+            <input class="form-control custom-input" formControlName="shipToName" placeholder="Ship-To Name">
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>City</label>
+            <input class="form-control custom-input" formControlName="city" placeholder="City">
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Post Code</label>
+            <input class="form-control custom-input" formControlName="shipToPostCode" placeholder="Post Code">
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Country</label>
+            <input class="form-control custom-input" formControlName="shipToCountry" placeholder="Country">
+          </div>
+
+          <div class="col-12 mb-3">
+            <label>Address</label>
+            <textarea rows="2" class="form-control custom-input" formControlName="address" placeholder="Address"></textarea>
+          </div>
+
+          <div class="col-12 mb-3">
+            <label>Address 2</label>
+            <textarea rows="2" class="form-control custom-input" formControlName="address2" placeholder="Address line 2"></textarea>
+          </div>
+
+          <div class="col-12 mb-3">
+            <label>Pay-To Address</label>
+            <textarea rows="2" class="form-control custom-input" formControlName="payToAddress" placeholder="Pay-To Address"></textarea>
+          </div>
+
+          <div class="col-12 mb-3">
+            <label>Remarks</label>
+            <textarea rows="2" class="form-control custom-input" formControlName="remarks" placeholder="Enter remarks..."></textarea>
+          </div>
+
+        </div>
       </div>
     </div>
 
@@ -68,30 +279,48 @@
               <thead>
                 <tr>
                   <th>Item</th>
-                  <th class="text-center">Ordered Qty</th>
-                  <th class="text-center">Received Qty</th>
-                  <th class="text-center">Received Date</th>
+                  <th>Description</th>
+                  <th class="text-end">Ordered Qty</th>
+                  <th class="text-end">Unit Cost</th>
+                  <th class="text-center" style="width: 140px;">Received Qty <span class="text-danger">*</span></th>
+                  <th class="text-end">Amount</th>
+                  <th class="text-center" style="width: 145px;">Received Date <span class="text-danger">*</span></th>
+                  <th class="text-center" style="width: 140px;">Planned Date</th>
+                  <th class="text-center" style="width: 140px;">Expected Date</th>
+                  <th style="width: 120px;">Location</th>
                   <th>Remarks</th>
                 </tr>
               </thead>
               <tbody formArrayName="items">
-                <tr *ngFor="let item of itemsForm.controls; let i = index" [formGroupName]="i">
+                <tr *ngFor="let item of itemsControls; let i = index" [formGroupName]="i">
                   <td>{{ item.get('itemName')?.value }}</td>
-                  <td class="text-center">{{ item.get('orderedQty')?.value }}</td>
-                  <td class="text-center">{{ item.get('receivedQuantity')?.value }}</td>
-                  <!-- <td class="text-center">
-                    <input type="date" class="form-control form-control-sm" formControlName="receivedDate">
-                    <span class="required-star">*</span>
-                  </td> -->
+                  <td>{{ item.get('itemDesc')?.value || '-' }}</td>
+                  <td class="text-end">{{ item.get('orderedQty')?.value }}</td>
+                  <td class="text-end">{{ item.get('unitCostExclVat')?.value | number:'1.2-2' }}</td>
                   <td class="text-center">
-  <div class="d-flex justify-content-center gap-1">
-    <input type="date" class="form-control form-control-sm" formControlName="receivedDate">
-    <span class="required-star">*</span>
-  </div>
-</td>
-
+                    <input type="number" min="0"
+                      class="form-control custom-input text-center py-1"
+                      style="height: 36px;"
+                      formControlName="receivedQuantity"
+                      (input)="onQuantityChange(i)">
+                  </td>
+                  <td class="text-end fw-semibold">
+                    {{ item.get('totalAmount')?.value | number:'1.2-2' }}
+                  </td>
+                  <td class="text-center">
+                    <input type="date" class="form-control custom-input py-1" style="height: 36px;" formControlName="receivedDate">
+                  </td>
+                  <td class="text-center">
+                    <input type="date" class="form-control custom-input py-1" style="height: 36px;" formControlName="plannedReceiptDate">
+                  </td>
+                  <td class="text-center">
+                    <input type="date" class="form-control custom-input py-1" style="height: 36px;" formControlName="expectedReceiptDate">
+                  </td>
                   <td>
-                    <input type="text" class="form-control form-control-sm" formControlName="remarks">
+                    <input type="text" class="form-control custom-input py-1" style="height: 36px;" formControlName="locationCode" placeholder="Loc">
+                  </td>
+                  <td>
+                    <input type="text" class="form-control custom-input py-1" style="height: 36px;" formControlName="remarks" placeholder="Remarks">
                   </td>
                 </tr>
               </tbody>
@@ -99,64 +328,226 @@
           </div>
         </div>
       </div>
-    </div>
 
-  </div>
-</div>
-} 
-
-@else {
-  <div class="empty-state">
-        <i class="fa fa-box-open empty-icon"></i>
-        <h5 class="empty-message">Shipment Details aren't received yet, Unable to Submit GRN</h5>
-        <p class="empty-submessage">Please check back later or contact the responsible team.</p>
-    </div>
-}
-
-<!-- Vendor Rating Modal -->
-<div class="rating-backdrop" *ngIf="showRatingModal">
-  <div class="rating-modal">
-
-    <h4 class="rating-title">What is your rating?</h4>
-
-    <p class="rating-subtitle">
-      How was your experience with
-      <strong>{{ vendorName }}</strong>
-      for Purchase Order
-      <strong>#{{ purchaseOrderNo }}</strong>?
-    </p>
-
-    <!-- Stars -->
-    <div class="stars-wrapper">
-      <div class="star-container" *ngFor="let star of stars; let i = index" (mousemove)="hoverStar($event, i)"
-        (mouseleave)="clearHover()" (click)="selectRating(i)">
-        <span class="rating-value" *ngIf="hoverIndex === i">
-          {{ hoverRating | number:'1.1-1' }}
-        </span>
-
-          <i class="fa star-icon" [ngClass]="getStarFill(i)"></i>
-
-
+      <div class="d-flex justify-content-end fw-bold mt-3">
+        <h5>Total: {{ calculateTotal() | number:'1.2-2' }}</h5>
       </div>
     </div>
 
+  </div>
+
+
+  <!-- ==================== 3. DETAIL VIEW ==================== -->
+  <div *ngIf="viewMode === 'detail'">
+
+    <!-- Action Bar -->
+    <div class="card cstm-ui-card po-action-bar mb-3 py-2 px-3 d-flex justify-content-between align-items-center flex-row flex-wrap">
+      <div class="d-flex align-items-center">
+        <button class="btn btn-lg mr-1" type="button" (click)="backToList()">
+          <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
+        </button>
+        <span class="vl"></span>
+        <h5 class="mb-0 fw-bold heading">Goods Receipt Note Details</h5>
+      </div>
+    </div>
+
+    <!-- Header Info Card -->
+    <div class="card cstm-ui-card mb-4">
+      <div class="card-body">
+        <div class="row">
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>GRN Number</label>
+            <input class="form-control custom-input" [value]="selectedGrn?.grNumber || '-'" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>PO Number</label>
+            <input class="form-control custom-input" [value]="selectedGrn?.purchaseOrderNo || '-'" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Vendor No</label>
+            <input class="form-control custom-input" [value]="selectedGrn?.vendorNo || '-'" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Vendor</label>
+            <input class="form-control custom-input" [value]="selectedGrn?.vendorName || '-'" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Receiver Name</label>
+            <input class="form-control custom-input" [value]="selectedGrn?.receiverName || '-'" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Status</label>
+            <input class="form-control custom-input" [value]="selectedGrn?.requestStatus || 'Delivered'" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Posting Date</label>
+            <input class="form-control custom-input" [value]="(selectedGrn?.postingDate | date:'yyyy-MM-dd') || '-'" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Document Date</label>
+            <input class="form-control custom-input" [value]="(selectedGrn?.documentDate | date:'yyyy-MM-dd') || '-'" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Due Date</label>
+            <input class="form-control custom-input" [value]="(selectedGrn?.dueDate | date:'yyyy-MM-dd') || '-'" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Order Date</label>
+            <input class="form-control custom-input" [value]="(selectedGrn?.orderDate | date:'yyyy-MM-dd') || '-'" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Vendor Currency</label>
+            <input class="form-control custom-input" [value]="selectedGrn?.vendorCurrency || 'SAR'" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Payment Method</label>
+            <input class="form-control custom-input" [value]="selectedGrn?.paymentMethod || '-'" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Payment Terms</label>
+            <input class="form-control custom-input" [value]="selectedGrn?.paymentTerms || '-'" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Location Code</label>
+            <input class="form-control custom-input" [value]="selectedGrn?.locationCode || '-'" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Ship-To Name</label>
+            <input class="form-control custom-input" [value]="selectedGrn?.shipToName || '-'" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>City</label>
+            <input class="form-control custom-input" [value]="selectedGrn?.city || selectedGrn?.shipToCity || '-'" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Post Code</label>
+            <input class="form-control custom-input" [value]="selectedGrn?.shipToPostCode || '-'" disabled>
+          </div>
+
+          <div class="col-lg-4 col-md-6 mb-3">
+            <label>Country</label>
+            <input class="form-control custom-input" [value]="selectedGrn?.shipToCountry || '-'" disabled>
+          </div>
+
+          <div class="col-12 mb-3">
+            <label>Address</label>
+            <textarea rows="2" class="form-control custom-input" [value]="selectedGrn?.address || selectedGrn?.shipToAddress || '-'" disabled></textarea>
+          </div>
+
+          <div class="col-12 mb-3" *ngIf="selectedGrn?.address2 || selectedGrn?.shipToAddress2">
+            <label>Address 2</label>
+            <textarea rows="2" class="form-control custom-input" [value]="selectedGrn?.address2 || selectedGrn?.shipToAddress2 || '-'" disabled></textarea>
+          </div>
+
+          <div class="col-12 mb-3" *ngIf="selectedGrn?.payToAddress">
+            <label>Pay-To Address</label>
+            <textarea rows="2" class="form-control custom-input" [value]="selectedGrn?.payToAddress || '-'" disabled></textarea>
+          </div>
+
+          <div class="col-12 mb-3" *ngIf="selectedGrn?.remarks">
+            <label>Remarks</label>
+            <textarea rows="2" class="form-control custom-input" [value]="selectedGrn?.remarks || '-'" disabled></textarea>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Items Section -->
+    <h5 class="heading mb-3 fw-bold" (click)="toggleItems()" style="cursor: pointer;">
+      Items
+      <i class="fa" [ngClass]="itemsExpanded ? 'fa-chevron-down' : 'fa-chevron-up'" style="font-size: 12px;"></i>
+    </h5>
+
+    <div [@expandCollapse]="itemsExpanded ? 'expanded' : 'collapsed'" style="overflow: hidden;">
+      <div class="card cstm-ui-card border-0 shadow-sm">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-sm pro-table mb-0">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Description</th>
+                  <th class="text-end">Ordered Qty</th>
+                  <th class="text-end">Received Qty</th>
+                  <th class="text-end">Unit Cost</th>
+                  <th class="text-end">Amount</th>
+                  <th class="text-center">Received Date</th>
+                  <th>Location</th>
+                  <th>Remarks</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of selectedGrn?.goodsReceiptItems">
+                  <td>{{ item.itemName || item.itemNo }}</td>
+                  <td>{{ item.itemDescription || item.itemDesc || '-' }}</td>
+                  <td class="text-end">{{ item.orderedQuantity ?? '-' }}</td>
+                  <td class="text-end fw-semibold">{{ item.receivedQuantity ?? item.quantity ?? '-' }}</td>
+                  <td class="text-end">{{ item.unitCostExclVat | number:'1.2-2' }}</td>
+                  <td class="text-end fw-semibold">
+                    {{ (item.amount || ((item.receivedQuantity || item.quantity || 0) * (item.unitCostExclVat || 0))) | number:'1.2-2' }}
+                  </td>
+                  <td class="text-center">{{ (item.receivedDate | date:'yyyy-MM-dd') || '-' }}</td>
+                  <td>{{ item.locationCode || '-' }}</td>
+                  <td>{{ item.remarks || '-' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end fw-bold mt-3">
+        <h5>Total: {{ calculateDetailTotal(selectedGrn) | number:'1.2-2' }}</h5>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ==================== VENDOR RATING MODAL ==================== -->
+<div class="rating-backdrop" *ngIf="showRatingModal">
+  <div class="rating-modal">
+    <h4 class="rating-title">What is your rating?</h4>
+    <p class="rating-subtitle">
+      How was your experience with <strong>{{ vendorName }}</strong>
+      for Purchase Order <strong>#{{ purchaseOrderNo }}</strong>?
+    </p>
+    <div class="stars-wrapper">
+      <div class="star-container" *ngFor="let star of stars; let i = index"
+        (mousemove)="hoverStar($event, i)" (mouseleave)="clearHover()" (click)="selectRating(i)">
+        <span class="rating-value" *ngIf="hoverIndex === i">{{ hoverRating | number:'1.1-1' }}</span>
+        <i class="fa star-icon" [ngClass]="getStarFill(i)"></i>
+      </div>
+    </div>
     <div class="selected-rating" *ngIf="selectedRating">
       Selected Rating: <strong>{{ selectedRating | number:'1.1-1' }}</strong>
     </div>
-
-    <!-- Comment -->
     <div class="mt-3">
-      <textarea class="form-control" rows="3" placeholder="Add a comment (optional)" [formControl]="ratingComment"></textarea>
+      <textarea class="form-control custom-input" rows="3" placeholder="Add a comment (optional)" [formControl]="ratingComment"></textarea>
     </div>
-
-    <button class="btn btn-primary w-100 mt-3" (click)="submitVendorRating()"
-      [disabled]="!selectedRating || savingRating">
+    <button class="btn btn-primary w-100 mt-3" (click)="submitVendorRating()" [disabled]="!selectedRating || savingRating">
       Submit Rating
     </button>
-
-    <button class="btn btn-link text-muted mt-2" (click)="closeRatingModal()">
-      Close
-    </button>
-
+    <button class="btn btn-link text-muted mt-2" (click)="closeRatingModal()">Close</button>
   </div>
 </div>
