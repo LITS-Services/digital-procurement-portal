@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import {
   ProcurementReportsService,
@@ -66,14 +67,20 @@ export class PoDeliveryTrackingComponent implements OnInit {
   loadingTable = false;
   exportingPdf = false;
   errorMessage = '';
+  showFilterBar = true;
 
-  // Exhibit 1.1: Delivery Status Donut (compact)
+  // Exhibit 1.1: Delivery Status Donut
   deliveryStatusDonut: ChartOptions = {
     series: [],
-    chart: { type: 'donut', height: 225 },
+    chart: { type: 'donut', height: 260, fontFamily: 'Poppins, sans-serif' },
     labels: [],
-    colors: ['#16a34a', '#0284c7', '#d97706', '#dc2626'],
-    legend: { position: 'bottom', horizontalAlign: 'center', fontWeight: 600, fontSize: '11px' },
+    colors: ['#16A34A', '#116AEF', '#D97706', '#DC2626'],
+    legend: {
+      position: 'bottom',
+      horizontalAlign: 'center',
+      fontWeight: 500,
+      fontSize: '12px'
+    },
     dataLabels: { enabled: false },
     plotOptions: {
       pie: {
@@ -81,14 +88,14 @@ export class PoDeliveryTrackingComponent implements OnInit {
           size: '68%',
           labels: {
             show: true,
-            name: { show: true, fontSize: '12px', fontWeight: 700, color: '#334155' },
-            value: { show: true, fontSize: '18px', fontWeight: 800, color: '#0f172a' },
+            name: { show: true, fontSize: '12px', fontWeight: 600, color: '#64748B' },
+            value: { show: true, fontSize: '18px', fontWeight: 700, color: '#0F172A' },
             total: {
               show: true,
               label: 'Completion',
-              fontSize: '11.5px',
-              fontWeight: 700,
-              color: '#0f172a',
+              fontSize: '12px',
+              fontWeight: 600,
+              color: '#0F172A',
               formatter: () => `${this.summary?.deliveryCompletionPercentage ?? 0}%`
             }
           }
@@ -97,24 +104,110 @@ export class PoDeliveryTrackingComponent implements OnInit {
     }
   };
 
-  // Exhibit 1.2: Delivery Performance Trend (compact)
+  // Exhibit 1.2: Delivery Performance Trend
   deliveryTrendChart: ChartOptions = {
     series: [],
-    chart: { type: 'line', height: 225, toolbar: { show: false } },
-    stroke: { curve: 'smooth', width: 2.2 },
-    colors: ['#16a34a', '#d97706', '#dc2626'],
+    colors: ['#16A34A', '#D97706', '#DC2626'],
+    chart: {
+      type: 'area',
+      height: 260,
+      fontFamily: 'Poppins, sans-serif',
+      toolbar: { show: false },
+      zoom: { enabled: false }
+    },
+    stroke: {
+      curve: 'smooth',
+      width: 2,
+      lineCap: 'round'
+    },
+    fill: {
+      type: 'gradient',
+      colors: ['#16A34A', '#D97706', '#DC2626'],
+      gradient: {
+        type: 'vertical',
+        shadeIntensity: 0,
+        inverseColors: false,
+        opacityFrom: 0.35,
+        opacityTo: 0.0,
+        stops: [0, 100],
+        colorStops: [
+          [
+            { offset: 0, color: '#16A34A', opacity: 0.35 },
+            { offset: 65, color: '#16A34A', opacity: 0.1 },
+            { offset: 100, color: '#16A34A', opacity: 0.0 }
+          ],
+          [
+            { offset: 0, color: '#D97706', opacity: 0.28 },
+            { offset: 65, color: '#D97706', opacity: 0.08 },
+            { offset: 100, color: '#D97706', opacity: 0.0 }
+          ],
+          [
+            { offset: 0, color: '#DC2626', opacity: 0.28 },
+            { offset: 65, color: '#DC2626', opacity: 0.08 },
+            { offset: 100, color: '#DC2626', opacity: 0.0 }
+          ]
+        ]
+      }
+    },
     dataLabels: { enabled: false },
-    xaxis: { categories: [], labels: { style: { colors: '#64748b', fontSize: '10.5px' } } },
-    yaxis: { labels: { style: { colors: '#64748b', fontSize: '10.5px' } } },
-    grid: { strokeDashArray: 3, borderColor: '#e2e8f0' },
-    legend: { position: 'top', horizontalAlign: 'right', fontWeight: 600, fontSize: '11px' }
+    xaxis: {
+      categories: [],
+      labels: {
+        rotate: -45,
+        rotateAlways: false,
+        hideOverlappingLabels: true,
+        offsetY: 2,
+        style: { colors: '#64748B', fontSize: '11px', fontFamily: 'Poppins, sans-serif' }
+      },
+      axisBorder: { show: false },
+      axisTicks: { show: false },
+      tooltip: { enabled: false }
+    },
+    yaxis: {
+      min: 0,
+      forceNiceScale: true,
+      labels: {
+        offsetX: -10,
+        style: { colors: '#64748B', fontSize: '11px', fontFamily: 'Poppins, sans-serif' },
+        formatter: (val: any) => `${Math.round(Number(val) || 0)}`
+      }
+    },
+    grid: {
+      borderColor: '#E2E8F0',
+      strokeDashArray: 6,
+      xaxis: { lines: { show: false } },
+      yaxis: { lines: { show: true } },
+      padding: { top: 4, left: 14, right: 16, bottom: 4 }
+    },
+    legend: {
+      position: 'top',
+      horizontalAlign: 'right',
+      fontWeight: 500,
+      fontSize: '12px'
+    },
+    tooltip: {
+      shared: true,
+      intersect: false,
+      y: {
+        formatter: (val: any) => `${Math.round(Number(val) || 0)} deliveries`
+      }
+    }
   };
 
   constructor(
     private reportsService: ProcurementReportsService,
     private toastr: ToastrService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
+
+  homePage(): void {
+    this.router.navigate(['/dashboard/dashboard1']);
+  }
+
+  toggleFilterBar(): void {
+    this.showFilterBar = !this.showFilterBar;
+  }
 
   ngOnInit(): void {
     const savedEntity = localStorage.getItem('selectedCompanyId');
@@ -125,7 +218,7 @@ export class PoDeliveryTrackingComponent implements OnInit {
   }
 
   private emptyPage<T>(): PaginatedReportResult<T> {
-    return { items: [], totalCount: 0, pageNumber: 1, pageSize: 15, totalPages: 0, hasPreviousPage: false, hasNextPage: false };
+    return { items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0, hasPreviousPage: false, hasNextPage: false };
   }
 
   loadMetadata(): void {
@@ -271,21 +364,22 @@ export class PoDeliveryTrackingComponent implements OnInit {
     this.loadingTable = true;
     const params = this.getFilterParams();
     params.pageNumber = page;
+    params.pageSize = 10;
 
     if (this.activeSection === 'pos') {
-      params.pageSize = this.poTable.pageSize;
+      this.poTable.pageSize = 10;
       this.reportsService.getPoTrackingTable(params).subscribe({
         next: (res) => { this.poTable = res; this.loadingTable = false; this.cdr.detectChanges(); },
         error: () => { this.loadingTable = false; this.cdr.detectChanges(); }
       });
     } else if (this.activeSection === 'deliveries') {
-      params.pageSize = this.deliveryTable.pageSize;
+      this.deliveryTable.pageSize = 10;
       this.reportsService.getDeliveryTrackingTable(params).subscribe({
         next: (res) => { this.deliveryTable = res; this.loadingTable = false; this.cdr.detectChanges(); },
         error: () => { this.loadingTable = false; this.cdr.detectChanges(); }
       });
     } else {
-      params.pageSize = this.pendingTable.pageSize;
+      this.pendingTable.pageSize = 10;
       this.reportsService.getPendingDeliveriesTable(params).subscribe({
         next: (res) => { this.pendingTable = res; this.loadingTable = false; this.cdr.detectChanges(); },
         error: () => { this.loadingTable = false; this.cdr.detectChanges(); }
@@ -355,6 +449,40 @@ export class PoDeliveryTrackingComponent implements OnInit {
   get grnPageQty(): number { return this.deliveryTable.items.reduce((s, r) => s + r.deliveredQuantity, 0); }
   get pendingPageVal(): number { return this.pendingTable.items.reduce((s, r) => s + r.pendingValue, 0); }
   get pendingPageQty(): number { return this.pendingTable.items.reduce((s, r) => s + r.pendingQuantity, 0); }
+
+  get currentActiveTable(): PaginatedReportResult<any> {
+    if (this.activeSection === 'pos') return this.poTable;
+    if (this.activeSection === 'deliveries') return this.deliveryTable;
+    return this.pendingTable;
+  }
+
+  getPages(): number[] {
+    const totalPages = this.currentActiveTable?.totalPages || 1;
+    const current = this.currentActiveTable?.pageNumber || 1;
+    const pages: number[] = [];
+    const maxVisible = 5;
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = Math.min(totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  getStatusChipClass(status: string): string {
+    const s = (status || '').toLowerCase();
+    if (s.includes('paid') || s.includes('delivered') || s.includes('completed') || s.includes('on-time')) return 'chip chip--success';
+    if (s.includes('approved') || s.includes('open') || s.includes('new')) return 'chip chip--approved';
+    if (s.includes('pending') || s.includes('partial')) return 'chip chip--pending';
+    if (s.includes('delay') || s.includes('overdue') || s.includes('cancel') || s.includes('reject')) return 'chip chip--rejected';
+    return 'chip chip--draft';
+  }
 
   getStatusPillClass(status: string): string {
     const s = (status || '').toLowerCase();

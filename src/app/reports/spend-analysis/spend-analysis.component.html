@@ -1,108 +1,148 @@
-<div class="report-workspace">
-  <!-- Non-Print Report Parameter & Export Bar -->
-  <div class="report-toolbar no-print">
-    <div class="report-toolbar__top">
-      <div class="report-toolbar__label">
-        <i class="ft-sliders text-primary"></i>
-        <span>Report Parameters &amp; Output Controls</span>
-      </div>
-      <div class="report-toolbar__actions">
-        <button type="button" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1" (click)="resetFilters()">
-          <i class="ft-rotate-ccw"></i> Reset
-        </button>
-        <button type="button" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1 px-3" (click)="applyFilters()">
-          <i class="ft-play"></i> Generate Report
-        </button>
-        <button type="button" class="btn btn-sm btn-outline-dark d-inline-flex align-items-center gap-1" (click)="printReport()">
-          <i class="ft-printer"></i> Print
-        </button>
-        <button type="button" class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1" (click)="exportPdf()" [disabled]="exportingPdf">
-          <i class="ft-download" *ngIf="!exportingPdf"></i>
-          <span class="spinner-border spinner-border-sm" *ngIf="exportingPdf" role="status"></span>
-          <span>{{ exportingPdf ? 'Exporting PDF...' : 'Export PDF' }}</span>
-        </button>
-      </div>
-    </div>
+<section>
+  <div class="row">
+    <div class="col-12">
 
-    <div class="row g-2 align-items-end">
-      <div class="col-xl-2 col-md-4 col-sm-6">
-        <label class="param-label">Reporting Period</label>
-        <select class="form-select form-select-sm" [(ngModel)]="selectedPreset" (change)="selectedPreset !== 'Custom' && applyFilters()">
-          <option *ngFor="let p of presets" [value]="p.value">{{ p.label }}</option>
-        </select>
-      </div>
-      <div class="col-xl-2 col-md-4 col-sm-6" *ngIf="selectedPreset === 'Custom'">
-        <label class="param-label">From Date</label>
-        <input type="date" class="form-control form-control-sm" [(ngModel)]="customFromDate" />
-      </div>
-      <div class="col-xl-2 col-md-4 col-sm-6" *ngIf="selectedPreset === 'Custom'">
-        <label class="param-label">To Date</label>
-        <input type="date" class="form-control form-control-sm" [(ngModel)]="customToDate" />
-      </div>
-      <div class="col-xl-2 col-md-4 col-sm-6">
-        <label class="param-label">Procurement Entity</label>
-        <select class="form-select form-select-sm" [(ngModel)]="selectedEntityId" (change)="onEntityFilterChange()">
-          <option [ngValue]="null">All Authorized ({{ metadata.entities.length }})</option>
-          <option *ngFor="let e of metadata.entities" [ngValue]="e.id">{{ e.name }}</option>
-        </select>
-      </div>
-      <div class="col-xl-2 col-md-4 col-sm-6">
-        <label class="param-label">Vendor</label>
-        <select class="form-select form-select-sm" [(ngModel)]="selectedVendorId">
-          <option value="">All Vendors</option>
-          <option *ngFor="let v of metadata.vendors" [value]="v.value">{{ v.label }}</option>
-        </select>
-      </div>
-      <div class="col-xl-2 col-md-4 col-sm-6">
-        <label class="param-label">PO Status</label>
-        <select class="form-select form-select-sm" [(ngModel)]="selectedPoStatus">
-          <option value="">All Statuses</option>
-          <option *ngFor="let s of metadata.poStatuses" [value]="s.value">{{ s.label }}</option>
-        </select>
-      </div>
-      <div class="col-xl-2 col-md-4 col-sm-6" *ngIf="metadata.categories.length > 0">
-        <label class="param-label">Category</label>
-        <select class="form-select form-select-sm" [(ngModel)]="selectedCategory">
-          <option value="">All Categories</option>
-          <option *ngFor="let c of metadata.categories" [value]="c.value">{{ c.label }}</option>
-        </select>
-      </div>
-    </div>
-  </div>
-
-  <!-- Error Banner -->
-  <div class="alert alert-danger py-2 px-3 mb-3" *ngIf="errorMessage">
-    <i class="ft-alert-circle me-1"></i> {{ errorMessage }}
-  </div>
-
-  <!-- ==================== FORMAL REPORT DOCUMENT SHEET ==================== -->
-  <div class="report-sheet">
-    <!-- Document Masthead -->
-    <div class="report-masthead">
-      <div class="report-masthead__left">
-        <div class="report-masthead__eyebrow">Digital Procurement Portal &middot; Management BI Report &middot; Ref: DPP-RPT-01</div>
-        <h1 class="report-masthead__title">Spend Analysis Report</h1>
-        <p class="report-masthead__desc">
-          Formal financial breakdown of procurement commitments, vendor expenditure concentration, procurement entity spend, invoicing, and payment settlement.
-        </p>
-      </div>
-    </div>
-
-    <!-- ==================== CHARTS & ANALYTICS ==================== -->
-    <section class="report-section">
-      <div class="report-section__header">
-        <h2 class="report-section__title">Charts &amp; Analytics</h2>
-        <span class="report-section__meta">Supporting trend and financial composition charts (SAR)</span>
+      <!-- Header -->
+      <div class="row">
+        <div class="col-md-12" style="margin-top: -0.25rem;">
+          <h4 class="heading">Spend Analysis</h4>
+        </div>
       </div>
 
-      <div class="row g-3">
-        <div class="col-lg-7">
-          <div class="exhibit-box">
-            <div class="exhibit-box__head">
-              <h3 class="exhibit-box__title">Periodic Spend Trend (Current vs. Prior Period)</h3>
-              <span class="exhibit-box__tag">SAR</span>
+      <!-- Action Pane -->
+      <div class="card cstm-ui-card">
+        <div>
+          <div class="d-flex justify-content-between align-items-center cstm-action-bar">
+            <div>
+              <button class="btn btn-lg mr-1" type="button" (click)="homePage()">
+                <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
+              </button>
+
+              <span class="vl"></span>
+
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="applyFilters()">
+                <img src="assets/img/svg-icons/Sync_icon.svg" class="btn-action-icon" alt="" />
+                <label class="btn-label">Generate Report</label>
+              </button>
+
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="resetFilters()">
+                <img src="assets/img/svg-icons/cancel-icon.svg" class="btn-action-icon" alt="" />
+                <label class="btn-label">Reset</label>
+              </button>
             </div>
-            <div class="exhibit-box__body">
+
+            <div class="d-flex align-items-center pr-actions-right">
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="toggleFilterBar()">
+                <img src="assets/img/svg-icons/filter-icon.svg" class="btn-action-icon" alt="" />
+                <label class="btn-label">Filter</label>
+              </button>
+
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="printReport()">
+                <i class="ft-printer"></i>
+                <label class="btn-label">Print</label>
+              </button>
+
+              <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="exportPdf()" [disabled]="exportingPdf">
+                <i class="ft-download" *ngIf="!exportingPdf"></i>
+                <span class="spinner-border spinner-border-sm" *ngIf="exportingPdf" role="status"></span>
+                <label class="btn-label">{{ exportingPdf ? 'Exporting PDF...' : 'Export PDF' }}</label>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters Pane -->
+      <div *ngIf="showFilterBar" class="card filter-card mb-2 no-print">
+        <div class="card-body py-2 px-3">
+          <div class="row g-2 align-items-end">
+            <div class="col-xl-2 col-md-4 col-sm-6">
+              <label class="filter-param-label">Reporting Period</label>
+              <select class="form-control custom-input" [(ngModel)]="selectedPreset" (change)="selectedPreset !== 'Custom' && applyFilters()">
+                <option *ngFor="let p of presets" [value]="p.value">{{ p.label }}</option>
+              </select>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6" *ngIf="selectedPreset === 'Custom'">
+              <label class="filter-param-label">From Date</label>
+              <input type="date" class="form-control" [(ngModel)]="customFromDate" />
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6" *ngIf="selectedPreset === 'Custom'">
+              <label class="filter-param-label">To Date</label>
+              <input type="date" class="form-control" [(ngModel)]="customToDate" />
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+              <label class="filter-param-label">Procurement Entity</label>
+              <select class="form-control custom-input" [(ngModel)]="selectedEntityId" (change)="onEntityFilterChange()">
+                <option [ngValue]="null">All Authorized ({{ metadata.entities.length }})</option>
+                <option *ngFor="let e of metadata.entities" [ngValue]="e.id">{{ e.name }}</option>
+              </select>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+              <label class="filter-param-label">Vendor</label>
+              <select class="form-control custom-input" [(ngModel)]="selectedVendorId">
+                <option value="">All Vendors</option>
+                <option *ngFor="let v of metadata.vendors" [value]="v.value">{{ v.label }}</option>
+              </select>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+              <label class="filter-param-label">PO Status</label>
+              <select class="form-control custom-input" [(ngModel)]="selectedPoStatus">
+                <option value="">All Statuses</option>
+                <option *ngFor="let s of metadata.poStatuses" [value]="s.value">{{ s.label }}</option>
+              </select>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6" *ngIf="metadata.categories.length > 0">
+              <label class="filter-param-label">Category</label>
+              <select class="form-control custom-input" [(ngModel)]="selectedCategory">
+                <option value="">All Categories</option>
+                <option *ngFor="let c of metadata.categories" [value]="c.value">{{ c.label }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error Alert -->
+      <div class="alert alert-danger py-2 px-3 mb-2" *ngIf="errorMessage">
+        <i class="ft-alert-circle me-1"></i> {{ errorMessage }}
+      </div>
+
+      <!-- Charts Section (Dashboard Panel Cards with Skeleton Loaders) -->
+      <div class="row spend-card-row">
+        <div class="col-lg-7">
+          <div class="panel-card h-100">
+            <div class="panel-card__header">
+              <div>
+                <h3 class="panel-card__title">Periodic Spend Trend</h3>
+                <p class="panel-card__subtitle">Analyze procurement spending trends over time</p>
+              </div>
+            </div>
+            <div class="panel-card__body">
+              <!-- Skeleton Loader while API is loading -->
+              <div *ngIf="loadingCharts" class="chart-skeleton">
+                <div class="chart-skeleton__body">
+                  <div class="chart-skeleton__axis-y">
+                    <div class="skeleton-bar" style="width: 26px; height: 10px;"></div>
+                    <div class="skeleton-bar" style="width: 22px; height: 10px;"></div>
+                    <div class="skeleton-bar" style="width: 26px; height: 10px;"></div>
+                    <div class="skeleton-bar" style="width: 18px; height: 10px;"></div>
+                    <div class="skeleton-bar" style="width: 14px; height: 10px;"></div>
+                  </div>
+                  <div class="chart-skeleton__plot">
+                    <div class="chart-skeleton__grid-line"></div>
+                    <div class="chart-skeleton__grid-line"></div>
+                    <div class="chart-skeleton__grid-line"></div>
+                    <div class="chart-skeleton__grid-line"></div>
+                    <div class="chart-skeleton__wave"></div>
+                  </div>
+                </div>
+                <div class="chart-skeleton__footer">
+                  <div class="skeleton-bar" style="width: 85px; height: 12px; border-radius: 999px;"></div>
+                  <div class="skeleton-bar" style="width: 85px; height: 12px; border-radius: 999px;"></div>
+                </div>
+              </div>
+
+              <!-- Real Chart once loaded -->
               <apx-chart *ngIf="!loadingCharts && spendTrendChart.series?.length"
                 [series]="spendTrendChart.series" [chart]="spendTrendChart.chart"
                 [xaxis]="spendTrendChart.xaxis" [yaxis]="spendTrendChart.yaxis"
@@ -111,17 +151,47 @@
                 [tooltip]="spendTrendChart.tooltip" [legend]="spendTrendChart.legend"
                 [dataLabels]="spendTrendChart.dataLabels">
               </apx-chart>
-              <div *ngIf="!loadingCharts && !spendTrendChart.series?.length" class="exhibit-empty">No trend data for this period.</div>
+              <div *ngIf="!loadingCharts && !spendTrendChart.series?.length" class="chart-empty-placeholder">
+                No trend data for this period.
+              </div>
             </div>
           </div>
         </div>
         <div class="col-lg-5">
-          <div class="exhibit-box">
-            <div class="exhibit-box__head">
-              <h3 class="exhibit-box__title">Spend Lifecycle Composition</h3>
-              <span class="exhibit-box__tag">SAR</span>
+          <div class="panel-card h-100">
+            <div class="panel-card__header">
+              <div>
+                <h3 class="panel-card__title">Spend Lifecycle Composition</h3>
+                <p class="panel-card__subtitle">Distribution of spend across procurement lifecycle stages</p>
+              </div>
             </div>
-            <div class="exhibit-box__body">
+            <div class="panel-card__body">
+              <!-- Skeleton Loader while API is loading -->
+              <div *ngIf="loadingCharts" class="chart-skeleton">
+                <div class="chart-skeleton__body">
+                  <div class="chart-skeleton__axis-y">
+                    <div class="skeleton-bar" style="width: 26px; height: 10px;"></div>
+                    <div class="skeleton-bar" style="width: 22px; height: 10px;"></div>
+                    <div class="skeleton-bar" style="width: 26px; height: 10px;"></div>
+                    <div class="skeleton-bar" style="width: 18px; height: 10px;"></div>
+                    <div class="skeleton-bar" style="width: 14px; height: 10px;"></div>
+                  </div>
+                  <div class="chart-skeleton__plot d-flex align-items-end justify-content-around pb-1">
+                    <div class="skeleton-bar" style="width: 18%; height: 70%; border-radius: 4px;"></div>
+                    <div class="skeleton-bar" style="width: 18%; height: 42%; border-radius: 4px;"></div>
+                    <div class="skeleton-bar" style="width: 18%; height: 32%; border-radius: 4px;"></div>
+                    <div class="skeleton-bar" style="width: 18%; height: 16%; border-radius: 4px;"></div>
+                  </div>
+                </div>
+                <div class="chart-skeleton__footer justify-content-around ps-4">
+                  <div class="skeleton-bar" style="width: 48px; height: 10px;"></div>
+                  <div class="skeleton-bar" style="width: 44px; height: 10px;"></div>
+                  <div class="skeleton-bar" style="width: 38px; height: 10px;"></div>
+                  <div class="skeleton-bar" style="width: 52px; height: 10px;"></div>
+                </div>
+              </div>
+
+              <!-- Real Chart once loaded -->
               <apx-chart *ngIf="!loadingCharts && spendCompositionChart.series?.length"
                 [series]="spendCompositionChart.series" [chart]="spendCompositionChart.chart"
                 [xaxis]="spendCompositionChart.xaxis" [yaxis]="spendCompositionChart.yaxis"
@@ -129,202 +199,234 @@
                 [grid]="spendCompositionChart.grid" [legend]="spendCompositionChart.legend"
                 [tooltip]="spendCompositionChart.tooltip" [dataLabels]="spendCompositionChart.dataLabels">
               </apx-chart>
-              <div *ngIf="!loadingCharts && !spendCompositionChart.series?.length" class="exhibit-empty">No spend composition data.</div>
+              <div *ngIf="!loadingCharts && !spendCompositionChart.series?.length" class="chart-empty-placeholder">
+                No spend composition data.
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </section>
 
-    <!-- ==================== VENDOR-WISE SPENDING ==================== -->
-    <section class="report-section">
-      <div class="report-section__header">
-        <h2 class="report-section__title">Vendor-wise Spending</h2>
-        <span class="report-section__meta">{{ vendorSchedule.length }} vendor(s) ranked by total spend (SAR)</span>
-      </div>
-
-      <div class="ledger-table-wrap">
-        <table class="report-ledger-table">
-          <thead>
-            <tr>
-              <th class="col-idx">#</th>
-              <th>Vendor Name</th>
-              <th>Vendor Code</th>
-              <th class="num">PO Count</th>
-              <th class="num">Total Spend (SAR)</th>
-              <th class="num">Invoiced (SAR)</th>
-              <th class="num">Paid (SAR)</th>
-              <th class="num">Outstanding (SAR)</th>
-              <th class="num">Spend Share</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let v of vendorSchedule; let i = index">
-              <td class="col-idx">{{ i + 1 }}</td>
-              <td class="fw-bold cell-truncate" [title]="v.vendorName">{{ v.vendorName }}</td>
-              <td class="text-muted col-code">{{ v.vendorCode }}</td>
-              <td class="num">{{ v.purchaseOrderCount | number }}</td>
-              <td class="num fw-bold">{{ v.totalSpend | number:'1.2-2' }}</td>
-              <td class="num">{{ v.totalInvoicedAmount | number:'1.2-2' }}</td>
-              <td class="num text-success">{{ v.totalPaidAmount | number:'1.2-2' }}</td>
-              <td class="num text-danger">{{ v.outstandingAmount | number:'1.2-2' }}</td>
-              <td class="num fw-semibold">{{ v.percentageContribution | number:'1.1-1' }}%</td>
-            </tr>
-            <tr *ngIf="vendorSchedule.length === 0">
-              <td colspan="9" class="text-center py-4 text-muted">No vendor spend recorded for the selected parameters.</td>
-            </tr>
-          </tbody>
-          <tfoot *ngIf="vendorSchedule.length > 0">
-            <tr>
-              <td colspan="3">TOTAL — ALL LISTED VENDORS</td>
-              <td class="num">{{ vendorTotalPos | number }}</td>
-              <td class="num">{{ vendorTotalSpend | number:'1.2-2' }} SAR</td>
-              <td class="num">{{ vendorTotalInvoiced | number:'1.2-2' }}</td>
-              <td class="num text-success">{{ vendorTotalPaid | number:'1.2-2' }}</td>
-              <td class="num text-danger">{{ vendorTotalOutstanding | number:'1.2-2' }}</td>
-              <td class="num">100.0%</td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-    </section>
-
-    <!-- ==================== PROCUREMENT ENTITY SPENDING ==================== -->
-    <section class="report-section">
-      <div class="report-section__header">
-        <h2 class="report-section__title">Procurement Entity Spending</h2>
-        <span class="report-section__meta">{{ entitySchedule.length }} authorized entity(ies)</span>
-      </div>
-
-      <div class="ledger-table-wrap">
-        <table class="report-ledger-table">
-          <thead>
-            <tr>
-              <th class="col-idx">#</th>
-              <th>Procurement Entity</th>
-              <th class="num">Active Vendors</th>
-              <th class="num">PO Count</th>
-              <th class="num">Total Spend (SAR)</th>
-              <th class="num">Invoiced (SAR)</th>
-              <th class="num">Paid (SAR)</th>
-              <th class="num">Outstanding (SAR)</th>
-              <th class="num">Spend Share</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let e of entitySchedule; let i = index">
-              <td class="col-idx">{{ i + 1 }}</td>
-              <td class="fw-bold cell-truncate" [title]="e.entityName">{{ e.entityName }}</td>
-              <td class="num">{{ e.totalVendors | number }}</td>
-              <td class="num">{{ e.purchaseOrderCount | number }}</td>
-              <td class="num fw-bold">{{ e.totalSpend | number:'1.2-2' }}</td>
-              <td class="num">{{ e.totalInvoicedAmount | number:'1.2-2' }}</td>
-              <td class="num text-success">{{ e.totalPaidAmount | number:'1.2-2' }}</td>
-              <td class="num text-danger">{{ e.outstandingAmount | number:'1.2-2' }}</td>
-              <td class="num fw-semibold">{{ e.percentageContribution | number:'1.1-1' }}%</td>
-            </tr>
-            <tr *ngIf="entitySchedule.length === 0">
-              <td colspan="9" class="text-center py-4 text-muted">No entity spend recorded for the selected parameters.</td>
-            </tr>
-          </tbody>
-          <tfoot *ngIf="entitySchedule.length > 0">
-            <tr>
-              <td colspan="3">TOTAL — AUTHORIZED ENTITIES</td>
-              <td class="num">{{ entityTotalPos | number }}</td>
-              <td class="num">{{ entityTotalSpend | number:'1.2-2' }} SAR</td>
-              <td class="num">{{ entityTotalInvoiced | number:'1.2-2' }}</td>
-              <td class="num text-success">{{ entityTotalPaid | number:'1.2-2' }}</td>
-              <td class="num text-danger">{{ entityTotalOutstanding | number:'1.2-2' }}</td>
-              <td class="num">100.0%</td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-    </section>
-
-    <!-- ==================== PURCHASE ORDER TRANSACTION LEDGER ==================== -->
-    <section class="report-section">
-      <div class="report-section__header">
-        <h2 class="report-section__title">Purchase Order Transaction Ledger</h2>
-        <span class="report-section__meta">{{ poLedger.totalCount }} total record(s)</span>
-      </div>
-
-      <div class="ledger-controls no-print">
-        <div class="ledger-search">
-          <i class="ft-search"></i>
-          <input type="text" class="form-control form-control-sm" placeholder="Filter ledger by PO, vendor, entity..." [(ngModel)]="searchTerm" (keyup.enter)="onSearchLedger()" />
-        </div>
-        <div class="d-flex align-items-center gap-2 text-muted" style="font-size: 11.5px;">
-          <span>Rows:</span>
-          <select class="form-select form-select-sm w-auto" [(ngModel)]="poLedger.pageSize" (ngModelChange)="loadPoLedger(1)">
-            <option [value]="10">10</option>
-            <option [value]="15">15</option>
-            <option [value]="25">25</option>
-            <option [value]="50">50</option>
-          </select>
+      <!-- Table 1 Card: Vendor-wise Spending -->
+      <div class="row spend-card-row">
+        <div class="col-12">
+          <div class="panel-card table-panel-card">
+            <div class="panel-card__header">
+              <div>
+                <h3 class="panel-card__title">Vendor-wise Spending</h3>
+                <p class="panel-card__subtitle">Supplier expenditure breakdown, payment status, and spend share</p>
+              </div>
+            </div>
+            <div class="panel-card__body dashboard-table-body">
+              <div class="table-responsive dashboard-listing-table-wrap">
+                <table class="table dashboard-listing-table mb-0">
+                  <thead>
+                    <tr>
+                      <th style="width: 70px;">SR. NO</th>
+                      <th>VENDOR NAME</th>
+                      <th>VENDOR CODE</th>
+                      <th class="text-right">PO COUNT</th>
+                      <th class="text-right">TOTAL SPEND (SAR)</th>
+                      <th class="text-right">INVOICED (SAR)</th>
+                      <th class="text-right">PAID (SAR)</th>
+                      <th class="text-right">OUTSTANDING (SAR)</th>
+                      <th class="text-right">SPEND SHARE</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let v of vendorSchedule; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td class="font-weight-bold text-dark">{{ v.vendorName }}</td>
+                      <td class="text-muted">{{ v.vendorCode }}</td>
+                      <td class="text-right">{{ v.purchaseOrderCount | number }}</td>
+                      <td class="text-right font-weight-bold">{{ v.totalSpend | number:'1.2-2' }}</td>
+                      <td class="text-right">{{ v.totalInvoicedAmount | number:'1.2-2' }}</td>
+                      <td class="text-right text-success font-weight-500">{{ v.totalPaidAmount | number:'1.2-2' }}</td>
+                      <td class="text-right" [class.text-danger]="v.outstandingAmount > 0">{{ v.outstandingAmount | number:'1.2-2' }}</td>
+                      <td class="text-right font-weight-bold">{{ v.percentageContribution | number:'1.1-1' }}%</td>
+                    </tr>
+                    <tr *ngIf="vendorSchedule.length === 0 && !loadingSchedules">
+                      <td colspan="9" class="text-center py-4 text-muted">No vendor spend recorded for the selected parameters.</td>
+                    </tr>
+                  </tbody>
+                  <tfoot *ngIf="vendorSchedule.length > 0">
+                    <tr class="table-subtotal-row">
+                      <td colspan="3" class="font-weight-bold text-dark">TOTAL</td>
+                      <td class="text-right font-weight-bold">{{ vendorTotalPos | number }}</td>
+                      <td class="text-right font-weight-bold text-primary">{{ vendorTotalSpend | number:'1.2-2' }}</td>
+                      <td class="text-right font-weight-bold">{{ vendorTotalInvoiced | number:'1.2-2' }}</td>
+                      <td class="text-right font-weight-bold text-success">{{ vendorTotalPaid | number:'1.2-2' }}</td>
+                      <td class="text-right font-weight-bold" [class.text-danger]="vendorTotalOutstanding > 0">{{ vendorTotalOutstanding | number:'1.2-2' }}</td>
+                      <td class="text-right font-weight-bold">100.0%</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="ledger-table-wrap">
-        <div *ngIf="loadingLedger" class="text-center py-4">
-          <div class="spinner-border spinner-border-sm text-primary"></div>
+      <!-- Table 2 Card: Procurement Entity Spending -->
+      <div class="row spend-card-row">
+        <div class="col-12">
+          <div class="panel-card table-panel-card">
+            <div class="panel-card__header">
+              <div>
+                <h3 class="panel-card__title">Procurement Entity Spending</h3>
+                <p class="panel-card__subtitle">Expenditure distribution and commitments across procurement entities</p>
+              </div>
+            </div>
+            <div class="panel-card__body dashboard-table-body">
+              <div class="table-responsive dashboard-listing-table-wrap">
+                <table class="table dashboard-listing-table mb-0">
+                  <thead>
+                    <tr>
+                      <th style="width: 70px;">SR. NO</th>
+                      <th>PROCUREMENT ENTITY</th>
+                      <th class="text-right">ACTIVE VENDORS</th>
+                      <th class="text-right">PO COUNT</th>
+                      <th class="text-right">TOTAL SPEND (SAR)</th>
+                      <th class="text-right">INVOICED (SAR)</th>
+                      <th class="text-right">PAID (SAR)</th>
+                      <th class="text-right">OUTSTANDING (SAR)</th>
+                      <th class="text-right">SPEND SHARE</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let e of entitySchedule; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td class="font-weight-bold text-dark">{{ e.entityName }}</td>
+                      <td class="text-right">{{ e.totalVendors | number }}</td>
+                      <td class="text-right">{{ e.purchaseOrderCount | number }}</td>
+                      <td class="text-right font-weight-bold">{{ e.totalSpend | number:'1.2-2' }}</td>
+                      <td class="text-right">{{ e.totalInvoicedAmount | number:'1.2-2' }}</td>
+                      <td class="text-right text-success font-weight-500">{{ e.totalPaidAmount | number:'1.2-2' }}</td>
+                      <td class="text-right" [class.text-danger]="e.outstandingAmount > 0">{{ e.outstandingAmount | number:'1.2-2' }}</td>
+                      <td class="text-right font-weight-bold">{{ e.percentageContribution | number:'1.1-1' }}%</td>
+                    </tr>
+                    <tr *ngIf="entitySchedule.length === 0 && !loadingSchedules">
+                      <td colspan="9" class="text-center py-4 text-muted">No entity spend recorded for the selected parameters.</td>
+                    </tr>
+                  </tbody>
+                  <tfoot *ngIf="entitySchedule.length > 0">
+                    <tr class="table-subtotal-row">
+                      <td colspan="3" class="font-weight-bold text-dark">TOTAL</td>
+                      <td class="text-right font-weight-bold">{{ entityTotalPos | number }}</td>
+                      <td class="text-right font-weight-bold text-primary">{{ entityTotalSpend | number:'1.2-2' }}</td>
+                      <td class="text-right font-weight-bold">{{ entityTotalInvoiced | number:'1.2-2' }}</td>
+                      <td class="text-right font-weight-bold text-success">{{ entityTotalPaid | number:'1.2-2' }}</td>
+                      <td class="text-right font-weight-bold" [class.text-danger]="entityTotalOutstanding > 0">{{ entityTotalOutstanding | number:'1.2-2' }}</td>
+                      <td class="text-right font-weight-bold">100.0%</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
-        <table class="report-ledger-table" *ngIf="!loadingLedger">
-          <thead>
-            <tr>
-              <th class="col-idx">#</th>
-              <th (click)="onSortLedger('purchaseorderno')" class="sortable">PO Number</th>
-              <th>Procurement Entity</th>
-              <th (click)="onSortLedger('vendorname')" class="sortable">Vendor</th>
-              <th (click)="onSortLedger('podate')" class="sortable">PO Date</th>
-              <th class="text-center">PO Status</th>
-              <th class="num">Received / Ordered</th>
-              <th (click)="onSortLedger('poamount')" class="sortable num">PO Amount (SAR)</th>
-              <th class="num">Invoiced (SAR)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let r of poLedger.items; let i = index">
-              <td class="col-idx">{{ (poLedger.pageNumber - 1) * poLedger.pageSize + i + 1 }}</td>
-              <td class="fw-bold col-code" [title]="r.purchaseOrderNo">{{ r.purchaseOrderNo }}</td>
-              <td class="cell-truncate" [title]="r.entityName">{{ r.entityName }}</td>
-              <td class="cell-truncate" [title]="r.vendorName">{{ r.vendorName }}</td>
-              <td class="text-nowrap">{{ r.poDate | date:'dd MMM yyyy' }}</td>
-              <td class="text-center"><span class="status-pill" [ngClass]="getStatusPillClass(r.poStatus)">{{ r.poStatus }}</span></td>
-              <td class="num">{{ r.deliveredQuantity | number:'1.0-1' }} / {{ r.orderedQuantity | number:'1.0-1' }}</td>
-              <td class="num fw-bold">{{ r.poAmount | number:'1.2-2' }}</td>
-              <td class="num">{{ r.invoicedAmount | number:'1.2-2' }}</td>
-            </tr>
-            <tr *ngIf="poLedger.items.length === 0">
-              <td colspan="9" class="text-center py-4 text-muted">No Purchase Orders match the current report parameters.</td>
-            </tr>
-          </tbody>
-          <tfoot *ngIf="poLedger.items.length > 0">
-            <tr>
-              <td colspan="7">PAGE SUBTOTAL ({{ poLedger.items.length }} POs shown)</td>
-              <td class="num">{{ poPageTotalAmount | number:'1.2-2' }} SAR</td>
-              <td class="num">{{ poPageTotalInvoiced | number:'1.2-2' }}</td>
-            </tr>
-          </tfoot>
-        </table>
       </div>
 
-      <div class="ledger-pagination no-print" *ngIf="poLedger.totalPages > 1">
-        <span>Showing page {{ poLedger.pageNumber }} of {{ poLedger.totalPages }} ({{ poLedger.totalCount }} total records)</span>
-        <div class="d-flex gap-1">
-          <button type="button" class="btn btn-sm btn-outline-secondary" [disabled]="!poLedger.hasPreviousPage" (click)="loadPoLedger(poLedger.pageNumber - 1)">Prev</button>
-          <button type="button" class="btn btn-sm btn-outline-secondary" [disabled]="!poLedger.hasNextPage" (click)="loadPoLedger(poLedger.pageNumber + 1)">Next</button>
+      <!-- Table 3 Card: Purchase Order Transaction Ledger -->
+      <div class="row spend-card-row mb-3">
+        <div class="col-12">
+          <div class="panel-card table-panel-card">
+            <div class="panel-card__header flex-wrap gap-2">
+              <div>
+                <h3 class="panel-card__title">Purchase Order Transaction Ledger</h3>
+                <p class="panel-card__subtitle">Itemized record of purchase orders and fulfillment status</p>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <div class="ledger-search-box">
+                  <i class="ft-search"></i>
+                  <input
+                    type="text"
+                    class="form-control form-control-sm"
+                    placeholder="Filter ledger by PO, vendor, entity..."
+                    [(ngModel)]="searchTerm"
+                    (keyup.enter)="onSearchLedger()" />
+                </div>
+              </div>
+            </div>
+            <div class="panel-card__body dashboard-table-body">
+              <div class="table-responsive dashboard-listing-table-wrap">
+                <table class="table dashboard-listing-table mb-0">
+                  <thead>
+                    <tr>
+                      <th style="width: 70px;">SR. NO</th>
+                      <th>PO NUMBER</th>
+                      <th>ENTITY</th>
+                      <th>VENDOR</th>
+                      <th>PO DATE</th>
+                      <th class="text-center">PO STATUS</th>
+                      <th class="text-right">RECEIVED / ORDERED</th>
+                      <th class="text-right">PO AMOUNT (SAR)</th>
+                      <th class="text-right">INVOICED (SAR)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let r of poLedger.items; let i = index">
+                      <td>{{ (poLedger.pageNumber - 1) * poLedger.pageSize + i + 1 }}</td>
+                      <td class="font-weight-bold text-primary">{{ r.purchaseOrderNo }}</td>
+                      <td>{{ r.entityName }}</td>
+                      <td>{{ r.vendorName }}</td>
+                      <td>{{ r.poDate | date:'yyyy-MM-dd' }}</td>
+                      <td class="text-center">
+                        <span [ngClass]="getStatusChipClass(r.poStatus)">{{ r.poStatus }}</span>
+                      </td>
+                      <td class="text-right">{{ r.deliveredQuantity | number:'1.0-1' }} / {{ r.orderedQuantity | number:'1.0-1' }}</td>
+                      <td class="text-right font-weight-bold">{{ r.poAmount | number:'1.2-2' }}</td>
+                      <td class="text-right">{{ r.invoicedAmount | number:'1.2-2' }}</td>
+                    </tr>
+                    <tr *ngIf="poLedger.items.length === 0 && !loadingLedger">
+                      <td colspan="9" class="text-center py-4 text-muted">No Purchase Orders match the current report parameters.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Table Footer Pagination Matching Application Wide Table Footer -->
+              <div class="ngx-datatable bootstrap" *ngIf="poLedger.totalCount > 0">
+                <div class="datatable-footer">
+                  <div class="datatable-footer-inner">
+                    <div class="page-count">
+                      <span>{{ poLedger.totalCount }} total</span>
+                    </div>
+                    <div class="datatable-pager">
+                      <ul class="pager">
+                        <li [class.disabled]="poLedger.pageNumber <= 1">
+                          <a href="javascript:void(0)" (click)="poLedger.pageNumber > 1 && loadPoLedger(1)" role="button" aria-label="go to first page">
+                            <i class="datatable-icon-prev"></i>
+                          </a>
+                        </li>
+                        <li [class.disabled]="!poLedger.hasPreviousPage">
+                          <a href="javascript:void(0)" (click)="poLedger.hasPreviousPage && loadPoLedger(poLedger.pageNumber - 1)" role="button" aria-label="go to previous page">
+                            <i class="datatable-icon-left"></i>
+                          </a>
+                        </li>
+                        <li *ngFor="let p of getPages()" class="pages" [class.active]="p === poLedger.pageNumber">
+                          <a href="javascript:void(0)" (click)="loadPoLedger(p)" role="button">{{ p }}</a>
+                        </li>
+                        <li [class.disabled]="!poLedger.hasNextPage">
+                          <a href="javascript:void(0)" (click)="poLedger.hasNextPage && loadPoLedger(poLedger.pageNumber + 1)" role="button" aria-label="go to next page">
+                            <i class="datatable-icon-right"></i>
+                          </a>
+                        </li>
+                        <li [class.disabled]="poLedger.pageNumber >= poLedger.totalPages">
+                          <a href="javascript:void(0)" (click)="poLedger.pageNumber < poLedger.totalPages && loadPoLedger(poLedger.totalPages)" role="button" aria-label="go to last page">
+                            <i class="datatable-icon-skip"></i>
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </section>
 
-    <!-- Formal Document Footer -->
-    <div class="report-footer">
-      <div class="report-footer__end">&mdash; End of Spend Analysis Report &mdash;</div>
-      <div class="report-footer__notes">
-        <span><strong>Basis of Reporting:</strong> Monetary amounts expressed in Saudi Riyal (SAR). Data scoped strictly to authorized Procurement Entities.</span>
-        <span>Confidential &middot; Internal Management Use Only</span>
-      </div>
     </div>
   </div>
-</div>
+</section>

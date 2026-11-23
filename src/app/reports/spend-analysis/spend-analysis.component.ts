@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import {
   ProcurementReportsService,
@@ -94,37 +95,140 @@ export class SpendAnalysisComponent implements OnInit {
 
   // Loading states
   loadingSummary = false;
-  loadingCharts = false;
+  loadingCharts = true;
   loadingSchedules = false;
   loadingLedger = false;
   exportingPdf = false;
   errorMessage = '';
+  showFilterBar = true;
 
-  // Exhibit 2.1: Spend Trend
+  // Exhibit 2.1: Spend Trend (matching Dashboard RFQ Pipeline chart UI)
   spendTrendChart: ChartOptions = {
     series: [],
-    chart: { type: 'area', height: 225, toolbar: { show: false } },
+    colors: ['#116AEF', '#93C5FD'],
+    chart: {
+      type: 'area',
+      height: 260,
+      fontFamily: 'Poppins, sans-serif',
+      toolbar: { show: false },
+      zoom: { enabled: false }
+    },
     dataLabels: { enabled: false },
-    stroke: { curve: 'smooth', width: 2 },
-    colors: ['#116aef', '#94a3b8'],
-    fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.22, opacityTo: 0.02 } },
-    xaxis: { categories: [], labels: { style: { colors: '#64748b', fontSize: '10.5px' } } },
-    yaxis: { labels: { formatter: (val: any) => this.formatShortNum(val), style: { colors: '#64748b', fontSize: '10.5px' } } },
-    grid: { strokeDashArray: 3, borderColor: '#e2e8f0' },
-    tooltip: { y: { formatter: (val: any) => `${(Number(val) || 0).toLocaleString()} SAR` } },
-    legend: { position: 'top', horizontalAlign: 'right', fontWeight: 600, fontSize: '11px' }
+    stroke: {
+      curve: 'smooth',
+      width: 2,
+      lineCap: 'round'
+    },
+    fill: {
+      type: 'gradient',
+      colors: ['#116AEF', '#93C5FD'],
+      gradient: {
+        type: 'vertical',
+        shadeIntensity: 0,
+        inverseColors: false,
+        opacityFrom: 0.35,
+        opacityTo: 0.0,
+        stops: [0, 100],
+        colorStops: [
+          [
+            { offset: 0, color: '#116AEF', opacity: 0.35 },
+            { offset: 65, color: '#116AEF', opacity: 0.1 },
+            { offset: 100, color: '#116AEF', opacity: 0.0 }
+          ],
+          [
+            { offset: 0, color: '#93C5FD', opacity: 0.25 },
+            { offset: 65, color: '#93C5FD', opacity: 0.07 },
+            { offset: 100, color: '#93C5FD', opacity: 0.0 }
+          ]
+        ]
+      }
+    },
+    xaxis: {
+      categories: [],
+      labels: {
+        rotate: -45,
+        rotateAlways: true,
+        hideOverlappingLabels: true,
+        offsetY: 2,
+        style: { fontSize: '11px', colors: '#64748B' }
+      },
+      axisBorder: { show: false },
+      axisTicks: { show: false },
+      tooltip: { enabled: false }
+    },
+    yaxis: {
+      labels: {
+        offsetX: -10,
+        formatter: (val: any) => this.formatShortNum(val),
+        style: { fontSize: '12px', colors: '#64748B' }
+      }
+    },
+    grid: {
+      borderColor: '#E2E8F0',
+      strokeDashArray: 6,
+      xaxis: { lines: { show: false } },
+      yaxis: { lines: { show: true } },
+      padding: { top: 4, left: 14, right: 16, bottom: 4 }
+    },
+    tooltip: {
+      shared: true,
+      intersect: false,
+      y: { formatter: (val: any) => `${(Number(val) || 0).toLocaleString()} SAR` }
+    },
+    legend: {
+      show: true,
+      position: 'bottom',
+      horizontalAlign: 'left',
+      offsetY: 4,
+      fontSize: '12px',
+      labels: { colors: '#64748B' },
+      markers: { strokeWidth: 0 },
+      itemMargin: { horizontal: 12, vertical: 4 }
+    }
   };
 
   // Exhibit 2.2: Spend Composition
   spendCompositionChart: ChartOptions = {
     series: [],
-    chart: { type: 'bar', height: 225, toolbar: { show: false } },
-    plotOptions: { bar: { horizontal: false, columnWidth: '42%', borderRadius: 3, distributed: true } },
+    chart: {
+      type: 'bar',
+      height: 250,
+      fontFamily: 'Poppins, sans-serif',
+      toolbar: { show: false }
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: '38%',
+        borderRadius: 4,
+        distributed: true
+      }
+    },
     dataLabels: { enabled: false },
-    colors: ['#116aef', '#0284c7', '#16a34a', '#d97706'],
-    xaxis: { categories: ['PO Spend', 'Invoiced', 'Paid', 'Outstanding'], labels: { style: { colors: '#475569', fontSize: '11px', fontWeight: 600 } } },
-    yaxis: { labels: { formatter: (val: any) => this.formatShortNum(val), style: { colors: '#64748b', fontSize: '10.5px' } } },
-    grid: { strokeDashArray: 3, borderColor: '#e2e8f0' },
+    colors: ['#116AEF', '#0284C7', '#16A34A', '#D97706'],
+    xaxis: {
+      categories: ['PO Spend', 'Invoiced', 'Paid', 'Outstanding'],
+      labels: {
+        style: { colors: '#64748B', fontSize: '12px', fontWeight: 500 },
+        offsetY: 4
+      },
+      axisBorder: { show: false },
+      axisTicks: { show: false }
+    },
+    yaxis: {
+      labels: {
+        offsetX: -10,
+        formatter: (val: any) => this.formatShortNum(val),
+        style: { colors: '#64748B', fontSize: '12px' }
+      }
+    },
+    grid: {
+      borderColor: '#E2E8F0',
+      strokeDashArray: 6,
+      xaxis: { lines: { show: false } },
+      yaxis: { lines: { show: true } },
+      padding: { top: 4, left: 14, right: 16, bottom: 4 }
+    },
     legend: { show: false },
     tooltip: { y: { formatter: (val: any) => `${(Number(val) || 0).toLocaleString()} SAR` } }
   };
@@ -132,8 +236,22 @@ export class SpendAnalysisComponent implements OnInit {
   constructor(
     private reportsService: ProcurementReportsService,
     private toastr: ToastrService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
+
+  homePage(): void {
+    this.router.navigate(['/dashboard/dashboard1']);
+  }
+
+  toggleFilterBar(): void {
+    this.showFilterBar = !this.showFilterBar;
+  }
+
+  onLedgerPageChange(event: any): void {
+    const page = (event?.offset ?? 0) + 1;
+    this.loadPoLedger(page);
+  }
 
   ngOnInit(): void {
     const savedEntity = localStorage.getItem('selectedCompanyId');
@@ -144,7 +262,7 @@ export class SpendAnalysisComponent implements OnInit {
   }
 
   private emptyPage<T>(): PaginatedReportResult<T> {
-    return { items: [], totalCount: 0, pageNumber: 1, pageSize: 15, totalPages: 0, hasPreviousPage: false, hasNextPage: false };
+    return { items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0, hasPreviousPage: false, hasNextPage: false };
   }
 
   private formatShortNum(val: any): string {
@@ -313,7 +431,8 @@ export class SpendAnalysisComponent implements OnInit {
     this.loadingLedger = true;
     const params = this.getFilterParams();
     params.pageNumber = page;
-    params.pageSize = this.poLedger.pageSize;
+    params.pageSize = 10;
+    this.poLedger.pageSize = 10;
 
     this.reportsService.getSpendPurchaseOrders(params).subscribe({
       next: (res) => {
@@ -416,10 +535,38 @@ export class SpendAnalysisComponent implements OnInit {
     return 'status-pill--neutral';
   }
 
+  getStatusChipClass(status: string): string {
+    const s = (status || '').toLowerCase();
+    if (s.includes('paid') || s.includes('delivered') || s.includes('completed')) return 'chip chip--success';
+    if (s.includes('approved') || s.includes('open') || s.includes('new')) return 'chip chip--approved';
+    if (s.includes('pending') || s.includes('partial')) return 'chip chip--pending';
+    if (s.includes('cancel') || s.includes('reject')) return 'chip chip--rejected';
+    return 'chip chip--draft';
+  }
+
   get activeEntityLabel(): string {
     if (!this.selectedEntityId) {
       return `All Authorized Entities (${this.metadata.entities.length})`;
     }
     return this.metadata.entities.find(e => e.id === this.selectedEntityId)?.name || 'Selected Entity';
+  }
+
+  getPages(): number[] {
+    const totalPages = this.poLedger?.totalPages || 1;
+    const current = this.poLedger?.pageNumber || 1;
+    const pages: number[] = [];
+    const maxVisible = 5;
+
+    let start = Math.max(1, current - Math.floor(maxVisible / 2));
+    let end = Math.min(totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 }
