@@ -494,3 +494,11 @@ form label, .form-group label {
   left: 0 !important;
   right: auto !important;
 }
+
+.cell-ellipsis {
+  display: block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

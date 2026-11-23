@@ -77,6 +77,18 @@ export class PurchaseOrderService {
     return this.http.get<any>(`${this.baseUrl}/get-grn?purchaseOrderId=${purchaseOrderId}`);
   }
 
+  getAllGoodsReceiptNotes(purchaseOrderId: number, currentPage = 1, pageSize = 100): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/get-all-grn`, {
+      params: { purchaseOrderId: purchaseOrderId.toString(), currentPage: currentPage.toString(), pageSize: pageSize.toString() }
+    });
+  }
+
+  getGoodsReceiptNoteDetail(id: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/get-grn`, {
+      params: { id: id.toString() }
+    });
+  }
+
   getInvoiceByPoId(purchaseOrderId: number) {
     return this.http.get<any>(`${this.baseUrl}/get-invoice-by-id?purchaseOrderId=${purchaseOrderId}`);
   }
