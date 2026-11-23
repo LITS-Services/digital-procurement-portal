@@ -77,48 +77,6 @@
                 </div>
             </div>
 
-            <!-- Acknowledgment Status Alerts -->
-            <div *ngIf="!poDetails?.isAcknowledged">
-                <!-- Overdue Alert -->
-                <div *ngIf="poDetails?.isOverdue || poDetails?.isReminderSent" class="alert alert-danger d-flex align-items-center justify-content-between p-3 mb-3 rounded shadow-sm border border-danger">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="ft-alert-octagon font-large-1 text-danger me-2"></i>
-                        <div>
-                            <h6 class="mb-1 text-danger fw-bold">
-                                Vendor Order Acknowledgment Overdue!
-                                <span *ngIf="poDetails?.reminderCount && poDetails?.reminderCount > 0" class="badge bg-danger text-white ms-1 font-small-2">
-                                    {{ poDetails?.reminderCount === 1 ? '1st Reminder Sent' : (poDetails?.reminderCount + ' Reminders Sent') }}
-                                </span>
-                            </h6>
-                            <p class="mb-0 text-muted small">
-                                The vendor has not submitted electronic order acknowledgment within the configured {{ poDetails?.reminderMinutes ? (poDetails?.reminderMinutes + ' minutes') : '48 hours' }} deadline. Automatic recurring reminders are being sent to the vendor, and follow-up communication has been initiated.
-                            </p>
-                        </div>
-                    </div>
-                    <button class="btn btn-danger btn-sm text-nowrap d-inline-flex align-items-center gap-1 shadow-sm" (click)="startCommunication()">
-                        <i class="ft-message-circle"></i>
-                        <span>Start Communication</span>
-                    </button>
-                </div>
-
-                <!-- Pending Alert -->
-                <div *ngIf="!poDetails?.isOverdue && !poDetails?.isReminderSent" class="alert alert-warning d-flex align-items-center justify-content-between p-3 mb-3 rounded shadow-sm" style="background-color: #fffbe6; border: 1px solid #ffe58f;">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="ft-clock font-large-1 text-warning me-2"></i>
-                        <div>
-                            <h6 class="mb-1 text-dark fw-bold">Pending Vendor Acknowledgment</h6>
-                            <p class="mb-0 text-muted small">
-                                Vendor has been awarded this Purchase Order and must electronically acknowledge it with estimated dispatch date within {{ poDetails?.reminderMinutes ? (poDetails?.reminderMinutes + ' minutes') : '48 hours' }}.
-                            </p>
-                        </div>
-                    </div>
-                    <button class="btn btn-outline-warning btn-sm text-nowrap d-inline-flex align-items-center gap-1 text-dark" (click)="startCommunication()">
-                        <i class="ft-message-square"></i>
-                        <span>Contact Vendor</span>
-                    </button>
-                </div>
-            </div>
-
             <!-- PO Info Card -->
             <div class="card cstm-ui-card mb-4">
                 <div class="card-body">
@@ -126,12 +84,6 @@
                         <div>
                             <span *ngIf="poDetails?.isAcknowledged" class="badge bg-light-success text-success border border-success px-3 py-2 font-small-3 d-inline-flex align-items-center gap-1">
                                 <i class="ft-check-circle"></i> Order Acknowledged by Vendor
-                            </span>
-                            <span *ngIf="!poDetails?.isAcknowledged && (poDetails?.isOverdue || poDetails?.isReminderSent)" class="badge bg-light-danger text-danger border border-danger px-3 py-2 font-small-3 d-inline-flex align-items-center gap-1">
-                                <i class="ft-alert-octagon"></i> Acknowledgment Overdue <span *ngIf="poDetails?.reminderCount && poDetails?.reminderCount > 1">({{ poDetails?.reminderCount }}x)</span>
-                            </span>
-                            <span *ngIf="!poDetails?.isAcknowledged && !poDetails?.isOverdue && !poDetails?.isReminderSent" class="badge bg-light-warning text-warning border border-warning px-3 py-2 font-small-3 d-inline-flex align-items-center gap-1">
-                                <i class="ft-clock"></i> Pending Acknowledgment
                             </span>
                         </div>
                         <div class="d-flex align-items-center gap-2">

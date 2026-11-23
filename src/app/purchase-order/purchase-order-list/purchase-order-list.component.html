@@ -144,20 +144,7 @@
           </ng-template>
         </ngx-datatable-column>
 
-        <ngx-datatable-column name="Acknowledgment" [sortable]="false" [flexGrow]="1" [minWidth]="130">
-          <ng-template let-row="row" ngx-datatable-cell-template>
-            <span *ngIf="row.isAcknowledged" class="badge bg-light-success text-success border border-success px-2 py-1 font-small-2">
-              <i class="ft-check me-1"></i>Acknowledged
-            </span>
-            <span *ngIf="!row.isAcknowledged && (row.isOverdue || row.isReminderSent)" class="badge bg-light-danger text-danger border border-danger px-2 py-1 font-small-2" title="Order acknowledgment deadline has passed">
-              <i class="ft-alert-octagon me-1"></i>Overdue
-            </span>
-            <span *ngIf="!row.isAcknowledged && !row.isOverdue && !row.isReminderSent" class="badge bg-light-warning text-warning-emphasis border border-warning px-2 py-1 font-small-2" title="Pending electronic acknowledgment">
-              <i class="ft-clock me-1"></i>Pending
-            </span>
-          </ng-template>
-        </ngx-datatable-column>
-        
+
         <ngx-datatable-column name="Requisition No." prop="requisitionNo" [sortable]="false" [flexGrow]="2" [minWidth]="140">
         </ngx-datatable-column>
 
