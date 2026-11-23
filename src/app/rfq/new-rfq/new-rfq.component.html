@@ -574,9 +574,33 @@
 
     </div>
 
+    <!-- Category Filter Bar (Incoming from PR items or Quotation items) -->
+    <div *ngIf="incomingPrCategories.length > 0" class="d-flex justify-content-between align-items-center mb-3 mt-2 flex-wrap" style="background: #f8fafc; padding: 10px 14px; border-radius: 6px; border: 1px solid #e2e8f0;">
+      <div class="d-flex align-items-center flex-wrap">
+        <label class="mb-0 mr-2 font-weight-bold" style="white-space: nowrap; font-size: 0.9rem; color: #334155;">
+          <i class="ft-filter mr-1 text-primary"></i>Category Filter:
+        </label>
+        <div style="min-width: 250px;">
+          <select class="form-control custom-input" [ngModel]="selectedCategoryFilter" (ngModelChange)="onCategoryFilterChanged($event)">
+            <option value="ALL">-- All Categories ({{ newQuotationItemData.length }}) --</option>
+            <option *ngFor="let cat of incomingPrCategories" [value]="cat.name">
+              {{ cat.name }} ({{ cat.count }})
+            </option>
+          </select>
+        </div>
+        <span *ngIf="selectedCategoryFilter && selectedCategoryFilter !== 'ALL'" class="badge badge-pill badge-light-primary ml-2 py-1 px-2 mt-1 mt-sm-0" style="font-size: 0.82rem;">
+          Showing {{ filteredQuotationItemData.length }} of {{ newQuotationItemData.length }} items
+        </span>
+      </div>
+
+      <div *ngIf="purchaseRequestId && selectedCategoryFilter && selectedCategoryFilter !== 'ALL'" class="text-muted small mt-1 mt-md-0">
+        <i class="ft-info mr-1 text-info"></i>Items segregated by <strong>{{ selectedCategoryFilter }}</strong>. Selection is scoped to this category.
+      </div>
+    </div>
+
     <!-- Datatable -->
       @if(datatableVisible){
-      <ngx-datatable class="bootstrap core-bootstrap" autoResize (autoResize)="onAutoResize()" [rows]="newQuotationItemData" [columnMode]="'force'"
+      <ngx-datatable class="bootstrap core-bootstrap" autoResize (autoResize)="onAutoResize()" [rows]="filteredQuotationItemData" [columnMode]="'force'"
         [headerHeight]="50" [footerHeight]="50" rowHeight="auto" [limit]="5"   [scrollbarH]="isMobile">
         <!-- Select -->
         <ngx-datatable-column *ngIf="purchaseRequestId" cellClass="datatable-checkbox-cell"
@@ -621,6 +645,15 @@
           </ng-template>
         </ngx-datatable-column>
 
+        <!-- Category -->
+        <ngx-datatable-column name="Category" [minWidth]="130">
+          <ng-template let-row="row" ngx-datatable-cell-template>
+            <span class="cell-ellipsis" [ngbTooltip]="getCategoryName(row)" container="body">
+              {{ getCategoryName(row) || '-' }}
+            </span>
+          </ng-template>
+        </ngx-datatable-column>
+
         <!-- Project Activity -->
         <ngx-datatable-column name="Project Activity" prop="ActivityName">
           <ng-template let-row="row" ngx-datatable-cell-template>
@@ -658,8 +691,8 @@
         <!-- Attachments -->
         <ngx-datatable-column name="Attachments" [sortable]="false" [canAutoResize]="false"
           [draggable]="false" [resizeable]="false">
-          <ng-template ngx-datatable-cell-template let-rowIndex="rowIndex">
-            <a matTooltip="Attachment" class="row-action-attachment" (click)="openNewEntityModal(rowIndex)"
+          <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
+            <a matTooltip="Attachment" class="row-action-attachment" (click)="openNewEntityModal(row)"
               [ngClass]="{ disabled: actionType === 'View' }">
               <i class="ft-paperclip mr-1" style="font-size: 1.5rem;"></i>
             </a>
@@ -675,7 +708,7 @@
               <i class="ft-edit mr-1" style="font-size: 1.5rem;"></i>
             </a>
     
-            <a matTooltip="Delete Item" style="cursor: pointer; color: #d1d4d7;" (click)="deleteRow(rowIndex)"
+            <a matTooltip="Delete Item" style="cursor: pointer; color: #d1d4d7;" (click)="deleteRow(row)"
               [ngClass]="viewMode ? 'disabled' : 'row-action-delete'">
               <i class="ft-trash trash-icon" style="font-size: 1.5rem;"></i>
             </a>

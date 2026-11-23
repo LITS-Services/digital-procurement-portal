@@ -52,6 +52,10 @@ export class NewRfqComponent implements OnInit {
   itemForm: FormGroup;
   editingRowIndex: number | null = null; // Track row being edited
   newQuotationItemData = [];
+  filteredQuotationItemData: any[] = [];
+  categoryList: any[] = [];
+  incomingPrCategories: { id: any; name: string; count: number }[] = [];
+  selectedCategoryFilter: string = 'ALL';
   selectedVendorsData: any[] = [];
   public chkBoxSelected = [];
   loading = false;
@@ -248,6 +252,10 @@ export class NewRfqComponent implements OnInit {
       departmentId: [null],
       projectId: [null],
       projectActivityId: [null],
+      categoryId: [null],
+      categoryName: [''],
+      procurementCategoryId: [null],
+      procurementCategoryName: [''],
       quotationItemAttachments: this.fb.array([]),
     });
     this.itemForm.get('unitOfMeasurementId')?.disable({ emitEvent: false });
@@ -326,6 +334,7 @@ export class NewRfqComponent implements OnInit {
       const qty = item.quantity || item.orderQuantity || 0;
       const uom = item.unitOfMeasurementSymbol || item.unitOfMeasurementCode || item.uom || 'EA';
       const reqDate = item.reqByDate ? new Date(item.reqByDate).toLocaleDateString() : (item.reqByDate || '-');
+      const category = this.getCategoryName(item) || '-';
       const projectActivity = [item.projectName, item.activityName || item.projectActivityName].filter(Boolean).join(' / ') || '-';
       itemsRows += `
         <tr>
@@ -334,6 +343,7 @@ export class NewRfqComponent implements OnInit {
             <strong>${item.itemName || item.itemDescription || '-'}</strong>
             ${item.itemDescription && item.itemDescription !== item.itemName ? `<br><small style="color:#64748b">${item.itemDescription}</small>` : ''}
           </td>
+          <td>${category}</td>
           <td>${projectActivity}</td>
           <td class="text-center">${uom}</td>
           <td class="text-end"><strong>${qty}</strong></td>
@@ -440,6 +450,7 @@ export class NewRfqComponent implements OnInit {
           <tr>
             <th style="width: 32px;" class="text-center">#</th>
             <th>Item & Description</th>
+            <th>Category</th>
             <th>Project / Activity</th>
             <th style="width: 60px;" class="text-center">UOM</th>
             <th style="width: 65px;" class="text-end">Qty</th>
@@ -448,7 +459,7 @@ export class NewRfqComponent implements OnInit {
           </tr>
         </thead>
         <tbody>
-          ${itemsRows || '<tr><td colspan="7" class="text-center" style="padding: 20px; color: #94a3b8;">No RFQ items found</td></tr>'}
+          ${itemsRows || '<tr><td colspan="8" class="text-center" style="padding: 20px; color: #94a3b8;">No RFQ items found</td></tr>'}
         </tbody>
       </table>
 
@@ -569,6 +580,7 @@ export class NewRfqComponent implements OnInit {
       }
       this.cdr.markForCheck();
       this.loadItemsForSelectedEntity();
+      this.loadCategoriesForSelectedEntity(desiredId ?? undefined);
     };
 
     // If viewing existing RFQ and user doesn't have entities loaded, or RFQ entity not in user's list
@@ -692,6 +704,7 @@ export class NewRfqComponent implements OnInit {
   onEntityChanged(): void {
     this.resetItemAndUomSelection();
     this.loadItemsForSelectedEntity();
+    this.loadCategoriesForSelectedEntity();
   }
 
   private getSelectedEntityGuid(): string | null {
@@ -739,6 +752,8 @@ export class NewRfqComponent implements OnInit {
     this.lookupService.getItemsByEntity(entityGuid).subscribe({
       next: (res) => {
         this.itemList = res ?? [];
+        this.buildIncomingPrCategories();
+        this.applyCategoryFilter();
         this.cdr.markForCheck();
       },
       error: (err) => console.error('Failed to load items for entity:', err),
@@ -759,6 +774,18 @@ export class NewRfqComponent implements OnInit {
       this.selectedUomLabel = '';
       this.itemForm.get('unitOfMeasurementId')?.setValue(null, { emitEvent: false });
       return;
+    }
+
+    const itemObj = this.itemList?.find(i => Number(i.id) === id);
+    if (itemObj) {
+      const catName = itemObj.categoryName || itemObj.procurementCategoryName || itemObj.category || this.getCategoryNameById(itemObj.categoryId || itemObj.procurementCategoryId) || '';
+      const catId = itemObj.categoryId || itemObj.procurementCategoryId || null;
+      this.itemForm.patchValue({
+        categoryId: catId,
+        categoryName: catName,
+        procurementCategoryId: catId,
+        procurementCategoryName: catName,
+      }, { emitEvent: false });
     }
 
     this.lookupService.getUomByItem(id).subscribe({
@@ -954,6 +981,115 @@ export class NewRfqComponent implements OnInit {
     return found ? found.description : '';
   }
 
+  getCategoryNameById(id: any): string {
+    if (!id) return '';
+    const numId = Number(id);
+    const found = this.categoryList?.find(c => Number(c.id ?? c.Id) === numId);
+    return found ? (found.name || found.Name || '') : '';
+  }
+
+  getCategoryName(row: any): string {
+    if (!row) return '';
+    if (row.categoryName && String(row.categoryName).trim()) return String(row.categoryName).trim();
+    if (row.procurementCategoryName && String(row.procurementCategoryName).trim()) return String(row.procurementCategoryName).trim();
+    if (row.category && String(row.category).trim()) return String(row.category).trim();
+    const catId = row.categoryId || row.procurementCategoryId;
+    if (catId) {
+      const byId = this.getCategoryNameById(catId);
+      if (byId) return byId;
+    }
+    if (row.itemId) {
+      const numItemId = Number(row.itemId);
+      const foundItem = this.itemList?.find(i => Number(i.id) === numItemId);
+      if (foundItem) {
+        if (foundItem.categoryName) return String(foundItem.categoryName).trim();
+        if (foundItem.procurementCategoryName) return String(foundItem.procurementCategoryName).trim();
+        if (foundItem.category) return String(foundItem.category).trim();
+        const itemCatId = foundItem.categoryId || foundItem.procurementCategoryId;
+        if (itemCatId) {
+          const byCatId = this.getCategoryNameById(itemCatId);
+          if (byCatId) return byCatId;
+        }
+      }
+    }
+    return '';
+  }
+
+  buildIncomingPrCategories(): void {
+    const map = new Map<string, { id: any; name: string; count: number }>();
+    for (const row of this.newQuotationItemData || []) {
+      const name = this.getCategoryName(row)?.trim();
+      if (!name) continue;
+      const key = name.toLowerCase();
+      const id = row.procurementCategoryId || row.categoryId || name;
+      if (map.has(key)) {
+        map.get(key)!.count++;
+      } else {
+        map.set(key, { id: id, name: name, count: 1 });
+      }
+    }
+    this.incomingPrCategories = Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  onCategoryFilterChanged(value: string): void {
+    this.selectedCategoryFilter = value;
+    this.applyCategoryFilter();
+  }
+
+  applyCategoryFilter(): void {
+    if (!this.selectedCategoryFilter || this.selectedCategoryFilter === 'ALL') {
+      this.filteredQuotationItemData = [...(this.newQuotationItemData || [])];
+      this.updateSelectAllState();
+      this.cdr.markForCheck();
+      return;
+    }
+
+    const selectedName = this.selectedCategoryFilter.trim().toLowerCase();
+    this.filteredQuotationItemData = (this.newQuotationItemData || []).filter(row => {
+      const catName = this.getCategoryName(row)?.trim().toLowerCase();
+      return catName === selectedName;
+    });
+
+    // Segregate item selection if PR is active:
+    // When a category is selected, deselect items not belonging to this category,
+    // and select the items belonging to this category!
+    if (this.purchaseRequestId) {
+      (this.newQuotationItemData || []).forEach(row => {
+        const catName = this.getCategoryName(row)?.trim().toLowerCase();
+        if (catName === selectedName) {
+          row.selected = true;
+        } else {
+          row.selected = false;
+        }
+      });
+      this.allSelected = this.filteredQuotationItemData.length > 0;
+    } else {
+      this.updateSelectAllState();
+    }
+    this.cdr.markForCheck();
+  }
+
+  loadCategoriesForSelectedEntity(targetEntityId?: number): void {
+    const entityId = targetEntityId ?? Number(this.newRfqForm?.get('entityId')?.value);
+    if (!entityId) {
+      this.categoryList = [];
+      return;
+    }
+    this.purchaseRequestService.getCategories(entityId).subscribe({
+      next: (res: any) => {
+        const data = this.extractList(res);
+        this.categoryList = Array.isArray(data) ? data : [];
+        this.buildIncomingPrCategories();
+        this.applyCategoryFilter();
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        console.error('Failed to load categories:', err);
+        this.categoryList = [];
+      }
+    });
+  }
+
   loadFromPurchaseRequest(prId: number): void {
     //new work
     this.spinner.show();
@@ -1026,6 +1162,12 @@ export class NewRfqComponent implements OnInit {
           projectName: item.projectName || item.ProjectName || this.getProjectNameById(item.projectId),
           ActivityName: item.ActivityName || item.activityName || item.projectActivityName || this.getActivityNameById(item.projectActivityId),
           activityName: item.activityName || item.ActivityName || item.projectActivityName || this.getActivityNameById(item.projectActivityId),
+          // Carry category from PR item
+          procurementCategoryId: item.procurementCategoryId || item.categoryId || null,
+          categoryId: item.categoryId || item.procurementCategoryId || null,
+          procurementCategoryName: item.procurementCategoryName || item.categoryName || item.category || '',
+          categoryName: item.categoryName || item.procurementCategoryName || item.category || '',
+          category: item.category || item.categoryName || item.procurementCategoryName || '',
 
           quotationItemAttachments:
             item.attachments?.map((a: any) => ({
@@ -1045,6 +1187,8 @@ export class NewRfqComponent implements OnInit {
         }));
 
         this.newQuotationItemData = [...this.newQuotationItemData];
+        this.buildIncomingPrCategories();
+        this.applyCategoryFilter();
         this.spinner.hide();
         this.cdr.detectChanges();
       },
@@ -1155,6 +1299,12 @@ export class NewRfqComponent implements OnInit {
             projectName: item.projectName || item.ProjectName || this.getProjectNameById(item.projectId),
             ActivityName: item.ActivityName || item.activityName || item.projectActivityName || this.getActivityNameById(item.projectActivityId),
             activityName: item.activityName || item.ActivityName || item.projectActivityName || this.getActivityNameById(item.projectActivityId),
+            // Category fields
+            procurementCategoryId: item.procurementCategoryId || item.categoryId || null,
+            categoryId: item.categoryId || item.procurementCategoryId || null,
+            procurementCategoryName: item.procurementCategoryName || item.categoryName || item.category || '',
+            categoryName: item.categoryName || item.procurementCategoryName || item.category || '',
+            category: item.category || item.categoryName || item.procurementCategoryName || '',
             quotationItemAttachments: (item.quotationItemAttachments || []).map((a: any) => ({
               id: a.id,
               content: a.content,
@@ -1170,6 +1320,8 @@ export class NewRfqComponent implements OnInit {
               isNew: false,
             })),
           }));
+          this.buildIncomingPrCategories();
+          this.applyCategoryFilter();
         }
 
         const rfqEntityId = Number(requestData.entityId) || null;
@@ -1186,8 +1338,11 @@ export class NewRfqComponent implements OnInit {
     });
   }
 
-  editRow(row: any, rowIndex: number) {
-    this.editingRowIndex = rowIndex;
+  editRow(row: any, rowIndex?: number) {
+    this.editingRowIndex = this.newQuotationItemData.indexOf(row);
+    if (this.editingRowIndex < 0 && rowIndex !== undefined) {
+      this.editingRowIndex = rowIndex;
+    }
     this.isItemsFormCollapsed = false;
     this.itemForm.patchValue({
       id: row.id,
@@ -1206,6 +1361,10 @@ export class NewRfqComponent implements OnInit {
       departmentId: row.departmentId || this.departmentId || null,
       projectId: row.projectId || null,
       projectActivityId: row.projectActivityId || null,
+      categoryId: row.categoryId || row.procurementCategoryId || null,
+      categoryName: this.getCategoryName(row),
+      procurementCategoryId: row.procurementCategoryId || row.categoryId || null,
+      procurementCategoryName: this.getCategoryName(row),
     });
     this.selectedUomLabel = this.resolveUomSymbol(row) || '';
     this.onVendorChange(row.vendorUserId);
@@ -1537,7 +1696,11 @@ export class NewRfqComponent implements OnInit {
     const projName = this.selectedProjectInfo?.name || this.getProjectNameById(projId);
     const actName = this.getActivityNameById(actId);
 
-    if (this.editingRowIndex !== null) {
+    const itemObj = this.itemList?.find(i => Number(i.id) === newItemId);
+    const resolvedCatName = itemObj ? (itemObj.categoryName || itemObj.procurementCategoryName || itemObj.category || this.getCategoryNameById(itemObj.categoryId || itemObj.procurementCategoryId)) : '';
+    const resolvedCatId = itemObj ? (itemObj.categoryId || itemObj.procurementCategoryId) : null;
+
+    if (this.editingRowIndex !== null && this.editingRowIndex >= 0) {
       const existing = this.newQuotationItemData[this.editingRowIndex];
       const merged = {
         ...existing,
@@ -1552,6 +1715,11 @@ export class NewRfqComponent implements OnInit {
         vatProdPostingGroup: existing.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
         unitOfMeasurementSymbol: this.selectedUomLabel || this.resolveUomSymbol(newItem) || this.resolveUomSymbol(existing),
         attachments: existing?.attachments ?? [],
+        categoryId: existing?.categoryId || resolvedCatId,
+        procurementCategoryId: existing?.procurementCategoryId || resolvedCatId,
+        categoryName: existing?.categoryName || resolvedCatName,
+        procurementCategoryName: existing?.procurementCategoryName || resolvedCatName,
+        category: existing?.category || resolvedCatName,
       };
 
       // Immutable update to trigger ngx-datatable refresh
@@ -1559,6 +1727,8 @@ export class NewRfqComponent implements OnInit {
         idx === this.editingRowIndex ? merged : item
       );
 
+      this.buildIncomingPrCategories();
+      this.applyCategoryFilter();
       this.toastr.success('Item updated successfully!');
       this.editingRowIndex = null;
     } else {
@@ -1575,8 +1745,15 @@ export class NewRfqComponent implements OnInit {
         vatProdPostingGroup: this.resolveVatProdPostingGroup(),
         unitOfMeasurementSymbol: this.resolveUomSymbol(newItem),
         attachments: newItem.attachments?.length ? newItem.attachments : [],
+        categoryId: resolvedCatId,
+        procurementCategoryId: resolvedCatId,
+        categoryName: resolvedCatName,
+        procurementCategoryName: resolvedCatName,
+        category: resolvedCatName,
       };
       this.newQuotationItemData = [...this.newQuotationItemData, withEmptyAttachments];
+      this.buildIncomingPrCategories();
+      this.applyCategoryFilter();
       this.toastr.success('Item added successfully!');
     }
 
@@ -1597,7 +1774,10 @@ export class NewRfqComponent implements OnInit {
     this.itemForm.get('unitOfMeasurementId')?.disable({ emitEvent: false });
   }
 
-  deleteRow(rowIndex: number): void {
+  deleteRow(rowOrIndex: any): void {
+    const actualIndex = typeof rowOrIndex === 'number' ? rowOrIndex : this.newQuotationItemData.indexOf(rowOrIndex);
+    if (actualIndex < 0) return;
+
     Swal.fire({
       title: 'Are you sure?',
       text: 'Do you want to delete this item?',
@@ -1609,15 +1789,28 @@ export class NewRfqComponent implements OnInit {
       cancelButtonColor: '#3085d6',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.newQuotationItemData.splice(rowIndex, 1);
-        this.newQuotationItemData = [...this.newQuotationItemData]; // refresh table
+        this.newQuotationItemData.splice(actualIndex, 1);
+        this.newQuotationItemData = [...this.newQuotationItemData];
+        this.buildIncomingPrCategories();
+        this.applyCategoryFilter();
         this.toastr.success('Item deleted!', '');
       }
     });
   }
 
-  openNewEntityModal(rowIndex: number): void {
-    const sourceRow = rowIndex !== null ? this.newQuotationItemData[rowIndex] : this.itemForm.value; // new item (not yet inserted)
+  openNewEntityModal(rowOrIndex: any): void {
+    let sourceRow: any = null;
+    let actualIndex: number = -1;
+    if (typeof rowOrIndex === 'number') {
+      actualIndex = rowOrIndex;
+      sourceRow = actualIndex >= 0 ? this.newQuotationItemData[actualIndex] : this.itemForm.value;
+    } else if (rowOrIndex && typeof rowOrIndex === 'object') {
+      sourceRow = rowOrIndex;
+      actualIndex = this.newQuotationItemData.indexOf(rowOrIndex);
+    } else {
+      sourceRow = this.itemForm.value;
+    }
+
     console.log('Source Row:', sourceRow);
     const modalRef = this.modalService.open(RfqAttachmentComponent, {
       backdrop: 'static',
@@ -1647,11 +1840,12 @@ export class NewRfqComponent implements OnInit {
             })),
           ];
 
-          if (rowIndex !== null) {
+          if (actualIndex >= 0) {
             // immutably update the edited row in the grid
             this.newQuotationItemData = this.newQuotationItemData.map((r, i) =>
-              i === rowIndex ? { ...r, quotationItemAttachments: data } : r
+              i === actualIndex ? { ...r, quotationItemAttachments: data } : r
             );
+            this.applyCategoryFilter();
           } else {
             // reflect on the form for a new (not yet inserted) item
             this.itemForm.patchValue({ quotationItemAttachments: data });
@@ -1975,11 +2169,17 @@ export class NewRfqComponent implements OnInit {
   }
 
   toggleSelectAll() {
-    this.newQuotationItemData.forEach(row => {
+    const targetRows = (this.selectedCategoryFilter && this.selectedCategoryFilter !== 'ALL')
+      ? this.filteredQuotationItemData
+      : this.newQuotationItemData;
+    targetRows.forEach(row => {
       row.selected = this.allSelected;
     });
   }
   updateSelectAllState() {
-    this.allSelected = this.newQuotationItemData.every(row => row.selected);
+    const targetRows = (this.selectedCategoryFilter && this.selectedCategoryFilter !== 'ALL')
+      ? this.filteredQuotationItemData
+      : this.newQuotationItemData;
+    this.allSelected = targetRows.length > 0 && targetRows.every(row => row.selected);
   }
 }
