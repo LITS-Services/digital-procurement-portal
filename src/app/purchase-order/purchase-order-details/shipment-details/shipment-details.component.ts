@@ -40,14 +40,39 @@ export class ShipmentDetailsComponent implements OnInit {
   loadShipmentDetails() {
     this.loading = true;
     this.spinner.show();
-    this.shipmentService.getShipmentDetailById(this.poId).subscribe({
-      next: res => {
-        this.shipmentDetails = res; // because your API returns Result<T>
+    this.purchaseOrderService.getPurchaseOrderById(this.poId).subscribe({
+      next: (po: any) => {
+        this.poDetails = po;
+        const items = po?.items || [];
+        this.shipmentDetails = {
+          shipmentDetailNo: po?.shipmentDetailNo || po?.purchaseOrderNo,
+          vendorName: po?.vendorCompanyName || po?.vendorName,
+          requestStatus: po?.requestStatus,
+          shipmentDate: po?.estimatedDispatchDate || po?.createdDate,
+          shipToName: po?.receiverName || po?.vendorName,
+          country: po?.country || po?.shipToCountry,
+          city: po?.city || po?.shipToCity,
+          region: po?.region,
+          shipToAddress: po?.address || po?.shipToAddress,
+          shipToAddress2: po?.address2,
+          postCode: po?.postCode || po?.shipToPostCode,
+          notes: po?.remarks || '-',
+          items: items.map((i: any) => ({
+            itemName: i.itemName,
+            orderedQty: i.quantity,
+            shippingQuantity: i.shippingQuantity || i.quantity,
+            deliveryDate: i.deliveryDate
+          }))
+        };
         this.loading = false;
         this.spinner.hide();
         this.cdr.detectChanges();
       },
-      error: () => this.loading = false
+      error: () => {
+        this.loading = false;
+        this.spinner.hide();
+        this.cdr.detectChanges();
+      }
     });
   }
 

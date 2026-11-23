@@ -7,6 +7,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { finalize } from 'rxjs/operators';
 import { PdfExportService } from 'app/shared/services/pdf-export.service';
+import { ShipmentService } from 'app/shared/services/shipment.service';
 import { PoRemarksComponent } from '../po-remarks/po-remarks.component';
 import { PoApprovalHistoryComponent } from '../po-approval-history/po-approval-history.component';
 
@@ -33,6 +34,13 @@ export class PurchaseOrderDetailsComponent implements OnInit {
   itemsExpanded = true;
   selectedTab: any = 'po-details';
 
+  // Shipment Line Details Modal
+  selectedPoLineId?: number;
+  selectedOrderedQty = 0;
+  selectedItemName = '';
+  shipmentLines: any[] = [];
+  loadingShipmentLines = false;
+
   constructor(
     private route: ActivatedRoute,
     private purchaseOrderService: PurchaseOrderService,
@@ -41,7 +49,8 @@ export class PurchaseOrderDetailsComponent implements OnInit {
     public spinner: NgxSpinnerService,
     private toastr: ToastrService,
     private pdfExportService: PdfExportService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private shipmentService: ShipmentService
   ) { }
 
   get currentUserId(): string {
@@ -316,6 +325,38 @@ export class PurchaseOrderDetailsComponent implements OnInit {
 
   homePage() {
     this.router.navigate(['purchase-order']);
+  }
+
+  openShipmentLineDetail(row: any, content: any): void {
+    this.selectedPoLineId = row.purchaseOrderLineId || row.id;
+    this.selectedOrderedQty = row.quantity ?? row.orderedQuantity ?? row.qty ?? 0;
+    this.selectedItemName = row.itemName ?? row.item ?? '-';
+    this.shipmentLines = [];
+    this.loadingShipmentLines = true;
+
+    this.modalService.open(content, { size: 'lg', centered: true });
+
+    if (this.selectedPoLineId) {
+      this.shipmentService.getShipmentLinesByPoLineId(this.selectedPoLineId).subscribe({
+        next: (res: any) => {
+          const data = Array.isArray(res) ? res : (Array.isArray(res?.value) ? res.value : (Array.isArray(res?.data) ? res.data : []));
+          this.shipmentLines = data;
+          this.loadingShipmentLines = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.shipmentLines = [];
+          this.loadingShipmentLines = false;
+          this.cdr.detectChanges();
+        }
+      });
+    } else {
+      this.loadingShipmentLines = false;
+    }
+  }
+
+  get totalShippedQty(): number {
+    return (this.shipmentLines || []).reduce((sum, line) => sum + (Number(line.quantity) || 0), 0);
   }
 
   selectTab(tab: any) {

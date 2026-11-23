@@ -226,7 +226,52 @@
             </div>
         </div>
         <div *ngIf="selectedTab === 'shipment-details'">
-            <app-shipment-details [poId]="poId"></app-shipment-details>
+            <ngx-datatable class="bootstrap core-bootstrap" [rows]="poDetails?.items ?? []" [columnMode]="'force'"
+                [headerHeight]="50" [footerHeight]="50" rowHeight="50" [limit]="10" [scrollbarH]="true"
+                [loadingIndicator]="loading">
+
+                <ngx-datatable-column name="Sr. No." [sortable]="false" [width]="70">
+                    <ng-template let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                        <span>{{ rowIndex + 1 }}</span>
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="Purchase Order No" prop="purchaseOrderNo" [sortable]="false">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{ poDetails?.purchaseOrderNo || '-' }}
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="Purchase Request No" prop="requisitionNo" [sortable]="false">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{ poDetails?.requisitionNo ?? poDetails?.prNo ?? '-' }}
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="RFQ No" prop="rfqNo" [sortable]="false">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{ poDetails?.rfqNo ?? poDetails?.rfqNumber ?? '-' }}
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="Item Name" prop="itemName" [sortable]="false"></ngx-datatable-column>
+
+                <ngx-datatable-column name="Ordered Qty" prop="quantity" [sortable]="false" [width]="110">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        {{ row.quantity ?? row.orderedQuantity ?? row.qty ?? 0 }}
+                    </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="Action" [sortable]="false" [width]="90">
+                    <ng-template let-row="row" ngx-datatable-cell-template>
+                        <button class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1"
+                            (click)="openShipmentLineDetail(row, shipmentLinesModal)">
+                            <i class="ft-eye"></i>
+                            <span>View</span>
+                        </button>
+                    </ng-template>
+                </ngx-datatable-column>
+            </ngx-datatable>
         </div>
 
         <div *ngIf="selectedTab === 'grn-details'">
@@ -241,4 +286,62 @@
             <app-vendor-rating [poId]="poId" [vendorUserId]="poDetails?.vendorUserId"></app-vendor-rating>
         </div> -->
     </div>
+
+    <!-- Shipment Lines Detail Modal (Matching Vendor Portal) -->
+    <ng-template #shipmentLinesModal let-modal>
+        <div class="modal-header">
+            <h5 class="modal-title fw-bold">Shipment Details</h5>
+            <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+        </div>
+        <div class="modal-body p-3">
+            <div class="row mb-3">
+                <div class="col-md-8 mb-2">
+                    <label class="form-label small fw-bold">Item Name</label>
+                    <input class="form-control form-control-sm custom-input" [value]="selectedItemName" disabled>
+                </div>
+                <div class="col-md-4 mb-2">
+                    <label class="form-label small fw-bold">Ordered Qty</label>
+                    <input class="form-control form-control-sm custom-input" [value]="selectedOrderedQty" disabled>
+                </div>
+            </div>
+
+            <div *ngIf="loadingShipmentLines" class="text-center py-4">
+                <i class="fa fa-spinner fa-spin fa-2x text-primary"></i>
+                <p class="small text-muted mt-2">Loading shipment lines...</p>
+            </div>
+
+            <div class="alert alert-light border text-center text-muted py-3 my-2 rounded" *ngIf="!loadingShipmentLines && shipmentLines.length === 0">
+                <i class="ft-info me-1"></i> The vendor has not submitted shipment lines for this item yet.
+            </div>
+
+            <div class="table-responsive border rounded" *ngIf="!loadingShipmentLines && shipmentLines.length > 0">
+                <table class="table table-sm table-striped align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="text-center" style="width: 50px;">#</th>
+                            <th class="text-center">QTY TO SHIP</th>
+                            <th class="text-center">SHIPMENT DATE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let line of shipmentLines; let i = index">
+                            <td class="text-center fw-bold">{{ i + 1 }}</td>
+                            <td class="text-center">{{ line.quantity }}</td>
+                            <td class="text-center">{{ line.shipmentDate ? (line.shipmentDate | date:'yyyy-MM-dd') : '-' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-end fw-bold mt-3" *ngIf="!loadingShipmentLines && shipmentLines.length > 0">
+                Total Qty to Ship:
+                <span class="text-success ms-1">
+                    {{ totalShippedQty }} / {{ selectedOrderedQty }}
+                </span>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary btn-sm" (click)="modal.dismiss()">Close</button>
+        </div>
+    </ng-template>
 </section>
