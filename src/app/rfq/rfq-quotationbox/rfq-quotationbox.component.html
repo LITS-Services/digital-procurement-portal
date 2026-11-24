@@ -34,7 +34,7 @@
       </div>
       
            <div *ngIf="!selectedVendor && !rfqData?.length" class="py-4 px-2">
-         No bids found for this RFQ.
+         No quotes found for this RFQ.
       </div>
 
 
@@ -130,7 +130,7 @@
               {{ row.reqByDate ? (row.reqByDate | date:'yyyy-MM-dd') : '—' }}
             </ng-template>
           </ngx-datatable-column>
-          <ngx-datatable-column name="Bid Price" prop="biddingAmount" [width]="125" [minWidth]="120">
+          <ngx-datatable-column name="Quote Price" prop="biddingAmount" [width]="125" [minWidth]="120">
             <ng-template let-row="row" ngx-datatable-cell-template>
               {{ (row.biddingAmount || 0) | number:'1.0-2' }}
             </ng-template>
