@@ -13,10 +13,17 @@ export class LookupService {
     return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=item`);
   }
 
-  getItemsByEntity(entityGuid: string) {
-    return this.http.get<any[]>(`${this.baseUrl}/dropdowns`, {
-      params: { name: 'Item', id: entityGuid }
-    });
+  getItemsByEntity(entityGuid: string, categoryId?: number | string | null) {
+    const params: any = { name: 'Item', id: entityGuid };
+    if (categoryId !== null && categoryId !== undefined && categoryId !== '') {
+      params.categoryId = String(categoryId);
+      params.parentId = String(categoryId);
+    }
+    return this.http.get<any[]>(`${this.baseUrl}/dropdowns`, { params });
+  }
+
+  getAllCategories() {
+    return this.http.get<any[]>(`${this.baseUrl}/dropdowns?name=categories`);
   }
 
   getAllUnitsOfMeasurement() {

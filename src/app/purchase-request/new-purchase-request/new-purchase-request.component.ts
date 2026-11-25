@@ -81,6 +81,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   workflowTypes: any[] = [];
 
   // new work
+  categoryList: any[] = [];
+  allEntityItems: any[] = [];
   itemList: any[] = [];
   unitsOfMeasurementList: any[] = [];
   uomMasterList: any[] = [];
@@ -212,7 +214,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       id: [null],
       requisitionNo: [''],
       itemType: ['Inventory', Validators.required],
-      itemId: [0],
+      categoryId: [null, Validators.required],
+      itemId: [0, Validators.required],
       unitOfMeasurementId: [0],
       amount: [0],
       // unitCost kept for API shape; UI removed — always 0 on save unless loaded from existing PR.
@@ -227,6 +230,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       attachments: this.fb.group([])
     });
 
+    this.loadCategories();
     this.loadAccounts();
     this.loadUnitsOfMeasurements();
     this.itemForm.get('unitOfMeasurementId')?.disable({ emitEvent: false });
@@ -557,6 +561,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   }
 
   onEntityChanged(): void {
+    this.itemForm?.patchValue({ categoryId: null }, { emitEvent: false });
     this.loadAddressOnEntityChanges();
     this.resetItemAndUomSelection();
     this.loadItemsForSelectedEntity();
@@ -571,17 +576,34 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     return guid || null;
   }
 
-  loadItemsForSelectedEntity(): void {
+  loadCategories(): void {
+    this.companyService.getAllCategories().subscribe({
+      next: (res: any) => {
+        this.categoryList = Array.isArray(res) ? res : (res?.value ?? []);
+        this.cdr.markForCheck();
+      },
+      error: (err) => console.error('Failed to load categories:', err)
+    });
+  }
+
+  getCategoryNameById(id: any): string {
+    if (!id) return '';
+    const cat = this.categoryList?.find(c => Number(c.id) === Number(id));
+    return cat ? (cat.name || cat.description || cat.code || '') : '';
+  }
+
+  loadItemsForSelectedEntity(categoryId?: any): void {
     const entityId = Number(this.newPurchaseRequestForm.get('entityId')?.value);
     if (!entityId) {
       this.itemList = [];
+      this.allEntityItems = [];
       this.vatProdPostingGroups = [];
       return;
     }
 
     const guid = this.getSelectedEntityGuid();
     if (guid) {
-      this.fetchEntityLookups(guid);
+      this.fetchEntityLookups(guid, categoryId);
       return;
     }
 
@@ -591,23 +613,30 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
         if (companyGuid) {
           const entity = this.entities?.find(e => Number(e.id) === entityId);
           if (entity) entity.stringId = companyGuid;
-          this.fetchEntityLookups(companyGuid);
+          this.fetchEntityLookups(companyGuid, categoryId);
         } else {
           this.itemList = [];
+          this.allEntityItems = [];
           this.vatProdPostingGroups = [];
         }
       },
       error: () => {
         this.itemList = [];
+        this.allEntityItems = [];
         this.vatProdPostingGroups = [];
       }
     });
   }
 
-  private fetchEntityLookups(entityGuid: string): void {
-    this.lookupService.getItemsByEntity(entityGuid).subscribe({
+  private fetchEntityLookups(entityGuid: string, categoryId?: any): void {
+    const activeCatId = categoryId !== undefined ? categoryId : this.itemForm?.get('categoryId')?.value;
+    this.lookupService.getItemsByEntity(entityGuid, activeCatId).subscribe({
       next: (res) => {
-        this.itemList = res ?? [];
+        const items = res ?? [];
+        if (!activeCatId) {
+          this.allEntityItems = items;
+        }
+        this.itemList = items;
         this.cdr.markForCheck();
       },
       error: (err) => console.error('Failed to load items for entity:', err)
@@ -621,6 +650,33 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     });
   }
 
+  onCategoryChange(catIdVal?: any): void {
+    const catId = catIdVal !== undefined && catIdVal !== null && catIdVal !== '' ? Number(catIdVal) : Number(this.itemForm.get('categoryId')?.value);
+
+    // If currently selected item does not match new category, reset item selection
+    const currentItemId = Number(this.itemForm.get('itemId')?.value);
+    if (currentItemId > 0 && catId > 0) {
+      const currentItem = (this.allEntityItems?.length ? this.allEntityItems : this.itemList)?.find(i => Number(i.id) === currentItemId);
+      const itemCatId = Number(currentItem?.categoryId || currentItem?.stringId);
+      if (itemCatId && itemCatId !== catId) {
+        this.itemForm.patchValue({ itemId: 0 });
+        this.resetItemAndUomSelection();
+      }
+    }
+
+    const entityGuid = this.getSelectedEntityGuid();
+    if (entityGuid) {
+      this.fetchEntityLookups(entityGuid, catId > 0 ? catId : null);
+    } else if (this.allEntityItems?.length) {
+      if (catId > 0) {
+        this.itemList = this.allEntityItems.filter(i => Number(i.categoryId || i.stringId) === catId);
+      } else {
+        this.itemList = [...this.allEntityItems];
+      }
+      this.cdr.markForCheck();
+    }
+  }
+
   onItemSelected(itemId: any): void {
     const id = Number(itemId);
     if (!id || Number.isNaN(id) || id <= 0) {
@@ -628,6 +684,12 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       this.selectedUomLabel = '';
       this.itemForm.get('unitOfMeasurementId')?.setValue(null, { emitEvent: false });
       return;
+    }
+
+    const selectedItem = (this.allEntityItems?.length ? this.allEntityItems : this.itemList)?.find(i => Number(i.id) === id);
+    const itemCatId = Number(selectedItem?.categoryId || selectedItem?.stringId);
+    if (itemCatId && !this.itemForm.get('categoryId')?.value) {
+      this.itemForm.patchValue({ categoryId: itemCatId }, { emitEvent: false });
     }
 
     this.lookupService.getUomByItem(id).subscribe({
@@ -959,58 +1021,9 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     return found ? found.description : '';
   }
   getItemNameById(id: number): string {
-    const found = this.itemList.find(i => i.id === id);
+    const found = this.allEntityItems?.find(i => i.id === id) || this.itemList?.find(i => i.id === id);
     return found ? found.description : '';
   }
-
-  // insertItem(): void {
-  //   const newItem = this.itemForm.value;
-  //   const newItemId = Number(newItem.itemId);
-
-  //   // Duplicate check — works for add and edit both
-  //   const duplicate = this.newPurchaseItemData.some((item, index) =>
-  //     index !== this.editingRowIndex && Number(item.itemId) === newItemId
-  //   );
-
-  //   if (duplicate) {
-  //     this.toastr.warning('This item is already added. You can update it instead.');
-  //     return;
-  //   }
-
-  //   if (this.editingRowIndex !== null) {
-  //     const existing = this.newPurchaseItemData[this.editingRowIndex];
-  //     const merged = {
-  //       ...existing,
-  //       ...newItem,
-  //       itemId: newItemId,
-  //       attachments: existing?.attachments ?? []
-  //     };
-
-  //     // Immutable update to trigger ngx-datatable refresh
-  //     this.newPurchaseItemData = this.newPurchaseItemData.map((item, idx) =>
-  //       idx === this.editingRowIndex ? merged : item
-  //     );
-
-  //     this.toastr.success('Item updated successfully!');
-  //     this.editingRowIndex = null;
-
-  //   } else {
-  //     // Add new
-  //     const withEmptyAttachments = {
-  //       ...newItem,
-  //       itemId: newItemId,
-  //       attachments: newItem.attachments?.length ? newItem.attachments : []
-  //     };
-  //     this.newPurchaseItemData = [...this.newPurchaseItemData, withEmptyAttachments];
-  //     this.toastr.success('Item added successfully!');
-  //   }
-
-  //   this.itemForm.reset({
-  //     amount: 0,
-  //     unitCost: 0,
-  //     orderQuantity: 1
-  //   });
-  // }
 
   insertItem(): void {
     if (this.itemForm.invalid) {
@@ -1021,8 +1034,15 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
     const newItem = this.itemForm.getRawValue();
     const itemId = Number(newItem.itemId);
+    const categoryId = newItem.categoryId ? Number(newItem.categoryId) : null;
     const orderQuantity = Number(newItem.orderQuantity);
     const amount = Number(newItem.amount);
+
+    if (!categoryId || Number.isNaN(categoryId) || categoryId <= 0) {
+      this.itemForm.get('categoryId')?.markAsTouched();
+      this.toastr.warning('Please select Category before adding item.');
+      return;
+    }
 
     if (!itemId || Number.isNaN(itemId) || itemId <= 0) {
       this.itemForm.get('itemId')?.markAsTouched();
@@ -1044,7 +1064,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
     // const derivedUnitCost = orderQuantity > 0 ? amount / orderQuantity : 0;
     const newItemId = Number(newItem.itemId);
-    const normalizedItem = { ...newItem, amount, unitCost: 0 };
+    const categoryName = this.getCategoryNameById(categoryId);
+    const normalizedItem = { ...newItem, categoryId, categoryName, amount, unitCost: 0 };
 
     // Duplicate check — works for add and edit both
     const duplicate = this.newPurchaseItemData.some((item, index) =>
@@ -1062,6 +1083,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       const merged = {
         ...existing,
         ...normalizedItem,
+        categoryId,
+        categoryName,
         itemId: existing.itemId,
         vatProdPostingGroup: existing.vatProdPostingGroup || this.resolveVatProdPostingGroup(),
         unitOfMeasurementSymbol: this.selectedUomLabel || this.resolveUomSymbol(normalizedItem) || this.resolveUomSymbol(existing),
@@ -1078,6 +1101,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       //  Always append a new manual row (no duplicate restriction)
       const withEmptyAttachments = {
         ...normalizedItem,
+        categoryId,
+        categoryName,
         itemId: newItemId,
         vatProdPostingGroup: this.resolveVatProdPostingGroup(),
         unitOfMeasurementSymbol: this.resolveUomSymbol(normalizedItem),
@@ -1095,8 +1120,13 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       orderQuantity: 0,
       accountId: 1,
       itemType: 'Inventory',
+      categoryId: null,
+      itemId: 0,
       reqByDate: this.toDateInputValue(new Date())
     });
+    if (this.allEntityItems?.length) {
+      this.itemList = [...this.allEntityItems];
+    }
     this.syncFinalVendorControlState();
   }
 
@@ -1133,10 +1163,13 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     // mark which row is being edited
     this.editingRowIndex = rowIndex;
 
+    const rowCatId = row.categoryId ? Number(row.categoryId) : null;
+
     // patch form values from the selected row
     this.itemForm.patchValue({
       id: row.id || null,
       itemType: row.itemType || '',
+      categoryId: rowCatId,
       itemId: Number(row.itemId) || null,
       unitOfMeasurementId: Number(row.unitOfMeasurementId) || null,
       orderQuantity: Number(row.orderQuantity) || 0,
@@ -1152,6 +1185,10 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     });
     this.selectedUomLabel = this.resolveUomSymbol(row) || '';
     this.syncFinalVendorControlState();
+
+    if (rowCatId) {
+      this.onCategoryChange(rowCatId);
+    }
 
     // if vendor changes, refresh vendor company list
     if (row.vendorUserId) {
@@ -1293,6 +1330,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
             id: item.id,
             requisitionNo: item.requisitionNo,
             itemType: item.itemType,
+            categoryId: item.categoryId ?? null,
+            categoryName: item.categoryName || this.getCategoryNameById(item.categoryId),
             itemId: item.itemId,
             itemDescription: item.itemDescription,
             amount: item.amount,
@@ -1390,6 +1429,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       ? this.newPurchaseItemData.map(item => ({
         id: item.id || null,
         itemType: item.itemType || '',
+        categoryId: item.categoryId ? Number(item.categoryId) : null,
+        categoryName: item.categoryName || this.getCategoryNameById(item.categoryId) || null,
         itemId: Number(item.itemId) || 0,
         unitOfMeasurementId: Number(item.unitOfMeasurementId) || null,
         amount: item.amount || 0,
@@ -1501,6 +1542,8 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       ? this.newPurchaseItemData.map(item => ({
         id: item.id || null,
         itemType: item.itemType || '',
+        categoryId: item.categoryId ? Number(item.categoryId) : null,
+        categoryName: item.categoryName || this.getCategoryNameById(item.categoryId) || null,
         itemId: Number(item.itemId) || null,
         unitOfMeasurementId: Number(item.unitOfMeasurementId) || null,
         amount: item.amount || 0,
@@ -1752,6 +1795,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       id: null,
       requisitionNo: '',
       itemType: 'Inventory',
+      categoryId: null,
       itemId: 0,
       unitOfMeasurementId: 0,
       amount: 0,
@@ -1771,6 +1815,10 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     this.selectedUomLabel = '';
     this.unitsOfMeasurementList = [];
     this.itemForm.get('unitOfMeasurementId')?.disable({ emitEvent: false });
+
+    if (this.allEntityItems?.length) {
+      this.itemList = [...this.allEntityItems];
+    }
 
     this.filteredCompanies = [];
     this.syncFinalVendorControlState();

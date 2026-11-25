@@ -447,6 +447,17 @@
                         <div class="form-grid w-100 px-1">
                           <div class="form-grid__item">
                             <div class="form-group mb-2">
+                              <label>Category <span class="text-danger">*</span></label>
+                              <select class="form-control custom-input" formControlName="categoryId"
+                                (change)="onCategoryChange()">
+                                <option [ngValue]="null">Select Category</option>
+                                <option *ngFor="let cat of categoryList" [ngValue]="cat.id">{{ cat.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div class="form-grid__item">
+                            <div class="form-group mb-2">
                               <label>Item <span class="text-danger">*</span></label>
                               <select class="form-control custom-input" formControlName="itemId">
                                 <option [ngValue]="0" disabled>Select Item</option>
@@ -606,6 +617,14 @@
                 <ngx-datatable-column name="Type" prop="itemType" [minWidth]="100" [flexGrow]="1">
                   <ng-template let-row="row" ngx-datatable-cell-template>
                     <span class="cell-ellipsis" container="body">{{ row.itemType }}</span>
+                  </ng-template>
+                </ngx-datatable-column>
+
+                <ngx-datatable-column name="Category" [minWidth]="160" [flexGrow]="1.5">
+                  <ng-template let-row="row" ngx-datatable-cell-template>
+                    <span class="cell-ellipsis" [ngbTooltip]="row.categoryName || getCategoryNameById(row.categoryId)" container="body">
+                      {{ row.categoryName || getCategoryNameById(row.categoryId) || '-' }}
+                    </span>
                   </ng-template>
                 </ngx-datatable-column>
 

@@ -23,6 +23,14 @@ export class CompanyService {
 
   constructor(private http: HttpClient) { }
 
+  getAllCategories(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/get-all-categories`);
+  }
+
+  getCategoriesDropdown(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/get-categories-dropdown`);
+  }
+
   getAllEmployees(): Observable<any[]> {
     return this.http.get<any[]>(`${environment.apiUrl}/Employee/GetAllEmployees`);
   }
