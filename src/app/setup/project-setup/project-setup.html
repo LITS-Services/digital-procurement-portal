@@ -29,7 +29,7 @@
 
               <button type="button" class="btn btn-sm cstm-ui-table-btn" (click)="editSelected(formModal)"
                 [disabled]="selected.length !== 1">
-                <i class="ft-edit"></i>
+                <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" />
                 <label class="ml-1">Edit</label>
               </button>
             </div>
@@ -201,7 +201,7 @@
                         </button>
                         <button type="button" class="btn-delete-row" (click)="removeActivity(i)"
                           ngbTooltip="Remove Activity" container="body">
-                          <i class="ft-trash-2"></i>
+                          <img src="assets/img/svg-icons/delete-icon.svg" class="row-action-icon" alt="Remove" />
                         </button>
                       </div>
                     </td>

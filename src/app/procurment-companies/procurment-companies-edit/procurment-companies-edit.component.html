@@ -127,11 +127,11 @@
                             <td>{{ addr.address2 }}</td>
                             <td>{{ addr.postCode }}</td>
                             <td class="text-center">
-                              <button type="button" class="btn btn-sm btn-outline-primary mr-1" (click)="editAddress(i)">
-                                <i class="ft-edit"></i>
+                              <button type="button" class="btn btn-sm btn-outline-primary mr-1" (click)="editAddress(i)" title="Edit">
+                                <img src="assets/img/svg-icons/update-icon.svg" class="row-action-icon" alt="Edit" />
                               </button>
-                              <button type="button" class="btn btn-sm btn-outline-danger" (click)="deleteAddress(i)">
-                                <i class="ft-trash"></i>
+                              <button type="button" class="btn btn-sm btn-outline-danger" (click)="deleteAddress(i)" title="Delete">
+                                <img src="assets/img/svg-icons/delete-icon.svg" class="row-action-icon" alt="Delete" />
                               </button>
                             </td>
                           </tr>

@@ -928,14 +928,14 @@
 
                 <ngx-datatable-column *ngIf="!viewMode" name="Actions" [minWidth]="110" [maxWidth]="130" [flexGrow]="0.9">
                   <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
-                    <a matTooltip="Edit Item" (click)="editRow(row, rowIndex)"
+                    <a matTooltip="Edit Item" class="mr-1" (click)="editRow(row, rowIndex)"
                       [ngClass]="viewMode ? 'disabled' : 'row-action-edit'">
-                      <i style="font-size: 1.5rem;" class="ft-edit mr-1"></i>
+                      <img src="assets/img/svg-icons/update-icon.svg" class="row-action-icon" alt="Edit" />
                     </a>
 
                     <a matTooltip="Delete Item" *ngIf="!isSelectingFinalVendor" (click)="deleteRow(rowIndex)"
                       [ngClass]="viewMode ? 'disabled' : 'row-action-delete'">
-                      <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
+                      <img src="assets/img/svg-icons/delete-icon.svg" class="row-action-icon" alt="Delete" />
                     </a>
                   </ng-template>
                 </ngx-datatable-column>

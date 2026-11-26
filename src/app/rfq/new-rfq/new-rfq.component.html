@@ -698,14 +698,14 @@
         <ngx-datatable-column *ngIf="!viewMode" name="Actions" [width]="120" [sortable]="false" [canAutoResize]="false"
           [draggable]="false" [resizeable]="false">
           <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
-            <a matTooltip="Edit Item" (click)="editRow(row, rowIndex)"
+            <a matTooltip="Edit Item" class="mr-1" (click)="editRow(row, rowIndex)"
               [ngClass]="viewMode ? 'disabled' : 'row-action-edit'">
-              <i class="ft-edit mr-1" style="font-size: 1.5rem;"></i>
+              <img src="assets/img/svg-icons/update-icon.svg" class="row-action-icon" alt="Edit" />
             </a>
     
-            <a matTooltip="Delete Item" style="cursor: pointer; color: #d1d4d7;" (click)="deleteRow(row)"
+            <a matTooltip="Delete Item" (click)="deleteRow(row)"
               [ngClass]="viewMode ? 'disabled' : 'row-action-delete'">
-              <i class="ft-trash trash-icon" style="font-size: 1.5rem;"></i>
+              <img src="assets/img/svg-icons/delete-icon.svg" class="row-action-icon" alt="Delete" />
             </a>
           </ng-template>
         </ngx-datatable-column>

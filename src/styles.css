@@ -869,15 +869,26 @@ select.custom-input {
 .row-action-edit {
   color: #606060 !important;
   cursor: pointer !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
 }
 
-.row-action-edit.disabled {
+.row-action-edit:hover:not(.disabled) {
+  background-color: rgba(17, 106, 239, 0.08);
+}
+
+.row-action-edit.disabled,
+.row-action-delete.disabled {
   color: #d1d4d7 !important;
   /* grey look */
   cursor: not-allowed !important;
   pointer-events: none !important;
   /* disables click */
-  opacity: 0.7;
+  opacity: 0.45;
   /* optional subtle fade */
 }
 
@@ -885,6 +896,31 @@ select.custom-input {
 .row-action-delete {
   color: #DB0000 !important;
   cursor: pointer !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.row-action-delete:hover:not(.disabled) {
+  background-color: rgba(219, 0, 0, 0.08);
+}
+
+.row-action-icon {
+  width: 17px;
+  height: 17px;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+.btn-outline-primary:hover .row-action-icon,
+.btn-outline-danger:hover .row-action-icon,
+.btn-danger .row-action-icon {
+  filter: brightness(0) invert(1);
 }
 
 .row-action-attachment {

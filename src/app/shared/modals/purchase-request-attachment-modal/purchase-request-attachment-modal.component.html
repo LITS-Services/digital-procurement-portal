@@ -91,9 +91,9 @@
                 <i style="font-size: 1.5rem;" class="ft-download"></i>
               </a>
 
-              <a *ngIf="!viewMode" matTooltip="Upload File" class="row-action-delete" (click)="deleteRow(rowIndex)"
+              <a *ngIf="!viewMode" matTooltip="Delete File" class="row-action-delete" (click)="deleteRow(rowIndex)"
                 [ngClass]="{'disabled':viewMode || uploadedFiles[rowIndex]?.isNew}">
-                <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
+                <img src="assets/img/svg-icons/delete-icon.svg" class="row-action-icon" alt="Delete" />
               </a>
             </ng-template>
           </ngx-datatable-column>

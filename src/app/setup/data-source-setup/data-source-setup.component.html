@@ -122,11 +122,11 @@
 
             <ngx-datatable-column name="Actions" [flexGrow]="1" [minWidth]="90" [sortable]="false">
               <ng-template ngx-datatable-cell-template let-row="row">
-                <button type="button" class="btn btn-sm btn-link text-danger p-0"
+                <button type="button" class="btn btn-sm btn-link row-action-delete p-1"
                   (click)="removeForm(row.key)"
                   title="Remove from checklist"
                   appPermission [appPermFormId]="FORM_IDS.DATA_SOURCE" [appPermDisable]="'write'">
-                  <i class="ft-trash-2 font-medium-1"></i>
+                  <img src="assets/img/svg-icons/delete-icon.svg" class="row-action-icon" alt="Remove" />
                 </button>
               </ng-template>
             </ngx-datatable-column>
