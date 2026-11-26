@@ -350,149 +350,18 @@ form label, .form-group label {
 }
 
 .phone-error {
-  position: absolute;
-  bottom: -20px;       // push below input
-  left: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  margin-top: 4px;
   font-size: 12px;
   color: #dc3545;
-  line-height: 1;
-  white-space: nowrap;
-}
+  line-height: 1.35;
 
-:host ::ng-deep ngx-intl-tel-input {
-  display: block;
-  direction: ltr !important;
-  text-align: left !important;
-}
-
-:host ::ng-deep ngx-intl-tel-input * {
-  box-sizing: border-box;
-}
-
-:host ::ng-deep ngx-intl-tel-input .iti {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  position: relative;
-  overflow: visible !important;
-  height: 42px;       
-  border-radius: 8px;
-  border: 1px solid #D7D7D7;
-  background-color: #ffffff;
-  padding-right: 12px;
-  padding-left: 0;
-  direction: ltr !important;
-  text-align: left !important;
-}
-
-:host ::ng-deep ngx-intl-tel-input .iti input:disabled {
-  background-color: #f5f5f5 !important;
-}
-
-:host ::ng-deep ngx-intl-tel-input .iti:has(input:disabled) {
-  background-color: #f5f5f5 !important;
-}
-
-:host ::ng-deep ngx-intl-tel-input .iti__flag-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 100%;
-  padding: 0 10px;
-  border-right: 1px solid #e0e3e8 !important;
-  border-left: none !important;
-  margin: 0;
-  direction: ltr !important;
-}
-
-:host ::ng-deep ngx-intl-tel-input .iti__selected-flag {
-  margin: 0;
-  display: flex;
-  align-items: center;
-  width: 100% !important;
-  direction: ltr !important;
-}
-
-:host ::ng-deep ngx-intl-tel-input .selected-dial-code,
-:host ::ng-deep ngx-intl-tel-input .iti__selected-dial-code {
-  margin-left: 6px;
-  margin-right: 0 !important;
-  font-size: 14px;
-  direction: ltr !important;
-  unicode-bidi: isolate !important;
-}
-
-:host ::ng-deep ngx-intl-tel-input .iti input {
-  flex: 1 1 auto;
-  width: 100%;
-  height: 100%;
-  border: none;
-  outline: none;
-  box-shadow: none;
-  padding: 10px !important;
-  font-size: 14px;
-  direction: ltr !important;
-  text-align: left !important;
-}
-
-:host ::ng-deep ngx-intl-tel-input .iti__divider {
-  display: block;
-  height: 1px;
-  margin: 4px 0;
-  border: 0;
-  background-color: #e0e3e8;  
-}
-
-:host ::ng-deep ngx-intl-tel-input .iti input:focus {
-  outline: none;
-  box-shadow: none;
-}
-
-:host ::ng-deep ngx-intl-tel-input .iti__country-list {
-  max-height: 260px;
-  margin: 0;
-  padding: 0;
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-  -webkit-overflow-scrolling: touch;
-  z-index: 9999 !important;
-  direction: ltr !important;
-  text-align: left !important;
-}
-
-:host ::ng-deep ngx-intl-tel-input .iti__country-list li.iti__country {
-  direction: ltr !important;
-  text-align: left !important;
-
-  .iti__dial-code {
-    direction: ltr !important;
-    unicode-bidi: isolate !important;
+  i {
+    margin-top: 1px;
+    flex-shrink: 0;
   }
-}
-
-:host ::ng-deep ngx-intl-tel-input .iti__country-container,
-:host ::ng-deep ngx-intl-tel-input .dropdown-menu.iti__dropdown-content {
-  position: absolute !important;
-  top: calc(100% + 4px) !important;
-  left: 0 !important;
-  right: auto !important;
-  margin-top: 0 !important;          
-  z-index: 9999 !important;
-  direction: ltr !important;
-  text-align: left !important;
-}
-
-:host ::ng-deep ngx-intl-tel-input .iti__dropdown-content {
-  overflow: hidden !important;
-  max-height: 300px;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.16);
-  background: #fff;
-  direction: ltr !important;
-  text-align: left !important;
-  left: 0 !important;
-  right: auto !important;
 }
 
 .cell-ellipsis {
@@ -501,4 +370,52 @@ form label, .form-group label {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.rfq-filter-toggle.dropdown-toggle::after {
+  display: none !important;
+}
+
+.rfq-filter-active {
+  color: #116aef !important;
+
+  .btn-label {
+    color: #116aef !important;
+    font-weight: 500;
+  }
+}
+
+.rfq-filter-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #116aef;
+  display: inline-block;
+  margin-left: -4px;
+}
+
+.rfq-category-dropdown-menu {
+  min-width: 240px !important;
+  max-width: 320px;
+}
+
+.rfq-dropdown-header {
+  padding: 4px 10px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 4px;
+}
+
+.rfq-dropdown-note {
+  margin-top: 4px;
+  padding: 6px 10px 2px;
+  border-top: 1px solid #f1f5f9;
+  font-size: 11.5px;
+  color: #64748b;
+  white-space: normal;
+  line-height: 1.35;
 }

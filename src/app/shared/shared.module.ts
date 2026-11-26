@@ -38,6 +38,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { HasPermissionDirective } from './auth/has-permission.directive';
 import { PermissionDirective } from './permissions/permission.directive';
 import { CustomSelectDirective } from './directives/custom-select.directive';
+import { CountryCodeSelectComponent } from './components/country-code-select/country-code-select.component';
+import { PhoneNumberInputComponent } from './components/phone-number-input/phone-number-input.component';
 
 @NgModule({
     exports: [
@@ -56,6 +58,8 @@ import { CustomSelectDirective } from './directives/custom-select.directive';
         HasPermissionDirective,
         PermissionDirective,
         CustomSelectDirective,
+        CountryCodeSelectComponent,
+        PhoneNumberInputComponent,
     ],
     imports: [
         RouterModule,
@@ -75,6 +79,8 @@ import { CustomSelectDirective } from './directives/custom-select.directive';
         HasPermissionDirective,
         PermissionDirective,
         CustomSelectDirective,
+        CountryCodeSelectComponent,
+        PhoneNumberInputComponent,
     ],
     declarations: [
         FooterComponent,

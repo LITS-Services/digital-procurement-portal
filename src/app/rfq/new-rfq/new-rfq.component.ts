@@ -16,11 +16,14 @@ import { LookupService } from 'app/shared/services/lookup.service';
 import { SelectedVendorsModalComponent } from './selected-vendors-modal/selected-vendors-modal.component';
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
-import { PhoneNumberUtil, PhoneNumberFormat as LibPhoneNumberFormat } from 'google-libphonenumber';
 import { ProjectService, ProjectItem, ProjectActivityItem } from 'app/shared/services/project.service';
 import { DataSourceService } from 'app/shared/services/data-source.service';
 import { PdfExportService } from 'app/shared/services/pdf-export.service';
+import {
+  DEFAULT_PHONE_COUNTRY_ISO,
+  formatPhoneNumber,
+  splitPhoneNumber
+} from 'app/shared/utils/phone-countries';
 
 @Component({
   selector: 'app-new-rfq',
@@ -134,20 +137,11 @@ export class NewRfqComponent implements OnInit {
     );
   }
 
-  SearchCountryField = SearchCountryField;
-  PhoneNumberFormat = PhoneNumberFormat;
-  preferredCountries: CountryISO[] = [
-    CountryISO.Pakistan,
-    CountryISO.UnitedArabEmirates,
-    CountryISO.SaudiArabia,
-    CountryISO.UnitedStates,
-    CountryISO.UnitedKingdom
-  ];
-
-  selectedCountryISO: CountryISO = CountryISO.Pakistan;
-  private phoneUtil = PhoneNumberUtil.getInstance();
-
-  phoneInputReady: boolean = true;
+  get isContactInvalid(): boolean {
+    const ctrl = this.newRfqForm?.get('contact');
+    if (!ctrl || ctrl.disabled) return false;
+    return ctrl.invalid && (ctrl.touched || ctrl.dirty);
+  }
 
   constructor(
     private router: Router,
@@ -1114,8 +1108,7 @@ export class NewRfqComponent implements OnInit {
         // Filter projects for this department
         this.updateFilteredProjectsForRfq();
 
-        await this.resetPhoneInput();
-        setTimeout(() =>  this.patchReceiverContactFromE164(pr.receiverContact), 0);
+        this.patchReceiverContactFromE164(pr.receiverContact);
    
         this.cdr.detectChanges();
 
@@ -1392,6 +1385,11 @@ export class NewRfqComponent implements OnInit {
 
   submitForm(continueToVendors: boolean = false) {
     if (this.isLoading) return;
+    if (this.newRfqForm.get('contact')?.invalid) {
+      this.newRfqForm.get('contact')?.markAsTouched();
+      this.toastr.warning('Please enter a valid phone number for the selected country.');
+      return;
+    }
     this.isLoading = true;
     const f = this.newRfqForm.getRawValue();
     const dateISO = f.date ? new Date(f.date).toISOString() : new Date().toISOString();
@@ -2114,58 +2112,31 @@ export class NewRfqComponent implements OnInit {
 
   private normalizePhoneToString(value: any): string {
     if (!value) return '';
-    if (typeof value === 'string') return value;
+    if (typeof value === 'string') return value.trim();
 
     return (
       value?.e164Number ||
-      null
+      value?.internationalNumber ||
+      value?.number ||
+      ''
     );
   }
 
   private patchReceiverContactFromE164(e164: string | null | undefined): void {
-    if (!e164) return;
-
     const ctrl = this.newRfqForm.get('contact');
     if (!ctrl) return;
 
-    try {
-      const phone = this.phoneUtil.parse(e164);
-      const region = (this.phoneUtil.getRegionCodeForNumber(phone) || 'PK').toUpperCase();
-      const iso2 = region.toLowerCase();
-      this.selectedCountryISO = (CountryISO as any)[region] ?? CountryISO.Pakistan;
-
-      const valueObj = {
-        number: String(phone.getNationalNumber()),
-        internationalNumber: this.phoneUtil.format(phone, LibPhoneNumberFormat.INTERNATIONAL),
-        nationalNumber: this.phoneUtil.format(phone, LibPhoneNumberFormat.NATIONAL),
-        e164Number: this.phoneUtil.format(phone, LibPhoneNumberFormat.E164),
-        countryCode: iso2,
-        dialCode: `+${phone.getCountryCode()}`
-      };
-
-      ctrl.reset(null, { emitEvent: false });
-      ctrl.setValue(valueObj, { emitEvent: false });
+    const raw = (e164 || '').trim();
+    if (!raw) {
+      ctrl.setValue('', { emitEvent: false });
       ctrl.updateValueAndValidity({ emitEvent: false });
-    } catch {
-      ctrl.reset(null, { emitEvent: false });
-      ctrl.updateValueAndValidity({ emitEvent: false });
+      return;
     }
-  }
 
-
-  private resetPhoneInput(): Promise<void> {
-    this.phoneInputReady = false;
-    this.cdr.detectChanges();
-
-    return new Promise((resolve) => {
-
-      setTimeout(() => {
-        this.phoneInputReady = true;
-        this.cdr.detectChanges();
-
-        requestAnimationFrame(() => resolve());
-      });
-    });
+    const parsed = splitPhoneNumber(raw, DEFAULT_PHONE_COUNTRY_ISO);
+    const formatted = formatPhoneNumber(parsed.countryIso, parsed.national) || raw;
+    ctrl.setValue(formatted, { emitEvent: false });
+    ctrl.updateValueAndValidity({ emitEvent: false });
   }
 
   toggleSelectAll() {

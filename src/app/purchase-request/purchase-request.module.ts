@@ -26,8 +26,8 @@ import { AutoResizeDatatableDirective } from 'app/shared/directives/table-auto-r
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
 import { PrInventoryManagementComponent } from './pr-inventory-management/pr-inventory-management.component';
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
-import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { CustomSelectDirective } from 'app/shared/directives/custom-select.directive';
+import { PhoneNumberInputComponent } from 'app/shared/components/phone-number-input/phone-number-input.component';
 
 
 @NgModule({
@@ -52,11 +52,11 @@ import { CustomSelectDirective } from 'app/shared/directives/custom-select.direc
     NgbDatepickerModule,
     ToastrModule.forRoot(),
     NgxSpinnerModule,
-    NgxIntlTelInputModule,
     AutoResizeDatatableDirective,
     DatatableAutoResizeDirective,
     PermissionDirective,
-    CustomSelectDirective
+    CustomSelectDirective,
+    PhoneNumberInputComponent
   ],
   declarations: [
     PurchaseRequestComponent,

@@ -20,11 +20,14 @@ import { catchError, distinctUntilChanged, filter, finalize, map, pairwise, star
 import { PurchaseOrderService } from 'app/shared/services/purchase-order.service';
 import { PurchaseRequestExceptionPolicyComponent } from 'app/shared/modals/purchase-request-exception-policy/purchase-request-exception-policy.component';
 import { forkJoin, of, Subject } from 'rxjs';
-import { CountryISO, PhoneNumberFormat, SearchCountryField } from 'ngx-intl-tel-input';
-import { PhoneNumberUtil, PhoneNumberFormat as LibPhoneNumberFormat } from 'google-libphonenumber';
 import { DataSourceService } from 'app/shared/services/data-source.service';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { PdfExportService } from 'app/shared/services/pdf-export.service';
+import {
+  DEFAULT_PHONE_COUNTRY_ISO,
+  formatPhoneNumber,
+  splitPhoneNumber
+} from 'app/shared/utils/phone-countries';
 
 @Component({
   selector: 'app-new-purchase-request',
@@ -33,37 +36,14 @@ import { PdfExportService } from 'app/shared/services/pdf-export.service';
   standalone: false
 })
 
-export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDestroy {
+export class NewPurchaseRequestComponent implements OnInit, OnDestroy {
   uploadedItems: any[] = [];
 
-  // ngx-intl-tel-input config (used in template)
-  SearchCountryField = SearchCountryField;
-  PhoneNumberFormat = PhoneNumberFormat;
-  preferredCountries: CountryISO[] = [
-    CountryISO.Pakistan,
-    CountryISO.UnitedArabEmirates,
-    CountryISO.SaudiArabia,
-    CountryISO.UnitedStates,
-    CountryISO.UnitedKingdom
-  ];
-
-  selectedCountryISO: CountryISO = CountryISO.Qatar;
-  private phoneUtil = PhoneNumberUtil.getInstance();
-  private readonly receiverContactValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-    const value = control.value;
-    if (!value) return null;
-
-    const phoneValue = this.normalizePhoneToString(value);
-    if (!phoneValue) return { invalidPhoneNumber: true };
-
-    try {
-      const parsedNumber = this.phoneUtil.parseAndKeepRawInput(phoneValue);
-      const isValid = this.phoneUtil.isValidNumber(parsedNumber);
-      return isValid ? null : { invalidPhoneNumber: true };
-    } catch {
-      return { invalidPhoneNumber: true };
-    }
-  };
+  get isReceiverContactInvalid(): boolean {
+    const ctrl = this.newPurchaseRequestForm?.get('receiverContact');
+    if (!ctrl || ctrl.disabled) return false;
+    return ctrl.invalid && (ctrl.touched || ctrl.dirty);
+  }
 
   isNewForm = true; // true = create, false = edit
   isFormDirty = false; // track if any field was touched
@@ -165,10 +145,6 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   @ViewChild(DatatableComponent) table: DatatableComponent;
   @ViewChild('tableRowDetails') tableRowDetails: any;
   @ViewChild('tableResponsive') tableResponsive: any;
-  @ViewChild('receiverIntlWrap', { read: ElementRef }) receiverIntlWrap?: ElementRef<HTMLElement>;
-
-  private receiverIntlMutationObserver?: MutationObserver;
-  private receiverIntlSearchUnlisten?: () => void;
 
   constructor(
     private router: Router,
@@ -205,11 +181,13 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
   private normalizePhoneToString(value: any): string {
     if (!value) return '';
-    if (typeof value === 'string') return value;
+    if (typeof value === 'string') return value.trim();
 
     return (
       value?.e164Number ||
-      null
+      value?.internationalNumber ||
+      value?.number ||
+      ''
     );
   }
 
@@ -222,7 +200,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       status: [{ value: null, disabled: true }],
       deliveryLocation: [''],
       receiverName: [''],
-      receiverContact: ['', [Validators.required, this.receiverContactValidator]],
+      receiverContact: ['', [Validators.required]],
       department: [null],
       designation: [''],
       businessUnit: [''],
@@ -386,109 +364,11 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     }
   }
 
-  ngAfterViewInit(): void {
-    this.setupReceiverIntlCountryListFilter();
-  }
-
   ngOnDestroy(): void {
     this.panelPositionObserver?.disconnect();
     this.panelResizeObserver?.disconnect();
-    this.receiverIntlMutationObserver?.disconnect();
-    this.receiverIntlSearchUnlisten?.();
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  /**
-   * ngx-intl-tel-input only scrolls to the first match; it does not filter the dropdown.
-   * We hide non-matching rows so unrelated countries (e.g. Uganda/Ukraine for "united s") disappear.
-   */
-  private setupReceiverIntlCountryListFilter(): void {
-    const root = this.receiverIntlWrap?.nativeElement;
-    if (!root || typeof MutationObserver === 'undefined') return;
-
-    const bindIfNeeded = (): void => {
-      const searchInput = root.querySelector<HTMLInputElement>('#country-search-box');
-      if (!searchInput || searchInput.dataset['receiverIntlFilter'] === '1') return;
-
-      this.receiverIntlSearchUnlisten?.();
-      searchInput.dataset['receiverIntlFilter'] = '1';
-
-      this.receiverIntlSearchUnlisten = this.renderer.listen(searchInput, 'input', () => {
-        this.applyReceiverIntlCountryRowFilter(root, searchInput.value);
-      });
-      this.applyReceiverIntlCountryRowFilter(root, searchInput.value);
-    };
-
-    this.receiverIntlMutationObserver?.disconnect();
-    this.receiverIntlMutationObserver = new MutationObserver(() => bindIfNeeded());
-    this.receiverIntlMutationObserver.observe(root, { childList: true, subtree: true });
-    bindIfNeeded();
-  }
-
-  private applyReceiverIntlCountryRowFilter(host: HTMLElement, raw: string): void {
-    const q = raw.trim().toLowerCase().replace(/\s+/g, ' ');
-    host.querySelectorAll<HTMLLIElement>('.iti__country-list li.iti__country').forEach(li => {
-      const nameText = (li.querySelector('.iti__country-name')?.textContent || '').trim().toLowerCase();
-      const dialDigits = (li.querySelector('.iti__dial-code')?.textContent || '')
-        .replace(/\D/g, '')
-        .toLowerCase();
-      const words = NewPurchaseRequestComponent.extractCountryLabelWords(nameText);
-      const tokens = q.split(/\s+/).filter(Boolean);
-      const show =
-        !q ||
-        tokens.length === 0 ||
-        tokens.every((tok) =>
-          NewPurchaseRequestComponent.receiverIntlTokenMatches(tok, words, dialDigits)
-        );
-      this.renderer.setStyle(li, 'display', show ? '' : 'none');
-    });
-
-    this.hideStandardRowWhenPreferredDuplicateVisible(host);
-  }
-
-  /**
-   * Preferred countries appear twice: once under `iti__preferred` and again in the full list.
-   * Hide the standard row when the preferred row for the same country is visible (search may hide preferred only).
-   */
-  private hideStandardRowWhenPreferredDuplicateVisible(host: HTMLElement): void {
-    const standards = host.querySelectorAll<HTMLLIElement>('li.iti__country.iti__standard');
-
-    host.querySelectorAll<HTMLLIElement>('li.iti__country.iti__preferred').forEach((pref) => {
-      const pid = pref.getAttribute('id');
-      if (!pid?.endsWith('-preferred')) return;
-
-      const baseId = pid.slice(0, -'-preferred'.length);
-      const standard = Array.from(standards).find((li) => li.getAttribute('id') === baseId);
-      if (!standard) return;
-
-      const prefHidden = pref.style.display === 'none';
-      if (!prefHidden) {
-        this.renderer.setStyle(standard, 'display', 'none');
-      }
-    });
-  }
-
-  /** English / Latin segments of the dropdown label — used only for filtering, not display. */
-  private static extractCountryLabelWords(nameLower: string): string[] {
-    return nameLower.match(/[a-z0-9]+/gi) ?? [];
-  }
-
-  /**
-   * Each search term matches only as a dial-code substring OR as a whole-word prefix/exact hit
-   * on the Latin name segments (never arbitrary substring — avoids unrelated countries).
-   */
-  private static receiverIntlTokenMatches(
-    token: string,
-    latinWords: string[],
-    dialDigits: string
-  ): boolean {
-    if (/^\d+$/.test(token)) {
-      return dialDigits.startsWith(token);
-    }
-
-    const t = token.toLowerCase();
-    return latinWords.some((w) => w === t || w.startsWith(t));
   }
 
   @HostListener('window:scroll', [])
@@ -511,28 +391,20 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   // }
 
   private patchReceiverContactFromE164(e164: string | null | undefined): void {
-    if (!e164) return;
+    const ctrl = this.newPurchaseRequestForm.get('receiverContact');
+    if (!ctrl) return;
 
-    try {
-      const phone = this.phoneUtil.parseAndKeepRawInput(e164);
-      const region = this.phoneUtil.getRegionCodeForNumber(phone) || 'PK';
-
-      this.selectedCountryISO = (CountryISO as any)[region] ?? CountryISO.Pakistan;
-
-      // build the object ngx-intl-tel-input understands
-      const valueObj = {
-        number: String(phone.getNationalNumber()),
-        internationalNumber: this.phoneUtil.format(phone, LibPhoneNumberFormat.INTERNATIONAL),
-        nationalNumber: this.phoneUtil.format(phone, LibPhoneNumberFormat.NATIONAL),
-        e164Number: this.phoneUtil.format(phone, LibPhoneNumberFormat.E164),
-        countryCode: region,
-        dialCode: `+${phone.getCountryCode()}`
-      };
-
-      this.newPurchaseRequestForm.get('receiverContact')?.setValue(valueObj, { emitEvent: false });
-    } catch {
-      this.newPurchaseRequestForm.get('receiverContact')?.setValue(e164, { emitEvent: false });
+    const raw = (e164 || '').trim();
+    if (!raw) {
+      ctrl.setValue('', { emitEvent: false });
+      ctrl.updateValueAndValidity({ emitEvent: false });
+      return;
     }
+
+    const parsed = splitPhoneNumber(raw, DEFAULT_PHONE_COUNTRY_ISO);
+    const formatted = formatPhoneNumber(parsed.countryIso, parsed.national) || raw;
+    ctrl.setValue(formatted, { emitEvent: false });
+    ctrl.updateValueAndValidity({ emitEvent: false });
   }
 
   private checkEntitySelection(): void {
@@ -661,6 +533,10 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
 
   onEntityChanged(): void {
     const entityId = this.newPurchaseRequestForm.get('entityId')?.value;
+    this.newPurchaseRequestForm.patchValue({
+      department: null
+    }, { emitEvent: false });
+
     if (!entityId) {
       this.addresses = [];
       this.newPurchaseRequestForm.patchValue({
@@ -680,6 +556,7 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
     this.selectedCategoryId = null;
     this.itemForm.patchValue({ categoryId: null }, { emitEvent: false });
     this.loadDimensionsForSelectedEntity(true);
+    this.cdr.markForCheck();
   }
 
   private getSelectedEntityGuid(): string | null {
@@ -2600,6 +2477,12 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
       this.newPurchaseRequestForm.markAllAsTouched();
       if (this.newPurchaseRequestForm.get('entityId')?.hasError('required')) {
         this.toastr.warning('Please select an Entity.');
+      } else if (this.newPurchaseRequestForm.get('receiverContact')?.invalid) {
+        this.toastr.warning(
+          this.newPurchaseRequestForm.get('receiverContact')?.hasError('required')
+            ? 'Phone number is required.'
+            : 'Please enter a valid phone number for the selected country.'
+        );
       } else {
         this.toastr.warning('Form is invalid');
       }
@@ -3399,19 +3282,6 @@ export class NewPurchaseRequestComponent implements OnInit, AfterViewInit, OnDes
   onViewExceptionPolicy(): void {
     if (!this.exceptionPolicyData) return;
     this.openExceptionPolicyModal({ mode: 'view' });
-  }
-
-  focusReceiverCountrySearch(): void {
-    setTimeout(() => {
-      const root = this.receiverIntlWrap?.nativeElement;
-      const searchInput =
-        root?.querySelector<HTMLInputElement>('#country-search-box') ??
-        document.querySelector<HTMLInputElement>('#country-search-box');
-
-      if (searchInput) {
-        searchInput.focus();
-      }
-    }, 0);
   }
 
   @ViewChildren(NgSelectComponent) selectComponents?: QueryList<NgSelectComponent>;

@@ -6,7 +6,6 @@
       <div class="row">
         <div class="col-md-12" style=" margin-top: -0.25rem;">
           <h4 class="heading">
-            <button class="btn btn-lg" type="button" (click)="homePage()"><img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" /></button>
             <ng-container *ngIf="viewMode === false; else viewModeTitle">
               {{ isNewForm ? 'Create Quotation Request' : 'Update Quotation Request' }}
             </ng-container>
@@ -128,73 +127,113 @@
   
     </div>
 
-      <div class="card cstm-ui-card sticky-toolbar" [class.sticky]="isToolbarSticky" *ngIf="rfqTabs !== 'vendors'">
-        <div class="d-flex justify-content-between px-2">
+      <!-- Action Pane -->
+      <div class="card cstm-ui-card sticky-toolbar" [class.sticky]="isToolbarSticky">
+        <div class="d-flex justify-content-between align-items-center cstm-action-bar">
 
           <div>
-          
-            <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" (click)="goBack()"
-              title="Back to RFQ Details">
-              <img src="assets/img/svg-icons/back-icon.svg" class="btn-action-icon btn-back-icon" alt="" /><label>Back</label>
+            <button class="btn btn-lg mr-1" type="button" (click)="homePage()" title="Back">
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
             </button>
-          
-          </div>
-      
-      
-          <div>
+            <span class="vl"></span>
 
-
-          
             <button *ngIf="isNewForm && rfqTabs === 'details'" class="btn btn-sm cstm-ui-table-btn"
               [disabled]="newRfqForm.invalid" (click)="goNext()">
-              <i class="ft-arrow-right"></i><label class="ml-1">Next</label>
+              <i class="ft-arrow-right"></i><label class="btn-label ml-1">Next</label>
             </button>
-          
-                <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" [disabled]="isLoading"
+
+            <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" (click)="goBack()"
+              title="Back to RFQ Details">
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-action-icon btn-back-icon" alt="" />
+              <label class="btn-label">Back to Details</label>
+            </button>
+
+            <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" [disabled]="isLoading"
               (click)="saveAsDraftAndGoBack()">
-              <img src="assets/img/svg-icons/draft-icon.svg" class="btn-action-icon" alt="" /><label class="ml-1">Save As Draft</label>
+              <img src="assets/img/svg-icons/draft-icon.svg" class="btn-action-icon" alt="" />
+              <label class="btn-label">Save As Draft</label>
             </button>
-          
+
             <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" [disabled]="isLoading"
               (click)="submitForm(true)">
-              <img src="assets/img/svg-icons/save-icon.svg" class="btn-action-icon" alt="" /><label class="ml-1">Save & Continue</label>
+              <img src="assets/img/svg-icons/save-icon.svg" class="btn-action-icon" alt="" />
+              <label class="btn-label">Save & Continue</label>
             </button>
 
-         
-          
             <button *ngIf="!isNewForm && (rfqTabs === 'details' || rfqTabs === 'items') && isSubmitter"
-              class="btn btn-sm cstm-ui-table-btn" [disabled]="newRfqForm.invalid || isStatusCompleted  || isStatusInProgress || !isSubmitter || viewMode"
-              (click)="submitForm()">
-              <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" /><label class="ml-1">Update</label>
-            </button>
-
-              <button   [ngbTooltip]="useRequestPOMode ? 'Request Purchase Order' : 'Create Purchase Order'" *ngIf="isStatusCompleted && (rfqTabs === 'details' || rfqTabs === 'items') && isSubmitter"
               class="btn btn-sm cstm-ui-table-btn"
-              (click)="onPOButtonClick()">
-              <img src="assets/img/svg-icons/create-icon.svg" class="btn-action-icon" alt="" /><label class="ml-1">{{ useRequestPOMode ? 'Request PO' : 'Create PO' }}</label>
+              [disabled]="newRfqForm.invalid || isStatusCompleted || isStatusInProgress || !isSubmitter || viewMode"
+              (click)="submitForm()">
+              <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" />
+              <label class="btn-label">Update</label>
             </button>
 
-            <ng-container *ngIf="viewMode && !isSubmitter">
-            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
-              (click)="onAddRemarks('Approve')">
-              <i class="ft-check"></i><label class="ml-1">Approve</label>
+            <button [ngbTooltip]="useRequestPOMode ? 'Request Purchase Order' : 'Create Purchase Order'"
+              *ngIf="isStatusCompleted && (rfqTabs === 'details' || rfqTabs === 'items') && isSubmitter"
+              class="btn btn-sm cstm-ui-table-btn" (click)="onPOButtonClick()">
+              <img src="assets/img/svg-icons/create-icon.svg" class="btn-action-icon" alt="" />
+              <label class="btn-label">{{ useRequestPOMode ? 'Request PO' : 'Create PO' }}</label>
             </button>
-            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
-              (click)="onAddRemarks('Reject')">
-              <img src="assets/img/svg-icons/cancel-icon.svg" class="btn-action-icon" alt="" /><label>Reject</label>
-            </button>
-            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
-              (click)="onAddRemarks('SendBack')">
-              <img src="assets/img/svg-icons/back-icon.svg" class="btn-action-icon btn-back-icon" alt="" /><label>Send Back</label>
-            </button>
-            </ng-container>          
-          
-            <button *ngIf="!isNewForm && currentQuotationId" type="button" class="btn btn-sm cstm-ui-table-btn"
-              (click)="downloadPdf()" [disabled]="isLoading" title="Download RFQ PDF">
-              <img src="assets/img/svg-icons/pdf-icon.svg" class="btn-action-icon" alt="" /><label>Download PDF</label>
-            </button>
-          
+
+            <ng-container *ngIf="viewMode && !isSubmitter && (rfqTabs === 'details' || rfqTabs === 'items')">
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
+                (click)="onAddRemarks('Approve')">
+                <i class="ft-check"></i><label class="btn-label ml-1">Approve</label>
+              </button>
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
+                (click)="onAddRemarks('Reject')">
+                <img src="assets/img/svg-icons/cancel-icon.svg" class="btn-action-icon" alt="" />
+                <label class="btn-label">Reject</label>
+              </button>
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
+                (click)="onAddRemarks('SendBack')">
+                <img src="assets/img/svg-icons/back-icon.svg" class="btn-action-icon btn-back-icon" alt="" />
+                <label class="btn-label">Send Back</label>
+              </button>
+            </ng-container>
           </div>
+
+          <div class="d-flex align-items-center">
+            <div *ngIf="rfqTabs === 'items' && incomingPrCategories.length > 0"
+              class="dropdown filter-dropdown mr-2" ngbDropdown placement="bottom-end">
+              <button type="button" class="btn btn-sm cstm-ui-table-btn rfq-filter-toggle"
+                [class.rfq-filter-active]="selectedCategoryFilter && selectedCategoryFilter !== 'ALL'"
+                [ngbTooltip]="selectedCategoryFilter !== 'ALL' ? ('Category: ' + selectedCategoryFilter + ' (' + filteredQuotationItemData.length + '/' + newQuotationItemData.length + ')') : 'Filter by Category'"
+                ngbDropdownToggle>
+                <img src="assets/img/svg-icons/filter-icon.svg" class="btn-action-icon" alt="" />
+                <label class="btn-label">Filter</label>
+                <span *ngIf="selectedCategoryFilter && selectedCategoryFilter !== 'ALL'" class="rfq-filter-dot"></span>
+              </button>
+
+              <div class="dropdown-menu dropdown-menu-right rfq-category-dropdown-menu" ngbDropdownMenu>
+                <div class="rfq-dropdown-header">Filter by Category</div>
+                <button type="button" class="dropdown-item"
+                  [class.active]="selectedCategoryFilter === 'ALL'"
+                  (click)="onCategoryFilterChanged('ALL')">
+                  <span>All Categories ({{ newQuotationItemData.length }})</span>
+                  <i *ngIf="selectedCategoryFilter === 'ALL'" class="ft ft-check chart-check-icon"></i>
+                </button>
+                <button type="button" class="dropdown-item"
+                  *ngFor="let cat of incomingPrCategories"
+                  [class.active]="selectedCategoryFilter === cat.name"
+                  (click)="onCategoryFilterChanged(cat.name)">
+                  <span>{{ cat.name }} ({{ cat.count }})</span>
+                  <i *ngIf="selectedCategoryFilter === cat.name" class="ft ft-check chart-check-icon"></i>
+                </button>
+                <div *ngIf="purchaseRequestId && selectedCategoryFilter && selectedCategoryFilter !== 'ALL'"
+                  class="rfq-dropdown-note">
+                  <i class="ft-info mr-1 text-primary"></i>Selection scoped to {{ selectedCategoryFilter }}
+                </div>
+              </div>
+            </div>
+
+            <button *ngIf="!isNewForm && currentQuotationId" type="button" class="btn btn-sm cstm-ui-table-btn mr-2"
+              (click)="downloadPdf()" [disabled]="isLoading" title="Download RFQ PDF">
+              <img src="assets/img/svg-icons/pdf-icon.svg" class="btn-action-icon" alt="" />
+              <label class="btn-label">Download PDF</label>
+            </button>
+          </div>
+
         </div>
       </div>
   
@@ -309,36 +348,20 @@
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2 phone-field-wrapper">
                   <label>Contact</label>
-                  <!-- <input type="text" formControlName="contact" placeholder="Enter Contact No."
-                    class="form-control  custom-input" /> -->
-                  
-                    <ngx-intl-tel-input
-                    class="vendor-phone"
+                  <app-phone-number-input
                     name="contact"
                     formControlName="contact"
-                    [cssClass]="'form-control custom-input'"
-                    [preferredCountries]="preferredCountries"
-                    [enableAutoCountrySelect]="true"
-                    [searchCountryFlag]="true"
-                    [searchCountryField]="[SearchCountryField.All]"
-                    [selectFirstCountry]="true"
-                    [separateDialCode]="true"
-                    [selectedCountryISO]="selectedCountryISO"
-                    [numberFormat]="PhoneNumberFormat.International"
-                    [maxLength]="20">
-                  </ngx-intl-tel-input>
-                
-                  @if (
-                    newRfqForm.get('contact')?.invalid &&
-                    newRfqForm.get('contact')?.touched
-                  ) {
+                    [defaultCountryIso]="'qa'"
+                    [invalid]="isContactInvalid">
+                  </app-phone-number-input>
+
+                  @if (isContactInvalid) {
                     <div class="phone-error">
                       <i class="ft-alert-circle me-1"></i>
-              
                       @if (newRfqForm.get('contact')?.hasError('required')) {
-                        Contact is required
+                        Phone number is required.
                       } @else {
-                        Invalid phone number
+                        Please enter a valid phone number for the selected country.
                       }
                     </div>
                   }
@@ -375,11 +398,7 @@
     </div>
 
     <div class="tab-pane mt-1 sticky-toolbar-target" role="tabpanel" *ngIf="rfqTabs === 'items'">
-     <!-- Quotation Items (no accordion) -->
-  <!-- Header -->
-
-
-  <!-- Content -->
+      <!-- Content -->
   <div *ngIf="hasUnusedItems">
     <!-- Top form (Insert + fields) -->
     <div *ngIf="!viewMode" class="card-accordion mt-2">
@@ -574,30 +593,6 @@
 
     </div>
 
-    <!-- Category Filter Bar (Incoming from PR items or Quotation items) -->
-    <div *ngIf="incomingPrCategories.length > 0" class="d-flex justify-content-between align-items-center mb-3 mt-2 flex-wrap" style="background: #f8fafc; padding: 10px 14px; border-radius: 6px; border: 1px solid #e2e8f0;">
-      <div class="d-flex align-items-center flex-wrap">
-        <label class="mb-0 mr-2 font-weight-bold" style="white-space: nowrap; font-size: 0.9rem; color: #334155;">
-          <i class="ft-filter mr-1 text-primary"></i>Category Filter:
-        </label>
-        <div style="min-width: 250px;">
-          <select class="form-control custom-input" [ngModel]="selectedCategoryFilter" (ngModelChange)="onCategoryFilterChanged($event)">
-            <option value="ALL">-- All Categories ({{ newQuotationItemData.length }}) --</option>
-            <option *ngFor="let cat of incomingPrCategories" [value]="cat.name">
-              {{ cat.name }} ({{ cat.count }})
-            </option>
-          </select>
-        </div>
-        <span *ngIf="selectedCategoryFilter && selectedCategoryFilter !== 'ALL'" class="badge badge-pill badge-light-primary ml-2 py-1 px-2 mt-1 mt-sm-0" style="font-size: 0.82rem;">
-          Showing {{ filteredQuotationItemData.length }} of {{ newQuotationItemData.length }} items
-        </span>
-      </div>
-
-      <div *ngIf="purchaseRequestId && selectedCategoryFilter && selectedCategoryFilter !== 'ALL'" class="text-muted small mt-1 mt-md-0">
-        <i class="ft-info mr-1 text-info"></i>Items segregated by <strong>{{ selectedCategoryFilter }}</strong>. Selection is scoped to this category.
-      </div>
-    </div>
-
     <!-- Datatable -->
       @if(datatableVisible){
       <ngx-datatable class="bootstrap core-bootstrap" autoResize (autoResize)="onAutoResize()" [rows]="filteredQuotationItemData" [columnMode]="'force'"
@@ -740,6 +735,23 @@
   </div>
 
    <div class="tab-pane mt-1" role="tabpanel" *ngIf="selectedTab === 'history'">
+    <div class="card cstm-ui-card mb-2">
+      <div class="d-flex justify-content-between align-items-center cstm-action-bar">
+        <div>
+          <button class="btn btn-lg mr-1" type="button" (click)="homePage()" title="Back">
+            <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
+          </button>
+          <span class="vl"></span>
+        </div>
+        <div class="d-flex align-items-center">
+          <button *ngIf="!isNewForm && currentQuotationId" type="button" class="btn btn-sm cstm-ui-table-btn mr-2"
+            (click)="downloadPdf()" [disabled]="isLoading" title="Download RFQ PDF">
+            <img src="assets/img/svg-icons/pdf-icon.svg" class="btn-action-icon" alt="" />
+            <label class="btn-label">Download PDF</label>
+          </button>
+        </div>
+      </div>
+    </div>
     <app-rfq-approval-history-modal [data]="{ rfqNo: newRfqForm.get('rfqNo')?.value}"></app-rfq-approval-history-modal>
   </div>
 
@@ -774,20 +786,37 @@
       </ul>
 
       </div>
-      
-      <div>
-        <ng-container *ngIf="isSubmitter">
-          <button class="btn btn-sm submit-approval-btn shadow-sm" [disabled]="!allItemsFinalized || newRfqForm.invalid || isStatusCompleted || isStatusInProgress" (click)="onSubmitForApproval()">
-            <img src="assets/img/svg-icons/Submit_icon.svg" class="btn-action-icon" alt="" /><label class="ml-1">Submit for Approval</label>
-          </button>
-        </ng-container>
-      </div>
+    </div>
 
+    <!-- Action Pane -->
+    <div class="card cstm-ui-card mt-1">
+      <div class="d-flex justify-content-between align-items-center cstm-action-bar">
+        <div>
+          <button class="btn btn-lg mr-1" type="button" (click)="homePage()" title="Back">
+            <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
+          </button>
+          <span class="vl"></span>
+
+          <button *ngIf="isSubmitter" type="button" class="btn btn-sm cstm-ui-table-btn"
+            [disabled]="!allItemsFinalized || newRfqForm.invalid || isStatusCompleted || isStatusInProgress"
+            (click)="onSubmitForApproval()">
+            <img src="assets/img/svg-icons/Submit_icon.svg" class="btn-action-icon" alt="" />
+            <label class="btn-label">Submit for Approval</label>
+          </button>
+        </div>
+        <div class="d-flex align-items-center">
+          <button *ngIf="!isNewForm && currentQuotationId" type="button" class="btn btn-sm cstm-ui-table-btn mr-2"
+            (click)="downloadPdf()" [disabled]="isLoading" title="Download RFQ PDF">
+            <img src="assets/img/svg-icons/pdf-icon.svg" class="btn-action-icon" alt="" />
+            <label class="btn-label">Download PDF</label>
+          </button>
+        </div>
+      </div>
     </div>
 
 
   <!-- Sub Tab Content -->
-  <div class="mt-3" [ngSwitch]="bidsTab">
+  <div class="mt-2" [ngSwitch]="bidsTab">
     <!-- Default sub-tab -->
     <app-rfq-quotationbox
       *ngSwitchCase="'quotation-box'"
@@ -816,7 +845,24 @@
   </div>
   </div>
 
-     <div class="tab-pane mt-3" role="tabpanel" *ngIf="selectedTab === 'comments'">
+     <div class="tab-pane mt-1" role="tabpanel" *ngIf="selectedTab === 'comments'">
+    <div class="card cstm-ui-card mb-2">
+      <div class="d-flex justify-content-between align-items-center cstm-action-bar">
+        <div>
+          <button class="btn btn-lg mr-1" type="button" (click)="homePage()" title="Back">
+            <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
+          </button>
+          <span class="vl"></span>
+        </div>
+        <div class="d-flex align-items-center">
+          <button *ngIf="!isNewForm && currentQuotationId" type="button" class="btn btn-sm cstm-ui-table-btn mr-2"
+            (click)="downloadPdf()" [disabled]="isLoading" title="Download RFQ PDF">
+            <img src="assets/img/svg-icons/pdf-icon.svg" class="btn-action-icon" alt="" />
+            <label class="btn-label">Download PDF</label>
+          </button>
+        </div>
+      </div>
+    </div>
     <app-rfq-comments [vendorsData]="selectedVendorsData" [viewMode]="viewMode" [data]="{ quotationId: currentQuotationId }"></app-rfq-comments>
   </div>
       <!-- Action Pane -->

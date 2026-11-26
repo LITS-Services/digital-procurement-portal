@@ -3060,6 +3060,32 @@ body.rtl .chart-check-icon {
   margin-right: 8px;
 }
 
+/* Country code dropdown overlay & phone number input focus/validation alignment */
+.app-country-select-overlay-pane {
+  box-sizing: border-box !important;
+}
+
+input.cc-search-input:focus {
+  border: 1.5px solid #116AEF !important;
+  box-shadow: 0 0 0 2px rgba(17, 106, 239, 0.14) !important;
+}
+
+input.phone-national-input:focus:not(.is-invalid) {
+  border: 1.5px solid #116AEF !important;
+  box-shadow: 0 0 0 3px rgba(17, 106, 239, 0.12) !important;
+  background-color: #fcfdff !important;
+}
+
+input.phone-national-input.is-invalid {
+  border-color: #dc3545 !important;
+  box-shadow: none !important;
+}
+
+input.phone-national-input.is-invalid:focus {
+  border: 1.5px solid #dc3545 !important;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15) !important;
+}
+
 
 
 
