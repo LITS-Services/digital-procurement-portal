@@ -25,6 +25,8 @@ export class PrInventoryManagementComponent implements OnInit {
   loading = false;
 
   procCompanies: any[] = [];
+  allProcCompanies: any[] = [];
+  prEntityId: number | null = null;
   addresses: any[] = [];
   selectedCompanyMap: { [key: number]: number } = {}; // Map of item index -> selected companyId
 
@@ -71,6 +73,8 @@ export class PrInventoryManagementComponent implements OnInit {
     this.purchaseRequestService.getPurchaseRequestById(id, false, true).subscribe({
       next: (requestData: any) => {
         this.requisitionNo = requestData.requisitionNo || '';
+        this.prEntityId = requestData.entityId != null ? Number(requestData.entityId) : null;
+        this.filterProcCompaniesByPrEntity();
 
         this.headerForm.patchValue({
           //prNumber: requestData.prNumber || requestData.id || '',
@@ -113,13 +117,24 @@ export class PrInventoryManagementComponent implements OnInit {
   private loadProcurementCompanies(userId: string): void {
     this.lookupService.getProcCompaniesByProcUserId(userId).subscribe({
       next: (res: any[]) => {
-        this.procCompanies = res;
+        this.allProcCompanies = res || [];
+        this.filterProcCompaniesByPrEntity();
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Failed to load procurement companies:', err);
       }
     });
+  }
+
+  private filterProcCompaniesByPrEntity(): void {
+    if (this.prEntityId != null) {
+      this.procCompanies = this.allProcCompanies.filter(
+        c => Number(c.id) === Number(this.prEntityId)
+      );
+    } else {
+      this.procCompanies = [...this.allProcCompanies];
+    }
   }
 onCompanyChange(itemIndex: number) {
   const fg = this.itemForms.at(itemIndex) as FormGroup;
