@@ -223,11 +223,11 @@ export class RfqComponent implements OnInit {
         const html = `
           <div class="header-bar">
             <div>
-              <h1>Request For Quotation (RFQ)</h1>
+              <h1>Request For Quotation</h1>
               <div class="subtitle">${row.entityName || 'Procurement Portal'}</div>
             </div>
             <div class="meta-box">
-              <div class="doc-number">RFQ #: ${rfqNo}</div>
+              <div class="doc-number">QUOTATION #: ${rfqNo}</div>
               <div class="doc-date">Date: ${row.date || '-'}</div>
               <div class="status-badge status-open">${row.requestStatus || 'Open'}</div>
             </div>
@@ -242,11 +242,11 @@ export class RfqComponent implements OnInit {
 
           <div class="info-cards info-cards-3">
             <div class="info-card">
-              <div class="info-card-header">RFQ Overview</div>
+              <div class="info-card-header">Quotation Overview</div>
               <div class="info-card-body">
                 <div class="info-row"><span class="info-label">Entity</span><span class="info-value">${row.entityName || 'Procurement Portal'}</span></div>
                 <div class="info-row"><span class="info-label">Department</span><span class="info-value">${row.department || '-'}</span></div>
-                <div class="info-row"><span class="info-label">PR Reference</span><span class="info-value">${row.purchaseRequestNo || '-'}</span></div>
+                <div class="info-row"><span class="info-label">Purchase Request</span><span class="info-value">${row.purchaseRequestNo || '-'}</span></div>
                 <div class="info-row"><span class="info-label">Issue Date</span><span class="info-value">${row.date || '-'}</span></div>
               </div>
             </div>

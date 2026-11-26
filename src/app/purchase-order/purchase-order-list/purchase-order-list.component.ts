@@ -408,7 +408,7 @@ export class PurchaseOrderListComponent implements OnInit {
               <div class="subtitle">${row.entityName || 'Procurement Portal'}</div>
             </div>
             <div class="meta-box">
-              <div class="doc-number">PO #: ${poNo}</div>
+              <div class="doc-number">ORDER #: ${poNo}</div>
               <div class="doc-date">Date: ${row.createdDate || '-'}</div>
               <div class="status-badge ${statusClass}">${statusText}</div>
             </div>
@@ -427,15 +427,15 @@ export class PurchaseOrderListComponent implements OnInit {
               <div class="info-card-header">Shipment & Delivery</div>
               <div class="info-card-body">
                 <div class="info-row"><span class="info-label">Ship To</span><span class="info-value">${row.shipToName || row.receiverName || '-'}</span></div>
-                <div class="info-row"><span class="info-label">Loc. Code</span><span class="info-value">${row.locationCode || '-'}</span></div>
+                <div class="info-row"><span class="info-label">Location Code</span><span class="info-value">${row.locationCode || '-'}</span></div>
                 <div class="info-row"><span class="info-label">Destination</span><span class="info-value">${[row.shipToCity, row.shipToCountry].filter(Boolean).join(', ') || '-'}</span></div>
               </div>
             </div>
             <div class="info-card">
               <div class="info-card-header">Procurement References</div>
               <div class="info-card-body">
-                <div class="info-row"><span class="info-label">PR Reference</span><span class="info-value">${row.requisitionNo || '-'}</span></div>
-                <div class="info-row"><span class="info-label">RFQ Reference</span><span class="info-value">${row.rfqNo || '-'}</span></div>
+                <div class="info-row"><span class="info-label">Purchase Request</span><span class="info-value">${row.requisitionNo || '-'}</span></div>
+                <div class="info-row"><span class="info-label">Quotation</span><span class="info-value">${row.rfqNo || '-'}</span></div>
                 <div class="info-row"><span class="info-label">Total Items</span><span class="info-value">${row.itemsCount || '1'} Items</span></div>
               </div>
             </div>

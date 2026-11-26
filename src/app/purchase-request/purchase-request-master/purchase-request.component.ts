@@ -301,7 +301,7 @@ export class PurchaseRequestComponent implements OnInit {
               <div class="subtitle">${row.entityName || row.entity || 'Procurement Portal'}</div>
             </div>
             <div class="meta-box">
-              <div class="doc-number">PR #: ${reqNo}</div>
+              <div class="doc-number">REQUISITION #: ${reqNo}</div>
               <div class="doc-date">Date: ${subDate}</div>
               <div class="status-badge ${statusClass}">${statusText}</div>
             </div>

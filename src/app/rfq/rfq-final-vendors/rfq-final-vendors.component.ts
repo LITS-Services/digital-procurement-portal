@@ -20,6 +20,8 @@ export class RfqFinalVendorsComponent implements OnChanges {
   vendorData: any[] = [];
   itemsWithTotals: any[] = [];
   selected: { [id: number]: any | null } = {};
+  descriptions: { [id: number]: string } = {};
+  submitted = false;
   quotationRequestId: number | null = null;
 
   loadingAi = false;
@@ -72,8 +74,11 @@ export class RfqFinalVendorsComponent implements OnChanges {
       this.vendorData = (vendors?.vendors || []).filter((v: any) => v.bids && v.bids.length > 0);
 
       this.selected = {};
+      this.descriptions = {};
+      this.submitted = false;
       this.itemsData.forEach(item => {
         this.selected[item.id] = null;
+        this.descriptions[item.id] = item.remarks || '';
       });
 
       this.mapSelectedVendors();
@@ -87,6 +92,8 @@ export class RfqFinalVendorsComponent implements OnChanges {
     this.itemsData = [];
     this.vendorData = [];
     this.selected = {};
+    this.descriptions = {};
+    this.submitted = false;
     this.itemsWithTotals = [];
     this.updateFinalizationState();
     this.loading = false;
@@ -143,26 +150,34 @@ export class RfqFinalVendorsComponent implements OnChanges {
   }
 
   onSubmit() {
-    const payload = this.itemsData
-      .map(row => {
-        const sel = this.selected[row.id];
-        if (!sel) return null;
-        return {
-          quotationItemId: row.id,
-          vendorUserId: sel.vendorUserId,
-          vendorCompanyId: sel.companyId
-        };
-      })
-      .filter(Boolean) as Array<{
-        quotationItemId: number;
-        vendorUserId: string;
-        vendorCompanyId: string;
-      }>;
+    this.submitted = true;
 
-    if (!payload.length) {
+    const selectedRows = this.itemsData.filter(row => !!this.selected[row.id]);
+
+    if (!selectedRows.length) {
       this.toastr.warning('Please select at least one vendor.');
       return;
     }
+
+    const missingDescriptionRow = selectedRows.find(
+      row => !(this.descriptions[row.id] || '').trim()
+    );
+    if (missingDescriptionRow) {
+      this.toastr.warning(
+        `Description is required for ${missingDescriptionRow.itemName || 'all selected line items'}.`
+      );
+      return;
+    }
+
+    const payload = selectedRows.map(row => {
+      const sel = this.selected[row.id];
+      return {
+        quotationItemId: row.id,
+        vendorUserId: sel.vendorUserId,
+        vendorCompanyId: sel.companyId,
+        description: (this.descriptions[row.id] || '').trim()
+      };
+    });
 
     Swal.fire({
       title: 'Confirm Vendor Selection',

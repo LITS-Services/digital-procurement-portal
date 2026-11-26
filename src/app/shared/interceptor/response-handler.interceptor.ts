@@ -38,8 +38,9 @@ export class responseHandlerInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const skip = req.context.get(SKIP_TOAST);
 
-    ///for POST, PUT, PATCH METHods
-    const isWriteMethod = /^(POST|PUT|PATCH)$/i.test(req.method);
+    ///for POST, PUT, PATCH, DELETE methods
+    const isWriteMethod = /^(POST|PUT|PATCH|DELETE)$/i.test(req.method);
+    const isDeleteRequest = /^DELETE$/i.test(req.method) || req.url.toLowerCase().includes('delete');
 
     return next.handle(req).pipe(
       tap({
@@ -58,7 +59,11 @@ export class responseHandlerInterceptor implements HttpInterceptor {
                 if (isWriteMethod) {
                   const success = body.successMessage?.trim?.();
                   if (success) {
-                    this.toastr.success(success);
+                    if (isDeleteRequest) {
+                      this.toastr.error(success);
+                    } else {
+                      this.toastr.success(success);
+                    }
                   }
                 }
               } else {
@@ -133,11 +138,27 @@ export class responseHandlerInterceptor implements HttpInterceptor {
   }
 
   private extractErrorMessage(body: responseDTO): string {
+    const formatItem = (item: any): string => {
+      if (!item) return '';
+      if (typeof item === 'string') return item;
+      return (
+        item.errorMessage ||
+        item.ErrorMessage ||
+        item.message ||
+        item.Message ||
+        item.description ||
+        JSON.stringify(item)
+      );
+    };
+
     if (Array.isArray(body.errors) && body.errors.length > 0) {
-      return body.errors[0];
+      return formatItem(body.errors[0]);
     }
     if (Array.isArray(body.validationErrors) && body.validationErrors.length > 0) {
-      return body.validationErrors.join('\n');
+      return body.validationErrors
+        .map(formatItem)
+        .filter(Boolean)
+        .join('\n');
     }
     return '';
   }

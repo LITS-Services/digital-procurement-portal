@@ -105,6 +105,21 @@
 
         </ng-template>
       </ngx-datatable-column>
+
+      <!-- Description (Required at line level) -->
+      <ngx-datatable-column name="Description *" [sortable]="false">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <ng-container *ngIf="row.itemName !== 'Total'">
+            <input type="text"
+              class="form-control"
+              [class.is-invalid]="submitted && selected[row.id] && !(descriptions[row.id] || '').trim()"
+              [disabled]="loading || viewMode || allItemsFinalized || isItemFinalized(row)"
+              [(ngModel)]="descriptions[row.id]"
+              [ngModelOptions]="{ standalone: true }"
+              placeholder="Enter description..." />
+          </ng-container>
+        </ng-template>
+      </ngx-datatable-column>
     </ngx-datatable>
   </div>
 </div>

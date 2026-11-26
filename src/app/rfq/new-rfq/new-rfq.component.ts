@@ -389,11 +389,11 @@ export class NewRfqComponent implements OnInit {
     const html = `
       <div class="header-bar">
         <div>
-          <h1>Request For Quotation (RFQ)</h1>
+          <h1>Request For Quotation</h1>
           <div class="subtitle">${entityName}</div>
         </div>
         <div class="meta-box">
-          <div class="doc-number">RFQ #: ${rfqNo}</div>
+          <div class="doc-number">QUOTATION #: ${rfqNo}</div>
           <div class="doc-date">Issue Date: ${subDate}</div>
           <div class="status-badge status-open">${statusText}</div>
         </div>
@@ -408,12 +408,12 @@ export class NewRfqComponent implements OnInit {
 
       <div class="info-cards info-cards-3">
         <div class="info-card">
-          <div class="info-card-header">RFQ Overview</div>
+          <div class="info-card-header">Quotation Overview</div>
           <div class="info-card-body">
             <div class="info-row"><span class="info-label">Entity</span><span class="info-value">${entityName}</span></div>
             <div class="info-row"><span class="info-label">Department</span><span class="info-value">${deptName}</span></div>
-            <div class="info-row"><span class="info-label">PR Reference</span><span class="info-value">${formVal.purchaseRequestNo || '-'}</span></div>
-            <div class="info-row"><span class="info-label">RFQ Number</span><span class="info-value">${rfqNo}</span></div>
+            <div class="info-row"><span class="info-label">Purchase Request</span><span class="info-value">${formVal.purchaseRequestNo || '-'}</span></div>
+            <div class="info-row"><span class="info-label">Quotation Number</span><span class="info-value">${rfqNo}</span></div>
             <div class="info-row"><span class="info-label">Issue Date</span><span class="info-value">${subDate}</span></div>
           </div>
         </div>
@@ -422,7 +422,7 @@ export class NewRfqComponent implements OnInit {
           <div class="info-card-header">Timeline & Terms</div>
           <div class="info-card-body">
             <div class="info-row"><span class="info-label">Deadline</span><span class="info-value">${deadlineDate}</span></div>
-            <div class="info-row"><span class="info-label">Exp. Delivery</span><span class="info-value">${deliveryDate}</span></div>
+            <div class="info-row"><span class="info-label">Expected Delivery</span><span class="info-value">${deliveryDate}</span></div>
             <div class="info-row"><span class="info-label">Payment Terms</span><span class="info-value">${formVal.paymentTerms || 'Standard Terms'}</span></div>
             <div class="info-row"><span class="info-label">Status</span><span class="info-value">${statusText}</span></div>
           </div>
