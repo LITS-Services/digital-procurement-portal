@@ -30,8 +30,8 @@ import { RfqCommentsComponent } from './rfq-comments/rfq-comments.component';
 import { RfqFinalVendorsComponent } from './rfq-final-vendors/rfq-final-vendors.component';
 import { PermissionDirective } from 'app/shared/permissions/permission.directive';
 import { DatatableAutoResizeDirective } from 'app/shared/directives/dataTable-auto-resize.directive';
-import { NgxIntlTelInputComponent, NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { CustomSelectDirective } from 'app/shared/directives/custom-select.directive';
+import { PhoneNumberInputComponent } from 'app/shared/components/phone-number-input/phone-number-input.component';
 
 
 @NgModule({
@@ -72,8 +72,8 @@ import { CustomSelectDirective } from 'app/shared/directives/custom-select.direc
     AutoResizeDatatableDirective,
     DatatableAutoResizeDirective,
     PermissionDirective,
-    NgxIntlTelInputModule,
-    CustomSelectDirective
+    CustomSelectDirective,
+    PhoneNumberInputComponent
 ],
 schemas: [NO_ERRORS_SCHEMA]
 })

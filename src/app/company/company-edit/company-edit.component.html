@@ -151,13 +151,11 @@
 
             <!-- Top: company header -->
             <div class="d-flex align-items-center mb-3">
+              @if (companyLogoUrl) {
               <div class="company-avatar mr-3">
-                @if (companyLogoUrl) {
                 <img [src]="companyLogoUrl" [alt]="companyName || 'Company Logo'" class="company-logo-img" />
-                } @else {
-                <i class="ft-briefcase"></i>
-                }
               </div>
+              }
 
               <div class="flex-grow-1">
                 <div class="company-label text-uppercase">Company Name</div>

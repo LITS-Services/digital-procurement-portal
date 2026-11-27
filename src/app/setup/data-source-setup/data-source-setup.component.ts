@@ -141,6 +141,36 @@ export class DataSourceSetupComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  onFormDropdownOpen(select: any): void {
+    select?.filter('');
+    setTimeout(() => {
+      const host = select?.element || select?._elementRef?.nativeElement;
+      const panel = host?.querySelector('.ng-dropdown-panel') || document.querySelector('.ng-dropdown-panel');
+      const input = panel?.querySelector('.dropdown-search-input') as HTMLInputElement | null;
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+    }, 0);
+  }
+
+  onDropdownSearchKeyDown(event: KeyboardEvent, select: any): void {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      select?.close();
+      return;
+    }
+    if (event.key === 'Tab') {
+      select?.close();
+      return;
+    }
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter') {
+      return;
+    }
+    event.stopPropagation();
+  }
+
   confirmAddForm(modal: any): void {
     if (!this.selectedFormToAdd) return;
 

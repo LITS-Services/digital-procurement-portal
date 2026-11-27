@@ -60,19 +60,34 @@
 
                             <div class="col-lg-6 mb-2">
                                 <label class="form-label mb-1">Select Receivers</label>
-                                <ng-select [items]="filteredReceivers"
+                                <ng-select #receiverSelect [items]="filteredReceivers"
                                     bindLabel="userName" bindValue="userId" [multiple]="true" [searchable]="false" [closeOnSelect]="false"
                                     placeholder="Select user(s)" formControlName="Receivers"
-                                    (open)="onReceiverDropdownOpen()">
+                                    (open)="onReceiverDropdownOpen(receiverSelect)">
                                     <ng-template ng-header-tmp>
                                         <div class="dropdown-search-wrapper">
-                                            <i class="ft-search dropdown-search-icon"></i>
-                                            <input type="text" class="dropdown-search-input"
+                                            <svg class="dropdown-search-icon" width="14" height="14" viewBox="0 0 24 24"
+                                                fill="none" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round"
+                                                stroke-linejoin="round" aria-hidden="true">
+                                                <circle cx="11" cy="11" r="8"></circle>
+                                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                            </svg>
+                                            <input #receiverSearch type="text" class="dropdown-search-input"
                                                 placeholder="Search user..."
                                                 [value]="receiverSearchTerm"
                                                 (input)="onSearchReceivers($event)"
                                                 (click)="$event.stopPropagation()"
-                                                (keydown)="$event.stopPropagation()" />
+                                                (keydown)="onReceiverSearchKeyDown($event, receiverSelect)"
+                                                autocomplete="off" spellcheck="false" />
+                                            <button *ngIf="receiverSearchTerm" type="button" class="dropdown-search-clear"
+                                                (click)="clearReceiverSearch($event, receiverSearch)"
+                                                tabindex="-1" aria-label="Clear search">
+                                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#64748b"
+                                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                </svg>
+                                            </button>
                                         </div>
                                     </ng-template>
                                 </ng-select>
@@ -153,7 +168,7 @@
                                 <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                                     <button class="btn btn-sm btn-outline-danger" (click)="removeReceiver(row.id)"
                                         title="Remove from List" type="button">
-                                        <i class="ft-trash-2"></i>
+                                        <img src="assets/img/svg-icons/delete-icon.svg" class="row-action-icon" alt="Remove" />
                                     </button>
                                 </ng-template>
                             </ngx-datatable-column>

@@ -59,11 +59,37 @@
                 <div class="form-group mb-2">
                   <label>{{ isVendorOnboarding ? 'Select Entity' : 'Workflow Initiator(s)' }}</label>
 
-                  <ng-select class="custom-style" [items]="isVendorOnboarding ? entitiesList : usersList"
+                  <ng-select #wfUserSelect class="custom-style" [items]="isVendorOnboarding ? entitiesList : usersList"
                     [bindLabel]="isVendorOnboarding ? 'name' : 'userName'" bindValue="id"
-                    [multiple]="!isVendorOnboarding" [closeOnSelect]="isVendorOnboarding" [searchable]="true"
+                    [multiple]="!isVendorOnboarding" [closeOnSelect]="isVendorOnboarding" [searchable]="false"
                     placeholder="{{ isVendorOnboarding ? 'Select Entity' : 'Select Users' }}"
-                    formControlName="usersList" (change)="isVendorOnboarding ? onEntitySelected($event?.id) : null">
+                    formControlName="usersList" (change)="isVendorOnboarding ? onEntitySelected($event?.id) : null"
+                    (open)="onUserDropdownOpen(wfUserSelect)">
+                    <ng-template ng-header-tmp>
+                      <div class="dropdown-search-wrapper">
+                        <svg class="dropdown-search-icon" width="14" height="14" viewBox="0 0 24 24"
+                          fill="none" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round"
+                          stroke-linejoin="round" aria-hidden="true">
+                          <circle cx="11" cy="11" r="8"></circle>
+                          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input #wfSearch type="text" class="dropdown-search-input"
+                          [placeholder]="isVendorOnboarding ? 'Search entity...' : 'Search user...'"
+                          (input)="wfUserSelect.filter(wfSearch.value)"
+                          (click)="$event.stopPropagation()"
+                          (keydown)="onDropdownSearchKeyDown($event, wfUserSelect)"
+                          autocomplete="off" spellcheck="false" />
+                        <button *ngIf="wfSearch.value" type="button" class="dropdown-search-clear"
+                          (click)="wfSearch.value = ''; wfUserSelect.filter(''); $event.stopPropagation(); wfSearch.focus()"
+                          tabindex="-1" aria-label="Clear search">
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#64748b"
+                            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                          </svg>
+                        </button>
+                      </div>
+                    </ng-template>
                   </ng-select>
 
                 </div>
@@ -260,13 +286,13 @@
 
                 <ngx-datatable-column name="Actions" [width]="70">
                   <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
-                    <a matTooltip="Edit Approver" style="cursor: pointer; color: #d1d4d7;"
+                    <a matTooltip="Edit Approver" class="row-action-edit mr-1"
                       (click)="editRow(row, rowIndex)" [ngClass]="{'disabled': actionType === 'View'}">
-                      <i style="font-size: 1.5rem;" class="ft-edit mr-1"></i>
+                      <img src="assets/img/svg-icons/update-icon.svg" class="row-action-icon" alt="Edit" />
                     </a>
-                    <a matTooltip="Delete Approver" style="cursor: pointer; color: #d1d4d7;"
+                    <a matTooltip="Delete Approver" class="row-action-delete"
                       (click)="deleteRow(rowIndex)" [ngClass]="{'disabled': actionType === 'View'}">
-                      <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
+                      <img src="assets/img/svg-icons/delete-icon.svg" class="row-action-icon" alt="Delete" />
                     </a>
                   </ng-template>
                 </ngx-datatable-column>

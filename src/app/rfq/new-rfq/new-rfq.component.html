@@ -6,7 +6,6 @@
       <div class="row">
         <div class="col-md-12" style=" margin-top: -0.25rem;">
           <h4 class="heading">
-            <button class="btn btn-lg" type="button" (click)="homePage()"><img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" /></button>
             <ng-container *ngIf="viewMode === false; else viewModeTitle">
               {{ isNewForm ? 'Create Quotation Request' : 'Update Quotation Request' }}
             </ng-container>
@@ -128,70 +127,72 @@
   
     </div>
 
-      <div class="card cstm-ui-card sticky-toolbar" [class.sticky]="isToolbarSticky" *ngIf="rfqTabs !== 'vendors'">
-        <div class="d-flex justify-content-between px-2">
+      <!-- Action Pane -->
+      <div class="card cstm-ui-card sticky-toolbar" [class.sticky]="isToolbarSticky">
+        <div class="d-flex justify-content-between align-items-center cstm-action-bar">
 
           <div>
-          
-            <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" (click)="goBack()"
-              title="Back to RFQ Details">
-              <img src="assets/img/svg-icons/back-icon.svg" class="btn-action-icon btn-back-icon" alt="" /><label>Back</label>
+            <button class="btn btn-lg mr-1" type="button" (click)="homePage()" title="Back">
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
             </button>
-          
-          </div>
-      
-      
-          <div>
+            <span class="vl"></span>
 
-
-          
             <button *ngIf="isNewForm && rfqTabs === 'details'" class="btn btn-sm cstm-ui-table-btn"
               [disabled]="newRfqForm.invalid" (click)="goNext()">
-              <i class="ft-arrow-right"></i><label class="ml-1">Next</label>
+              <i class="ft-arrow-right"></i><label class="btn-label ml-1">Next</label>
             </button>
-          
-                <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" [disabled]="isLoading"
+
+            <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" (click)="goBack()"
+              title="Back to RFQ Details">
+              <img src="assets/img/svg-icons/back-icon.svg" class="btn-action-icon btn-back-icon" alt="" />
+              <label class="btn-label">Back to Details</label>
+            </button>
+
+            <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" [disabled]="isLoading"
               (click)="saveAsDraftAndGoBack()">
-              <img src="assets/img/svg-icons/draft-icon.svg" class="btn-action-icon" alt="" /><label class="ml-1">Save As Draft</label>
+              <img src="assets/img/svg-icons/draft-icon.svg" class="btn-action-icon" alt="" />
+              <label class="btn-label">Save As Draft</label>
             </button>
-          
+
             <button *ngIf="isNewForm && rfqTabs === 'items'" class="btn btn-sm cstm-ui-table-btn" [disabled]="isLoading"
               (click)="submitForm(true)">
-              <img src="assets/img/svg-icons/save-icon.svg" class="btn-action-icon" alt="" /><label class="ml-1">Save & Continue</label>
+              <img src="assets/img/svg-icons/save-icon.svg" class="btn-action-icon" alt="" />
+              <label class="btn-label">Save & Continue</label>
             </button>
 
-         
-          
             <button *ngIf="!isNewForm && (rfqTabs === 'details' || rfqTabs === 'items') && isSubmitter"
-              class="btn btn-sm cstm-ui-table-btn" [disabled]="newRfqForm.invalid || isStatusCompleted  || isStatusInProgress || !isSubmitter || viewMode"
-              (click)="submitForm()">
-              <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" /><label class="ml-1">Update</label>
-            </button>
-
-              <button   ngbTooltip="Request Purchase Order" *ngIf="isStatusCompleted && (rfqTabs === 'details' || rfqTabs === 'items') && isSubmitter"
               class="btn btn-sm cstm-ui-table-btn"
-              (click)="requestPO()">
-              <img src="assets/img/svg-icons/create-icon.svg" class="btn-action-icon" alt="" /><label>Request PO</label>
+              [disabled]="newRfqForm.invalid || isStatusCompleted || isStatusInProgress || !isSubmitter || viewMode"
+              (click)="submitForm()">
+              <img src="assets/img/svg-icons/update-icon.svg" class="btn-action-icon" alt="" />
+              <label class="btn-label">Update</label>
             </button>
 
-            <ng-container *ngIf="viewMode && !isSubmitter">
-            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
-              (click)="onAddRemarks('Approve')">
-              <i class="ft-check"></i><label class="ml-1">Approve</label>
+            <button ngbTooltip="Request Purchase Order"
+              *ngIf="isStatusCompleted && (rfqTabs === 'details' || rfqTabs === 'items') && isSubmitter"
+              class="btn btn-sm cstm-ui-table-btn" (click)="requestPO()">
+              <img src="assets/img/svg-icons/create-icon.svg" class="btn-action-icon" alt="" />
+              <label class="btn-label">Request PO</label>
             </button>
-            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
-              (click)="onAddRemarks('Reject')">
-              <img src="assets/img/svg-icons/cancel-icon.svg" class="btn-action-icon" alt="" /><label>Reject</label>
-            </button>
-            <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
-              (click)="onAddRemarks('SendBack')">
-              <img src="assets/img/svg-icons/back-icon.svg" class="btn-action-icon btn-back-icon" alt="" /><label>Send Back</label>
-            </button>
-            </ng-container>          
-          
-          
-          
+
+            <ng-container *ngIf="viewMode && !isSubmitter && (rfqTabs === 'details' || rfqTabs === 'items')">
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
+                (click)="onAddRemarks('Approve')">
+                <i class="ft-check"></i><label class="btn-label ml-1">Approve</label>
+              </button>
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
+                (click)="onAddRemarks('Reject')">
+                <img src="assets/img/svg-icons/cancel-icon.svg" class="btn-action-icon" alt="" />
+                <label class="btn-label">Reject</label>
+              </button>
+              <button class="btn btn-sm cstm-ui-table-btn" [disabled]="isStatusCompleted || isSubmitter || !isMainApprover"
+                (click)="onAddRemarks('SendBack')">
+                <img src="assets/img/svg-icons/back-icon.svg" class="btn-action-icon btn-back-icon" alt="" />
+                <label class="btn-label">Send Back</label>
+              </button>
+            </ng-container>
           </div>
+
         </div>
       </div>
   
@@ -298,36 +299,20 @@
               <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2 phone-field-wrapper">
                   <label>Contact</label>
-                  <!-- <input type="text" formControlName="contact" placeholder="Enter Contact No."
-                    class="form-control  custom-input" /> -->
-                  
-                    <ngx-intl-tel-input
-                    class="vendor-phone"
+                  <app-phone-number-input
                     name="contact"
                     formControlName="contact"
-                    [cssClass]="'form-control custom-input'"
-                    [preferredCountries]="preferredCountries"
-                    [enableAutoCountrySelect]="true"
-                    [searchCountryFlag]="true"
-                    [searchCountryField]="[SearchCountryField.All]"
-                    [selectFirstCountry]="true"
-                    [separateDialCode]="true"
-                    [selectedCountryISO]="selectedCountryISO"
-                    [numberFormat]="PhoneNumberFormat.International"
-                    [maxLength]="20">
-                  </ngx-intl-tel-input>
-                
-                  @if (
-                    newRfqForm.get('contact')?.invalid &&
-                    newRfqForm.get('contact')?.touched
-                  ) {
+                    [defaultCountryIso]="'qa'"
+                    [invalid]="isContactInvalid">
+                  </app-phone-number-input>
+
+                  @if (isContactInvalid) {
                     <div class="phone-error">
                       <i class="ft-alert-circle me-1"></i>
-              
                       @if (newRfqForm.get('contact')?.hasError('required')) {
-                        Contact is required
+                        Phone number is required.
                       } @else {
-                        Invalid phone number
+                        Please enter a valid phone number for the selected country.
                       }
                     </div>
                   }
@@ -621,14 +606,14 @@
         <ngx-datatable-column *ngIf="!viewMode" name="Actions" [width]="120" [sortable]="false" [canAutoResize]="false"
           [draggable]="false" [resizeable]="false">
           <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
-            <a matTooltip="Edit Item" (click)="editRow(row, rowIndex)"
+            <a matTooltip="Edit Item" class="mr-1" (click)="editRow(row, rowIndex)"
               [ngClass]="viewMode ? 'disabled' : 'row-action-edit'">
-              <i class="ft-edit mr-1" style="font-size: 1.5rem;"></i>
+              <img src="assets/img/svg-icons/update-icon.svg" class="row-action-icon" alt="Edit" />
             </a>
     
-            <a matTooltip="Delete Item" style="cursor: pointer; color: #d1d4d7;" (click)="deleteRow(rowIndex)"
+            <a matTooltip="Delete Item" (click)="deleteRow(rowIndex)"
               [ngClass]="viewMode ? 'disabled' : 'row-action-delete'">
-              <i class="ft-trash trash-icon" style="font-size: 1.5rem;"></i>
+              <img src="assets/img/svg-icons/delete-icon.svg" class="row-action-icon" alt="Delete" />
             </a>
           </ng-template>
         </ngx-datatable-column>
@@ -658,6 +643,16 @@
   </div>
 
    <div class="tab-pane mt-1" role="tabpanel" *ngIf="selectedTab === 'history'">
+    <div class="card cstm-ui-card mb-2">
+      <div class="d-flex justify-content-between align-items-center cstm-action-bar">
+        <div>
+          <button class="btn btn-lg mr-1" type="button" (click)="homePage()" title="Back">
+            <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
+          </button>
+          <span class="vl"></span>
+        </div>
+      </div>
+    </div>
     <app-rfq-approval-history-modal [data]="{ rfqNo: newRfqForm.get('rfqNo')?.value}"></app-rfq-approval-history-modal>
   </div>
 
@@ -692,20 +687,30 @@
       </ul>
 
       </div>
-      
-      <div>
-        <ng-container *ngIf="isSubmitter">
-          <button class="btn btn-sm submit-approval-btn shadow-sm" [disabled]="!allItemsFinalized || newRfqForm.invalid || isStatusCompleted || isStatusInProgress" (click)="onSubmitForApproval()">
-            <img src="assets/img/svg-icons/Submit_icon.svg" class="btn-action-icon" alt="" /><label class="ml-1">Submit for Approval</label>
-          </button>
-        </ng-container>
-      </div>
+    </div>
 
+    <!-- Action Pane -->
+    <div class="card cstm-ui-card mt-1">
+      <div class="d-flex justify-content-between align-items-center cstm-action-bar">
+        <div>
+          <button class="btn btn-lg mr-1" type="button" (click)="homePage()" title="Back">
+            <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
+          </button>
+          <span class="vl"></span>
+
+          <button *ngIf="isSubmitter" type="button" class="btn btn-sm cstm-ui-table-btn"
+            [disabled]="!allItemsFinalized || newRfqForm.invalid || isStatusCompleted || isStatusInProgress"
+            (click)="onSubmitForApproval()">
+            <img src="assets/img/svg-icons/Submit_icon.svg" class="btn-action-icon" alt="" />
+            <label class="btn-label">Submit for Approval</label>
+          </button>
+        </div>
+      </div>
     </div>
 
 
   <!-- Sub Tab Content -->
-  <div class="mt-3" [ngSwitch]="bidsTab">
+  <div class="mt-2" [ngSwitch]="bidsTab">
     <!-- Default sub-tab -->
     <app-rfq-quotationbox
       *ngSwitchCase="'quotation-box'"
@@ -734,7 +739,17 @@
   </div>
   </div>
 
-     <div class="tab-pane mt-3" role="tabpanel" *ngIf="selectedTab === 'comments'">
+     <div class="tab-pane mt-1" role="tabpanel" *ngIf="selectedTab === 'comments'">
+    <div class="card cstm-ui-card mb-2">
+      <div class="d-flex justify-content-between align-items-center cstm-action-bar">
+        <div>
+          <button class="btn btn-lg mr-1" type="button" (click)="homePage()" title="Back">
+            <img src="assets/img/svg-icons/back-icon.svg" class="btn-back-icon" alt="Back" />
+          </button>
+          <span class="vl"></span>
+        </div>
+      </div>
+    </div>
     <app-rfq-comments [vendorsData]="selectedVendorsData" [viewMode]="viewMode" [data]="{ quotationId: currentQuotationId }"></app-rfq-comments>
   </div>
       <!-- Action Pane -->

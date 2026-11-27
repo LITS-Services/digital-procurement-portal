@@ -141,9 +141,34 @@
                 <div class="col-lg-6 col-md-6 col-sm-12 me-1">
                   <div class="mb-2">
                     <label>Select Companies</label>
-                    <ng-select class="custom-style" [items]="companies" bindLabel="name" bindValue="id"
-                      [multiple]="true" [searchable]="true" placeholder="Select Company(s)"
-                      formControlName="companyIds">
+                    <ng-select #empCompanySelect class="custom-style" [items]="companies" bindLabel="name" bindValue="id"
+                      [multiple]="true" [searchable]="false" [closeOnSelect]="false" placeholder="Select Company(s)"
+                      formControlName="companyIds" (open)="onCompanyDropdownOpen(empCompanySelect)">
+                      <ng-template ng-header-tmp>
+                        <div class="dropdown-search-wrapper">
+                          <svg class="dropdown-search-icon" width="14" height="14" viewBox="0 0 24 24"
+                            fill="none" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round"
+                            stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                          </svg>
+                          <input #empCompSearch type="text" class="dropdown-search-input"
+                            placeholder="Search company..."
+                            (input)="empCompanySelect.filter(empCompSearch.value)"
+                            (click)="$event.stopPropagation()"
+                            (keydown)="onDropdownSearchKeyDown($event, empCompanySelect)"
+                            autocomplete="off" spellcheck="false" />
+                          <button *ngIf="empCompSearch.value" type="button" class="dropdown-search-clear"
+                            (click)="empCompSearch.value = ''; empCompanySelect.filter(''); $event.stopPropagation(); empCompSearch.focus()"
+                            tabindex="-1" aria-label="Clear search">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#64748b"
+                              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                              <line x1="18" y1="6" x2="6" y2="18"></line>
+                              <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                          </button>
+                        </div>
+                      </ng-template>
                     </ng-select>
 
                     <div *ngIf="companyForm.get('companyIds')?.invalid && companyFormSubmitted && !isEditMode"

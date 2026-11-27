@@ -238,28 +238,22 @@
               </div>
 
               <div class="form-grid__item mb-2">
-                <div class="form-group mb-2 phone-field-wrapper" #receiverIntlWrap>
+                <div class="form-group mb-2 phone-field-wrapper">
                   <label>Receiver Contact <span class="text-danger">*</span></label>
-                  <ngx-intl-tel-input class="vendor-phone" name="receiverContact" formControlName="receiverContact"
-                    (click)="focusReceiverCountrySearch()"
-                    [cssClass]="'form-control custom-input'" [preferredCountries]="preferredCountries"
-                    [enableAutoCountrySelect]="true" [searchCountryFlag]="true"
-                    [searchCountryField]="[SearchCountryField.Name]" [phoneValidation]="true" [selectFirstCountry]="false"
-                    [separateDialCode]="true" [selectedCountryISO]="selectedCountryISO"
-                    [numberFormat]="PhoneNumberFormat.International" [maxLength]="20">
-                  </ngx-intl-tel-input>
+                  <app-phone-number-input
+                    name="receiverContact"
+                    formControlName="receiverContact"
+                    [defaultCountryIso]="'qa'"
+                    [invalid]="isReceiverContactInvalid">
+                  </app-phone-number-input>
 
-                  @if (
-                  newPurchaseRequestForm.get('receiverContact')?.invalid &&
-                  newPurchaseRequestForm.get('receiverContact')?.touched
-                  ) {
+                  @if (isReceiverContactInvalid) {
                   <div class="phone-error">
                     <i class="ft-alert-circle me-1"></i>
-
                     @if (newPurchaseRequestForm.get('receiverContact')?.hasError('required')) {
-                    Receiver Contact is required
+                    Phone number is required.
                     } @else {
-                    Invalid phone number
+                    Please enter a valid phone number for the selected country.
                     }
                   </div>
                   }
@@ -693,14 +687,14 @@
 
                 <ngx-datatable-column *ngIf="!viewMode" name="Actions" [minWidth]="110" [maxWidth]="130" [flexGrow]="0.9">
                   <ng-template ngx-datatable-cell-template let-row="row" let-rowIndex="rowIndex">
-                    <a matTooltip="Edit Item" (click)="editRow(row, rowIndex)"
+                    <a matTooltip="Edit Item" class="mr-1" (click)="editRow(row, rowIndex)"
                       [ngClass]="viewMode ? 'disabled' : 'row-action-edit'">
-                      <i style="font-size: 1.5rem;" class="ft-edit mr-1"></i>
+                      <img src="assets/img/svg-icons/update-icon.svg" class="row-action-icon" alt="Edit" />
                     </a>
 
                     <a matTooltip="Delete Item" *ngIf="!isSelectingFinalVendor" (click)="deleteRow(rowIndex)"
                       [ngClass]="viewMode ? 'disabled' : 'row-action-delete'">
-                      <i style="font-size: 1.5rem;" class="ft-trash trash-icon"></i>
+                      <img src="assets/img/svg-icons/delete-icon.svg" class="row-action-icon" alt="Delete" />
                     </a>
                   </ng-template>
                 </ngx-datatable-column>

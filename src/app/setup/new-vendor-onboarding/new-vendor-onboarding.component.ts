@@ -387,13 +387,44 @@ export class NewVendorOnboardingComponent implements OnInit {
     }
   }
 
-  onReceiverDropdownOpen(): void {
+  onReceiverDropdownOpen(select?: any): void {
     this.receiverSearchTerm = '';
     this.filteredReceivers = [...this.allReceivers];
     setTimeout(() => {
-      const input = document.querySelector('.ng-dropdown-panel .dropdown-search-input') as HTMLInputElement;
-      input?.focus();
-    }, 50);
+      const host = select?.element || select?._elementRef?.nativeElement;
+      const panel = host?.querySelector('.ng-dropdown-panel') || document.querySelector('.ng-dropdown-panel');
+      const input = panel?.querySelector('.dropdown-search-input') as HTMLInputElement | null;
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+    }, 0);
+  }
+
+  clearReceiverSearch(event: MouseEvent, input: HTMLInputElement): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.receiverSearchTerm = '';
+    this.filteredReceivers = [...this.allReceivers];
+    input.value = '';
+    input.focus();
+  }
+
+  onReceiverSearchKeyDown(event: KeyboardEvent, select: any): void {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      select?.close();
+      return;
+    }
+    if (event.key === 'Tab') {
+      select?.close();
+      return;
+    }
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter') {
+      return;
+    }
+    event.stopPropagation();
   }
 
   // Helper method to check if add button should be enabled

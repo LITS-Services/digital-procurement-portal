@@ -122,11 +122,11 @@
 
             <ngx-datatable-column name="Actions" [flexGrow]="1" [minWidth]="90" [sortable]="false">
               <ng-template ngx-datatable-cell-template let-row="row">
-                <button type="button" class="btn btn-sm btn-link text-danger p-0"
+                <button type="button" class="btn btn-sm btn-link row-action-delete p-1"
                   (click)="removeForm(row.key)"
                   title="Remove from checklist"
                   appPermission [appPermFormId]="FORM_IDS.DATA_SOURCE" [appPermDisable]="'write'">
-                  <i class="ft-trash-2 font-medium-1"></i>
+                  <img src="assets/img/svg-icons/delete-icon.svg" class="row-action-icon" alt="Remove" />
                 </button>
               </ng-template>
             </ngx-datatable-column>
@@ -156,13 +156,41 @@
     <div class="form-group mb-0">
       <label class="font-weight-bold mb-1" style="font-size: 13px;">Form / Module</label>
       <ng-select
+        #formSelect
         [items]="availableFormsToAdd"
         bindLabel="label"
         bindValue="key"
+        [searchable]="false"
         [(ngModel)]="selectedFormToAdd"
         (change)="onFormOptionSelected($event)"
+        (open)="onFormDropdownOpen(formSelect)"
         placeholder="Choose a form..."
         notFoundText="All forms have been added">
+        <ng-template ng-header-tmp>
+          <div class="dropdown-search-wrapper">
+            <svg class="dropdown-search-icon" width="14" height="14" viewBox="0 0 24 24"
+              fill="none" stroke="#94a3b8" stroke-width="2.2" stroke-linecap="round"
+              stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input #formSearch type="text" class="dropdown-search-input"
+              placeholder="Search form..."
+              (input)="formSelect.filter(formSearch.value)"
+              (click)="$event.stopPropagation()"
+              (keydown)="onDropdownSearchKeyDown($event, formSelect)"
+              autocomplete="off" spellcheck="false" />
+            <button *ngIf="formSearch.value" type="button" class="dropdown-search-clear"
+              (click)="formSearch.value = ''; formSelect.filter(''); $event.stopPropagation(); formSearch.focus()"
+              tabindex="-1" aria-label="Clear search">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#64748b"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </ng-template>
         <ng-template ng-option-tmp let-item="item">
           <div class="d-flex flex-column py-1">
             <span class="font-weight-600 text-dark" style="font-size: 13px; line-height: 1.3;">{{ item.label }}</span>

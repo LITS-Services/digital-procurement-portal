@@ -29,6 +29,7 @@ const COPIED_CLASSES = [
   'custom-input',
   'custom-select',
   'form-select',
+  'w-cstm',
   'd-inline-block',
   'w-100',
   'width-100',
@@ -39,6 +40,7 @@ const COPIED_CLASSES = [
   'mx-1',
   'me-1',
   'mr-1',
+  'filter-label',
   'chart-range-select',
   'project-filter-select'
 ];
@@ -98,6 +100,19 @@ export class CustomSelectDirective implements AfterViewInit, DoCheck, OnDestroy 
       }
     }
 
+    // Copy any arbitrary classes excluding hidden/Angular internal classes
+    for (let i = 0; i < select.classList.length; i++) {
+      const cls = select.classList.item(i);
+      if (
+        cls &&
+        cls !== 'app-native-select-hidden' &&
+        !cls.startsWith('ng-') &&
+        !btn.classList.contains(cls)
+      ) {
+        btn.classList.add(cls);
+      }
+    }
+
     if (select.style.width) {
       btn.style.width = select.style.width;
     }
@@ -127,7 +142,11 @@ export class CustomSelectDirective implements AfterViewInit, DoCheck, OnDestroy 
       this.zone.run(() => {
         this.syncTriggerState();
         if (this.panelRef) {
-          this.panelRef.instance.setItems(this.readOptions(), this.getDirection());
+          this.panelRef.instance.setItems(
+            this.readOptions(),
+            this.getDirection(),
+            this.getSearchPlaceholder()
+          );
         }
       });
     });
@@ -222,8 +241,10 @@ export class CustomSelectDirective implements AfterViewInit, DoCheck, OnDestroy 
       .withPositions(positions)
       .withPush(true);
 
-    const minWidth = Math.max(triggerRect.width, 130);
-    const maxWidth = Math.min(Math.max(triggerRect.width, 380), Math.max(window.innerWidth - 24, 200));
+    const triggerWidth = Math.round(triggerRect.width);
+    const viewportMax = Math.max(window.innerWidth - 24, triggerWidth);
+    const minWidth = Math.min(Math.max(triggerWidth, 200), viewportMax);
+    const maxWidth = Math.min(Math.max(triggerWidth + 250, 650), viewportMax);
 
     this.overlayRef = this.overlay.create({
       positionStrategy,
@@ -237,7 +258,17 @@ export class CustomSelectDirective implements AfterViewInit, DoCheck, OnDestroy 
 
     const portal = new ComponentPortal(CustomSelectPanelComponent);
     this.panelRef = this.overlayRef.attach(portal);
-    this.panelRef.instance.setItems(this.readOptions(), dir);
+    this.panelRef.instance.setItems(this.readOptions(), dir, this.getSearchPlaceholder());
+
+    const panelEl = this.panelRef.location.nativeElement as HTMLElement;
+    panelEl.style.display = 'block';
+    panelEl.style.width = '100%';
+    panelEl.style.minWidth = `${minWidth}px`;
+    panelEl.style.boxSizing = 'border-box';
+
+    if (this.overlayRef.overlayElement) {
+      this.overlayRef.overlayElement.style.minWidth = `${minWidth}px`;
+    }
 
     this.triggerBtn.setAttribute('aria-expanded', 'true');
     this.triggerBtn.classList.add('app-select-trigger--open');
@@ -247,6 +278,13 @@ export class CustomSelectDirective implements AfterViewInit, DoCheck, OnDestroy 
     this.overlaySubs.add(
       this.panelRef.instance.optionSelected.subscribe((item) => {
         this.selectOption(item);
+      })
+    );
+
+    this.overlaySubs.add(
+      this.panelRef.instance.closeRequested.subscribe(() => {
+        this.close(true);
+        this.triggerBtn?.focus();
       })
     );
 
@@ -412,8 +450,9 @@ export class CustomSelectDirective implements AfterViewInit, DoCheck, OnDestroy 
       !selectedOpt ||
       selectedOpt.disabled ||
       selectedOpt.value === '' ||
+      !displayText ||
       (selectedOpt.index === 0 &&
-        (selectedOpt.value.endsWith('null') || displayText.startsWith('--')));
+        (selectedOpt.value.endsWith('null') || displayText.startsWith('--') || displayText === 'Select'));
 
     this.triggerBtn.classList.toggle('app-select-trigger--placeholder', isPlaceholder);
     this.triggerBtn.disabled = disabled;
@@ -428,7 +467,11 @@ export class CustomSelectDirective implements AfterViewInit, DoCheck, OnDestroy 
     if (sig !== this.lastOptionsSignature) {
       this.lastOptionsSignature = sig;
       if (this.panelRef) {
-        this.panelRef.instance.setItems(this.readOptions(), this.getDirection());
+        this.panelRef.instance.setItems(
+          this.readOptions(),
+          this.getDirection(),
+          this.getSearchPlaceholder()
+        );
       }
     }
   }
@@ -440,9 +483,11 @@ export class CustomSelectDirective implements AfterViewInit, DoCheck, OnDestroy 
 
     const pushOption = (opt: HTMLOptionElement, groupHeader?: string) => {
       if (opt.hidden || opt.style.display === 'none') return;
+      const label = (opt.textContent ?? '').trim();
+      if (!label && opt.disabled) return;
       items.push({
         index: opt.index,
-        label: (opt.textContent ?? '').trim(),
+        label: label || '-- None --',
         disabled: opt.disabled,
         selected: opt.index === selectedIdx,
         groupHeader
@@ -472,5 +517,47 @@ export class CustomSelectDirective implements AfterViewInit, DoCheck, OnDestroy 
       return 'rtl';
     }
     return 'ltr';
+  }
+
+  private getSearchPlaceholder(): string {
+    const select = this.el.nativeElement;
+
+    const placeholderAttr = select.getAttribute('placeholder');
+    if (placeholderAttr) {
+      const clean = placeholderAttr.replace(/^--\s*|\s*--$/g, '').trim();
+      if (clean.toLowerCase().startsWith('select ')) {
+        return `Search ${clean.slice(7).trim().toLowerCase()}...`;
+      }
+      return `Search ${clean.toLowerCase()}...`;
+    }
+
+    const labelEl =
+      select.labels?.[0] ||
+      select.closest('.form-field')?.querySelector('label') ||
+      select.closest('.form-group')?.querySelector('label') ||
+      select.closest('.filter-group')?.querySelector('label') ||
+      select.closest('fieldset')?.querySelector('label') ||
+      select.parentElement?.querySelector(':scope > label');
+
+    if (labelEl) {
+      const clone = labelEl.cloneNode(true) as HTMLElement;
+      clone.querySelectorAll('.text-danger, small, i, svg, span.text-danger').forEach((n) => n.remove());
+      const labelText = (clone.textContent ?? '').trim();
+      if (labelText) {
+        return `Search ${labelText.toLowerCase()}...`;
+      }
+    }
+
+    if (select.options.length > 0) {
+      const firstOpt = select.options[0];
+      if (firstOpt && (firstOpt.disabled || firstOpt.hidden || firstOpt.value === '')) {
+        const optText = (firstOpt.textContent ?? '').trim().replace(/^--\s*|\s*--$/g, '');
+        if (optText.toLowerCase().startsWith('select ') && optText.length > 7) {
+          return `Search ${optText.slice(7).trim().toLowerCase()}...`;
+        }
+      }
+    }
+
+    return 'Search...';
   }
 }
