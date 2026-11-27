@@ -272,11 +272,11 @@
 
                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
                 <div class="form-group mb-2">
-              <label class="d-flex align-items-center mr-2 w-100" [ngbTooltip]="entityHint">
-                <span class="mr-2">Entity</span>
-              
+              <label class="entity-field-label w-100" [ngbTooltip]="entityHint">
+                <span class="entity-label-title">Entity</span>
+
                 <small *ngIf="isEntityLocked && entityHint" class="hint-ellipsis ms-auto text-muted">
-                  <i class="ft-info mr-1"></i>
+                  <i class="ft-info"></i>
                   <span class="hint-text">
                     {{ entityHint }}
                   </span>
